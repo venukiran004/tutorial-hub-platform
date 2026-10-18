@@ -36,6 +36,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A `for` loop is shorthand for a short conversation between two objects. Python calls `iter()` on whatever you gave it to obtain an **iterator**, then calls `next()` on that iterator repeatedly until it signals exhaustion by raising `StopIteration`." },
 
     { t: "code", lang: "python", title: "the loop, written out longhand", code: `
@@ -130,6 +133,10 @@ for i, item in enumerate(items):
     /* ================================================================== */
     { t: "h2", n: "02", text: "for versus while", id: "for-vs-while" },
 
+    {"kind": "flow", "title": "A sequence of items, or a condition that changes", "caption": "**`for` is for consuming a sequence of items — known in advance or produced by something — and that is the overwhelming majority of loops.** `while` is for **repeating until a condition changes where there is no natural sequence: polling, retrying, a REPL, consuming a queue that refills.** Which is a useful test to apply in review: **a `while` loop with a counter you increment yourself is almost always a `for` loop over a range**, and the manual counter is where the off-by-one lives.", "cols": 3, "nodes": [{"id": "f", "label": "for: a sequence of items", "sub": "the overwhelming majority", "tone": "good"}, {"id": "s", "label": "Known in advance, or produced", "sub": "a list, a file, a generator", "tone": "good"}, {"id": "w", "label": "while: until a condition changes", "sub": "no natural sequence", "tone": "accent"}, {"id": "e", "label": "Polling, retrying, a REPL, a queue", "sub": "the real cases", "tone": "accent"}, {"id": "c", "label": "A while with your own counter", "sub": "is a for over a range", "tone": "crit"}], "edges": [["f", "s"], ["w", "e"], ["e", "c"]], "t": "diagram", "id": "dg-2_7-02-3"},
+
+
+
     { t: "dl", items: [
       ["Use `for`", "When you are consuming a **sequence of items** — known in advance or produced by something. This is the overwhelming majority of loops."],
       ["Use `while`", "When you are repeating until a **condition changes** and there is no natural sequence: polling, retrying, a REPL, consuming a queue that refills."]
@@ -187,6 +194,9 @@ else:
 
 
 
+
+
+
     { t: "code", lang: "python", title: "the three, and what each is for", code: `
 for order in orders:
     if order.is_cancelled:
@@ -227,6 +237,9 @@ except TimeoutError:
     { t: "h2", n: "04", text: "The loop `else`", id: "loop-else" },
 
     {"kind": "trace", "title": "The loop else, stepped", "caption": "Searching for 7 in [3, 5, 9]: the loop runs to exhaustion, so else runs and reports 'not found'. Searching for 5, break fires on the second pass and else is skipped.", "vars": ["x", "broke?", "else runs?"], "steps": [{"code": "for x in [3, 5, 9]: if x == 7: break", "state": ["3", "no", ""], "changed": [0]}, {"code": "    (next)", "state": ["5", "no", ""], "changed": [0]}, {"code": "    (next)", "state": ["9", "no", ""], "changed": [0]}, {"code": "else: print('not found')", "state": ["—", "no", "yes"], "changed": [2], "tone": "good", "note": "exhausted without break"}, {"code": "for x in [3, 5, 9]: if x == 5: break", "state": ["5", "yes", "no"], "changed": [1, 2], "tone": "warn", "note": "break skips else"}], "t": "diagram", "id": "dg-2_7-04-2"},
+
+
+
 
 
 

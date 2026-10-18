@@ -1,0 +1,1121 @@
+{
+ "2.1": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Stability is a guarantee, which is what makes a multi-pass sort work",
+    "caption": "**Timsort is stable: elements comparing equal keep their original relative order** — and that is a documented guarantee rather than an observation, which is what lets you **sort by several keys in separate passes, least significant first.** The output shows it: `beth` and `carol` both have 50.0 and stay in input order. **`key=` is called once per element**, so an expensive key is cheap here and ruinous in a comparison function — and **`operator.itemgetter(\"total\")` is faster than the equivalent lambda.**",
+    "left": "technique",
+    "codeW": 170,
+    "vars": [
+     "what it does",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "key=lambda o: o.total",
+      "state": [
+       "called ONCE per element",
+       "not once per comparison"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "key=lambda o: (a, b)",
+      "state": [
+       "sort by a, tie-break on b",
+       "negate a number to reverse it"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "stability",
+      "state": [
+       "50.0 beth before 50.0 carol",
+       "input order, guaranteed"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "so: several passes",
+      "state": [
+       "least significant first",
+       "each one preserves the last"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "itemgetter('total')",
+      "state": [
+       "faster than the lambda",
+       "and reads well",
+       "-"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "2.2": [
+  {
+   "after": "01",
+   "d": {
+    "kind": "compare",
+    "title": "The usual explanation is true and pedagogically misleading",
+    "caption": "***A tuple is an immutable list* is technically correct and teaches the wrong instinct.** The distinction experienced engineers actually use is **what the positions mean** — and there is a one-line test: **if you would be comfortable appending an element, it is a list; if appending would make no sense because the fields are positional, it is a tuple.** It also explains a syntax that otherwise looks strange: **`return x, y` returns a tuple, and `for k, v in d.items()` unpacks one.**",
+    "columns": [
+     {
+      "title": "List",
+      "tone": "good",
+      "items": [
+       "many items of the SAME kind",
+       "position means nothing in particular",
+       "length varies at runtime",
+       "you iterate over all of them",
+       "prices = [19.99, 5.01, 0.10]"
+      ]
+     },
+     {
+      "title": "Tuple",
+      "tone": "violet",
+      "items": [
+       "a few fields of DIFFERENT kinds",
+       "position 0 is always the same field",
+       "length is fixed by the data's structure",
+       "you unpack it into named variables",
+       "point = (x, y), row = (id, name, created_at)"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "It exists because it is hashable, and that is a narrower reason than it looks",
+    "caption": "**A `frozenset` is an immutable set, and because it cannot change it is hashable — which means it can be a dictionary key or an element of another set.** That is the whole reason it exists. The narrowness is worth stating: **if you only need “this set should not be modified”, a plain `set` and a convention costs nothing** — the type earns its place only when something downstream requires hashability, such as **keying a cache on a set of permissions, or deduplicating sets of tags.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "Immutable, so hashable",
+      "sub": "the only real difference",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "So it can be a dict key",
+      "sub": "or an element of another set",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Cache keyed on a permission set",
+      "sub": "the real use",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "Or deduplicating sets of tags",
+      "sub": "a set of sets",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Not for 'do not modify this'",
+      "sub": "a set and a convention is free",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "k"
+     ],
+     [
+      "k",
+      "u"
+     ],
+     [
+      "k",
+      "d"
+     ],
+     [
+      "i",
+      "n"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.3": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A language guarantee since 3.7, not a CPython detail",
+    "caption": "**Dicts preserve insertion order — an implementation detail in CPython 3.6 and a language guarantee in 3.7 — so it is safe to rely on across implementations, not merely in CPython.** The third line is the part worth noticing: **re-assigning an existing key keeps its original position, while deleting and re-inserting moves it to the end.** Which means **an in-place update preserves order and a delete-then-set does not**, and the two look equivalent in a diff.",
+    "left": "operation",
+    "codeW": 190,
+    "vars": [
+     "resulting key order"
+    ],
+    "steps": [
+     {
+      "code": "built as b, a, c",
+      "state": [
+       "['b', 'a', 'c']"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "d['a'] = new value",
+      "state": [
+       "['b', 'a', 'c']"
+      ],
+      "tone": "good",
+      "note": "position kept"
+     },
+     {
+      "code": "del d['a']; d['a'] = v",
+      "state": [
+       "['b', 'c', 'a']"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "moved to the end"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "A view is a live window, and the key view does set algebra",
+    "caption": "**`d.keys()`, `d.values()` and `d.items()` return views — live windows onto the dict rather than copies — so they reflect later changes and cost nothing to create.** The second property is the one people miss: **the key and item views support set operations directly**, so `a.keys() - b.keys()` gives the keys only `a` has, with no intermediate sets built. **Being live is also the trap: mutating the dict while iterating a view raises `RuntimeError`**, which is why you wrap it in `list()` to iterate and delete.",
+    "left": "expression",
+    "codeW": 170,
+    "vars": [
+     "result",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "d.keys()",
+      "state": [
+       "dict_keys(['x', 'y', 'z'])",
+       "a live view, not a copy"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a.keys() - b.keys()",
+      "state": [
+       "{'x'}",
+       "set algebra, no copies"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "b.keys() - a.keys()",
+      "state": [
+       "{'y', 'z'}",
+       "the other direction"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "mutating while iterating",
+      "state": [
+       "RuntimeError",
+       "wrap in list() to delete"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "trace",
+    "title": "Later keys win, and the merge is one level deep",
+    "caption": "**`{**defaults, **overrides}` resolves a duplicate key in favour of the later mapping** — which is what makes the layered-configuration idiom work at all. The limit is the one 2.9 §04 returns to: **the merge is shallow, so a nested dict in `overrides` replaces the whole nested dict in `defaults` rather than merging into it.** For a flat config that is exactly right; for `{'db': {'host': ..., 'port': ...}}` **overriding only the host silently drops the port.**",
+    "left": "merge",
+    "codeW": 190,
+    "vars": [
+     "result",
+     "depth"
+    ],
+    "steps": [
+     {
+      "code": "spreading both mappings",
+      "state": [
+       "port 9000, debug False",
+       "later keys win"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "d1 | d2  (3.9+)",
+      "state": [
+       "the same thing",
+       "an operator for it"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a nested dict in overrides",
+      "state": [
+       "REPLACES, not merges",
+       "one level only"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "2.9 revisits this"
+     }
+    ]
+   }
+  }
+ ],
+ "2.4": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Slice assignment edits the object, so every alias sees it",
+    "caption": "**A slice on the left of an assignment replaces that region in place — the list object stays the same, so every name bound to it sees the change.** Which is the difference from `lst = [...]`, and the reason the aliasing lesson matters here. The length changes are the part that surprises: **assigning three items into a one-item slice grows the list**, and **assigning an empty list into a slice deletes that region** — so `lst[1:3] = []` is a deletion written as an assignment.",
+    "left": "statement",
+    "codeW": 160,
+    "vars": [
+     "result",
+     "object identity"
+    ],
+    "steps": [
+     {
+      "code": "lst[1:2] = ['x','y','z']",
+      "state": [
+       "[1, 'x', 'y', 'z', 4, 5]",
+       "unchanged - same list"
+      ],
+      "tone": "violet",
+      "note": "grew by two"
+     },
+     {
+      "code": "lst[:] = [9, 9]",
+      "state": [
+       "[9, 9]",
+       "unchanged"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "replaces contents"
+     },
+     {
+      "code": "lst[1:3] = []",
+      "state": [
+       "[0]",
+       "unchanged"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "a deletion"
+     },
+     {
+      "code": "and every alias",
+      "state": [
+       "sees all of it",
+       "because nothing was rebound"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Four of these five are O(n) and copy pointers only",
+    "caption": "The column that matters is the third: **a list or dict copy is `O(n)` and copies *pointers*, so the nested objects are shared** — which is why a shallow copy of a list of dicts gives you a new list whose dicts are the originals. **`copy.deepcopy` is the only one that follows the whole graph, tracking cycles, and it is `O(total graph)`** rather than `O(n)`. And the row that is free: **`tuple(t)` on a tuple returns the same object, because it cannot change.**",
+    "left": "operation",
+    "codeW": 190,
+    "vars": [
+     "cost",
+     "what it copies"
+    ],
+    "steps": [
+     {
+      "code": "lst[:], lst.copy(), list(lst)",
+      "state": [
+       "O(n)",
+       "n pointers; nested shared"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "d.copy(), dict(d), {**d}",
+      "state": [
+       "O(n)",
+       "n key/value pointers"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "lst[a:b]",
+      "state": [
+       "O(b-a)",
+       "the pointers in that range"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "tuple(t) where t is a tuple",
+      "state": [
+       "O(1)",
+       "NOTHING - the same object"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "copy.deepcopy(x)",
+      "state": [
+       "O(total graph)",
+       "everything, recursively"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  }
+ ],
+ "2.5": [
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Concurrency removes the accident of timing that was hiding the flaw",
+    "caption": "**Shared mutable state is a bug in a single-threaded program too — it is just harder to observe, because nothing else runs between your read and your write.** The output makes it concrete: two call sites, **`{'limit': 50}` twice**, one object. So **concurrency does not introduce the flaw; it removes the accident of timing that was hiding it** — which is why “it only breaks under load” is a statement about observability rather than about cause, and why the fix is the same in both cases.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "One mutable object, two owners",
+      "sub": "{'limit': 50} twice",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "Single-threaded: nothing runs between",
+      "sub": "read and write are adjacent",
+      "tone": "warn"
+     },
+     {
+      "id": "h",
+      "label": "So the bug is hidden, not absent",
+      "sub": "the state is already shared",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Concurrency interleaves them",
+      "sub": "and the flaw becomes visible",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "So the fix is the same either way",
+      "sub": "do not share the object",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "o"
+     ],
+     [
+      "o",
+      "h"
+     ],
+     [
+      "h",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.6": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Three dispatch shapes, and the third one moves the branch into the data",
+    "caption": "**A chain of `elif` comparing the same variable against constants is a lookup written as control flow — past three or four branches a dict usually reads better and is easier to extend.** The three forms differ in what the values are: **a constant per key, a function per key when each branch does work, or a method on the object itself when the branch genuinely belongs to the data.** The last is the one that scales, **because adding a case means adding a class rather than editing a dispatcher.**",
+    "left": "shape",
+    "codeW": 170,
+    "vars": [
+     "the dict holds",
+     "when"
+    ],
+    "steps": [
+     {
+      "code": "if / elif chain",
+      "state": [
+       "nothing - it is code",
+       "two or three branches"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "RATES[plan]",
+      "state": [
+       "a constant per key",
+       "a pure lookup"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "HANDLERS.get(event['type'])",
+      "state": [
+       "a function per key",
+       "each branch does work"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "obj.handle()",
+      "state": [
+       "nothing - polymorphism",
+       "the branch belongs to the data"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet",
+      "note": "adding a case adds a class"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "One conditional reads well, three nested ones do not",
+    "caption": "**Inside a comprehension, an f-string or an argument list a statement is not allowed — the conditional expression is the only option, and that is what it is for rather than saving a line.** The degradation is quick: **two branches is still readable, three is already hard, and four wraps across lines and should be a table.** Which is what the last row is: **`GRADES[bisect_right(CUTOFFS, score)]` replaces the whole chain with sorted data and one lookup.**",
+    "left": "form",
+    "codeW": 190,
+    "vars": [
+     "verdict"
+    ],
+    "steps": [
+     {
+      "code": "'even' if n % 2 == 0 else 'odd'",
+      "state": [
+       "the right tool"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "inside a comprehension",
+      "state": [
+       "the ONLY option - no statements"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "'high' if s > 90 else 'mid' if s > 50 else 'low'",
+      "state": [
+       "already hard to read"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "four branches, wrapped",
+      "state": [
+       "should be a table"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "GRADES[bisect_right(CUTOFFS, score)]",
+      "state": [
+       "sorted data, one lookup"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  }
+ ],
+ "2.7": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "A sequence of items, or a condition that changes",
+    "caption": "**`for` is for consuming a sequence of items — known in advance or produced by something — and that is the overwhelming majority of loops.** `while` is for **repeating until a condition changes where there is no natural sequence: polling, retrying, a REPL, consuming a queue that refills.** Which is a useful test to apply in review: **a `while` loop with a counter you increment yourself is almost always a `for` loop over a range**, and the manual counter is where the off-by-one lives.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "for: a sequence of items",
+      "sub": "the overwhelming majority",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Known in advance, or produced",
+      "sub": "a list, a file, a generator",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "while: until a condition changes",
+      "sub": "no natural sequence",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Polling, retrying, a REPL, a queue",
+      "sub": "the real cases",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "A while with your own counter",
+      "sub": "is a for over a range",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "s"
+     ],
+     [
+      "w",
+      "e"
+     ],
+     [
+      "e",
+      "c"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.8": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Holding the data twice is a normal trade, and the discipline is the risk",
+    "caption": "**Choosing a container is not always exclusive. When two access patterns both matter, holding the data twice is a normal engineering trade — you are spending memory to remove an order of complexity.** Here a list keeps order and a set answers membership in `O(1)`. **The cost is roughly double the memory and the discipline of keeping the two views consistent — and that discipline is the real risk**, which is why the synchronisation belongs **inside one small class rather than scattered across callers.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "A list keeps the order",
+      "sub": "and membership is O(n)",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "A set answers membership",
+      "sub": "O(1), and has no order",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "Hold both",
+      "sub": "memory for an order of complexity",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "The risk is the synchronisation",
+      "sub": "not the memory",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "So confine it to one small class",
+      "sub": "never to the callers",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "b"
+     ],
+     [
+      "s",
+      "b"
+     ],
+     [
+      "b",
+      "r"
+     ],
+     [
+      "r",
+      "c"
+     ]
+    ]
+   }
+  }
+ ],
+ "2.9": [
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "One nested order becomes two flat rows, and an empty dict survives flattening",
+    "caption": "**Reshaping nested data into flat rows is the commonest transformation there is — one order with two line items becomes two rows, each carrying the order and customer fields repeated.** Which is the shape every analytics tool wants and no API returns. The flattening row is the edge case worth having a decision about: **`{'e': {}}` flattens to `{'e': {}}` rather than disappearing**, because there is no leaf inside it — so **an empty branch is either preserved as a value or lost, and the recursion has to choose.**",
+    "left": "input",
+    "codeW": 170,
+    "vars": [
+     "output"
+    ],
+    "steps": [
+     {
+      "code": "one order, two line items",
+      "state": [
+       "two flat rows"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "each row carries",
+      "state": [
+       "order_id, customer_id, city repeated"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "plus its own",
+      "state": [
+       "sku, qty, amount"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "flatten {'a': {'b': {'c': 1}}, 'e': {}}",
+      "state": [
+       "{'a.b.c': 1, 'd': 2, 'e': {}}"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet",
+      "note": "the empty branch survives"
+     }
+    ]
+   }
+  }
+ ],
+ "2.10": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "`key=` changes what is compared, not what is returned",
+    "caption": "**`max(orders, key=...)` returns the order, not the total** — which is the distinction that makes these three built-ins replace a best-so-far loop rather than just a comparison. So `max` with a key gives you the whole record to work with, and if you wanted the number you ask for it afterwards. Two details worth carrying: **`min`/`max` raise on an empty iterable unless you pass `default=`**, and **`sorted` returns a new list and is stable**, so 2.1's multi-pass technique applies here too.",
+    "left": "call",
+    "codeW": 190,
+    "vars": [
+     "returns",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "max(orders, key=itemgetter('total'))",
+      "state": [
+       "{'id': 1, 'total': 120, ...}",
+       "the record, not 120"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "max(orders, key=...)['id']",
+      "state": [
+       "1",
+       "ask for the field after"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "min(names, key=len)",
+      "state": [
+       "beth",
+       "ties go to the first"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "sorted(names)",
+      "state": [
+       "['alice', 'beth', 'carol']",
+       "a new list, and stable"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "min([]) with no default",
+      "state": [
+       "ValueError",
+       "pass default="
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "It stopped at 2, which is the whole reason to keep it a generator",
+    "caption": "**`any` and `all` short-circuit — the trace prints `checking 0`, `checking 1`, `checking 2` and then stops, because the third element satisfied it.** Which is why the argument should be a generator expression and not a list comprehension: **`any([f(x) for x in xs])` evaluates `f` for every element before `any` sees any of them, so the short-circuit is thrown away.** Dropping two brackets changes the cost from `O(n)` to `O(position of the first match)`.",
+    "left": "call",
+    "codeW": 190,
+    "vars": [
+     "result",
+     "elements evaluated"
+    ],
+    "steps": [
+     {
+      "code": "all(x > 0 for x in [1, 0, 2])",
+      "state": [
+       "False",
+       "stops at the 0"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "any(check(x) for x in xs)",
+      "state": [
+       "True",
+       "0, 1, 2 then stops"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "any([check(x) for x in xs])",
+      "state": [
+       "True",
+       "ALL of them"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "two brackets, O(n)"
+     }
+    ]
+   }
+  }
+ ],
+ "2.11": [
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Two different positions for a condition, doing two different jobs",
+    "caption": "**A condition at the end filters — fewer elements come out. A conditional expression at the front transforms — the same number of elements come out, mapped.** Which is why the two can be combined and are not alternatives: `[f(x) if c(x) else g(x) for x in xs if keep(x)]` filters first and then maps what survives. The third row is the readability limit: **once both are present and either expression is non-trivial, a named function or a loop is the clearer version.**",
+    "left": "form",
+    "codeW": 190,
+    "vars": [
+     "output",
+     "what it does"
+    ],
+    "steps": [
+     {
+      "code": "[x for x in xs if x % 2]",
+      "state": [
+       "[1, 3]",
+       "filters - fewer out"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "['+' if x > 0 else '-' for x in xs]",
+      "state": [
+       "['+', '-', '+', '-']",
+       "transforms - same count"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "both at once",
+      "state": [
+       "['small', 'big']",
+       "filter, then map"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "both, non-trivial",
+      "state": [
+       "-",
+       "name the function instead"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Dropping two brackets took 8,448,728 bytes to 200",
+    "caption": "**A list comprehension over a million items allocates 8,448,728 bytes; the generator expression is 200 bytes, because it holds a recipe rather than a result** — a 42,000× difference, and the sum over it is identical. So the rule is about what happens next: **use a generator when you are feeding `sum`, `any`, `max` or a `for` loop, and a list when you need to index it, measure its length, or iterate it more than once.** The last point is the trap: **a generator is consumed once, and the second pass sees nothing.**",
+    "left": "expression",
+    "codeW": 190,
+    "vars": [
+     "bytes",
+     "note"
+    ],
+    "steps": [
+     {
+      "code": "[x * x for x in range(1_000_000)]",
+      "state": [
+       "8,448,728",
+       "the result"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "(x * x for x in range(1_000_000))",
+      "state": [
+       "200",
+       "a recipe"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet",
+      "note": "42,000x"
+     },
+     {
+      "code": "sum of either",
+      "state": [
+       "333332833333500000",
+       "identical"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "iterating the generator twice",
+      "state": [
+       "nothing the second time",
+       "consumed once"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "The comprehension variable does not leak, and that is a Python 3 change",
+    "caption": "**A comprehension has its own scope, so the loop variable does not leak into the enclosing function — the outer `x` prints `unchanged`.** This was not true in Python 2, which is why older code sometimes relies on the leak. The second row is the part that still catches people: **the iterable of the outermost `for` is evaluated in the enclosing scope, while everything else is evaluated inside** — which is why a comprehension at class level can see the class's names in that first iterable and nowhere else.",
+    "left": "what you read",
+    "codeW": 190,
+    "vars": [
+     "value",
+     "scope"
+    ],
+    "steps": [
+     {
+      "code": "x after the comprehension",
+      "state": [
+       "unchanged",
+       "its own scope"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "the comprehension's own x",
+      "state": [
+       "2",
+       "invisible outside"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "the outermost iterable",
+      "state": [
+       "evaluated OUTSIDE",
+       "the one exception"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "so at class level",
+      "state": [
+       "only that iterable sees class names",
+       "the rest cannot"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  }
+ ]
+}

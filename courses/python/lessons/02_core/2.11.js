@@ -37,6 +37,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "Reading a comprehension in the order it executes",
       caption: "Written output-first, executed loop-first. Reading it in execution order — for, then if, then the expression — is what makes a nested one tractable.",
@@ -107,6 +110,10 @@ print(list(lengths))   # []`},
     /* ================================================================== */
     { t: "h2", n: "02", text: "Conditions, and where they go", id: "conditions" },
 
+    {"kind": "trace", "title": "Two different positions for a condition, doing two different jobs", "caption": "**A condition at the end filters — fewer elements come out. A conditional expression at the front transforms — the same number of elements come out, mapped.** Which is why the two can be combined and are not alternatives: `[f(x) if c(x) else g(x) for x in xs if keep(x)]` filters first and then maps what survives. The third row is the readability limit: **once both are present and either expression is non-trivial, a named function or a loop is the clearer version.**", "left": "form", "codeW": 190, "vars": ["output", "what it does"], "steps": [{"code": "[x for x in xs if x % 2]", "state": ["[1, 3]", "filters - fewer out"], "tone": "good"}, {"code": "['+' if x > 0 else '-' for x in xs]", "state": ["['+', '-', '+', '-']", "transforms - same count"], "changed": [0, 1], "tone": "good"}, {"code": "both at once", "state": ["['small', 'big']", "filter, then map"], "changed": [0, 1], "tone": "violet"}, {"code": "both, non-trivial", "state": ["-", "name the function instead"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_11-02-2"},
+
+
+
     { t: "code", lang: "python", title: "filtering versus transforming", code: `
 values = [1, -2, 3, -4]
 
@@ -133,6 +140,9 @@ print(labels)
     { t: "h2", n: "03", text: "Where a comprehension stops helping", id: "limits" },
 
     {"kind": "compare", "title": "When a comprehension stops helping", "caption": "A comprehension is for building one collection from one iterable with at most one condition. Side effects, nested logic and three-level nesting belong in a loop, where a reader can breathe.", "columns": [{"title": "keep the comprehension", "tone": "good", "items": ["[f(x) for x in xs if ok(x)]", "one input, one output", "fits on a line or two"]}, {"title": "write the loop", "tone": "warn", "items": ["calls with side effects", "try/except per item", "two nested fors with conditions", "when you needed a comment"]}], "t": "diagram", "id": "dg-2_11-03-1"},
+
+
+
 
 
 
@@ -233,6 +243,10 @@ print(transposed)
     /* ================================================================== */
     { t: "h2", n: "04", text: "Generator expressions", id: "generators" },
 
+    {"kind": "trace", "title": "Dropping two brackets took 8,448,728 bytes to 200", "caption": "**A list comprehension over a million items allocates 8,448,728 bytes; the generator expression is 200 bytes, because it holds a recipe rather than a result** — a 42,000× difference, and the sum over it is identical. So the rule is about what happens next: **use a generator when you are feeding `sum`, `any`, `max` or a `for` loop, and a list when you need to index it, measure its length, or iterate it more than once.** The last point is the trap: **a generator is consumed once, and the second pass sees nothing.**", "left": "expression", "codeW": 190, "vars": ["bytes", "note"], "steps": [{"code": "[x * x for x in range(1_000_000)]", "state": ["8,448,728", "the result"], "tone": "crit"}, {"code": "(x * x for x in range(1_000_000))", "state": ["200", "a recipe"], "changed": [0, 1], "tone": "violet", "note": "42,000x"}, {"code": "sum of either", "state": ["333332833333500000", "identical"], "changed": [0, 1], "tone": "good"}, {"code": "iterating the generator twice", "state": ["nothing the second time", "consumed once"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_11-04-3"},
+
+
+
     { t: "code", lang: "python", title: "drop the brackets, drop the memory", code: `
 import sys
 
@@ -277,6 +291,10 @@ for u in users:                     # correct
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Scope", id: "scope" },
+
+    {"kind": "trace", "title": "The comprehension variable does not leak, and that is a Python 3 change", "caption": "**A comprehension has its own scope, so the loop variable does not leak into the enclosing function — the outer `x` prints `unchanged`.** This was not true in Python 2, which is why older code sometimes relies on the leak. The second row is the part that still catches people: **the iterable of the outermost `for` is evaluated in the enclosing scope, while everything else is evaluated inside** — which is why a comprehension at class level can see the class's names in that first iterable and nowhere else.", "left": "what you read", "codeW": 190, "vars": ["value", "scope"], "steps": [{"code": "x after the comprehension", "state": ["unchanged", "its own scope"], "tone": "good"}, {"code": "the comprehension's own x", "state": ["2", "invisible outside"], "changed": [0, 1], "tone": "good"}, {"code": "the outermost iterable", "state": ["evaluated OUTSIDE", "the one exception"], "changed": [0, 1], "tone": "violet"}, {"code": "so at class level", "state": ["only that iterable sees class names", "the rest cannot"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_11-05-4"},
+
+
 
     { t: "code", lang: "python", title: "the loop variable does not leak", code: `
 x = "unchanged"

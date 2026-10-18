@@ -36,6 +36,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A dict computes `hash(key)`, uses part of that hash to pick a slot in an index array, and looks there. If the slot holds a different key — a **collision** — it probes further until it finds the right one or an empty slot. Because the number of probes does not grow with the size of the dict, lookup is O(1)." },
 
     { t: "viz",
@@ -129,6 +132,10 @@ print(f(a=1, b=2))             # **kwargs is a dict`,
     /* ================================================================== */
     { t: "h2", n: "02", text: "Insertion order is a guarantee", id: "ordering" },
 
+    {"kind": "trace", "title": "A language guarantee since 3.7, not a CPython detail", "caption": "**Dicts preserve insertion order — an implementation detail in CPython 3.6 and a language guarantee in 3.7 — so it is safe to rely on across implementations, not merely in CPython.** The third line is the part worth noticing: **re-assigning an existing key keeps its original position, while deleting and re-inserting moves it to the end.** Which means **an in-place update preserves order and a delete-then-set does not**, and the two look equivalent in a diff.", "left": "operation", "codeW": 190, "vars": ["resulting key order"], "steps": [{"code": "built as b, a, c", "state": ["['b', 'a', 'c']"], "tone": "good"}, {"code": "d['a'] = new value", "state": ["['b', 'a', 'c']"], "tone": "good", "note": "position kept"}, {"code": "del d['a']; d['a'] = v", "state": ["['b', 'c', 'a']"], "changed": [0], "tone": "crit", "note": "moved to the end"}], "t": "diagram", "id": "dg-2_3-02-2"},
+
+
+
     { t: "p", text: "Dicts preserve insertion order. This became an implementation detail in CPython 3.6 and a **language guarantee** in 3.7 — so it is safe to rely on across implementations, not merely in CPython." },
 
     { t: "code", lang: "python", title: "what the guarantee does and does not cover", code: `
@@ -174,6 +181,9 @@ def remember(key, value, limit=100):
     { t: "h2", n: "03", text: "Reading a key: four options", id: "access" },
 
     {"kind": "compare", "title": "Four ways to read a key", "caption": "Pick by what a missing key means: a bug (d[k]), a default (get), a default to store (setdefault), or something the structure should handle for you (defaultdict).", "columns": [{"title": "d[k]", "tone": "crit", "items": ["KeyError if absent", "use when absence is a bug"]}, {"title": "d.get(k, default)", "tone": "accent", "items": ["returns default", "does not store it"]}, {"title": "d.setdefault(k, v)", "tone": "good", "items": ["stores v if absent", "returns the value"]}, {"title": "defaultdict", "tone": "violet", "items": ["factory called on miss", "for grouping and counting"]}], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
 
 
 
@@ -282,6 +292,10 @@ Counter({'paid': 8, 'pending': 2, 'failed': 1})`
     /* ================================================================== */
     { t: "h2", n: "05", text: "Views", id: "views" },
 
+    {"kind": "trace", "title": "A view is a live window, and the key view does set algebra", "caption": "**`d.keys()`, `d.values()` and `d.items()` return views — live windows onto the dict rather than copies — so they reflect later changes and cost nothing to create.** The second property is the one people miss: **the key and item views support set operations directly**, so `a.keys() - b.keys()` gives the keys only `a` has, with no intermediate sets built. **Being live is also the trap: mutating the dict while iterating a view raises `RuntimeError`**, which is why you wrap it in `list()` to iterate and delete.", "left": "expression", "codeW": 170, "vars": ["result", "note"], "steps": [{"code": "d.keys()", "state": ["dict_keys(['x', 'y', 'z'])", "a live view, not a copy"], "tone": "good"}, {"code": "a.keys() - b.keys()", "state": ["{'x'}", "set algebra, no copies"], "changed": [0, 1], "tone": "violet"}, {"code": "b.keys() - a.keys()", "state": ["{'y', 'z'}", "the other direction"], "changed": [0, 1], "tone": "violet"}, {"code": "mutating while iterating", "state": ["RuntimeError", "wrap in list() to delete"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_3-05-3"},
+
+
+
     { t: "p", text: "`d.keys()`, `d.values()` and `d.items()` return **views** — live windows onto the dict, not copies. They reflect later changes, cost nothing to create, and the key and item views support set operations." },
 
     { t: "code", lang: "python", title: "views are live and set-like", code: `
@@ -326,6 +340,10 @@ b 2`
 
     /* ================================================================== */
     { t: "h2", n: "06", text: "Merging, copying and the traps", id: "traps" },
+
+    {"kind": "trace", "title": "Later keys win, and the merge is one level deep", "caption": "**`{**defaults, **overrides}` resolves a duplicate key in favour of the later mapping** — which is what makes the layered-configuration idiom work at all. The limit is the one 2.9 §04 returns to: **the merge is shallow, so a nested dict in `overrides` replaces the whole nested dict in `defaults` rather than merging into it.** For a flat config that is exactly right; for `{'db': {'host': ..., 'port': ...}}` **overriding only the host silently drops the port.**", "left": "merge", "codeW": 190, "vars": ["result", "depth"], "steps": [{"code": "spreading both mappings", "state": ["port 9000, debug False", "later keys win"], "tone": "good"}, {"code": "d1 | d2  (3.9+)", "state": ["the same thing", "an operator for it"], "changed": [0, 1], "tone": "good"}, {"code": "a nested dict in overrides", "state": ["REPLACES, not merges", "one level only"], "changed": [0, 1], "tone": "crit", "note": "2.9 revisits this"}], "t": "diagram", "id": "dg-2_3-06-4"},
+
+
 
     { t: "code", lang: "python", title: "merging", code: `
 defaults = {"host": "localhost", "port": 8080, "debug": False}

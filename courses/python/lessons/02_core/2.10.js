@@ -37,6 +37,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "viz",
       title: "The loop you were about to write, and the built-in that replaces it",
       caption: "Each built-in is a loop someone already wrote, in C, correctly. Reaching for one is faster to read and usually faster to run.",
@@ -133,6 +136,10 @@ print(dict(zip(["host", "port"], ["localhost", 8080])))
     /* ================================================================== */
     { t: "h2", n: "02", text: "sorted, max and min", id: "sorted-max-min" },
 
+    {"kind": "trace", "title": "`key=` changes what is compared, not what is returned", "caption": "**`max(orders, key=...)` returns the order, not the total** — which is the distinction that makes these three built-ins replace a best-so-far loop rather than just a comparison. So `max` with a key gives you the whole record to work with, and if you wanted the number you ask for it afterwards. Two details worth carrying: **`min`/`max` raise on an empty iterable unless you pass `default=`**, and **`sorted` returns a new list and is stable**, so 2.1's multi-pass technique applies here too.", "left": "call", "codeW": 190, "vars": ["returns", "note"], "steps": [{"code": "max(orders, key=itemgetter('total'))", "state": ["{'id': 1, 'total': 120, ...}", "the record, not 120"], "tone": "violet"}, {"code": "max(orders, key=...)['id']", "state": ["1", "ask for the field after"], "changed": [0, 1], "tone": "good"}, {"code": "min(names, key=len)", "state": ["beth", "ties go to the first"], "changed": [0, 1], "tone": "good"}, {"code": "sorted(names)", "state": ["['alice', 'beth', 'carol']", "a new list, and stable"], "changed": [0, 1], "tone": "good"}, {"code": "min([]) with no default", "state": ["ValueError", "pass default="], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_10-02-1"},
+
+
+
     { t: "code", lang: "python", title: "key does the work", code: `
 from operator import itemgetter
 
@@ -172,6 +179,10 @@ None
 
     /* ================================================================== */
     { t: "h2", n: "03", text: "any and all", id: "any-all" },
+
+    {"kind": "trace", "title": "It stopped at 2, which is the whole reason to keep it a generator", "caption": "**`any` and `all` short-circuit — the trace prints `checking 0`, `checking 1`, `checking 2` and then stops, because the third element satisfied it.** Which is why the argument should be a generator expression and not a list comprehension: **`any([f(x) for x in xs])` evaluates `f` for every element before `any` sees any of them, so the short-circuit is thrown away.** Dropping two brackets changes the cost from `O(n)` to `O(position of the first match)`.", "left": "call", "codeW": 190, "vars": ["result", "elements evaluated"], "steps": [{"code": "all(x > 0 for x in [1, 0, 2])", "state": ["False", "stops at the 0"], "tone": "good"}, {"code": "any(check(x) for x in xs)", "state": ["True", "0, 1, 2 then stops"], "changed": [0, 1], "tone": "violet"}, {"code": "any([check(x) for x in xs])", "state": ["True", "ALL of them"], "changed": [1], "tone": "crit", "note": "two brackets, O(n)"}], "t": "diagram", "id": "dg-2_10-03-2"},
+
+
 
     { t: "code", lang: "python", title: "asking a question instead of computing an answer", code: `
 statuses = ["paid", "pending", "paid"]

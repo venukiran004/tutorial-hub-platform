@@ -25,6 +25,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "A typical developer machine has several Python installations that know nothing about each other: one shipped with the operating system, one installed from python.org or Homebrew, one inside every virtual environment, and possibly one bundled with an IDE or a Conda distribution. Typing `python` picks whichever appears first on your `PATH`, and that is easy to change without noticing." },
 
     { t: "p", text: "So the diagnostic habit worth building on day one is: never assume. Ask." },
@@ -166,6 +169,9 @@ else:
 
 
 
+
+
+
     { t: "table",
       head: ["Runtime", "Reach for it when", "What it costs you"],
       rows: [
@@ -181,6 +187,9 @@ else:
     { t: "h2", n: "04", text: "Never use the system Python", id: "system-python" },
 
     {"kind": "flow", "title": "The system Python runs the system", "caption": "**Linux distributions and macOS ship a Python that the operating system itself depends on — package managers, system utilities and parts of the desktop are written in it.** So the rule is simple and absolute: **the system Python runs the system; you install your own and you work inside virtual environments.** The failure mode is worth picturing: **`sudo pip install` into the system interpreter can upgrade a package a system tool depended on, and the thing that breaks is not your project.**", "cols": 3, "nodes": [{"id": "s", "label": "The OS depends on its Python", "sub": "package managers, desktop tools", "tone": "accent"}, {"id": "p", "label": "sudo pip install upgrades a shared package", "sub": "for everything at once", "tone": "crit"}, {"id": "b", "label": "And what breaks is not your project", "sub": "it is the package manager", "tone": "crit"}, {"id": "o", "label": "So: install your own interpreter", "sub": "python.org, Homebrew, pyenv", "tone": "good"}, {"id": "v", "label": "And work inside virtual environments", "sub": "one per project", "tone": "good"}], "edges": [["s", "p"], ["p", "b"], ["b", "o"], ["o", "v"]], "t": "diagram", "id": "dg-1_2-04-2"},
+
+
+
 
 
 
@@ -206,6 +215,9 @@ error: externally-managed-environment
     { t: "h2", n: "05", text: "Standard library, PyPI, and the cost of a dependency", id: "ecosystem" },
 
     {"kind": "compare", "title": "The question is not whether a package exists", "caption": "**Python's “batteries included” is earned — JSON, CSV, HTTP, SQLite, compression, hashing, dates, subprocesses, threading, async, testing and argument parsing are all in the standard library, and a large amount of professional Python needs nothing else.** PyPI adds several hundred thousand packages, **so the engineering question is not *does a package exist* — one always does — but *should this be a dependency*.** The two ends of the list are the clearest: **`zoneinfo` retired most date libraries, and there is no standard-library answer at all for array maths.**", "columns": [{"title": "The standard library is enough", "tone": "good", "items": ["dates and times — datetime, zoneinfo", "CLI parsing — argparse, unless it is a large multi-command tool", "config — configparser, dataclasses, away from boundaries", "and zoneinfo specifically retired a whole category of package"]}, {"title": "Reach for a package", "tone": "accent", "items": ["numeric work — immediately; numpy is not optional", "testing — effectively always; pytest is the ecosystem standard", "HTTP — almost always; pooling, retries and sane timeouts", "validation at an API or file boundary — pydantic earns it there"]}], "t": "diagram", "id": "dg-1_2-05-3"},
+
+
+
 
 
 
