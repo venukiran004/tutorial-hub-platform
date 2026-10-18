@@ -24,6 +24,7 @@ EC.receiveLesson({
     {"kind": "layers", "title": "The whole model is five things, and three of them are from module 4", "caption": "Nothing in the implementation is new at this point — **the embedding and positional tables are 4.2, the blocks are 4.7, and the output projection is the token embedding transposed** (which is §02's weight tying). Which is the useful thing to notice before writing it: **a GPT is a decoder stack with a tied output head, and every decision inside it has already been measured** — so the parts that can go wrong are the plumbing, which is §03.", "items": [{"label": "Token + position embedding", "sub": "(50257, 768) and (1024, 768)", "tone": "accent", "side": "4.2"}, {"label": "12 decoder blocks", "sub": "causal self-attention, then FFN, both residual", "tone": "good", "side": "4.7"}, {"label": "Final LayerNorm", "sub": "Pre-LN, so the stream needs normalising once", "tone": "good", "side": "4.6"}, {"label": "Output projection", "sub": "the token embedding, transposed", "tone": "violet", "side": "tied"}, {"label": "= 124,439,808 parameters", "sub": "the real checkpoint, exactly", "tone": "violet", "side": "4.10"}], "t": "diagram", "id": "dg-5_5-01-0"},
 
 
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n55.py — attention with a fused QKV projection", code:
 "class MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, n_heads, dropout=0.1):\n        super().__init__()\n        self.d_k = d_model // n_heads\n        self.n_heads = n_heads\n        self.qkv = nn.Linear(d_model, 3 * d_model)   # one matmul, not three\n        self.out = nn.Linear(d_model, d_model)\n        self.dropout = nn.Dropout(dropout)\n\n    def forward(self, x, mask=None):\n        B, T, C = x.size()\n        qkv = self.qkv(x).reshape(B, T, 3, self.n_heads, self.d_k)\n        qkv = qkv.permute(2, 0, 3, 1, 4)             # (3, B, heads, T, d_k)\n        Q, K, V = qkv[0], qkv[1], qkv[2]\n\n        scores = (Q @ K.transpose(-2, -1)) / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, float('-inf'))\n\n        weights = self.dropout(torch.softmax(scores, dim=-1))\n        out = (weights @ V).transpose(1, 2).reshape(B, T, C)\n        return self.out(out)",
       caption: "Fusing Q, K and V into one `d_model → 3·d_model` projection is mathematically identical to three separate ones and meaningfully faster — one larger matmul beats three smaller ones on any accelerator." },
@@ -37,6 +38,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Weight tying is 38,597,376 parameters, or 31% of the model", "caption": "**The implementation hits the real checkpoint exactly — 124,439,808 — and without tying it would be 163,037,184.** The saving is precisely the token embedding table from 4.10, counted once instead of twice. And the justification is not only size: **the input embedding maps a token to a vector and the output projection maps a vector to a token, so tying them asserts the two directions use one space** — which is why untying usually does not help even when you can afford it.", "left": "configuration", "codeW": 180, "vars": ["parameters", "difference"], "steps": [{"code": "this implementation", "state": ["124,439,808", "-"], "tone": "good"}, {"code": "the real gpt2 checkpoint", "state": ["124,439,808", "0"], "tone": "violet", "note": "exact"}, {"code": "without weight tying", "state": ["163,037,184", "+38,597,376"], "changed": [0, 1], "tone": "crit", "note": "31% larger"}], "t": "diagram", "id": "dg-5_5-02-1"},
 
 
+
     { t: "out", text:
 "GPTModel(50257) -> 124,439,808 params = 124.44M\n\nthe real gpt2 checkpoint      124,439,808\n\nwithout weight tying          163,037,184   (+38,597,376)" },
 
@@ -46,6 +48,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Two bugs", id: "bugs" },
 
     {"kind": "trace", "title": "Two errors that say nothing about what is wrong", "caption": "Both are real messages from writing this model, and **neither names the mistake.** The first arrives from `.view()` after a transpose — **the tensor is no longer contiguous, so the fix is `.reshape()`, and the message tells you about memory strides rather than about attention heads.** The second is an index error from `top-k` with `k` larger than the vocabulary. **Which is the practical lesson of writing a transformer by hand: the errors are tensor-shape errors, and the stack trace points at the line after the mistake.**", "left": "error", "codeW": 210, "vars": ["what it actually means", "the fix"], "steps": [{"code": "'view size is not compatible...'", "state": ["a transpose left it non-contiguous", "use .reshape()"], "tone": "crit"}, {"code": "'selected index k out of range'", "state": ["top-k with k > vocab size", "clamp k"], "changed": [0, 1], "tone": "crit"}, {"code": "both", "state": ["name memory, not the model", "read the line before"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-03-2"},
+
 
 
     { t: "out", text:
@@ -65,6 +68,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "A loss that stops at 1.01, and 100% exact match", "caption": "The task is chosen so accuracy is unambiguous: **emit eight digits reversed, which requires attending from output position `L+1+i` back to input position `L−1−i` — a reversed copy no bigram or positional heuristic can fake.** **152,000 parameters, 36.6 seconds on CPU, 50/50 exact match.** And the loss curve is worth reading: **it reaches 1.03 by step 200 and then barely moves, flattening at 1.0106** — which is the loss on the padding and separator positions, not a failure to learn.", "left": "step", "codeW": 130, "vars": ["loss", "note"], "steps": [{"code": "1", "state": ["36.5871", "random"], "tone": "crit"}, {"code": "200", "state": ["1.0287", "essentially solved"], "changed": [0, 1], "tone": "good"}, {"code": "800", "state": ["1.0111", "flat"], "changed": [0, 1], "tone": "good"}, {"code": "1200", "state": ["1.0106", "the floor is structural"], "changed": [0, 1], "tone": "violet"}, {"code": "accuracy", "state": ["50/50 = 100.0%", "36.6 s on CPU"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-04-3"},
 
 
+
     { t: "p", text: "A task with a single correct answer, so accuracy is unambiguous: given eight digits and a separator, emit them reversed. Solving it requires attending from output position `L+1+i` back to input position `L−1−i` — a reversed copy, which no bigram or positional heuristic can fake." },
 
     { t: "out", text:
@@ -81,6 +85,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "One head of four does the copy, at weight 0.698", "caption": "Output position 9 must copy input position 7, and **only head 2 does it — 0.698 on position 7, while heads 0 and 1 sit on position 3 and head 3 attends to itself.** Which is 4.4's finding in a model small enough to verify completely: **the task is solved by one head, the other three are doing something else or nothing, and the clean division of labour exists in exactly one of the four.** A 100% accurate model does not need all its heads to be interpretable.", "left": "head", "codeW": 130, "vars": ["attends most to", "weight", "is that the copy?"], "steps": [{"code": "0", "state": ["position 3", "0.128", "no"], "tone": "warn"}, {"code": "1", "state": ["position 3", "0.153", "no"], "changed": [1], "tone": "warn"}, {"code": "2", "state": ["position 7", "0.698", "YES"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "3", "state": ["position 9 (itself)", "0.445", "no"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-5_5-05-4"},
 
 
+
     { t: "out", text:
 "final layer, output position 9 — it must copy input position 7\n\n  head 0 attends most to position 3   (weight 0.128)\n  head 1 attends most to position 3   (weight 0.153)\n  head 2 attends most to position 7   (weight 0.698)\n  head 3 attends most to position 9   (weight 0.445)" },
 
@@ -92,6 +97,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Every decoding setting got it exactly right, including T=2.0", "caption": "**T=1.0 k=1, T=1.0 k=5, T=2.0 k=10 and T=0.5 k=50 all produce the exact target** — which is not a statement about decoding but about the model: **when the next token is genuinely determined, the distribution is peaked enough that flattening it by a factor of two changes nothing.** Decoding settings matter when the model is uncertain, **so a task with one correct answer is exactly the task where they do not** — and tuning them on such a task teaches you nothing.", "left": "settings", "codeW": 170, "vars": ["output", "exact?"], "steps": [{"code": "T=1.0, k=1 (greedy)", "state": ["[8,4,2,0,8,5,0,1]", "yes"], "tone": "good"}, {"code": "T=1.0, k=5", "state": ["[8,4,2,0,8,5,0,1]", "yes"], "tone": "good"}, {"code": "T=2.0, k=10", "state": ["[8,4,2,0,8,5,0,1]", "yes"], "tone": "violet", "note": "flattened 2x, unchanged"}, {"code": "T=0.5, k=50", "state": ["[8,4,2,0,8,5,0,1]", "yes"], "tone": "good"}], "t": "diagram", "id": "dg-5_5-06-5"},
 
 
+
     { t: "out", text:
 "target [8, 4, 2, 0, 8, 5, 0, 1]\n\n  T=1.0 k=1    -> [8, 4, 2, 0, 8, 5, 0, 1]   exact\n  T=1.0 k=5    -> [8, 4, 2, 0, 8, 5, 0, 1]   exact\n  T=2.0 k=10   -> [8, 4, 2, 0, 8, 5, 0, 1]   exact\n  T=0.5 k=50   -> [8, 4, 2, 0, 8, 5, 0, 1]   exact" },
 
@@ -101,6 +107,7 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "The generation loop", id: "generate" },
 
     {"kind": "flow", "title": "Two operations, and the order they compose in", "caption": "**Temperature divides the logits before the softmax, so `T < 1` sharpens and `T > 1` flattens — and it never changes the ranking.** Top-k masks everything outside the `k` highest logits to `-inf`, **so the softmax assigns them exactly zero** (4.5's underflow argument again). **The two compose in that order: temperature reshapes the distribution, then top-k truncates it** — which matters, because truncating first and then flattening would redistribute mass across a set already chosen.", "cols": 3, "nodes": [{"id": "t", "label": "Temperature: divide the logits", "sub": "T<1 sharpens, T>1 flattens", "tone": "good"}, {"id": "r", "label": "It never changes the ranking", "sub": "only the sharpness", "tone": "accent"}, {"id": "k", "label": "Top-k: mask the rest to -inf", "sub": "softmax gives them exactly 0", "tone": "good"}, {"id": "o", "label": "Order: temperature, then top-k", "sub": "reshape, then truncate", "tone": "violet"}, {"id": "w", "label": "Reversed, flattening spreads mass", "sub": "over a set already chosen", "tone": "warn"}], "edges": [["t", "r"], ["r", "k"], ["k", "o"], ["o", "w"]], "t": "diagram", "id": "dg-5_5-07-6"},
+
 
 
     { t: "code", lang: "python", title: "Autoregressive decoding with temperature and top-k", code:

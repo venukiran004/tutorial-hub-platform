@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n47.py — the EncoderBlock", code:
 "class EncoderBlock(nn.Module):\n    def __init__(self, d_model, n_heads, d_ff, dropout=0.1):\n        super().__init__()\n        self.attention = MultiHeadAttention(d_model, n_heads, dropout)\n        self.ffn = nn.Sequential(\n            nn.Linear(d_model, d_ff), nn.GELU(), nn.Dropout(dropout),\n            nn.Linear(d_ff, d_model), nn.Dropout(dropout))\n        self.norm1 = nn.LayerNorm(d_model)\n        self.norm2 = nn.LayerNorm(d_model)\n\n    def forward(self, x, src_mask=None):\n        # Pre-LN: normalise inside the branch, leave the residual clean\n        normed = self.norm1(x)\n        attn_out, _ = self.attention(normed, normed, normed, src_mask)\n        x = x + attn_out                    # residual\n        x = x + self.ffn(self.norm2(x))     # residual\n        return x",
       caption: "Two sublayers, each `x = x + SubLayer(LN(x))`. This is the Pre-LN form from lesson 4.6 — note the residual `x` is never itself normalised." },
@@ -64,6 +65,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "encoder:  in (2, 12, 512)                      -> out (2, 12, 512)\ndecoder:  in (2, 7, 512) + encoder (2, 12, 512) -> out (2, 7, 512)" },
 
@@ -75,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Where the parameters are", id: "params" },
 
     {"kind": "trace", "title": "A decoder block is 1.33x an encoder block, and the extra is one whole module", "caption": "**3,152,384 against 4,204,032, and the difference is exactly 1,050,624 — one complete cross-attention module**, the same size as self-attention. Which is the honest way to think about encoder-decoder cost: **a decoder layer is not slightly more expensive, it has three sublayers instead of two.** And the LayerNorms are 2,048 parameters, **0.06% of the block** — worth remembering next time a normalisation choice is presented as a parameter-budget question.", "left": "component", "codeW": 170, "vars": ["parameters", "share"], "steps": [{"code": "encoder: attention", "state": ["1,050,624", "33.3%"], "tone": "accent"}, {"code": "encoder: FFN", "state": ["2,099,712", "66.6%"], "changed": [0, 1], "tone": "violet"}, {"code": "encoder: 2 LayerNorms", "state": ["2,048", "0.06%"], "changed": [0, 1], "tone": "good"}, {"code": "encoder block total", "state": ["3,152,384", "1.00x"], "changed": [0, 1], "tone": "good"}, {"code": "decoder block total", "state": ["4,204,032", "1.33x"], "changed": [0, 1], "tone": "warn", "note": "+ one cross-attention"}], "t": "diagram", "id": "dg-4_7-04-2"},
+
 
 
 
@@ -92,6 +95,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A useful way to read a stack: the residual connection creates a single vector per position that runs from the input to the output, and every sublayer *reads* from it and *adds* to it. Nothing replaces it. In a Pre-LN model nothing rescales it either, so its magnitude accumulates." },
 
     { t: "out", text:
@@ -103,6 +107,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "The two masks behave differently", id: "masks" },
 
     {"kind": "trace", "title": "One mask zeroes a triangle; the other normalises over a different axis entirely", "caption": "The two masks in a decoder are not variations of one idea. **Self-attention is (1, 8, 7, 7) with an upper-triangle max of exactly 0.00e+00 — the causal constraint, enforced to the float.** Cross-attention is **(1, 8, 7, 12), and its rows sum to 1 over the twelve *source* positions** — so there is no triangle to mask, because a target position may legitimately read any part of the source. **Confusing the two is how a causal mask ends up applied to cross-attention and silently halves the available source.**", "left": "attention", "codeW": 170, "vars": ["shape", "what is constrained"], "steps": [{"code": "decoder self-attention", "state": ["(1, 8, 7, 7)", "upper triangle = 0.00e+00"], "tone": "good"}, {"code": "cross-attention", "state": ["(1, 8, 7, 12)", "rows sum to 1 over 12 SOURCE"], "changed": [0, 1], "tone": "violet"}, {"code": "so there is no triangle", "state": ["target x source", "any source position is legal"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_7-06-4"},
+
 
 
 

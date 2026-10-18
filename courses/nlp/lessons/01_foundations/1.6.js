@@ -34,6 +34,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "mental", title: "You shall know a word by the company it keeps",
       body: [{ t: "p", text: "Firth's line from 1957 is the whole basis of the field. If two words appear in the same contexts — *the ___ ran across the garden* — then whatever they mean, they mean something similar enough to be substitutable there. That is a claim about text alone, requiring no dictionary, no labels and no linguistics, which is exactly why it scales. Every embedding method in this lesson is a different way of turning co-occurrence counts into vectors, and they all rest on this one assumption." }] },
 
@@ -63,6 +64,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Negative sampling", id: "negative" },
 
     {"kind": "flow", "title": "Fifty thousand dot products per pair, replaced by K+1", "caption": "The honest objective is a softmax over **every** word in the vocabulary — 50,000 dot products and a normalisation, **for every training pair, of which there are billions.** Negative sampling asks a cheaper question: **push the true context word's score up and `K` randomly sampled words' scores down, with `K` typically 5 to 20.** The samples come from the unigram distribution raised to **0.75**, which flattens it — **an empirical exponent rather than a principled one**, chosen to stop common words dominating the negatives while still sampling them more often than rare ones.", "cols": 3, "nodes": [{"id": "s", "label": "Softmax over 50,000 words", "sub": "per pair, billions of pairs", "tone": "crit"}, {"id": "k", "label": "Instead: 1 positive + K negatives", "sub": "K is 5 to 20", "tone": "good"}, {"id": "u", "label": "Push the true word up", "sub": "score -> 1", "tone": "good"}, {"id": "d", "label": "Push K sampled words down", "sub": "score -> 0", "tone": "good"}, {"id": "e", "label": "Sampled from freq^0.75", "sub": "empirical, not principled", "tone": "warn"}], "edges": [["s", "k"], ["k", "u"], ["k", "d"], ["d", "e"]], "t": "diagram", "id": "dg-1_6-03-1"},
+
 
 
 
@@ -109,6 +111,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Trained on 4,000 sentences with a 24-word vocabulary, where animals, people, places, objects and two kinds of verb each occupy a distinct template slot — 63,736 training pairs, six epochs, no labels:" },
 
     { t: "out", text: `  cat      -> wolf 0.991, dog 0.988, fox 0.986, park 0.408
@@ -141,6 +144,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Method", "Key idea", "Handles OOV?"],
       rows: [
         ["**Word2Vec**", "Predict context from centre (or the reverse), locally, with negative sampling", "No"],
@@ -154,6 +158,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "The analogy, honestly", id: "analogy" },
 
     {"kind": "flow", "title": "The result is real and the demonstration is stage-managed", "caption": "The analogy works when a relation happens to be a consistent **translation** in the vector space, and for some relations it genuinely is — a real and surprising property of embeddings trained on enough text. **But the standard evaluation excludes the three input words from the candidate answers, and without that exclusion the nearest vector to `king − man + woman` is frequently `king` itself.** Worth knowing both halves, **because the analogy is often cited as evidence that embeddings capture meaning more strongly than the geometry supports.**", "cols": 3, "nodes": [{"id": "r", "label": "Some relations ARE a translation", "sub": "real, and surprising", "tone": "good"}, {"id": "e", "label": "The evaluation excludes the 3 inputs", "sub": "king, man, woman", "tone": "warn"}, {"id": "w", "label": "Without that, the answer is often 'king'", "sub": "the nearest vector", "tone": "crit"}, {"id": "b", "label": "So: the result holds, the demo is staged", "sub": "both halves are true", "tone": "violet"}, {"id": "c", "label": "It is cited as more than it shows", "sub": "which is why this matters", "tone": "teal"}], "edges": [["r", "e"], ["e", "w"], ["w", "b"], ["b", "c"]], "t": "diagram", "id": "dg-1_6-06-4"},
+
 
 
 

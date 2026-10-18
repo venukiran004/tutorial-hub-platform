@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The task and the toy model", id: "setup" },
 
+    {"kind": "trace", "title": "Two vocabularies, one architecture, and a target vocabulary that includes its own control tokens", "caption": "The source has three words and the target has five — **`<bos>` and `<eos>` are entries in the target vocabulary, not metadata**, which is what lets the decoder *predict* that it should stop. Everything else is minimal by design: **`d_model = 4`, one head, one encoder block, one decoder block.** The task is small enough to follow and structurally complete: **source reading, target writing, and the cross-attention between them.**", "left": "vocabulary", "codeW": 150, "vars": ["entries", "note"], "steps": [{"code": "source", "state": ["I, love, AI", "3 words"], "tone": "good"}, {"code": "target", "state": ["<bos>, <eos>, ich, liebe, KI", "5 - control tokens included"], "changed": [0, 1], "tone": "violet"}, {"code": "model", "state": ["d_model 4, 1 head, 1+1 blocks", "structurally complete"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-6_5-01-0"},
+
     { t: "out", text:
 "translate  \"I love AI\"  ->  \"ich liebe KI\"\n\n  d_model = 4, one head, one encoder block, one decoder block\n\n  source embeddings          target embeddings\n    I     [ 1, 0,  1,  0]      <bos>   [ 0.0,  0.0,  0.5,  0.5]\n    love  [ 0, 1,  0,  1]      <eos>   [-0.5, -0.5,  0.0,  0.0]\n    AI    [ 1, 1, -1,  0]      ich     [ 1.0,  0.0,  0.5, -0.5]\n                               liebe   [ 0.0,  1.0, -0.5,  0.5]\n                               KI      [ 1.0,  1.0,  0.0, -1.0]\n\n  target vocabulary: [<bos>, <eos>, ich, liebe, KI]" },
 
@@ -31,12 +33,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Embedding and position", id: "embed" },
 
+    {"kind": "trace", "title": "The same PE matrix is reused for source, target and every sentence", "caption": "The construction is identical to 6.1's — **and that is the point worth noticing: the positional encoding depends only on position and dimension, never on the token.** So **the same `PE` matrix serves the source and the target, and every sentence the model will ever see.** Which is why it costs zero parameters and why 4.9's extrapolation question is about a formula rather than about data: **nothing in `PE` was fitted to this sentence.**", "left": "token", "codeW": 130, "vars": ["X = embedding + PE"], "steps": [{"code": "I", "state": ["[1.000, 1.000, 1.000, 1.000]"], "tone": "good"}, {"code": "love", "state": ["[0.841, 1.540, 0.010, 2.000]"], "changed": [0], "tone": "good"}, {"code": "AI", "state": ["[1.909, 0.584, -0.980, 1.000]"], "changed": [0], "tone": "good"}, {"code": "and the same PE", "state": ["serves the target too"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_5-02-1"},
+
     { t: "out", text:
 "X = source embedding + sinusoidal position\n\n  I      [1.000, 1.000,  1.000, 1.000]\n  love   [0.841, 1.540,  0.010, 2.000]\n  AI     [1.909, 0.584, -0.980, 1.000]" },
 
     { t: "p", text: "The same construction as lesson 6.1 — the positional encoding is identical because it depends only on position and dimension, never on the token. That is worth noticing: the *same* `PE` matrix is reused for source and target, and for every sentence the model ever sees." },
 
     { t: "h2", n: "03", text: "Encoder self-attention", id: "selfattn" },
+
+    {"kind": "trace", "title": "Unmasked, so every row is a full distribution over all three source tokens", "caption": "**No triangle here — every source token attends to the whole sentence including positions after it**, which is the encoder's defining difference from 6.4's decoder and the reason 5.1 lists “cannot generate” against it. The weights are close to uniform on an untrained model (**0.176 to 0.553**), and the largest entry in every row is on `AI`, **which is an artefact of that token's embedding magnitude rather than anything semantic.**", "left": "query", "codeW": 130, "vars": ["-> I", "-> love", "-> AI"], "steps": [{"code": "I", "state": ["0.286", "0.264", "0.450"], "tone": "accent"}, {"code": "love", "state": ["0.176", "0.271", "0.553"], "changed": [0, 1, 2], "tone": "accent", "note": "sees AI, after it"}, {"code": "AI", "state": ["0.237", "0.437", "0.326"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "upper triangle", "state": ["non-zero - no mask", "-", "-"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_5-03-2"},
 
     { t: "out", text:
 "encoder self-attention weights\n\n           I       love    AI\n  I     [0.286   0.264   0.450]\n  love  [0.176   0.271   0.553]\n  AI    [0.237   0.437   0.326]" },
@@ -45,6 +51,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Compare this with every attention matrix so far in the module, which had an upper triangle of exactly zero. Here **row `I` puts 0.450 on `AI`** — a token three positions to its right. The encoder is allowed to look forward because the entire source sentence exists before any processing begins; there is no future to leak. That bidirectionality is the encoder's whole advantage, and it is why *lesson 5.1's* BERT could predict a word from its right context while a causal model could not. In a translation model it matters concretely: German word order differs from English, so deciding how to render the first English word can genuinely require having read the last one." }] },
 
     { t: "h2", n: "04", text: "The encoder memory", id: "memory" },
+
+    {"kind": "trace", "title": "One matrix, computed once, read at every decoding step", "caption": "Six operations — **self-attention, residual, LayerNorm, FFN, residual, LayerNorm** — produce a (3, 4) matrix. And its role is the thing to hold onto: **`memory` is computed once and reused at every decoder step** (6.7 counts one encoder pass against six decoder passes). Note all three rows have a strongly negative third dimension — **the encoder has pushed every source token in the same direction on that axis**, which is what a shared LayerNorm over four dimensions tends to produce.", "left": "source token", "codeW": 130, "vars": ["memory row"], "steps": [{"code": "I", "state": ["[0.574, 0.465, -1.727, 0.687]"], "tone": "good"}, {"code": "love", "state": ["[-0.178, 0.790, -1.562, 0.951]"], "changed": [0], "tone": "good"}, {"code": "AI", "state": ["[0.751, 0.366, -1.716, 0.599]"], "changed": [0], "tone": "good"}, {"code": "computed", "state": ["once, then reused every step"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_5-04-3"},
 
     { t: "out", text:
 "after self-attention, residual, LayerNorm, FFN, residual, LayerNorm\n\n  memory =\n    I      [ 0.574, 0.465, -1.727, 0.687]\n    love   [-0.178, 0.790, -1.562, 0.951]\n    AI     [ 0.751, 0.366, -1.716, 0.599]" },
@@ -68,6 +76,8 @@ EC.receiveLesson({
     { t: "p", text: "The source does not change while the target is being generated, so nothing about `memory` changes either. A decoder-only model has no equivalent saving — its prompt and its output live in one sequence, so every new token extends the same context that attention must run over. This is part of why encoder-decoder models remain competitive for translation and speech, where there is a clearly distinct source." },
 
     { t: "h2", n: "06", text: "The block, component by component", id: "block" },
+
+    {"kind": "trace", "title": "Six steps, all shape-preserving, and only one of them mixes tokens", "caption": "Every row is **(3, 4) in and (3, 4) out** — the block never changes the shape, which is what lets blocks stack without adapters. And the “what it achieves” column separates the two kinds of work: **step 3 is the only one that mixes information between tokens**, while the embedding, positional add, FFN and both norms all operate on each row independently. **So an encoder block is one mixing operation surrounded by five per-token ones.**", "left": "step", "codeW": 170, "vars": ["shape", "mixes tokens?"], "steps": [{"code": "1-2: embed + positional", "state": ["(3, 4)", "no"], "tone": "good"}, {"code": "3: self-attention, unmasked", "state": ["(3, 4)", "YES - the only one"], "changed": [1], "tone": "violet"}, {"code": "4: residual + LayerNorm", "state": ["(3, 4)", "no"], "changed": [1], "tone": "good"}, {"code": "5-6: FFN, residual + norm", "state": ["(3, 4)", "no"], "tone": "good"}], "t": "diagram", "id": "dg-6_5-06-4"},
 
     { t: "table",
       head: ["Step", "Operation", "Shape", "What it achieves"],

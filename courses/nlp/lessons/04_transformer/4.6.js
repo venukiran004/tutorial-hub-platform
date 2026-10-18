@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\text{FFN}(x) = \\text{GELU}(xW_1 + b_1)\\,W_2 + b_2" },
 
     { t: "p", text: "Applied independently and identically to every position — hence *position-wise*. It has no idea other tokens exist. That division of labour is the point: attention **mixes** information between tokens, the FFN **transforms** each token on its own, and a block alternates between the two." },
@@ -47,6 +48,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "x       ReLU      GELU      GELU-tanh   SiLU\n-3.0    0.0000    -0.0041   -0.0036     -0.1423\n-2.0    0.0000    -0.0455   -0.0454     -0.2384\n-1.0    0.0000    -0.1587   -0.1588     -0.2689\n-0.5    0.0000    -0.1543   -0.1543     -0.1888\n 0.0    0.0000     0.0000    0.0000      0.0000\n 0.5    0.5000     0.3457    0.3457      0.3112\n 1.0    1.0000     0.8413    0.8412      0.7311\n 2.0    2.0000     1.9545    1.9546      1.7616\n 3.0    3.0000     2.9959    2.9964      2.8577\n\nmax |GELU exact - tanh approximation| = 4.13e-04" },
 
@@ -57,6 +59,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "SwiGLU and the two-thirds rule", id: "swiglu" },
 
     {"kind": "trace", "title": "The two-thirds rule balances the budget to four decimal places", "caption": "A gated linear unit **splits the up-projection into two branches and multiplies them elementwise, one acting as a learned gate — three weight matrices instead of two — so `d_ff` shrinks by two thirds to keep the budget fixed.** It is commonly stated as a rule of thumb; measured, it is near-exact: **2,096,640 against 2,097,152 at `d_model=512` (0.9998×), and 134,209,536 against 134,217,728 at 4096 (0.9999×).** So SwiGLU is a **free** substitution in parameter terms, which is why it displaced plain GELU FFNs.", "left": "configuration", "codeW": 190, "vars": ["d_ff", "parameters", "ratio"], "steps": [{"code": "d_model 512, standard", "state": ["2048", "2,097,152", "1.0000x"], "tone": "accent"}, {"code": "d_model 512, SwiGLU", "state": ["1365", "2,096,640", "0.9998x"], "changed": [0, 1, 2], "tone": "good"}, {"code": "d_model 4096, standard", "state": ["16384", "134,217,728", "1.0000x"], "changed": [0, 1], "tone": "accent"}, {"code": "d_model 4096, SwiGLU", "state": ["10922", "134,209,536", "0.9999x"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-4_6-03-2"},
+
 
 
 
@@ -80,6 +83,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\mu = \\frac{1}{d}\\sum_{i=1}^{d} x_i, \\quad \\sigma^2 = \\frac{1}{d}\\sum_{i=1}^{d}(x_i - \\mu)^2, \\quad \\text{LN}(x) = \\gamma \\odot \\frac{x - \\mu}{\\sqrt{\\sigma^2 + \\epsilon}} + \\beta" },
 
     { t: "p", text: "Normalisation runs **across the feature dimension, per token** — not across the batch. That independence from batch statistics is what makes it safe with variable sequence lengths and at batch size 1, which BatchNorm is not." },
@@ -90,6 +94,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "RMSNorm", id: "rmsnorm" },
 
     {"kind": "trace", "title": "RMSNorm does not centre, and it was 161% slower here", "caption": "Same input: **mean of squares 29, RMS 5.3852, and an output whose mean is 0.9285 rather than 0** — because RMSNorm divides by the root mean square without subtracting the mean, so **it rescales without centring.** That is the whole simplification, and it is usually described as the faster option. **Measured on torch 2.10 CPU at `d=4096`: LayerNorm 43.80 ms against RMSNorm 114.32 ms — 161% slower, and `nn.RMSNorm` is no better.** The reason is implementation, not arithmetic: **LayerNorm has a fused ATen kernel and RMSNorm here does not.**", "left": "measurement", "codeW": 190, "vars": ["value"], "steps": [{"code": "mean of squares", "state": ["29.0000"], "tone": "accent"}, {"code": "RMS", "state": ["5.3852"], "changed": [0], "tone": "good"}, {"code": "output mean", "state": ["0.9285, NOT 0"], "changed": [0], "tone": "violet", "note": "no centring"}, {"code": "LayerNorm (fused ATen)", "state": ["43.80 ms"], "changed": [0], "tone": "good"}, {"code": "RMSNorm (composed / nn.RMSNorm)", "state": ["114.32 ms / 114.73 ms"], "changed": [0], "tone": "crit", "note": "+161%"}], "t": "diagram", "id": "dg-4_6-05-4"},
+
 
 
 

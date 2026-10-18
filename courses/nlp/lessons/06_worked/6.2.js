@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Version one: identity projections", id: "identity" },
 
+    {"kind": "trace", "title": "With Q = K = V = X the score matrix is symmetric, and 'sat' attends mostly to itself", "caption": "Setting all three projections to the identity makes the arithmetic minimal while every other step stays real — **and it exposes what the three matrices are for.** The score matrix is **symmetric**: `score(the,cat) = score(cat,the) = 4.3917`, because a dot product is symmetric and nothing distinguishes the two roles. And the result is degenerate: **`sat` gives 0.5101 of its attention to itself**, since a vector's largest dot product is usually with itself.", "left": "query", "codeW": 130, "vars": ["-> the", "-> cat", "-> sat"], "steps": [{"code": "the", "state": ["4.0000", "4.3917", "3.5129"], "tone": "accent"}, {"code": "cat", "state": ["4.3917", "5.1006", "3.5259"], "changed": [0, 1, 2], "tone": "accent", "note": "symmetric"}, {"code": "sat", "state": ["3.5129", "3.5259", "4.9863"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "sat's weights", "state": ["0.2442", "0.2458", "0.5101"], "changed": [0, 1, 2], "tone": "crit", "note": "mostly itself"}], "t": "diagram", "id": "dg-6_2-01-0"},
+
     { t: "p", text: "Start with `Q = K = V = X`, so a token's query, key and value are all just the token's own vector. This keeps the arithmetic minimal while every other step stays real." },
 
     { t: "out", text:
@@ -47,6 +49,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Why three matrices", id: "why" },
 
+    {"kind": "trace", "title": "The toy matrices make the three roles visible: in order, swapped, and the other two dimensions", "caption": "**`W_Q` reads dimensions 0 and 1 in order, `W_K` reads the same two *swapped*, and `W_V` reads dimensions 2 and 3** — which is the minimal construction that makes the three vectors genuinely different. The analogy holds: **the query is what you type into a search box, the key is a page's indexed terms, and the value is the page content you actually read.** Note the consequence of the swap: **it breaks the symmetry §01 produced**, so `score(a,b) ≠ score(b,a)`.", "left": "matrix", "codeW": 130, "vars": ["what it reads", "the question it answers"], "steps": [{"code": "W_Q", "state": ["dims 0,1 in order", "what am I looking for?"], "tone": "good"}, {"code": "W_K", "state": ["dims 0,1 SWAPPED", "what do I advertise?"], "changed": [0, 1], "tone": "violet", "note": "breaks the symmetry"}, {"code": "W_V", "state": ["dims 2,3", "what do I hand over?"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-6_2-02-1"},
+
     { t: "table",
       head: ["Vector", "Question it answers", "Search-engine analogy"],
       rows: [
@@ -60,6 +64,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Version two: real projections", id: "real" },
 
+    {"kind": "trace", "title": "Now 'sat' attends to 'cat' instead of to itself", "caption": "The same token now has three different vectors — **`q_sat ≠ k_sat ≠ v_sat`** — and `d_k` is **2, not 4**, because the head projects down. The scores change the outcome: **`score(sat→cat) = 3.4322` is now the highest, against `sat→sat` at 2.2297**, so the degenerate self-attention of §01 is gone. Scaling by `sqrt(2)` and softmaxing gives **[0.2651, 0.5149, 0.2200]**, matching the reference's [0.266, 0.516, 0.219].", "left": "step", "codeW": 150, "vars": ["-> the", "-> cat", "-> sat"], "steps": [{"code": "raw score", "state": ["2.4932", "3.4322", "2.2297"], "tone": "good", "note": "cat is highest now"}, {"code": "scaled by sqrt(2)", "state": ["1.7630", "2.4270", "1.5766"], "changed": [0, 1, 2], "tone": "good"}, {"code": "exp", "state": ["5.8297", "11.3245", "4.8386"], "changed": [0, 1, 2], "tone": "good"}, {"code": "weights (sum 21.9927)", "state": ["0.2651", "0.5149", "0.2200"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-03-2"},
+
     { t: "out", text:
 "        Q (queries)          K (keys)             V (values)\n  the [ 1.0000  1.0000 ]  [ 1.0000  1.0000 ]  [ 1.0000  1.0000 ]\n  cat [ 0.8415  1.5403 ]  [ 1.5403  0.8415 ]  [ 1.0100  1.0000 ]\n  sat [ 1.9093  0.5839 ]  [ 0.5839  1.9093 ]  [ 0.0200  0.9998 ]" },
 
@@ -72,6 +78,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "*sat* now puts **51.49%** of its attention on *cat* — the noun it is the verb of — 26.5% on *the* and only 22.0% on itself. Compare the identity version, where the same token gave 51.0% to itself and the two others a quarter each. The entire difference is that `W_K` **swaps dimensions 0 and 1** while `W_Q` leaves them in order, so a query's dimension 0 meets a key's dimension 1. That asymmetry is what lets a token look for something *other than a copy of itself*. In a real model these matrices are learned, and this subject-verb link is exactly the kind of structure training discovers — lesson 4.4 found a clean previous-token head in BERT the same way." }] },
 
     { t: "h2", n: "04", text: "Blending values, not keys", id: "values" },
+
+    {"kind": "trace", "title": "The output is a weighted average of values, and dimension 1 comes out at exactly 1.0000", "caption": "**The weights multiply `v`, not `k`** — which is the step people skip, and it is why three matrices rather than two: **what is compared and what is handed over are different quantities.** The arithmetic is two lines, and dimension 1 lands on **exactly 1.0000** because all three values are ~1.0 there and the weights sum to 1. **So a dimension on which every token agrees passes through attention unchanged, however the weights fall.**", "left": "dimension", "codeW": 150, "vars": ["0.2651*v_the + 0.5149*v_cat + 0.2200*v_sat", "result"], "steps": [{"code": "dim 0", "state": ["1.0000, 1.0100, 0.0200", "0.7895"], "tone": "good"}, {"code": "dim 1", "state": ["1.0000, 1.0000, 0.9998", "1.0000"], "changed": [0, 1], "tone": "violet", "note": "unchanged - all agree"}, {"code": "out_sat", "state": ["-", "[0.7895, 1.0000]"], "changed": [0, 1], "tone": "good", "note": "reference [0.79, 1.00]"}], "t": "diagram", "id": "dg-6_2-04-3"},
 
     { t: "out", text:
 "out_sat = 0.2651 * v_the + 0.5149 * v_cat + 0.2200 * v_sat\n\n  dim0: 0.2651*1.0000 + 0.5149*1.0100 + 0.2200*0.0200 = 0.7895\n  dim1: 0.2651*1.0000 + 0.5149*1.0000 + 0.2200*0.9998 = 1.0000\n\n  out_sat = [0.7895, 1.0000]\n  reference: [0.79, 1.00]" },

@@ -33,6 +33,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Modern MT is an encoder-decoder transformer: the encoder reads the source sentence, the decoder generates the target one token at a time, attending back to the encoder at every step. Two families dominate what you will actually deploy." },
 
     { t: "dl", items: [
@@ -92,6 +93,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "BLEU is modified n-gram precision, geometrically averaged over n = 1 to 4, multiplied by a brevity penalty. Precision rather than recall, because a translation should not add content; the brevity penalty exists because precision alone would reward emitting one word you were sure of." },
 
     { t: "math", tex: "\\text{BLEU} = \\text{BP} \\cdot \\exp\\!\\left(\\sum_{n=1}^{4} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{1 - r/c} & c \\leq r \\end{cases}" },
@@ -109,6 +111,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "The brevity penalty", id: "bp" },
 
     {"kind": "trace", "title": "At five words of nine, BLEU is the brevity penalty and nothing else", "caption": "**Every n-gram the five-word candidate emitted was correct, so all four precisions are 1.0 and BLEU equals BP exactly — 0.4493.** That is the penalty doing the entire job. **Without it, the translator's optimal strategy would be to emit the three words it was most confident about and stop**, scoring perfect precision on a useless output. Note how steep it is at the short end: **one word of nine gives BP 0.0003**, which is `e^(1−r/c)` behaving exponentially.", "left": "candidate length", "codeW": 160, "vars": ["BP", "BLEU", "all precisions"], "steps": [{"code": "1 of 9", "state": ["0.0003", "0.0001", "1.0"], "tone": "crit"}, {"code": "3 of 9", "state": ["0.1353", "0.0761", "1.0"], "changed": [0, 1], "tone": "crit"}, {"code": "5 of 9", "state": ["0.4493", "0.4493", "1.0"], "changed": [0, 1], "tone": "violet", "note": "BLEU = BP exactly"}, {"code": "9 of 9", "state": ["1.0000", "1.0000", "1.0"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-2_7-04-2"},
+
 
 
 
@@ -148,6 +151,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Reading a BLEU number", id: "bands" },
 
     {"kind": "trace", "title": "Seven bands, and the usable threshold is lower than people assume", "caption": "The bands are what a BLEU number means to a reader of the output, and **the interesting line is 20–29: the gist is clear with significant errors**, which is where a lot of deployed MT actually sits and is genuinely useful for triage. **Under 10 is useless and over 60 is often better than a human translation** — and that last band is also the one to distrust, since it usually means the test set overlaps the training data.", "left": "BLEU", "codeW": 130, "vars": ["what it means to a reader"], "steps": [{"code": "under 10", "state": ["almost useless"], "tone": "crit"}, {"code": "10-19", "state": ["hard to get the gist"], "changed": [0], "tone": "crit"}, {"code": "20-29", "state": ["the gist is clear, significant errors"], "changed": [0], "tone": "warn", "note": "where much of deployed MT sits"}, {"code": "30-40", "state": ["understandable to good"], "changed": [0], "tone": "good"}, {"code": "40-60", "state": ["high to very high quality"], "changed": [0], "tone": "good"}, {"code": "over 60", "state": ["often better than a human - distrust it"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-2_7-06-3"},
+
 
 
 

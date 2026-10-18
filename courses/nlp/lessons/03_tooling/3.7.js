@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Coreference resolution decides which expressions in a text refer to the same real-world entity. The output is a set of chains, each grouping the mentions of one entity." },
 
     { t: "out", text:
@@ -55,6 +56,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "\"Apple released the iPhone. It costs $999.\"\n\nentities  : [('Apple', 'ORG'), ('999', 'MONEY')]\nrelations : [('It', 'cost', '$999')]" },
 
@@ -64,6 +66,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "The ambiguity that grammar cannot resolve", id: "winograd" },
 
     {"kind": "trace", "title": "One word changes what the pronoun refers to, and the parse is identical", "caption": "**Same parse, same entities, same pronoun position — swapping *big* for *small* changes what *it* refers to, and nothing in the grammar records that.** Resolving them requires knowing **that a container must be larger than the thing it contains**, which is world knowledge rather than syntax. This is the Winograd schema shape, and it is the reason coreference resisted rule-based approaches for decades: **the signal is not in the sentence.**", "left": "sentence", "codeW": 230, "vars": ["it =", "what decides it"], "steps": [{"code": "'...doesn't fit in the suitcase because it is too big.'", "state": ["trophy", "world knowledge"], "tone": "warn"}, {"code": "'...doesn't fit in the suitcase because it is too small.'", "state": ["suitcase", "world knowledge"], "changed": [0], "tone": "warn"}, {"code": "the parse", "state": ["identical", "nothing in the grammar"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_7-03-2"},
+
 
 
 
@@ -87,6 +90,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "scratchpad/nlp/n37.py — dependency-based relation extraction", code:
 "def extract_relations(text):\n    \"\"\"Extract (subject, relation, object) triples from the dependency parse.\"\"\"\n    doc = nlp(text)\n    relations = []\n    for token in doc:\n        if token.dep_ == \"ROOT\" and token.pos_ == \"VERB\":\n            subjects = [c for c in token.children\n                        if c.dep_ in (\"nsubj\", \"nsubjpass\")]\n            objects  = [c for c in token.children\n                        if c.dep_ in (\"dobj\", \"attr\", \"pobj\")]\n            for subj in subjects:\n                subj_span = doc[subj.left_edge.i:subj.right_edge.i + 1]\n                for obj in objects:\n                    obj_span = doc[obj.left_edge.i:obj.right_edge.i + 1]\n                    relations.append((subj_span.text, token.lemma_,\n                                      obj_span.text))\n    return relations",
       caption: "The function, unmodified. It finds the root verb, takes its subject and object children, and expands each to its full subtree." },
@@ -97,6 +101,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Five failures, five lessons", id: "failures" },
 
     {"kind": "trace", "title": "Five failures, five one-line causes in the parse", "caption": "Each failure traces to a single feature of the dependency tree. **In the passive, `Google` hangs off the preposition *by* as `pobj`, not off the verb — so it is never considered.** The copular root is `is`, tagged `AUX` not `VERB`, **so a `pos_ == \"VERB\"` guard rejects the sentence before anything else runs.** And only one token per sentence is `ROOT`, **so a second clause's verb is `conj` and its entire relation is silently dropped.** Fixing each means a rule per construction, **which is the moment a rule-based extractor stops being cheaper than a model.**", "left": "construction", "codeW": 190, "vars": ["the parse feature", "what the extractor did"], "steps": [{"code": "passive", "state": ["Google = pobj of 'by'", "no object found -> nothing"], "tone": "crit"}, {"code": "copular", "state": ["root 'is' is AUX, not VERB", "rejected by the guard"], "changed": [0, 1], "tone": "crit"}, {"code": "coordination", "state": ["the conjunct is in the subtree", "swallowed into one object"], "changed": [0, 1], "tone": "crit"}, {"code": "apposition", "state": ["the appositive is in the span", "correct span, useless key"], "changed": [0, 1], "tone": "crit"}, {"code": "second clause", "state": ["its verb is conj, not ROOT", "dropped silently"], "changed": [0, 1], "tone": "crit"}, {"code": "negation", "state": ["dep_='neg' is present", "and never inspected"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_7-05-4"},
+
 
 
 

@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "config: d_model 768, heads 12, d_ff 3072, layers 12, vocab 50257, max_pos 1024\n\nper block\n  W_Q, W_K, W_V   3 x (768 x 768)    1,769,472\n  W_O                 768 x 768         589,824\n  attention total                     2,359,296\n\n  W1  768 x 3072                      2,359,296\n  W2  3072 x 768                      2,359,296\n  FFN total                           4,718,592\n\n  2 LayerNorms  2 x (768 + 768)           3,072\n\n  per block                           7,080,960\n  x 12 blocks                        84,971,520\n\nembeddings\n  token     50257 x 768              38,597,376\n  position   1024 x 768                 786,432\nfinal LayerNorm                           1,536\n\nTOTAL                             124,356,864" },
 
@@ -33,6 +34,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Against the real checkpoint", id: "actual" },
 
     {"kind": "trace", "title": "The two MLP matrices are 45% of the model, and the largest single tensor is not a layer", "caption": "The checkpoint is **124,439,808 against the arithmetic's 124,356,864 — a difference of 82,944, which is the biases the formula omitted.** Then the breakdown: **`c_fc` and `c_proj` together hold 56.6M, 45% of the entire model, against attention's 28.3M. And the single largest tensor is `wte.weight` at 38.6M, which is not a computation layer at all — it is a lookup table.** **Where the parameters are is not where most of the explanation goes.**", "left": "tensor", "codeW": 190, "vars": ["parameters", "share of 124.4M"], "steps": [{"code": "wte.weight (token embedding)", "state": ["38,597,376", "31.0%"], "tone": "violet", "note": "a lookup table"}, {"code": "mlp.c_fc + mlp.c_proj", "state": ["56,623,104", "45.5%"], "changed": [0, 1], "tone": "violet"}, {"code": "attn.c_attn + attn.c_proj", "state": ["28,311,552", "22.8%"], "changed": [0, 1], "tone": "good"}, {"code": "wpe.weight (position)", "state": ["786,432", "0.6%"], "changed": [0, 1], "tone": "good"}, {"code": "all biases and LayerNorms", "state": ["~121,000", "0.1%"], "changed": [0, 1], "tone": "accent", "note": "the 82,944 gap"}], "t": "diagram", "id": "dg-4_10-02-1"},
+
 
 
 
@@ -78,6 +80,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "crit", title: "Doubling d_model quadruples the parameters per layer",
       body: [{ t: "p", text: "Because the count is `12·L·d²`, `d` enters squared and `L` only linearly. Double the depth and you double the parameters; double the width and you **quadruple** them. That asymmetry shapes every architecture decision downstream — it is why models grow deep faster than they grow wide, why width is usually chosen first and held, and why a seemingly modest change from `d_model = 4096` to `8192` is a four-times parameter increase per layer, not a doubling. It also drives the compute cost: attention and FFN FLOPs scale with `d²` too." }] },
 
@@ -97,6 +100,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "model           d_model  layers  non-embedding    embedding      embed share\nGPT-2 small       768      12        84,934,656    38,597,376       31.2%\nGPT-2 medium     1024      24       301,989,888    51,463,168       14.6%\nGPT-2 large      1280      36       707,788,800    64,328,960        8.3%\nGPT-2 xl         1600      48     1,474,560,000    80,411,200        5.2%\nLLaMA-2 7B       4096      32     6,442,450,944   131,072,000        2.0%\nLLaMA-3 8B       4096      32     6,442,450,944   525,336,576        7.5%" },
 
@@ -108,6 +112,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "What the count does not tell you", id: "limits" },
 
     {"kind": "layers", "title": "Four things the count does not tell you, and the last one is the important one", "caption": "**Training memory is roughly 4× the parameter memory before activations — weights, gradients and two Adam moments — so a 7B model in fp16 is about 14GB of weights and around 56GB before you store a single activation.** Compute has a usable rule: **forward is about `2 × params` FLOPs per token and training about `6 × params`.** And the honest last row: **parameter count correlates with capability only within an architecture family, and even then data and training compute matter more.**", "items": [{"label": "Inference memory", "sub": "params x bytes, plus activations and the KV cache", "tone": "good", "side": "2B at fp16"}, {"label": "Training memory", "sub": "~4x params: weights, grads, two Adam moments", "tone": "crit", "side": "7B -> 56GB"}, {"label": "Compute", "sub": "~2x params FLOPs forward, ~6x for training", "tone": "good", "side": "per token"}, {"label": "The KV cache", "sub": "grows with batch and sequence - often dominates", "tone": "warn", "side": "long context"}, {"label": "Capability", "sub": "only within a family, and data matters more", "tone": "violet", "side": "the caveat"}], "t": "diagram", "id": "dg-4_10-06-4"},
+
 
 
 

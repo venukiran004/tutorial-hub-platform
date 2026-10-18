@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Residual and the first LayerNorm", id: "residual" },
 
+    {"kind": "trace", "title": "The residual restores the token, and the norm rescales what is left", "caption": "Adding `z_sat` back gives **[3.3341, 1.5044, 0.5226, 1.9997]** — and note dimension 0 is now 3.33, well outside the input's range, **which is 4.7's residual-stream growth happening in one step.** LayerNorm then brings it back: **μ = 1.8402, σ = 1.0132, and `n = [1.4745, -0.3315, -1.3005, 0.1574]` with mean 0 and variance 1.** Every figure matches the reference. **The norm is what keeps the next sublayer seeing inputs on a predictable scale.**", "left": "step", "codeW": 150, "vars": ["value"], "steps": [{"code": "attn output", "state": ["[1.4248, 0.9205, 0.5026, 0.9999]"], "tone": "accent"}, {"code": "+ z_sat (residual)", "state": ["[3.3341, 1.5044, 0.5226, 1.9997]"], "changed": [0], "tone": "warn", "note": "dim 0 now 3.33"}, {"code": "mu / sigma", "state": ["1.8402 / 1.0132"], "changed": [0], "tone": "good"}, {"code": "normalised", "state": ["[1.4745, -0.3315, -1.3005, 0.1574]"], "changed": [0], "tone": "good", "note": "mean 0, var 1"}], "t": "diagram", "id": "dg-6_3-01-0"},
+
     { t: "out", text:
 "residual: add the original input back\n\n  r = z_sat + attn_sat\n    = [1.9093, 0.5839, 0.0200, 0.9998] + [1.4248, 0.9205, 0.5026, 0.9999]\n    = [3.3341, 1.5044, 0.5226, 1.9997]\n\n  reference: [3.33, 1.50, 0.52, 2.00]" },
 
@@ -31,6 +33,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The feed-forward network", id: "ffn" },
 
+    {"kind": "trace", "title": "One dimension is zeroed, and that is the whole nonlinearity", "caption": "With identity weights and a 0.5 bias the FFN reduces to `ReLU(n + 0.5)`, **so the only thing it does is set −0.8005 to exactly 0.** That single clipped dimension is the entire nonlinearity in this block — **everything else in a transformer is a linear map or a normalisation**, which is worth sitting with: the FFN is where the model can express anything a matrix cannot. In a real model the same step runs **512 → 2048 → 512** with learned weights, clipping a different subset for every token.", "left": "step", "codeW": 150, "vars": ["value", "what changed"], "steps": [{"code": "n", "state": ["[1.4745, -0.3315, -1.3005, 0.1574]", "-"], "tone": "accent"}, {"code": "n + 0.5", "state": ["[1.9745, 0.1685, -0.8005, 0.6574]", "shifted"], "changed": [0, 1], "tone": "good"}, {"code": "ReLU", "state": ["[1.9745, 0.1685, 0.0000, 0.6574]", "ONE dimension zeroed"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_3-02-1"},
+
     { t: "out", text:
 "toy weights: W1 = W2 = identity, b1 = [0.5, 0.5, 0.5, 0.5], b2 = 0\nso FFN(n) = ReLU(n + 0.5)\n\n  pre-activation = n + 0.5 = [1.9745, 0.1685, -0.8005, 0.6574]\n  after ReLU               = [1.9745, 0.1685,  0.0000, 0.6574]\n                                                   ^\n                                       the -0.8005 became 0\n\nreference: [1.97, 0.16, -0.80, 0.66] then [1.97, 0.16, 0.00, 0.66]" },
 
@@ -38,6 +42,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "One of four dimensions was negative and is now exactly zero. In a toy model that looks trivial; in a real FFN with `d_ff = 3072` it is the mechanism by which the network *selects* which of thousands of learned features are active for this particular token. Under lesson 4.6's key-value memory reading, the hidden activation records **which patterns fired**, and ReLU is what makes that a selection rather than a weighted sum of everything. Note also that the gradient through that dimension is now exactly zero — the dead-ReLU problem, and why GELU and SiLU, which lesson 4.6 measured going smoothly negative, replaced it." }] },
 
     { t: "h2", n: "03", text: "Second residual and norm", id: "second" },
+
+    {"kind": "trace", "title": "The second residual and norm, and the block is done", "caption": "`r' = n + ffn_out` gives **[3.4490, −0.1629, −1.3005, 0.8148]**, and the variance has grown to **3.0791** — a wider spread than after the first norm, because the FFN's output was added to an already-normalised vector. The final hidden state is **`h = [1.5665, -0.4918, -1.1401, 0.0654]`**. And the scaling note: **in a 96-layer model these steps repeat 96 times, each writing another increment into this same vector** — here there is one layer, so the stack is done.", "left": "step", "codeW": 150, "vars": ["value"], "steps": [{"code": "n + ffn_out", "state": ["[3.4490, -0.1629, -1.3005, 0.8148]"], "tone": "warn"}, {"code": "mu / var / sigma", "state": ["0.7001 / 3.0791 / 1.7547"], "changed": [0], "tone": "good", "note": "var up from 1.03"}, {"code": "h (final hidden state)", "state": ["[1.5665, -0.4918, -1.1401, 0.0654]"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_3-03-2"},
 
     { t: "out", text:
 "  r' = n + ffn_out\n     = [1.4745, -0.3315, -1.3005, 0.1574] + [1.9745, 0.1685, 0.0000, 0.6574]\n     = [3.4490, -0.1629, -1.3005, 0.8148]\n\n  reference: [3.44, -0.18, -1.30, 0.82]\n\n  mean  mu    = 0.7001     reference 0.70\n  var   sigma2 = 3.0791    reference 3.07\n        sigma  = 1.7547    reference 1.75\n\n  h = [1.5665, -0.4918, -1.1401, 0.0654]\n  reference: [1.57, -0.49, -1.14, 0.07]" },
@@ -49,6 +55,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The LM head", id: "head" },
 
+    {"kind": "trace", "title": "Six logits, each one dot product with an embedding row", "caption": "**With weight tying the projection matrix *is* the embedding matrix, so the logit for a word is `h` dotted with that word's embedding** — the same matrix that mapped ids to vectors on the way in. Which makes each logit readable: **`logit(mat) = h·[1,0,0,1] = 1.5665 + 0.0654 = +1.6319`**, two of `h`'s four numbers added. All six match the reference. **And look at the pairs: `the` at +0.4264 and `<eos>` at −0.4264** — which §06 explains.", "left": "word", "codeW": 130, "vars": ["embedding", "logit = h . E[w]"], "steps": [{"code": "mat", "state": ["[1,0,0,1]", "+1.6319"], "tone": "good", "note": "highest"}, {"code": "sat", "state": ["[1,1,0,0]", "+1.0747"], "changed": [0, 1], "tone": "good"}, {"code": "the", "state": ["[1,0,1,0]", "+0.4264"], "changed": [0, 1], "tone": "accent"}, {"code": "<eos>", "state": ["[0,1,0,1]", "-0.4264"], "changed": [0, 1], "tone": "accent", "note": "exactly negated"}, {"code": "on / cat", "state": ["[0,0,1,1] / [0,1,1,0]", "-1.0747 / -1.6319"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-6_3-04-3"},
+
     { t: "p", text: "Project `h` onto every word in the vocabulary. With **weight tying** the projection matrix *is* the embedding matrix, so the logit for a word is the dot product of `h` with that word's embedding — the same matrix that mapped ids to vectors on the way in." },
 
     { t: "out", text:
@@ -56,12 +64,16 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Softmax", id: "softmax" },
 
+    {"kind": "trace", "title": "“mat” at 47.51%, matching the reference to three decimals", "caption": "Six logits, one softmax, **probabilities summing to 1.000000 and every value matching the reference to three decimal places.** The prediction is `mat` at **47.51%** — which given a vocabulary containing both *on* and *mat* is **a defensible continuation of a sentence that wants to become *the cat sat on the mat*.** Note the distribution is not peaked: **the top two hold 0.747 between them**, so this toy model is uncertain in the way 5.8 measured GPT-2 being uncertain.", "left": "word", "codeW": 130, "vars": ["logit", "probability", "reference"], "steps": [{"code": "mat", "state": ["+1.6319", "0.4751", "0.476"], "tone": "violet"}, {"code": "sat", "state": ["+1.0747", "0.2721", "0.272"], "changed": [0, 1, 2], "tone": "good"}, {"code": "the", "state": ["+0.4264", "0.1423", "0.142"], "changed": [0, 1, 2], "tone": "good"}, {"code": "<eos>", "state": ["-0.4264", "0.0606", "0.061"], "changed": [0, 1, 2], "tone": "good"}, {"code": "on / cat", "state": ["-1.0747 / -1.6319", "0.0317 / 0.0182", "0.032 / 0.018"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-6_3-05-4"},
+
     { t: "out", text:
 "word      logit      probability     reference\nmat      +1.6319       0.4751          0.476\nsat      +1.0747       0.2721          0.272\nthe      +0.4264       0.1423          0.142\n<eos>    -0.4264       0.0606          0.061\non       -1.0747       0.0317          0.032\ncat      -1.6319       0.0182          0.018\n\n  sum = 1.000000\n\n  prediction: 'mat' at 47.51%" },
 
     { t: "p", text: "Every probability matches the reference to three decimal places. *\"the cat sat\"* → *\"mat\"*, which given a vocabulary containing *on* and *mat* is a defensible continuation of a sentence that wants to become *the cat sat on the mat*." },
 
     { t: "h2", n: "06", text: "The antisymmetry this is rarely mentioned", id: "antisymmetry" },
+
+    {"kind": "trace", "title": "Every logit pair sums to exactly zero, and the cause is one line earlier", "caption": "**`logit(the) + logit(<eos>) = 0.000000` and so does every other pair** — which looks mysterious and is a direct consequence of two facts stacking. **LayerNorm makes `sum(h) = 0`, and this vocabulary's six embeddings are three complementary pairs** (`[1,0,1,0]` and `[0,1,0,1]` sum to all-ones). **So each pair's logits sum to `h · [1,1,1,1]` = `sum(h)` = 0.** An artefact of the toy vocabulary, and a clean demonstration that **a normalisation constraint propagates all the way to the output.**", "left": "pair", "codeW": 190, "vars": ["sum"], "steps": [{"code": "logit(the) + logit(<eos>)", "state": ["0.000000"], "tone": "violet"}, {"code": "logit(sat) + logit(on)", "state": ["0.000000"], "tone": "violet"}, {"code": "the cause", "state": ["LayerNorm forces sum(h) = 0"], "changed": [0], "tone": "good"}, {"code": "and", "state": ["each pair's embeddings sum to [1,1,1,1]"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-6_3-06-5"},
 
     { t: "out", text:
 "the logits, paired\n\n  logit(the)   +0.4264  +  logit(<eos>)  -0.4264  =  0.000000\n  logit(sat)   +1.0747  +  logit(on)     -1.0747  =  0.000000\n  logit(cat)   -1.6319  +  logit(mat)    +1.6319  =  0.000000" },

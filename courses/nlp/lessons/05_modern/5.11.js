@@ -24,6 +24,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A continuous dynamical system, discretised into a recurrence", "caption": "**`h'(t) = A h(t) + B x(t)` is a latent state evolving under an input — control theory, not sequence modelling.** Discretise it by zero-order hold or a bilinear transform and **you get `h_k = Ā h_{k−1} + B̄ x_k`, a recurrence over sequence positions.** Which is the whole move: **the model is specified in continuous time and run in discrete steps, so the step size `Δ` becomes a parameter** — and Mamba's selectivity in §05 is exactly making that parameter depend on the input.", "cols": 3, "nodes": [{"id": "c", "label": "h'(t) = A h(t) + B x(t)", "sub": "a continuous linear system", "tone": "accent"}, {"id": "d", "label": "Discretise: ZOH or bilinear", "sub": "a step size delta appears", "tone": "violet"}, {"id": "r", "label": "h_k = Abar h_{k-1} + Bbar x_k", "sub": "a recurrence over positions", "tone": "good"}, {"id": "y", "label": "y_k = C h_k", "sub": "read the state out", "tone": "good"}, {"id": "m", "label": "And delta is what Mamba makes learnable", "sub": "per input", "tone": "teal"}], "edges": [["c", "d"], ["d", "r"], ["r", "y"], ["y", "m"]], "t": "diagram", "id": "dg-5_11-01-0"},
 
+
     { t: "math", tex: "h'(t) = A\\,h(t) + B\\,x(t), \\qquad y(t) = C\\,h(t) + D\\,x(t)" },
 
     { t: "p", text: "A continuous linear dynamical system: a latent state `h` evolving under an input `x`. Discretise it — by zero-order hold or a bilinear transform — and you get a recurrence over sequence positions." },
@@ -36,6 +37,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The duality", id: "duality" },
 
     {"kind": "trace", "title": "The recurrence and the convolution agree to 4.77e-07", "caption": "**Because the recurrence is linear it unrolls in closed form, so `y_k` is a convolution with a kernel `K_j = C Āⱼ B̄` computable in advance** — which is the duality that makes SSMs trainable: **run it as a convolution in parallel for training, and as a recurrence one step at a time for inference.** Verified: identical outputs to within float noise. And the kernel decays — **`|A| < 1` means `Aⱼ` shrinks with `j`, so distant inputs contribute less, and the rate of that decay *is* the memory horizon.**", "left": "form", "codeW": 170, "vars": ["y[:3]", "used for"], "steps": [{"code": "recurrent", "state": ["0.09177, 0.456604, 0.398602", "inference, O(1) per step"], "tone": "good"}, {"code": "convolutional", "state": ["0.09177, 0.456604, 0.398602", "training, fully parallel"], "changed": [1], "tone": "good"}, {"code": "max |difference|", "state": ["4.768e-07", "float noise"], "changed": [0, 1], "tone": "violet"}, {"code": "kernel taps", "state": ["-0.425, -0.653, -0.709, -0.645 ...", "and it decays"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_11-02-1"},
+
 
     { t: "p", text: "Because the recurrence is linear, it can be unrolled in closed form. Substituting repeatedly gives `y_k` as a weighted sum over all past inputs — a **convolution** with a kernel computable in advance." },
 
@@ -57,6 +59,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The half-life is the memory, and it is brutally sensitive to A", "caption": "**At `A = 0.5` the half-life is 1.0 step and `|A|^50` is 8.9e−16 — the state has forgotten everything. At `A = 0.999` the half-life is 692.8 steps.** So **a hand-initialised `A` has to be accurate to three decimal places to give a useful memory horizon**, which is precisely the problem HiPPO solves: it derives an initialisation for `A` that provably approximates the whole input history, rather than leaving the memory length to chance.", "left": "A", "codeW": 130, "vars": ["|A|^50", "half-life in steps"], "steps": [{"code": "0.500", "state": ["8.882e-16", "1.0"], "tone": "crit", "note": "no memory"}, {"code": "0.900", "state": ["5.154e-03", "6.6"], "changed": [0, 1], "tone": "crit"}, {"code": "0.990", "state": ["6.050e-01", "69.0"], "changed": [0, 1], "tone": "warn"}, {"code": "0.999", "state": ["9.512e-01", "692.8"], "changed": [0, 1], "tone": "good", "note": "three decimals matter"}], "t": "diagram", "id": "dg-5_11-03-2"},
 
+
     { t: "out", text:
 "A         |A|^50            half-life (steps)\n0.500     8.882e-16               1.0\n0.900     5.154e-03               6.6\n0.990     6.050e-01              69.0\n0.999     9.512e-01             692.8" },
 
@@ -67,6 +70,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "4.2 MB at any length, against 524 GB at a million tokens", "caption": "**The SSM state is 4.2 MB regardless of sequence length — that is the structural claim, and it is what an RNN always had.** The comparison is the reason anyone cares: **a transformer's KV cache is 1.07 GB at 2,048 tokens (256× the state) and 524.29 GB at a million (125,000×).** Which is also the honest cost: **a fixed-size state cannot hold everything, so the trade is bounded memory against lossy recall** — and 4.1's capacity argument now runs the other way.", "left": "sequence length", "codeW": 160, "vars": ["SSM state", "KV cache (MHA)", "ratio"], "steps": [{"code": "2,048", "state": ["4.2 MB", "1.07 GB", "256x"], "tone": "good"}, {"code": "8,192", "state": ["4.2 MB", "4.29 GB", "1024x"], "changed": [1, 2], "tone": "good"}, {"code": "131,072", "state": ["4.2 MB", "68.72 GB", "16384x"], "changed": [1, 2], "tone": "violet"}, {"code": "1,000,000", "state": ["4.2 MB", "524.29 GB", "125000x"], "changed": [1, 2], "tone": "violet", "note": "and it is lossy"}], "t": "diagram", "id": "dg-5_11-04-3"},
 
+
     { t: "out", text:
 "d_model 4096, 32 layers, d_state 16, fp16\n\nSSM state, any sequence length:         4.2 MB\n\ntransformer KV cache (MHA)\n  2,048 tokens         1.07 GB        256x the SSM state\n  8,192 tokens         4.29 GB       1024x\n  32,768 tokens       17.18 GB       4096x\n  131,072 tokens      68.72 GB      16384x\n  1,000,000 tokens   524.29 GB     125000x" },
 
@@ -76,6 +80,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "Mamba's selectivity", id: "mamba" },
 
     {"kind": "trace", "title": "Delta varies tenfold across the input, which is the selectivity", "caption": "**S4's `A`, `B` and `C` are fixed, so the same filter is applied to every input regardless of content — the model cannot decide that *this* token matters more than that one.** Mamba makes them functions of the input, and the measurement shows the effect: **`Δ` ranges over [0.0198, 0.2189], an 11× spread, which produces `Ā` values from 0.9804 to 0.8034.** Read as half-lives that is **a memory horizon that varies per token** — content-dependent forgetting, which is what attention had and S4 did not.", "left": "quantity", "codeW": 160, "vars": ["range", "what it means"], "steps": [{"code": "S4: A, B, C", "state": ["fixed", "the same filter for every input"], "tone": "crit"}, {"code": "Mamba: delta", "state": ["[0.0198, 0.2189]", "an 11x spread, per token"], "changed": [0, 1], "tone": "violet"}, {"code": "resulting Abar", "state": ["0.9804 ... 0.8034", "a per-token memory horizon"], "changed": [0, 1], "tone": "good"}, {"code": "so", "state": ["content-dependent forgetting", "what attention had, S4 did not"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-5_11-05-4"},
+
 
     { t: "p", text: "S4's `A`, `B` and `C` are fixed, so the same filter is applied to every input regardless of content. That is a real limitation — the model cannot decide that *this* token matters more than that one. Mamba makes the parameters functions of the input." },
 

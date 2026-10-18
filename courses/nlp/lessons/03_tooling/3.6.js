@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A static embedding is a lookup table: one row per word type. Word2Vec, GloVe and fastText all produce one. That design decision has a consequence that no amount of training data fixes — a word with several meanings gets one vector, which must be some average of its senses, and no downstream model can recover the distinction because the information was destroyed at the input." },
 
     { t: "p", text: "Lesson 3.2 made the scale of this concrete from WordNet: *bank* has 18 senses and *run* has 57. Those are not edge cases; polysemy is the normal condition of frequent words." },
@@ -37,6 +38,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The measurement", id: "measurement" },
 
     {"kind": "trace", "title": "Same-sense pairs score higher than cross-sense pairs, and a static embedding scores 1.0 for all four", "caption": "Four sentences, two senses of `bank`, BERT's final layer. **Same-sense pairs sit at 0.5065 and 0.4023; cross-sense pairs at 0.2789 and 0.2736** — a clear separation, and worth noting that even the same-sense pairs are nowhere near 1.0, because the contexts still differ. **The comparison row is the finding: a static embedding returns 1.0000 for every row by construction**, so it does not score this problem badly — it cannot represent the question.", "left": "pair", "codeW": 170, "vars": ["BERT layer 12 cosine", "static embedding"], "steps": [{"code": "finance / finance", "state": ["0.5065", "1.0000"], "tone": "good"}, {"code": "river / river", "state": ["0.4023", "1.0000"], "changed": [0], "tone": "good"}, {"code": "finance / river", "state": ["0.2789", "1.0000"], "changed": [0], "tone": "crit"}, {"code": "finance / river", "state": ["0.2736", "1.0000"], "tone": "crit", "note": "by construction"}], "t": "diagram", "id": "dg-3_6-02-1"},
+
 
 
 
@@ -66,6 +68,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "layer   same-sense   cross-sense   separation\n0       0.9583       0.9583        +0.0000\n1       0.8848       0.7100        +0.1748\n2       0.8693       0.6087        +0.2606\n3       0.7759       0.5042        +0.2717\n4       0.7278       0.4411        +0.2867   <- peak\n5       0.7042       0.4340        +0.2703\n6       0.6510       0.4165        +0.2344\n7       0.6321       0.3706        +0.2615\n8       0.5704       0.3445        +0.2259\n9       0.5112       0.3066        +0.2046\n10      0.5410       0.3399        +0.2011\n11      0.5591       0.3791        +0.1800\n12      0.4544       0.2762        +0.1782" },
 
@@ -77,6 +80,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "The same pattern, five words", id: "polysemy" },
 
     {"kind": "trace", "title": "Five words, all entering indistinguishable and leaving separated", "caption": "The pattern holds for every word tested: **layer 0 between 0.9575 and 1.0000, layer 12 between 0.2789 and 0.5831.** `light` is the clean case — **it starts at a perfect 1.0000 because it occupies the same position in both probe sentences, so even the positional embedding matches — and ends at 0.4073.** Which isolates the mechanism exactly: **nothing about the input differed, and twelve layers of attention reading the surrounding words produced the whole gap.**", "left": "word", "codeW": 130, "vars": ["layer 0", "layer 12", "moved by"], "steps": [{"code": "light", "state": ["1.0000", "0.4073", "-0.593"], "tone": "violet", "note": "identical input"}, {"code": "bank", "state": ["0.9713", "0.2789", "-0.692"], "changed": [0, 1, 2], "tone": "good"}, {"code": "bat", "state": ["0.9575", "0.5206", "-0.437"], "changed": [0, 1, 2], "tone": "good"}, {"code": "spring", "state": ["0.9697", "0.4234", "-0.546"], "changed": [0, 1, 2], "tone": "good"}, {"code": "plant", "state": ["0.9659", "0.5831", "-0.383"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-3_6-04-3"},
+
 
 
 
@@ -126,6 +130,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A second probe, separating two kinds of difference. The syntactic contrast uses *bank* in the same sense in two different grammatical roles; the semantic contrast uses the two different senses." },
 
     { t: "out", text:
@@ -137,6 +142,7 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Which layer to use", id: "which" },
 
     {"kind": "layers", "title": "Five cases, and the first one removes the question", "caption": "**If you can afford to fine-tune the whole model, the question does not arise — gradients update every layer — and that is the preference.** For frozen features the measurements above give the answer: **middle layers, roughly 4–8, because sense separation peaked at 4 and was still strong through 8**, and lower-middle for a syntactic task. Two warnings: **mean-pooling the final layer is a weak sentence encoder**, and when unsure, **concatenate or learn a weighted sum — ELMo's original answer, and still the safe default.**", "items": [{"label": "Fine-tuning the whole model", "sub": "gradients update every layer - prefer this", "tone": "violet", "side": "no choice"}, {"label": "Frozen, semantic task", "sub": "middle layers, roughly 4-8", "tone": "good", "side": "peak at 4"}, {"label": "Frozen, syntactic task", "sub": "lower-middle, roughly 2-6", "tone": "good", "side": "below"}, {"label": "Sentence embeddings", "sub": "NOT the final layer alone - use sentence-transformers", "tone": "crit", "side": "trained for it"}, {"label": "Unsure", "sub": "concatenate, or learn a weighted sum", "tone": "teal", "side": "ELMo"}], "t": "diagram", "id": "dg-3_6-07-5"},
+
 
 
 

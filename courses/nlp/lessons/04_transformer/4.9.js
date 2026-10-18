@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Let `P` be any permutation matrix, so `PPᵀ = I`. Attention with no positional information:" },
 
     { t: "math", tex: "\\text{Attn}(PX) = \\text{softmax}\\!\\left(\\frac{P(XW_Q)(XW_K)^{\\top}P^{\\top}}{\\sqrt{d_k}}\\right)P(XW_V) = P \\cdot \\text{Attn}(X)" },
@@ -44,6 +45,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Two design axes", id: "axes" },
 
     {"kind": "trace", "title": "Two axes, four quadrants, and one of them is nearly empty", "caption": "The axes are **absolute against relative** and **added to the input against applied inside attention** — and the quadrant map explains the field's history. **Absolute-at-the-input is where everything started: learned absolute and sinusoidal. Relative-inside-attention is where everything ended up: T5's bias, RoPE's rotation, ALiBi's linear penalty.** And **absolute-inside-attention is rare**, which is informative: once you are modifying attention directly, encoding distance is strictly more useful than encoding index.", "left": "applied", "codeW": 170, "vars": ["absolute: encode i", "relative: encode i - j"], "steps": [{"code": "added to the input embedding", "state": ["learned (BERT, GPT-2); sinusoidal", "Shaw et al."], "tone": "accent"}, {"code": "inside attention", "state": ["rare", "T5 bias; RoPE; ALiBi"], "changed": [0, 1], "tone": "violet"}, {"code": "where the field moved", "state": ["from here...", "...to here"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_9-02-1"},
+
 
 
 
@@ -65,6 +67,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "The simplest scheme", code:
 "self.pos_emb = nn.Embedding(max_len, d_model)          # trainable table\npos = self.pos_emb(torch.arange(T, device=x.device))   # (T, d_model)\nx   = self.token_emb(idx) + pos",
       caption: "One learned vector per position, no different in kind from the token embedding table." },
@@ -74,6 +77,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Sinusoidal, and its hidden relative structure", id: "sinusoidal" },
 
     {"kind": "trace", "title": "The fast pair swings, the slow pair barely moves, and the rotation matrix does not depend on position", "caption": "At `d = 4` the two frequencies behave completely differently over the first three positions: **the fast pair goes 0.000 → 0.841 → 0.909 while the slow pair goes 0.000 → 0.010 → 0.020.** The derivation is the angle-addition identity per pair, and the consequence is the one that matters: **the rotation matrix depends on `k` but not on `pos`. So an absolute encoding already contains relative structure the model *can* learn to exploit — it just is not forced to. RoPE makes it the mechanism instead of a possibility.**", "left": "position", "codeW": 130, "vars": ["fast pair (w=1.0)", "slow pair (w=0.01)"], "steps": [{"code": "0", "state": ["(0.000, 1.000)", "(0.000, 1.000)"], "tone": "accent"}, {"code": "1", "state": ["(0.841, 0.540)", "(0.010, 1.000)"], "changed": [0, 1], "tone": "good"}, {"code": "2", "state": ["(0.909, -0.416)", "(0.020, 1.000)"], "changed": [0, 1], "tone": "good"}, {"code": "the offset matrix", "state": ["depends on k, not pos", "which is relative structure"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_9-04-3"},
+
 
 
 
@@ -94,6 +98,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["Shaw et al. (2018)", "Add a learned vector `a_{i−j}` to the keys (and optionally values) inside the attention computation. Distances are clipped to ±k so the table stays small. The value-side term complicates KV caching, which is why it fell out of favour."],
       ["T5 relative bias", "Drop the vectors entirely. Add one learned **scalar** per (distance bucket, head) directly to the attention logits, with no positional information in the input at all."],
@@ -106,6 +111,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "RoPE", id: "rope" },
 
     {"kind": "trace", "title": "Same relative distance, four absolute positions, the same score to five decimals", "caption": "**Rotate the query and key by an angle proportional to their absolute position, and because `R_mᵀR_n = R_{n−m}`, the dot product depends only on `n − m`.** Measured at `d = 64` with the same `q` and `k` at distance 3: **2.803810, 2.803811, 2.803815, 2.804198 at absolute positions 0, 10, 100 and 5000** — identical to five decimals, with the drift at 5000 being float precision. And it is not degenerate: **different distances give genuinely different scores**, from −0.727 at distance 0 to 1.761 at distance 2.", "left": "positions", "codeW": 150, "vars": ["score", "distance"], "steps": [{"code": "m=0, n=3", "state": ["2.803810", "3"], "tone": "good"}, {"code": "m=10, n=13", "state": ["2.803811", "3"], "changed": [0], "tone": "good"}, {"code": "m=100, n=103", "state": ["2.803815", "3"], "changed": [0], "tone": "good"}, {"code": "m=5000, n=5003", "state": ["2.804198", "3"], "changed": [0], "tone": "good", "note": "float precision"}, {"code": "distances 0 / 2 / 10", "state": ["-0.727 / 1.761 / -0.492", "0 / 2 / 10"], "changed": [0, 1], "tone": "violet", "note": "not degenerate"}], "t": "diagram", "id": "dg-4_9-06-5"},
+
 
 
 
@@ -134,6 +140,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "It is commonly stated that high-frequency pairs make distant tokens' contributions oscillate and cancel, giving a natural long-range decay. That is checkable, and the answer depends on what you measure." },
 
     { t: "out", text:
@@ -145,6 +152,7 @@ EC.receiveLesson({
     { t: "h2", n: "08", text: "ALiBi", id: "alibi" },
 
     {"kind": "trace", "title": "No positional embedding of any kind — just a penalty per head", "caption": "**Subtract `m_h·|i−j|` from the logits, with `m_h = 2^(-8h/H)`.** At `H = 8` the slopes come out as **exact powers of two: 1/2, 1/4, 1/8 … 1/256** — so **each head has a different effective window, from a head that sees almost nothing beyond a few tokens to one that is nearly position-blind.** That spread is the whole mechanism, and it is **fixed, not learned**, which is why ALiBi extrapolates best from train-short to test-long: there is nothing fitted to the training length.", "left": "configuration", "codeW": 160, "vars": ["slopes", "note"], "steps": [{"code": "H = 8, r = 0.5", "state": ["1/2, 1/4, 1/8, ... 1/256", "exact powers of two"], "tone": "good"}, {"code": "H = 16, r = 0.7071", "state": ["0.7071, 0.5, 0.3536, ...", "finer spread"], "changed": [0, 1], "tone": "good"}, {"code": "bias row, slope 0.5, i=4", "state": ["-2.0 -1.5 -1.0 -0.5 0.0", "linear in distance"], "changed": [0, 1], "tone": "accent"}, {"code": "and all of it is", "state": ["fixed, not learned", "nothing fitted to length"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_9-08-7"},
+
 
 
 
@@ -177,6 +185,7 @@ EC.receiveLesson({
     { t: "h2", n: "10", text: "The whole field on one table", id: "comparison" },
 
     {"kind": "trace", "title": "Six schemes, and three of them cost zero parameters", "caption": "Read the parameter and extrapolation columns together. **Learned absolute spends `L_max × d` and extrapolates not at all. Sinusoidal, RoPE and ALiBi all cost zero** — and they differ in how far they stretch: **sinusoidal is defined beyond its training length and weak in practice, RoPE is good and becomes great with PI/NTK/YaRN scaling, and ALiBi is the best train-short-test-long of the set.** The deployed answer is the second-to-last row: **RoPE, in LLaMA, Mistral, Gemma and Qwen.**", "left": "scheme", "codeW": 150, "vars": ["params", "extrapolation", "used by"], "steps": [{"code": "learned absolute", "state": ["L_max x d", "none - hard cap", "BERT, GPT-2/3, ViT"], "tone": "crit"}, {"code": "sinusoidal", "state": ["0", "defined, weak in practice", "the original"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "Shaw relative", "state": ["small table", "good", "Transformer-XL"], "changed": [0, 1, 2], "tone": "good"}, {"code": "T5 bias", "state": ["buckets x heads", "good", "T5, DeBERTa"], "changed": [0, 1, 2], "tone": "good"}, {"code": "RoPE", "state": ["0", "good; great with YaRN", "LLaMA, Mistral, Gemma, Qwen"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "ALiBi", "state": ["0", "best train-short to test-long", "BLOOM, MPT"], "changed": [1, 2], "tone": "good"}], "t": "diagram", "id": "dg-4_9-10-8"},
+
 
 
 

@@ -26,6 +26,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Twenty-four characters, five tokens, no special tokens at all", "caption": "**GPT-2 is a causal LM, so there is no `[CLS]` or `[SEP]` to mark** — which is why the shape is (1, 5) rather than (1, 7), and why slicing `[1:-1]` off a GPT-2 sequence removes real words. The `Ġ` is byte-level BPE's printable stand-in for a leading space, from 4.8 — **so `Ġcapital` is a different token from `capital`, and the space is carried by the word that follows it.**", "left": "property", "codeW": 160, "vars": ["value"], "steps": [{"code": "text", "state": ["'The capital of France is' - 24 chars"], "tone": "accent"}, {"code": "input_ids", "state": ["[464, 3139, 286, 4881, 318]"], "changed": [0], "tone": "good"}, {"code": "tokens", "state": ["['The', 'Ġcapital', 'Ġof', 'ĠFrance', 'Ġis']"], "changed": [0], "tone": "good"}, {"code": "shape / special tokens", "state": ["(1, 5) / none"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_8-01-0"},
 
 
+
     { t: "out", text:
 "'The capital of France is'   (24 characters)\n\n  input_ids   [464, 3139, 286, 4881, 318]\n  tokens      ['The', 'Ġcapital', 'Ġof', 'ĠFrance', 'Ġis']\n  shape       (1, 5)\n  vocabulary  50,257" },
 
@@ -34,6 +35,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Embedding", id: "embed" },
 
     {"kind": "trace", "title": "The positional signal is twice the token signal at the input", "caption": "**Token embeddings come in at RMS 0.1077 and position embeddings at 0.2176 — so in a trained GPT-2 the positional contribution is about 2× the token contribution, summing to 0.2418.** Which is the measured answer to the question 4.2 §06 raised from the other side: **the original paper scaled embeddings up by `sqrt(d_model)` to stop position dominating, and here, after training, position dominates anyway** — because learned tables find their own scale and this one chose a larger one.", "left": "tensor", "codeW": 170, "vars": ["shape", "RMS"], "steps": [{"code": "token embeddings", "state": ["(5, 768)", "0.1077"], "tone": "good"}, {"code": "position embeddings", "state": ["(5, 768)", "0.2176"], "changed": [0, 1], "tone": "violet", "note": "2x the tokens"}, {"code": "summed", "state": ["(5, 768)", "0.2418"], "changed": [1], "tone": "accent"}], "t": "diagram", "id": "dg-5_8-02-1"},
+
 
 
     { t: "out", text:
@@ -45,6 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Through the stack", id: "stack" },
 
     {"kind": "trace", "title": "The residual stream grows 200-fold and then the final norm pulls it back", "caption": "**RMS goes 0.2418 at the embedding output to 50.9625 at layer 11 — a 211× growth — and then the final LayerNorm brings it to 6.8346.** 4.7 measured 1.29× on an *untrained* stack; this is what training does to the same mechanism. And the attention check confirms the architecture across the whole model: **upper-triangle maximum 0.00e+00 over all 144 head-layer combinations.** The sink is here too: **the final token puts 61% of its layer-0 attention on the first token.**", "left": "layer", "codeW": 130, "vars": ["shape", "RMS"], "steps": [{"code": "0 (embedding output)", "state": ["(1, 5, 768)", "0.2418"], "tone": "good"}, {"code": "1", "state": ["(1, 5, 768)", "2.8246"], "changed": [1], "tone": "good"}, {"code": "4", "state": ["(1, 5, 768)", "44.4031"], "changed": [1], "tone": "warn"}, {"code": "11", "state": ["(1, 5, 768)", "50.9625"], "changed": [1], "tone": "crit", "note": "211x the input"}, {"code": "12 (final LayerNorm)", "state": ["(1, 5, 768)", "6.8346"], "changed": [1], "tone": "violet"}], "t": "diagram", "id": "dg-5_8-03-2"},
+
 
 
     { t: "out", text:
@@ -63,6 +66,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "All the logits are large and negative, and it does not matter", "caption": "**The raw logit range is [−129.868, −100.250] — every value negative, and softmax is shift-invariant, so only their differences matter.** Which is worth knowing before debugging a model by printing logits: **their absolute level is meaningless.** And the shape is (1, 5, 50257): **one distribution per position from a single pass, of which generation uses only the last, because it is the only position that has attended to the whole prompt.**", "left": "property", "codeW": 170, "vars": ["value", "note"], "steps": [{"code": "logits shape", "state": ["(1, 5, 50257)", "one per position"], "tone": "good"}, {"code": "used for generation", "state": ["(50257,)", "the last position only"], "changed": [0, 1], "tone": "violet"}, {"code": "raw logit range", "state": ["[-129.868, -100.250]", "all negative"], "changed": [0, 1], "tone": "warn"}, {"code": "why that is fine", "state": ["softmax is shift-invariant", "only differences matter"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_8-04-3"},
 
 
+
     { t: "out", text:
 "logits (1, 5, 50257)   — one distribution per position\nfor generation we use only the last: (50257,)\n\nraw logit range [-129.868, -100.250]" },
 
@@ -71,6 +75,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", text: "What the model actually predicts", id: "predicts" },
 
     {"kind": "trace", "title": "Paris is fifth, at 0.0322, behind “the” at 0.0846", "caption": "**The model's top candidate is `' the'` and `' Paris'` is fifth — and entropy is 5.9985 nats against a maximum of 10.8249, so the distribution is genuinely uncertain rather than wrong.** `'The capital of France is the capital of...'` is a perfectly good continuation. Greedy decoding then shows the consequence: **it takes `' the'`, and from there `' capital'` at 0.1697 and `' of'` at 0.9271** — **each step is locally confident and the path never reaches Paris.**", "left": "step / candidate", "codeW": 170, "vars": ["token", "p"], "steps": [{"code": "top candidate", "state": ["' the'", "0.0846"], "tone": "warn"}, {"code": "5th candidate", "state": ["' Paris'", "0.0322"], "changed": [0, 1], "tone": "crit"}, {"code": "greedy step 1", "state": ["' capital'", "0.1697"], "changed": [0, 1], "tone": "warn"}, {"code": "greedy step 2", "state": ["' of'", "0.9271"], "changed": [0, 1], "tone": "crit", "note": "locally certain"}, {"code": "entropy", "state": ["5.9985 nats", "max 10.8249"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_8-05-4"},
+
 
 
     { t: "out", text:
@@ -88,6 +93,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "Decoding strategies on this one distribution", id: "decoding" },
 
     {"kind": "trace", "title": "Top-p at 0.9 keeps 1,503 tokens; top-k at 50 covers 55% of the mass", "caption": "The two truncations are not comparable settings. **`k=50` keeps 50 tokens covering 0.5495 of the mass; `p=0.90` keeps 1,503 tokens** — because this distribution has a long tail and a fixed `k` cannot know that. Which is the argument for nucleus sampling: **it adapts its size to the shape.** Temperature is orthogonal and does not change the ranking: **at `T=0.1` the top token holds 0.994 and sampling is effectively greedy; at `T=2.0` entropy is 9.4254 against a uniform maximum of 10.8249.**", "left": "setting", "codeW": 140, "vars": ["tokens kept", "mass covered", "entropy"], "steps": [{"code": "T=0.1", "state": ["all", "-", "0.0409"], "tone": "crit", "note": "effectively greedy"}, {"code": "T=2.0", "state": ["all", "-", "9.4254"], "changed": [2], "tone": "crit", "note": "near-uniform"}, {"code": "k=50", "state": ["50", "0.5495", "-"], "changed": [0, 1, 2], "tone": "good"}, {"code": "p=0.90", "state": ["1503", "0.90", "-"], "changed": [0, 1], "tone": "violet", "note": "30x more tokens"}, {"code": "p=0.99", "state": ["9144", "0.99", "-"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_8-06-5"},
+
 
 
     { t: "out", text:
@@ -110,6 +116,7 @@ EC.receiveLesson({
     { t: "h2", n: "07", text: "Detokenisation and the full shape table", id: "shapes" },
 
     {"kind": "trace", "title": "Four strategies, four different texts, one prompt", "caption": "**Greedy and beam-4 both loop — `'the capital of France, and the capital of France is the'` — which is 3.4's finding that perplexity rewards repetition, arriving as output.** Sampling escapes the loop and pays for it: **`T=0.7, p=0.9` invents a claim about French culture, and `T=1.5, k=50` runs into `<|endoftext|>` mid-sentence.** The decoded ids are the same eleven integers the whole lesson has been tracking, **so the only thing that differed between these four outputs was how one distribution was sampled.**", "left": "strategy", "codeW": 160, "vars": ["output", "failure mode"], "steps": [{"code": "greedy", "state": ["'...the capital of the French Republic...'", "repetition"], "tone": "warn"}, {"code": "beam 4", "state": ["'...and the capital of France is the'", "repetition, worse"], "changed": [0, 1], "tone": "crit"}, {"code": "T=0.7, top-p 0.9", "state": ["'...never had much of a French culture'", "invention"], "changed": [0, 1], "tone": "warn"}, {"code": "T=1.5, top-k 50", "state": ["'...pretty close...<|endoftext|>'", "early stop"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_8-07-6"},
+
 
 
     { t: "out", text:

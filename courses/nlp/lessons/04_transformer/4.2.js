@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\text{Input} = \\text{TokenEmbedding}(x) + \\text{PositionalEncoding}(pos)" },
 
     { t: "p", text: "Lesson 4.3 shows that attention is permutation-equivariant — shuffle the input rows and the output rows shuffle identically. The mechanism genuinely cannot distinguish *the cat sat* from *sat cat the*. Since order carries most of the meaning in language, positional information has to enter somewhere, and the transformer puts it in the input by **addition**." },
@@ -40,6 +41,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "The construction", id: "construction" },
 
     {"kind": "trace", "title": "Each pair of dimensions is one frequency, as sine and cosine", "caption": "**At position 0 every sine is 0 and every cosine is 1, which is why the first row alternates `[0, 1, 0, 1, ...]`** — the position-0 encoding is not a zero vector. The structure is the point: **dimensions `(2i, 2i+1)` hold the sine and cosine of the *same* frequency, and that pairing is what makes the rotation property in §05 possible.** Every value lies in [−1, 1] by construction, so the encoding cannot blow up at any position.", "left": "position", "codeW": 140, "vars": ["first 8 dimensions", "note"], "steps": [{"code": "0", "state": ["0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0", "sin=0, cos=1 everywhere"], "tone": "accent"}, {"code": "1", "state": ["0.8415 0.5403 0.8219 0.5697 ...", "each pair, one frequency"], "changed": [0, 1], "tone": "good"}, {"code": "shape and range", "state": ["(200, 512), all in [-1, 1]", "cannot blow up"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
 
 
 
@@ -66,6 +68,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "out", text:
 "dim pair    frequency      wavelength (positions)\n0           1.000e+00               6.28\n1           9.647e-01               6.51\n32          3.162e-01              19.87\n64          1.000e-01              62.83\n128         1.000e-02             628.32\n255         1.037e-04           60611.48" },
 
@@ -75,6 +78,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", text: "Three properties worth verifying", id: "properties" },
 
     {"kind": "trace", "title": "Unique, equal-norm, and smoothly decaying — all three checked", "caption": "**Max off-diagonal cosine over 200 positions is 0.973055, so no two positions collide.** Every position vector has norm exactly **16.0000** — `sqrt(d_model/2)` — **so no position is intrinsically louder than another**, which matters because the encoding is *added* to the embedding. And the dot product decays smoothly with separation: **0.9731 at k=1 down to 0.3374 at k=199. That last property is the useful one: attention scores can pick up distance directly from the encoding.**", "left": "property", "codeW": 170, "vars": ["measurement", "why it matters"], "steps": [{"code": "uniqueness", "state": ["max off-diag cos 0.973055", "no two positions collide"], "tone": "good"}, {"code": "norm", "state": ["16.0000 at every position", "no position is louder"], "changed": [0, 1], "tone": "good"}, {"code": "cos(PE[0], PE[k]), k=1", "state": ["0.9731", "adjacent = similar"], "changed": [0, 1], "tone": "good"}, {"code": "k=10 / k=50", "state": ["0.6789 / 0.5121", "smooth decay"], "changed": [0, 1], "tone": "good"}, {"code": "k=199", "state": ["0.3374", "distance is readable from it"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-04-3"},
+
 
 
 
@@ -95,6 +99,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The paper's stated motivation is that `PE[pos+k]` is a *linear function* of `PE[pos]` for any fixed offset `k`. Within one frequency pair that linear function is a plane rotation by `ω·k`. Checking it at three different starting positions with `k = 7`:" },
 
     { t: "out", text:
@@ -106,6 +111,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", text: "The scaling factor", id: "scaling" },
 
     {"kind": "trace", "title": "The stated justification is backwards: embeddings were already larger", "caption": "The reference multiplies the token embedding by `sqrt(d_model)` **because otherwise the positional encoding would dominate.** Measured with `nn.Embedding`'s default `N(0,1)` init: **token RMS 0.9963 against PE RMS 0.7071 — the embeddings are already 1.41× larger.** After multiplying by `sqrt(512) = 22.6274` the ratio is **31.88**, so the scaling does not prevent domination, **it makes the positional signal 32 times quieter than the token signal.** Which may still be the right thing — **and it is not the stated reason.**", "left": "quantity", "codeW": 170, "vars": ["RMS", "token : PE ratio"], "steps": [{"code": "token embedding, N(0,1)", "state": ["0.9963", "-"], "tone": "accent"}, {"code": "positional encoding", "state": ["0.7071", "1.4089"], "changed": [0, 1], "tone": "warn", "note": "embeddings already larger"}, {"code": "after x sqrt(512)", "state": ["22.5426", "31.8800"], "changed": [0, 1], "tone": "crit", "note": "position is now 32x quieter"}], "t": "diagram", "id": "dg-4_2-06-5"},
+
 
 
 
