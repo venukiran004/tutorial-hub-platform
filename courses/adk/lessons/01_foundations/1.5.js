@@ -21,6 +21,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The agent", id: "agent" },
 
+    {"kind": "flow", "title": "The second tool consumes the first one's output, so the model has to chain them", "caption": "**That is the whole design of this example.** `suggest_clothing` takes a temperature and a rain chance, which only `get_forecast` can supply, so answering the question requires two tool calls in sequence and therefore three model round trips. **Nothing in the agent says so** — there is no chain, no graph and no ordering hint, only two declarations and an instruction, and the sequence is the model's inference from the parameter names.", "cols": 3, "nodes": [{"id": "q", "label": "What should I wear in Pune tomorrow?", "sub": "one question", "tone": "violet"}, {"id": "f", "label": "get_forecast(city, day)", "sub": "returns high_c 31, rain_pct 10", "tone": "accent"}, {"id": "s", "label": "suggest_clothing(high_c, rain_pct)", "sub": "needs what the first one returned", "tone": "accent"}, {"id": "a", "label": "light cotton", "sub": "the answer, on the third model call", "tone": "good"}, {"id": "n", "label": "No chain, no graph, no ordering hint", "sub": "the model inferred it from the parameters", "tone": "warn"}], "edges": [["q", "f"], ["f", "s"], ["s", "a"], ["a", "n"]], "t": "diagram", "id": "dg-1_5-01-1"},
+
     { t: "code", lang: "python", title: "Two tools, one instruction",
       code: `def get_forecast(city: str, day: str) -> dict:
     """Returns the forecast for a city on a given day.
@@ -73,6 +75,8 @@ agent = LlmAgent(name="trip_agent", model=llm,
 
     { t: "h2", n: "03", text: "What the model was sent, each time", id: "requests" },
 
+    {"kind": "trace", "title": "The history grows by two blocks per tool call, and the declarations are resent every time", "caption": "**One question became three requests carrying 1, 3 and 5 content blocks** — the model's own function call and the response are both appended, and nothing is summarised or dropped. By call three it is re-reading everything it has already seen, **which is why token cost over a long tool chain grows faster than the number of calls.** The last column is the cost people forget to count: **every declaration is sent on every call, so fifty tools means fifty declarations three times over.**", "left": "model call", "codeW": 130, "vars": ["content blocks", "new since the last call", "tools declared"], "steps": [{"code": "call 1", "state": ["1", "the question", "both, in full"], "tone": "good"}, {"code": "call 2", "state": ["3", "the call, and its response", "both again"], "changed": [0, 1], "tone": "accent"}, {"code": "call 3", "state": ["5", "the call, and its response", "both again"], "changed": [0], "tone": "warn"}, {"code": "so the cost", "state": ["grows per call", "nothing is ever dropped", "a fixed tax per call"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-03-2"},
+
     { t: "p", text: "The interesting part is not the events but the requests behind them. Recording every `LlmRequest` the framework built gives this:" },
 
     { t: "out", text: `  model call 1: 1 content blocks, tools=['get_forecast', 'suggest_clothing']
@@ -103,6 +107,7 @@ agent = LlmAgent(name="trip_agent", model=llm,
 
 
 
+
     { t: "out", text: `session transcript:
   user       user text    invocation=4f2196e3e3b5
   trip_agent call         invocation=4f2196e3e3b5
@@ -114,6 +119,8 @@ agent = LlmAgent(name="trip_agent", model=llm,
     { t: "p", text: "Six events in the session against five in the stream — the user's message again — and a single invocation id across all of them. Next turn, the model's first call will contain all six of these rebuilt as content blocks, and the count starts from there." },
 
     { t: "h2", n: "05", text: "Which event is the answer", id: "final" },
+
+    {"kind": "trace", "title": "Four ways an event can be the answer, and one way it looks like one", "caption": "**The rule is that an event is final when it is not partial and has no pending function calls** — plus two deliberate cases where a tool's own output is the answer, with no model pass after it. The last row is the trap worth reading twice: **in a multi-agent run one event per agent can report true**, so a front end that renders every final event shows the coordinator's answer and each specialist's. Filter by author, or take the last event of the invocation.", "left": "event", "codeW": 190, "vars": ["is_final_response()", "why"], "steps": [{"code": "a partial streaming chunk", "state": ["false", "partial is set"], "tone": "warn"}, {"code": "a turn with a pending tool call", "state": ["false", "the call has no response yet"], "changed": [0, 1], "tone": "warn"}, {"code": "the model's closing sentence", "state": ["TRUE", "not partial, nothing pending"], "changed": [0, 1], "tone": "good"}, {"code": "a tool with skip_summarization", "state": ["TRUE", "the tool output IS the answer"], "changed": [1], "tone": "violet"}, {"code": "a long-running tool id present", "state": ["TRUE", "the same deliberate case"], "changed": [1], "tone": "violet"}, {"code": "several agents in one run", "state": ["TRUE, once EACH", "filter by author"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-05-3"},
 
     { t: "p", text: "`event.is_final_response()` is the rule, and it is worth knowing what it actually checks, because a UI that shows the wrong event shows a half-finished sentence or nothing at all. From the installed source: an event is final when it is not partial and has no pending function calls — and also when `skip_summarization` is set or a long-running tool id is present, which are the deliberate cases where a tool's own output is the answer (lessons 4.2 and 4.5)." },
 
@@ -143,9 +150,9 @@ return final_text`,
         { label: "model call 1", tone: "accent", bars: [[0, 2.6, "~1 s"]] },
         { label: "get_forecast", tone: "good", bars: [[2.6, 2.9, "ms"]] },
         { label: "model call 2", tone: "accent", bars: [[2.9, 5.6, "~1 s"]] },
-        { label: "suggest_clothing", tone: "good", bars: [[5.6, 5.8, "ms"]] },
+        { label: "suggest_clothing", tone: "good", bars: [[5.6, 5.8, ""]] },
         { label: "model call 3", tone: "accent", bars: [[5.8, 8.6, "~1 s"]] },
-        { label: "ADK overhead", tone: "warn", bars: [[8.6, 8.8, "ms"]] }
+        { label: "ADK overhead", tone: "warn", bars: [[8.6, 8.8, ""]] }
       ] },
 
     { t: "p", text: "That shape has a practical consequence for design: an agent that needs three sequential tool calls to answer will take three model round trips, and no amount of tuning the framework changes it. If the two tools here were independent, the model could ask for both in one turn and ADK would execute them together — one round trip saved (lesson 4.3). If the chain is fixed and known, a `SequentialAgent` with no model in the middle removes the decision entirely (lesson 2.3). Latency work on agents is almost always about removing round trips." },

@@ -35,6 +35,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The smallest agent that does something", id: "smallest" },
 
+    {"kind": "trace", "title": "Three events reach the caller and four are stored", "caption": "**The extra one is the user's own message, which ADK appends before the agent runs** — and the asymmetry is the first thing to internalise about this framework: **the stream is what you show a user, and the session is what the next turn is built from.** They are not the same list. The second column is the other half of the lesson: **nothing in the stream is “the answer” until an event says so**, which is why the loop iterates rather than awaiting a string.", "left": "event", "codeW": 160, "vars": ["author", "streamed", "stored"], "steps": [{"code": "the question", "state": ["user", "no", "yes"], "tone": "violet"}, {"code": "call get_weather(city)", "state": ["weather_agent", "yes", "yes"], "changed": [0, 1], "tone": "accent"}, {"code": "result: 21 C, clear", "state": ["weather_agent", "yes", "yes"], "tone": "good"}, {"code": "the sentence, final", "state": ["weather_agent", "yes", "yes"], "tone": "good"}], "t": "diagram", "id": "dg-1_1-02-0"},
+
     { t: "code", lang: "python", title: "An agent, a tool, a runner, an event stream",
       code: `import asyncio
 from google.adk.agents import LlmAgent
@@ -111,6 +113,8 @@ session now holds 4 events` },
 
     { t: "h2", n: "04", text: "Four design decisions you can read off the API", id: "decisions" },
 
+    {"kind": "steps", "title": "Four decisions, and what each one buys", "caption": "Each of these is readable straight off the type signatures, and each one is the reason a later chapter is short. **The third is the one that surprises people: a tool does not write to a database, it writes to state, and the change rides along with the event that produced it** — so replaying the events rebuilds the state, which is what makes a session portable and an invocation resumable.", "items": [{"label": "Everything is an event stream", "desc": "run_async returns an async generator, so streaming, approval and interception are events you have not consumed yet", "tone": "accent"}, {"label": "Services are injected, not imported", "desc": "sessions, artifacts, memory and credentials are constructor arguments, so dev and production differ by one line", "tone": "good"}, {"label": "State changes travel with events", "desc": "a tool writes to state, the delta attaches to its event, and the service applies it on append - so replay rebuilds it", "tone": "warn"}, {"label": "Agents compose", "desc": "an agent can hold sub-agents, be a tool, be a workflow step or be a loop body; there is no separate chain concept", "tone": "violet"}], "t": "diagram", "id": "dg-1_1-04-1"},
+
     { t: "dl", items: [
       ["**Everything is an event stream**", "`runner.run_async(...)` is an `AsyncGenerator[Event, None]`. Nothing returns \"the answer\"; you iterate over what happened, and the answer is the event for which `is_final_response()` is true. That is what makes streaming, human approval and mid-run interception possible at all — they are just events you have not consumed yet."],
       ["**Services are injected, not imported**", "The runner takes a `session_service`, an `artifact_service`, a `memory_service` and a `credential_service`. Development uses the in-memory implementations; production swaps in a database or Vertex AI without touching agent code. `InMemoryRunner` is exactly this with the four in-memory services pre-wired."],
@@ -136,6 +140,8 @@ session now holds 4 events` },
     { t: "p", text: "The practical consequence: ADK code lives inside `asyncio`, and a tool that calls a blocking library holds the loop exactly as it would in FastAPI. Lesson 10.1 is the full treatment; for now, if you have not written async Python, that is the prerequisite to fill." },
 
     { t: "h2", n: "06", text: "What ADK is not", id: "not" },
+
+    {"kind": "compare", "title": "Five things people expect it to be, and what it actually is", "caption": "**The last row is the one worth sitting with.** A framework cannot make an agent choose the right tool; it can only give you the hooks — callbacks, evaluation, tracing — with which to find out that it chose the wrong one. **Everything on the right is infrastructure around a model call, not an improvement to it.**", "columns": [{"title": "What people assume ADK is", "tone": "warn", "items": ["a model, or a better model", "a hosting product", "a prompt framework", "a vector database", "something that makes agents reliable"]}, {"title": "What it actually is", "tone": "good", "items": ["a caller of one - Gemini by default, swappable", "the library you deploy; Agent Engine hosts it", "instruction strings with state interpolation", "a tool an agent calls; retrieval is your choice", "the hooks with which to find out that it is not"]}], "t": "diagram", "id": "dg-1_1-06-2"},
 
     { t: "dl", items: [
       ["Not a model", "It calls one. Gemini by default, anything with a `BaseLlm` adapter otherwise (lesson 3.2)."],

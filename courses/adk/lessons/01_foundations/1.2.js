@@ -64,7 +64,7 @@ EC.receiveLesson({
 
     { t: "diagram", kind: "matrix", title: "What each one brings",
       caption: "The two are not symmetric: LangChain is wide at the data and integration layer, ADK is deep at the runtime layer. Wrapping LangChain tools inside an ADK agent is supported and common.",
-      rows: ["Document loaders, splitters, retrievers", "Provider-agnostic model wrappers", "Prompt templates and output parsers", "Session, state and event runtime", "Artifacts and credential services", "Callbacks at every step", "Built-in evaluation and dev UI", "Agent-to-agent protocol"],
+      rows: ["Loaders and retrievers", "Provider-agnostic models", "Templates and parsers", "Session and event runtime", "Artifacts and credentials", "Callbacks at every step", "Evaluation and dev UI", "Agent-to-agent protocol"],
       cols: ["LangChain", "ADK"],
       cells: [
         [{ text: "extensive", tone: "good" }, { text: "none — bring your own", tone: "warn" }],
@@ -114,7 +114,7 @@ agent = LlmAgent(
     { t: "diagram", kind: "steps", title: "The decision, in order",
       caption: "Answer these before comparing feature lists. In most projects the first two settle it.",
       items: [
-        { label: "Is the agent a conversation, or a pipeline?", desc: "conversation with tools and delegation → ADK's agent tree; a branching state machine → a graph framework (or ADK's Workflow)", tone: "accent" },
+        { label: "Is the agent a conversation, or a pipeline?", desc: "a conversation with tools → the agent tree; a branching state machine → a graph framework, or ADK's Workflow", tone: "accent" },
         { label: "Who owns sessions, memory and files?", desc: "if you want them provided rather than designed, ADK ships all three as services", tone: "good" },
         { label: "Where will it run, and under whose identity?", desc: "Google Cloud with IAM and Vertex AI → ADK plus Agent Engine is the least glue; elsewhere → any framework in a container", tone: "warn" },
         { label: "What does the team already run?", desc: "an existing LangChain retrieval stack is a real cost to port — though its tools can be wrapped rather than rewritten", tone: "violet" }
