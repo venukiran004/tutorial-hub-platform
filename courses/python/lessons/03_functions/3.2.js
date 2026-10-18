@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "the full grammar, in order", code: `
 def example(pos_only, /, standard, *args, kw_only, **kwargs):
     ...
@@ -180,6 +181,7 @@ parse(data, strict=True)`},
 
 
 
+
     { t: "code", lang: "python", title: "the / marker", code: `
 def distance(x, y, /):
     """x and y can never be passed by name."""
@@ -219,6 +221,7 @@ print(tag("div", name="header"))
     { t: "h2", n: "04", text: "`*args` and `**kwargs`", id: "args-kwargs" },
 
     {"kind": "trace", "title": "The same call twice, and the second one is missing a field", "caption": "**`*args` collects extra positionals into a tuple and `**kwargs` collects extra keywords into a dict** — so a logging wrapper can accept anything and pass it on. The output is the argument for being explicit about what you forward: **the first call carries `request_id` and `latency`, the second carries only `request_id`**, and nothing in the signature said either was expected. Which is the trade: **`**kwargs` makes a function accept everything, including a typo, so a misspelled keyword is silently collected rather than rejected.**", "left": "call", "codeW": 170, "vars": ["args", "kwargs"], "steps": [{"code": "log('INFO', 'user', 42, request_id=..., latency=1.2)", "state": ["('user', 42)", "{'request_id', 'latency'}"], "tone": "good"}, {"code": "log('INFO', 'user', 42, request_id=...)", "state": ["('user', 42)", "{'request_id'}"], "changed": [1], "tone": "good"}, {"code": "log(..., requst_id=...)", "state": ["('user', 42)", "collected, not rejected"], "changed": [1], "tone": "crit", "note": "a typo survives"}], "t": "diagram", "id": "dg-3_2-04-2"},
+
 
 
 
@@ -284,6 +287,7 @@ def create_user(
     { t: "h2", n: "05", text: "Defaults, revisited", id: "defaults" },
 
     {"kind": "trace", "title": "Three levels of default, and `None` stops working at the third", "caption": "The rules are short: **never a mutable literal (1.4), evaluate once at `def` time, and prefer `None` as the sentinel.** The third level is where people get stuck: **`None` works until `None` is itself a valid value the caller might pass — then you need a private sentinel object, which cannot be confused with anything a caller could supply.** The usual shape is a module-level `_MISSING = object()`, **and it is the only way to tell “argument omitted” from “argument explicitly `None`”.**", "left": "default", "codeW": 170, "vars": ["works when", "fails when"], "steps": [{"code": "def f(x=[])", "state": ["never", "always - 1.4"], "tone": "crit"}, {"code": "def f(x=None)", "state": ["None is not a valid value", "None is meaningful"], "changed": [0, 1], "tone": "good"}, {"code": "_MISSING = object()", "state": ["always", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "so it distinguishes", "state": ["omitted", "from explicitly None"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_2-05-3"},
+
 
 
 

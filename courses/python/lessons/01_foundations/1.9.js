@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Here is a failure from a small program. Before reading the explanation, decide which line contains the bug." },
 
     { t: "code", lang: "text", title: "the traceback", numbered: false, code: `
@@ -155,6 +156,7 @@ ConfigError: could not load configuration`},
 
 
 
+
     { t: "code", lang: "python", title: "the four keyword arguments", code: `
 import sys
 
@@ -244,6 +246,7 @@ print("checkpoint reached", flush=True)`},
 
 
 
+
     { t: "code", lang: "python", title: "input always returns a string", code: `
 age_raw = input("Age: ")        # "30" -- never an int
 print(type(age_raw))
@@ -276,6 +279,7 @@ for line in sys.stdin:
       sub: "The alternative to adding print statements and re-running." },
 
     {"kind": "layers", "title": "Eight commands, and two of them are why a debugger beats a print", "caption": "**Adding a print, re-running, discovering you needed a different variable, and repeating is a slow loop — `breakpoint()` stops execution and gives you a REPL with every local in scope**, so the next question costs one line instead of one run. The two rows no amount of printing replaces are the last: **`u` and `d` move up and down the stack to inspect a *caller's* locals**, which is where the wrong value usually came from.", "items": [{"label": "p expr / pp expr", "sub": "print, or pretty-print, any expression", "tone": "good", "side": "inspect"}, {"label": "l", "sub": "show the source around the current line", "tone": "good", "side": "orient"}, {"label": "n / s", "sub": "next line, stepping over / step into the call", "tone": "good", "side": "step"}, {"label": "c / q", "sub": "continue to the next breakpoint / quit", "tone": "good", "side": "control"}, {"label": "w", "sub": "where - print the current stack", "tone": "accent", "side": "context"}, {"label": "u / d", "sub": "move a frame to inspect a CALLER's locals", "tone": "violet", "side": "the reason"}], "t": "diagram", "id": "dg-1_9-04-3"},
+
 
 
 

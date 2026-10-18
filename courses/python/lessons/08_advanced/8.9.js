@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "what the graph looks like", code: `
 # Container RSS, one pod, over 36 hours
 #
@@ -78,6 +79,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "Confirm it is unbounded", id: "confirm" },
 
     {"kind": "trace", "title": "A leak rises forever; fragmentation flattens", "caption": "**The two sequences are the whole diagnostic, and they are distinguishable in five samples.** A leak adds roughly the same amount every cycle — **+56 MB, indefinitely.** Fragmentation **rises and then flattens at 201 MB**, because the allocator is holding freed arenas it cannot return to the OS rather than retaining live objects. Which matters because **only the first has a fix in your code**: the second is addressed by allocation patterns, a different allocator, or restarting the worker, **and `tracemalloc` will show you nothing growing.**", "left": "samples over five cycles", "codeW": 180, "vars": ["MB", "diagnosis"], "steps": [{"code": "142.3, 198.7, 254.9, 311.2, 367.5", "state": ["+56 per cycle", "a LEAK"], "tone": "crit"}, {"code": "142.3, 198.7, 201.1, 201.4, 201.6", "state": ["flattens at ~201", "fragmentation"], "changed": [0, 1], "tone": "warn"}, {"code": "and the difference matters", "state": ["-", "only the first is in your code"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_9-02-0"},
+
 
 
     { t: "code", lang: "python", title: "the cheapest possible test", code: `
@@ -117,6 +119,7 @@ print(probe(handle_one_request))
     { t: "h2", n: "03", text: "Attribute the allocations", id: "tracemalloc" },
 
     {"kind": "trace", "title": "The top line is 241 MiB from one file, and the count is what identifies it", "caption": "**`tracemalloc`'s snapshot comparison attributes allocations to the line that made them — `app/cache.py:47: size=241 MiB, count=1250000, average=202 B`.** The count is the field that names the bug: **1.25 million objects averaging 202 bytes is a cache with no bound, not a few large buffers** — and an unbounded cache is the first of §05's six suspects. Note how fast it falls off: **241 MiB, then 38.1, then 4.2** — so a leak is almost always one line, which is what makes this cheap to act on.", "left": "line", "codeW": 160, "vars": ["size", "count", "average"], "steps": [{"code": "app/cache.py:47", "state": ["241 MiB", "1,250,000", "202 B"], "tone": "crit", "note": "a cache, not a buffer"}, {"code": "app/models.py:88", "state": ["38.1 MiB", "250,000", "160 B"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "app/handlers.py:23", "state": ["4.2 MiB", "5,000", "880 B"], "changed": [0, 1, 2], "tone": "good"}, {"code": "so a leak is", "state": ["almost always one line", "-", "-"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-8_9-03-1"},
+
 
 
     { t: "code", lang: "python", title: "tracemalloc: which lines are growing", code: `
@@ -256,6 +259,7 @@ MODULE app.cache <- dict <- list`,
     { t: "h2", n: "05", text: "The six usual suspects", id: "suspects" },
 
     {"kind": "trace", "title": "Six causes, and each has a signature you can recognise before profiling", "caption": "**The second row is the one people do not expect: `lru_cache` on a method pins every instance it was called with, so memory plateaus at `maxsize` instances rather than at `maxsize` values** — a bounded cache that is unbounded in what it retains. The fourth is similarly quiet: **a `defaultdict` read with arbitrary keys creates entries for keys nobody set**, so reading is a write. And the last: **objects never collected despite going out of scope points at a closure or a descriptor keyed by instance** — `WeakKeyDictionary`.", "left": "cause", "codeW": 170, "vars": ["signature", "fix"], "steps": [{"code": "an unbounded cache or registry", "state": ["one dict grows with requests", "lru_cache(maxsize=), deque(maxlen=)"], "tone": "crit"}, {"code": "lru_cache on a method", "state": ["plateaus at maxsize INSTANCES", "cached_property, or per-instance"], "changed": [0, 1], "tone": "crit"}, {"code": "a module-level mutable default", "state": ["growth with no obvious owner", "None default, build inside (3.2)"], "changed": [0, 1], "tone": "crit"}, {"code": "a defaultdict read with any key", "state": ["entries nobody set", ".get() for reads"], "changed": [0, 1], "tone": "crit"}, {"code": "retained exceptions", "state": ["frames and locals held", "log and discard"], "changed": [0, 1], "tone": "crit"}, {"code": "a closure keyed by instance", "state": ["never collected despite scope", "WeakKeyDictionary"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_9-05-2"},
+
 
 
     { t: "table",

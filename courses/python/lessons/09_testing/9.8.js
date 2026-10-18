@@ -105,6 +105,8 @@ notify.py        4      0      2      1    83%`},
 
     { t: "h2", n: "02", text: "Configuring it honestly", id: "config" },
 
+    {"kind": "flow", "title": "`parallel = true` is the one people miss, and without it coverage collapses", "caption": "**Run under `pytest-xdist` without `parallel = true` and each worker overwrites the last coverage file, so the number reports whatever the last worker happened to run** — a plausible figure that is measuring one fragment of the suite. The pairing is `parallel = true` plus `coverage combine`. And the honest part of the configuration is what you exclude: **every `# pragma: no cover` is a line nobody will ever be told about again**, so the cost of excluding is not the percentage, it is the silence.", "cols": 3, "nodes": [{"id": "x", "label": "pytest-xdist, several workers", "sub": "each writes a coverage file", "tone": "accent"}, {"id": "w", "label": "Without parallel = true", "sub": "each overwrites the last", "tone": "crit"}, {"id": "p", "label": "So the number is one worker's share", "sub": "plausible, and wrong", "tone": "crit"}, {"id": "c", "label": "parallel = true, then combine", "sub": "the pairing", "tone": "good"}, {"id": "e", "label": "And every pragma: no cover", "sub": "is a line you silenced forever", "tone": "warn"}], "edges": [["x", "w"], ["w", "p"], ["p", "c"], ["c", "e"]], "t": "diagram", "id": "dg-9_8-02-0"},
+
     { t: "code", lang: "toml", title: "pyproject.toml", code: `
 [tool.coverage.run]
 branch = true
@@ -200,6 +202,8 @@ BASE=$(cat .coverage-baseline)
 
     { t: "h2", n: "04", text: "The workflow", id: "workflow" },
 
+    {"kind": "flow", "title": "`fail-fast: false` is deliberate, and the step order is a design decision", "caption": "**The matrix default cancels the other Python versions on the first failure, so you learn that 3.11 broke and not whether 3.12 did** — `fail-fast: false` costs a few minutes of CI and tells you whether the failure is version-specific, which is the question you were going to ask next. And the ordering: **lint and type-check before the tests, because they are seconds against minutes and catch a different class of error** — so a run that will fail anyway fails fast, and a developer gets the cheap feedback first.", "cols": 3, "nodes": [{"id": "d", "label": "The matrix default cancels siblings", "sub": "on the first failure", "tone": "crit"}, {"id": "f", "label": "fail-fast: false", "sub": "a few minutes of CI", "tone": "good"}, {"id": "v", "label": "Tells you if it is version-specific", "sub": "the next question, answered", "tone": "violet"}, {"id": "l", "label": "Lint and type-check first", "sub": "seconds against minutes", "tone": "good"}, {"id": "c", "label": "So the cheap feedback arrives first", "sub": "and a doomed run dies early", "tone": "good"}], "edges": [["d", "f"], ["f", "v"], ["l", "c"], ["v", "c"]], "t": "diagram", "id": "dg-9_8-04-1"},
+
     { t: "code", lang: "yaml", title: ".github/workflows/ci.yml", code: `
 name: ci
 
@@ -282,7 +286,8 @@ jobs:
 
     { t: "h2", n: "05", text: "Flaky tests", id: "flaky" },
 
-    {"kind": "steps", "title": "Handling a flaky test", "caption": "A test that passes on retry is measuring something outside the code: time, ordering, shared state or the network. Quarantine it, find the dependency, remove it — never just add a retry.", "items": [{"label": "Quarantine", "desc": "mark it, keep the suite green, keep it running", "tone": "warn"}, {"label": "Find the hidden input", "desc": "clock, random seed, test order, shared fixture, real network", "tone": "accent"}, {"label": "Make the input explicit", "desc": "freeze time, seed, isolate state, stub the network", "tone": "good"}, {"label": "Un-quarantine or delete", "desc": "a test nobody trusts is worse than no test", "tone": "crit"}], "t": "diagram", "id": "dg-9_8-05-0"},
+    {"kind": "steps", "title": "Handling a flaky test", "caption": "A test that passes on retry is measuring something outside the code: time, ordering, shared state or the network. Quarantine it, find the dependency, remove it — never just add a retry.", "items": [{"label": "Quarantine", "desc": "mark it, keep the suite green, keep it running", "tone": "warn"}, {"label": "Find the hidden input", "desc": "clock, random seed, test order, shared fixture, real network", "tone": "accent"}, {"label": "Make the input explicit", "desc": "freeze time, seed, isolate state, stub the network", "tone": "good"}, {"label": "Un-quarantine or delete", "desc": "a test nobody trusts is worse than no test", "tone": "crit"}], "t": "diagram", "id": "dg-9_8-05-2"},
+
 
 
 

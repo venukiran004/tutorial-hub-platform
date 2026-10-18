@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What test pain is telling you", id: "signals" },
 
+    {"kind": "trace", "title": "Seven test symptoms, each naming a specific design fault", "caption": "**Test pain is a measurement, not an inconvenience — each symptom names something the design is doing.** The two most common: **several `@patch` decorators mean the function constructs its own dependencies**, and **patching `datetime` or `random` means it reads a hidden global source.** Both fix the same way: pass it in. And the sixth is the subtle one: **asserting on log output to verify a decision means the decision has no return value** — so return it, and log it at the caller.", "left": "symptom in the test", "codeW": 170, "vars": ["what the design is doing", "the change"], "steps": [{"code": "several @patch decorators", "state": ["it constructs its own dependencies", "pass them in"], "tone": "crit"}, {"code": "patching datetime or random", "state": ["it reads a hidden global", "take now or rng as a parameter"], "changed": [0, 1], "tone": "crit"}, {"code": "needs a temp dir for a calculation", "state": ["logic and I/O interleaved", "split the pure part out"], "changed": [0, 1], "tone": "crit"}, {"code": "needs a database to check a rule", "state": ["the rule is inside a query loop", "compute on loaded data"], "changed": [0, 1], "tone": "crit"}, {"code": "asserting on log output", "state": ["the decision has no return value", "return it; log at the caller"], "changed": [0, 1], "tone": "violet"}, {"code": "importing has side effects", "state": ["work at import time", "move it into a function"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-9_6-01-0"},
+
     { t: "table",
       head: ["Symptom in the test", "What the design is doing", "The change"],
       rows: [
@@ -35,6 +37,8 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "02", text: "Seams, without a framework", id: "seams" },
+
+    {"kind": "flow", "title": "A default argument is a complete dependency-injection system", "caption": "**No container, no decorator, no framework** — a parameter with a default keeps every existing call site working and gives every test a substitution point. Which is 3.2's keyword argument doing the job a Java codebase needs a framework for, and it has one real advantage over a constructor: **the substitution is visible in the signature, so a reader can see what the function depends on without reading the body.** The limit is the usual one: **once three or four dependencies travel together, a constructor or a small object reads better.**", "cols": 3, "nodes": [{"id": "d", "label": "def charge(order, gateway=stripe)", "sub": "a default argument", "tone": "violet"}, {"id": "c", "label": "Every existing call site still works", "sub": "nothing to migrate", "tone": "good"}, {"id": "t", "label": "And every test has a substitution point", "sub": "pass a fake", "tone": "good"}, {"id": "s", "label": "Visible in the signature", "sub": "the dependency is documented", "tone": "violet"}, {"id": "l", "label": "Past three or four: a constructor", "sub": "or a small object", "tone": "accent"}], "edges": [["d", "c"], ["c", "t"], ["t", "s"], ["s", "l"]], "t": "diagram", "id": "dg-9_6-02-1"},
 
     { t: "code", lang: "python", title: "a default argument is a complete dependency-injection system", code: `
 # Untestable without patching: the dependency is chosen inside
@@ -82,7 +86,8 @@ class ReportService:
 
     { t: "h2", n: "03", text: "Functional core, imperative shell", id: "core" },
 
-    {"kind": "flow", "title": "Functional core, imperative shell", "caption": "Pure functions in the middle take data and return data — trivially testable. The thin shell around them does the I/O: reads the file, calls the API, writes the database. Tests target the core; a few integration tests cover the shell.", "cols": 3, "nodes": [{"id": "in", "label": "shell: read input", "sub": "file, HTTP, DB", "tone": "warn"}, {"id": "core", "label": "core: pure functions", "sub": "data in, data out — unit tested", "tone": "good"}, {"id": "out", "label": "shell: write output", "sub": "DB, API, file", "tone": "warn"}], "edges": [["in", "core"], ["core", "out"]], "t": "diagram", "id": "dg-9_6-03-0"},
+    {"kind": "flow", "title": "Functional core, imperative shell", "caption": "Pure functions in the middle take data and return data — trivially testable. The thin shell around them does the I/O: reads the file, calls the API, writes the database. Tests target the core; a few integration tests cover the shell.", "cols": 3, "nodes": [{"id": "in", "label": "shell: read input", "sub": "file, HTTP, DB", "tone": "warn"}, {"id": "core", "label": "core: pure functions", "sub": "data in, data out — unit tested", "tone": "good"}, {"id": "out", "label": "shell: write output", "sub": "DB, API, file", "tone": "warn"}], "edges": [["in", "core"], ["core", "out"]], "t": "diagram", "id": "dg-9_6-03-3"},
+
 
 
 
@@ -234,6 +239,8 @@ def test_chase_rules(days_overdue, amount, expected):
     },
 
     { t: "h2", n: "04", text: "Hidden dependencies", id: "hidden" },
+
+    {"kind": "flow", "title": "All four have the same shape: something the function reaches out to grab", "caption": "**A module-level client, `datetime.now()`, `os.environ`, a global cache — all four are things the function reaches out to grab rather than being handed, and injecting each one is a small change that also documents the dependency.** The pattern for code that genuinely must touch the world is the humble object: **put the untestable part in a thin wrapper with no logic, and test the logic it calls.** Which is the honest limit — **you are not making I/O testable, you are making sure almost nothing depends on it.**", "cols": 3, "nodes": [{"id": "g", "label": "A module-level client", "sub": "grabbed, not handed", "tone": "crit"}, {"id": "t", "label": "datetime.now(), os.environ", "sub": "same shape", "tone": "crit"}, {"id": "i", "label": "Inject each one", "sub": "small, and it documents the dependency", "tone": "good"}, {"id": "h", "label": "Must touch the world? A humble object", "sub": "a thin wrapper with no logic", "tone": "violet"}, {"id": "l", "label": "Not making I/O testable", "sub": "making almost nothing depend on it", "tone": "teal"}], "edges": [["g", "i"], ["t", "i"], ["i", "h"], ["h", "l"]], "t": "diagram", "id": "dg-9_6-04-2"},
 
     { t: "code", lang: "python", title: "four things that make code untestable, and their fixes", code: `
 # 1. THE CLOCK

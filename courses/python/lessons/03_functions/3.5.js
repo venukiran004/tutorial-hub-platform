@@ -106,6 +106,7 @@ def double(x: int) -> int:
 
 
 
+
     { t: "ladder",
       title: "Doubling the active users' scores",
       rungs: [
@@ -146,6 +147,7 @@ result = [u.score * 2 for u in users if is_billable(u)]`,
     { t: "h2", n: "03", text: "The three cases where map wins", id: "map-wins" },
 
     {"kind": "trace", "title": "Three cases, and the middle one is the one a comprehension cannot do cleanly", "caption": "A comprehension is the default and **`map` wins in exactly three situations.** The first is cosmetic — **`map(str.strip, lines)` beats `[s.strip() for s in lines]` when the function already exists, because the loop variable adds nothing.** The second is the real one: **`map(f, a, b)` iterates several sequences in parallel and stops at the shortest, which a comprehension needs `zip` to express.** And the third is laziness over a large or infinite source, **where `map` returns an iterator rather than building a list.**", "left": "case", "codeW": 190, "vars": ["map", "the comprehension"], "steps": [{"code": "the function already exists", "state": ["map(str.strip, lines)", "[s.strip() for s in lines]"], "tone": "good"}, {"code": "parallel over several sequences", "state": ["map(f, first, last)", "needs zip to express"], "changed": [0, 1], "tone": "violet"}, {"code": "a large or infinite source", "state": ["lazy - an iterator", "builds the whole list"], "changed": [0, 1], "tone": "violet"}, {"code": "anything with a condition", "state": ["needs filter too", "clearer - one expression"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_5-03-1"},
+
 
 
 
@@ -203,6 +205,7 @@ first_error = next((p for p in parsed if p.failed), None)
     { t: "h2", n: "04", text: "reduce", id: "reduce" },
 
     {"kind": "trace", "title": "Four results, and three of them have a built-in that says it better", "caption": "`reduce` folds a binary function over a sequence, and the measured values make the case against it: **24 is `math.prod`, 10 is `sum`, 4 is `max`** — all three read better as the named built-in, and `reduce` requires the reader to decode the lambda to find out which operation it was. **So what is left for `reduce` is the fourth row: a genuinely custom combine with no built-in equivalent** — merging configuration dicts left to right, composing functions, intersecting a list of sets. **And it moved out of builtins into `functools` in Python 3, which was a judgement about how often it is the right tool.**", "left": "reduce expression", "codeW": 180, "vars": ["result", "what to write instead"], "steps": [{"code": "reduce(mul, [1,2,3,4])", "state": ["24", "math.prod"], "tone": "crit"}, {"code": "reduce(add, [1,2,3,4])", "state": ["10", "sum"], "changed": [0, 1], "tone": "crit"}, {"code": "reduce(lambda a,b: a if a>b else b, xs)", "state": ["4", "max"], "changed": [0, 1], "tone": "crit"}, {"code": "reduce(merge, configs)", "state": ["a merged dict", "nothing - reduce is right"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-3_5-04-2"},
+
 
 
 

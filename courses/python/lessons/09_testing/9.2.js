@@ -137,7 +137,8 @@ def test_checkout(client):
 
     { t: "h2", n: "02", text: "Collection: what pytest actually looks at", id: "collection" },
 
-    {"kind": "tree", "title": "What pytest collects", "caption": "Files matching test_*.py or *_test.py, then functions starting with test_ and methods of classes starting with Test. Anything else is invisible, which is the usual reason a new test 'does not run'.", "root": {"label": "rootdir", "tone": "accent", "children": [{"label": "tests/", "children": [{"label": "test_orders.py", "tone": "good", "children": [{"label": "test_total()", "tone": "good"}, {"label": "class TestRefund", "tone": "good"}, {"label": "helper()", "sub": "not collected", "tone": "warn"}]}, {"label": "orders_helpers.py", "sub": "not collected", "tone": "warn"}]}, {"label": "conftest.py", "sub": "fixtures, hooks"}]}, "t": "diagram", "id": "dg-9_2-02-0"},
+    {"kind": "tree", "title": "What pytest collects", "caption": "Files matching test_*.py or *_test.py, then functions starting with test_ and methods of classes starting with Test. Anything else is invisible, which is the usual reason a new test 'does not run'.", "root": {"label": "rootdir", "tone": "accent", "children": [{"label": "tests/", "children": [{"label": "test_orders.py", "tone": "good", "children": [{"label": "test_total()", "tone": "good"}, {"label": "class TestRefund", "tone": "good"}, {"label": "helper()", "sub": "not collected", "tone": "warn"}]}, {"label": "orders_helpers.py", "sub": "not collected", "tone": "warn"}]}, {"label": "conftest.py", "sub": "fixtures, hooks"}]}, "t": "diagram", "id": "dg-9_2-02-1"},
+
 
 
 
@@ -231,6 +232,8 @@ filterwarnings = ["error"]         # a new DeprecationWarning fails the build
     },
 
     { t: "h2", n: "03", text: "Reading a failure report", id: "reading-failures" },
+
+    {"kind": "layers", "title": "Five sections in a failure report, and most people read one", "caption": "**The other four are where the cause usually is.** The node id is **the exact argument to rerun just this test — copy it, do not re-run the suite.** The fixture line shows every fixture with its repr, **so a useful `__repr__` on your fakes turns it into free diagnostics.** The `E` lines' **`+ where` clauses show how each side was computed, which is how you tell a wrong value from a wrong attribute.** And the section people skip is where the answer was: **captured output, shown only on failure.**", "items": [{"label": "1. The node id", "sub": "file::test[param] - rerun exactly this", "tone": "violet", "side": "copy it"}, {"label": "2. The fixture line", "sub": "every fixture, with its repr", "tone": "good", "side": "free"}, {"label": "3. The E lines", "sub": "+ where shows how each side was computed", "tone": "good", "side": "the diff"}, {"label": "4. Captured output", "sub": "stdout, stderr and logs - only on failure", "tone": "violet", "side": "skipped"}, {"label": "5. Short summary (-ra)", "sub": "one line per failure - read this first on 40", "tone": "teal", "side": "the pattern"}], "t": "diagram", "id": "dg-9_2-03-0"},
 
     { t: "p", text: "A pytest failure has four sections and most people read one. The other three are where the cause usually is." },
 

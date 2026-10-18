@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "What `obj.x` actually does",
       caption: "The order is the whole lesson. A data descriptor on the class beats the instance dictionary; a non-data descriptor loses to it. That single distinction explains `property`, bound methods, and why `cached_property` can replace itself.",
@@ -143,6 +144,7 @@ print(Service.__dict__["fetch"].__get__(Service(), Service))
     {"kind": "trace", "title": "`obj is None` means it was accessed on the class, not an instance", "caption": "**That check is the whole reason `__get__` takes two arguments — returning `self` when `obj is None` is the convention, and it is what lets `Product.price` give you the descriptor to introspect while `product.price` gives you the value.** The rule next to it is absolute: **never store per-instance state on the descriptor, because one descriptor object serves every instance of the class** — so `self._value = x` makes every product share a price, and the bug looks like a caching problem. **Store it in `obj.__dict__` under the name `__set_name__` gave you.**", "left": "access", "codeW": 170, "vars": ["obj is", "return"], "steps": [{"code": "product.price", "state": ["the instance", "the computed value"], "tone": "good"}, {"code": "Product.price", "state": ["None", "self - the descriptor"], "changed": [0, 1], "tone": "violet"}, {"code": "self._value = x", "state": ["-", "shared by EVERY instance"], "changed": [0, 1], "tone": "crit"}, {"code": "obj.__dict__[self._name] = x", "state": ["-", "per instance, correctly"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_5-02-0"},
 
 
+
     { t: "code", lang: "python", title: "the full protocol", code: `
 class Field:
     def __set_name__(self, owner: type, name: str) -> None:
@@ -203,6 +205,7 @@ print(a.price)                    # 20 -- they share one descriptor`,
     { t: "h2", n: "03", text: "The library descriptors, explained", id: "library" },
 
     {"kind": "trace", "title": "Data or non-data decides who wins against the instance dict", "caption": "**A data descriptor defines `__set__` and takes precedence over the instance `__dict__`; a non-data descriptor does not, so an instance attribute shadows it** — which is 4.2's lookup order with the reason attached. That is why `cached_property` works at all: **it is non-data, so once it writes the value into `obj.__dict__` the second access never reaches the descriptor.** And it is why it fails on `__slots__`: **`TypeError: No '__dict__' attribute on 'WithSlots' instance to cache 'area'`** — the mechanism it depends on was removed.", "left": "object", "codeW": 160, "vars": ["kind", "its __get__ returns"], "steps": [{"code": "a plain function", "state": ["non-data", "a bound method"], "tone": "good"}, {"code": "property", "state": ["DATA", "the getter's result"], "changed": [0, 1], "tone": "violet"}, {"code": "classmethod / staticmethod", "state": ["non-data", "bound to the class / unbound"], "changed": [0, 1], "tone": "good"}, {"code": "cached_property", "state": ["non-data", "computes, then writes to __dict__"], "changed": [0, 1], "tone": "violet"}, {"code": "...on a __slots__ class", "state": ["-", "TypeError: no __dict__ to cache in"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_5-03-1"},
+
 
 
     { t: "table",

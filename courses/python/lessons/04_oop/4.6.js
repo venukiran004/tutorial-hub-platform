@@ -123,6 +123,7 @@ print(recorder.sent)
 
 
 
+
     { t: "p", text: "Python's own syntax is built on this. `len(x)`, `for i in x`, `x[k]`, `with x:` and `x + y` do not check types — they call a dunder method, and anything defining it participates." },
 
     { t: "table",
@@ -178,6 +179,7 @@ list(batch), sum(o.total for o in batch)
 
 
 
+
     { t: "p", text: "Duck typing's weakness is that the contract is invisible: `alert_all(notifiers, ...)` does not say what a notifier is, so a wrong object fails at the call, at runtime, possibly in production. `Protocol` fixes that without giving up the freedom." },
 
     { t: "code", lang: "python", title: "structural typing", code: `
@@ -223,6 +225,7 @@ class Broken:
     { t: "h2", n: "04", text: "Where duck typing silently misfires", id: "misfires" },
 
     {"kind": "trace", "title": "A string passed where a list of strings was meant, and no error anywhere", "caption": "**No error, because `str` genuinely is iterable — it just iterates at the wrong granularity.** This is the canonical failure of duck typing: **the object has the right shape and the wrong meaning**, so every structural check passes and the behaviour is wrong. The defences are worth taking in order: **a `list[str]` hint so mypy catches it, an explicit `isinstance(recipients, str)` guard at any public boundary, and a signature that takes the single case separately** — because the shape cannot distinguish them.", "left": "call", "codeW": 170, "vars": ["what it iterates", "error?"], "steps": [{"code": "send(['a@x.com', 'b@x.com'])", "state": ["two addresses", "no"], "tone": "good"}, {"code": "send('a@x.com')", "state": ["21 characters", "NO"], "changed": [0, 1], "tone": "crit"}, {"code": "a list[str] hint", "state": ["-", "mypy catches it"], "changed": [0, 1], "tone": "good"}, {"code": "isinstance(x, str) guard", "state": ["-", "at a public boundary"], "changed": [0, 1], "tone": "good"}, {"code": "a separate single-value parameter", "state": ["-", "the shape cannot tell them apart"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_6-04-2"},
+
 
 
 

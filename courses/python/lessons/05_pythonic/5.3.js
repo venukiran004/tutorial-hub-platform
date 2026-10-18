@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "same operation, two shapes", code: `
 # LBYL -- Look Before You Leap
 if "timeout" in config:
@@ -54,6 +55,7 @@ timeout = config.get("timeout", 30)
     { t: "h2", n: "02", text: "The race LBYL cannot fix", id: "toctou" },
 
     {"kind": "timeline", "title": "The race that look-before-you-leap cannot fix", "caption": "Between the check and the use, another process can change the world. EAFP does the operation and handles the failure, which closes the gap.", "span": 6, "lanes": [{"label": "your code", "tone": "accent", "bars": [[0, 2, "os.path.exists(p) → True"], [4, 6, "open(p) → FileNotFoundError", "crit"]]}, {"label": "other process", "tone": "warn", "bars": [[2, 4, "deletes p"]]}], "t": "diagram", "id": "dg-5_3-02-3"},
+
 
 
 
@@ -151,6 +153,7 @@ except PermissionError:
 
 
 
+
     { t: "code", lang: "python", title: "the cost is in which path is common", code: `
 import timeit
 
@@ -184,6 +187,7 @@ miss  lbyl=0.062  eafp=0.271`,
     { t: "h2", n: "04", text: "Where LBYL is right", id: "lbyl-right" },
 
     {"kind": "trace", "title": "Five situations, and two of them have nothing to do with speed", "caption": "The two rows that are about **correctness rather than cost** are the ones to remember. **Anything about shared state — files, network, other processes — is EAFP, because a check is out of date by the time you act**, which is the race no amount of care removes. And **anything expensive or irreversible to attempt is LBYL, because it is better to check than to half-perform and roll back.** The others follow the arithmetic in §03: **rare failure favours EAFP, common failure favours LBYL.**", "left": "if the failure is", "codeW": 170, "vars": ["prefer", "because"], "steps": [{"code": "rare", "state": ["EAFP", "no check cost on the common path"], "tone": "good"}, {"code": "common", "state": ["LBYL", "raising is expensive"], "changed": [0, 1], "tone": "good"}, {"code": "about shared state", "state": ["EAFP", "a check is out of date already"], "changed": [0, 1], "tone": "violet"}, {"code": "expensive or irreversible", "state": ["LBYL", "better than a half-performed rollback"], "changed": [0, 1], "tone": "violet"}, {"code": "cheap to attempt and undo", "state": ["EAFP", "attempting IS the check"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_3-04-2"},
+
 
 
 

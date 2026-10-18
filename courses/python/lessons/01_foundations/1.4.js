@@ -47,6 +47,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Most introductions to programming describe a variable as a box you put a value into. In languages like C that picture is roughly accurate: a variable names a piece of memory, and assigning writes bytes into it." },
 
     { t: "p", text: "In Python it is wrong, and it is the specific wrongness that produces the bugs in this lesson. A Python name is a **label**. Assignment attaches the label to an object that already exists somewhere in memory. The object does not live in the variable, and two labels can point at the same object." },
@@ -159,6 +160,7 @@ True`
 
 
 
+
     { t: "dl", items: [
       ["Identity", "Fixed for the object's entire life. `id(x)` exposes it — in CPython, the memory address. The `is` operator compares identity."],
       ["Type", "Also fixed. An object never changes type; `x = 5` followed by `x = \"five\"` does not change an object, it binds `x` to a different one."],
@@ -216,6 +218,7 @@ print(config)`,
       sub: "Not pass-by-value, not pass-by-reference. Something simpler than either." },
 
     {"kind": "memory", "title": "Arguments are passed by binding", "caption": "Calling f(a) binds the parameter name to the same object. Mutating it inside f is visible to the caller; assigning a new object to the parameter is not.", "left": "caller", "right": "objects", "names": [{"name": "a  (caller)", "to": "o1"}, {"name": "items  (inside f)", "to": "o1", "label": "same object"}, {"name": "items = []  (rebind)", "to": "o2", "dashed": true}], "objects": [{"id": "o1", "type": "list", "value": "[1, 2, 3]", "note": "mutations visible to both"}, {"id": "o2", "type": "list", "value": "[]", "note": "a new object; the caller never sees it", "tone": "warn"}], "t": "diagram", "id": "dg-1_4-03-1"},
+
 
 
 
@@ -316,6 +319,7 @@ print(numbers)
 
 
 
+
     { t: "code", lang: "python", title: "read this and predict the second call", code: `
 def add_item(item, basket=[]):
     basket.append(item)
@@ -354,6 +358,7 @@ def add_item(item: str, basket: list[str] | None = None) -> list[str]:
     { t: "h2", n: "05", text: "is versus ==", id: "is-vs-equals" },
 
     {"kind": "trace", "title": "is versus ==, stepped", "caption": "== asks whether two objects have equal value; is asks whether they are the same object. Two equal lists are not identical; small integers and interned strings sometimes are, which is why is 'appears to work' until it does not.", "vars": ["a", "b", "a == b", "a is b"], "steps": [{"code": "a = [1, 2]; b = [1, 2]", "state": ["[1, 2]", "[1, 2]", "True", "False"], "changed": [3], "note": "equal, two objects"}, {"code": "b = a", "state": ["[1, 2]", "[1, 2]", "True", "True"], "changed": [3], "note": "one object"}, {"code": "x = 256; y = 256", "state": ["256", "256", "True", "True"], "note": "cached small int"}, {"code": "x = 1000; y = 1000", "state": ["1000", "1000", "True", "False*"], "changed": [3], "tone": "warn", "note": "*implementation detail"}], "t": "diagram", "id": "dg-1_4-05-2"},
+
 
 
 
@@ -428,6 +433,7 @@ if value is None:        # identity check: always safe, never overridable
     { t: "h2", n: "06", text: "Aliasing in real code", id: "aliasing" },
 
     {"kind": "flow", "title": "`tags or DEFAULT_TAGS` does not copy the default", "caption": "This is the shape the bug takes in a real codebase, **where the two names are far apart.** The expression **binds the new document's `tags` key to the module-level list — so every document created without tags shares one list, and the module constant is corrupted for the lifetime of the process.** The output shows it: **two documents, and appending to one changes both.** The fix is §04's fix: **`list(DEFAULT_TAGS)`, or `None` as the sentinel and build the list inside.**", "cols": 3, "nodes": [{"id": "o", "label": "tags or DEFAULT_TAGS", "sub": "looks like a default", "tone": "accent"}, {"id": "b", "label": "Binds to the module-level list", "sub": "no copy is made", "tone": "crit"}, {"id": "s", "label": "Every untagged document shares it", "sub": "['untagged', 'finance'] twice", "tone": "crit"}, {"id": "c", "label": "And the module constant is corrupted", "sub": "for the whole process", "tone": "crit"}, {"id": "f", "label": "Fix: list(DEFAULT_TAGS), or a None sentinel", "sub": "same as section 04", "tone": "good"}], "edges": [["o", "b"], ["b", "s"], ["s", "c"], ["c", "f"]], "t": "diagram", "id": "dg-1_4-06-5"},
+
 
 
 

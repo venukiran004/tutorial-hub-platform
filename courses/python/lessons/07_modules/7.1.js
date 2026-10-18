@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Filesystem paths have structure: a root, a sequence of components, a stem and a suffix. Treat one as a string and you take responsibility for that structure yourself — separators, duplicates, trailing slashes, platform differences. You will get it wrong, and the wrongness usually only appears on the other operating system." },
 
     { t: "code", lang: "python", title: "four ways string paths go wrong", code: `
@@ -129,6 +130,7 @@ safe_join(Path("/srv/app/uploads"), "../../etc/passwd")
       sub: "A file on disk contains bytes. A Python `str` contains code points. Something has to convert." },
 
     {"kind": "flow", "title": "What text mode does", "caption": "open(p) in text mode decodes bytes with an encoding and translates newlines; 'rb' gives you the bytes untouched. Name the encoding every time, because the default depends on the machine.", "cols": 3, "nodes": [{"id": "disk", "label": "bytes on disk", "sub": "b'caf\\xc3\\xa9\\r\\n'", "tone": "warn"}, {"id": "dec", "label": "decode + newline translation", "sub": "encoding='utf-8', newline=None", "tone": "accent"}, {"id": "str", "label": "str in your program", "sub": "'café\\n'", "tone": "good"}], "edges": [["disk", "dec", "read"], ["dec", "str"]], "t": "diagram", "id": "dg-7_1-02-2"},
+
 
 
 
@@ -270,6 +272,7 @@ with log.open("a", encoding="utf-8") as f:
 
 
 
+
     { t: "p", text: "Until Python 3.15, `open()` without an `encoding` argument uses `locale.getencoding()` — whatever the operating system says the local default is. That is UTF-8 on modern Linux and macOS, and it is **cp1252** on a Western Windows install and **cp932** on a Japanese one." },
 
     { t: "p", text: "So the same code reads the same file differently on two machines. This is the mechanism behind the single most common cross-platform Python bug." },
@@ -325,6 +328,7 @@ Path("out.txt").read_text()
     { t: "h2", n: "04", text: "Writing without losing the old file", id: "atomic-writes" },
 
     {"kind": "steps", "title": "Atomic write: temp file, then rename", "caption": "Writing straight into the target leaves a half-written file if the process dies. Write to a temporary file in the same directory, fsync, then rename — the rename is atomic on the same filesystem.", "items": [{"label": "write to target.tmp", "desc": "same directory, so the rename cannot cross filesystems", "tone": "accent"}, {"label": "flush and os.fsync()", "desc": "the bytes are on disk, not in a cache", "tone": "warn"}, {"label": "os.replace('target.tmp', 'target')", "desc": "atomic: readers see the old file or the new one, never a partial", "tone": "good"}], "t": "diagram", "id": "dg-7_1-04-3"},
+
 
 
 

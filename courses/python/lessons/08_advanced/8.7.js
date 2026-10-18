@@ -23,6 +23,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "Six parameters, five kinds, and `bind` turns a call into a dict", "caption": "**`inspect.signature` recovers the full parameter list with each one's kind — `POSITIONAL_OR_KEYWORD`, `VAR_POSITIONAL`, `KEYWORD_ONLY`, `VAR_KEYWORD`** — which is how a framework decides what to inject without being told. The pair that does the real work is `bind` and `apply_defaults`: **a call becomes `{'source': ..., 'amount': 500, 'tags': (), 'dry_run': True, 'extra': {}}`, with defaults filled in** — and a wrong call becomes a readable error, **`missing a required argument: 'target'`**, before anything runs.", "left": "what you call", "codeW": 170, "vars": ["result"], "steps": [{"code": "str(signature(f))", "state": ["(source, target, amount=0, *tags, dry_run=False, **extra)"], "tone": "good"}, {"code": "p.kind per parameter", "state": ["POSITIONAL_OR_KEYWORD ... VAR_KEYWORD"], "changed": [0], "tone": "good"}, {"code": "bind(...).apply_defaults()", "state": ["every parameter, defaults filled"], "changed": [0], "tone": "violet"}, {"code": "ba.args, ba.kwargs", "state": ["('acct-1','acct-2',500), {'dry_run': True}"], "changed": [0], "tone": "good"}, {"code": "bind with an argument missing", "state": ["missing a required argument: 'target'"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-8_7-01-0"},
 
 
+
     { t: "code", lang: "python", title: "the object behind every function", code: `
 import inspect
 
@@ -136,6 +137,7 @@ def audited(fn):
     {"kind": "trace", "title": "`__annotations__` gives you strings; `get_type_hints` gives you the types", "caption": "**With `from __future__ import annotations`, or on Python 3.14 by default, annotations are stored as strings — `{'user': 'User', 'limit': 'int'}` — so reading `__annotations__` directly gives you text that happens to look like a type.** `typing.get_type_hints(fn)` resolves them against the defining module's namespace and returns real objects: **`{'user': <class 'User'>, ...}`.** Which is the difference between a framework that works and one that fails on a forward reference — **and the resolution can itself raise `NameError` if the name is only available under `TYPE_CHECKING`.**", "left": "how you read them", "codeW": 170, "vars": ["result"], "steps": [{"code": "fn.__annotations__", "state": ["{'user': 'User', 'limit': 'int'}"], "tone": "warn", "note": "strings"}, {"code": "get_type_hints(fn)", "state": ["{'user': <class 'User'>, ...}"], "changed": [0], "tone": "violet"}, {"code": "a TYPE_CHECKING-only import", "state": ["NameError during resolution"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-8_7-03-1"},
 
 
+
     { t: "code", lang: "python", title: "`__annotations__` is not enough", code: `
 from __future__ import annotations       # makes annotations STRINGS
 
@@ -197,6 +199,7 @@ typing.get_type_hints(handler)
 
 
 
+
     { t: "code", lang: "python", title: "possible, and rarely right", code: `
 import inspect
 
@@ -230,6 +233,7 @@ class Logger:
     { t: "h2", n: "05", text: "The rest of the module", id: "rest" },
 
     {"kind": "trace", "title": "Seven functions, and two of them fail where you least expect", "caption": "**`getsource` needs the file to exist, so it fails in a zipapp, in a REPL and in anything that compiled from a string** — which is the one to guard rather than assume. **`getdoc` is better than `obj.__doc__` because it dedents *and* follows inheritance**, so an overridden method with no docstring still reports the base's. And the row frameworks are built on: **`iscoroutinefunction` is how a framework decides whether to `await`** — which is why decorating an async function with a sync wrapper breaks dispatch, unless `wraps` preserved it.", "left": "function", "codeW": 170, "vars": ["gives", "note"], "steps": [{"code": "getsource(obj)", "state": ["the source text", "fails in a zipapp or a REPL"], "tone": "crit"}, {"code": "getdoc(obj)", "state": ["dedented AND inherited", "better than __doc__"], "changed": [0, 1], "tone": "violet"}, {"code": "iscoroutinefunction(fn)", "state": ["a bool", "how a framework decides to await"], "changed": [0, 1], "tone": "violet"}, {"code": "getmembers(obj, predicate)", "state": ["name/value pairs", "isfunction on a class, ismethod on an instance"], "changed": [0, 1], "tone": "good"}, {"code": "unwrap(fn)", "state": ["the innermost function", "follows __wrapped__ down"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_7-05-2"},
+
 
 
     { t: "table",
