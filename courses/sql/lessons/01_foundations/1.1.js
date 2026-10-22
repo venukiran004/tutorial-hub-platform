@@ -170,6 +170,10 @@ INSERT INTO employees VALUES
 
 
 
+
+
+
+
     { t: "p", text: "SQL is declarative: you describe the result and the engine decides how to build it. But the *meaning* of a query is defined by a fixed logical order, and you can only predict a result by walking it. **FROM and JOIN assemble the rows. WHERE removes rows. GROUP BY collapses them. HAVING removes groups. SELECT computes the columns. DISTINCT removes duplicate rows. ORDER BY sorts. LIMIT trims.** The physical plan (module 5) may do these in a different order for speed, but it must produce what this order says." },
 
     { t: "dl", items: [
@@ -280,6 +284,10 @@ LIMIT    2;
 
 
 
+
+
+
+
     { t: "p", text: "Most SQL errors that look arbitrary are this order enforced. **An alias defined in SELECT does not exist yet when WHERE runs**, so `WHERE n_orders >= 2` fails — the condition belongs in HAVING, with the aggregate written out. **An aggregate cannot go in WHERE** because no group exists yet. **A window function cannot be filtered in the same query** because it is computed in SELECT, after WHERE and HAVING have finished; the filter goes in an outer query, or in `QUALIFY` on the engines that have it (3.2)." },
 
     { t: "code", lang: "sql", title: "Four errors that are all the same error",
@@ -310,6 +318,11 @@ SELECT DISTINCT department FROM employees ORDER BY salary;
     ]},
 
     { t: "h2", n: "04", text: "DISTINCT, ORDER BY, LIMIT: what each guarantees", id: "tail" },
+
+    {"kind": "trace", "title": "Three clauses, and what each one does not promise", "caption": "**All three are assumed to do something slightly stronger than they do.** DISTINCT works on the whole row, so there is no way to make it apply to one column — that is what GROUP BY or DISTINCT ON is for. ORDER BY fixes the order only for the keys you name, so rows that tie come back in whatever order the plan produced, **and can come back differently next time the data changes.** And LIMIT without ORDER BY is not “the first ten”: it is ten rows of whatever the plan happened to emit first, which is a genuinely non-deterministic query.", "left": "what you write", "codeW": 190, "vars": ["what it guarantees", "what people assume"], "steps": [{"code": "SELECT DISTINCT a, b", "state": ["distinct PAIRS", "distinct values of a"], "tone": "crit"}, {"code": "ORDER BY country", "state": ["order within country only", "a fully fixed order"], "changed": [0, 1], "tone": "crit"}, {"code": "LIMIT 10, no ORDER BY", "state": ["any ten rows the plan emitted", "the first ten"], "changed": [0, 1], "tone": "crit"}, {"code": "ORDER BY with a tiebreak key", "state": ["a total order - reproducible", "-"], "changed": [0, 1], "tone": "good"}, {"code": "and where NULL sorts", "state": ["a dialect fact, not a standard", "the same everywhere"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_1-04-2"},
+
+
+
 
     { t: "p", text: "The last three stages are where correctness is assumed and not checked. **DISTINCT applies to the entire row**: `SELECT DISTINCT country, tier` keeps every distinct *pair*, and there is no way to make it apply to country alone — that is what GROUP BY or `DISTINCT ON` (2.4) is for. **ORDER BY is stable only for the keys you name**: rows that tie on the sort keys come back in an order the engine chose, and can come back differently next time. **LIMIT without ORDER BY is a sample of whatever the plan produced first.**" },
 

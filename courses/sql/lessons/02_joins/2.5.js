@@ -27,6 +27,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`GROUP BY country, tier` gives the finest level. A report usually also wants the per-country subtotal and the grand total, and the naive way is three queries UNIONed together, each rescanning the table. **`ROLLUP (country, tier)` computes the groupings `(country, tier)`, `(country)` and `()` in one scan; `CUBE` computes every combination; `GROUPING SETS` computes exactly the list you name.** The subtotal rows carry NULL in the column that was rolled up, and `GROUPING(col)` returns 1 on those rows so a real NULL — Dalia's country — is not mistaken for a subtotal." },
 
     { t: "code", lang: "sql", title: "ROLLUP with GROUPING(), and the same via GROUPING SETS",
@@ -126,6 +130,10 @@ ORDER  BY 1 NULLS LAST, 2 NULLS LAST;
 
 
 
+
+
+
+
     { t: "p", text: "`FILTER (WHERE …)` after any aggregate restricts it to a subset of the group without touching the other aggregates in the same SELECT. Where a CASE inside SUM needs an `ELSE 0` and an AVG needs an `ELSE NULL`, FILTER needs nothing: the excluded rows are simply not there. **Percentiles and the mode are aggregates that need their input sorted**, which is what `WITHIN GROUP (ORDER BY …)` supplies: the median is `PERCENTILE_CONT(0.5)`, interpolated between the two middle values when the count is even, or `PERCENTILE_DISC(0.5)`, an actual value from the data." },
 
     { t: "code", lang: "sql", title: "Per-status figures with two filtered aggregates, then medians per department",
@@ -153,6 +161,10 @@ FROM   employees GROUP BY department ORDER BY department;
     },
 
     { t: "h2", n: "03", text: "Lists, arrays, booleans and statistics", id: "others" },
+
+    {"kind": "trace", "title": "When the group's answer is not a number", "caption": "**An aggregate can return a sorted list, an array, a yes-or-no fact about every row, or a value taken from one particular row** — and that last one is the surprise, because picking a row is exactly what an aggregate is supposed to be unable to do. MAX_BY returns the x from the row where y is largest, which replaces a whole window-function detour. **Note the ORDER BY sitting inside the aggregate**: it orders the list being built, not the output rows, which is a different ORDER BY from the one at the end of the query.", "left": "aggregate", "codeW": 200, "vars": ["returns", "on engineering"], "steps": [{"code": "STRING_AGG(name, ', ' ORDER BY salary DESC)", "state": ["one delimited string", "Oscar, Tomas, Quentin, Rosa, Sami"], "tone": "good"}, {"code": "ARRAY_AGG(name ORDER BY hired_on)", "state": ["an array a client unpacks", "Oscar, Quentin, Rosa, Tomas, Sami"], "changed": [0, 1], "tone": "good"}, {"code": "BOOL_AND / BOOL_OR", "state": ["does every row / does any row", "a yes-or-no fact"], "changed": [0, 1], "tone": "accent"}, {"code": "MAX_BY(name, salary)", "state": ["a value FROM one row", "the top earner's name"], "changed": [0, 1], "tone": "violet"}, {"code": "and the ORDER BY inside", "state": ["orders the list being built", "not the output rows"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_5-03-2"},
+
+
 
     { t: "p", text: "Sometimes the group's answer is not a number. `STRING_AGG` builds a delimited list — with an ORDER BY inside the aggregate, so the list is in a chosen order — and `ARRAY_AGG` builds an array a client can unpack. `BOOL_AND` and `BOOL_OR` answer 'does every row' and 'does any row'. The statistical aggregates give a standard deviation, a correlation or a mode without leaving the query. **And `MAX_BY(x, y)` — `arg_max` in some dialects — returns the x on the row where y is greatest, which is the one 'value from a particular row' that an aggregate can do.**" },
 

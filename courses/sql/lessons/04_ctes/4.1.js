@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "The same parenthesised SELECT plays different roles depending on where it stands. In a comparison or the SELECT list it is a **scalar** and must produce one value. In FROM it is a **derived table** — a relation with an alias, joinable like any other. In WHERE with EXISTS, IN, ANY or ALL it is a **predicate** over a set. The rules that follow are all consequences of which role it is playing." },
 
     { t: "dl", items: [
@@ -58,6 +62,8 @@ SELECT name FROM customers WHERE customer_id = (SELECT customer_id FROM orders);
     },
 
     { t: "h2", n: "02", text: "ANY, ALL, and derived tables", id: "any" },
+
+    {"kind": "trace", "title": "ALL and ANY, and the empty-set behaviour nobody tests for", "caption": "**Both quantifiers read nicely and both have a MAX or MIN equivalent that is usually clearer** — and the reason to prefer the aggregate form is the last two rows. Against an empty set, greater-than-ALL is *trivially true* because there is nothing to fail against, so a filter that should match nobody matches everybody. The MAX form returns NULL instead and the predicate is simply false. **A derived table is the other half of this section:** computing the department averages once as a relation is how an aggregate becomes something you can join to, and it is still the right tool when the aggregate's grain is not the row's.", "left": "predicate", "codeW": 210, "vars": ["reads as", "same as", "on an empty set"], "steps": [{"code": "salary > ALL (SELECT salary FROM sales)", "state": ["more than everyone", "> MAX(salary)", "TRUE for every row"], "tone": "crit"}, {"code": "salary < ANY (SELECT salary FROM sales)", "state": ["cheaper than someone", "< MAX(salary)", "false for every row"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "salary > (SELECT MAX(salary) ...)", "state": ["the same question", "-", "NULL, so false - safe"], "changed": [0, 1, 2], "tone": "good"}, {"code": "JOIN (SELECT dept, AVG(salary) ...) d", "state": ["the aggregate as a table", "-", "no rows to join"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-4_1-02-2"},
 
     { t: "p", text: "`salary > ALL (SELECT salary FROM sales)` reads as 'paid more than everyone in sales' and is equivalent to `salary > (SELECT MAX(salary) FROM sales)` — the MAX form is usually clearer and always safe against an empty set, which makes `> ALL` trivially true. A derived table in FROM is how an aggregate becomes joinable: **compute the department averages once as a relation, then join employees to it.** It is the pre-window way of doing 3.1's difference-from-average, and it is still the right tool when the aggregate's grain is not the row's." },
 
@@ -111,6 +117,10 @@ ORDER  BY vs_dept DESC LIMIT 3;
     { t: "h2", n: "04", text: "LATERAL: a subquery per row, on purpose", id: "lateral" },
 
     {"kind": "compare", "title": "A join, and a subquery evaluated per row on purpose", "caption": "LATERAL is the correlated subquery promoted to the FROM clause, and the one case where running it per row is the point rather than the cost: 'the three most recent orders for each customer' cannot be expressed as a plain join without ranking the whole table first.", "columns": [{"title": "JOIN", "tone": "accent", "items": ["Both sides evaluated independently", "The ON condition pairs them", "Cannot see the left row's values", "Top-n per group needs a window"]}, {"title": "LATERAL / CROSS APPLY", "tone": "good", "items": ["The right side sees the left row", "Evaluated once per left row", "LIMIT inside it is per left row", "Top-n per group is three lines"]}], "t": "diagram", "id": "dg-4_1-04-1"},
+
+
+
+
 
 
 

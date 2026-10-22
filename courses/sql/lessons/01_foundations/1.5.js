@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A cast converts a value from one type to another, and fails when it cannot: `CAST('4.2x' AS INTEGER)` is an error, not a NULL. **Every engine has a lenient form** — `TRY_CAST` in DuckDB and SQL Server, `SAFE_CAST` in BigQuery, a `CASE` with a regex check in PostgreSQL before 16 — that returns NULL instead, which is the one to use on data you did not produce. The numeric types promise different things: INTEGER is exact and divides as integers; NUMERIC(p, s) is exact decimal and slow; FLOAT is a binary approximation that is fast and cannot represent 0.1." },
 
     { t: "code", lang: "sql", title: "Casts that fail, casts that return NULL, and the float that is not 0.3",
@@ -60,6 +64,11 @@ SELECT 7 / 2 AS div, 7 % 2 AS modulo, 7.0 / 2 AS dec_div;
 
     { t: "h2", n: "02", text: "The string toolbox", id: "strings" },
 
+    {"kind": "trace", "title": "The two concatenations disagree about NULL, and one of them deletes your label", "caption": "**A label built with the double-pipe operator vanishes entirely for every row with a missing part** — not a gap in the middle, the whole value becomes NULL, because NULL propagates through the operator. CONCAT treats NULL as an empty string instead, which is almost always what a display label wants. **Everything else in the string toolbox shares the plain NULL rule: NULL in, NULL out.** And POSITION is 1-based with 0 meaning not found, so testing it with a greater-than-zero comparison is correct and testing for a non-null result is not.", "left": "expression", "codeW": 210, "vars": ["result", "why"], "steps": [{"code": "'Mr ' || NULL || ' Bruno'", "state": ["NULL - the whole label", "the operator propagates NULL"], "tone": "crit"}, {"code": "CONCAT('Mr ', NULL, ' Bruno')", "state": ["Mr  Bruno", "CONCAT treats NULL as empty"], "changed": [0, 1], "tone": "good"}, {"code": "POSITION('a' IN 'Asha')", "state": ["4", "1-based, not 0-based"], "changed": [0, 1], "tone": "accent"}, {"code": "POSITION('a' IN 'Chen')", "state": ["0", "not found - never NULL"], "changed": [0, 1], "tone": "accent"}, {"code": "UPPER(NULL), TRIM(NULL)", "state": ["NULL", "NULL in, NULL out"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_5-02-2"},
+
+
+
+
     { t: "p", text: "Text arrives dirty — padded, mixed-case, with the real value inside a longer string. The functions are the same on every engine with small spelling differences, and all of them share the NULL rule: a NULL input gives a NULL output. **The one that surprises is concatenation: `||` propagates NULL, so a label built with it disappears for every row with a missing part. `CONCAT()` treats NULL as empty.**" },
 
     { t: "code", lang: "sql", title: "Clean, cut, find, pad — and the two concatenations",
@@ -89,6 +98,11 @@ SELECT LOWER(TRIM(REGEXP_REPLACE(name, '\\s+', ' ', 'g'))) AS key FROM customers
     },
 
     { t: "h2", n: "03", text: "Dates: truncate, extract, shift", id: "dates" },
+
+    {"kind": "trace", "title": "Three ways to measure the same gap, and they give three answers", "caption": "**Subtracting the dates counts days, DATE_DIFF by month counts boundary crossings, and AGE counts whole elapsed days** — so the same two dates produce 178, 5 and 177. None is wrong; they answer different questions, and the hazard is reaching for the convenient one. **Boundary counting is what gets an age-in-years calculation wrong on the day before a birthday**, because one crossing of the 1st of a month is not one month of elapsed time. The last row is the other surprise: date arithmetic clamps, so a month after the 31st of January is the 28th of February.", "left": "what you write", "codeW": 230, "vars": ["answer", "what it actually counts"], "steps": [{"code": "DATE '2025-04-30' - signed_up", "state": ["178", "exact days"], "tone": "good"}, {"code": "DATE_DIFF('month', signed_up, ...)", "state": ["5", "1st-of-month crossings"], "changed": [0, 1], "tone": "crit"}, {"code": "AGE(DATE '2025-04-30', signed_up)", "state": ["177 days", "whole days elapsed, calendar-aware"], "changed": [0, 1], "tone": "accent"}, {"code": "DATE_TRUNC('month', placed_at)", "state": ["2025-01-01, 2025-02-01", "the group key for a time series"], "changed": [0, 1], "tone": "violet"}, {"code": "31 January plus one month", "state": ["28 February", "arithmetic clamps to the month end"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_5-03-3"},
+
+
+
 
     { t: "p", text: "Three operations cover almost all date work. **Truncation** rounds a timestamp down to the start of a unit and is the group key for any time series. **Extraction** pulls one component out as a number — the day of week for a seasonality feature, the epoch for a duration in seconds. **Arithmetic** shifts by an interval, subtracts two dates for a duration, and clamps: a month after the 31st of January is the 28th of February, because February has no 31st." },
 
@@ -145,6 +159,10 @@ FROM   p;
     { t: "h2", n: "04", text: "The date spine: months with nothing in them", id: "spine" },
 
     {"kind": "timeline", "title": "Why the monthly series starts in January", "caption": "A GROUP BY produces a row per period that **has** data, so November and December — which have no paid orders in the shop — are absent rather than zero, and a chart or a rolling average reads absence as a dip. `generate_series` builds the six months and a LEFT JOIN from it keeps every one, with `COALESCE` turning the empty ones into `0.00`.", "span": 6, "tick": 1, "lanes": [{"label": "Paid revenue", "bars": [[2, 3, "203.00", "good"], [3, 4, "251.90", "good"], [4, 5, "190.50", "good"], [5, 6, "52.50", "good"]]}, {"label": "GROUP BY gives", "bars": [[2, 6, "4 rows: Jan to Apr", "accent"]]}, {"label": "Absent", "bars": [[0, 2, "Nov and Dec: no row at all", "crit"]]}, {"label": "Date spine", "bars": [[0, 6, "6 rows, Nov and Dec as 0.00", "violet"]]}], "t": "diagram", "id": "dg-1_5-04-1"},
+
+
+
+
 
 
 

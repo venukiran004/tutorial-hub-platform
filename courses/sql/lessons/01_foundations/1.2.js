@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A comparison in SQL has three possible results: true, false, and unknown. **Any comparison in which either side is NULL is unknown** — including `NULL = NULL`. The logical operators combine the three the way you would expect if you read unknown as 'could be either': false AND unknown is false, because false wins regardless; true OR unknown is true; everything else involving unknown stays unknown. Then the rule that makes it matter: **WHERE, HAVING, JOIN … ON and CASE … WHEN keep a row only when the condition is true.** Unknown is treated like false at every one of those gates, and there is no error to tell you it happened." },
 
     { t: "dl", items: [
@@ -122,6 +126,11 @@ WHERE NOT country <=> 'GB'                        -- MySQL`,
 
     { t: "h2", n: "03", text: "NOT IN: the trap with two sides", id: "notin" },
 
+    {"kind": "flow", "title": "NOT IN has a trap on each side of the operator", "caption": "**NOT IN expands to a chain of inequalities joined by AND, and that is the whole explanation.** A NULL anywhere in the list makes one term unknown, so the AND can never be true and the query returns nothing — no error, no warning, zero rows. A NULL in the column does the same to that single row. **This is the most common cause of an extract that suddenly comes back empty after working for a year:** the subquery feeding the list gained its first NULL. NOT EXISTS has neither problem, which is why it is the form to reach for.", "cols": 3, "nodes": [{"id": "x", "label": "country NOT IN ('GB', NULL)", "sub": "expands to a chain of AND", "tone": "accent"}, {"id": "u", "label": "One term is unknown", "sub": "nothing compares equal to NULL", "tone": "crit"}, {"id": "z", "label": "ZERO ROWS, no error", "sub": "the NULL was on the right", "tone": "crit"}, {"id": "l", "label": "Or the column itself is NULL", "sub": "that row alone is dropped", "tone": "warn"}, {"id": "s", "label": "A subquery can supply a NULL you never wrote", "sub": "worked for a year, now empty", "tone": "crit"}, {"id": "f", "label": "Use NOT EXISTS instead", "sub": "neither trap applies", "tone": "good"}], "edges": [["x", "u"], ["u", "z"], ["x", "l"], ["z", "s"], ["s", "f"]], "t": "diagram", "id": "dg-1_2-03-2"},
+
+
+
+
     { t: "p", text: "`x NOT IN (a, b, c)` is shorthand for `x <> a AND x <> b AND x <> c`. **If any element of the list is NULL, one term is unknown, the AND is at best unknown, and no row passes — the query returns nothing.** And the trap has a second side: if `x` itself is NULL, every term is unknown and that row is dropped, whatever the list holds. A subquery in the list can contain a NULL you never wrote, which is how a query that worked for a year returns zero rows the first time a lookup table gains a null." },
 
     { t: "code", lang: "sql", title: "Both sides of NOT IN, and the form that means what you meant",
@@ -155,6 +164,10 @@ WHERE  NOT EXISTS (SELECT 1 FROM products q WHERE q.unit_price < 30 AND q.catego
     { t: "h2", n: "04", text: "Aggregates, groups, distinct and unique", id: "aggregates" },
 
     {"kind": "matrix", "title": "What each aggregate does with a NULL", "caption": "Only `COUNT(*)` counts rows; everything else counts or sums the values that exist. The gap between `COUNT(*)` and `COUNT(x)` is the number of NULLs in x — a free null check.", "cols": ["Sees NULL", "Consequence"], "rows": ["COUNT(*)", "COUNT(x)", "SUM(x)", "AVG(x)", "GROUP BY x", "COUNT(DISTINCT x)"], "cells": [[{"text": "counts the row", "tone": "accent"}, "the only true row count"], [{"text": "skips it", "tone": "warn"}, "COUNT(*) - COUNT(x) = nulls"], [{"text": "skips it", "tone": "warn"}, "NULL when every value is NULL"], [{"text": "skips it", "tone": "warn"}, "divides by the non-null count"], [{"text": "one NULL group", "tone": "violet"}, "all NULLs land together"], [{"text": "skips it", "tone": "warn"}, "NULL is never a distinct value"]], "t": "diagram", "id": "dg-1_2-04-1"},
+
+
+
+
 
 
 

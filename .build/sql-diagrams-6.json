@@ -1,0 +1,86 @@
+{
+ "1.1": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Three clauses, and what each one does not promise",
+         "caption": "**All three are assumed to do something slightly stronger than they do.** DISTINCT works on the whole row, so there is no way to make it apply to one column — that is what GROUP BY or DISTINCT ON is for. ORDER BY fixes the order only for the keys you name, so rows that tie come back in whatever order the plan produced, **and can come back differently next time the data changes.** And LIMIT without ORDER BY is not “the first ten”: it is ten rows of whatever the plan happened to emit first, which is a genuinely non-deterministic query.",
+         "left": "what you write", "codeW": 190,
+         "vars": ["what it guarantees", "what people assume"],
+         "steps": [
+          {"code": "SELECT DISTINCT a, b", "state": ["distinct PAIRS", "distinct values of a"], "tone": "crit"},
+          {"code": "ORDER BY country", "state": ["order within country only", "a fully fixed order"], "changed": [0, 1], "tone": "crit"},
+          {"code": "LIMIT 10, no ORDER BY", "state": ["any ten rows the plan emitted", "the first ten"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ORDER BY with a tiebreak key", "state": ["a total order - reproducible", "-"], "changed": [0, 1], "tone": "good"},
+          {"code": "and where NULL sorts", "state": ["a dialect fact, not a standard", "the same everywhere"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "1.2": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "NOT IN has a trap on each side of the operator",
+         "caption": "**NOT IN expands to a chain of inequalities joined by AND, and that is the whole explanation.** A NULL anywhere in the list makes one term unknown, so the AND can never be true and the query returns nothing — no error, no warning, zero rows. A NULL in the column does the same to that single row. **This is the most common cause of an extract that suddenly comes back empty after working for a year:** the subquery feeding the list gained its first NULL. NOT EXISTS has neither problem, which is why it is the form to reach for.",
+         "cols": 3,
+         "nodes": [
+          {"id": "x", "label": "country NOT IN ('GB', NULL)", "sub": "expands to a chain of AND", "tone": "accent"},
+          {"id": "u", "label": "One term is unknown", "sub": "nothing compares equal to NULL", "tone": "crit"},
+          {"id": "z", "label": "ZERO ROWS, no error", "sub": "the NULL was on the right", "tone": "crit"},
+          {"id": "l", "label": "Or the column itself is NULL", "sub": "that row alone is dropped", "tone": "warn"},
+          {"id": "s", "label": "A subquery can supply a NULL you never wrote", "sub": "worked for a year, now empty", "tone": "crit"},
+          {"id": "f", "label": "Use NOT EXISTS instead", "sub": "neither trap applies", "tone": "good"}],
+         "edges": [["x", "u"], ["u", "z"], ["x", "l"], ["z", "s"], ["s", "f"]]}}
+ ],
+
+ "1.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Two wildcards, run against the same eight names",
+         "caption": "**LIKE has exactly two wildcards and nothing else:** the percent sign matches any run of characters including none, and the underscore matches exactly one. Everything else is a literal. **Which makes the fourth row the one to remember — an underscore in your search text is a wildcard**, so searching for a literal one needs an ESCAPE clause, or it quietly matches any single character instead. And case sensitivity is a dialect default rather than a rule: PostgreSQL is sensitive, MySQL and SQL Server are not, so a name search can work on one engine and fail on another.",
+         "left": "pattern", "codeW": 190,
+         "vars": ["means", "matches here"],
+         "steps": [
+          {"code": "LIKE '_a%'", "state": ["second character is a", "Dalia, Fatou, Mara"], "tone": "good"},
+          {"code": "LIKE '%a'", "state": ["ends in a", "Asha, Dalia, Emeka, Mara"], "changed": [0, 1], "tone": "good"},
+          {"code": "LIKE '% %'", "state": ["contains a space", "Desk lamp, Gift card"], "changed": [0, 1], "tone": "accent"},
+          {"code": "a literal underscore", "state": ["needs an ESCAPE clause", "without it, any single character"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ILIKE 'A%'", "state": ["case-insensitive, PostgreSQL", "Asha"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Which side gets converted decides whether the index is used",
+         "caption": "**The rule is one sentence: keep the column bare and cast the literal.** Comparing an integer column to a quoted literal converts the literal once and uses the index. Comparing a text column to a bare number converts *every row* — which makes the index unusable and raises an error on the first value with a letter in it. **A function wrapped around the column has the same effect for the same reason**, which is why a month filter written with TO_CHAR scans the whole table while a half-open range on the bare column does not. And row one is a reminder that text order is not numeric order.",
+         "left": "predicate", "codeW": 210,
+         "vars": ["what gets converted", "indexable"],
+         "steps": [
+          {"code": "'9' > '10'", "state": ["nothing - compared character by character", "true, and not arithmetic"], "tone": "warn"},
+          {"code": "customer_id = '5', id integer", "state": ["the literal, once", "yes"], "changed": [0, 1], "tone": "good"},
+          {"code": "zip_code = 12345, zip text", "state": ["EVERY ROW", "no - and it may error"], "changed": [0, 1], "tone": "crit"},
+          {"code": "placed_at >= TIMESTAMP '...'", "state": ["the literal", "yes"], "changed": [0, 1], "tone": "good"},
+          {"code": "TO_CHAR(placed_at, 'YYYY-MM')", "state": ["every row", "no - a full scan every time"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "1.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The two concatenations disagree about NULL, and one of them deletes your label",
+         "caption": "**A label built with the double-pipe operator vanishes entirely for every row with a missing part** — not a gap in the middle, the whole value becomes NULL, because NULL propagates through the operator. CONCAT treats NULL as an empty string instead, which is almost always what a display label wants. **Everything else in the string toolbox shares the plain NULL rule: NULL in, NULL out.** And POSITION is 1-based with 0 meaning not found, so testing it with a greater-than-zero comparison is correct and testing for a non-null result is not.",
+         "left": "expression", "codeW": 210,
+         "vars": ["result", "why"],
+         "steps": [
+          {"code": "'Mr ' || NULL || ' Bruno'", "state": ["NULL - the whole label", "the operator propagates NULL"], "tone": "crit"},
+          {"code": "CONCAT('Mr ', NULL, ' Bruno')", "state": ["Mr  Bruno", "CONCAT treats NULL as empty"], "changed": [0, 1], "tone": "good"},
+          {"code": "POSITION('a' IN 'Asha')", "state": ["4", "1-based, not 0-based"], "changed": [0, 1], "tone": "accent"},
+          {"code": "POSITION('a' IN 'Chen')", "state": ["0", "not found - never NULL"], "changed": [0, 1], "tone": "accent"},
+          {"code": "UPPER(NULL), TRIM(NULL)", "state": ["NULL", "NULL in, NULL out"], "changed": [0, 1], "tone": "warn"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Three ways to measure the same gap, and they give three answers",
+         "caption": "**Subtracting the dates counts days, DATE_DIFF by month counts boundary crossings, and AGE counts whole elapsed days** — so the same two dates produce 178, 5 and 177. None is wrong; they answer different questions, and the hazard is reaching for the convenient one. **Boundary counting is what gets an age-in-years calculation wrong on the day before a birthday**, because one crossing of the 1st of a month is not one month of elapsed time. The last row is the other surprise: date arithmetic clamps, so a month after the 31st of January is the 28th of February.",
+         "left": "what you write", "codeW": 230,
+         "vars": ["answer", "what it actually counts"],
+         "steps": [
+          {"code": "DATE '2025-04-30' - signed_up", "state": ["178", "exact days"], "tone": "good"},
+          {"code": "DATE_DIFF('month', signed_up, ...)", "state": ["5", "1st-of-month crossings"], "changed": [0, 1], "tone": "crit"},
+          {"code": "AGE(DATE '2025-04-30', signed_up)", "state": ["177 days", "whole days elapsed, calendar-aware"], "changed": [0, 1], "tone": "accent"},
+          {"code": "DATE_TRUNC('month', placed_at)", "state": ["2025-01-01, 2025-02-01", "the group key for a time series"], "changed": [0, 1], "tone": "violet"},
+          {"code": "31 January plus one month", "state": ["28 February", "arithmetic clamps to the month end"], "changed": [0, 1], "tone": "warn"}]}}
+ ]
+}

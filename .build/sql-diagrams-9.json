@@ -1,0 +1,56 @@
+{
+ "4.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "ALL and ANY, and the empty-set behaviour nobody tests for",
+         "caption": "**Both quantifiers read nicely and both have a MAX or MIN equivalent that is usually clearer** — and the reason to prefer the aggregate form is the last two rows. Against an empty set, greater-than-ALL is *trivially true* because there is nothing to fail against, so a filter that should match nobody matches everybody. The MAX form returns NULL instead and the predicate is simply false. **A derived table is the other half of this section:** computing the department averages once as a relation is how an aggregate becomes something you can join to, and it is still the right tool when the aggregate's grain is not the row's.",
+         "left": "predicate", "codeW": 210,
+         "vars": ["reads as", "same as", "on an empty set"],
+         "steps": [
+          {"code": "salary > ALL (SELECT salary FROM sales)", "state": ["more than everyone", "> MAX(salary)", "TRUE for every row"], "tone": "crit"},
+          {"code": "salary < ANY (SELECT salary FROM sales)", "state": ["cheaper than someone", "< MAX(salary)", "false for every row"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "salary > (SELECT MAX(salary) ...)", "state": ["the same question", "-", "NULL, so false - safe"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "JOIN (SELECT dept, AVG(salary) ...) d", "state": ["the aggregate as a table", "-", "no rows to join"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ],
+
+ "4.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "One recursion, four questions, and only the anchor and the join direction change",
+         "caption": "**The shape of a recursive CTE never changes — what changes is where you start and which way the join points.** Anchor at a node and join child-to-parent and you walk *down* into a subtree. Anchor at a leaf and join the other way and you climb *up* to the root, which is the chain of command. **The fourth row is the one worth learning:** anchor on every row at once and carry the root's id along, and each employee appears once per ancestor — so grouping by that root gives every manager their subtree payroll in a single pass. That is a bill-of-materials rollup wearing an org chart.",
+         "left": "what you want", "codeW": 190,
+         "vars": ["anchor at", "join direction", "result"],
+         "steps": [
+          {"code": "Oscar's whole organisation", "state": ["Oscar", "child to parent - downwards", "4 reports, 479,000 payroll"], "tone": "good"},
+          {"code": "Wen's chain of command", "state": ["Wen, a leaf", "parent to child - upwards", "Wen, Uma, Priya, Nadia"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "depth of every node", "state": ["the root", "downwards, carrying a counter", "a level per row"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "EVERY manager's subtree total", "state": ["every row at once", "downwards, carrying the root id", "one row per ancestor pair"], "changed": [0, 1, 2], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Rows that exist in no table, and the one line that stops it",
+         "caption": "**A recursive CTE can manufacture rows: start with one value, add an interval each round, and stop when the guard fails.** That is the date spine from lesson 1.5 for engines without generate_series — MySQL, SQLite, SQL Server — and the same three lines generate integers, months, or any arithmetic sequence. **The guard is not optional and it lives in the recursive member's WHERE, not in the outer query:** an outer LIMIT does not stop the recursion, it just stops reading. SQL Server caps the rounds at 100 by default, which turns a forgotten guard into an error rather than a runaway.",
+         "cols": 3,
+         "nodes": [
+          {"id": "a", "label": "Anchor: one literal date", "sub": "SELECT DATE '2025-03-01'", "tone": "accent"},
+          {"id": "r", "label": "Recursive member: add a day", "sub": "SELECT d + INTERVAL '1 day' FROM days", "tone": "good"},
+          {"id": "g", "label": "WHERE d < the end date", "sub": "the guard - inside the recursion", "tone": "violet"},
+          {"id": "o", "label": "Seven rows, from no table at all", "sub": "a date spine anywhere", "tone": "good"},
+          {"id": "f", "label": "Forget the guard and it never ends", "sub": "an outer LIMIT does not stop it", "tone": "crit"}],
+         "edges": [["a", "r"], ["r", "g"], ["g", "o"], ["g", "f"]]}}
+ ],
+
+ "4.5": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Two index types, and each one only serves its own predicate shape",
+         "caption": "**The last column is the point of the section: an index that exists is not an index that is used.** An expression index is built on one exact expression, so a query written with the JSON-returning arrow instead of the text-returning one misses it entirely — same field, same value, full scan. **A GIN index serves containment and key-existence across any field, and does nothing for a plain text-arrow equality.** So the choice is not which index is better: it is which shape of predicate your code actually writes, and then making the two match.",
+         "left": "index", "codeW": 190,
+         "vars": ["serves", "cost", "does NOT serve"],
+         "steps": [
+          {"code": "none", "state": ["nothing", "-", "every query scans"], "tone": "crit"},
+          {"code": "B-tree on (doc->>'channel')", "state": ["equality and ranges on that ONE field", "small, cheap writes", "any other field"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "...queried with doc->'channel'", "state": ["NOT USED - a different expression", "-", "a full scan again"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "GIN on the whole document", "state": ["containment, key existence, paths", "larger, slower writes", "a plain ->> equality"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "GIN with jsonb_path_ops", "state": ["containment only", "smaller than plain GIN", "key existence"], "changed": [0, 1, 2], "tone": "accent"}]}}
+ ]
+}

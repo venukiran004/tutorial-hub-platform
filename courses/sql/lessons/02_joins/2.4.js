@@ -27,6 +27,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`GROUP BY country, tier` partitions the rows into one bucket per distinct `(country, tier)` pair, NULL counting as a value for the purpose. Each bucket becomes one output row. **The only things that have a single value per bucket are the grouping columns themselves and aggregates over the bucket** — so `SELECT name` in a query grouped by country is an error in PostgreSQL, because a country has many names and the engine will not guess. MySQL with `ONLY_FULL_GROUP_BY` off, and SQLite, pick one arbitrarily, which is worse." },
 
     { t: "code", lang: "sql", title: "Two grouping columns, then the shape every per-entity report has",
@@ -61,6 +65,10 @@ ORDER  BY c.customer_id;
     ]},
 
     { t: "h2", n: "02", text: "HAVING: filtering after the collapse", id: "having" },
+
+    {"kind": "trace", "title": "Same answer three ways, and only one of them lets the index help", "caption": "**A condition with no aggregate in it belongs in WHERE, even though HAVING would accept it** — because WHERE removes rows before they are grouped, which is less work and leaves the planner free to use an index. HAVING runs after the collapse and can only see grouping columns and aggregates. **The FILTER form is the one worth adding to your vocabulary:** it keeps every order in the grouping while counting only the paid ones, so you can report paid and unpaid side by side in a single pass. And HAVING with no GROUP BY treats the whole table as one group.", "left": "where the condition goes", "codeW": 220, "vars": ["runs", "effect"], "steps": [{"code": "WHERE status = 'paid'", "state": ["before grouping", "fewer rows grouped, index-friendly"], "tone": "good"}, {"code": "HAVING COUNT(*) >= 2", "state": ["after grouping", "the only place an aggregate can go"], "changed": [0, 1], "tone": "accent"}, {"code": "HAVING status = 'paid'", "state": ["after grouping", "accepted, and wasteful"], "changed": [0, 1], "tone": "crit"}, {"code": "COUNT(*) FILTER (WHERE ...)", "state": ["inside the aggregate", "keeps every row in the group"], "changed": [0, 1], "tone": "violet"}, {"code": "HAVING with no GROUP BY", "state": ["once", "the whole table as one group"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-2_4-02-2"},
+
+
 
     { t: "p", text: "WHERE runs before grouping and cannot see aggregates; HAVING runs after and can. **A condition that does not involve an aggregate belongs in WHERE even though HAVING would accept it**, because WHERE removes rows before they are grouped — less work, and the planner can use an index. HAVING without GROUP BY treats the whole table as one group, which is occasionally useful for 'return the total only if …'." },
 
@@ -139,6 +147,10 @@ GROUP  BY c.tier ORDER BY c.tier;
     { t: "h2", n: "04", text: "One whole row per group is not a GROUP BY", id: "distincton" },
 
     {"kind": "compare", "title": "'The latest order per customer' is not an aggregate", "caption": "The question asks for a **row** chosen by an ordering, not a value computed over a group. There is no aggregate that returns 'the status on the row where placed_at was the maximum', and MAX on each column separately silently mixes rows: Chen's MAX(status) is `refunded`, from a different order than his MAX(placed_at).", "columns": [{"title": "MAX on each column", "tone": "crit", "items": ["One row per customer", "MAX(placed_at): the right timestamp", "MAX(status): alphabetically last", "The two come from different rows", "Wrong, and it does not error"]}, {"title": "DISTINCT ON / ROW_NUMBER", "tone": "good", "items": ["7 rows: Mara has no order", "The whole row, chosen by the sort", "Every column from that one row", "ORDER BY starts with the key", "DISTINCT ON: Postgres, DuckDB"]}], "t": "diagram", "id": "dg-2_4-04-1"},
+
+
+
+
 
 
 

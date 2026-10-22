@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "All three ranking functions take an ORDER BY inside OVER and assign a number to each row in that order. They differ only at ties. **ROW_NUMBER gives every row a distinct number, choosing arbitrarily among ties unless the ORDER BY has a tie-breaker. RANK gives tied rows the same number and skips the numbers they consumed. DENSE_RANK gives tied rows the same number and skips nothing.** NTILE(n) splits the ordered rows into n buckets as evenly as it can and returns the bucket." },
 
     { t: "code", lang: "sql", title: "Ten salaries, one tie, four numberings",
@@ -100,6 +104,9 @@ FROM   employees ORDER BY salary DESC, name;
 
     { t: "h2", n: "02", text: "Top-N per group", id: "topn" },
 
+    {"kind": "trace", "title": "Three ranking functions, one tie, three different answers to top three", "caption": "**In engineering the third and fourth salaries tie, and that single fact makes the three functions disagree about how many rows top-three means.** ROW_NUMBER hands out 3 and 4 arbitrarily and returns exactly three rows; RANK gives both the tied rows 3 and returns four; DENSE_RANK does the same without leaving a gap afterwards. **Only the question can say which is right** — “exactly three bonuses to award” and “everyone in the top three salary bands” are different requirements. And ROW_NUMBER without a tie-breaker is non-deterministic: add the primary key as the last ORDER BY column.", "left": "the tied pair, salary 125000", "codeW": 220, "vars": ["numbers given", "rows in top 3", "next rank"], "steps": [{"code": "ROW_NUMBER()", "state": ["3 and 4, arbitrarily", "exactly 3", "5"], "tone": "crit"}, {"code": "RANK()", "state": ["3 and 3", "4", "5 - a gap"], "changed": [0, 1, 2], "tone": "good"}, {"code": "DENSE_RANK()", "state": ["3 and 3", "4", "4 - no gap"], "changed": [0, 1, 2], "tone": "good"}, {"code": "ROW_NUMBER, no tie-breaker", "state": ["a different answer each run", "3", "-"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "...ORDER BY salary DESC, employee_id", "state": ["fixed, reproducible", "3", "-"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_2-02-2"},
+
+
     { t: "p", text: "'The three best-paid people in each department' is a ranking partitioned by department, filtered to rank ≤ 3. Because a window cannot be filtered in its own WHERE (3.1), the ranking goes in a subquery and the filter outside — or in QUALIFY. **Which ranking function you use decides what happens in engineering, where the third and fourth salaries tie**: ROW_NUMBER returns exactly three, RANK and DENSE_RANK return four, and only the question can tell you which is right." },
 
     { t: "code", lang: "sql", title: "Top three per department, and what the tie does to it",
@@ -135,6 +142,10 @@ ORDER  BY department, salary DESC;`,
     { t: "h2", n: "03", text: "The nth highest", id: "nth" },
 
     {"kind": "matrix", "title": "Which ranking function the question wants", "caption": "The choice is decided by what a tie should mean. 'Second-highest salary' is the second distinct *value*, so a tie at the top still leaves a second value below it — DENSE_RANK. 'Exactly three rows' can only be ROW_NUMBER.", "cols": ["Use", "Because a tie should"], "rows": ["Exactly n rows", "Top n including ties", "The nth distinct value", "De-duplication", "Quartiles and deciles"], "cells": [[{"text": "ROW_NUMBER", "tone": "accent"}, "be broken, arbitrarily or by a key"], [{"text": "RANK", "tone": "good"}, "mean there is no next place"], [{"text": "DENSE_RANK", "tone": "good"}, "consume only one value"], [{"text": "ROW_NUMBER", "tone": "accent"}, "keep exactly one copy"], [{"text": "NTILE(n)", "tone": "violet"}, "land in the same bucket"]], "t": "diagram", "id": "dg-3_2-03-1"},
+
+
+
+
 
 
 

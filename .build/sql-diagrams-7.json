@@ -1,0 +1,75 @@
+{
+ "2.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The lookup table has a NULL row, and it still does not match",
+         "caption": "**A join condition is a comparison, so the NULL rules from lesson 1.2 apply unchanged** — and that produces the result people find hardest to believe: a product whose category is NULL does not match the lookup row whose category is also NULL, because NULL = NULL is unknown, not true. Under an inner join the gift card vanishes; under a left join it survives with a NULL department, **which is usually the answer you want.** When it genuinely is not, the null-safe comparison is the fix — IS NOT DISTINCT FROM, or the spaceship operator on MySQL.",
+         "left": "join condition", "codeW": 230,
+         "vars": ["gift card, category NULL", "why"],
+         "steps": [
+          {"code": "INNER JOIN ON k.category = p.category", "state": ["row disappears", "the comparison is unknown"], "tone": "crit"},
+          {"code": "LEFT JOIN ON k.category = p.category", "state": ["survives, dept NULL", "no pair was made"], "changed": [0, 1], "tone": "accent"},
+          {"code": "...even though the lookup HAS a NULL row", "state": ["still no match", "NULL = NULL is unknown too"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ON k.category IS NOT DISTINCT FROM ...", "state": ["dept = unknown", "null-safe: NULL matches NULL"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Two children of one parent, and every total is wrong by a different factor",
+         "caption": "**One row per line item is exactly right for summing revenue — until you count orders, which are now repeated once per item.** Add a third join to events and each item row repeats once per event, so revenue is multiplied by that customer's event count: **a different wrong factor for every customer, and every figure still looks plausible.** DISTINCT rescues the counts and does nothing for the sums. The fix is structural: aggregate each child to one row per parent first, then join one-to-one. And ship the reconciliation query — the joined total must equal the base-table total, 697.90 here.",
+         "cols": 3,
+         "nodes": [
+          {"id": "o", "label": "customers JOIN orders JOIN items", "sub": "one row per line item", "tone": "accent"},
+          {"id": "r", "label": "Revenue correct, order count wrong", "sub": "Asha reads 6 orders, she has 3", "tone": "warn"},
+          {"id": "e", "label": "Add a JOIN to events", "sub": "each item row repeats per event", "tone": "crit"},
+          {"id": "n", "label": "Now NOTHING is right", "sub": "a different factor per customer", "tone": "crit"},
+          {"id": "d", "label": "DISTINCT fixes counts, not sums", "sub": "which is why it feels fixed", "tone": "warn"},
+          {"id": "f", "label": "Aggregate each child per parent first", "sub": "then join one-to-one", "tone": "good"},
+          {"id": "c", "label": "And reconcile against the base table", "sub": "one query, catches all four traps", "tone": "violet"}],
+         "edges": [["o", "r"], ["r", "e"], ["e", "n"], ["n", "d"], ["d", "f"], ["f", "c"]]}}
+ ],
+
+ "2.3": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "The engine sees two tables; only you know they are one",
+         "caption": "**A self join is an ordinary join whose two sides happen to be the same table under different aliases** — there is nothing special about it except that the aliases now carry the whole meaning. The two uses are worth separating. **For a hierarchy, the condition walks the pointer** — manager_id to employee_id — and LEFT is what keeps the root, whose manager is NULL. **For pairs, the condition shares a value, and an inequality on the key is doing two jobs:** it stops a row pairing with itself, and it stops each pair appearing twice in both orders.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "One table, two aliases", "sub": "e and m - the engine sees two", "tone": "accent"},
+          {"id": "h", "label": "Hierarchy: walk the pointer", "sub": "ON m.employee_id = e.manager_id", "tone": "good"},
+          {"id": "l", "label": "LEFT keeps the root", "sub": "whose manager_id is NULL", "tone": "good"},
+          {"id": "p", "label": "Pairs: share a value", "sub": "ON a.country = b.country", "tone": "violet"},
+          {"id": "i", "label": "Plus an inequality on the key", "sub": "a.id < b.id", "tone": "violet"},
+          {"id": "w", "label": "Which does two jobs", "sub": "no self-pairs, and no duplicates", "tone": "warn"}],
+         "edges": [["s", "h"], ["h", "l"], ["s", "p"], ["p", "i"], ["i", "w"]]}}
+ ],
+
+ "2.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Same answer three ways, and only one of them lets the index help",
+         "caption": "**A condition with no aggregate in it belongs in WHERE, even though HAVING would accept it** — because WHERE removes rows before they are grouped, which is less work and leaves the planner free to use an index. HAVING runs after the collapse and can only see grouping columns and aggregates. **The FILTER form is the one worth adding to your vocabulary:** it keeps every order in the grouping while counting only the paid ones, so you can report paid and unpaid side by side in a single pass. And HAVING with no GROUP BY treats the whole table as one group.",
+         "left": "where the condition goes", "codeW": 220,
+         "vars": ["runs", "effect"],
+         "steps": [
+          {"code": "WHERE status = 'paid'", "state": ["before grouping", "fewer rows grouped, index-friendly"], "tone": "good"},
+          {"code": "HAVING COUNT(*) >= 2", "state": ["after grouping", "the only place an aggregate can go"], "changed": [0, 1], "tone": "accent"},
+          {"code": "HAVING status = 'paid'", "state": ["after grouping", "accepted, and wasteful"], "changed": [0, 1], "tone": "crit"},
+          {"code": "COUNT(*) FILTER (WHERE ...)", "state": ["inside the aggregate", "keeps every row in the group"], "changed": [0, 1], "tone": "violet"},
+          {"code": "HAVING with no GROUP BY", "state": ["once", "the whole table as one group"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "2.5": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "When the group's answer is not a number",
+         "caption": "**An aggregate can return a sorted list, an array, a yes-or-no fact about every row, or a value taken from one particular row** — and that last one is the surprise, because picking a row is exactly what an aggregate is supposed to be unable to do. MAX_BY returns the x from the row where y is largest, which replaces a whole window-function detour. **Note the ORDER BY sitting inside the aggregate**: it orders the list being built, not the output rows, which is a different ORDER BY from the one at the end of the query.",
+         "left": "aggregate", "codeW": 200,
+         "vars": ["returns", "on engineering"],
+         "steps": [
+          {"code": "STRING_AGG(name, ', ' ORDER BY salary DESC)", "state": ["one delimited string", "Oscar, Tomas, Quentin, Rosa, Sami"], "tone": "good"},
+          {"code": "ARRAY_AGG(name ORDER BY hired_on)", "state": ["an array a client unpacks", "Oscar, Quentin, Rosa, Tomas, Sami"], "changed": [0, 1], "tone": "good"},
+          {"code": "BOOL_AND / BOOL_OR", "state": ["does every row / does any row", "a yes-or-no fact"], "changed": [0, 1], "tone": "accent"},
+          {"code": "MAX_BY(name, salary)", "state": ["a value FROM one row", "the top earner's name"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and the ORDER BY inside", "state": ["orders the list being built", "not the output rows"], "changed": [0, 1], "tone": "warn"}]}}
+ ]
+}

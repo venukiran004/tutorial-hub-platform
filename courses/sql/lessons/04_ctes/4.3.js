@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`WITH RECURSIVE t AS (anchor UNION ALL recursive_member)` is evaluated in rounds. The anchor runs once and its rows form the working set. Then the recursive member runs with `t` bound to the working set — only the rows from the previous round, not everything so far — and its output becomes the next working set. **When a round produces no rows, evaluation stops, and the CTE's result is the union of every round.** A hierarchy walk therefore descends one level per round." },
 
     { t: "code", lang: "sql", title: "The org chart from the root, with depth and path",
@@ -102,6 +106,8 @@ SELECT depth, name, path FROM tree ORDER BY path;
 
     { t: "h2", n: "02", text: "Subtrees, chains of command, and aggregating over a subtree", id: "subtree" },
 
+    {"kind": "trace", "title": "One recursion, four questions, and only the anchor and the join direction change", "caption": "**The shape of a recursive CTE never changes — what changes is where you start and which way the join points.** Anchor at a node and join child-to-parent and you walk *down* into a subtree. Anchor at a leaf and join the other way and you climb *up* to the root, which is the chain of command. **The fourth row is the one worth learning:** anchor on every row at once and carry the root's id along, and each employee appears once per ancestor — so grouping by that root gives every manager their subtree payroll in a single pass. That is a bill-of-materials rollup wearing an org chart.", "left": "what you want", "codeW": 190, "vars": ["anchor at", "join direction", "result"], "steps": [{"code": "Oscar's whole organisation", "state": ["Oscar", "child to parent - downwards", "4 reports, 479,000 payroll"], "tone": "good"}, {"code": "Wen's chain of command", "state": ["Wen, a leaf", "parent to child - upwards", "Wen, Uma, Priya, Nadia"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "depth of every node", "state": ["the root", "downwards, carrying a counter", "a level per row"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "EVERY manager's subtree total", "state": ["every row at once", "downwards, carrying the root id", "one row per ancestor pair"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-4_3-02-2"},
+
     { t: "p", text: "Start the anchor at any node and the recursion produces that node's subtree. Start at a leaf and join the other way — `e.employee_id = u.manager_id` — and it climbs to the root: the chain of command. **To aggregate over every subtree at once, anchor on every row and carry the root's id along**; each employee then appears once per ancestor, and grouping by the root gives each manager their total reports and subtree payroll, which is the bill-of-materials rollup in an org-chart costume." },
 
     { t: "code", lang: "sql", title: "Oscar's organisation, Wen's chain of command, and every manager's subtree total",
@@ -136,6 +142,8 @@ GROUP  BY m.name HAVING COUNT(*) > 1 ORDER BY subtree_payroll DESC;
 
     { t: "h2", n: "03", text: "Generating rows from nothing", id: "series" },
 
+    {"kind": "flow", "title": "Rows that exist in no table, and the one line that stops it", "caption": "**A recursive CTE can manufacture rows: start with one value, add an interval each round, and stop when the guard fails.** That is the date spine from lesson 1.5 for engines without generate_series — MySQL, SQLite, SQL Server — and the same three lines generate integers, months, or any arithmetic sequence. **The guard is not optional and it lives in the recursive member's WHERE, not in the outer query:** an outer LIMIT does not stop the recursion, it just stops reading. SQL Server caps the rounds at 100 by default, which turns a forgotten guard into an error rather than a runaway.", "cols": 3, "nodes": [{"id": "a", "label": "Anchor: one literal date", "sub": "SELECT DATE '2025-03-01'", "tone": "accent"}, {"id": "r", "label": "Recursive member: add a day", "sub": "SELECT d + INTERVAL '1 day' FROM days", "tone": "good"}, {"id": "g", "label": "WHERE d < the end date", "sub": "the guard - inside the recursion", "tone": "violet"}, {"id": "o", "label": "Seven rows, from no table at all", "sub": "a date spine anywhere", "tone": "good"}, {"id": "f", "label": "Forget the guard and it never ends", "sub": "an outer LIMIT does not stop it", "tone": "crit"}], "edges": [["a", "r"], ["r", "g"], ["g", "o"], ["g", "f"]], "t": "diagram", "id": "dg-4_3-03-3"},
+
     { t: "p", text: "A recursive CTE can produce rows that exist in no table: start with one date, add a day each round, stop at the end date. It is the date spine of 1.5 on engines without `generate_series` — MySQL, SQLite, SQL Server — and it generates integers, months or any arithmetic sequence the same way. **The termination condition lives in the recursive member's WHERE; forget it and the series never ends.**" },
 
     { t: "code", lang: "sql", title: "A week of dates from a single literal",
@@ -157,6 +165,10 @@ SELECT d::DATE AS d, EXTRACT(dow FROM d) AS dow FROM days;
     { t: "h2", n: "04", text: "Cycles, and three ways to survive them", id: "cycles" },
 
     {"kind": "matrix", "title": "Three ways to survive a cycle", "caption": "A tree terminates because leaves have no children. A graph does not: with the edges 1→2, 2→3, 3→1, the working set is never empty. Each of these breaks the loop by carrying the path so far, so a node that reappears can be detected.", "cols": ["How", "Cost"], "rows": ["CYCLE ... SET", "An array of visited ids", "A depth limit", "Nothing"], "cells": [[{"text": "the engine tracks the path", "tone": "good"}, "SQL:2016; Postgres 14+"], [{"text": "carry it and test membership", "tone": "accent"}, "portable; one extra column"], [{"text": "stop at depth n", "tone": "warn"}, "truncates a legitimate deep tree"], [{"text": "it never terminates", "tone": "crit"}, "the depth limit, or the query is killed"]], "t": "diagram", "id": "dg-4_3-04-1"},
+
+
+
+
 
 
 

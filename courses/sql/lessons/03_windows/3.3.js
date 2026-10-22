@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A partition is the group; a frame is the subset of the partition, relative to the current row, that the aggregate actually runs over. With no ORDER BY the frame is the whole partition — the grand total on every row. **With ORDER BY and nothing else, the frame becomes everything from the start of the partition up to the current row and its peers**, which is what turns SUM into a running total. Every other shape — the last three rows, the previous 30 days, everything except this row, everything after it — is a frame clause written out." },
 
     { t: "dl", items: [
@@ -98,6 +102,10 @@ FROM   employees ORDER BY salary, employee_id;
 
 
 
+
+
+
+
     { t: "p", text: "A moving average over the last three orders is `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`: the current row and the two before it in the ORDER BY. At the start of the partition the frame is shorter — one row, then two — and the average is over what exists, so the first values are not smoothed. **A frame that includes FOLLOWING rows uses the future**: a centred average is a legitimate smoother for a chart and a leak in a feature (Data Handling 8.3), because the row's value now depends on rows that come after it." },
 
     { t: "code", lang: "sql", title: "Trailing, centred, remaining — and the count that says how full the window was",
@@ -129,6 +137,9 @@ FROM   ot ORDER BY placed_at;
     ]},
 
     { t: "h2", n: "03", text: "RANGE: windows in value or time", id: "range" },
+
+    {"kind": "trace", "title": "ROWS counts rows; RANGE measures the sort key", "caption": "**Three rows back is not the same amount of time on two different days** — which is the whole reason RANGE exists. Over a timestamp, a 30-day RANGE frame is genuinely “every order in the 30 days up to this one”, so orders drop out of the window as they age rather than as new rows arrive. Over a number it becomes a value band. **And the behaviour that surprises everyone: rows with the same sort value are always in a RANGE frame together**, so a running total over a non-unique key jumps by the whole tied group at once. RANGE is the default, which is why this bites unasked.", "left": "frame", "codeW": 230, "vars": ["means", "use when"], "steps": [{"code": "ROWS BETWEEN 2 PRECEDING AND CURRENT ROW", "state": ["three rows, whatever their dates", "rows are evenly spaced"], "tone": "accent"}, {"code": "RANGE BETWEEN INTERVAL '30 days' PRECEDING", "state": ["every row within 30 days", "unevenly spaced events"], "changed": [0, 1], "tone": "good"}, {"code": "RANGE BETWEEN 10000 PRECEDING AND FOLLOWING", "state": ["a value band around mine", "salary bands, price bands"], "changed": [0, 1], "tone": "good"}, {"code": "ties under RANGE", "state": ["ALL peers are in the frame", "the surprise - and it is the default"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_3-03-2"},
+
 
     { t: "p", text: "ROWS counts rows; RANGE measures the sort key. `RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW` over a timestamp is 'every order in the 30 days up to this one' — the right frame when rows are unevenly spaced in time, because three rows back is not the same amount of time on two different days. Over a number it is 'every row whose value is within so much of mine'. **Peers — rows with the same sort value — are always inside a RANGE frame together**, which is why RANGE is the default and why it surprises." },
 

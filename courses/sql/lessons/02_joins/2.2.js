@@ -27,6 +27,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Under the logical order of 1.1, the join runs first and WHERE runs on its output. A LEFT JOIN pads Mara's row with NULLs for every order column. Then `WHERE o.status = 'paid'` asks whether NULL equals `'paid'` — unknown — and drops the row. **The outer join kept her; the WHERE threw her away. The LEFT JOIN has become an INNER JOIN with extra steps.** The condition belongs in ON, where it decides which orders *pair* with a customer, rather than which customers survive." },
 
     { t: "code", lang: "sql", title: "Same condition, two positions, two results",
@@ -86,6 +90,10 @@ WHERE  o.order_id IS NULL;                                    -- Mara: the anti-
 
 
 
+
+
+
+
     { t: "p", text: "After a LEFT JOIN, a customer with no orders still has a row — the padded one. `COUNT(*)` counts rows, so it says 1. **`COUNT(o.order_id)` counts non-null values of a right-hand column, and the padding is NULL**, so it says 0. The same applies to every aggregate: `SUM` over the padded row is NULL rather than 0, which is where `COALESCE(SUM(…), 0)` comes from." },
 
     { t: "code", lang: "sql", title: "Three counts on the same rows",
@@ -103,6 +111,10 @@ GROUP  BY c.name ORDER BY c.name;
     },
 
     { t: "h2", n: "03", text: "Trap 3: a NULL key matches nothing", id: "nullkey" },
+
+    {"kind": "trace", "title": "The lookup table has a NULL row, and it still does not match", "caption": "**A join condition is a comparison, so the NULL rules from lesson 1.2 apply unchanged** — and that produces the result people find hardest to believe: a product whose category is NULL does not match the lookup row whose category is also NULL, because NULL = NULL is unknown, not true. Under an inner join the gift card vanishes; under a left join it survives with a NULL department, **which is usually the answer you want.** When it genuinely is not, the null-safe comparison is the fix — IS NOT DISTINCT FROM, or the spaceship operator on MySQL.", "left": "join condition", "codeW": 230, "vars": ["gift card, category NULL", "why"], "steps": [{"code": "INNER JOIN ON k.category = p.category", "state": ["row disappears", "the comparison is unknown"], "tone": "crit"}, {"code": "LEFT JOIN ON k.category = p.category", "state": ["survives, dept NULL", "no pair was made"], "changed": [0, 1], "tone": "accent"}, {"code": "...even though the lookup HAS a NULL row", "state": ["still no match", "NULL = NULL is unknown too"], "changed": [0, 1], "tone": "crit"}, {"code": "ON k.category IS NOT DISTINCT FROM ...", "state": ["dept = unknown", "null-safe: NULL matches NULL"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-2_2-03-2"},
+
+
 
     { t: "p", text: "The join condition `k.category = p.category` is a comparison, and 1.2 applies: when either side is NULL the comparison is unknown and the pair is not made. The gift card's category is NULL, so it matches no row of a category lookup — **even a lookup row whose category is also NULL**, because `NULL = NULL` is unknown too. Under an inner join the gift card disappears; under a left join it survives with a NULL department, which is usually the right answer, and when it is not, the null-safe comparison is the fix." },
 
@@ -126,6 +138,10 @@ ORDER  BY p.product_id;
     },
 
     { t: "h2", n: "04", text: "Trap 4: fan-out", id: "fanout" },
+
+    {"kind": "flow", "title": "Two children of one parent, and every total is wrong by a different factor", "caption": "**One row per line item is exactly right for summing revenue — until you count orders, which are now repeated once per item.** Add a third join to events and each item row repeats once per event, so revenue is multiplied by that customer's event count: **a different wrong factor for every customer, and every figure still looks plausible.** DISTINCT rescues the counts and does nothing for the sums. The fix is structural: aggregate each child to one row per parent first, then join one-to-one. And ship the reconciliation query — the joined total must equal the base-table total, 697.90 here.", "cols": 3, "nodes": [{"id": "o", "label": "customers JOIN orders JOIN items", "sub": "one row per line item", "tone": "accent"}, {"id": "r", "label": "Revenue correct, order count wrong", "sub": "Asha reads 6 orders, she has 3", "tone": "warn"}, {"id": "e", "label": "Add a JOIN to events", "sub": "each item row repeats per event", "tone": "crit"}, {"id": "n", "label": "Now NOTHING is right", "sub": "a different factor per customer", "tone": "crit"}, {"id": "d", "label": "DISTINCT fixes counts, not sums", "sub": "which is why it feels fixed", "tone": "warn"}, {"id": "f", "label": "Aggregate each child per parent first", "sub": "then join one-to-one", "tone": "good"}, {"id": "c", "label": "And reconcile against the base table", "sub": "one query, catches all four traps", "tone": "violet"}], "edges": [["o", "r"], ["r", "e"], ["e", "n"], ["n", "d"], ["d", "f"], ["f", "c"]], "t": "diagram", "id": "dg-2_2-04-3"},
+
+
 
     { t: "p", text: "Join customers to orders, then orders to items, and one row per item is exactly right for summing revenue — until you also count orders, which are now repeated once per item. Add a third join to events and every item row is repeated once per event, **so the revenue is multiplied by the number of events, per customer, by a different factor each.** No total in the result is right, and each is wrong by an amount that looks plausible. This is the chasm trap, and it is the most expensive silent bug in reporting SQL." },
 

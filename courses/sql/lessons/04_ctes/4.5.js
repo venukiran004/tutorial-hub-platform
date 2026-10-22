@@ -25,6 +25,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "PostgreSQL has two JSON types: `json`, which stores the text verbatim, and `jsonb`, which stores a parsed binary form that is indexable and faster to query — use `jsonb`. **`->` returns a JSON value (still JSON), `->>` returns text, and a path of `->` steps ending in `->>` reaches a nested scalar as a string you then cast.** A missing key is NULL, not an error, which is convenient and also how a typo in a key name goes unnoticed." },
 
     { t: "code", lang: "sql", title: "Order metadata as JSON: scalars, nested objects, arrays",
@@ -135,6 +139,8 @@ GROUP  BY c.customer_id, c.name, c.tier ORDER BY c.customer_id LIMIT 2;
 
     { t: "h2", n: "03", text: "Indexing a field inside JSON", id: "indexing" },
 
+    {"kind": "trace", "title": "Two index types, and each one only serves its own predicate shape", "caption": "**The last column is the point of the section: an index that exists is not an index that is used.** An expression index is built on one exact expression, so a query written with the JSON-returning arrow instead of the text-returning one misses it entirely — same field, same value, full scan. **A GIN index serves containment and key-existence across any field, and does nothing for a plain text-arrow equality.** So the choice is not which index is better: it is which shape of predicate your code actually writes, and then making the two match.", "left": "index", "codeW": 190, "vars": ["serves", "cost", "does NOT serve"], "steps": [{"code": "none", "state": ["nothing", "-", "every query scans"], "tone": "crit"}, {"code": "B-tree on (doc->>'channel')", "state": ["equality and ranges on that ONE field", "small, cheap writes", "any other field"], "changed": [0, 1, 2], "tone": "good"}, {"code": "...queried with doc->'channel'", "state": ["NOT USED - a different expression", "-", "a full scan again"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "GIN on the whole document", "state": ["containment, key existence, paths", "larger, slower writes", "a plain ->> equality"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "GIN with jsonb_path_ops", "state": ["containment only", "smaller than plain GIN", "key existence"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-4_5-03-2"},
+
     { t: "p", text: "`WHERE doc->>'channel' = 'web'` extracts the field from every row and compares — a full scan, however small the answer. Two indexes fix it. **An expression index on `(doc->>'channel')` serves equality and range predicates on that one field**, exactly like an index on a column, and is the right choice for a field you always filter the same way. **A GIN index on the whole `jsonb` column serves containment (`@>`), key-existence (`?`) and path predicates across any field**, at the cost of a larger index and slower writes. Neither helps a predicate written in a form the index does not recognise — `->>` with a B-tree, `@>` with GIN, and not the other way round." },
 
     { t: "code", lang: "sql", title: "Two indexes, two predicate shapes",
@@ -159,6 +165,10 @@ SELECT order_id FROM orders_meta WHERE doc->>'channel' = 'web';                 
     { t: "h2", n: "04", text: "When it should have been a table", id: "table" },
 
     {"kind": "matrix", "title": "When the JSON column should have been a table", "caption": "A JSON column is a table you have not designed yet, and that is sometimes the correct choice. It stops being correct the moment the application depends on a field being present — because the database is no longer keeping that promise for you.", "cols": ["JSON column", "Because"], "rows": ["Varies by product type", "A payload you do not own", "A field every query filters", "A NOT NULL rule on it", "A one-to-many list", "An audit copy of a record"], "cells": [[{"text": "right", "tone": "good"}, "no table could hold all the shapes"], [{"text": "right", "tone": "good"}, "the producer owns the schema"], [{"text": "wrong", "tone": "crit"}, "promote it to a column and index it"], [{"text": "wrong", "tone": "crit"}, "a constraint cannot reach inside"], [{"text": "wrong", "tone": "crit"}, "that is a child table with a key"], [{"text": "right", "tone": "good"}, "kept exactly as received, on purpose"]], "t": "diagram", "id": "dg-4_5-04-1"},
+
+
+
+
 
 
 

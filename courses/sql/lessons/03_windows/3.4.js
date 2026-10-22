@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`LAG(x)` returns `x` from the row one position earlier in the window's ORDER BY; `LEAD(x)` from one position later. Both take an offset — `LAG(x, 2)` — and a default for when there is no such row, which is otherwise NULL. **The difference between the current row and its LAG is the change; the difference between the LEAD's timestamp and the current one is the time until the next event.** A partition by customer keeps the offsets inside each customer's history." },
 
     { t: "code", lang: "sql", title: "Previous amount, change, time since the last order and until the next",
@@ -63,6 +67,10 @@ ORDER  BY customer_id, placed_at;
     { t: "h2", n: "02", text: "The LAST_VALUE trap", id: "lastvalue" },
 
     {"kind": "steps", "title": "Why LAST_VALUE returns the current row", "caption": "FIRST_VALUE looks backwards into a frame that starts at the partition's beginning, so it works. LAST_VALUE looks forwards into a frame that **ends at the current row** — so the last row of the frame is the current row, and the function returns the value you already had.", "items": [{"label": "ORDER BY placed_at, no frame written", "desc": "the default frame appears", "code": "default", "tone": "accent"}, {"label": "The frame is start-of-partition to current row", "desc": "nothing after this row is in it", "code": "frame", "tone": "warn"}, {"label": "FIRST_VALUE reads the frame's first row", "desc": "the partition's first order: correct", "code": "works", "tone": "good"}, {"label": "LAST_VALUE reads the frame's last row", "desc": "which is this row: the value you started with", "code": "wrong", "tone": "crit"}, {"label": "ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING", "desc": "the whole partition is in the frame; now it is the last order", "code": "fixed", "tone": "good"}], "t": "diagram", "id": "dg-3_4-02-1"},
+
+
+
+
 
 
 
@@ -134,6 +142,9 @@ ORDER  BY customer_id, placed_at;
     },
 
     { t: "h2", n: "03", text: "Period-over-period on a grouped series", id: "pop" },
+
+    {"kind": "flow", "title": "LAG reads the previous row, which is only the previous month if no month is missing", "caption": "**Group to months first, then LAG the revenue by one — and the whole correctness of that depends on every month having a row.** A month with no orders produces no row, so LAG silently compares March against January and reports a change that never happened. A date spine with zeros is what makes “previous row” mean “previous month”. **The other discipline is leaving the first month NULL:** there is no previous period, which is a different fact from a change of zero, and coalescing it to 0 puts a false flat month at the start of every chart.", "cols": 3, "nodes": [{"id": "g", "label": "Group to one row per month", "sub": "the aggregate comes first", "tone": "accent"}, {"id": "l", "label": "LAG(revenue) OVER (ORDER BY month)", "sub": "the previous ROW", "tone": "good"}, {"id": "m", "label": "A month with no orders has no row", "sub": "so March compares against January", "tone": "crit"}, {"id": "s", "label": "A date spine with zeros fixes it", "sub": "now previous row IS previous month", "tone": "good"}, {"id": "n", "label": "And leave the first month NULL", "sub": "no previous period is not zero change", "tone": "violet"}], "edges": [["g", "l"], ["l", "m"], ["m", "s"], ["s", "n"]], "t": "diagram", "id": "dg-3_4-03-2"},
+
 
     { t: "p", text: "Month-over-month change is LAG over a monthly aggregate: group to months first, then LAG the revenue by one month. The first month has no previous and its change is NULL, which is correct and should stay NULL rather than be coalesced to zero — 'no change' and 'no previous period' are different facts. **If the series has gaps, LAG reads the previous *row*, not the previous *month*** — a spine (1.5) with zeros is what makes 'previous row' mean 'previous month'." },
 

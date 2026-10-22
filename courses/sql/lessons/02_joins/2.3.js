@@ -19,6 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Self joins: a table against itself", id: "self" },
 
+    {"kind": "flow", "title": "The engine sees two tables; only you know they are one", "caption": "**A self join is an ordinary join whose two sides happen to be the same table under different aliases** — there is nothing special about it except that the aliases now carry the whole meaning. The two uses are worth separating. **For a hierarchy, the condition walks the pointer** — manager_id to employee_id — and LEFT is what keeps the root, whose manager is NULL. **For pairs, the condition shares a value, and an inequality on the key is doing two jobs:** it stops a row pairing with itself, and it stops each pair appearing twice in both orders.", "cols": 3, "nodes": [{"id": "s", "label": "One table, two aliases", "sub": "e and m - the engine sees two", "tone": "accent"}, {"id": "h", "label": "Hierarchy: walk the pointer", "sub": "ON m.employee_id = e.manager_id", "tone": "good"}, {"id": "l", "label": "LEFT keeps the root", "sub": "whose manager_id is NULL", "tone": "good"}, {"id": "p", "label": "Pairs: share a value", "sub": "ON a.country = b.country", "tone": "violet"}, {"id": "i", "label": "Plus an inequality on the key", "sub": "a.id < b.id", "tone": "violet"}, {"id": "w", "label": "Which does two jobs", "sub": "no self-pairs, and no duplicates", "tone": "warn"}], "edges": [["s", "h"], ["h", "l"], ["s", "p"], ["p", "i"], ["i", "w"]], "t": "diagram", "id": "dg-2_3-01-2"},
+
+
+
     { t: "p", text: "A self join is an ordinary join in which both sides are the same table under different aliases. The engine sees two relations; only you know they are one. The two uses are **hierarchies** — a row that refers to another row of the same table, like `manager_id` — and **pairs** — rows that share a value, where the join condition compares each row with the others and an inequality on the key stops each pair appearing twice and each row pairing with itself." },
 
     { t: "code", lang: "sql", title: "Managers, the employee who out-earns theirs, and customers in the same country",
@@ -56,6 +60,10 @@ ORDER  BY a.country;
 
 
 
+
+
+
+
     { t: "p", text: "A semi join keeps the rows of the left table that have at least one match on the right, **once each, and without the right table's columns**. It is not a join in the row-multiplication sense: a customer with three orders appears once, not three times. SQL has no SEMI JOIN keyword in most dialects; it has three spellings that mean the same thing and one that is a different thing wearing the same clothes." },
 
     { t: "code", lang: "sql", title: "Customers who have ordered, four ways — three of them right",
@@ -84,6 +92,10 @@ SELECT c.name FROM customers c JOIN orders o ON o.customer_id = c.customer_id;
     { t: "h2", n: "03", text: "Anti joins: does no match exist?", id: "anti" },
 
     {"kind": "matrix", "title": "Four ways to ask 'has no order', and which survive a NULL", "caption": "All four return Iker and Mara **today**, because `orders.customer_id` happens to be NOT NULL. `NOT IN` returns nothing the day that subquery yields a single NULL — so the two that are correct by construction are the two to write.", "cols": ["NULL-safe", "What it does"], "rows": ["WHERE NOT EXISTS", "LEFT JOIN + IS NULL", "WHERE NOT IN", "EXCEPT"], "cells": [[{"text": "yes", "tone": "good"}, "the default; planner: Anti Join"], [{"text": "yes", "tone": "good"}, "keep the padded rows"], [{"text": "no", "tone": "crit"}, "one NULL and it returns nothing"], [{"text": "yes", "tone": "accent"}, "whole-row set difference"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
+
 
 
 

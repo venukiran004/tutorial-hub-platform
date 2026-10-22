@@ -28,6 +28,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`BETWEEN a AND b` is `>= a AND <= b` — **inclusive on both ends, always**. For integers that is fine. For decimals it is fine as long as the ends are the values you mean. For timestamps it is the source of a bug that appears at every month end, because the upper bound you wrote as a date is a timestamp at midnight, and the day you wanted is the 24 hours *after* it. `IN (…)` is a chain of `= OR =`, with the NULL behaviour of 1.2; a subquery in the list is the same chain over whatever rows come back." },
 
     { t: "code", lang: "sql", title: "BETWEEN is inclusive — which is the problem with timestamps",
@@ -59,6 +63,11 @@ SELECT order_id FROM orders WHERE placed_at >= DATE '2025-02-01' AND placed_at <
 
     { t: "h2", n: "02", text: "Patterns", id: "patterns" },
 
+    {"kind": "trace", "title": "Two wildcards, run against the same eight names", "caption": "**LIKE has exactly two wildcards and nothing else:** the percent sign matches any run of characters including none, and the underscore matches exactly one. Everything else is a literal. **Which makes the fourth row the one to remember — an underscore in your search text is a wildcard**, so searching for a literal one needs an ESCAPE clause, or it quietly matches any single character instead. And case sensitivity is a dialect default rather than a rule: PostgreSQL is sensitive, MySQL and SQL Server are not, so a name search can work on one engine and fail on another.", "left": "pattern", "codeW": 190, "vars": ["means", "matches here"], "steps": [{"code": "LIKE '_a%'", "state": ["second character is a", "Dalia, Fatou, Mara"], "tone": "good"}, {"code": "LIKE '%a'", "state": ["ends in a", "Asha, Dalia, Emeka, Mara"], "changed": [0, 1], "tone": "good"}, {"code": "LIKE '% %'", "state": ["contains a space", "Desk lamp, Gift card"], "changed": [0, 1], "tone": "accent"}, {"code": "a literal underscore", "state": ["needs an ESCAPE clause", "without it, any single character"], "changed": [0, 1], "tone": "crit"}, {"code": "ILIKE 'A%'", "state": ["case-insensitive, PostgreSQL", "Asha"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_3-02-2"},
+
+
+
+
     { t: "p", text: "`LIKE` has two wildcards and nothing else: `%` matches any run of characters including none, `_` matches exactly one. It is case-sensitive in PostgreSQL and case-insensitive in MySQL and SQL Server by default — a dialect fact worth knowing before a name search 'works' on one and not the other. `ILIKE` is PostgreSQL's explicit case-insensitive form. Beyond that is the regular-expression operator, which is a different language with a different cost." },
 
     { t: "code", lang: "sql", title: "Two wildcards, an escape, and the regex operators by dialect",
@@ -88,6 +97,10 @@ WHERE name SIMILAR TO '(A|B|C)%'            -- the standard's hybrid: regex alte
     { t: "h2", n: "03", text: "Three kinds of time", id: "time" },
 
     {"kind": "matrix", "title": "Three kinds of time, and what each one pins down", "caption": "The choice is about what the value *means*, not how it prints. A TIMESTAMP without a zone is a clock face with no location — two of them cannot be compared across regions without an assumption you did not write down.", "cols": ["Fixes", "Fails when"], "rows": ["DATE", "TIMESTAMP", "TIMESTAMPTZ", "INTERVAL"], "cells": [["a calendar day", "an event has a time of day"], ["a clock reading", "two zones are compared"], ["an instant in UTC", "a local wall-clock is wanted"], ["a length of time", "months: not a fixed length"]], "t": "diagram", "id": "dg-1_3-03-1"},
+
+
+
+
 
 
 
@@ -145,6 +158,11 @@ SELECT TIMESTAMPTZ '2025-03-30 00:30:00+00' + INTERVAL '24 hours';  -- 2025-03-3
     },
 
     { t: "h2", n: "04", text: "Comparisons that cast", id: "casts" },
+
+    {"kind": "trace", "title": "Which side gets converted decides whether the index is used", "caption": "**The rule is one sentence: keep the column bare and cast the literal.** Comparing an integer column to a quoted literal converts the literal once and uses the index. Comparing a text column to a bare number converts *every row* — which makes the index unusable and raises an error on the first value with a letter in it. **A function wrapped around the column has the same effect for the same reason**, which is why a month filter written with TO_CHAR scans the whole table while a half-open range on the bare column does not. And row one is a reminder that text order is not numeric order.", "left": "predicate", "codeW": 210, "vars": ["what gets converted", "indexable"], "steps": [{"code": "'9' > '10'", "state": ["nothing - compared character by character", "true, and not arithmetic"], "tone": "warn"}, {"code": "customer_id = '5', id integer", "state": ["the literal, once", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "zip_code = 12345, zip text", "state": ["EVERY ROW", "no - and it may error"], "changed": [0, 1], "tone": "crit"}, {"code": "placed_at >= TIMESTAMP '...'", "state": ["the literal", "yes"], "changed": [0, 1], "tone": "good"}, {"code": "TO_CHAR(placed_at, 'YYYY-MM')", "state": ["every row", "no - a full scan every time"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_3-04-3"},
+
+
+
 
     { t: "p", text: "When the two sides of a comparison have different types, the engine converts one of them, and which one it picks decides whether the predicate is cheap. `customer_id = '5'` converts the literal once. **`zip_code = 12345` on a text column converts every row's `zip_code` to a number** — and fails on the first row with a letter in it, or, if it does not fail, prevents the index on `zip_code` from being used because the indexed values are text and the comparison is numeric. Text comparison is also not numeric comparison: `'9' > '10'` is true, character by character." },
 

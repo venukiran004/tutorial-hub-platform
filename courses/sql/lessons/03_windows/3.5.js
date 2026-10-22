@@ -27,6 +27,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A session is a run of events by one customer with no gap longer than some threshold. 3.4 produced the flag — `new_session` is true on the first event and wherever the gap exceeds 30 minutes. **A running SUM of that flag, per customer in time order, is the session number**: it increments exactly at each session start and stays constant within a session. Group by customer and session number and every per-session statistic follows." },
 
     { t: "code", lang: "sql", title: "Events to sessions in three layers",
@@ -64,6 +68,10 @@ FROM   numbered GROUP BY 1, 2 ORDER BY 1, 2;
     { t: "h2", n: "02", text: "Gaps and islands", id: "islands" },
 
     {"kind": "steps", "title": "Gaps and islands: why subtracting a row number finds a streak", "caption": "Consecutive days advance by one, and so does the row number — so their difference is constant for the length of a run and changes the moment a day is missed. The constant is meaningless on its own and is a perfect group key.", "items": [{"label": "ROW_NUMBER() OVER (ORDER BY day)", "desc": "1, 2, 3, 4 ... in date order", "code": "rn", "tone": "accent"}, {"label": "day - rn (as an interval)", "desc": "constant while the days are consecutive", "code": "key", "tone": "good"}, {"label": "A missed day advances day but not rn", "desc": "so the difference jumps to a new constant", "code": "breaks", "tone": "warn"}, {"label": "GROUP BY that difference", "desc": "one group per unbroken run", "code": "islands", "tone": "violet"}, {"label": "COUNT(*) and MIN(day) per group", "desc": "the length of each streak and when it began", "code": "answer", "tone": "good"}], "t": "diagram", "id": "dg-3_5-02-1"},
+
+
+
+
 
 
 
@@ -122,6 +130,9 @@ FROM   islands GROUP BY user_id, island ORDER BY user_id, streak_start;
     },
 
     { t: "h2", n: "03", text: "Cumulative distinct counts, and streaks of growth", id: "cumulative" },
+
+    {"kind": "flow", "title": "Flag, running-sum, group: one shape for two different questions", "caption": "**A running COUNT(DISTINCT) is not available — engines refuse it, because the frame would have to remember every earlier value** — and the workaround is the same three-step shape that solves streaks. For cumulative customers: assign each one to the month they first appeared, count first appearances per month, running-sum that. **For growth streaks: flag the months that did not grow, running-sum the flags, and every row sharing a flag total is one streak.** Learning this shape once covers gaps-and-islands, sessionisation and streaks — they are the same query.", "cols": 3, "nodes": [{"id": "d", "label": "Running COUNT(DISTINCT) is refused", "sub": "the frame cannot remember every value", "tone": "crit"}, {"id": "f", "label": "Step 1: reduce each thing to one event", "sub": "the month a customer FIRST ordered", "tone": "accent"}, {"id": "c", "label": "Step 2: count those per period", "sub": "2, 2, 2 new customers", "tone": "good"}, {"id": "r", "label": "Step 3: running-sum them", "sub": "2, 4, 6 customers ever", "tone": "good"}, {"id": "s", "label": "Same shape for streaks", "sub": "flag non-growth, running-sum the flags", "tone": "violet"}, {"id": "g", "label": "Rows sharing a flag total are one streak", "sub": "also gaps-and-islands, and sessions", "tone": "violet"}], "edges": [["d", "f"], ["f", "c"], ["c", "r"], ["r", "s"], ["s", "g"]], "t": "diagram", "id": "dg-3_5-03-2"},
+
 
     { t: "p", text: "'How many customers have ever ordered, by month' cannot be a running COUNT(DISTINCT) — engines refuse DISTINCT inside a window with an ORDER BY, because the frame would have to remember every earlier value. **Assign each customer to the month they first appeared, count first appearances per month, and running-sum those.** The same flag-and-sum shape handles 'consecutive months of revenue growth': flag the months that did not grow, running-sum the flags, and each group is a growth streak." },
 

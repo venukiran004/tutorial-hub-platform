@@ -26,6 +26,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`SUM(amount) OVER ()` is a SUM whose window is the whole result: the grand total, repeated on every row. `SUM(amount) OVER (PARTITION BY customer_id)` is the customer's total, on each of the customer's rows. `SUM(amount) OVER (ORDER BY placed_at)` is a running total: for each row, the sum of every row up to and including it in that order. **The rows are not collapsed. The aggregate is computed per window and written on each row that belongs to it.**" },
 
     { t: "code", lang: "sql", title: "Running total, grand total, share of total — one pass over paid orders",
@@ -101,6 +105,9 @@ FROM   ot ORDER BY placed_at;
 
     { t: "h2", n: "02", text: "PARTITION BY: the group that stays as rows", id: "partition" },
 
+    {"kind": "trace", "title": "The same OVER clause, with and without an ORDER BY inside it", "caption": "**PARTITION BY divides the rows exactly as GROUP BY would — and then does not collapse them.** That is the whole difference, and it is why a window can put the customer's total on every one of that customer's rows, ready to compare against the row's own amount. **Adding an ORDER BY inside the same OVER changes the aggregate from a partition total to a running total**, restarting at each new customer. Several windows with different partitions and orders can sit in one SELECT, each computed independently, from a single scan of the data.", "left": "what you write in OVER", "codeW": 230, "vars": ["what lands on each row"], "steps": [{"code": "SUM(amount) OVER ()", "state": ["the grand total, on every row"], "tone": "accent"}, {"code": "SUM(amount) OVER (PARTITION BY customer_id)", "state": ["that customer's total"], "changed": [0], "tone": "good"}, {"code": "...PARTITION BY customer_id ORDER BY placed_at", "state": ["a running total, restarting per customer"], "changed": [0], "tone": "violet"}, {"code": "COUNT(*) OVER (PARTITION BY customer_id)", "state": ["how many orders that customer has"], "changed": [0], "tone": "good"}, {"code": "amount / SUM(amount) OVER (PARTITION BY ...)", "state": ["this order's share of the customer"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-02-2"},
+
+
     { t: "p", text: "PARTITION BY divides the rows exactly as GROUP BY would, and then the window function runs within each division. Add ORDER BY inside the same OVER and the aggregate becomes cumulative *within the partition*, restarting at each new customer. **Several windows can appear in one SELECT with different partitions and orders**, each computed independently — the per-customer total and the per-customer running total, side by side, from one scan." },
 
     { t: "code", lang: "sql", title: "Per-customer total, count, running total and share on every order",
@@ -127,6 +134,9 @@ ORDER  BY customer_id, placed_at;
     },
 
     { t: "h2", n: "03", text: "Differences from the group, and the WINDOW clause", id: "difference" },
+
+    {"kind": "flow", "title": "Why a row can be compared with its own group", "caption": "**The window value sits on the row, which is the one thing GROUP BY cannot give you** — so salary minus the department average is an ordinary subtraction rather than a join back to an aggregated copy of the table. That is the class of question windows exist for: per-row against its own group. **The WINDOW clause is worth using as soon as two functions share a definition:** it names the window once, so the query shortens and the planner sorts once for all of them rather than once each.", "cols": 3, "nodes": [{"id": "g", "label": "GROUP BY collapses the rows", "sub": "the row's own value is gone", "tone": "crit"}, {"id": "j", "label": "So you join back to compare", "sub": "a second pass over the table", "tone": "crit"}, {"id": "w", "label": "A window keeps the row", "sub": "and puts the group value beside it", "tone": "good"}, {"id": "s", "label": "salary - AVG(salary) OVER w", "sub": "an ordinary subtraction", "tone": "violet"}, {"id": "n", "label": "WINDOW w AS (PARTITION BY department)", "sub": "name it once, reuse it", "tone": "violet"}, {"id": "p", "label": "And the planner sorts once", "sub": "not once per function", "tone": "teal"}], "edges": [["g", "j"], ["j", "w"], ["w", "s"], ["s", "n"], ["n", "p"]], "t": "diagram", "id": "dg-3_1-03-3"},
+
 
     { t: "p", text: "Because the window value sits on the row, it can be compared with the row's own value. Salary minus department average, amount as a share of the customer's total, a reading minus the sensor's running mean — the per-row-versus-its-group comparisons that a GROUP BY cannot express without a join back. **When several functions share one window, the WINDOW clause names it once**, which both shortens the query and lets the planner sort once for all of them." },
 
@@ -157,6 +167,10 @@ ORDER  BY department, salary DESC;
     { t: "h2", n: "04", text: "Where a window function may appear", id: "where" },
 
     {"kind": "matrix", "title": "Where a window function is allowed", "caption": "A window function is computed at the SELECT step, after WHERE, GROUP BY and HAVING have all finished. Everything in this table follows from that one fact — including why filtering on a rank needs an outer query.", "cols": ["Allowed", "Because"], "rows": ["In SELECT", "In ORDER BY", "In WHERE", "In HAVING", "In GROUP BY", "Nested in another window"], "cells": [[{"text": "yes", "tone": "good"}, "this is where it is computed"], [{"text": "yes", "tone": "good"}, "ORDER BY runs after SELECT"], [{"text": "no", "tone": "crit"}, "WHERE has already finished"], [{"text": "no", "tone": "crit"}, "HAVING runs before SELECT"], [{"text": "no", "tone": "crit"}, "grouping happens first"], [{"text": "no", "tone": "crit"}, "wrap it in a CTE and window that"]], "t": "diagram", "id": "dg-3_1-04-1"},
+
+
+
+
 
 
 
