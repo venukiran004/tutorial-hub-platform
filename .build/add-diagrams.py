@@ -67,7 +67,7 @@ for lid, items in specs.items():
                 print("no blocks in %s" % lid); continue
             end = idx
         else:
-            pat = re.compile(r'^\s*\{ t: "h2", n: "%s"' % re.escape(it["after"]))
+            pat = re.compile(r'^\s*\{\s*"?t"?: "h2", "?n"?: "%s"' % re.escape(it["after"]))
             idx = next((i for i, l in enumerate(lines) if pat.match(l)), None)
             if idx is None:
                 print("no h2 %s in %s" % (it["after"], lid)); continue

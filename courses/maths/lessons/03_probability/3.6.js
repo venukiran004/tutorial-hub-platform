@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Conditioning restricts the sample space", id: "conditioning" },
 
+    {"kind": "trace", "title": "Conditioning throws rows away and rescales what is left", "caption": "**Learning something does not change the relative sizes inside the condition — only the denominator.** Start from a joint table where 19.5% of all users churned. Condition on paid and you keep one row, divide by 0.300, and get 5%. Condition on churned instead and you divide by 0.195 to get 7.7%. **Same cell on top, different denominators, and that is the whole reason P(A given B) and P(B given A) are different numbers** — the mistake behind every misread medical test and every confused churn dashboard.", "left": "what you ask", "codeW": 200, "vars": ["numerator", "divided by", "answer"], "steps": [{"code": "P(churned)", "state": ["0.180 + 0.015", "1.000 - everything", "19.5%"], "tone": "accent"}, {"code": "P(churned | paid)", "state": ["0.015", "0.300 - the paid row", "5.0%"], "changed": [0, 1, 2], "tone": "good"}, {"code": "P(paid | churned)", "state": ["0.015", "0.195 - the churn column", "7.7%"], "changed": [1, 2], "tone": "violet"}, {"code": "same cell on top", "state": ["0.015 both times", "different denominators", "different answers"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-3_6-01-1"},
+
+
     { t: "p", text: "**Conditioning means discarding every outcome where the condition failed, then rescaling what remains so it sums to 1 again.** The relative sizes inside the condition never change — only the denominator does, which is why `P(A|B)` and `P(B|A)` divide by different things." },
 
     { t: "dl", items: [
@@ -89,6 +92,8 @@ joint[("paid", "churn")] / p_churn               # 0.077
     { t: "h2", n: "02", text: "Bayes, and the term everyone drops", id: "bayes" },
 
     {"kind": "steps", "title": "Bayes, and the term everyone drops", "caption": "The base rate is the term that gets forgotten, and it dominates the answer when the event is rare. A 99%-accurate test for a 1-in-10,000 condition still leaves a positive result far more likely to be a false alarm than a case.", "items": [{"label": "the prior — P(H)", "desc": "the base rate, before any evidence. Dropping this is the classic error", "tone": "crit", "code": "the base rate"}, {"label": "the likelihood — P(E|H)", "desc": "how expected the evidence is if the hypothesis holds", "tone": "accent", "code": "the test"}, {"label": "the evidence — P(E)", "desc": "across ALL hypotheses, which is what normalises the result", "tone": "good", "code": "the total"}, {"label": "the posterior — P(H|E)", "desc": "prior × likelihood ÷ evidence; now repeat with this as the prior", "tone": "violet", "code": "the answer"}], "t": "diagram", "id": "dg-3_6-02-0"},
+
+
 
 
 
@@ -232,6 +237,9 @@ p_guilty_given_match(60_000_000)   # 1.6%   -- 60 expected false matches
     ]},
 
     { t: "h2", n: "03", text: "Independence and its conditional cousin", id: "independence" },
+
+    {"kind": "compare", "title": "A common cause and a common effect pull in opposite directions", "caption": "**These are the two shapes behind “should I control for this variable?”, and they answer it oppositely** — which is why “control for everything” is unsafe advice rather than cautious advice. Ice cream and drownings correlate at 0.771 because both follow temperature; hold the temperature in a narrow band and the correlation falls to 0.011. **A collider does the reverse: conditioning on a common effect manufactures an association between causes that were genuinely unrelated.** Independence and conditional independence are different properties, and neither implies the other.", "columns": [{"title": "Confounder - a common CAUSE", "tone": "warn", "items": ["temperature drives ice cream and drownings", "marginally correlated at 0.771", "hold temperature fixed: 0.011", "conditioning REMOVES a spurious link", "so here you should control for it"]}, {"title": "Collider - a common EFFECT", "tone": "crit", "items": ["two unrelated causes of one outcome", "marginally independent", "condition on the outcome: now correlated", "conditioning CREATES a link that was absent", "so here controlling for it is the bug"]}], "t": "diagram", "id": "dg-3_6-03-2"},
+
 
     { t: "p", text: "**Independence means learning one thing tells you nothing about the other**, and it is a much stronger claim than it sounds. Conditional independence — independence once a third variable is known — is a different property, and neither implies the other." },
 

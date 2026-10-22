@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Entropy is expected surprise", id: "entropy" },
 
+    {"kind": "trace", "title": "Surprise, in bits, and why it has to be a logarithm", "caption": "**Three requirements pin the formula down completely:** a certain event must not be surprising, a rarer event must be more surprising, and independent surprises must add. **Only the logarithm satisfies all three** — so surprise is minus log p, and entropy is just its average. The unit is real rather than decorative: one bit is exactly a fair coin flip, and the entropy of a distribution is a hard lower bound on the average bits per symbol that any encoder can reach. **It is a compression limit, not an index.**", "left": "an outcome of probability p", "codeW": 210, "vars": ["surprise in bits", "reading"], "steps": [{"code": "p = 1", "state": ["0.0", "certain - nothing learned"], "tone": "good"}, {"code": "p = 0.5", "state": ["1.0", "a fair coin flip: one bit"], "changed": [0, 1], "tone": "accent"}, {"code": "p = 1/1024", "state": ["10.0", "ten bits"], "changed": [0, 1], "tone": "violet"}, {"code": "p = 1e-12", "state": ["39.9", "very surprising indeed"], "changed": [0, 1], "tone": "warn"}, {"code": "average it over a fair coin", "state": ["H = 1.0 bit", "entropy IS expected surprise"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-3_8-01-1"},
+
+
     { t: "p", text: "**Entropy measures how much uncertainty a distribution carries**, defined as the average surprise of its outcomes. Only the logarithm makes surprise behave sensibly — certain events surprising you not at all, and independent surprises adding — which is why logs appear throughout." },
 
     { t: "dl", items: [
@@ -94,6 +97,8 @@ entropy(freqs)                            # 2.246 bits per symbol
     { t: "h2", n: "02", text: "Cross-entropy and KL", id: "cross-entropy" },
 
     {"kind": "matrix", "title": "Entropy, cross-entropy and KL", "caption": "Three quantities, one relationship: cross-entropy is entropy plus KL divergence. Training a classifier minimises cross-entropy, and because the data's own entropy is fixed, that is the same as minimising the KL divergence from the truth.", "cols": ["what it measures", "zero when"], "rows": ["H(p)", "H(p, q)", "KL(p ‖ q)"], "cells": [["the uncertainty in p itself", {"text": "p is certain", "tone": "good"}], [{"text": "the cost of coding p using q", "tone": "accent"}, "p is certain AND q = p"], [{"text": "the EXCESS cost — H(p,q) − H(p)", "tone": "violet"}, {"text": "q = p exactly", "tone": "good"}]], "t": "diagram", "id": "dg-3_8-02-0"},
+
+
 
 
 
@@ -237,6 +242,9 @@ js(p, q), js(q, p)       # 0.311, 0.311 -- symmetric, and finite`},
     ]},
 
     { t: "h2", n: "03", text: "Mutual information", id: "mutual-information" },
+
+    {"kind": "trace", "title": "Zero bits, one bit, and the quarter-bit in between", "caption": "**Mutual information is the gap from the previous lesson, measured in bits** — the KL divergence between the joint table and the product of its marginals. It is zero exactly when the variables are independent, and it reaches one full bit when Y is a copy of X, because knowing Y then removes a whole bit of uncertainty. **Unlike correlation it catches any dependence at all, linear or not.** The caution is the last row: two features can each score highly against the target and be duplicates of one another, so ranking features one at a time selects the same information twice.", "left": "the joint table", "codeW": 200, "vars": ["I(X;Y) in bits", "what it means"], "steps": [{"code": "all four cells 0.25", "state": ["0.0", "independent - the joint IS the product"], "tone": "good"}, {"code": "0.5 on the diagonal only", "state": ["1.0", "Y is a copy of X"], "changed": [0, 1], "tone": "violet"}, {"code": "0.4 diagonal, 0.1 off", "state": ["0.2781", "partially dependent"], "changed": [0, 1], "tone": "accent"}, {"code": "two features, high I each", "state": ["-", "possibly the SAME bits twice"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_8-03-2"},
+
 
     { t: "p", text: "**Mutual information measures how much knowing one variable reduces uncertainty about another.** Unlike correlation it detects any dependence whatsoever, linear or not — it is the KL divergence between the joint distribution and the product of the marginals." },
 

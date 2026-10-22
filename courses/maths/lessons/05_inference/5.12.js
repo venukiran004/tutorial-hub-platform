@@ -171,6 +171,8 @@ normal_posterior(100, 15, np.array([120., 118., 125.]), sigma=10)
 
 
 
+
+
     { t: "p", text: "**A credible interval supports the reading a confidence interval cannot**: there really is a 95% probability the parameter lies inside it. That is what the prior buys — and with a flat prior and a decent sample the two intervals usually agree numerically while meaning different things." },
 
     { t: "dl", items: [
@@ -400,7 +402,7 @@ d["expected_loss_keep"] / d["expected_loss_ship"]     # 37x
       ]
     },
 
-        {"t": "h2", "n": "04", "text": "Bayes factors: evidence without a threshold", "id": "bayes-factor"},
+    { t: "h2", n: "04", text: "Bayes factors: evidence without a threshold", id: "bayes-factor" },
     {"t": "p", "text": "A p-value cannot say anything in favour of the null. A **Bayes factor** can, because it is a ratio of how well each hypothesis predicted the data that arrived:"},
     {"t": "math", "tex": "BF_{10} \\;=\\; \\frac{P(D \\mid H_1)}{P(D \\mid H_0)} \\;=\\; \\frac{\\text{posterior odds}}{\\text{prior odds}}"},
     {"t": "p", "text": "So `BF₁₀ = 5` means the data are five times better predicted by the alternative, and `BF₁₀ = 0.2` means they are five times better predicted by the **null** — a statement no frequentist test produces. The conventional reading is a scale rather than a cutoff, which is the point: there is no 0.05 to game."},

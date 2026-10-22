@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A random variable is a function", id: "definition" },
 
+    {"kind": "flow", "title": "One experiment, three random variables, three different distributions", "caption": "**A random variable is a function, and that is the whole point of the definition.** The 36 outcomes of two dice are fixed; what varies is which numeric question you ask of them. The sum, the larger die and “did they match” are three different functions on the *same* sample space, so each has its own distribution — obtained by pushing the probabilities on the outcomes through the function. **The randomness is in which outcome occurs; the function itself is a deterministic rule**, which is why X is written with a capital and the value it took is written small.", "cols": 4, "nodes": [{"id": "s", "label": "36 outcomes, equally likely", "sub": "the sample space - fixed", "tone": "accent"}, {"id": "x", "label": "X = the sum", "sub": "values 2 to 12, peaked at 7", "tone": "good"}, {"id": "y", "label": "Y = the larger die", "sub": "values 1 to 6, rising", "tone": "violet"}, {"id": "z", "label": "Z = did they match", "sub": "an indicator: 0 or 1", "tone": "warn"}, {"id": "d", "label": "Three distributions", "sub": "each is the pushforward of one function", "tone": "teal"}], "edges": [["s", "x"], ["s", "y"], ["s", "z"], ["x", "d"], ["y", "d"], ["z", "d"]], "t": "diagram", "id": "dg-3_2-01-1"},
+
+
     { t: "p", text: "**A random variable is not a variable — it is a function** that assigns a number to every outcome. The randomness lives in which outcome occurs; the function itself is a fixed, deterministic rule, which is why one experiment can support many different random variables." },
 
     { t: "dl", items: [
@@ -79,6 +82,8 @@ sum(pmf(X, S).values())                # 1.0, necessarily
     { t: "h2", n: "02", text: "PMF against PDF", id: "pmf-pdf" },
 
     {"kind": "compare", "title": "PMF against PDF", "caption": "The distinction that causes the most confusion: a PMF **is** a probability, a PDF is not. A density can exceed 1 without contradiction because what must integrate to one is the area, not the height.", "columns": [{"title": "PMF — discrete", "tone": "good", "items": ["P(X = x) is a probability, in [0, 1]", "P(X = x) can be asked and answered", "the values sum to 1", "a bar chart with gaps"]}, {"title": "PDF — continuous", "tone": "accent", "items": ["f(x) is a DENSITY and may exceed 1", "P(X = x) = 0 for every single x", "the area under the curve is 1", "probability comes from an interval, not a point"]}], "t": "diagram", "id": "dg-3_2-02-0"},
+
+
 
 
 
@@ -175,6 +180,9 @@ stats.norm(loc=1.80, scale=0.07).pdf(1.80)  # 5.699 -- 100x the cm value
 
     { t: "h2", n: "03", text: "The CDF works for both", id: "cdf" },
 
+    {"kind": "trace", "title": "The same question, asked two ways, in the tail", "caption": "**At 115 the two routes agree, and at 230 one of them has nothing left to give.** float64 holds about 16 digits, so once the CDF exceeds 1 minus 1e-16 it rounds to exactly 1.0 and the subtraction returns zero — **not a small number, zero.** The survival function computes the tail directly and never does that subtraction, which is why libraries ship `sf` as a separate function rather than as a convenience. It is the same cancellation that makes E[X²] − E[X]² a bad way to compute a variance.", "left": "for a normal, mean 100, sd 15", "codeW": 210, "vars": ["1 - cdf(x)", "sf(x)"], "steps": [{"code": "x = 115, one sd out", "state": ["0.1587", "0.1587 - agree"], "tone": "good"}, {"code": "x = 200, 6.7 sd out", "state": ["1.31e-11", "1.31e-11 - still agree"], "changed": [0, 1], "tone": "accent"}, {"code": "x = 230, 8.7 sd out", "state": ["0.0 - WRONG", "2.22e-18 - correct"], "changed": [0, 1], "tone": "crit"}, {"code": "because cdf(230) rounds to", "state": ["exactly 1.0", "never formed", "-"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_2-03-2"},
+
+
     { t: "p", text: "**The cumulative distribution function is defined identically for discrete and continuous variables**, which makes it the more fundamental object. It also exists for mixed distributions that have neither a clean PMF nor a clean PDF." },
 
     { t: "dl", items: [
@@ -200,11 +208,16 @@ d.cdf(115)                       # 0.8413   P(X <= 115)
 d.sf(115)                        # 0.1587   the survival function
 d.cdf(115) - d.cdf(85)           # 0.6827   P(85 < X <= 115)
 
-# USE sf RATHER THAN 1 - cdf IN THE FAR TAIL. When the CDF is 1 - 1e-18,
-# float64 stores it as exactly 1.0 and the subtraction gives 0.
-d.cdf(200)                       # 0.9999999999999999
-1 - d.cdf(200)                   # 1.11e-16  -- wrong, and it is noise
-d.sf(200)                        # 1.31e-11  -- correct
+# USE sf RATHER THAN 1 - cdf IN THE FAR TAIL. float64 has about 16
+# digits, so once the CDF exceeds 1 - 1e-16 it rounds to exactly 1.0
+# and the subtraction returns zero.
+d.cdf(200)                       # 0.999999999986916
+1 - d.cdf(200)                   # 1.31e-11  -- still fine here
+d.sf(200)                        # 1.31e-11  -- agrees
+
+d.cdf(230)                       # 1.0       -- rounded, 8.7 sigma out
+1 - d.cdf(230)                   # 0.0       -- WRONG, the answer is gone
+d.sf(230)                        # 2.22e-18  -- correct
 #
 # The same cancellation lesson as 2.6: scipy provides sf because the
 # subtraction destroys precision, not as a convenience.
@@ -636,15 +649,15 @@ def test_mismatched_edges_and_counts_are_rejected():
         why: "The cleanest test is units: measure the same quantity in metres instead of centimetres and every density multiplies by 100. A number that changes when you change units is not a probability."
       },
       {
-        stem: "You need `P(X > 200)` where the CDF at 200 is 0.9999999999999999. What should you compute?",
+        stem: "You need `P(X > 230)` for `norm(100, 15)`, where the CDF at 230 rounds to exactly 1.0 in float64. What should you compute?",
         options: [
-          "`1 - d.cdf(200)`",
-          "`d.sf(200)` — the survival function, computed directly rather than by subtraction",
-          "`d.pdf(200)`",
-          "`1 - d.ppf(200)`"
+          "`1 - d.cdf(230)`",
+          "`d.sf(230)` — the survival function, computed directly rather than by subtraction",
+          "`d.pdf(230)`",
+          "`1 - d.ppf(230)`"
         ],
         answer: 1,
-        why: "`1 - cdf` gives 1.11e-16 here — pure round-off — while `sf` gives the correct 1.31e-11. The subtraction cancels every significant digit, which is the same failure as `E[X²] − E[X]²` from lesson 2.6, and it bites exactly in the tail where you need precision."
+        why: "`1 - cdf` gives exactly `0.0` here — the answer has been rounded away — while `sf` gives the correct 2.22e-18. The subtraction cancels every significant digit, which is the same failure as `E[X²] − E[X]²` from lesson 2.6, and it bites exactly in the tail where you need precision."
       },
       {
         stem: "How do you sample from a distribution given only a uniform generator?",

@@ -153,6 +153,8 @@ ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.55, and unstable
 
 
 
+
+
     { t: "p", text: "OLS has several assumptions and **they are not equally important**. Only two of them bias the coefficients; the rest affect the standard errors — and the one everyone tests for, normality, matters least of all." },
 
     { t: "dl", items: [
@@ -350,7 +352,7 @@ np.sqrt(ols(X, y)["resid"].var())             # 2.94 -- interpretable`},
       { t: "p", text: "**190 pure-noise predictors explain 97% of the variance.** R² never decreases when you add a variable, does not fall when the functional form is wrong, and is not comparable across datasets with different `x` ranges." }
     ]},
 
-        {"t": "h2", "n": "03", "text": "Autocorrelation, and the diagnostic for it", "id": "durbin-watson"},
+    { t: "h2", n: "03", text: "Autocorrelation, and the diagnostic for it", id: "durbin-watson" },
     {"t": "p", "text": "Independence is the assumption whose failure does the most damage, and with time-ordered data it fails quietly. If today's residual resembles yesterday's, the model has less information than the row count suggests — so the standard errors come out too small and everything looks more significant than it is."},
     {"t": "p", "text": "The **Durbin–Watson** statistic measures exactly that, comparing successive residuals:"},
     {"t": "math", "tex": "d \\;=\\; \\frac{\\sum_{t=2}^{n}(e_t - e_{t-1})^{2}}{\\sum_{t=1}^{n} e_t^{2}} \\;\\approx\\; 2(1-\\hat\\rho)"},

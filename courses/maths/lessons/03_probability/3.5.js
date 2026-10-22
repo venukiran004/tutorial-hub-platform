@@ -30,6 +30,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Continuous distributions are best identified by **the process that generates them** rather than by the shape of their density. The single most useful distinction is additive against multiplicative: many small effects adding give a normal, and many small effects multiplying give a lognormal." },
 
     { t: "dl", items: [
@@ -236,6 +238,9 @@ running_mean_jumps(heavy)             # 7
 
     { t: "h2", n: "03", text: "The memoryless property, and its consequence", id: "memoryless" },
 
+    {"kind": "trace", "title": "Having waited five minutes changes nothing, which is often the wrong model", "caption": "**The two numbers are identical, and that is the property.** “I have waited 5 minutes, what is the chance of another 10” equals “the chance of 10 from a standing start” — the clock resets continuously, and the exponential is the only continuous distribution that does this. **Which makes it exactly right for a process with no internal state and badly wrong for anything that ages.** If a long-running request is *less* likely to finish soon, the hazard rate is rising, and a timeout is the correct response rather than more patience.", "left": "question, mean wait 10", "codeW": 200, "vars": ["value", "reading"], "steps": [{"code": "P(wait over 15 | waited 5)", "state": ["0.3679", "another 10, having waited 5"], "tone": "accent"}, {"code": "P(wait over 10)", "state": ["0.3679", "10 from a standing start"], "tone": "accent"}, {"code": "so the hazard rate", "state": ["constant", "no notion of age at all"], "changed": [0, 1], "tone": "violet"}, {"code": "right for", "state": ["decay, arrivals, cache misses", "no internal state"], "changed": [0, 1], "tone": "good"}, {"code": "wrong for", "state": ["wear, patience, disk failure", "these age - use a Weibull"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_5-03-1"},
+
+
     { t: "p", text: "**A memoryless process has no notion of age**: having waited already tells you nothing about how much longer you will wait. The exponential is the only continuous distribution with this property, and whether your process has it decides whether a timeout makes sense." },
 
     { t: "dl", items: [
@@ -301,7 +306,9 @@ for k in (0.5, 1.0, 2.5):
       caption: "**Timeouts only make sense for processes that age.** If failures were memoryless, killing a long-running request would gain nothing — you would be discarding completed work for no improvement in the odds."
     },
 
-        {"t": "h2", "n": "04", "text": "The Gamma distribution, which the exponential is a case of", "id": "gamma"},
+    { t: "h2", n: "04", text: "The Gamma distribution, which the exponential is a case of", id: "gamma" },
+
+    {"kind": "trace", "title": "One shape parameter, and the mode leaves zero", "caption": "**At k = 1 the Gamma *is* the exponential** — same distribution, mode sitting at zero. Raise k and the mode moves out to (k−1) times the scale, because waiting for the third event is not like waiting for the first. **That is the modelling signal worth taking from this table: if your latency histogram rises to a peak and then falls, an exponential cannot fit it**, since its mode is always at zero. Reach for a Gamma rather than transforming the data until the exponential looks acceptable. At large k it approaches a normal — the CLT arriving, since this is a sum of k exponentials.", "left": "k, with scale 2", "codeW": 150, "vars": ["mean", "mode", "density at 1"], "steps": [{"code": "k = 1", "state": ["2.0", "0.0 - at the origin", "0.3033"], "tone": "good"}, {"code": "k = 2", "state": ["4.0", "2.0 - moved out", "0.1516"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "k = 5", "state": ["10.0", "8.0", "0.0008"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "k large", "state": ["k times scale", "near the mean", "approaches a normal"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-3_5-04-2"},
     {"t": "p", "text": "The exponential models the wait for **one** event. The **Gamma** models the wait for the *k*th, which is why it appears whenever a process needs several stages to complete — a request that passes through four services, a part that fails only after the third shock."},
     {"t": "math", "tex": "f(x;k,\\theta) \\;=\\; \\frac{x^{k-1}e^{-x/\\theta}}{\\Gamma(k)\\,\\theta^{k}}, \\qquad \\mathbb{E}[X]=k\\theta, \\quad \\operatorname{Var}(X)=k\\theta^{2}"},
     {"t": "dl", "items": [["**k = 1**", "the exponential, exactly — memoryless, mode at zero."], ["**k > 1**", "a mode away from zero, and a right skew that weakens as k grows."], ["**k large**", "approaches a normal, which is the CLT arriving: a sum of k exponentials."], ["**the conjugate use**", "a Gamma prior on a Poisson rate stays Gamma after the data, which is why it is the standard prior for counts."]]},

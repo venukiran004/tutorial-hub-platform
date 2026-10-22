@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Linearity, and why it is unreasonable", id: "linearity" },
 
+    {"kind": "trace", "title": "Three answers you could not get any other way", "caption": "**In every row the pieces are strongly dependent, and in every row it does not matter** — linearity of expectation needs no independence and no knowledge of the joint distribution at all. The recipe is always the same: write the count as a sum of indicators, use the fact that the expectation of an indicator *is* a probability, and add. **Row one is the one to remember: shuffle a million hats and the expected number of people getting their own back is exactly 1.** Simulated at n = 1,000 it comes out at 1.002.", "left": "problem", "codeW": 190, "vars": ["written as", "expectation"], "steps": [{"code": "n hats returned at random", "state": ["a sum of n indicators", "exactly 1, for every n"], "tone": "violet"}, {"code": "simulated at n = 1,000", "state": ["5,000 shuffles", "1.002"], "changed": [0, 1], "tone": "good"}, {"code": "n keys into N hash buckets", "state": ["one indicator per pair", "pairs over N"], "changed": [0, 1], "tone": "accent"}, {"code": "collect all n coupons", "state": ["a sum over stages", "n times the n-th harmonic"], "changed": [0, 1], "tone": "accent"}, {"code": "and the pieces are", "state": ["strongly dependent", "which never matters"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_3-01-0"},
+
+
     { t: "p", text: "**Expectation is the long-run average value of a random variable**, and its most useful property is that it adds — always, with no conditions attached. Independence is never required, which is what lets you compute averages for problems whose distributions you could not write down." },
 
     { t: "dl", items: [
@@ -141,6 +144,9 @@ expected_distinct(3000, 1000)     # 950.2
     },
 
     { t: "h2", n: "02", text: "Variance does not have linearity", id: "variance" },
+
+    {"kind": "trace", "title": "Add two variables and the variance depends on whether they move together", "caption": "**Both rows have the same two variances; only the correlation differs, and the answer is 90% larger.** Var(X+Y) is Var(X) + Var(Y) + twice the covariance, and dropping that cross term is one of the more expensive habits in applied work — it is exactly how a portfolio, a latency budget or an error budget gets reported as safer than it is. **The scaling row is the other half: doubling a quantity quadruples its variance** while the standard deviation merely doubles, which is why the standard deviation is the one that belongs in a report.", "left": "X and Y", "codeW": 180, "vars": ["Var(X) + Var(Y)", "Var(X + Y)"], "steps": [{"code": "independent", "state": ["2.001", "2.005 - matches"], "tone": "good"}, {"code": "correlated at 0.9", "state": ["1.998", "3.797 - 90% higher"], "changed": [0, 1], "tone": "crit"}, {"code": "so the cross term", "state": ["twice the covariance", "zero only if uncorrelated"], "changed": [0, 1], "tone": "violet"}, {"code": "and scaling by a", "state": ["a squared times Var", "sd only scales by a"], "changed": [0, 1], "tone": "warn"}, {"code": "units, for latency in ms", "state": ["variance in ms squared", "sd in ms - reportable"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_3-02-1"},
+
 
     { t: "p", text: "**Variance measures spread as the average squared distance from the mean**, and unlike expectation it does not simply add. Combining two variables introduces a covariance term, and assuming it away is one of the more expensive habits in applied statistics." },
 

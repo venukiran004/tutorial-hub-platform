@@ -30,6 +30,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "**A concentration inequality bounds how far a random quantity can stray from its expectation, without assuming a distribution.** The three standard ones trade assumptions for tightness: assume less and the bound is looser, but it cannot be wrong." },
 
     { t: "dl", items: [
@@ -309,7 +311,9 @@ cantelli_quantile_bound(94.2, 142.8) / observed_p99      # 2.47
       ]
     },
 
-        {"t": "h2", "n": "04", "text": "Chernoff: tightening Hoeffding for sums of Bernoullis", "id": "chernoff"},
+    { t: "h2", n: "04", text: "Chernoff: tightening Hoeffding for sums of Bernoullis", id: "chernoff" },
+
+    {"kind": "trace", "title": "The same question, two bounds, fourteen orders of magnitude apart", "caption": "**Ten thousand requests at a 1% error rate: can the error count double to 200?** Hoeffding knows only that each indicator lies between 0 and 1, so it must allow for a distribution piled at the ends, and returns a useless 0.27. Chernoff knows the mean is 100 and that doubling it takes a conspiracy, and returns 3e-15. **When your variables are indicators — a click, a failure, a cache hit — using Hoeffding leaves nearly all of the information on the table.** The multiplicative form is why: the bound scales with the mean rather than with the range.", "left": "bound on P(errors reach 200)", "codeW": 220, "vars": ["value", "what it uses"], "steps": [{"code": "expected errors", "state": ["100 of 10,000", "n times p"], "tone": "accent"}, {"code": "Hoeffding", "state": ["2.707e-01 - useless", "only the range, 0 to 1"], "changed": [0, 1], "tone": "crit"}, {"code": "Chernoff", "state": ["3.338e-15", "the mean as well"], "changed": [0, 1], "tone": "good"}, {"code": "the gap", "state": ["14 orders of magnitude", "the same event, both times"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_9-04-1"},
     {"t": "p", "text": "Hoeffding treats every bounded variable alike. When the variables are **Bernoulli** — a click, a failure, a cache hit — more is known, and the **Chernoff bound** uses it. It works by bounding the moment generating function and then optimising the free parameter, which is why the result is multiplicative in the mean rather than additive in the range."},
     {"t": "math", "tex": "P\\!\\left(X \\ge (1+\\delta)\\mu\\right) \\;\\le\\; \\exp\\!\\left(-\\frac{\\delta^{2}\\mu}{2+\\delta}\\right)"},
     {"t": "p", "text": "The practical difference is that the bound scales with μ. For a rare event the deviation you can rule out is **much** smaller than Hoeffding would allow, because a sum that is usually near zero cannot drift far without something unlikely happening."},

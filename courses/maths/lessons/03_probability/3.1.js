@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three axioms, and everything else", id: "axioms" },
 
+    {"kind": "tree", "title": "Three assumptions at the top, and every rule below is derived", "caption": "**Nothing on the lower level is an extra assumption** — each one follows from the three above it, which is worth seeing once so the rules stop feeling like a list to memorise. The word *disjoint* in the third axiom is the important one: **it is exactly why the union rule has to subtract the overlap.** Add two overlapping events and the shared part is counted twice. And “equally likely” is nowhere on this diagram, because it is a property of the sample space you chose, not a law.", "root": {"label": "Kolmogorov's three axioms", "sub": "the entire foundation", "tone": "accent", "children": [{"label": "Non-negativity", "sub": "P(A) is never below 0", "tone": "good"}, {"label": "Normalisation", "sub": "P(whole space) = 1", "tone": "good", "children": [{"label": "Complement", "sub": "P(not A) = 1 - P(A)", "tone": "violet"}, {"label": "Bound", "sub": "P(A) is never above 1", "tone": "violet"}]}, {"label": "Additivity, DISJOINT only", "sub": "P(A or B) = P(A) + P(B)", "tone": "warn", "children": [{"label": "Union, overlapping", "sub": "add them, then subtract the overlap once", "tone": "violet"}, {"label": "Monotonicity", "sub": "A inside B means P(A) is at most P(B)", "tone": "violet"}]}]}, "t": "diagram", "id": "dg-3_1-01-1"},
+
+
     { t: "p", text: "Probability is built on three assumptions, and everything else in the subject is derived from them. **They say that probabilities are non-negative, that something certainly happens, and that probabilities of separate outcomes add** — nothing more is assumed." },
 
     { t: "dl", items: [
@@ -91,6 +94,8 @@ sums[7] / 36                  # 0.1667
     { t: "h2", n: "02", text: "Counting: four cases and nothing else", id: "counting" },
 
     {"kind": "matrix", "title": "Counting: two questions, four answers", "caption": "Every counting problem is one of these four, and the two questions are *does order matter* and *can an item repeat*. Choosing the wrong cell is the single commonest error in a probability interview — so decide the two questions before reaching for a formula.", "cols": ["order matters", "order does not"], "rows": ["no repeats", "repeats allowed"], "cells": [[{"text": "permutation: n!/(n−k)!", "tone": "accent"}, {"text": "combination: C(n,k)", "tone": "good"}], [{"text": "nᵏ — each slot independent", "tone": "warn"}, {"text": "multiset: C(n+k−1, k)", "tone": "violet"}]], "t": "diagram", "id": "dg-3_1-02-0"},
+
+
 
 
 
@@ -244,6 +249,9 @@ for p in (0.01, 0.1, 0.3, 0.5):
     },
 
     { t: "h2", n: "04", text: "The birthday problem, and where it shows up", id: "birthday" },
+
+    {"kind": "trace", "title": "Why 23 people is a coin flip, and 253 is the number to look at", "caption": "**The middle column is the entire explanation.** People picture “someone shares *my* birthday”, which needs about 253 people for even odds. The question actually asked is about *any* pair — and 23 people make 253 pairs, each with a 1-in-365 chance. **The same 253 appearing in both places is not a coincidence.** The engineering form is the one to carry: a collision becomes likely after roughly the square root of N draws, not N/2, which is why a 256-bit hash offers about 128 bits of collision resistance.", "left": "people", "codeW": 110, "vars": ["pairs of people", "P(two share a birthday)"], "steps": [{"code": "10", "state": ["45", "0.1169"], "tone": "good"}, {"code": "23", "state": ["253", "0.5073 - a coin flip"], "changed": [0, 1], "tone": "violet"}, {"code": "50", "state": ["1,225", "0.9704"], "changed": [0, 1], "tone": "warn"}, {"code": "70", "state": ["2,415", "0.9992"], "changed": [0, 1], "tone": "crit"}, {"code": "but MY birthday", "state": ["n, not n squared", "needs about 253 people"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_1-04-2"},
+
 
     { t: "p", text: "The birthday problem is the classic demonstration that collision intuition is badly wrong. **With 23 people the chance of a shared birthday is above 50%** — because the question is about *any* pair, and 23 people make 253 pairs." },
 

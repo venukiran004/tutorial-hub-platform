@@ -20,6 +20,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Joint, marginal, conditional", id: "joint" },
 
+    {"kind": "flow", "title": "Everything comes out of the joint table, and nothing goes back in", "caption": "**One direction works and the other does not, which is the point of the section.** Sum the joint over a variable and you have a marginal; divide by a marginal and you have a conditional. **But the marginals cannot rebuild the joint** — many different joint tables share the same row and column totals, and everything about how the two variables relate lives in that gap. Which is also where the tests live: **chi-square and mutual information both measure the distance between the observed joint and the product of the marginals.**", "cols": 3, "nodes": [{"id": "j", "label": "The joint table", "sub": "a probability per combination", "tone": "accent"}, {"id": "m", "label": "Sum out a variable: a marginal", "sub": "row and column totals", "tone": "good"}, {"id": "c", "label": "Divide by a marginal: a conditional", "sub": "fix one, renormalise the rest", "tone": "good"}, {"id": "b", "label": "But marginals cannot rebuild it", "sub": "many joints share the same totals", "tone": "crit"}, {"id": "g", "label": "And that gap IS the relationship", "sub": "joint against product of marginals", "tone": "violet"}, {"id": "t", "label": "Which chi-square and MI measure", "sub": "two ways to size the same gap", "tone": "teal"}], "edges": [["j", "m"], ["m", "c"], ["j", "b"], ["b", "g"], ["g", "t"]], "t": "diagram", "id": "dg-3_7-01-1"},
+
+
     { t: "p", text: "A **joint distribution** assigns probability to every combination of two or more variables, and both marginals and conditionals are derived from it. **The reverse is not true** — the marginals alone cannot reconstruct the joint, and everything about how the variables relate lives in that gap." },
 
     { t: "dl", items: [
@@ -220,6 +223,9 @@ np.corrcoef(a, 1000*a)[0, 1]            # 1.0   slope 1000
 
     { t: "h2", n: "03", text: "The covariance matrix", id: "covariance-matrix" },
 
+    {"kind": "trace", "title": "Drop the off-diagonal and the risk comes out a third too low", "caption": "**Three things, two of which share a driver — and the naive sum of weighted variances understates the real spread by nearly half.** The correct expression is w-transpose Sigma w: one line, every covariance included, always right. The shortcut of summing w-squared times sigma-squared quietly assumes every off-diagonal entry is zero, **which is false for anything with a common cause: two services behind one database, two features derived from one measurement, two assets in one sector.** The same off-diagonal information is what makes a minimum-variance portfolio possible at all.", "left": "equal weights on three assets", "codeW": 220, "vars": ["variance of the combination"], "steps": [{"code": "diagonal only, sum of w2 s2", "state": ["0.3343"], "tone": "crit"}, {"code": "the full form, w' Sigma w", "state": ["0.4941"], "changed": [0], "tone": "good"}, {"code": "ratio", "state": ["1.478 - understated by a third"], "changed": [0], "tone": "violet"}, {"code": "because two of the three", "state": ["share a driver: covariance 0.719"], "changed": [0], "tone": "warn"}], "t": "diagram", "id": "dg-3_7-03-2"},
+
+
     { t: "p", text: "For several variables at once, the **covariance matrix** holds every pairwise covariance, with the variances along its diagonal. It is what turns risk, portfolio and dimensionality questions into linear algebra — and using only its diagonal is a common and expensive shortcut." },
 
     { t: "dl", items: [
@@ -299,6 +305,8 @@ w_min @ S @ w_min                        # 0.2947 vs 0.4941 equal-weight
     { t: "h2", n: "04", text: "Simpson's paradox", id: "simpson" },
 
     {"kind": "matrix", "title": "Simpson's paradox, with the numbers", "caption": "Treatment B wins in **both** groups and loses overall, because the groups differ in size and in severity. The lesson is not that statistics lies — it is that an aggregate without the confounder is a different question from the one you meant to ask.", "cols": ["treatment A", "treatment B", "who wins"], "rows": ["mild cases", "severe cases", "combined"], "cells": [["81/87 = 93%", {"text": "234/270 = 87%", "tone": "good"}, {"text": "A", "tone": "accent"}], ["192/263 = 73%", {"text": "55/80 = 69%", "tone": "good"}, {"text": "A", "tone": "accent"}], [{"text": "273/350 = 78%", "tone": "crit"}, {"text": "289/350 = 83%", "tone": "crit"}, {"text": "B — reversed", "tone": "crit"}]], "t": "diagram", "id": "dg-3_7-04-0"},
+
+
 
 
 

@@ -1,0 +1,208 @@
+{
+ "3.1": [
+  {"after": "01",
+   "d": {"kind": "tree",
+         "title": "Three assumptions at the top, and every rule below is derived",
+         "caption": "**Nothing on the lower level is an extra assumption** — each one follows from the three above it, which is worth seeing once so the rules stop feeling like a list to memorise. The word *disjoint* in the third axiom is the important one: **it is exactly why the union rule has to subtract the overlap.** Add two overlapping events and the shared part is counted twice. And “equally likely” is nowhere on this diagram, because it is a property of the sample space you chose, not a law.",
+         "root": {"label": "Kolmogorov's three axioms", "sub": "the entire foundation", "tone": "accent",
+                  "children": [
+                   {"label": "Non-negativity", "sub": "P(A) is never below 0", "tone": "good"},
+                   {"label": "Normalisation", "sub": "P(whole space) = 1", "tone": "good",
+                    "children": [
+                     {"label": "Complement", "sub": "P(not A) = 1 - P(A)", "tone": "violet"},
+                     {"label": "Bound", "sub": "P(A) is never above 1", "tone": "violet"}]},
+                   {"label": "Additivity, DISJOINT only", "sub": "P(A or B) = P(A) + P(B)", "tone": "warn",
+                    "children": [
+                     {"label": "Union, overlapping", "sub": "add them, then subtract the overlap once", "tone": "violet"},
+                     {"label": "Monotonicity", "sub": "A inside B means P(A) is at most P(B)", "tone": "violet"}]}]}}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Why 23 people is a coin flip, and 253 is the number to look at",
+         "caption": "**The middle column is the entire explanation.** People picture “someone shares *my* birthday”, which needs about 253 people for even odds. The question actually asked is about *any* pair — and 23 people make 253 pairs, each with a 1-in-365 chance. **The same 253 appearing in both places is not a coincidence.** The engineering form is the one to carry: a collision becomes likely after roughly the square root of N draws, not N/2, which is why a 256-bit hash offers about 128 bits of collision resistance.",
+         "left": "people", "codeW": 110,
+         "vars": ["pairs of people", "P(two share a birthday)"],
+         "steps": [
+          {"code": "10", "state": ["45", "0.1169"], "tone": "good"},
+          {"code": "23", "state": ["253", "0.5073 - a coin flip"], "changed": [0, 1], "tone": "violet"},
+          {"code": "50", "state": ["1,225", "0.9704"], "changed": [0, 1], "tone": "warn"},
+          {"code": "70", "state": ["2,415", "0.9992"], "changed": [0, 1], "tone": "crit"},
+          {"code": "but MY birthday", "state": ["n, not n squared", "needs about 253 people"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "3.2": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "One experiment, three random variables, three different distributions",
+         "caption": "**A random variable is a function, and that is the whole point of the definition.** The 36 outcomes of two dice are fixed; what varies is which numeric question you ask of them. The sum, the larger die and “did they match” are three different functions on the *same* sample space, so each has its own distribution — obtained by pushing the probabilities on the outcomes through the function. **The randomness is in which outcome occurs; the function itself is a deterministic rule**, which is why X is written with a capital and the value it took is written small.",
+         "cols": 4,
+         "nodes": [
+          {"id": "s", "label": "36 outcomes, equally likely", "sub": "the sample space - fixed", "tone": "accent"},
+          {"id": "x", "label": "X = the sum", "sub": "values 2 to 12, peaked at 7", "tone": "good"},
+          {"id": "y", "label": "Y = the larger die", "sub": "values 1 to 6, rising", "tone": "violet"},
+          {"id": "z", "label": "Z = did they match", "sub": "an indicator: 0 or 1", "tone": "warn"},
+          {"id": "d", "label": "Three distributions", "sub": "each is the pushforward of one function", "tone": "teal"}],
+         "edges": [["s", "x"], ["s", "y"], ["s", "z"], ["x", "d"], ["y", "d"], ["z", "d"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The same question, asked two ways, in the tail",
+         "caption": "**At 115 the two routes agree, and at 230 one of them has nothing left to give.** float64 holds about 16 digits, so once the CDF exceeds 1 minus 1e-16 it rounds to exactly 1.0 and the subtraction returns zero — **not a small number, zero.** The survival function computes the tail directly and never does that subtraction, which is why libraries ship `sf` as a separate function rather than as a convenience. It is the same cancellation that makes E[X²] − E[X]² a bad way to compute a variance.",
+         "left": "for a normal, mean 100, sd 15", "codeW": 210,
+         "vars": ["1 - cdf(x)", "sf(x)"],
+         "steps": [
+          {"code": "x = 115, one sd out", "state": ["0.1587", "0.1587 - agree"], "tone": "good"},
+          {"code": "x = 200, 6.7 sd out", "state": ["1.31e-11", "1.31e-11 - still agree"], "changed": [0, 1], "tone": "accent"},
+          {"code": "x = 230, 8.7 sd out", "state": ["0.0 - WRONG", "2.22e-18 - correct"], "changed": [0, 1], "tone": "crit"},
+          {"code": "because cdf(230) rounds to", "state": ["exactly 1.0", "never formed", "-"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "3.3": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three answers you could not get any other way",
+         "caption": "**In every row the pieces are strongly dependent, and in every row it does not matter** — linearity of expectation needs no independence and no knowledge of the joint distribution at all. The recipe is always the same: write the count as a sum of indicators, use the fact that the expectation of an indicator *is* a probability, and add. **Row one is the one to remember: shuffle a million hats and the expected number of people getting their own back is exactly 1.** Simulated at n = 1,000 it comes out at 1.002.",
+         "left": "problem", "codeW": 190,
+         "vars": ["written as", "expectation"],
+         "steps": [
+          {"code": "n hats returned at random", "state": ["a sum of n indicators", "exactly 1, for every n"], "tone": "violet"},
+          {"code": "simulated at n = 1,000", "state": ["5,000 shuffles", "1.002"], "changed": [0, 1], "tone": "good"},
+          {"code": "n keys into N hash buckets", "state": ["one indicator per pair", "pairs over N"], "changed": [0, 1], "tone": "accent"},
+          {"code": "collect all n coupons", "state": ["a sum over stages", "n times the n-th harmonic"], "changed": [0, 1], "tone": "accent"},
+          {"code": "and the pieces are", "state": ["strongly dependent", "which never matters"], "changed": [0, 1], "tone": "warn"}]}},
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Add two variables and the variance depends on whether they move together",
+         "caption": "**Both rows have the same two variances; only the correlation differs, and the answer is 90% larger.** Var(X+Y) is Var(X) + Var(Y) + twice the covariance, and dropping that cross term is one of the more expensive habits in applied work — it is exactly how a portfolio, a latency budget or an error budget gets reported as safer than it is. **The scaling row is the other half: doubling a quantity quadruples its variance** while the standard deviation merely doubles, which is why the standard deviation is the one that belongs in a report.",
+         "left": "X and Y", "codeW": 180,
+         "vars": ["Var(X) + Var(Y)", "Var(X + Y)"],
+         "steps": [
+          {"code": "independent", "state": ["2.001", "2.005 - matches"], "tone": "good"},
+          {"code": "correlated at 0.9", "state": ["1.998", "3.797 - 90% higher"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so the cross term", "state": ["twice the covariance", "zero only if uncorrelated"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and scaling by a", "state": ["a squared times Var", "sd only scales by a"], "changed": [0, 1], "tone": "warn"},
+          {"code": "units, for latency in ms", "state": ["variance in ms squared", "sd in ms - reportable"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "3.5": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Having waited five minutes changes nothing, which is often the wrong model",
+         "caption": "**The two numbers are identical, and that is the property.** “I have waited 5 minutes, what is the chance of another 10” equals “the chance of 10 from a standing start” — the clock resets continuously, and the exponential is the only continuous distribution that does this. **Which makes it exactly right for a process with no internal state and badly wrong for anything that ages.** If a long-running request is *less* likely to finish soon, the hazard rate is rising, and a timeout is the correct response rather than more patience.",
+         "left": "question, mean wait 10", "codeW": 200,
+         "vars": ["value", "reading"],
+         "steps": [
+          {"code": "P(wait over 15 | waited 5)", "state": ["0.3679", "another 10, having waited 5"], "tone": "accent"},
+          {"code": "P(wait over 10)", "state": ["0.3679", "10 from a standing start"], "tone": "accent"},
+          {"code": "so the hazard rate", "state": ["constant", "no notion of age at all"], "changed": [0, 1], "tone": "violet"},
+          {"code": "right for", "state": ["decay, arrivals, cache misses", "no internal state"], "changed": [0, 1], "tone": "good"},
+          {"code": "wrong for", "state": ["wear, patience, disk failure", "these age - use a Weibull"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "One shape parameter, and the mode leaves zero",
+         "caption": "**At k = 1 the Gamma *is* the exponential** — same distribution, mode sitting at zero. Raise k and the mode moves out to (k−1) times the scale, because waiting for the third event is not like waiting for the first. **That is the modelling signal worth taking from this table: if your latency histogram rises to a peak and then falls, an exponential cannot fit it**, since its mode is always at zero. Reach for a Gamma rather than transforming the data until the exponential looks acceptable. At large k it approaches a normal — the CLT arriving, since this is a sum of k exponentials.",
+         "left": "k, with scale 2", "codeW": 150,
+         "vars": ["mean", "mode", "density at 1"],
+         "steps": [
+          {"code": "k = 1", "state": ["2.0", "0.0 - at the origin", "0.3033"], "tone": "good"},
+          {"code": "k = 2", "state": ["4.0", "2.0 - moved out", "0.1516"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "k = 5", "state": ["10.0", "8.0", "0.0008"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "k large", "state": ["k times scale", "near the mean", "approaches a normal"], "changed": [0, 1, 2], "tone": "warn"}]}}
+ ],
+
+ "3.6": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Conditioning throws rows away and rescales what is left",
+         "caption": "**Learning something does not change the relative sizes inside the condition — only the denominator.** Start from a joint table where 19.5% of all users churned. Condition on paid and you keep one row, divide by 0.300, and get 5%. Condition on churned instead and you divide by 0.195 to get 7.7%. **Same cell on top, different denominators, and that is the whole reason P(A given B) and P(B given A) are different numbers** — the mistake behind every misread medical test and every confused churn dashboard.",
+         "left": "what you ask", "codeW": 200,
+         "vars": ["numerator", "divided by", "answer"],
+         "steps": [
+          {"code": "P(churned)", "state": ["0.180 + 0.015", "1.000 - everything", "19.5%"], "tone": "accent"},
+          {"code": "P(churned | paid)", "state": ["0.015", "0.300 - the paid row", "5.0%"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "P(paid | churned)", "state": ["0.015", "0.195 - the churn column", "7.7%"], "changed": [1, 2], "tone": "violet"},
+          {"code": "same cell on top", "state": ["0.015 both times", "different denominators", "different answers"], "changed": [0, 1, 2], "tone": "crit"}]}},
+  {"after": "03",
+   "d": {"kind": "compare",
+         "title": "A common cause and a common effect pull in opposite directions",
+         "caption": "**These are the two shapes behind “should I control for this variable?”, and they answer it oppositely** — which is why “control for everything” is unsafe advice rather than cautious advice. Ice cream and drownings correlate at 0.771 because both follow temperature; hold the temperature in a narrow band and the correlation falls to 0.011. **A collider does the reverse: conditioning on a common effect manufactures an association between causes that were genuinely unrelated.** Independence and conditional independence are different properties, and neither implies the other.",
+         "columns": [
+          {"title": "Confounder - a common CAUSE", "tone": "warn",
+           "items": ["temperature drives ice cream and drownings",
+                     "marginally correlated at 0.771",
+                     "hold temperature fixed: 0.011",
+                     "conditioning REMOVES a spurious link",
+                     "so here you should control for it"]},
+          {"title": "Collider - a common EFFECT", "tone": "crit",
+           "items": ["two unrelated causes of one outcome",
+                     "marginally independent",
+                     "condition on the outcome: now correlated",
+                     "conditioning CREATES a link that was absent",
+                     "so here controlling for it is the bug"]}]}}
+ ],
+
+ "3.7": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Everything comes out of the joint table, and nothing goes back in",
+         "caption": "**One direction works and the other does not, which is the point of the section.** Sum the joint over a variable and you have a marginal; divide by a marginal and you have a conditional. **But the marginals cannot rebuild the joint** — many different joint tables share the same row and column totals, and everything about how the two variables relate lives in that gap. Which is also where the tests live: **chi-square and mutual information both measure the distance between the observed joint and the product of the marginals.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "j", "label": "The joint table", "sub": "a probability per combination", "tone": "accent"},
+          {"id": "m", "label": "Sum out a variable: a marginal", "sub": "row and column totals", "tone": "good"},
+          {"id": "c", "label": "Divide by a marginal: a conditional", "sub": "fix one, renormalise the rest", "tone": "good"},
+          {"id": "b", "label": "But marginals cannot rebuild it", "sub": "many joints share the same totals", "tone": "crit"},
+          {"id": "g", "label": "And that gap IS the relationship", "sub": "joint against product of marginals", "tone": "violet"},
+          {"id": "t", "label": "Which chi-square and MI measure", "sub": "two ways to size the same gap", "tone": "teal"}],
+         "edges": [["j", "m"], ["m", "c"], ["j", "b"], ["b", "g"], ["g", "t"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Drop the off-diagonal and the risk comes out a third too low",
+         "caption": "**Three things, two of which share a driver — and the naive sum of weighted variances understates the real spread by nearly half.** The correct expression is w-transpose Sigma w: one line, every covariance included, always right. The shortcut of summing w-squared times sigma-squared quietly assumes every off-diagonal entry is zero, **which is false for anything with a common cause: two services behind one database, two features derived from one measurement, two assets in one sector.** The same off-diagonal information is what makes a minimum-variance portfolio possible at all.",
+         "left": "equal weights on three assets", "codeW": 220,
+         "vars": ["variance of the combination"],
+         "steps": [
+          {"code": "diagonal only, sum of w2 s2", "state": ["0.3343"], "tone": "crit"},
+          {"code": "the full form, w' Sigma w", "state": ["0.4941"], "changed": [0], "tone": "good"},
+          {"code": "ratio", "state": ["1.478 - understated by a third"], "changed": [0], "tone": "violet"},
+          {"code": "because two of the three", "state": ["share a driver: covariance 0.719"], "changed": [0], "tone": "warn"}]}}
+ ],
+
+ "3.8": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Surprise, in bits, and why it has to be a logarithm",
+         "caption": "**Three requirements pin the formula down completely:** a certain event must not be surprising, a rarer event must be more surprising, and independent surprises must add. **Only the logarithm satisfies all three** — so surprise is minus log p, and entropy is just its average. The unit is real rather than decorative: one bit is exactly a fair coin flip, and the entropy of a distribution is a hard lower bound on the average bits per symbol that any encoder can reach. **It is a compression limit, not an index.**",
+         "left": "an outcome of probability p", "codeW": 210,
+         "vars": ["surprise in bits", "reading"],
+         "steps": [
+          {"code": "p = 1", "state": ["0.0", "certain - nothing learned"], "tone": "good"},
+          {"code": "p = 0.5", "state": ["1.0", "a fair coin flip: one bit"], "changed": [0, 1], "tone": "accent"},
+          {"code": "p = 1/1024", "state": ["10.0", "ten bits"], "changed": [0, 1], "tone": "violet"},
+          {"code": "p = 1e-12", "state": ["39.9", "very surprising indeed"], "changed": [0, 1], "tone": "warn"},
+          {"code": "average it over a fair coin", "state": ["H = 1.0 bit", "entropy IS expected surprise"], "changed": [0, 1], "tone": "teal"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Zero bits, one bit, and the quarter-bit in between",
+         "caption": "**Mutual information is the gap from the previous lesson, measured in bits** — the KL divergence between the joint table and the product of its marginals. It is zero exactly when the variables are independent, and it reaches one full bit when Y is a copy of X, because knowing Y then removes a whole bit of uncertainty. **Unlike correlation it catches any dependence at all, linear or not.** The caution is the last row: two features can each score highly against the target and be duplicates of one another, so ranking features one at a time selects the same information twice.",
+         "left": "the joint table", "codeW": 200,
+         "vars": ["I(X;Y) in bits", "what it means"],
+         "steps": [
+          {"code": "all four cells 0.25", "state": ["0.0", "independent - the joint IS the product"], "tone": "good"},
+          {"code": "0.5 on the diagonal only", "state": ["1.0", "Y is a copy of X"], "changed": [0, 1], "tone": "violet"},
+          {"code": "0.4 diagonal, 0.1 off", "state": ["0.2781", "partially dependent"], "changed": [0, 1], "tone": "accent"},
+          {"code": "two features, high I each", "state": ["-", "possibly the SAME bits twice"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "3.9": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The same question, two bounds, fourteen orders of magnitude apart",
+         "caption": "**Ten thousand requests at a 1% error rate: can the error count double to 200?** Hoeffding knows only that each indicator lies between 0 and 1, so it must allow for a distribution piled at the ends, and returns a useless 0.27. Chernoff knows the mean is 100 and that doubling it takes a conspiracy, and returns 3e-15. **When your variables are indicators — a click, a failure, a cache hit — using Hoeffding leaves nearly all of the information on the table.** The multiplicative form is why: the bound scales with the mean rather than with the range.",
+         "left": "bound on P(errors reach 200)", "codeW": 220,
+         "vars": ["value", "what it uses"],
+         "steps": [
+          {"code": "expected errors", "state": ["100 of 10,000", "n times p"], "tone": "accent"},
+          {"code": "Hoeffding", "state": ["2.707e-01 - useless", "only the range, 0 to 1"], "changed": [0, 1], "tone": "crit"},
+          {"code": "Chernoff", "state": ["3.338e-15", "the mean as well"], "changed": [0, 1], "tone": "good"},
+          {"code": "the gap", "state": ["14 orders of magnitude", "the same event, both times"], "changed": [0, 1], "tone": "violet"}]}}
+ ]
+}
