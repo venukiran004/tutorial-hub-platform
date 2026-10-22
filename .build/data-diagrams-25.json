@@ -1,0 +1,133 @@
+{
+ "6.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Decide the role first, then convert - not the other way round",
+         "caption": "**Reading a file and then asking what the columns are is backwards.** Decide each column's role, then convert to it deliberately, because the conversion is where the sentinels get caught: an empty string, NA, N/A and −999 all have to become missing *before* the cast, or they become a category called “-999” or silently coerce to zero. **`errors=\"coerce\"` is the argument that makes this safe** — anything unparseable becomes NaT or NaN rather than raising or passing through — and then counting the new missing values tells you how dirty the column really was.",
+         "left": "role", "codeW": 150,
+         "vars": ["convert with", "why that one"],
+         "steps": [
+          {"code": "integer", "state": ["to_numeric then Int64", "nullable - a plain int cannot hold NaN"], "tone": "good"},
+          {"code": "float", "state": ["to_numeric(errors='coerce')", "unparseable becomes NaN, not an error"], "changed": [0, 1], "tone": "good"},
+          {"code": "datetime", "state": ["to_datetime(errors='coerce')", "and state format= as well"], "changed": [0, 1], "tone": "good"},
+          {"code": "category or flag", "state": ["astype('category')", "memory, and a fixed set of levels"], "changed": [0, 1], "tone": "accent"},
+          {"code": "but FIRST", "state": ["replace '', NA, N/A, -999", "or a sentinel becomes a category"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "6.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Nothing above 0.71, and one column is exactly the sum of the other two",
+         "caption": "**A correlation matrix is every pair, one pair at a time — so a feature that is a combination of two others can hide in plain sight.** Here c is a + b almost exactly, and the highest pairwise correlation is 0.71: a “drop anything above 0.9” rule keeps all three, and any linear model with all three has unstable coefficients. **The variance inflation factor is the measure that sees it, because it regresses each feature on all the others rather than on one at a time.** The same blind spot explains Simpson's paradox: a trend that reverses inside every group is invisible pairwise.",
+         "left": "what you look at", "codeW": 200,
+         "vars": ["what it says", "what it misses"],
+         "steps": [
+          {"code": "corr(a, c) and corr(b, c)", "state": ["0.71 and 0.70", "that c is a + b"], "tone": "crit"},
+          {"code": "a 0.9 correlation cutoff", "state": ["keeps all three", "the exact dependency"], "changed": [0, 1], "tone": "crit"},
+          {"code": "VIF on c", "state": ["enormous", "nothing - this is the test"], "changed": [0, 1], "tone": "good"},
+          {"code": "pairwise, across a grouping", "state": ["one overall trend", "a reversal inside every group"], "changed": [0, 1], "tone": "warn"},
+          {"code": "partial correlation", "state": ["the link with a third held fixed", "-"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "6.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Every accuracy test is a comparison with something outside the table",
+         "caption": "**A value can pass every other check and still be wrong: an email that is well-formed, unique, present and recent can belong to somebody else.** Accuracy is agreement with reality, and reality is not in the data — so there is no self-contained test for it, only three ways of reaching outside. **The miss column is what makes reconciliation insufficient on its own:** errors that net to zero pass it perfectly, and so does a figure that is wrong in both the table and the reference because they share an upstream source.",
+         "left": "method", "codeW": 170,
+         "vars": ["catches", "misses"],
+         "steps": [
+          {"code": "reconcile a total", "state": ["lost rows, doubled rows, a unit change", "errors that net to zero"], "tone": "good"},
+          {"code": "compare against a source of truth", "state": ["per-record disagreement", "only where both are wrong together"], "changed": [0, 1], "tone": "good"},
+          {"code": "manual review of a sample", "state": ["anything, including the unexpected", "rare problems - sample size limits it"], "changed": [0, 1], "tone": "accent"},
+          {"code": "and the limit on all three", "state": ["-", "the reference may share the same bug"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "6.4": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Five hundred billion pairs, or a few million",
+         "caption": "**Comparing every record with every other is quadratic: a million customers is 500 billion pairs, which is not a tuning problem but an impossibility.** Blocking makes it many small problems by only comparing records that share a cheap key — and the whole design sits in one constraint: **the block key must be shared by true duplicates, so a typo in the block key separates a pair for ever.** Hence a key built from the parts typos usually miss. Then a cluster of matches has to collapse into one record, and that survivorship rule decides what actually remains.",
+         "cols": 3,
+         "nodes": [
+          {"id": "n", "label": "Every pair: 500 billion", "sub": "for a million records", "tone": "crit"},
+          {"id": "b", "label": "Block on a cheap shared key", "sub": "postcode district plus an initial", "tone": "good"},
+          {"id": "s", "label": "Compare only within a block", "sub": "many small problems", "tone": "good"},
+          {"id": "t", "label": "But a typo in the KEY splits a pair for ever", "sub": "so build it from stable parts", "tone": "crit"},
+          {"id": "c", "label": "Cluster the matches", "sub": "a match is not transitive - decide", "tone": "violet"},
+          {"id": "w", "label": "Then a survivorship rule picks what remains", "sub": "newest, most complete, or most trusted", "tone": "violet"}],
+         "edges": [["n", "b"], ["b", "s"], ["b", "t"], ["s", "c"], ["c", "w"]]}}
+ ],
+
+ "6.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "One of the three mechanisms is testable, and the distinction that matters is not",
+         "caption": "**MCAR is testable: if missingness is unrelated to everything, the rows with and without the value should look the same on every other column — so a difference on any column rules it out.** What cannot be tested is the one that changes what you should do: MAR against MNAR turns on whether missingness depends on the value you do not have, and no amount of data answers that. **So the honest procedure is to test for MCAR, gather evidence, and then reason about the collection process** — which is domain knowledge, not statistics.",
+         "left": "mechanism", "codeW": 190,
+         "vars": ["means", "testable?"],
+         "steps": [
+          {"code": "MCAR", "state": ["missingness unrelated to anything", "YES - compare the two groups"], "tone": "good"},
+          {"code": "MAR", "state": ["depends on data you DO have", "not against MNAR"], "changed": [0, 1], "tone": "warn"},
+          {"code": "MNAR", "state": ["depends on the missing value itself", "no - by definition"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so what you can do", "state": ["test MCAR, then reason about the process", "domain knowledge, not statistics"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "6.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four imputations, in order of what they condition on",
+         "caption": "**Each method is a different answer to “conditioned on what?”, and the ordering is roughly cheapest to most faithful.** A column mean conditions on nothing, so it flattens variance and weakens every correlation the column had. **The group-conditional fill is usually the best value for effort** — one line, and it respects the structure that actually drives the missingness. KNN and the iterative imputer condition on the other columns properly, at the cost of fitting a model inside your preprocessing, which then has to go inside the pipeline so it never sees the test set.",
+         "left": "method", "codeW": 190,
+         "vars": ["conditions on", "cost"],
+         "steps": [
+          {"code": "mean or median", "state": ["nothing", "flattens variance and correlation"], "tone": "crit"},
+          {"code": "group-conditional mean", "state": ["the row's group", "one line - best value for effort"], "changed": [0, 1], "tone": "good"},
+          {"code": "KNN", "state": ["the most similar rows", "needs scaling; slow on wide data"], "changed": [0, 1], "tone": "accent"},
+          {"code": "iterative (MICE-style)", "state": ["every other column, in a loop", "a model inside preprocessing"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and all of them", "state": ["-", "must be fitted on train only"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Several guesses, several analyses, one pooled answer",
+         "caption": "**Single imputation treats each guess as a fact, which is why it produces standard errors that are too small** — the uncertainty about the filled value simply disappears from the arithmetic. Multiple imputation keeps it: draw from the predictive distribution rather than taking its mean, do that m times, run the analysis on each, and pool. **The spread between the m answers becomes part of the reported uncertainty**, which is what makes the interval honest. Reach for it when the confidence interval is the deliverable; a point prediction from a tree model rarely needs it.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "sample_posterior=True", "sub": "draw, do not take the mean", "tone": "accent"},
+          {"id": "m", "label": "m complete datasets", "sub": "different seeds, different fills", "tone": "good"},
+          {"id": "a", "label": "Run the analysis m times", "sub": "one estimate and SE each", "tone": "good"},
+          {"id": "p", "label": "Pool: average the estimates", "sub": "within-plus-between variance", "tone": "violet"},
+          {"id": "h", "label": "The spread IS the extra uncertainty", "sub": "which single imputation threw away", "tone": "violet"},
+          {"id": "w", "label": "Worth it when the interval is the deliverable", "sub": "not for every point prediction", "tone": "warn"}],
+         "edges": [["s", "m"], ["m", "a"], ["a", "p"], ["p", "h"], ["h", "w"]]}}
+ ],
+
+ "6.7": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Far from which rest?",
+         "caption": "**A transaction of 400 is unremarkable overall, normal for a large store, and a glaring anomaly for a small one** — so a detector that pools everything misses the real outlier and flags perfectly ordinary large-store rows instead. The fix is to apply the same rule within the group. **The two rows below it are the time-series versions of the same mistake:** a value has to be compared against the series' own level, which drifts, and against the same hour or weekday, which cycles. Pooling across a trend flags the end of the series; pooling across a season flags every Monday.",
+         "left": "compared against", "codeW": 190,
+         "vars": ["finds", "misses"],
+         "steps": [
+          {"code": "the whole dataset", "state": ["globally extreme values", "a small-store 400 - looks normal"], "tone": "crit"},
+          {"code": "the row's own group", "state": ["unusual FOR THAT GROUP", "cross-group structure"], "changed": [0, 1], "tone": "good"},
+          {"code": "a rolling local window", "state": ["a spike against the recent level", "a slow drift"], "changed": [0, 1], "tone": "good"},
+          {"code": "the same hour or weekday", "state": ["a genuinely odd Monday", "-"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pooled across a season", "state": ["every Monday", "the actual anomaly"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "6.8": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Change the model instead of the data",
+         "caption": "**A squared-error loss makes one extreme row quadratically important, which is the whole reason it dominates the fit** — so if the value is genuine, the alternative to editing the data is choosing a loss that limits any row's influence. Huber is quadratic near the centre and linear in the tail; quantile regression models a percentile and never squares anything; a tree splits on order alone, so the magnitude of an extreme value is irrelevant to it. **And influence is not outlyingness: a wildly wrong y at a typical x barely moves the line, while a moderate error at an extreme x can rotate it.**",
+         "left": "model", "codeW": 190,
+         "vars": ["what one extreme row does", "when"],
+         "steps": [
+          {"code": "OLS, squared error", "state": ["dominates the fit, quadratically", "only with clean data"], "tone": "crit"},
+          {"code": "Huber", "state": ["bounded influence past a threshold", "mostly clean, some bad rows"], "changed": [0, 1], "tone": "good"},
+          {"code": "quantile regression", "state": ["almost none - no squaring", "when the median is the target"], "changed": [0, 1], "tone": "good"},
+          {"code": "a tree or gradient boosting", "state": ["nothing - splits use order only", "the usual pragmatic answer"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and to measure it", "state": ["Cook's distance, not a z-score", "above 1 changes the model"], "changed": [0, 1], "tone": "accent"}]}}
+ ]
+}

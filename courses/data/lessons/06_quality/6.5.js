@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A value is missing for a reason. **The classification asks one question: does the probability of a value being missing depend on anything — and if so, on what?** The answer determines whether the rows you have are representative of the rows you do not." },
 
     { t: "dl", items: [
@@ -189,6 +193,10 @@ for name, df in [("full", full), ("MCAR", mcar), ("MAR", mar), ("MNAR", mnar)]:
 
     { t: "h2", n: "02", text: "What can be tested, and what cannot", id: "testing" },
 
+    {"kind": "trace", "title": "One of the three mechanisms is testable, and the distinction that matters is not", "caption": "**MCAR is testable: if missingness is unrelated to everything, the rows with and without the value should look the same on every other column — so a difference on any column rules it out.** What cannot be tested is the one that changes what you should do: MAR against MNAR turns on whether missingness depends on the value you do not have, and no amount of data answers that. **So the honest procedure is to test for MCAR, gather evidence, and then reason about the collection process** — which is domain knowledge, not statistics.", "left": "mechanism", "codeW": 190, "vars": ["means", "testable?"], "steps": [{"code": "MCAR", "state": ["missingness unrelated to anything", "YES - compare the two groups"], "tone": "good"}, {"code": "MAR", "state": ["depends on data you DO have", "not against MNAR"], "changed": [0, 1], "tone": "warn"}, {"code": "MNAR", "state": ["depends on the missing value itself", "no - by definition"], "changed": [0, 1], "tone": "crit"}, {"code": "so what you can do", "state": ["test MCAR, then reason about the process", "domain knowledge, not statistics"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_5-02-1"},
+
+
+
     { t: "p", text: "**MCAR is testable: if missingness is unrelated to everything, the rows with and without a value should look the same on every other column.** MAR versus MNAR is not testable from the data, because the difference is whether missingness depends on a value you do not have. What you can do is look for evidence and reason about the process." },
 
     { t: "code", lang: "python", title: "testing MCAR, and gathering evidence about the rest", code: `
@@ -297,7 +305,11 @@ np.percentile(full["income"], [90, 95, 99, 100])
 
     { t: "h2", n: "03", text: "What to do, by mechanism", id: "actions" },
 
-    {"kind": "matrix", "title": "What to do, by mechanism", "caption": "The mechanism decides whether a fill is honest. Under MCAR the observed rows are a fair sample, so dropping them loses power but not correctness. Under MNAR the missingness itself carries the information — and an imputed value hides exactly the thing you needed to model.", "cols": ["Safe to", "Because"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "drop, or impute simply", "tone": "good"}, "the observed rows are a fair sample"], [{"text": "impute using the predictors", "tone": "accent"}, "the gap is explained by other columns"], [{"text": "model the missingness itself", "tone": "crit"}, "the absence is the information"]], "t": "diagram", "id": "dg-6_5-03-1"},
+    {"kind": "matrix", "title": "What to do, by mechanism", "caption": "The mechanism decides whether a fill is honest. Under MCAR the observed rows are a fair sample, so dropping them loses power but not correctness. Under MNAR the missingness itself carries the information — and an imputed value hides exactly the thing you needed to model.", "cols": ["Safe to", "Because"], "rows": ["MCAR", "MAR", "MNAR"], "cells": [[{"text": "drop, or impute simply", "tone": "good"}, "the observed rows are a fair sample"], [{"text": "impute using the predictors", "tone": "accent"}, "the gap is explained by other columns"], [{"text": "model the missingness itself", "tone": "crit"}, "the absence is the information"]], "t": "diagram", "id": "dg-6_5-03-2"},
+
+
+
+
 
 
 

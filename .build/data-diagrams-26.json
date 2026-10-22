@@ -1,0 +1,164 @@
+{
+ "7.1": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Every encoder but one has a fit step, and the leak scales with what it learns",
+         "caption": "**One-hot learns only a category list, so fitting it on everything leaks a little — the test set's rare values decided what “rare” means.** Anything that learns *counts* leaks much more, because the test set's frequencies end up inside a feature column. **Hashing is the only encoder with nothing to fit**, which is exactly why it is reached for in streaming settings. And the handling of an unseen category is the other half of the same decision: a value that appears only at prediction time must land somewhere defined, which is what the rare-label bucket is for.",
+         "left": "encoder", "codeW": 170,
+         "vars": ["what it fits", "leak if fitted on all data"],
+         "steps": [
+          {"code": "one-hot", "state": ["the category list", "small - which values exist"], "tone": "warn"},
+          {"code": "rare-label grouping", "state": ["which values are rare", "the test set defines 'rare'"], "changed": [0, 1], "tone": "warn"},
+          {"code": "frequency encoding", "state": ["a count per category", "LARGE - test counts in a feature"], "changed": [0, 1], "tone": "crit"},
+          {"code": "target encoding", "state": ["a target mean per category", "largest - the label itself"], "changed": [0, 1], "tone": "crit"},
+          {"code": "hashing", "state": ["NOTHING", "none - no fit, so no leak"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "7.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four target-encoding variants, and only two of them are usable",
+         "caption": "**The naive version encodes each row using its own label, which is leakage so direct that the feature can look almost perfect in training and be worthless afterwards.** Out-of-fold encoding fixes that; smoothing fixes the separate problem that a category with two rows gets an extreme mean from noise. **Both fixes are required, not alternatives** — out-of-fold without smoothing still overfits rare categories, and smoothing without out-of-fold still leaks the row's own label. The ordered variant is CatBoost's answer and is the right one for time-ordered data.",
+         "left": "variant", "codeW": 190,
+         "vars": ["each row encoded from", "verdict"],
+         "steps": [
+          {"code": "naive", "state": ["all rows, including itself", "NEVER for a model"], "tone": "crit"},
+          {"code": "K-fold out-of-fold", "state": ["the other K-1 folds", "fixes the own-label leak only"], "changed": [0, 1], "tone": "warn"},
+          {"code": "out-of-fold plus smoothing", "state": ["other folds, blended to the prior", "the default - both fixes"], "changed": [0, 1], "tone": "good"},
+          {"code": "ordered", "state": ["rows earlier in the order only", "for time-ordered data"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "7.3": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "A coefficient near 1 is a diagnostic no one-hot model can offer",
+         "caption": "**Weight of evidence puts the feature on the log-odds scale, which is the scale the logistic model works in — so the model has nothing left to rescale and the coefficient should come out near 1.** That turns a coefficient into a check. **Far below 1 means the evidence is already carried by other features; far above 1 means the table overfit or leaked; negative means collinearity has flipped it.** Twenty WoE features all sitting near 1 is a model you can defend line by line, which is why this encoding survives in credit scoring.",
+         "cols": 3,
+         "nodes": [
+          {"id": "w", "label": "WoE is the log-odds shift per category", "sub": "computed from the training labels", "tone": "accent"},
+          {"id": "m", "label": "The model works in log-odds too", "sub": "so there is nothing to rescale", "tone": "good"},
+          {"id": "c", "label": "So the coefficient should be about 1", "sub": "one parameter, not k", "tone": "good"},
+          {"id": "l", "label": "Far below 1: the evidence is elsewhere", "sub": "another feature already has it", "tone": "warn"},
+          {"id": "h", "label": "Far above 1: the table overfit or leaked", "sub": "check the fit was out-of-fold", "tone": "crit"},
+          {"id": "n", "label": "Negative: collinearity has flipped it", "sub": "a diagnostic, for free", "tone": "violet"}],
+         "edges": [["w", "m"], ["m", "c"], ["c", "l"], ["c", "h"], ["c", "n"]]}}
+ ],
+
+ "7.4": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four scalers, and the one whose output range is defined by an outlier",
+         "caption": "**MinMax maps the observed minimum and maximum to 0 and 1 — so a single extreme value sets the range and squashes everything else into a narrow band near zero.** It is right only where the bounds are genuinely known in advance: pixels, percentages. **RobustScaler is the one to reach for when the outliers are real and staying**, because the median and IQR are unmoved by them. And all four are fit steps: fitting on the full data centres the training features on a mean that includes the test set, which is a small leak on homogeneous data and a large one otherwise.",
+         "left": "scaler", "codeW": 170,
+         "vars": ["centre and spread", "what an outlier does"],
+         "steps": [
+          {"code": "StandardScaler", "state": ["mean and standard deviation", "inflates sigma, squashes the bulk"], "tone": "accent"},
+          {"code": "MinMaxScaler", "state": ["min and range", "DEFINES the range - everything else compresses"], "changed": [0, 1], "tone": "crit"},
+          {"code": "RobustScaler", "state": ["median and IQR", "nothing to the bulk; it stays extreme"], "changed": [0, 1], "tone": "good"},
+          {"code": "MaxAbsScaler", "state": ["zero and max absolute", "defines the bound; keeps sparsity"], "changed": [0, 1], "tone": "accent"},
+          {"code": "and all four", "state": ["are FIT on the training set", "fit on everything and test leaks in"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "7.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "All of them are a power of x; the differences are input and strength",
+         "caption": "**Log is the limiting case as the power goes to zero, square root is power one half, and Box-Cox fits the power from the data** — which makes the family one idea rather than five tricks. The practical decisions are in the first two columns. **A column containing zeros cannot take a plain log, and log1p is the fix rather than an arbitrary offset; a column with negative values needs Yeo-Johnson**, which fits a power per sign. And the fitted transforms have a parameter learned on the training set, so they belong inside the pipeline.",
+         "left": "transform", "codeW": 160,
+         "vars": ["accepts", "compression", "fitted?"],
+         "steps": [
+          {"code": "log(x)", "state": ["x above 0 only", "strong, multiplicative", "no"], "tone": "good"},
+          {"code": "log1p(x)", "state": ["x of 0 allowed", "strong; weak below 1", "no"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "sqrt(x)", "state": ["x of 0 allowed", "mild - variance stabilising", "no"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "Box-Cox", "state": ["x above 0 only", "a fitted power", "YES - on train"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "Yeo-Johnson", "state": ["any sign", "a fitted power per sign", "YES - on train"], "changed": [0, 1, 2], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Three reasons not to transform a skewed column",
+         "caption": "**For a tree, a monotonic transform leaves every split unchanged — so logging a feature for a gradient booster is work with no effect**, while logging its *target* changes the loss being minimised, which is a real decision rather than a no-op. **The second row is the one that costs accuracy:** in fraud, the few transactions over 10,000 are the entire point, and log compresses 10,000 and 100,000 to 9.2 and 11.5 — a difference of 2.3 on a scale where typical rows already differ by more than that. The tail was the signal, and the transform removed it.",
+         "left": "situation", "codeW": 190,
+         "vars": ["effect of logging the feature"],
+         "steps": [
+          {"code": "a tree or gradient booster", "state": ["none - splits are order-based"], "tone": "warn"},
+          {"code": "...but logging the TARGET", "state": ["changes the loss being minimised"], "changed": [0], "tone": "violet"},
+          {"code": "the tail IS the signal, as in fraud", "state": ["10,000 and 100,000 become 9.2 and 11.5"], "changed": [0], "tone": "crit"},
+          {"code": "a feature with a hard rule at a value", "state": ["the threshold stops being a round number"], "changed": [0], "tone": "crit"},
+          {"code": "a linear model on amounts", "state": ["genuinely helps - the usual case"], "changed": [0], "tone": "good"}]}}
+ ],
+
+ "7.6": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "One cut is honest when the world already made the cut",
+         "caption": "**Binarising throws away almost everything, which is the right trade only when the threshold exists outside your model** — eighteen for adulthood, zero for a balance, ninety days for a default, the free-shipping amount. The world has already made the decision discrete and the model should encode it, not rediscover it. **Everywhere else, one cut at a number somebody guessed is the worst of the binning options:** it loses the ordering within each side, cannot represent a non-monotonic relationship any better than a line can, and hides the arbitrariness of the threshold behind a tidy 0 and 1.",
+         "left": "situation", "codeW": 200,
+         "vars": ["binarise?", "why"],
+         "steps": [
+          {"code": "age >= 18, balance < 0, overdue > 90", "state": ["yes", "the rule exists in the world"], "tone": "good"},
+          {"code": "amount > the free-shipping threshold", "state": ["yes", "behaviour genuinely changes there"], "changed": [0, 1], "tone": "good"},
+          {"code": "a cut at a round number you chose", "state": ["no", "arbitrary, and it hides that"], "changed": [0, 1], "tone": "crit"},
+          {"code": "a U-shaped relationship", "state": ["no", "use quantile bins and look"], "changed": [0, 1], "tone": "crit"},
+          {"code": "for a tree model", "state": ["rarely", "it can find the split itself"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "7.7": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "A number with a unit is two variables until you recombine them",
+         "caption": "**“1.2 GB” and “800MB” are not comparable as extracted, and they are once both are bytes** — so the extraction has two parts, the magnitude and the scale, and the column is not numeric until the lookup has been applied. The messy rows are the point of the exercise: **a missing unit has to be a decision, not a default** — assuming the most common one is a choice worth recording, and so is refusing. The last row is the one people underestimate: a range is two numbers, and collapsing it to a midpoint invents precision the source never had.",
+         "left": "raw value", "codeW": 170,
+         "vars": ["magnitude", "unit", "in bytes"],
+         "steps": [
+          {"code": "'1.2 GB'", "state": ["1.2", "GB", "1.2e9"], "tone": "good"},
+          {"code": "'800MB'", "state": ["800", "MB", "8.0e8"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "'3,400 KB'", "state": ["3400 - strip the comma", "KB", "3.4e6"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "'1.5 G'", "state": ["1.5", "G - an alias for GB", "needs the lookup"], "changed": [0, 1, 2], "tone": "warn"},
+          {"code": "'unknown' and ''", "state": ["NaN", "none", "NaN - not zero"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "'10-20 GB', a range", "state": ["two numbers", "GB", "keep both, or record the choice"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ],
+
+ "7.8": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four features a timestamp cannot give you by itself",
+         "caption": "**A date does not know it is a holiday** — that is an external table, and the days *around* one often matter more than the day itself, because behaviour shifts before and after. **The time-zone row is the one that silently corrupts an hour-of-day feature:** storing in UTC is correct, and deriving “local hour” from UTC without converting puts a London evening and a Tokyo morning in the same bucket. And a fiscal calendar is another table: a quarter that starts in April is not something a timestamp implies.",
+         "left": "feature", "codeW": 180,
+         "vars": ["needs", "why"],
+         "steps": [
+          {"code": "is_holiday", "state": ["an external calendar table", "the date cannot know"], "tone": "accent"},
+          {"code": "days to or from a holiday", "state": ["the same table, plus arithmetic", "often more predictive than the day"], "changed": [0, 1], "tone": "violet"},
+          {"code": "local hour of day", "state": ["the user's time zone", "UTC alone mixes evening and morning"], "changed": [0, 1], "tone": "crit"},
+          {"code": "fiscal quarter", "state": ["the company's calendar", "a year that starts in April"], "changed": [0, 1], "tone": "good"},
+          {"code": "business days elapsed", "state": ["weekends and holidays excluded", "not a Timedelta - an offset"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "7.9": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The row is inside its own group average, and whether that matters depends on the aggregate",
+         "caption": "**“How does this row compare to rows like it” is a feature with a groupby inside, and `transform` is the mechanism** — the aggregate is computed per group and attached to every member. The distinction worth getting right is in the last two rows. **An aggregate of the features is safe to compute over all the data; an aggregate of the target is not**, because the row's own label is inside its group's rate. The leave-one-out version excludes the row, which is the same correction that target encoding needs, for the same reason.",
+         "left": "feature", "codeW": 200,
+         "vars": ["includes the row itself?", "safe?"],
+         "steps": [
+          {"code": "the customer's mean order value", "state": ["yes, and harmlessly", "fine - no target involved"], "tone": "good"},
+          {"code": "amount divided by that mean", "state": ["yes", "fine - a useful ratio feature"], "changed": [0, 1], "tone": "good"},
+          {"code": "the group's size", "state": ["yes", "fine"], "changed": [0, 1], "tone": "good"},
+          {"code": "the region's RETURN RATE", "state": ["yes - its own label", "LEAKS"], "changed": [0, 1], "tone": "crit"},
+          {"code": "...leave-one-out", "state": ["no - the row is excluded", "the correction target encoding needs"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "7.10": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Bag-of-words thinks refund and reimbursement are as unrelated as refund and giraffe",
+         "caption": "**That is the one sentence that motivates embeddings:** counting words gives a column per word, so two words that mean the same thing share nothing at all. An embedding places each token, document or ID in a space where similar things are close — for text from a model that has read far more than your corpus, for IDs learned from your own data. **The trade is in the last column:** TF-IDF columns are words you can read off a coefficient, and an embedding dimension means nothing in isolation, so a linear model over embeddings is accurate and unexplainable.",
+         "left": "representation", "codeW": 170,
+         "vars": ["output", "unseen token", "interpretable"],
+         "steps": [
+          {"code": "counts, bag of words", "state": ["sparse, vocabulary-wide", "ignored", "yes - columns are words"], "tone": "good"},
+          {"code": "TF-IDF", "state": ["sparse, normalised", "ignored", "yes - the default for linear"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "hashing", "state": ["sparse, fixed width", "hashed to a bucket", "no"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "pretrained sentence embedding", "state": ["dense, 384 dims", "handled - no vocabulary", "no"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "learned ID embedding", "state": ["dense, learned", "needs an unknown bucket", "no"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ]
+}

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three kinds of the same thing", id: "kinds" },
 
-    {"kind": "matrix", "title": "Three kinds of duplicate, and only the first is cheap", "caption": "They need different tools because they are different problems. The third cannot be found in the data at all: a maiden name and a married name are the same person and nothing about the two rows says so without a domain rule or a second identifier.", "cols": ["Found by", "Example"], "rows": ["Exact duplicate", "Fuzzy duplicate", "Semantic duplicate"], "cells": [[{"text": "duplicated()", "tone": "good"}, "a retry, a double load, a join"], [{"text": "normalise, then similarity", "tone": "warn"}, "a typo, a transposed digit"], [{"text": "a domain rule or second id", "tone": "crit"}, "a maiden name, an old address"]], "t": "diagram", "id": "dg-6_4-01-0"},
+    {"kind": "matrix", "title": "Three kinds of duplicate, and only the first is cheap", "caption": "They need different tools because they are different problems. The third cannot be found in the data at all: a maiden name and a married name are the same person and nothing about the two rows says so without a domain rule or a second identifier.", "cols": ["Found by", "Example"], "rows": ["Exact duplicate", "Fuzzy duplicate", "Semantic duplicate"], "cells": [[{"text": "duplicated()", "tone": "good"}, "a retry, a double load, a join"], [{"text": "normalise, then similarity", "tone": "warn"}, "a typo, a transposed digit"], [{"text": "a domain rule or second id", "tone": "crit"}, "a maiden name, an old address"]], "t": "diagram", "id": "dg-6_4-01-1"},
+
+
+
+
 
 
 
@@ -158,7 +162,11 @@ row_hash.duplicated(keep=False).sum()
 
     { t: "h2", n: "02", text: "Fuzzy matching", id: "fuzzy" },
 
-    {"kind": "steps", "title": "Why blocking is what makes matching possible", "caption": "Comparing every pair is n²: a hundred thousand records is five billion comparisons. Blocking only compares pairs that share a cheap key, which removes almost all of them — at the cost of missing a true pair whose block key differs, which is why the key is chosen to be the field least likely to be wrong.", "items": [{"label": "Normalise first", "desc": "case, whitespace, accents, punctuation", "code": "1", "tone": "accent"}, {"label": "Block on a cheap key", "desc": "same postcode, same first three letters", "code": "2", "tone": "good"}, {"label": "Compare within blocks only", "desc": "far below n squared", "code": "3", "tone": "good"}, {"label": "Score each pair", "desc": "edit distance, or a weighted field comparison", "code": "4", "tone": "violet"}, {"label": "Threshold, then cluster", "desc": "the threshold is a choice and can be wrong", "code": "5", "tone": "warn"}, {"label": "Survivorship", "desc": "which record, and which field from which record, survives", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-6_4-02-1"},
+    {"kind": "steps", "title": "Why blocking is what makes matching possible", "caption": "Comparing every pair is n²: a hundred thousand records is five billion comparisons. Blocking only compares pairs that share a cheap key, which removes almost all of them — at the cost of missing a true pair whose block key differs, which is why the key is chosen to be the field least likely to be wrong.", "items": [{"label": "Normalise first", "desc": "case, whitespace, accents, punctuation", "code": "1", "tone": "accent"}, {"label": "Block on a cheap key", "desc": "same postcode, same first three letters", "code": "2", "tone": "good"}, {"label": "Compare within blocks only", "desc": "far below n squared", "code": "3", "tone": "good"}, {"label": "Score each pair", "desc": "edit distance, or a weighted field comparison", "code": "4", "tone": "violet"}, {"label": "Threshold, then cluster", "desc": "the threshold is a choice and can be wrong", "code": "5", "tone": "warn"}, {"label": "Survivorship", "desc": "which record, and which field from which record, survives", "code": "6", "tone": "teal"}], "t": "diagram", "id": "dg-6_4-02-2"},
+
+
+
+
 
 
 
@@ -269,6 +277,10 @@ process.extract("john smyth", choices, scorer=fuzz.token_sort_ratio, limit=3)
     ]},
 
     { t: "h2", n: "03", text: "Scaling and resolving", id: "scale" },
+
+    {"kind": "flow", "title": "Five hundred billion pairs, or a few million", "caption": "**Comparing every record with every other is quadratic: a million customers is 500 billion pairs, which is not a tuning problem but an impossibility.** Blocking makes it many small problems by only comparing records that share a cheap key — and the whole design sits in one constraint: **the block key must be shared by true duplicates, so a typo in the block key separates a pair for ever.** Hence a key built from the parts typos usually miss. Then a cluster of matches has to collapse into one record, and that survivorship rule decides what actually remains.", "cols": 3, "nodes": [{"id": "n", "label": "Every pair: 500 billion", "sub": "for a million records", "tone": "crit"}, {"id": "b", "label": "Block on a cheap shared key", "sub": "postcode district plus an initial", "tone": "good"}, {"id": "s", "label": "Compare only within a block", "sub": "many small problems", "tone": "good"}, {"id": "t", "label": "But a typo in the KEY splits a pair for ever", "sub": "so build it from stable parts", "tone": "crit"}, {"id": "c", "label": "Cluster the matches", "sub": "a match is not transitive - decide", "tone": "violet"}, {"id": "w", "label": "Then a survivorship rule picks what remains", "sub": "newest, most complete, or most trusted", "tone": "violet"}], "edges": [["n", "b"], ["b", "s"], ["b", "t"], ["s", "c"], ["c", "w"]], "t": "diagram", "id": "dg-6_4-03-0"},
+
+
 
     { t: "p", text: "**Comparing every record to every other is n² — a million customers is 500 billion pairs.** Blocking restricts comparison to pairs that share a cheap key, and turns the problem into many small ones. Then a cluster of matches has to become one record, and the rule for how is the part that decides what survives." },
 

@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Replacing every missing value in a column with the column's mean is the most common imputation and the most damaging one that looks harmless. **It puts a spike at one point in the distribution, and every statistic that depends on spread — standard deviation, correlation, confidence interval — is now computed on a column that has less spread than the truth.**" },
 
     { t: "dl", items: [
@@ -183,6 +187,10 @@ income.mean()                                          # 38,000
 
     { t: "h2", n: "02", text: "Imputation that uses structure", id: "structured" },
 
+    {"kind": "trace", "title": "Four imputations, in order of what they condition on", "caption": "**Each method is a different answer to “conditioned on what?”, and the ordering is roughly cheapest to most faithful.** A column mean conditions on nothing, so it flattens variance and weakens every correlation the column had. **The group-conditional fill is usually the best value for effort** — one line, and it respects the structure that actually drives the missingness. KNN and the iterative imputer condition on the other columns properly, at the cost of fitting a model inside your preprocessing, which then has to go inside the pipeline so it never sees the test set.", "left": "method", "codeW": 190, "vars": ["conditions on", "cost"], "steps": [{"code": "mean or median", "state": ["nothing", "flattens variance and correlation"], "tone": "crit"}, {"code": "group-conditional mean", "state": ["the row's group", "one line - best value for effort"], "changed": [0, 1], "tone": "good"}, {"code": "KNN", "state": ["the most similar rows", "needs scaling; slow on wide data"], "changed": [0, 1], "tone": "accent"}, {"code": "iterative (MICE-style)", "state": ["every other column, in a loop", "a model inside preprocessing"], "changed": [0, 1], "tone": "violet"}, {"code": "and all of them", "state": ["-", "must be fitted on train only"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_6-02-1"},
+
+
+
     { t: "p", text: "**A better guess uses the other columns.** If missingness is MAR — predictable from observed data — then the missing value is too, and an imputation that conditions on the right columns can be nearly unbiased. Each method makes a different assumption about what \"conditions on\" means." },
 
     { t: "code", lang: "python", title: "group-conditional, KNN and iterative imputation", code: `
@@ -280,7 +288,11 @@ test_f = imp.transform(test[["income"]])               # applies it to test
 
     { t: "h2", n: "03", text: "The indicator, and keeping the gap visible", id: "indicator" },
 
-    {"kind": "compare", "title": "The indicator keeps the gap visible", "caption": "Any fill makes a value up. Adding a boolean column that records *where* the fill happened costs one column and lets the model use the fact of absence as a feature — which, under MNAR, is often the strongest signal in the dataset.", "columns": [{"title": "Fill only", "tone": "warn", "items": ["The column looks complete", "The model cannot tell filled from real", "Variance is understated", "MNAR information is destroyed"]}, {"title": "Fill, plus an indicator", "tone": "good", "items": ["One extra boolean column", "The model can learn from absence", "The fill's effect is separable", "The commonest fix, and the cheapest"]}], "t": "diagram", "id": "dg-6_6-03-1"},
+    {"kind": "compare", "title": "The indicator keeps the gap visible", "caption": "Any fill makes a value up. Adding a boolean column that records *where* the fill happened costs one column and lets the model use the fact of absence as a feature — which, under MNAR, is often the strongest signal in the dataset.", "columns": [{"title": "Fill only", "tone": "warn", "items": ["The column looks complete", "The model cannot tell filled from real", "Variance is understated", "MNAR information is destroyed"]}, {"title": "Fill, plus an indicator", "tone": "good", "items": ["One extra boolean column", "The model can learn from absence", "The fill's effect is separable", "The commonest fix, and the cheapest"]}], "t": "diagram", "id": "dg-6_6-03-3"},
+
+
+
+
 
 
 
@@ -364,6 +376,10 @@ HistGradientBoostingRegressor().fit(mar[["age", "income"]].fillna({"income": np.
     },
 
     { t: "h2", n: "04", text: "Multiple imputation: carrying the uncertainty through", id: "multiple" },
+
+    {"kind": "flow", "title": "Several guesses, several analyses, one pooled answer", "caption": "**Single imputation treats each guess as a fact, which is why it produces standard errors that are too small** — the uncertainty about the filled value simply disappears from the arithmetic. Multiple imputation keeps it: draw from the predictive distribution rather than taking its mean, do that m times, run the analysis on each, and pool. **The spread between the m answers becomes part of the reported uncertainty**, which is what makes the interval honest. Reach for it when the confidence interval is the deliverable; a point prediction from a tree model rarely needs it.", "cols": 3, "nodes": [{"id": "s", "label": "sample_posterior=True", "sub": "draw, do not take the mean", "tone": "accent"}, {"id": "m", "label": "m complete datasets", "sub": "different seeds, different fills", "tone": "good"}, {"id": "a", "label": "Run the analysis m times", "sub": "one estimate and SE each", "tone": "good"}, {"id": "p", "label": "Pool: average the estimates", "sub": "within-plus-between variance", "tone": "violet"}, {"id": "h", "label": "The spread IS the extra uncertainty", "sub": "which single imputation threw away", "tone": "violet"}, {"id": "w", "label": "Worth it when the interval is the deliverable", "sub": "not for every point prediction", "tone": "warn"}], "edges": [["s", "m"], ["m", "a"], ["a", "p"], ["p", "h"], ["h", "w"]], "t": "diagram", "id": "dg-6_6-04-2"},
+
+
 
     { t: "p", text: "**Single imputation treats each guess as a fact. Multiple imputation makes several guesses, runs the analysis on each, and combines the results** — so the spread between the guesses becomes part of the reported uncertainty. It is the method that gives honest standard errors, and it is the standard in any field where the confidence interval is the deliverable." },
 

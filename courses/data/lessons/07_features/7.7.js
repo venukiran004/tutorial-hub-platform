@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One field, several variables", id: "mixed" },
 
-    {"kind": "steps", "title": "One field, several variables", "caption": "`\"A21\"` is a letter-code and a number. `\"3 bed flat\"` is a count and a category. Splitting them is routine; the fourth step is the one people skip, and it is often the strongest feature — rows written `\"n/a\"` rather than `\"0\"` or blank frequently differ in outcome, and the format is the only evidence left of why.", "items": [{"label": "Extract the numeric part", "desc": "a regex group, cast to a number", "code": "1", "tone": "accent"}, {"label": "Extract the categorical part", "desc": "the letter, the unit, the suffix", "code": "2", "tone": "accent"}, {"label": "Normalise the units", "desc": "1.2 GB and 800 MB into one base unit", "code": "3", "tone": "good"}, {"label": "Record which pattern matched", "desc": "'n/a' against '0' against blank: a feature", "code": "4", "tone": "violet"}, {"label": "Report parse coverage", "desc": "the fraction of rows the extraction handled", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-7_7-01-0"},
+    {"kind": "steps", "title": "One field, several variables", "caption": "`\"A21\"` is a letter-code and a number. `\"3 bed flat\"` is a count and a category. Splitting them is routine; the fourth step is the one people skip, and it is often the strongest feature — rows written `\"n/a\"` rather than `\"0\"` or blank frequently differ in outcome, and the format is the only evidence left of why.", "items": [{"label": "Extract the numeric part", "desc": "a regex group, cast to a number", "code": "1", "tone": "accent"}, {"label": "Extract the categorical part", "desc": "the letter, the unit, the suffix", "code": "2", "tone": "accent"}, {"label": "Normalise the units", "desc": "1.2 GB and 800 MB into one base unit", "code": "3", "tone": "good"}, {"label": "Record which pattern matched", "desc": "'n/a' against '0' against blank: a feature", "code": "4", "tone": "violet"}, {"label": "Report parse coverage", "desc": "the fraction of rows the extraction handled", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-7_7-01-1"},
+
+
+
+
 
 
 
@@ -182,6 +186,9 @@ out
 
     { t: "h2", n: "02", text: "Units, currencies and ranges", id: "units" },
 
+    {"kind": "trace", "title": "A number with a unit is two variables until you recombine them", "caption": "**“1.2 GB” and “800MB” are not comparable as extracted, and they are once both are bytes** — so the extraction has two parts, the magnitude and the scale, and the column is not numeric until the lookup has been applied. The messy rows are the point of the exercise: **a missing unit has to be a decision, not a default** — assuming the most common one is a choice worth recording, and so is refusing. The last row is the one people underestimate: a range is two numbers, and collapsing it to a midpoint invents precision the source never had.", "left": "raw value", "codeW": 170, "vars": ["magnitude", "unit", "in bytes"], "steps": [{"code": "'1.2 GB'", "state": ["1.2", "GB", "1.2e9"], "tone": "good"}, {"code": "'800MB'", "state": ["800", "MB", "8.0e8"], "changed": [0, 1, 2], "tone": "good"}, {"code": "'3,400 KB'", "state": ["3400 - strip the comma", "KB", "3.4e6"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "'1.5 G'", "state": ["1.5", "G - an alias for GB", "needs the lookup"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "'unknown' and ''", "state": ["NaN", "none", "NaN - not zero"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "'10-20 GB', a range", "state": ["two numbers", "GB", "keep both, or record the choice"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_7-02-0"},
+
+
     { t: "p", text: "**A number with a unit is two variables — the magnitude and the scale — and they must be recombined onto one base unit before the column is numeric.** `\"1.2 GB\"` and `\"800 MB\"` are not comparable as extracted; they are once both are bytes. The same applies to currencies, time periods and ranges." },
 
     { t: "code", lang: "python", title: "normalising to a base unit, and what to do with a range", code: `
@@ -276,7 +283,11 @@ rg["is_open"] = rg["open"].notna().astype(int)
 
     { t: "h2", n: "03", text: "Free text with structure inside", id: "freetext" },
 
-    {"kind": "matrix", "title": "Free text with structure inside", "caption": "A free-text field that people fill in by hand is rarely free of structure — it holds a measurement, a code, a unit or a date in whatever format the writer chose. Extracting the structure is worth more than vectorising the text, and the pattern that matched is itself a feature.", "cols": ["Extract", "Keep as well"], "rows": ["\"3 bed flat\"", "\"1.2 GB\"", "\"approx 40k\"", "\"see notes\"", "\"\" (blank)"], "cells": [[{"text": "count 3, type flat", "tone": "good"}, "the pattern: count + type"], [{"text": "1200, unit MB", "tone": "good"}, "the unit as written"], [{"text": "40000", "tone": "warn"}, "an is_approximate flag"], [{"text": "nothing numeric", "tone": "crit"}, "a deferral marker: often predictive"], [{"text": "nothing", "tone": "crit"}, "blank is not the same as \"n/a\""]], "t": "diagram", "id": "dg-7_7-03-1"},
+    {"kind": "matrix", "title": "Free text with structure inside", "caption": "A free-text field that people fill in by hand is rarely free of structure — it holds a measurement, a code, a unit or a date in whatever format the writer chose. Extracting the structure is worth more than vectorising the text, and the pattern that matched is itself a feature.", "cols": ["Extract", "Keep as well"], "rows": ["\"3 bed flat\"", "\"1.2 GB\"", "\"approx 40k\"", "\"see notes\"", "\"\" (blank)"], "cells": [[{"text": "count 3, type flat", "tone": "good"}, "the pattern: count + type"], [{"text": "1200, unit MB", "tone": "good"}, "the unit as written"], [{"text": "40000", "tone": "warn"}, "an is_approximate flag"], [{"text": "nothing numeric", "tone": "crit"}, "a deferral marker: often predictive"], [{"text": "nothing", "tone": "crit"}, "blank is not the same as \"n/a\""]], "t": "diagram", "id": "dg-7_7-03-2"},
+
+
+
+
 
     { t: "code", lang: "python", title: "pulling structured fields out of a notes column", code: `
 notes = pd.Series([

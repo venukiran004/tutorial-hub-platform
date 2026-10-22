@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Unusual is not wrong", id: "cause" },
 
-    {"kind": "matrix", "title": "Unusual is not wrong", "caption": "The treatment follows from which of these a row is, and that question cannot be answered by a rule on the value. An influential point is a fourth, orthogonal thing: a row can be extreme without changing the fit, or moderate and highly influential.", "cols": ["Do", "Because"], "rows": ["Error outlier", "Genuine outlier", "Influential point"], "cells": [[{"text": "remove or correct", "tone": "crit"}, "keeping it teaches something false"], [{"text": "keep", "tone": "good"}, "removing it teaches a tamer world"], [{"text": "measure it, then decide", "tone": "warn"}, "Cook's distance, not the value"]], "t": "diagram", "id": "dg-6_8-01-1"},
+    {"kind": "matrix", "title": "Unusual is not wrong", "caption": "The treatment follows from which of these a row is, and that question cannot be answered by a rule on the value. An influential point is a fourth, orthogonal thing: a row can be extreme without changing the fit, or moderate and highly influential.", "cols": ["Do", "Because"], "rows": ["Error outlier", "Genuine outlier", "Influential point"], "cells": [[{"text": "remove or correct", "tone": "crit"}, "keeping it teaches something false"], [{"text": "keep", "tone": "good"}, "removing it teaches a tamer world"], [{"text": "measure it, then decide", "tone": "warn"}, "Cook's distance, not the value"]], "t": "diagram", "id": "dg-6_8-01-2"},
+
+
+
+
 
 
 
@@ -186,6 +190,10 @@ investigate(orders, 19, "amount", group="customer")
 
 
 
+
+
+
+
     { t: "table",
       head: ["Treatment", "What it does", "Preserves", "Loses", "Right when"],
       rows: [
@@ -299,6 +307,10 @@ df["amount"].sum(), df["amount_w"].sum()
     },
 
     { t: "h2", n: "03", text: "Keeping them: models that cope", id: "robust" },
+
+    {"kind": "trace", "title": "Change the model instead of the data", "caption": "**A squared-error loss makes one extreme row quadratically important, which is the whole reason it dominates the fit** — so if the value is genuine, the alternative to editing the data is choosing a loss that limits any row's influence. Huber is quadratic near the centre and linear in the tail; quantile regression models a percentile and never squares anything; a tree splits on order alone, so the magnitude of an extreme value is irrelevant to it. **And influence is not outlyingness: a wildly wrong y at a typical x barely moves the line, while a moderate error at an extreme x can rotate it.**", "left": "model", "codeW": 190, "vars": ["what one extreme row does", "when"], "steps": [{"code": "OLS, squared error", "state": ["dominates the fit, quadratically", "only with clean data"], "tone": "crit"}, {"code": "Huber", "state": ["bounded influence past a threshold", "mostly clean, some bad rows"], "changed": [0, 1], "tone": "good"}, {"code": "quantile regression", "state": ["almost none - no squaring", "when the median is the target"], "changed": [0, 1], "tone": "good"}, {"code": "a tree or gradient boosting", "state": ["nothing - splits use order only", "the usual pragmatic answer"], "changed": [0, 1], "tone": "violet"}, {"code": "and to measure it", "state": ["Cook's distance, not a z-score", "above 1 changes the model"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-6_8-03-1"},
+
+
 
     { t: "p", text: "**If the values are genuine, the alternative to changing the data is changing the model.** A squared-error loss lets one extreme row dominate the fit; a robust loss limits any row's influence; a tree model never squares anything. The data stays as it is, and the model learns the centre without being dragged by the edge." },
 

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What a split claims", id: "claims" },
 
-    {"kind": "matrix", "title": "What each split actually claims", "caption": "A split is a claim about the population the estimate generalises to. A random split claims performance on rows like these; a group split claims performance on entities never seen; a time split claims performance on a later period — which is the only period a deployed model ever sees.", "cols": ["Estimates performance on", "Use when"], "rows": ["Random holdout", "Stratified split", "Group split", "Time-based split", "Time split with a gap"], "cells": [["rows drawn like these", "rows are independent"], [{"text": "the same, class rates kept", "tone": "good"}, "a class is rare"], [{"text": "unseen entities", "tone": "good"}, "many rows per customer or device"], [{"text": "a later period", "tone": "good"}, "anything deployed forward in time"], [{"text": "a later period, honestly", "tone": "accent"}, "labels span a window"]], "t": "diagram", "id": "dg-8_4-01-0"},
+    {"kind": "matrix", "title": "What each split actually claims", "caption": "A split is a claim about the population the estimate generalises to. A random split claims performance on rows like these; a group split claims performance on entities never seen; a time split claims performance on a later period — which is the only period a deployed model ever sees.", "cols": ["Estimates performance on", "Use when"], "rows": ["Random holdout", "Stratified split", "Group split", "Time-based split", "Time split with a gap"], "cells": [["rows drawn like these", "rows are independent"], [{"text": "the same, class rates kept", "tone": "good"}, "a class is rare"], [{"text": "unseen entities", "tone": "good"}, "many rows per customer or device"], [{"text": "a later period", "tone": "good"}, "anything deployed forward in time"], [{"text": "a later period, honestly", "tone": "accent"}, "labels span a window"]], "t": "diagram", "id": "dg-8_4-01-2"},
+
+
+
+
 
 
 
@@ -101,6 +105,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Random and stratified, and how noisy one holdout is", id: "random" },
 
+    {"kind": "trace", "title": "How big a difference a test set of that size can actually resolve", "caption": "**This table is the answer to “model B is better, 0.83 against 0.81” — with thirty positives in the test set, that gap is inside the noise and the statement is about the random seed.** The standard error falls with the square root of the positive count, which is why a rare-class problem needs far more test data than its row count suggests. **Cross-validation uses every row as a test row once and reports a mean with a spread**, and repeated cross-validation shrinks the spread further. When the interval covers both candidates, the honest report says so.", "left": "positives in the test set", "codeW": 210, "vars": ["standard error of AUC", "what you can resolve"], "steps": [{"code": "10", "state": ["about 0.09", "nothing under 0.2"], "tone": "crit"}, {"code": "30", "state": ["about 0.05", "0.80 against 0.90, barely"], "changed": [0, 1], "tone": "crit"}, {"code": "100", "state": ["about 0.03", "0.80 against 0.86"], "changed": [0, 1], "tone": "warn"}, {"code": "300", "state": ["about 0.016", "0.80 against 0.83"], "changed": [0, 1], "tone": "good"}, {"code": "1,000", "state": ["about 0.009", "0.80 against 0.82"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_4-02-0"},
+
     { t: "p", text: "When rows really are independent and the deployment scores the same population in the same period, a shuffled split is correct. Two things still go wrong. **A rare class ends up unevenly shared** — a 5 % positive rate and a 120-row test set can give three positives or eleven, by luck — and `stratify=y` fixes it. And **one holdout is one draw**: the number it produces has a standard error that on small data is larger than most of the differences people act on." },
 
     { t: "code", lang: "python", title: "Stratify, then count how much a single split moves",
@@ -150,7 +156,11 @@ print(np.round(scores, 2))          # [0.81 0.9  0.74 0.87 0.79 0.93 0.83 0.77]
 
     { t: "h2", n: "03", text: "Group splits: who, not what", id: "group" },
 
-    {"kind": "steps", "title": "Group splits: who, not what", "caption": "With many rows per entity, a random split puts the same customer on both sides, and the model scores well by recognising the customer rather than the pattern. The fix is to split the **entities** and then take their rows.", "items": [{"label": "Many rows share an entity", "desc": "several orders per customer, several scans per patient", "code": "1", "tone": "accent"}, {"label": "A random row split divides them", "desc": "the same customer is in train and in test", "code": "2", "tone": "crit"}, {"label": "The model recognises the entity", "desc": "not the pattern you wanted it to learn", "code": "3", "tone": "crit"}, {"label": "Split the entities instead", "desc": "GroupKFold on customer_id, then take their rows", "code": "fix", "tone": "good"}, {"label": "Check it", "desc": "the intersection of train and test ids must be empty", "code": "assert", "tone": "good"}], "t": "diagram", "id": "dg-8_4-03-1"},
+    {"kind": "steps", "title": "Group splits: who, not what", "caption": "With many rows per entity, a random split puts the same customer on both sides, and the model scores well by recognising the customer rather than the pattern. The fix is to split the **entities** and then take their rows.", "items": [{"label": "Many rows share an entity", "desc": "several orders per customer, several scans per patient", "code": "1", "tone": "accent"}, {"label": "A random row split divides them", "desc": "the same customer is in train and in test", "code": "2", "tone": "crit"}, {"label": "The model recognises the entity", "desc": "not the pattern you wanted it to learn", "code": "3", "tone": "crit"}, {"label": "Split the entities instead", "desc": "GroupKFold on customer_id, then take their rows", "code": "fix", "tone": "good"}, {"label": "Check it", "desc": "the intersection of train and test ids must be empty", "code": "assert", "tone": "good"}], "t": "diagram", "id": "dg-8_4-03-3"},
+
+
+
+
 
 
 
@@ -187,6 +197,8 @@ print(cross_val_score(rf, Xg, yg, cv=GroupKFold(5), groups=cust, scoring="roc_au
     ]},
 
     { t: "h2", n: "04", text: "Time-based splits", id: "time" },
+
+    {"kind": "trace", "title": "Walk forward, and both of the arguments that matter default to wrong", "caption": "**`gap` excludes the rows between train and test, and it is needed whenever a feature or a label is computed over a window** — without it the last training labels depend on events inside the test block, which is leakage that a time split appears to have prevented. **`max_train_size` turns the expanding window into a sliding one**, which is what you want when the relationship drifts and old data is actively misleading. The report comes from the last fold or the mean with its spread, and the final block of time is a holdout the tuning never touches.", "left": "setting", "codeW": 190, "vars": ["default", "when you need otherwise"], "steps": [{"code": "gap", "state": ["0 - train ends where test begins", "any windowed feature or label"], "tone": "crit"}, {"code": "max_train_size", "state": ["None - an expanding window", "under drift, slide instead"], "changed": [0, 1], "tone": "warn"}, {"code": "test_size", "state": ["derived from n_splits", "set it to a meaningful period"], "changed": [0, 1], "tone": "accent"}, {"code": "what to report", "state": ["-", "the last fold, or the mean and spread"], "changed": [1], "tone": "good"}, {"code": "and the final block", "state": ["-", "a holdout tuning never touches"], "changed": [1], "tone": "violet"}], "t": "diagram", "id": "dg-8_4-04-1"},
 
     { t: "p", text: "A deployed model predicts the future from the past, so the estimate must too. `TimeSeriesSplit` walks forward: each fold trains on everything before a point and tests on the next block. Two settings matter and both default to wrong. **`gap`** excludes rows between train and test — needed whenever labels or features are computed over a window, so that the last training labels do not depend on events inside the test block. **`max_train_size`** turns the expanding window into a sliding one, which is the right choice when old rows describe a relationship that no longer holds." },
 

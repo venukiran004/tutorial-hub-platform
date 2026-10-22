@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Bytes, text and the mapping between them", id: "encoding" },
 
-    {"kind": "matrix", "title": "The pattern of garbage identifies the mismatch", "caption": "Mojibake is not random: each wrong pairing produces a signature. `café` written as UTF-8 and read as Latin-1 shows `cafÃ©`, because the two bytes of é are each shown as one Latin-1 character. Reading the signature tells you which encoding to pass.", "cols": ["Shows", "Means"], "rows": ["UTF-8 read as Latin-1", "Latin-1 read as UTF-8", "errors='strict'", "errors='replace'", "errors='ignore'"], "cells": [[{"text": "cafÃ©: two chars for one", "tone": "warn"}, "pass encoding='utf-8'"], [{"text": "a decode error", "tone": "warn"}, "pass encoding='latin-1' or cp1252"], [{"text": "raises", "tone": "good"}, "the only setting that tells you"], [{"text": "inserts a replacement char", "tone": "crit"}, "the damage is now permanent"], [{"text": "drops the bytes", "tone": "crit"}, "silent data loss"]], "t": "diagram", "id": "dg-5_2-01-1"},
+    {"kind": "matrix", "title": "The pattern of garbage identifies the mismatch", "caption": "Mojibake is not random: each wrong pairing produces a signature. `café` written as UTF-8 and read as Latin-1 shows `cafÃ©`, because the two bytes of é are each shown as one Latin-1 character. Reading the signature tells you which encoding to pass.", "cols": ["Shows", "Means"], "rows": ["UTF-8 read as Latin-1", "Latin-1 read as UTF-8", "errors='strict'", "errors='replace'", "errors='ignore'"], "cells": [[{"text": "cafÃ©: two chars for one", "tone": "warn"}, "pass encoding='utf-8'"], [{"text": "a decode error", "tone": "warn"}, "pass encoding='latin-1' or cp1252"], [{"text": "raises", "tone": "good"}, "the only setting that tells you"], [{"text": "inserts a replacement char", "tone": "crit"}, "the damage is now permanent"], [{"text": "drops the bytes", "tone": "crit"}, "silent data loss"]], "t": "diagram", "id": "dg-5_2-01-3"},
+
+
+
+
 
 
 
@@ -211,6 +215,10 @@ def fix_mojibake(s, wrong="latin-1", right="utf-8"):
 
 
 
+
+
+
+
     { t: "p", text: "**Windows tools — Excel, Notepad, PowerShell — often write UTF-8 with three invisible bytes at the front.** They are not displayed by editors, they are not whitespace, and `read_csv` makes them part of the first column's name." },
 
     { t: "code", lang: "python", title: "the invisible bytes that rename your first column", code: `
@@ -282,6 +290,11 @@ df.to_csv("for_excel.csv", index=False, encoding="utf-8-sig")  # with BOM
     },
 
     { t: "h2", n: "03", text: "Line endings and embedded newlines", id: "newlines" },
+
+    {"kind": "trace", "title": "Line endings almost never break a read; they break other things", "caption": "**pandas handles all three conventions, so a line-ending problem rarely shows up as a read failure** — it shows up as a trailing carriage return stuck to the last column's values, or a git diff claiming every line changed. **The genuine difficulty is the row below it: a quoted field containing a newline is one record spanning two physical lines**, and any tool that splits the file on newlines before parsing quotes will cut it in half. That is why a hand-rolled split-on-newline reader works until the first free-text comment field arrives.", "left": "what is in the file", "codeW": 200, "vars": ["on read", "the symptom"], "steps": [{"code": "LF line endings", "state": ["handled", "none"], "tone": "good"}, {"code": "CRLF line endings", "state": ["handled", "none - but a diff may show every line"], "changed": [1], "tone": "good"}, {"code": "a bare CR, classic Mac", "state": ["handled", "rare, and exports still exist"], "changed": [1], "tone": "accent"}, {"code": "split on newline by hand", "state": ["-", "a trailing \\r on the last column"], "changed": [0, 1], "tone": "warn"}, {"code": "a newline INSIDE a quoted field", "state": ["one record, two physical lines", "any naive splitter cuts it in half"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-03-1"},
+
+
+
 
     { t: "code", lang: "python", title: "CRLF, LF, and the field that contains a line break", code: `
 # THREE CONVENTIONS:
@@ -359,6 +372,11 @@ with open("out.csv", "w", newline="", encoding="utf-8") as fh:
     },
 
     { t: "h2", n: "04", text: "What Excel does to data", id: "excel" },
+
+    {"kind": "trace", "title": "Five silent edits Excel makes on open, and keeps on save", "caption": "**Excel is a presentation tool that saves what it displays, so every transformation it applies on open is written back on save, and none of them raises.** A CSV that has been opened and re-saved in Excel is a different file. **The first two rows destroy identifiers:** leading zeros vanish, and a sixteen-digit number becomes scientific notation with its last digits gone for good. The date row is well documented in genomics, where gene names were renamed by a spreadsheet. The defence is not detection, it is never routing a data file through Excel — but detection is what you have after the fact.", "left": "what Excel does", "codeW": 190, "vars": ["in", "out"], "steps": [{"code": "strips leading zeros", "state": ["007412", "7412 - joins now fail"], "tone": "crit"}, {"code": "scientific notation", "state": ["1234567890123456", "1.23457E+15 - digits gone"], "changed": [0, 1], "tone": "crit"}, {"code": "interprets as a date", "state": ["MAR1, SEPT2", "1-Mar, 02-Sep"], "changed": [0, 1], "tone": "crit"}, {"code": "reformats a date", "state": ["2026-03-01", "01/03/2026 - and locale-dependent"], "changed": [0, 1], "tone": "warn"}, {"code": "trims trailing spaces", "state": ["'ada '", "'ada' - usually harmless"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_2-04-2"},
+
+
+
 
     { t: "p", text: "**Excel is not a data tool; it is a presentation tool that saves what it displays.** Every transformation it applies on open is applied to the file on save, and none of them raises. A CSV that has been opened and re-saved in Excel is a different file." },
 

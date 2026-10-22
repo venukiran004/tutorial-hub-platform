@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Which models care", id: "which" },
 
-    {"kind": "matrix", "title": "Which models care about scale, and which cannot", "caption": "A tree's split at `income > 40,000` is the identical split at `log(income) > 10.6` — the row order is unchanged, so the tree is unchanged. Anything that measures a distance, or takes a gradient step in a shared learning rate, is a different story.", "cols": ["Scale matters", "Because"], "rows": ["KNN, SVM, k-means", "PCA", "Regularised linear", "Neural networks", "Decision trees", "Gradient boosting"], "cells": [[{"text": "yes", "tone": "crit"}, "they measure distance"], [{"text": "yes", "tone": "crit"}, "it maximises variance, which has units"], [{"text": "yes", "tone": "crit"}, "the penalty is per-coefficient"], [{"text": "yes", "tone": "crit"}, "one learning rate for every input"], [{"text": "no", "tone": "good"}, "a split depends on order, not scale"], [{"text": "no", "tone": "good"}, "trees all the way down"]], "t": "diagram", "id": "dg-7_4-01-1"},
+    {"kind": "matrix", "title": "Which models care about scale, and which cannot", "caption": "A tree's split at `income > 40,000` is the identical split at `log(income) > 10.6` — the row order is unchanged, so the tree is unchanged. Anything that measures a distance, or takes a gradient step in a shared learning rate, is a different story.", "cols": ["Scale matters", "Because"], "rows": ["KNN, SVM, k-means", "PCA", "Regularised linear", "Neural networks", "Decision trees", "Gradient boosting"], "cells": [[{"text": "yes", "tone": "crit"}, "they measure distance"], [{"text": "yes", "tone": "crit"}, "it maximises variance, which has units"], [{"text": "yes", "tone": "crit"}, "the penalty is per-coefficient"], [{"text": "yes", "tone": "crit"}, "one learning rate for every input"], [{"text": "no", "tone": "good"}, "a split depends on order, not scale"], [{"text": "no", "tone": "good"}, "trees all the way down"]], "t": "diagram", "id": "dg-7_4-01-2"},
+
+
+
+
 
 
 
@@ -161,6 +165,10 @@ score(RandomForestClassifier(200, random_state=0), Xtr_s, Xte_s)     # 0.83
 
 
 
+
+
+
+
     { t: "p", text: "**Every scaler is a choice of centre and spread.** Standardisation uses mean and σ, which outliers move. Min-max uses the extremes, which outliers *are*. Robust scaling uses median and IQR, which outliers cannot touch. The right one depends on whether the extreme values are part of the signal or a problem to contain." },
 
     { t: "code", lang: "python", title: "five scalers on a skewed column with an outlier", code: `
@@ -249,6 +257,9 @@ describe("power (YJ)", PowerTransformer(method="yeo-johnson").fit_transform(x))
     ]},
 
     { t: "h2", n: "03", text: "Fit on train, and the target", id: "leak" },
+
+    {"kind": "trace", "title": "Four scalers, and the one whose output range is defined by an outlier", "caption": "**MinMax maps the observed minimum and maximum to 0 and 1 — so a single extreme value sets the range and squashes everything else into a narrow band near zero.** It is right only where the bounds are genuinely known in advance: pixels, percentages. **RobustScaler is the one to reach for when the outliers are real and staying**, because the median and IQR are unmoved by them. And all four are fit steps: fitting on the full data centres the training features on a mean that includes the test set, which is a small leak on homogeneous data and a large one otherwise.", "left": "scaler", "codeW": 170, "vars": ["centre and spread", "what an outlier does"], "steps": [{"code": "StandardScaler", "state": ["mean and standard deviation", "inflates sigma, squashes the bulk"], "tone": "accent"}, {"code": "MinMaxScaler", "state": ["min and range", "DEFINES the range - everything else compresses"], "changed": [0, 1], "tone": "crit"}, {"code": "RobustScaler", "state": ["median and IQR", "nothing to the bulk; it stays extreme"], "changed": [0, 1], "tone": "good"}, {"code": "MaxAbsScaler", "state": ["zero and max absolute", "defines the bound; keeps sparsity"], "changed": [0, 1], "tone": "accent"}, {"code": "and all four", "state": ["are FIT on the training set", "fit on everything and test leaks in"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-7_4-03-1"},
+
 
     { t: "code", lang: "python", title: "the scaler is a fit step, and the target has its own", code: `
 from sklearn.pipeline import make_pipeline

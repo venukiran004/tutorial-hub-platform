@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Text as a very wide sparse matrix", id: "bow" },
 
-    {"kind": "steps", "title": "From text to a sparse matrix", "caption": "Three of these five steps are fitted on the training corpus, and each is a place a vocabulary can leak. IDF in particular is a statistic over documents: fit it on everything and the test set's word frequencies have influenced the training features.", "items": [{"label": "Tokenise", "desc": "the regex decides whether \"don't\" is one token or two", "code": "1", "tone": "accent"}, {"label": "Build the vocabulary", "desc": "fitted on train; anything else is invisible later", "code": "fit", "tone": "warn"}, {"label": "Term frequency", "desc": "count, binary, log, or divided by length", "code": "2", "tone": "good"}, {"label": "Inverse document frequency", "desc": "log(N / df), fitted on train: a statistic over documents", "code": "fit", "tone": "warn"}, {"label": "Multiply, then L2-normalise per row", "desc": "documents of different lengths become comparable", "code": "3", "tone": "good"}], "t": "diagram", "id": "dg-7_10-01-0"},
+    {"kind": "steps", "title": "From text to a sparse matrix", "caption": "Three of these five steps are fitted on the training corpus, and each is a place a vocabulary can leak. IDF in particular is a statistic over documents: fit it on everything and the test set's word frequencies have influenced the training features.", "items": [{"label": "Tokenise", "desc": "the regex decides whether \"don't\" is one token or two", "code": "1", "tone": "accent"}, {"label": "Build the vocabulary", "desc": "fitted on train; anything else is invisible later", "code": "fit", "tone": "warn"}, {"label": "Term frequency", "desc": "count, binary, log, or divided by length", "code": "2", "tone": "good"}, {"label": "Inverse document frequency", "desc": "log(N / df), fitted on train: a statistic over documents", "code": "fit", "tone": "warn"}, {"label": "Multiply, then L2-normalise per row", "desc": "documents of different lengths become comparable", "code": "3", "tone": "good"}], "t": "diagram", "id": "dg-7_10-01-1"},
+
+
+
+
 
 
 
@@ -180,7 +184,11 @@ coef.head(3), coef.tail(3)
 
     { t: "h2", n: "02", text: "Hashing: no vocabulary at all", id: "hashing" },
 
-    {"kind": "compare", "title": "A vocabulary, and no vocabulary at all", "caption": "Hashing maps each token to a column by hashing it: nothing to fit, nothing to store, and nothing that can leak. The cost is collisions — two words sharing a column — and the loss of any way to name a column afterwards, which rules it out whenever the model has to be explained.", "columns": [{"title": "TF-IDF with a vocabulary", "tone": "good", "items": ["Columns have names", "Coefficients are interpretable", "Must be fitted and stored", "An unseen word is invisible", "Memory grows with the vocabulary"]}, {"title": "The hashing trick", "tone": "accent", "items": ["Columns are hash buckets", "No column can be named", "No fit step, nothing to store", "Every word maps somewhere", "Fixed width; collisions are the cost"]}], "t": "diagram", "id": "dg-7_10-02-1"},
+    {"kind": "compare", "title": "A vocabulary, and no vocabulary at all", "caption": "Hashing maps each token to a column by hashing it: nothing to fit, nothing to store, and nothing that can leak. The cost is collisions — two words sharing a column — and the loss of any way to name a column afterwards, which rules it out whenever the model has to be explained.", "columns": [{"title": "TF-IDF with a vocabulary", "tone": "good", "items": ["Columns have names", "Coefficients are interpretable", "Must be fitted and stored", "An unseen word is invisible", "Memory grows with the vocabulary"]}, {"title": "The hashing trick", "tone": "accent", "items": ["Columns are hash buckets", "No column can be named", "No fit step, nothing to store", "Every word maps somewhere", "Fixed width; collisions are the cost"]}], "t": "diagram", "id": "dg-7_10-02-2"},
+
+
+
+
 
 
 
@@ -247,6 +255,9 @@ fh.transform(crosses).shape                          # (3, 65536)
     },
 
     { t: "h2", n: "03", text: "Embeddings", id: "embeddings" },
+
+    {"kind": "trace", "title": "Bag-of-words thinks refund and reimbursement are as unrelated as refund and giraffe", "caption": "**That is the one sentence that motivates embeddings:** counting words gives a column per word, so two words that mean the same thing share nothing at all. An embedding places each token, document or ID in a space where similar things are close — for text from a model that has read far more than your corpus, for IDs learned from your own data. **The trade is in the last column:** TF-IDF columns are words you can read off a coefficient, and an embedding dimension means nothing in isolation, so a linear model over embeddings is accurate and unexplainable.", "left": "representation", "codeW": 170, "vars": ["output", "unseen token", "interpretable"], "steps": [{"code": "counts, bag of words", "state": ["sparse, vocabulary-wide", "ignored", "yes - columns are words"], "tone": "good"}, {"code": "TF-IDF", "state": ["sparse, normalised", "ignored", "yes - the default for linear"], "changed": [0, 1, 2], "tone": "good"}, {"code": "hashing", "state": ["sparse, fixed width", "hashed to a bucket", "no"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "pretrained sentence embedding", "state": ["dense, 384 dims", "handled - no vocabulary", "no"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "learned ID embedding", "state": ["dense, learned", "needs an unknown bucket", "no"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_10-03-0"},
+
 
     { t: "p", text: "**Bag-of-words knows nothing about meaning: 'refund' and 'reimbursement' are as unrelated as 'refund' and 'giraffe'.** An embedding maps each token — or each document, or each customer ID — to a dense vector in a space where similar things are close. For text the vectors come pretrained from a model that has read far more than your corpus; for IDs they are learned from your data, and are the modern answer to high-cardinality categoricals." },
 

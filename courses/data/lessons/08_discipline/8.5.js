@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A transformer has two methods with different rights. **`fit` may look at the rows it is given and remember things**: a median, a mean and standard deviation, a category list, a set of quantiles, a vocabulary. **`transform` may only apply what was remembered.** A `Pipeline` calls `fit_transform` on each step in turn during `fit`, and `transform` on each step during `predict` — so as long as every step honours the contract, the validation fold, the test set and tomorrow's request are all processed with statistics learnt from training rows alone." },
 
     { t: "dl", items: [
@@ -103,6 +107,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "A full preprocessor, tunable end to end", id: "build" },
 
+    {"kind": "flow", "title": "Named branches give every parameter an address", "caption": "**That is the practical payoff of a ColumnTransformer: because each branch is named, the imputation strategy, the rare-category threshold and the model's regularisation all have addresses in one grid** — so a single search tunes them together, refitting every candidate per fold with nothing learned from the validation rows. **The three transform-time settings in the last box are not tidiness, they are correctness:** a validation fold will contain a region the training fold never saw and a null in a column that had none, and each of those needs a decided answer rather than an exception.", "cols": 3, "nodes": [{"id": "c", "label": "ColumnTransformer routes by dtype or name", "sub": "one Pipeline per branch", "tone": "accent"}, {"id": "n", "label": "Branches are named", "sub": "so every parameter has an address", "tone": "good"}, {"id": "g", "label": "One grid tunes imputation AND the model", "sub": "refit per fold, together", "tone": "violet"}, {"id": "u", "label": "handle_unknown='ignore'", "sub": "a new category becomes all zeros", "tone": "good"}, {"id": "m", "label": "min_frequency folds rare categories", "sub": "so the vocabulary is fold-stable", "tone": "good"}, {"id": "i", "label": "A constant imputer gives nulls a level", "sub": "each one a decision, not an exception", "tone": "violet"}], "edges": [["c", "n"], ["n", "g"], ["g", "u"], ["u", "m"], ["m", "i"]], "t": "diagram", "id": "dg-8_5-02-1"},
+
     { t: "p", text: "Real frames mix types, and each type needs its own chain. `ColumnTransformer` routes columns by name or by dtype selector into branches, each branch a `Pipeline`, and concatenates the outputs. **Because the branches are named, every parameter inside them has an address**, and one grid search can tune the imputation strategy, the rare-category threshold and the model's regularisation together — each candidate refit per fold, with nothing learnt from the validation rows." },
 
     { t: "code", lang: "python", title: "ColumnTransformer with typed branches, named outputs and a nested grid",
@@ -161,6 +167,8 @@ print(grid.best_params_)
 
     { t: "h2", n: "03", text: "Custom transformers, and the one that looks stateless", id: "custom" },
 
+    {"kind": "trace", "title": "A two-line test that catches a leaking transformer", "caption": "**A correct transformer's output for one row depends on the fitted state and that row alone — so transforming the first ten rows must give exactly the same values as transforming everything and taking the first ten.** When it does not, the transformer is computing something from the batch: a mean, a rank, a quantile, a frequency. That will leak in cross-validation and misbehave in serving, where the batch is one row. **The contract that prevents it is the same three rules every time:** `__init__` stores arguments unchanged, `fit` learns state into trailing-underscore names, `transform` only applies it.", "left": "part of the contract", "codeW": 180, "vars": ["must", "because"], "steps": [{"code": "__init__", "state": ["store arguments unchanged", "clone rebuilds from get_params"], "tone": "good"}, {"code": "fit", "state": ["learn state into name_ attributes", "the trailing underscore is the convention"], "changed": [0, 1], "tone": "good"}, {"code": "transform", "state": ["check fitted, then apply only", "no learning at transform time"], "changed": [0, 1], "tone": "good"}, {"code": "the test", "state": ["transform(X[:10]) == transform(X)[:10]", "exactly, not approximately"], "changed": [0, 1], "tone": "violet"}, {"code": "if it fails", "state": ["something is computed per batch", "it will leak, and break in serving"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_5-03-2"},
+
     { t: "p", text: "Anything the library does not provide follows the same contract. Inherit `BaseEstimator` for `get_params`/`set_params` — which is what makes the grid search and `clone` work — and `TransformerMixin` for `fit_transform`. **`__init__` stores its arguments unchanged and does nothing else; `fit` computes and stores state with trailing-underscore names; `transform` checks it was fitted and applies.** Add `get_feature_names_out` so the frame keeps its names." },
 
     { t: "code", lang: "python", title: "A quantile clipper, a stateless log, and the FunctionTransformer that is not stateless",
@@ -210,7 +218,11 @@ print(bad_scale.transform(te.iloc[:10]).to_numpy()[:1].round(2))   # [[ 0.9  -0.
 
     { t: "h2", n: "04", text: "What a pipeline cannot do, and where that work goes", id: "limits" },
 
-    {"kind": "matrix", "title": "Three things a pipeline cannot do", "caption": "A pipeline is a chain of **row-preserving** transforms followed by a model: `transform` must return as many rows as it received. Everything that changes the row count, or that needs other rows, lives outside it — and knowing where that work goes is what keeps it from drifting between training and serving.", "cols": ["Why not", "Where it goes"], "rows": ["Drop rows", "Deduplicate", "Remove outliers", "Point-in-time features", "Resample classes"], "cells": [[{"text": "transform must preserve rows", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it needs other rows", "tone": "warn"}, "the feature builder, per row"], [{"text": "sklearn's Pipeline refuses", "tone": "warn"}, "imblearn's, during fit only"]], "t": "diagram", "id": "dg-8_5-04-1"},
+    {"kind": "matrix", "title": "Three things a pipeline cannot do", "caption": "A pipeline is a chain of **row-preserving** transforms followed by a model: `transform` must return as many rows as it received. Everything that changes the row count, or that needs other rows, lives outside it — and knowing where that work goes is what keeps it from drifting between training and serving.", "cols": ["Why not", "Where it goes"], "rows": ["Drop rows", "Deduplicate", "Remove outliers", "Point-in-time features", "Resample classes"], "cells": [[{"text": "transform must preserve rows", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it changes the row count", "tone": "crit"}, "upstream, before the split"], [{"text": "it needs other rows", "tone": "warn"}, "the feature builder, per row"], [{"text": "sklearn's Pipeline refuses", "tone": "warn"}, "imblearn's, during fit only"]], "t": "diagram", "id": "dg-8_5-04-3"},
+
+
+
+
 
     { t: "p", text: "A pipeline is a chain of row-preserving transforms followed by a model. Three things fall outside it. **It cannot drop rows** — `transform` must return as many rows as it received — so deduplication, censoring of unclosed labels and outlier removal are upstream, before the split. **It cannot build point-in-time features** from other rows — the as-of aggregates of 7.8 and 8.3 are computed by the feature builder, per row, from that row's past, and the truncation test guards them. **It cannot resample** with scikit-learn's `Pipeline`, because resampling changes the row count; 8.6 uses `imblearn`'s pipeline, which allows it during `fit` only." },
 

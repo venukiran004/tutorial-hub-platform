@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Univariate rules and their blind spots", id: "univariate" },
 
-    {"kind": "matrix", "title": "Why the z-score hides the outlier it is looking for", "caption": "Both μ and σ are computed from data that includes the outlier. A large value inflates σ and pulls μ towards itself, so its own z-score comes out smaller than it should — and two large outliers can hide each other completely. The quartile-based rules have no such problem because quartiles do not move.", "cols": ["Breakdown point", "Masking"], "rows": ["z-score", "IQR rule", "Robust z (MAD)", "The mean", "The median"], "cells": [[{"text": "0", "tone": "crit"}, "yes: it inflates its own σ"], [{"text": "25%", "tone": "good"}, "no: quartiles do not move"], [{"text": "50%", "tone": "good"}, "no: median and MAD are robust"], [{"text": "0", "tone": "crit"}, "one value moves it anywhere"], [{"text": "50%", "tone": "good"}, "half the data may be corrupt"]], "t": "diagram", "id": "dg-6_7-01-0"},
+    {"kind": "matrix", "title": "Why the z-score hides the outlier it is looking for", "caption": "Both μ and σ are computed from data that includes the outlier. A large value inflates σ and pulls μ towards itself, so its own z-score comes out smaller than it should — and two large outliers can hide each other completely. The quartile-based rules have no such problem because quartiles do not move.", "cols": ["Breakdown point", "Masking"], "rows": ["z-score", "IQR rule", "Robust z (MAD)", "The mean", "The median"], "cells": [[{"text": "0", "tone": "crit"}, "yes: it inflates its own σ"], [{"text": "25%", "tone": "good"}, "no: quartiles do not move"], [{"text": "50%", "tone": "good"}, "no: median and MAD are robust"], [{"text": "0", "tone": "crit"}, "one value moves it anywhere"], [{"text": "50%", "tone": "good"}, "half the data may be corrupt"]], "t": "diagram", "id": "dg-6_7-01-1"},
+
+
+
+
 
 
 
@@ -175,7 +179,11 @@ def pct_outliers(x, lo=0.5, hi=99.5):
 
     { t: "h2", n: "02", text: "Multivariate outliers", id: "multivariate" },
 
-    {"kind": "matrix", "title": "Normal on every column, impossible as a combination", "caption": "Height 180 cm is normal. Weight 45 kg is normal. Together they describe someone who does not exist. No univariate rule sees it, because each column was checked on its own — which is the whole argument for a multivariate check.", "cols": ["Sees it", "Needs"], "rows": ["Per-column z-score", "Per-column IQR", "Mahalanobis distance", "Isolation Forest", "A domain rule (BMI)"], "cells": [[{"text": "no", "tone": "crit"}, "each column is normal"], [{"text": "no", "tone": "crit"}, "each column is normal"], [{"text": "yes", "tone": "good"}, "the covariance; assumes elliptical"], [{"text": "yes", "tone": "good"}, "no distribution assumption"], [{"text": "yes, best", "tone": "accent"}, "someone who knows the domain"]], "t": "diagram", "id": "dg-6_7-02-1"},
+    {"kind": "matrix", "title": "Normal on every column, impossible as a combination", "caption": "Height 180 cm is normal. Weight 45 kg is normal. Together they describe someone who does not exist. No univariate rule sees it, because each column was checked on its own — which is the whole argument for a multivariate check.", "cols": ["Sees it", "Needs"], "rows": ["Per-column z-score", "Per-column IQR", "Mahalanobis distance", "Isolation Forest", "A domain rule (BMI)"], "cells": [[{"text": "no", "tone": "crit"}, "each column is normal"], [{"text": "no", "tone": "crit"}, "each column is normal"], [{"text": "yes", "tone": "good"}, "the covariance; assumes elliptical"], [{"text": "yes", "tone": "good"}, "no distribution assumption"], [{"text": "yes, best", "tone": "accent"}, "someone who knows the domain"]], "t": "diagram", "id": "dg-6_7-02-2"},
+
+
+
+
 
 
 
@@ -337,6 +345,10 @@ pd.crosstab(uni, multi, rownames=["univariate"], colnames=["multivariate"])
     },
 
     { t: "h2", n: "03", text: "Time series and groups", id: "context" },
+
+    {"kind": "trace", "title": "Far from which rest?", "caption": "**A transaction of 400 is unremarkable overall, normal for a large store, and a glaring anomaly for a small one** — so a detector that pools everything misses the real outlier and flags perfectly ordinary large-store rows instead. The fix is to apply the same rule within the group. **The two rows below it are the time-series versions of the same mistake:** a value has to be compared against the series' own level, which drifts, and against the same hour or weekday, which cycles. Pooling across a trend flags the end of the series; pooling across a season flags every Monday.", "left": "compared against", "codeW": 190, "vars": ["finds", "misses"], "steps": [{"code": "the whole dataset", "state": ["globally extreme values", "a small-store 400 - looks normal"], "tone": "crit"}, {"code": "the row's own group", "state": ["unusual FOR THAT GROUP", "cross-group structure"], "changed": [0, 1], "tone": "good"}, {"code": "a rolling local window", "state": ["a spike against the recent level", "a slow drift"], "changed": [0, 1], "tone": "good"}, {"code": "the same hour or weekday", "state": ["a genuinely odd Monday", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "pooled across a season", "state": ["every Monday", "the actual anomaly"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_7-03-0"},
+
+
 
     { t: "p", text: "**\"Far from the rest\" depends on which rest.** A value that is normal for the dataset can be an outlier for its sensor, its region, or its hour of the day — and a detector that pools everything will miss it while flagging the wrong things." },
 

@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "You write `SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY`. **The engine evaluates `FROM` first and `SELECT` almost last.** That is why a column alias defined in `SELECT` cannot be used in `WHERE`, and why `WHERE` cannot filter on an aggregate." },
 
     { t: "dl", items: [
@@ -169,6 +173,11 @@ WHERE  total > 500;                      -- now total IS a column
 
     { t: "h2", n: "02", text: "NULL: three-valued logic", id: "null" },
 
+    {"kind": "trace", "title": "Two filters that look complementary and together miss every NULL", "caption": "**A comparison with NULL is unknown, not false, and WHERE keeps only rows that are true** — so both halves of an apparent partition drop the NULL rows, and each half looks complete. A report built from the two under-counts by exactly the number of NULLs. **`IS NULL` is the third case, always.** The aggregate row is the same fact from the other side: COUNT of a column skips NULLs while COUNT(star) does not, so the two differ by exactly the NULL count — which makes the pair a free null check rather than a redundancy.", "left": "predicate", "codeW": 210, "vars": ["returns rows where region is NULL?", "why"], "steps": [{"code": "WHERE region = 'north'", "state": ["no", "expected"], "tone": "good"}, {"code": "WHERE region <> 'north'", "state": ["NO - also not", "unknown is not true"], "changed": [0, 1], "tone": "crit"}, {"code": "the two together", "state": ["miss every NULL row", "and both look complete"], "changed": [0, 1], "tone": "crit"}, {"code": "... OR region IS NULL", "state": ["yes", "the only test that works on NULL"], "changed": [0, 1], "tone": "good"}, {"code": "COUNT(*) against COUNT(region)", "state": ["they differ by the NULL count", "a free null check"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-02-1"},
+
+
+
+
     { t: "p", text: "**`NULL` means \"unknown\", and every comparison with an unknown is itself unknown** — not true, not false. `WHERE` keeps only rows whose condition is true, so an unknown condition drops the row. This is the single most common source of silent under-counts in SQL." },
 
     { t: "code", lang: "sql", title: "how NULL moves through comparisons, aggregates and IN", code: `
@@ -266,7 +275,11 @@ FROM   lines;                                      -- divide-by-zero error
 
     { t: "h2", n: "03", text: "Joins, and the row count they produce", id: "joins" },
 
-    {"kind": "matrix", "title": "The row count a join produces", "caption": "The same arithmetic as a pandas merge, and the same incident: a key that appears twice on the left and three times on the right contributes six rows, and the revenue total is then triple what it should be. Predict the count before you run the query.", "cols": ["Rows out", "When it surprises"], "rows": ["INNER on a unique key", "LEFT from the parent", "Two children of one parent", "CROSS JOIN", "A NULL in the key"], "cells": [[{"text": "one per match", "tone": "good"}, "orphans disappear quietly"], [{"text": "+1 per childless parent", "tone": "good"}, "COUNT(*) counts the padding"], [{"text": "n1 x n2 per parent", "tone": "crit"}, "the fan-out that triples revenue"], [{"text": "n x m", "tone": "crit"}, "a forgotten join condition"], [{"text": "that row drops", "tone": "warn"}, "NULL never equals NULL"]], "t": "diagram", "id": "dg-5_5-03-1"},
+    {"kind": "matrix", "title": "The row count a join produces", "caption": "The same arithmetic as a pandas merge, and the same incident: a key that appears twice on the left and three times on the right contributes six rows, and the revenue total is then triple what it should be. Predict the count before you run the query.", "cols": ["Rows out", "When it surprises"], "rows": ["INNER on a unique key", "LEFT from the parent", "Two children of one parent", "CROSS JOIN", "A NULL in the key"], "cells": [[{"text": "one per match", "tone": "good"}, "orphans disappear quietly"], [{"text": "+1 per childless parent", "tone": "good"}, "COUNT(*) counts the padding"], [{"text": "n1 x n2 per parent", "tone": "crit"}, "the fan-out that triples revenue"], [{"text": "n x m", "tone": "crit"}, "a forgotten join condition"], [{"text": "that row drops", "tone": "warn"}, "NULL never equals NULL"]], "t": "diagram", "id": "dg-5_5-03-3"},
+
+
+
+
 
 
 
@@ -376,6 +389,11 @@ JOIN   payments p    ON p.order_id = o.id;      -- 1 : many
     },
 
     { t: "h2", n: "04", text: "Set operations and the extract query", id: "sets" },
+
+    {"kind": "trace", "title": "ALL is faster and usually right", "caption": "**UNION sorts and deduplicates the combined result, which is expensive and almost never what you want when stacking partitions of one table** — the rows are already distinct, and you are paying for a sort to prove it. Reach for plain UNION only when duplicates across the inputs are genuinely possible and unwanted. **The bottom rows are the other two confusions worth having straight before writing an extract**, including the one where a NULL in a NOT IN list empties the result, which is section 02 arriving in a different costume.", "left": "this against that", "codeW": 200, "vars": ["the difference", "which to reach for"], "steps": [{"code": "UNION / UNION ALL", "state": ["a sort and dedupe, or neither", "ALL, when stacking partitions"], "tone": "violet"}, {"code": "WHERE / HAVING", "state": ["before grouping, or after", "WHERE unless it is an aggregate"], "changed": [0, 1], "tone": "good"}, {"code": "DISTINCT / GROUP BY", "state": ["dedupes, or makes groups", "equivalent with no aggregates"], "changed": [0, 1], "tone": "accent"}, {"code": "IN / EXISTS", "state": ["a list, or a matching row", "EXISTS - NOT IN breaks on a NULL"], "changed": [0, 1], "tone": "crit"}, {"code": "GROUP BY ROLLUP", "state": ["subtotals in one pass", "and GROUPING() names them"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_5-04-2"},
+
+
+
 
     { t: "code", lang: "sql", title: "UNION, and writing the extract so the database does the work", code: `
 -- UNION REMOVES DUPLICATES; UNION ALL DOES NOT.

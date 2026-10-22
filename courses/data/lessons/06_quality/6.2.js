@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`df.corr()` returns Pearson by default. **Pearson measures how well a straight line fits; it is zero for a perfect U-shape, and it is dragged wherever the extreme values point.** Spearman and Kendall measure monotonic association on ranks, which is usually closer to the question being asked." },
 
     { t: "dl", items: [
@@ -184,7 +188,11 @@ print(feat.corrwith(target, method="spearman").round(2).to_dict())  # b still ~0
 
     { t: "h2", n: "02", text: "Association for categorical columns", id: "categorical" },
 
-    {"kind": "matrix", "title": "Correlation is undefined for two categorical columns", "caption": "There is no order to correlate. The tools are a contingency table, a chi-square test for whether the association is real, Cramér's V for how strong it is on a 0–1 scale, and mutual information for the general case that handles every combination of types.", "cols": ["Answers", "Scale"], "rows": ["Contingency table", "Chi-square test", "Cramér's V", "Mutual information", "Pearson on codes"], "cells": [["what the joint counts are", "counts"], [{"text": "is the association real", "tone": "accent"}, "a p-value, not a strength"], [{"text": "how strong is it", "tone": "good"}, "0 to 1, comparable across pairs"], [{"text": "how much one tells you", "tone": "good"}, "bits; works for any types"], [{"text": "nothing meaningful", "tone": "crit"}, "the codes' order is arbitrary"]], "t": "diagram", "id": "dg-6_2-02-1"},
+    {"kind": "matrix", "title": "Correlation is undefined for two categorical columns", "caption": "There is no order to correlate. The tools are a contingency table, a chi-square test for whether the association is real, Cramér's V for how strong it is on a 0–1 scale, and mutual information for the general case that handles every combination of types.", "cols": ["Answers", "Scale"], "rows": ["Contingency table", "Chi-square test", "Cramér's V", "Mutual information", "Pearson on codes"], "cells": [["what the joint counts are", "counts"], [{"text": "is the association real", "tone": "accent"}, "a p-value, not a strength"], [{"text": "how strong is it", "tone": "good"}, "0 to 1, comparable across pairs"], [{"text": "how much one tells you", "tone": "good"}, "bits; works for any types"], [{"text": "nothing meaningful", "tone": "crit"}, "the codes' order is arbitrary"]], "t": "diagram", "id": "dg-6_2-02-2"},
+
+
+
+
 
 
 
@@ -297,6 +305,10 @@ stats.kruskal(*groups)              # rank-based: assumes neither
     },
 
     { t: "h2", n: "03", text: "More than two at once", id: "multivariate" },
+
+    {"kind": "trace", "title": "Nothing above 0.71, and one column is exactly the sum of the other two", "caption": "**A correlation matrix is every pair, one pair at a time — so a feature that is a combination of two others can hide in plain sight.** Here c is a + b almost exactly, and the highest pairwise correlation is 0.71: a “drop anything above 0.9” rule keeps all three, and any linear model with all three has unstable coefficients. **The variance inflation factor is the measure that sees it, because it regresses each feature on all the others rather than on one at a time.** The same blind spot explains Simpson's paradox: a trend that reverses inside every group is invisible pairwise.", "left": "what you look at", "codeW": 200, "vars": ["what it says", "what it misses"], "steps": [{"code": "corr(a, c) and corr(b, c)", "state": ["0.71 and 0.70", "that c is a + b"], "tone": "crit"}, {"code": "a 0.9 correlation cutoff", "state": ["keeps all three", "the exact dependency"], "changed": [0, 1], "tone": "crit"}, {"code": "VIF on c", "state": ["enormous", "nothing - this is the test"], "changed": [0, 1], "tone": "good"}, {"code": "pairwise, across a grouping", "state": ["one overall trend", "a reversal inside every group"], "changed": [0, 1], "tone": "warn"}, {"code": "partial correlation", "state": ["the link with a third held fixed", "-"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-03-1"},
+
+
 
     { t: "p", text: "**A correlation matrix is every pair, one pair at a time. Some structure only exists across three or more columns**: a feature that is nearly a linear combination of two others, a trend that reverses inside every group, a relationship that is only there when a third variable is held fixed." },
 

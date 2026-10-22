@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Relationships between columns", id: "relationships" },
 
-    {"kind": "matrix", "title": "Four shapes of derived feature", "caption": "A ratio is frequently the quantity the domain already reasons in — debt to income, clicks per impression — and it normalises for scale at the same time. Polynomial expansion is the mechanical version of all of this: complete, and combinatorially large.", "cols": ["Is", "Signal"], "rows": ["Interaction", "Ratio", "Difference", "Polynomial features", "Group aggregate"], "cells": [["a product, or one given the other", "two variables acting together"], [{"text": "one per unit of another", "tone": "good"}, "what the domain reasons in"], [{"text": "a gap between two levels", "tone": "good"}, "often the gap, not either level"], [{"text": "every product up to a degree", "tone": "warn"}, "complete, and explodes in width"], [{"text": "a statistic over the key's rows", "tone": "warn"}, "powerful, and leaks if unwindowed"]], "t": "diagram", "id": "dg-7_9-01-0"},
+    {"kind": "matrix", "title": "Four shapes of derived feature", "caption": "A ratio is frequently the quantity the domain already reasons in — debt to income, clicks per impression — and it normalises for scale at the same time. Polynomial expansion is the mechanical version of all of this: complete, and combinatorially large.", "cols": ["Is", "Signal"], "rows": ["Interaction", "Ratio", "Difference", "Polynomial features", "Group aggregate"], "cells": [["a product, or one given the other", "two variables acting together"], [{"text": "one per unit of another", "tone": "good"}, "what the domain reasons in"], [{"text": "a gap between two levels", "tone": "good"}, "often the gap, not either level"], [{"text": "every product up to a degree", "tone": "warn"}, "complete, and explodes in width"], [{"text": "a statistic over the key's rows", "tone": "warn"}, "powerful, and leaks if unwindowed"]], "t": "diagram", "id": "dg-7_9-01-1"},
+
+
+
+
 
 
 
@@ -182,6 +186,9 @@ P.shape                                                       # (n, 9)
 
     { t: "h2", n: "02", text: "Group aggregations as features", id: "group" },
 
+    {"kind": "trace", "title": "The row is inside its own group average, and whether that matters depends on the aggregate", "caption": "**“How does this row compare to rows like it” is a feature with a groupby inside, and `transform` is the mechanism** — the aggregate is computed per group and attached to every member. The distinction worth getting right is in the last two rows. **An aggregate of the features is safe to compute over all the data; an aggregate of the target is not**, because the row's own label is inside its group's rate. The leave-one-out version excludes the row, which is the same correction that target encoding needs, for the same reason.", "left": "feature", "codeW": 200, "vars": ["includes the row itself?", "safe?"], "steps": [{"code": "the customer's mean order value", "state": ["yes, and harmlessly", "fine - no target involved"], "tone": "good"}, {"code": "amount divided by that mean", "state": ["yes", "fine - a useful ratio feature"], "changed": [0, 1], "tone": "good"}, {"code": "the group's size", "state": ["yes", "fine"], "changed": [0, 1], "tone": "good"}, {"code": "the region's RETURN RATE", "state": ["yes - its own label", "LEAKS"], "changed": [0, 1], "tone": "crit"}, {"code": "...leave-one-out", "state": ["no - the row is excluded", "the correction target encoding needs"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-7_9-02-0"},
+
+
     { t: "p", text: "**\"How does this row compare to rows like it\" is a feature with a groupby inside.** The customer's mean order value, the region's conversion rate, the product category's return rate — computed over the group and attached to each member. `transform` (4.2) is the mechanism; the question is what goes into the aggregate." },
 
     { t: "code", lang: "python", title: "group features, and the row that includes itself", code: `
@@ -283,7 +290,11 @@ orders["cust_vs_region"] = orders["cust_mean_amount"] / region_mean
 
     { t: "h2", n: "03", text: "Time-windowed aggregations", id: "windows" },
 
-    {"kind": "timeline", "title": "The group aggregate that uses orders from the future", "caption": "For a row dated March, the mean over 'this customer's orders' includes June's. The windowed version — the mean over the 90 days **before** this order — is what a production system could actually compute, and it is a rolling window with a shift.", "span": 12, "tick": 3, "lanes": [{"label": "The row", "bars": [[5, 6, "March", "accent"]]}, {"label": "All-history mean", "bars": [[0, 12, "includes June: not knowable in March", "crit"]]}, {"label": "90-day window", "bars": [[2, 5, "the 90 days before it", "good"]]}, {"label": "Production sees", "bars": [[0, 5, "everything up to the row's own date", "good"]]}], "t": "diagram", "id": "dg-7_9-03-1"},
+    {"kind": "timeline", "title": "The group aggregate that uses orders from the future", "caption": "For a row dated March, the mean over 'this customer's orders' includes June's. The windowed version — the mean over the 90 days **before** this order — is what a production system could actually compute, and it is a rolling window with a shift.", "span": 12, "tick": 3, "lanes": [{"label": "The row", "bars": [[5, 6, "March", "accent"]]}, {"label": "All-history mean", "bars": [[0, 12, "includes June: not knowable in March", "crit"]]}, {"label": "90-day window", "bars": [[2, 5, "the 90 days before it", "good"]]}, {"label": "Production sees", "bars": [[0, 5, "everything up to the row's own date", "good"]]}], "t": "diagram", "id": "dg-7_9-03-2"},
+
+
+
+
 
 
 

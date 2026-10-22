@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The idea, and why the naive form is a leak", id: "leak" },
 
-    {"kind": "steps", "title": "Why the naive target encoding is the label in disguise", "caption": "A category with one row encodes to that row's own target. The feature then *is* the label for that row, cross-validation reports an excellent score, and in production the column carries no information at all. The size of the leak is inversely proportional to the category's size, so it is worst exactly where high cardinality made you want the encoding.", "items": [{"label": "Replace each category with its target mean", "desc": "computed over all of the training rows", "code": "1", "tone": "accent"}, {"label": "The row's own target is in that mean", "desc": "the feature partly is the label", "code": "2", "tone": "warn"}, {"label": "A category with one row", "desc": "encodes to exactly that row's target", "code": "leak", "tone": "crit"}, {"label": "The model learns to read the encoding", "desc": "and the CV score looks excellent", "code": "3", "tone": "crit"}, {"label": "Out-of-fold: the other folds only", "desc": "a row's own label never touches its own feature", "code": "fix", "tone": "good"}, {"label": "Smoothing towards the prior", "desc": "3 rows is mostly prior; 3,000 rows is mostly itself", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-7_2-01-0"},
+    {"kind": "steps", "title": "Why the naive target encoding is the label in disguise", "caption": "A category with one row encodes to that row's own target. The feature then *is* the label for that row, cross-validation reports an excellent score, and in production the column carries no information at all. The size of the leak is inversely proportional to the category's size, so it is worst exactly where high cardinality made you want the encoding.", "items": [{"label": "Replace each category with its target mean", "desc": "computed over all of the training rows", "code": "1", "tone": "accent"}, {"label": "The row's own target is in that mean", "desc": "the feature partly is the label", "code": "2", "tone": "warn"}, {"label": "A category with one row", "desc": "encodes to exactly that row's target", "code": "leak", "tone": "crit"}, {"label": "The model learns to read the encoding", "desc": "and the CV score looks excellent", "code": "3", "tone": "crit"}, {"label": "Out-of-fold: the other folds only", "desc": "a row's own label never touches its own feature", "code": "fix", "tone": "good"}, {"label": "Smoothing towards the prior", "desc": "3 rows is mostly prior; 3,000 rows is mostly itself", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-7_2-01-1"},
+
+
+
+
 
 
 
@@ -156,7 +160,11 @@ train.groupby("cat").size().describe()
 
     { t: "h2", n: "02", text: "Out-of-fold and smoothing", id: "oof" },
 
-    {"kind": "matrix", "title": "Three ways to compute it without the leak", "caption": "All three ensure that the statistic a row sees was computed without that row. The test set is different: it is encoded with statistics from **all** of training, because at prediction time there is no fold structure and no label.", "cols": ["A row is encoded from", "Cost"], "rows": ["Naive mean", "Out-of-fold", "Leave-one-out", "Ordered statistics", "Smoothing"], "cells": [[{"text": "every row, itself included", "tone": "crit"}, "the leak"], [{"text": "the other folds only", "tone": "good"}, "k fits; the standard choice"], [{"text": "every row but itself", "tone": "warn"}, "still leaks through the group size"], [{"text": "rows before it in a permutation", "tone": "good"}, "CatBoost's variant"], [{"text": "blended toward the prior", "tone": "good"}, "combine it with one of the above"]], "t": "diagram", "id": "dg-7_2-02-1"},
+    {"kind": "matrix", "title": "Three ways to compute it without the leak", "caption": "All three ensure that the statistic a row sees was computed without that row. The test set is different: it is encoded with statistics from **all** of training, because at prediction time there is no fold structure and no label.", "cols": ["A row is encoded from", "Cost"], "rows": ["Naive mean", "Out-of-fold", "Leave-one-out", "Ordered statistics", "Smoothing"], "cells": [[{"text": "every row, itself included", "tone": "crit"}, "the leak"], [{"text": "the other folds only", "tone": "good"}, "k fits; the standard choice"], [{"text": "every row but itself", "tone": "warn"}, "still leaks through the group size"], [{"text": "rows before it in a permutation", "tone": "good"}, "CatBoost's variant"], [{"text": "blended toward the prior", "tone": "good"}, "combine it with one of the above"]], "t": "diagram", "id": "dg-7_2-02-2"},
+
+
+
+
 
 
 
@@ -276,6 +284,9 @@ sk.fit_transform(train[["cat"]], train["y"])[:3]
     },
 
     { t: "h2", n: "03", text: "Regression, multiclass, and the ordered variant", id: "variants" },
+
+    {"kind": "trace", "title": "Four target-encoding variants, and only two of them are usable", "caption": "**The naive version encodes each row using its own label, which is leakage so direct that the feature can look almost perfect in training and be worthless afterwards.** Out-of-fold encoding fixes that; smoothing fixes the separate problem that a category with two rows gets an extreme mean from noise. **Both fixes are required, not alternatives** — out-of-fold without smoothing still overfits rare categories, and smoothing without out-of-fold still leaks the row's own label. The ordered variant is CatBoost's answer and is the right one for time-ordered data.", "left": "variant", "codeW": 190, "vars": ["each row encoded from", "verdict"], "steps": [{"code": "naive", "state": ["all rows, including itself", "NEVER for a model"], "tone": "crit"}, {"code": "K-fold out-of-fold", "state": ["the other K-1 folds", "fixes the own-label leak only"], "changed": [0, 1], "tone": "warn"}, {"code": "out-of-fold plus smoothing", "state": ["other folds, blended to the prior", "the default - both fixes"], "changed": [0, 1], "tone": "good"}, {"code": "ordered", "state": ["rows earlier in the order only", "for time-ordered data"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-7_2-03-0"},
+
 
     { t: "code", lang: "python", title: "the same idea for other targets, and CatBoost's version", code: `
 # REGRESSION: the category mean of a continuous y. Same OOF, same

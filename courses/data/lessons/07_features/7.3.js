@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Log-odds relative to the prior", id: "woe" },
 
-    {"kind": "matrix", "title": "Weight of evidence puts a category on the model's own scale", "caption": "WoE is the category's log-odds minus the overall log-odds. A logistic regression is linear in log-odds, so a feature already on that scale enters the model as a straight line — which is why a scorecard can print a number of points per attribute and have it be exact rather than approximate.", "cols": ["Is", "Means"], "rows": ["WoE = 0", "WoE > 0", "WoE < 0", "Information Value", "IV below 0.02", "IV above 0.5"], "cells": [[{"text": "the category is the prior", "tone": "accent"}, "it tells you nothing"], ["more positives than the prior", "shifts the odds up"], ["more negatives than the prior", "shifts the odds down"], [{"text": "one number per feature", "tone": "good"}, "how much its categories separate"], [{"text": "unpredictive", "tone": "warn"}, "drop it"], [{"text": "suspiciously strong", "tone": "crit"}, "check for leakage first"]], "t": "diagram", "id": "dg-7_3-01-0"},
+    {"kind": "matrix", "title": "Weight of evidence puts a category on the model's own scale", "caption": "WoE is the category's log-odds minus the overall log-odds. A logistic regression is linear in log-odds, so a feature already on that scale enters the model as a straight line — which is why a scorecard can print a number of points per attribute and have it be exact rather than approximate.", "cols": ["Is", "Means"], "rows": ["WoE = 0", "WoE > 0", "WoE < 0", "Information Value", "IV below 0.02", "IV above 0.5"], "cells": [[{"text": "the category is the prior", "tone": "accent"}, "it tells you nothing"], ["more positives than the prior", "shifts the odds up"], ["more negatives than the prior", "shifts the odds down"], [{"text": "one number per feature", "tone": "good"}, "how much its categories separate"], [{"text": "unpredictive", "tone": "warn"}, "drop it"], [{"text": "suspiciously strong", "tone": "crit"}, "check for leakage first"]], "t": "diagram", "id": "dg-7_3-01-1"},
+
+
+
+
 
 
 
@@ -157,6 +161,9 @@ iv                                               # 0.228
 
     { t: "h2", n: "02", text: "Why logistic regression wants it", id: "logistic" },
 
+    {"kind": "flow", "title": "A coefficient near 1 is a diagnostic no one-hot model can offer", "caption": "**Weight of evidence puts the feature on the log-odds scale, which is the scale the logistic model works in — so the model has nothing left to rescale and the coefficient should come out near 1.** That turns a coefficient into a check. **Far below 1 means the evidence is already carried by other features; far above 1 means the table overfit or leaked; negative means collinearity has flipped it.** Twenty WoE features all sitting near 1 is a model you can defend line by line, which is why this encoding survives in credit scoring.", "cols": 3, "nodes": [{"id": "w", "label": "WoE is the log-odds shift per category", "sub": "computed from the training labels", "tone": "accent"}, {"id": "m", "label": "The model works in log-odds too", "sub": "so there is nothing to rescale", "tone": "good"}, {"id": "c", "label": "So the coefficient should be about 1", "sub": "one parameter, not k", "tone": "good"}, {"id": "l", "label": "Far below 1: the evidence is elsewhere", "sub": "another feature already has it", "tone": "warn"}, {"id": "h", "label": "Far above 1: the table overfit or leaked", "sub": "check the fit was out-of-fold", "tone": "crit"}, {"id": "n", "label": "Negative: collinearity has flipped it", "sub": "a diagnostic, for free", "tone": "violet"}], "edges": [["w", "m"], ["m", "c"], ["c", "l"], ["c", "h"], ["c", "n"]], "t": "diagram", "id": "dg-7_3-02-0"},
+
+
     { t: "p", text: "A logistic model fits `log-odds(y) = β₀ + Σ βᵢ xᵢ`. **If xᵢ is already the log-odds shift for its category, the model's job for that feature is to learn βᵢ ≈ 1** — one parameter instead of one per category, on a scale where a straight line is the right shape. One-hot gives the same fit with k parameters; WoE gives it with one, and the one is interpretable." },
 
     { t: "code", lang: "python", title: "WoE against one-hot in a logistic model, and the scorecard", code: `
@@ -244,7 +251,11 @@ scorecard(m_woe, {"region": tbl})["region"]
 
     { t: "h2", n: "03", text: "Continuous features: monotonic binning", id: "binning" },
 
-    {"kind": "compare", "title": "Why the bins must be monotonic", "caption": "A non-monotonic WoE says risk rises with income, then falls, then rises. That is usually noise in a thin bin, and it is never something a scorecard can print — so the bins are merged until the direction is consistent, trading a little fit for a statement the business can act on.", "columns": [{"title": "Equal-frequency bins", "tone": "warn", "items": ["Every bin is populated", "WoE may zigzag across them", "A thin bin's estimate is noisy", "Fits better, explains worse"]}, {"title": "Monotonic merged bins", "tone": "good", "items": ["Adjacent bins merged until WoE is ordered", "One direction across the whole range", "Each bin has enough rows to trust", "Required for a scorecard"]}], "t": "diagram", "id": "dg-7_3-03-1"},
+    {"kind": "compare", "title": "Why the bins must be monotonic", "caption": "A non-monotonic WoE says risk rises with income, then falls, then rises. That is usually noise in a thin bin, and it is never something a scorecard can print — so the bins are merged until the direction is consistent, trading a little fit for a statement the business can act on.", "columns": [{"title": "Equal-frequency bins", "tone": "warn", "items": ["Every bin is populated", "WoE may zigzag across them", "A thin bin's estimate is noisy", "Fits better, explains worse"]}, {"title": "Monotonic merged bins", "tone": "good", "items": ["Adjacent bins merged until WoE is ordered", "One direction across the whole range", "Each bin has enough rows to trust", "Required for a scorecard"]}], "t": "diagram", "id": "dg-7_3-03-2"},
+
+
+
+
 
 
 

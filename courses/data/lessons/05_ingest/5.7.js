@@ -20,6 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Reading from a database", id: "read" },
 
+    {"kind": "flow", "title": "Formatting a value into SQL is not risky, it is wrong", "caption": "**It breaks on an apostrophe in a surname, on a percent sign in a LIKE, on a backslash — and it is the mechanism of every SQL injection.** The parameterised form is shorter and handles all of them, which is why there is no trade-off to weigh here. **Identifiers are the one genuine exception**, because a table or column name cannot be bound: validate it against an allowlist your own code owns, then format it. The value must never have come from outside. And the cost of the read itself is decided by the query, not the connection: select the columns and rows you need.", "cols": 3, "nodes": [{"id": "f", "label": "f-string a value into the query", "sub": "the obvious thing", "tone": "crit"}, {"id": "b", "label": "Breaks on an apostrophe", "sub": "before anyone attacks anything", "tone": "crit"}, {"id": "i", "label": "And it is how injection works", "sub": "the same defect, weaponised", "tone": "crit"}, {"id": "p", "label": "Bind the value as a parameter", "sub": "shorter, and handles every case", "tone": "good"}, {"id": "d", "label": "Identifiers cannot be bound", "sub": "allowlist them, then format", "tone": "violet"}, {"id": "q", "label": "And the cost is in the query", "sub": "columns and rows, not the connection", "tone": "accent"}], "edges": [["f", "b"], ["b", "i"], ["i", "p"], ["p", "d"], ["p", "q"]], "t": "diagram", "id": "dg-5_7-01-1"},
+
+
+
+
     { t: "p", text: "`read_sql` runs a query and builds a frame from the result. **Everything about its cost is decided by the query** — how many rows come back, how many columns, and whether the database or pandas does the work. The connection is the boring part." },
 
     { t: "dl", items: [
@@ -116,7 +121,11 @@ df = pd.read_sql(text("SELECT ..."), engine,
 
     { t: "h2", n: "02", text: "Results that do not fit", id: "stream" },
 
-    {"kind": "matrix", "title": "Results that do not fit in memory", "caption": "The default `read_sql` builds the whole result as one frame, which is fine until the day the query returns ten million rows and the process dies. Each of these moves the boundary somewhere else; the last one moves the work instead of the rows.", "cols": ["Does", "Costs"], "rows": ["read_sql(...)", "chunksize=", "A server-side cursor", "LIMIT / OFFSET paging", "Aggregate in SQL"], "cells": [[{"text": "one frame, all rows", "tone": "warn"}, "memory proportional to the result"], [{"text": "an iterator of frames", "tone": "good"}, "you must handle the pieces"], [{"text": "streams from the server", "tone": "good"}, "the connection stays open"], [{"text": "a page at a time", "tone": "crit"}, "OFFSET rescans; rows can shift"], [{"text": "returns the few rows you need", "tone": "accent"}, "nothing: the right answer first"]], "t": "diagram", "id": "dg-5_7-02-1"},
+    {"kind": "matrix", "title": "Results that do not fit in memory", "caption": "The default `read_sql` builds the whole result as one frame, which is fine until the day the query returns ten million rows and the process dies. Each of these moves the boundary somewhere else; the last one moves the work instead of the rows.", "cols": ["Does", "Costs"], "rows": ["read_sql(...)", "chunksize=", "A server-side cursor", "LIMIT / OFFSET paging", "Aggregate in SQL"], "cells": [[{"text": "one frame, all rows", "tone": "warn"}, "memory proportional to the result"], [{"text": "an iterator of frames", "tone": "good"}, "you must handle the pieces"], [{"text": "streams from the server", "tone": "good"}, "the connection stays open"], [{"text": "a page at a time", "tone": "crit"}, "OFFSET rescans; rows can shift"], [{"text": "returns the few rows you need", "tone": "accent"}, "nothing: the right answer first"]], "t": "diagram", "id": "dg-5_7-02-3"},
+
+
+
+
 
 
 
@@ -196,6 +205,10 @@ while True:
     { t: "h2", n: "03", text: "Pushing work down, and reading the plan", id: "pushdown" },
 
     {"kind": "matrix", "title": "Push the work down, or pull the rows up", "caption": "The database is usually better at filtering and aggregating than your process is, and the wire is the bottleneck. The rule: send as little as possible over it, and read the plan to confirm the predicate actually reached the index.", "cols": ["rows over the wire", "verdict"], "rows": ["SELECT *, filter in pandas", "filter in SQL", "aggregate in SQL", "join in pandas", "join in SQL"], "cells": [[{"text": "all of them", "tone": "crit"}, {"text": "the default mistake", "tone": "crit"}], [{"text": "only the matches", "tone": "good"}, "check the plan uses an index"], [{"text": "one row per group", "tone": "good"}, {"text": "almost always right", "tone": "good"}], [{"text": "both tables in full", "tone": "crit"}, "only if the join is not expressible"], [{"text": "the result only", "tone": "good"}, {"text": "right, and let it use the index", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-03-0"},
+
+
+
+
 
 
 
@@ -372,6 +385,11 @@ out = df.groupby(["region", df.order_date.dt.date])["amount"].sum()`,
     },
 
     { t: "h2", n: "04", text: "Writing back", id: "write" },
+
+    {"kind": "trace", "title": "if_exists='replace' drops the table, and takes everything with it", "caption": "**It does not truncate and refill — it issues a DROP and creates a new table from the frame's dtypes**, so every index, foreign key, default, trigger and grant on the old table is gone, and the new column types are whatever pandas inferred. That is rarely what “replace” is read to mean. **Truncate-and-append inside one transaction is the operation people actually want**, and it keeps the schema that somebody designed. The index argument matters more here than in a CSV, because a RangeIndex written as a column lives in a table that outlives the script.", "left": "if_exists", "codeW": 160, "vars": ["what happens", "what survives"], "steps": [{"code": "'fail' - the default", "state": ["raises if the table exists", "everything"], "tone": "good"}, {"code": "'append'", "state": ["inserts rows", "everything - the usual choice"], "changed": [0, 1], "tone": "good"}, {"code": "'replace'", "state": ["DROP, then CREATE from dtypes", "nothing: no index, FK, grant"], "changed": [0, 1], "tone": "crit"}, {"code": "what you probably want", "state": ["TRUNCATE then append, in one transaction", "the schema somebody designed"], "changed": [0, 1], "tone": "violet"}, {"code": "and index=False", "state": ["keeps a RangeIndex out of the table", "it is not data"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-5_7-04-2"},
+
+
+
 
     { t: "code", lang: "python", title: "to_sql, batch size, and the transaction you did not know you opened", code: `
 # THE BASIC WRITE:

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What PCA computes", id: "compute" },
 
-    {"kind": "matrix", "title": "What PCA computes, and what each piece is called", "caption": "Explained variance measures **spread, not usefulness**: a component can carry most of the variance and none of the signal, because nothing in the computation ever looked at the target. That is the single most important property of PCA to hold on to.", "cols": ["Is", "Note"], "rows": ["Principal component", "Loading", "Score", "Explained variance", "Reconstruction error"], "cells": [["a unit-length direction", "eigenvector of the covariance"], ["each column's weight in it", "which columns, with what sign"], [{"text": "a row's coordinate", "tone": "good"}, "the scores are the new features"], [{"text": "the eigenvalue", "tone": "warn"}, "spread, not usefulness"], ["distance to the projection", "the sum of the discarded eigenvalues"]], "t": "diagram", "id": "dg-8_2-01-0"},
+    {"kind": "matrix", "title": "What PCA computes, and what each piece is called", "caption": "Explained variance measures **spread, not usefulness**: a component can carry most of the variance and none of the signal, because nothing in the computation ever looked at the target. That is the single most important property of PCA to hold on to.", "cols": ["Is", "Note"], "rows": ["Principal component", "Loading", "Score", "Explained variance", "Reconstruction error"], "cells": [["a unit-length direction", "eigenvector of the covariance"], ["each column's weight in it", "which columns, with what sign"], [{"text": "a row's coordinate", "tone": "good"}, "the scores are the new features"], [{"text": "the eigenvalue", "tone": "warn"}, "spread, not usefulness"], ["distance to the projection", "the sum of the discarded eigenvalues"]], "t": "diagram", "id": "dg-8_2-01-2"},
+
+
+
+
 
 
 
@@ -91,7 +95,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Scaling decides the answer", id: "scaling" },
 
-    {"kind": "matrix", "title": "Scaling decides the answer PCA gives", "caption": "PCA maximises variance, and variance has units. Leave income in pounds beside age in years and the first component is almost entirely income — not because it matters more, but because its numbers are larger. Standardising first is what makes the question 'which directions co-vary' rather than 'which column has the biggest units'.", "cols": ["First component", "Why"], "rows": ["Unscaled, mixed units", "Standardised", "After a log transform", "On one-hot columns"], "cells": [[{"text": "the largest-unit column", "tone": "crit"}, "pounds dwarf years"], [{"text": "the real co-variation", "tone": "good"}, "every column contributes equally"], [{"text": "changes again", "tone": "warn"}, "PCA is not scale-invariant"], [{"text": "dominated by rare levels", "tone": "warn"}, "binary variance depends on the rate"]], "t": "diagram", "id": "dg-8_2-02-1"},
+    {"kind": "matrix", "title": "Scaling decides the answer PCA gives", "caption": "PCA maximises variance, and variance has units. Leave income in pounds beside age in years and the first component is almost entirely income — not because it matters more, but because its numbers are larger. Standardising first is what makes the question 'which directions co-vary' rather than 'which column has the biggest units'.", "cols": ["First component", "Why"], "rows": ["Unscaled, mixed units", "Standardised", "After a log transform", "On one-hot columns"], "cells": [[{"text": "the largest-unit column", "tone": "crit"}, "pounds dwarf years"], [{"text": "the real co-variation", "tone": "good"}, "every column contributes equally"], [{"text": "changes again", "tone": "warn"}, "PCA is not scale-invariant"], [{"text": "dominated by rare levels", "tone": "warn"}, "binary variance depends on the rate"]], "t": "diagram", "id": "dg-8_2-02-3"},
+
+
+
+
 
 
 
@@ -197,6 +205,8 @@ print(np.abs(pca.components_[:, 4]).max().round(4))   # 0.001 -- the quiet colum
 
     { t: "h2", n: "03", text: "How many components", id: "howmany" },
 
+    {"kind": "trace", "title": "The 95% rule answers a question nobody asked", "caption": "**Explained variance is a property of the columns, not of the task — so a threshold on it is a convention, not a choice.** Two better questions have computable answers. Parallel analysis asks how many components carry more variance than shuffled data does, which is a test against chance. Cross-validation asks how many the model needs, **and the grid must include no reduction at all as one of the options** — because if that wins or ties, reduction needs a reason other than accuracy: training cost, storage, or a downstream algorithm that cannot cope with collinear columns.", "left": "how you choose k", "codeW": 190, "vars": ["what it answers", "verdict"], "steps": [{"code": "95% of variance", "state": ["a property of the columns", "a convention, not a choice"], "tone": "crit"}, {"code": "the elbow of the scree plot", "state": ["where the curve bends", "eyeballing, and often ambiguous"], "changed": [0, 1], "tone": "warn"}, {"code": "parallel analysis", "state": ["more variance than shuffled data", "a test against chance"], "changed": [0, 1], "tone": "good"}, {"code": "cross-validate k on the task", "state": ["what the model needs", "the one that answers the question"], "changed": [0, 1], "tone": "violet"}, {"code": "...including k = no reduction", "state": ["whether PCA helps at all", "if it ties, you need another reason"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_2-03-0"},
+
     { t: "p", text: "The 95 % rule is a convention about variance with no connection to the model's task. Two better questions have answers you can compute. **How many components carry structure beyond chance?** Parallel analysis answers that. **How many does the model need?** Cross-validation answers that, and it should include *no reduction at all* as one of the options." },
 
     { t: "code", lang: "python", title: "Parallel analysis, then the score the model actually gets",
@@ -246,6 +256,8 @@ for p, m, s in zip(grid.cv_results_["param_pca"], grid.cv_results_["mean_test_sc
     ]},
 
     { t: "h2", n: "04", text: "What reduction costs, and the variants", id: "cost" },
+
+    {"kind": "flow", "title": "When a component has no description, naming it anyway is storytelling", "caption": "**A coefficient on PC2 says nothing about any column a stakeholder recognises** — the loadings say what PC2 is made of, and whether that admits a description is a fact about the data rather than a matter of effort. With three or four strongly loaded columns you can say it honestly: “mostly the engagement counts, positive”. **With the loading spread thinly over forty columns there is no honest sentence**, and inventing one is the failure mode. If an explanation per column is a requirement, selection or a regularised model on the original columns is the answer instead.", "cols": 3, "nodes": [{"id": "p", "label": "A coefficient on PC2", "sub": "no stakeholder recognises PC2", "tone": "accent"}, {"id": "l", "label": "Read the loadings", "sub": "what is this component made of?", "tone": "good"}, {"id": "f", "label": "A few strong loadings: describable", "sub": "the three engagement counts, positive", "tone": "good"}, {"id": "s", "label": "Spread over forty columns: not", "sub": "and naming it anyway is storytelling", "tone": "crit"}, {"id": "a", "label": "Need an explanation per column?", "sub": "use selection, or ridge on the originals", "tone": "violet"}], "edges": [["p", "l"], ["l", "f"], ["l", "s"], ["s", "a"]], "t": "diagram", "id": "dg-8_2-04-1"},
 
     { t: "p", text: "A model coefficient on `PC2` says nothing about any column a stakeholder recognises. The loadings say what PC2 is made of, and with a few strongly loaded columns you can describe it honestly — 'mostly the three engagement counts, positive'. **With loadings spread across forty columns, the component has no description, and naming it anyway is storytelling.** If the requirement is an explanation per column, use selection (8.1) or a regularised model on the original columns instead." },
 

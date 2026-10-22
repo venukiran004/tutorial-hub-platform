@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "`read_csv` reads every field as a string and then, for each column, tries integer, then float, then leaves it as object. **That inference happens per column, per file, on whatever values the file happens to contain** — so the same column can arrive as `int64` on Monday and `float64` on Tuesday because one row was blank." },
 
     { t: "dl", items: [
@@ -174,7 +178,11 @@ pd.read_csv(raw2, na_values=["-999", "."])["v"].tolist()
 
     { t: "h2", n: "02", text: "Delimiters, quoting and the rows that break", id: "delimiters" },
 
-    {"kind": "matrix", "title": "Comma-separated is a convention, not a rule", "caption": "A European export uses semicolons because the decimal separator is a comma; a log export uses tabs or pipes. And a field that contains the delimiter must be quoted — which is where malformed files come from, because the writer that forgot to quote it produced a file with the wrong number of columns on one row.", "cols": ["Delimiter", "Why"], "rows": ["Most exports", "European exports", "Log exports", "A field holds the delimiter", "A field holds a newline"], "cells": [[{"text": "comma", "tone": "good"}, "the default assumption"], [{"text": "semicolon", "tone": "warn"}, "the decimal separator is a comma"], [{"text": "tab or pipe", "tone": "accent"}, "unlikely to appear in the data"], [{"text": "must be quoted", "tone": "warn"}, "unquoted, the row gains a column"], [{"text": "quoted, and still legal", "tone": "crit"}, "line count is not row count"]], "t": "diagram", "id": "dg-5_1-02-1"},
+    {"kind": "matrix", "title": "Comma-separated is a convention, not a rule", "caption": "A European export uses semicolons because the decimal separator is a comma; a log export uses tabs or pipes. And a field that contains the delimiter must be quoted — which is where malformed files come from, because the writer that forgot to quote it produced a file with the wrong number of columns on one row.", "cols": ["Delimiter", "Why"], "rows": ["Most exports", "European exports", "Log exports", "A field holds the delimiter", "A field holds a newline"], "cells": [[{"text": "comma", "tone": "good"}, "the default assumption"], [{"text": "semicolon", "tone": "warn"}, "the decimal separator is a comma"], [{"text": "tab or pipe", "tone": "accent"}, "unlikely to appear in the data"], [{"text": "must be quoted", "tone": "warn"}, "unquoted, the row gains a column"], [{"text": "quoted, and still legal", "tone": "crit"}, "line count is not row count"]], "t": "diagram", "id": "dg-5_1-02-3"},
+
+
+
+
 
 
 
@@ -278,6 +286,11 @@ pd.read_csv(short)
 
     { t: "h2", n: "03", text: "Files larger than memory", id: "chunks" },
 
+    {"kind": "trace", "title": "What composes across chunks, and what does not", "caption": "**Peak memory is one chunk plus your accumulators, whatever the file size — but only for statistics that can be accumulated.** A sum, a count, a minimum and a group total all compose: carry a running total and add. **A median does not, because it needs every value at once**, and neither does a global sort or an exact distinct count. The practical escape for those is to make two passes, or to aggregate per chunk and combine approximately — and at that point a columnar format with predicate pushdown is usually a better answer than chunking a CSV at all.", "left": "what you want", "codeW": 190, "vars": ["composes across chunks?", "how"], "steps": [{"code": "sum, count, min, max", "state": ["yes", "carry a running accumulator"], "tone": "good"}, {"code": "a mean", "state": ["yes", "carry the sum AND the count"], "changed": [0, 1], "tone": "good"}, {"code": "group totals", "state": ["yes", "a dict per key, merged per chunk"], "changed": [0, 1], "tone": "good"}, {"code": "a median or a percentile", "state": ["NO", "needs every value at once"], "changed": [0, 1], "tone": "crit"}, {"code": "an exact distinct count", "state": ["only by holding every key", "or a sketch, approximately"], "changed": [0, 1], "tone": "crit"}, {"code": "a global sort", "state": ["NO", "two passes, or a different tool"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_1-03-1"},
+
+
+
+
     { t: "code", lang: "python", title: "chunked reading, and what it can and cannot compute", code: `
 # chunksize= RETURNS AN ITERATOR. Nothing is read until you iterate.
 # reader = pd.read_csv("huge.csv", chunksize=500_000, dtype=SCHEMA)
@@ -354,6 +367,11 @@ def rows_for(path, region, chunksize=500_000):
     { t: "p", text: "One more reader worth knowing exists: **`pd.read_html(page)`** returns a list of frames, one per `<table>` on a page. It needs `lxml` or `bs4`, applies the same type inference as `read_csv` — so `dtype=` and `thousands=` matter just as much — and a table scraped from a web page is the likeliest place to meet merged header cells, footnote markers inside numbers, and non-breaking spaces where you expected nulls." },
 
     { t: "h2", n: "04", text: "Writing", id: "write" },
+
+    {"kind": "flow", "title": "Where the Unnamed: 0 column comes from", "caption": "**`to_csv` writes the index by default, as an unnamed first column — and reading that file back gives a column called `Unnamed: 0`.** That is the whole mechanism behind the most frequently asked question in pandas, and it compounds: write, read, write again and you accumulate a second one. **`index=False` unless the index carries meaning; if it does, name it** so it round-trips as a real column rather than as an accident. The same reasoning applies to `to_sql`, where a RangeIndex becomes a column in a table that will outlive the script.", "cols": 3, "nodes": [{"id": "w", "label": "df.to_csv(path)", "sub": "the default writes the index", "tone": "accent"}, {"id": "f", "label": "An unnamed first column in the file", "sub": "0, 1, 2 ...", "tone": "warn"}, {"id": "r", "label": "read_csv names it Unnamed: 0", "sub": "it has to call it something", "tone": "crit"}, {"id": "a", "label": "Write again and you get two", "sub": "every round trip adds one", "tone": "crit"}, {"id": "x", "label": "index=False", "sub": "unless the index carries meaning", "tone": "good"}, {"id": "n", "label": "Or name the index first", "sub": "then it round-trips as a real column", "tone": "good"}], "edges": [["w", "f"], ["f", "r"], ["r", "a"], ["a", "x"], ["x", "n"]], "t": "diagram", "id": "dg-5_1-04-2"},
+
+
+
 
     { t: "code", lang: "python", title: "to_csv, and the index that keeps coming back", code: `
 df = pd.DataFrame({"id": ["007", "008"], "v": [1.5, np.nan]})

@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Profiling is not exploration. **It is a checklist, run in the same order every time, that turns \"I have a file\" into \"I know what each column is, how much of it is missing, and what is wrong with it.\"** Exploration comes after, and it is much faster once the checklist is done." },
 
     { t: "dl", items: [
@@ -205,6 +209,10 @@ miss[miss.sum(axis=1) == 12].sum().sort_values(ascending=False).head(12)
 
     { t: "h2", n: "02", text: "Cardinality and distributions", id: "distributions" },
 
+    {"kind": "trace", "title": "Decide the role first, then convert - not the other way round", "caption": "**Reading a file and then asking what the columns are is backwards.** Decide each column's role, then convert to it deliberately, because the conversion is where the sentinels get caught: an empty string, NA, N/A and −999 all have to become missing *before* the cast, or they become a category called “-999” or silently coerce to zero. **`errors=\"coerce\"` is the argument that makes this safe** — anything unparseable becomes NaT or NaN rather than raising or passing through — and then counting the new missing values tells you how dirty the column really was.", "left": "role", "codeW": 150, "vars": ["convert with", "why that one"], "steps": [{"code": "integer", "state": ["to_numeric then Int64", "nullable - a plain int cannot hold NaN"], "tone": "good"}, {"code": "float", "state": ["to_numeric(errors='coerce')", "unparseable becomes NaN, not an error"], "changed": [0, 1], "tone": "good"}, {"code": "datetime", "state": ["to_datetime(errors='coerce')", "and state format= as well"], "changed": [0, 1], "tone": "good"}, {"code": "category or flag", "state": ["astype('category')", "memory, and a fixed set of levels"], "changed": [0, 1], "tone": "accent"}, {"code": "but FIRST", "state": ["replace '', NA, N/A, -999", "or a sentinel becomes a category"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_1-02-1"},
+
+
+
     { t: "code", lang: "python", title: "steps 4 and 5: what each column contains, by role", code: `
 # CONVERT DELIBERATELY, now that roles are known:
 typed = df.copy()
@@ -319,7 +327,11 @@ for c in card[card["role"] == "datetime"].index:
 
     { t: "h2", n: "03", text: "The checks that catch a broken export", id: "sanity" },
 
-    {"kind": "matrix", "title": "The checks a broken export fails and a descriptive summary passes", "caption": "Everything before this step **describes** the data. These test it. Each one is a fact that must be true if the export is intact, and a truncated or double-loaded file passes every histogram while failing these.", "cols": ["Catches", "Written as"], "rows": ["Row count against source", "Primary key uniqueness", "A total that reconciles", "Date range plausible", "Column set unchanged", "No all-null column"], "cells": [[{"text": "truncation, double load", "tone": "crit"}, "an assertion on len(df)"], [{"text": "a join that will multiply", "tone": "crit"}, "duplicated(subset=key).sum() == 0"], [{"text": "a filter applied upstream", "tone": "crit"}, "sum against a known figure"], [{"text": "a parse that read 2025 as 1925", "tone": "warn"}, "min and max against bounds"], [{"text": "schema drift", "tone": "warn"}, "set(df.columns) == expected"], [{"text": "a rename that broke a mapping", "tone": "warn"}, "isna().all() on each column"]], "t": "diagram", "id": "dg-6_1-03-1"},
+    {"kind": "matrix", "title": "The checks a broken export fails and a descriptive summary passes", "caption": "Everything before this step **describes** the data. These test it. Each one is a fact that must be true if the export is intact, and a truncated or double-loaded file passes every histogram while failing these.", "cols": ["Catches", "Written as"], "rows": ["Row count against source", "Primary key uniqueness", "A total that reconciles", "Date range plausible", "Column set unchanged", "No all-null column"], "cells": [[{"text": "truncation, double load", "tone": "crit"}, "an assertion on len(df)"], [{"text": "a join that will multiply", "tone": "crit"}, "duplicated(subset=key).sum() == 0"], [{"text": "a filter applied upstream", "tone": "crit"}, "sum against a known figure"], [{"text": "a parse that read 2025 as 1925", "tone": "warn"}, "min and max against bounds"], [{"text": "schema drift", "tone": "warn"}, "set(df.columns) == expected"], [{"text": "a rename that broke a mapping", "tone": "warn"}, "isna().all() on each column"]], "t": "diagram", "id": "dg-6_1-03-2"},
+
+
+
+
 
 
 

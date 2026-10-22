@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The one question", id: "question" },
 
-    {"kind": "matrix", "title": "What separates a proxy from a leak is availability, not strength", "caption": "A feature that predicts the label almost perfectly is suspicious but not thereby a leak. The question is whether it will be **populated, in that form, at prediction time** — support tickets correlate with dissatisfaction because they share a cause, and that correlation is the point.", "cols": ["Available at prediction", "Verdict"], "rows": ["A closure code", "A refund amount", "Support ticket count", "Days since signup", "Filled after the label"], "cells": [[{"text": "no: written with the label", "tone": "crit"}, "target leakage"], [{"text": "no: a consequence", "tone": "crit"}, "target leakage"], [{"text": "yes, as of now", "tone": "good"}, "a proxy: legitimate"], [{"text": "yes", "tone": "good"}, "legitimate"], [{"text": "empty in production", "tone": "crit"}, "leakage, however strong it looks"]], "t": "diagram", "id": "dg-8_3-01-0"},
+    {"kind": "matrix", "title": "What separates a proxy from a leak is availability, not strength", "caption": "A feature that predicts the label almost perfectly is suspicious but not thereby a leak. The question is whether it will be **populated, in that form, at prediction time** — support tickets correlate with dissatisfaction because they share a cause, and that correlation is the point.", "cols": ["Available at prediction", "Verdict"], "rows": ["A closure code", "A refund amount", "Support ticket count", "Days since signup", "Filled after the label"], "cells": [[{"text": "no: written with the label", "tone": "crit"}, "target leakage"], [{"text": "no: a consequence", "tone": "crit"}, "target leakage"], [{"text": "yes, as of now", "tone": "good"}, "a proxy: legitimate"], [{"text": "yes", "tone": "good"}, "legitimate"], [{"text": "empty in production", "tone": "crit"}, "leakage, however strong it looks"]], "t": "diagram", "id": "dg-8_3-01-2"},
+
+
+
+
 
 
 
@@ -76,6 +80,8 @@ EC.receiveLesson({
     },
 
     { t: "h2", n: "02", text: "Target leakage", id: "target" },
+
+    {"kind": "trace", "title": "Present for every training row, empty for every scoring row", "caption": "**That asymmetry is the definition of target leakage, and it is why the training score looks wonderful.** The column was populated by the outcome — a closure reason, an investigation flag, a discharge code — so in an extract of settled cases it is always there, and at scoring time it is always empty. **The symptom set is consistent and worth memorising:** one feature dominates importance, the score is implausible for the domain, and the column's null rate in a live sample is far higher than in training. The scan finds candidates; only a manifest of what is known at prediction time decides.", "left": "evidence", "codeW": 190, "vars": ["in training", "at scoring time"], "steps": [{"code": "the leaking column", "state": ["populated for every row", "empty for every row"], "tone": "crit"}, {"code": "feature importance", "state": ["one feature dominates", "-"], "changed": [0], "tone": "crit"}, {"code": "the score", "state": ["implausible for the domain", "collapses"], "changed": [0, 1], "tone": "crit"}, {"code": "the null rate", "state": ["low", "far higher - the tell"], "changed": [0, 1], "tone": "violet"}, {"code": "but a strong LEGITIMATE feature", "state": ["also dominates", "also populated - it is fine"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_3-02-0"},
 
     { t: "p", text: "The column was populated by the outcome. Sometimes it is obvious — `churn_date` in a churn model — and sometimes it is a code, a flag or a count that a downstream team writes as part of handling the event: the retention team's closure reason, the fraud team's investigation flag, the hospital's discharge disposition. **In the training extract it is present for every row because every row has already had its outcome. At scoring time it is empty for every row, because none has.**" },
 
@@ -198,6 +204,8 @@ for tr, te in cv.split(Xd, yd):
 
     { t: "h2", n: "04", text: "Temporal leakage", id: "temporal" },
 
+    {"kind": "trace", "title": "A time split passes, and the feature still carries the future", "caption": "**The split is not the defence, because the feature was computed before the split and every row already holds its share of what came later.** A centred rolling mean looks forward by construction; a per-customer average over the whole extract includes rows after t; and the count of rows per entity is a clock — a customer with forty rows stayed longer than one with three, which for churn or default *is* the label. **The check is to recompute the features as-of each row's own timestamp and see which ones change.** Labels leak time too: a 90-day outcome cannot be observed for a row extracted 30 days ago.", "left": "feature", "codeW": 200, "vars": ["why it leaks", "the as-of version"], "steps": [{"code": "a centred rolling mean", "state": ["half the window is after t", "trailing window only"], "tone": "crit"}, {"code": "the customer's overall average", "state": ["includes rows after t", "expanding mean, shifted by one"], "changed": [0, 1], "tone": "crit"}, {"code": "n_orders_total, days_active", "state": ["a clock: how far the extract reaches", "count only up to t"], "changed": [0, 1], "tone": "crit"}, {"code": "last_seen minus first_seen", "state": ["the entity's whole lifespan", "measure it at t"], "changed": [0, 1], "tone": "crit"}, {"code": "'churned within 90 days'", "state": ["unobservable for recent rows", "censor: drop unclosed windows"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-04-1"},
+
     { t: "p", text: "The row is at time *t*; the feature was computed from rows after *t*. A centred rolling mean, a per-customer average over the whole extract, a `first_purchase_to_last_purchase` span, a count of rows per entity — each folds the future into the present. **A time-based split does not catch this**, because the feature was built before the split and every row already carries its share of the future. The check is to remove the future and see which features change." },
 
     { t: "code", lang: "python", title: "The time split passes; the feature still leaks",
@@ -251,7 +259,11 @@ print(changed.mean().round(2))     # spend_prev 0.00   spend_smooth 0.20   spend
 
     { t: "h2", n: "05", text: "The checks, and which kind each one catches", id: "checks" },
 
-    {"kind": "matrix", "title": "The checks, and which kind of leak each one catches", "caption": "No single check finds all three kinds, which is why the list is a list. The first is the cheapest and finds the most: a single feature with a suspiciously high score, on its own, is almost always a leak rather than a discovery.", "cols": ["Catches", "How"], "rows": ["Single-feature AUC", "Drop it and refit", "Duplicate row scan", "Entity on both sides", "Fit timing audit", "Past train, future test"], "cells": [[{"text": "target leakage", "tone": "crit"}, "one feature that predicts alone"], ["target leakage", "the score collapses: it carried it all"], [{"text": "contamination", "tone": "warn"}, "exact duplicates across the split"], [{"text": "contamination", "tone": "warn"}, "group the split by entity"], [{"text": "contamination", "tone": "warn"}, "was anything fitted before the split"], [{"text": "temporal leakage", "tone": "crit"}, "the only split production resembles"]], "t": "diagram", "id": "dg-8_3-05-1"},
+    {"kind": "matrix", "title": "The checks, and which kind of leak each one catches", "caption": "No single check finds all three kinds, which is why the list is a list. The first is the cheapest and finds the most: a single feature with a suspiciously high score, on its own, is almost always a leak rather than a discovery.", "cols": ["Catches", "How"], "rows": ["Single-feature AUC", "Drop it and refit", "Duplicate row scan", "Entity on both sides", "Fit timing audit", "Past train, future test"], "cells": [[{"text": "target leakage", "tone": "crit"}, "one feature that predicts alone"], ["target leakage", "the score collapses: it carried it all"], [{"text": "contamination", "tone": "warn"}, "exact duplicates across the split"], [{"text": "contamination", "tone": "warn"}, "group the split by entity"], [{"text": "contamination", "tone": "warn"}, "was anything fitted before the split"], [{"text": "temporal leakage", "tone": "crit"}, "the only split production resembles"]], "t": "diagram", "id": "dg-8_3-05-3"},
+
+
+
+
 
 
 

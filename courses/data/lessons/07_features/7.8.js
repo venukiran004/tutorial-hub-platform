@@ -144,7 +144,11 @@ f[["month"]].describe().loc[["min", "max"]]                # 1, 12
 
     { t: "h2", n: "02", text: "Elapsed time: the features that carry the most", id: "elapsed" },
 
-    {"kind": "matrix", "title": "A duration usually beats any calendar component", "caption": "Days since signup, hours since last purchase, days until the contract ends — each is continuous, each carries recency, and each must be computed against a reference that **was known at the row's own time**. Measuring 'days since last purchase' against the dataset's maximum date is a leak: that date is in the future for every row but one.", "cols": ["Carries", "Reference must be"], "rows": ["Days since signup", "Hours since last event", "Days until renewal", "Day of week", "Days since max(date)"], "cells": [[{"text": "tenure", "tone": "good"}, "the row's own timestamp"], [{"text": "recency", "tone": "good"}, "the previous event, shifted"], [{"text": "anticipation", "tone": "good"}, "known in advance: safe"], [{"text": "seasonality", "tone": "accent"}, "cyclical: encode it as sin and cos"], [{"text": "the future", "tone": "crit"}, "a leak: max is later than the row"]], "t": "diagram", "id": "dg-7_8-02-1"},
+    {"kind": "matrix", "title": "A duration usually beats any calendar component", "caption": "Days since signup, hours since last purchase, days until the contract ends — each is continuous, each carries recency, and each must be computed against a reference that **was known at the row's own time**. Measuring 'days since last purchase' against the dataset's maximum date is a leak: that date is in the future for every row but one.", "cols": ["Carries", "Reference must be"], "rows": ["Days since signup", "Hours since last event", "Days until renewal", "Day of week", "Days since max(date)"], "cells": [[{"text": "tenure", "tone": "good"}, "the row's own timestamp"], [{"text": "recency", "tone": "good"}, "the previous event, shifted"], [{"text": "anticipation", "tone": "good"}, "known in advance: safe"], [{"text": "seasonality", "tone": "accent"}, "cyclical: encode it as sin and cos"], [{"text": "the future", "tone": "crit"}, "a leak: max is later than the row"]], "t": "diagram", "id": "dg-7_8-02-2"},
+
+
+
+
 
 
 
@@ -242,6 +246,10 @@ orders["tenure_at_order"] = (orders["order_ts"] - orders["signup"]).dt.days
     { t: "h2", n: "03", text: "Cyclical encoding", id: "cyclical" },
 
     {"kind": "steps", "title": "Cyclical encoding, and why a raw hour misleads", "caption": "Hour 23 and hour 0 are one unit apart in time and twenty-three apart as integers, so any model using distance sees midnight as the furthest point from 11pm. Two columns fix it.", "items": [{"label": "the problem: 23 and 0 are adjacent", "desc": "but a model reads them as maximally far apart", "tone": "crit", "code": "the bug"}, {"label": "map the hour onto a circle", "desc": "theta = 2*pi*hour/24", "tone": "accent", "code": "1"}, {"label": "emit sin(theta) and cos(theta)", "desc": "two columns, and now the distance between 23 and 0 is small", "tone": "good", "code": "2"}, {"label": "the same shape for day, month, weekday", "desc": "use the right period: 7, 12, 365 — not always 24", "tone": "violet", "code": "3"}], "t": "diagram", "id": "dg-7_8-03-0"},
+
+
+
+
 
 
 
@@ -363,6 +371,9 @@ for k in (1, 2, 3):
     },
 
     { t: "h2", n: "04", text: "Calendars, holidays and time zones", id: "calendar" },
+
+    {"kind": "trace", "title": "Four features a timestamp cannot give you by itself", "caption": "**A date does not know it is a holiday** — that is an external table, and the days *around* one often matter more than the day itself, because behaviour shifts before and after. **The time-zone row is the one that silently corrupts an hour-of-day feature:** storing in UTC is correct, and deriving “local hour” from UTC without converting puts a London evening and a Tokyo morning in the same bucket. And a fiscal calendar is another table: a quarter that starts in April is not something a timestamp implies.", "left": "feature", "codeW": 180, "vars": ["needs", "why"], "steps": [{"code": "is_holiday", "state": ["an external calendar table", "the date cannot know"], "tone": "accent"}, {"code": "days to or from a holiday", "state": ["the same table, plus arithmetic", "often more predictive than the day"], "changed": [0, 1], "tone": "violet"}, {"code": "local hour of day", "state": ["the user's time zone", "UTC alone mixes evening and morning"], "changed": [0, 1], "tone": "crit"}, {"code": "fiscal quarter", "state": ["the company's calendar", "a year that starts in April"], "changed": [0, 1], "tone": "good"}, {"code": "business days elapsed", "state": ["weekends and holidays excluded", "not a Timedelta - an offset"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_8-04-1"},
+
 
     { t: "code", lang: "python", title: "the features a timestamp alone cannot give you", code: `
 # HOLIDAYS: an external table. The date does not know it is one.

@@ -1,0 +1,157 @@
+{
+ "5.1": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "What composes across chunks, and what does not",
+         "caption": "**Peak memory is one chunk plus your accumulators, whatever the file size — but only for statistics that can be accumulated.** A sum, a count, a minimum and a group total all compose: carry a running total and add. **A median does not, because it needs every value at once**, and neither does a global sort or an exact distinct count. The practical escape for those is to make two passes, or to aggregate per chunk and combine approximately — and at that point a columnar format with predicate pushdown is usually a better answer than chunking a CSV at all.",
+         "left": "what you want", "codeW": 190,
+         "vars": ["composes across chunks?", "how"],
+         "steps": [
+          {"code": "sum, count, min, max", "state": ["yes", "carry a running accumulator"], "tone": "good"},
+          {"code": "a mean", "state": ["yes", "carry the sum AND the count"], "changed": [0, 1], "tone": "good"},
+          {"code": "group totals", "state": ["yes", "a dict per key, merged per chunk"], "changed": [0, 1], "tone": "good"},
+          {"code": "a median or a percentile", "state": ["NO", "needs every value at once"], "changed": [0, 1], "tone": "crit"},
+          {"code": "an exact distinct count", "state": ["only by holding every key", "or a sketch, approximately"], "changed": [0, 1], "tone": "crit"},
+          {"code": "a global sort", "state": ["NO", "two passes, or a different tool"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Where the Unnamed: 0 column comes from",
+         "caption": "**`to_csv` writes the index by default, as an unnamed first column — and reading that file back gives a column called `Unnamed: 0`.** That is the whole mechanism behind the most frequently asked question in pandas, and it compounds: write, read, write again and you accumulate a second one. **`index=False` unless the index carries meaning; if it does, name it** so it round-trips as a real column rather than as an accident. The same reasoning applies to `to_sql`, where a RangeIndex becomes a column in a table that will outlive the script.",
+         "cols": 3,
+         "nodes": [
+          {"id": "w", "label": "df.to_csv(path)", "sub": "the default writes the index", "tone": "accent"},
+          {"id": "f", "label": "An unnamed first column in the file", "sub": "0, 1, 2 ...", "tone": "warn"},
+          {"id": "r", "label": "read_csv names it Unnamed: 0", "sub": "it has to call it something", "tone": "crit"},
+          {"id": "a", "label": "Write again and you get two", "sub": "every round trip adds one", "tone": "crit"},
+          {"id": "x", "label": "index=False", "sub": "unless the index carries meaning", "tone": "good"},
+          {"id": "n", "label": "Or name the index first", "sub": "then it round-trips as a real column", "tone": "good"}],
+         "edges": [["w", "f"], ["f", "r"], ["r", "a"], ["a", "x"], ["x", "n"]]}}
+ ],
+
+ "5.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Line endings almost never break a read; they break other things",
+         "caption": "**pandas handles all three conventions, so a line-ending problem rarely shows up as a read failure** — it shows up as a trailing carriage return stuck to the last column's values, or a git diff claiming every line changed. **The genuine difficulty is the row below it: a quoted field containing a newline is one record spanning two physical lines**, and any tool that splits the file on newlines before parsing quotes will cut it in half. That is why a hand-rolled split-on-newline reader works until the first free-text comment field arrives.",
+         "left": "what is in the file", "codeW": 200,
+         "vars": ["on read", "the symptom"],
+         "steps": [
+          {"code": "LF line endings", "state": ["handled", "none"], "tone": "good"},
+          {"code": "CRLF line endings", "state": ["handled", "none - but a diff may show every line"], "changed": [1], "tone": "good"},
+          {"code": "a bare CR, classic Mac", "state": ["handled", "rare, and exports still exist"], "changed": [1], "tone": "accent"},
+          {"code": "split on newline by hand", "state": ["-", "a trailing \\r on the last column"], "changed": [0, 1], "tone": "warn"},
+          {"code": "a newline INSIDE a quoted field", "state": ["one record, two physical lines", "any naive splitter cuts it in half"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Five silent edits Excel makes on open, and keeps on save",
+         "caption": "**Excel is a presentation tool that saves what it displays, so every transformation it applies on open is written back on save, and none of them raises.** A CSV that has been opened and re-saved in Excel is a different file. **The first two rows destroy identifiers:** leading zeros vanish, and a sixteen-digit number becomes scientific notation with its last digits gone for good. The date row is well documented in genomics, where gene names were renamed by a spreadsheet. The defence is not detection, it is never routing a data file through Excel — but detection is what you have after the fact.",
+         "left": "what Excel does", "codeW": 190,
+         "vars": ["in", "out"],
+         "steps": [
+          {"code": "strips leading zeros", "state": ["007412", "7412 - joins now fail"], "tone": "crit"},
+          {"code": "scientific notation", "state": ["1234567890123456", "1.23457E+15 - digits gone"], "changed": [0, 1], "tone": "crit"},
+          {"code": "interprets as a date", "state": ["MAR1, SEPT2", "1-Mar, 02-Sep"], "changed": [0, 1], "tone": "crit"},
+          {"code": "reformats a date", "state": ["2026-03-01", "01/03/2026 - and locale-dependent"], "changed": [0, 1], "tone": "warn"},
+          {"code": "trims trailing spaces", "state": ["'ada '", "'ada' - usually harmless"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "5.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Three JSON layouts and one that streams",
+         "caption": "**`orient=` exists because “JSON” is three different file layouts** — an array of records, a dict of columns, or a dict keyed by index — and pandas infers the wrong one often enough that stating it is worth the characters. **The row that matters operationally is the last: JSON Lines is one object per line, so it streams.** A single enormous JSON array has to be parsed entirely before the first record is available, which is why every log and event feed uses the line-delimited form, and why `lines=True` with `chunksize=` is the only shape of JSON read that scales.",
+         "left": "the file looks like", "codeW": 190,
+         "vars": ["orient", "streams?"],
+         "steps": [
+          {"code": "a JSON array of objects", "state": ["records", "no - parsed whole"], "tone": "accent"},
+          {"code": "one object, column to list", "state": ["columns", "no"], "changed": [0, 1], "tone": "accent"},
+          {"code": "one object, index to record", "state": ["index", "no"], "changed": [0, 1], "tone": "accent"},
+          {"code": "one object per LINE", "state": ["lines=True", "YES - with chunksize"], "changed": [0, 1], "tone": "violet"},
+          {"code": "nested objects", "state": ["json_normalize(sep='_')", "flatten first"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "5.4": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four codecs on the same data, and why zstd is now the usual choice",
+         "caption": "**Snappy is the default and the fastest; zstd is 25% smaller for a small cost and has become the normal answer** — gzip and brotli buy a little more compression for much slower reads, which is the wrong trade for a file that will be read many times. The other half of the decision is partitioning, and the failure there has a name: **a partition column with high cardinality produces thousands of tiny files, and the per-file overhead then dominates every read.** Aim for row groups and files in the hundreds of megabytes, not the hundreds of kilobytes.",
+         "left": "compression", "codeW": 160,
+         "vars": ["size", "read speed", "verdict"],
+         "steps": [
+          {"code": "none", "state": ["largest", "fastest per byte", "rarely worth it"], "tone": "warn"},
+          {"code": "snappy", "state": ["700 MB", "fast", "the default"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "zstd", "state": ["520 MB", "fast", "the usual choice now"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "gzip", "state": ["480 MB", "slow", "only for interchange"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "brotli", "state": ["470 MB", "slow to write", "archival"], "changed": [0, 1, 2], "tone": "crit"}]}}
+ ],
+
+ "5.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Two filters that look complementary and together miss every NULL",
+         "caption": "**A comparison with NULL is unknown, not false, and WHERE keeps only rows that are true** — so both halves of an apparent partition drop the NULL rows, and each half looks complete. A report built from the two under-counts by exactly the number of NULLs. **`IS NULL` is the third case, always.** The aggregate row is the same fact from the other side: COUNT of a column skips NULLs while COUNT(star) does not, so the two differ by exactly the NULL count — which makes the pair a free null check rather than a redundancy.",
+         "left": "predicate", "codeW": 210,
+         "vars": ["returns rows where region is NULL?", "why"],
+         "steps": [
+          {"code": "WHERE region = 'north'", "state": ["no", "expected"], "tone": "good"},
+          {"code": "WHERE region <> 'north'", "state": ["NO - also not", "unknown is not true"], "changed": [0, 1], "tone": "crit"},
+          {"code": "the two together", "state": ["miss every NULL row", "and both look complete"], "changed": [0, 1], "tone": "crit"},
+          {"code": "... OR region IS NULL", "state": ["yes", "the only test that works on NULL"], "changed": [0, 1], "tone": "good"},
+          {"code": "COUNT(*) against COUNT(region)", "state": ["they differ by the NULL count", "a free null check"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "ALL is faster and usually right",
+         "caption": "**UNION sorts and deduplicates the combined result, which is expensive and almost never what you want when stacking partitions of one table** — the rows are already distinct, and you are paying for a sort to prove it. Reach for plain UNION only when duplicates across the inputs are genuinely possible and unwanted. **The bottom rows are the other two confusions worth having straight before writing an extract**, including the one where a NULL in a NOT IN list empties the result, which is section 02 arriving in a different costume.",
+         "left": "this against that", "codeW": 200,
+         "vars": ["the difference", "which to reach for"],
+         "steps": [
+          {"code": "UNION / UNION ALL", "state": ["a sort and dedupe, or neither", "ALL, when stacking partitions"], "tone": "violet"},
+          {"code": "WHERE / HAVING", "state": ["before grouping, or after", "WHERE unless it is an aggregate"], "changed": [0, 1], "tone": "good"},
+          {"code": "DISTINCT / GROUP BY", "state": ["dedupes, or makes groups", "equivalent with no aggregates"], "changed": [0, 1], "tone": "accent"},
+          {"code": "IN / EXISTS", "state": ["a list, or a matching row", "EXISTS - NOT IN breaks on a NULL"], "changed": [0, 1], "tone": "crit"},
+          {"code": "GROUP BY ROLLUP", "state": ["subtotals in one pass", "and GROUPING() names them"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "5.6": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The same five operations in pandas and in SQL",
+         "caption": "**Every one of these is a window function in SQL and a transform or a shift in pandas, and the translation is mechanical once the pairing is in front of you** — which matters because the right place to compute them is wherever the data already is. The two details in the notes are the ones that bite: **say ROWS rather than letting RANGE include tied peers**, and remember that LAG produces a NULL at the start of every partition, not just at the start of the table. That NULL is correct and should usually stay — no previous row is not the same fact as no change.",
+         "left": "pandas", "codeW": 220,
+         "vars": ["SQL", "the detail"],
+         "steps": [
+          {"code": "groupby(k)[v].transform('sum')", "state": ["SUM(v) OVER (PARTITION BY k)", "annotate, do not collapse"], "tone": "good"},
+          {"code": "groupby(k)[v].cumsum()", "state": ["SUM(v) OVER (... ROWS UNBOUNDED PRECEDING)", "say ROWS; RANGE includes peers"], "changed": [0, 1], "tone": "violet"},
+          {"code": "groupby(k)[v].shift(1)", "state": ["LAG(v) OVER (PARTITION BY k ORDER BY t)", "NULL at each partition's start"], "changed": [0, 1], "tone": "accent"},
+          {"code": "groupby(k)[v].rank('min')", "state": ["RANK() OVER (PARTITION BY k ORDER BY v)", "dense gives DENSE_RANK"], "changed": [0, 1], "tone": "accent"},
+          {"code": "rolling(7).mean()", "state": ["AVG(v) OVER (... 6 PRECEDING)", "6, not 7 - the current row counts"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "5.7": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Formatting a value into SQL is not risky, it is wrong",
+         "caption": "**It breaks on an apostrophe in a surname, on a percent sign in a LIKE, on a backslash — and it is the mechanism of every SQL injection.** The parameterised form is shorter and handles all of them, which is why there is no trade-off to weigh here. **Identifiers are the one genuine exception**, because a table or column name cannot be bound: validate it against an allowlist your own code owns, then format it. The value must never have come from outside. And the cost of the read itself is decided by the query, not the connection: select the columns and rows you need.",
+         "cols": 3,
+         "nodes": [
+          {"id": "f", "label": "f-string a value into the query", "sub": "the obvious thing", "tone": "crit"},
+          {"id": "b", "label": "Breaks on an apostrophe", "sub": "before anyone attacks anything", "tone": "crit"},
+          {"id": "i", "label": "And it is how injection works", "sub": "the same defect, weaponised", "tone": "crit"},
+          {"id": "p", "label": "Bind the value as a parameter", "sub": "shorter, and handles every case", "tone": "good"},
+          {"id": "d", "label": "Identifiers cannot be bound", "sub": "allowlist them, then format", "tone": "violet"},
+          {"id": "q", "label": "And the cost is in the query", "sub": "columns and rows, not the connection", "tone": "accent"}],
+         "edges": [["f", "b"], ["b", "i"], ["i", "p"], ["p", "d"], ["p", "q"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "if_exists='replace' drops the table, and takes everything with it",
+         "caption": "**It does not truncate and refill — it issues a DROP and creates a new table from the frame's dtypes**, so every index, foreign key, default, trigger and grant on the old table is gone, and the new column types are whatever pandas inferred. That is rarely what “replace” is read to mean. **Truncate-and-append inside one transaction is the operation people actually want**, and it keeps the schema that somebody designed. The index argument matters more here than in a CSV, because a RangeIndex written as a column lives in a table that outlives the script.",
+         "left": "if_exists", "codeW": 160,
+         "vars": ["what happens", "what survives"],
+         "steps": [
+          {"code": "'fail' - the default", "state": ["raises if the table exists", "everything"], "tone": "good"},
+          {"code": "'append'", "state": ["inserts rows", "everything - the usual choice"], "changed": [0, 1], "tone": "good"},
+          {"code": "'replace'", "state": ["DROP, then CREATE from dtypes", "nothing: no index, FK, grant"], "changed": [0, 1], "tone": "crit"},
+          {"code": "what you probably want", "state": ["TRUNCATE then append, in one transaction", "the schema somebody designed"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and index=False", "state": ["keeps a RangeIndex out of the table", "it is not data"], "changed": [0, 1], "tone": "accent"}]}}
+ ]
+}

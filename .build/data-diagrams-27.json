@@ -1,0 +1,152 @@
+{
+ "8.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four ways to score a feature's importance, and two of them measure the training data",
+         "caption": "**Impurity importance is computed on the rows the model learned from, so a feature it overfit to scores highly on the data it memorised.** It also favours high-cardinality columns, simply because more distinct values offer more candidate thresholds, and it splits the credit between two correlated features according to whichever the tree happened to pick first. **Permutation importance on held-out data measures what the model actually relies on when predicting** — which is the question being asked. The wrapper methods see interactions, because the model does, and cost a fit per question.",
+         "left": "method", "codeW": 180,
+         "vars": ["measured on", "sees interactions", "bias"],
+         "steps": [
+          {"code": "impurity importance", "state": ["TRAINING rows", "via the model", "favours high cardinality"], "tone": "crit"},
+          {"code": "permutation importance", "state": ["held-out rows", "via the model", "splits credit when correlated"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "L1 coefficients", "state": ["training, with a penalty", "no - linear only", "picks one of a correlated pair"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "RFE, a wrapper", "state": ["whatever you score on", "yes", "one fit per step"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "and asking 1,000 questions", "state": ["one validation set", "-", "finds what fits THAT set"], "changed": [0, 1, 2], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "The question is not which threshold, but what the model loses",
+         "caption": "**A cutoff on an importance score is a number with no connection to accuracy.** Scoring the model at each k inside cross-validation produces a curve, and the curve answers the actual question — with one rule for reading it: **differences smaller than the spread across folds are noise, so the right k is the smallest one that is not clearly worse.** The second half is the part that gets skipped: selection is a fit step. Choosing features on the full data and then cross-validating the model gives an optimistic score, because every fold's test rows helped choose the features.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "Pick a threshold on an importance score", "sub": "unrelated to accuracy", "tone": "crit"},
+          {"id": "c", "label": "Instead: score the model at each k", "sub": "inside cross-validation", "tone": "good"},
+          {"id": "r", "label": "Read the curve, not the maximum", "sub": "differences under the fold spread are noise", "tone": "violet"},
+          {"id": "s", "label": "Take the smallest k that is not worse", "sub": "fewer features, same score", "tone": "good"},
+          {"id": "l", "label": "And selection goes INSIDE the CV", "sub": "it is a fit step like any other", "tone": "crit"}],
+         "edges": [["t", "c"], ["c", "r"], ["r", "s"], ["s", "l"]]}}
+ ],
+
+ "8.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The 95% rule answers a question nobody asked",
+         "caption": "**Explained variance is a property of the columns, not of the task — so a threshold on it is a convention, not a choice.** Two better questions have computable answers. Parallel analysis asks how many components carry more variance than shuffled data does, which is a test against chance. Cross-validation asks how many the model needs, **and the grid must include no reduction at all as one of the options** — because if that wins or ties, reduction needs a reason other than accuracy: training cost, storage, or a downstream algorithm that cannot cope with collinear columns.",
+         "left": "how you choose k", "codeW": 190,
+         "vars": ["what it answers", "verdict"],
+         "steps": [
+          {"code": "95% of variance", "state": ["a property of the columns", "a convention, not a choice"], "tone": "crit"},
+          {"code": "the elbow of the scree plot", "state": ["where the curve bends", "eyeballing, and often ambiguous"], "changed": [0, 1], "tone": "warn"},
+          {"code": "parallel analysis", "state": ["more variance than shuffled data", "a test against chance"], "changed": [0, 1], "tone": "good"},
+          {"code": "cross-validate k on the task", "state": ["what the model needs", "the one that answers the question"], "changed": [0, 1], "tone": "violet"},
+          {"code": "...including k = no reduction", "state": ["whether PCA helps at all", "if it ties, you need another reason"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "When a component has no description, naming it anyway is storytelling",
+         "caption": "**A coefficient on PC2 says nothing about any column a stakeholder recognises** — the loadings say what PC2 is made of, and whether that admits a description is a fact about the data rather than a matter of effort. With three or four strongly loaded columns you can say it honestly: “mostly the engagement counts, positive”. **With the loading spread thinly over forty columns there is no honest sentence**, and inventing one is the failure mode. If an explanation per column is a requirement, selection or a regularised model on the original columns is the answer instead.",
+         "cols": 3,
+         "nodes": [
+          {"id": "p", "label": "A coefficient on PC2", "sub": "no stakeholder recognises PC2", "tone": "accent"},
+          {"id": "l", "label": "Read the loadings", "sub": "what is this component made of?", "tone": "good"},
+          {"id": "f", "label": "A few strong loadings: describable", "sub": "the three engagement counts, positive", "tone": "good"},
+          {"id": "s", "label": "Spread over forty columns: not", "sub": "and naming it anyway is storytelling", "tone": "crit"},
+          {"id": "a", "label": "Need an explanation per column?", "sub": "use selection, or ridge on the originals", "tone": "violet"}],
+         "edges": [["p", "l"], ["l", "f"], ["l", "s"], ["s", "a"]]}}
+ ],
+
+ "8.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Present for every training row, empty for every scoring row",
+         "caption": "**That asymmetry is the definition of target leakage, and it is why the training score looks wonderful.** The column was populated by the outcome — a closure reason, an investigation flag, a discharge code — so in an extract of settled cases it is always there, and at scoring time it is always empty. **The symptom set is consistent and worth memorising:** one feature dominates importance, the score is implausible for the domain, and the column's null rate in a live sample is far higher than in training. The scan finds candidates; only a manifest of what is known at prediction time decides.",
+         "left": "evidence", "codeW": 190,
+         "vars": ["in training", "at scoring time"],
+         "steps": [
+          {"code": "the leaking column", "state": ["populated for every row", "empty for every row"], "tone": "crit"},
+          {"code": "feature importance", "state": ["one feature dominates", "-"], "changed": [0], "tone": "crit"},
+          {"code": "the score", "state": ["implausible for the domain", "collapses"], "changed": [0, 1], "tone": "crit"},
+          {"code": "the null rate", "state": ["low", "far higher - the tell"], "changed": [0, 1], "tone": "violet"},
+          {"code": "but a strong LEGITIMATE feature", "state": ["also dominates", "also populated - it is fine"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "A time split passes, and the feature still carries the future",
+         "caption": "**The split is not the defence, because the feature was computed before the split and every row already holds its share of what came later.** A centred rolling mean looks forward by construction; a per-customer average over the whole extract includes rows after t; and the count of rows per entity is a clock — a customer with forty rows stayed longer than one with three, which for churn or default *is* the label. **The check is to recompute the features as-of each row's own timestamp and see which ones change.** Labels leak time too: a 90-day outcome cannot be observed for a row extracted 30 days ago.",
+         "left": "feature", "codeW": 200,
+         "vars": ["why it leaks", "the as-of version"],
+         "steps": [
+          {"code": "a centred rolling mean", "state": ["half the window is after t", "trailing window only"], "tone": "crit"},
+          {"code": "the customer's overall average", "state": ["includes rows after t", "expanding mean, shifted by one"], "changed": [0, 1], "tone": "crit"},
+          {"code": "n_orders_total, days_active", "state": ["a clock: how far the extract reaches", "count only up to t"], "changed": [0, 1], "tone": "crit"},
+          {"code": "last_seen minus first_seen", "state": ["the entity's whole lifespan", "measure it at t"], "changed": [0, 1], "tone": "crit"},
+          {"code": "'churned within 90 days'", "state": ["unobservable for recent rows", "censor: drop unclosed windows"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "8.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "How big a difference a test set of that size can actually resolve",
+         "caption": "**This table is the answer to “model B is better, 0.83 against 0.81” — with thirty positives in the test set, that gap is inside the noise and the statement is about the random seed.** The standard error falls with the square root of the positive count, which is why a rare-class problem needs far more test data than its row count suggests. **Cross-validation uses every row as a test row once and reports a mean with a spread**, and repeated cross-validation shrinks the spread further. When the interval covers both candidates, the honest report says so.",
+         "left": "positives in the test set", "codeW": 210,
+         "vars": ["standard error of AUC", "what you can resolve"],
+         "steps": [
+          {"code": "10", "state": ["about 0.09", "nothing under 0.2"], "tone": "crit"},
+          {"code": "30", "state": ["about 0.05", "0.80 against 0.90, barely"], "changed": [0, 1], "tone": "crit"},
+          {"code": "100", "state": ["about 0.03", "0.80 against 0.86"], "changed": [0, 1], "tone": "warn"},
+          {"code": "300", "state": ["about 0.016", "0.80 against 0.83"], "changed": [0, 1], "tone": "good"},
+          {"code": "1,000", "state": ["about 0.009", "0.80 against 0.82"], "changed": [0, 1], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Walk forward, and both of the arguments that matter default to wrong",
+         "caption": "**`gap` excludes the rows between train and test, and it is needed whenever a feature or a label is computed over a window** — without it the last training labels depend on events inside the test block, which is leakage that a time split appears to have prevented. **`max_train_size` turns the expanding window into a sliding one**, which is what you want when the relationship drifts and old data is actively misleading. The report comes from the last fold or the mean with its spread, and the final block of time is a holdout the tuning never touches.",
+         "left": "setting", "codeW": 190,
+         "vars": ["default", "when you need otherwise"],
+         "steps": [
+          {"code": "gap", "state": ["0 - train ends where test begins", "any windowed feature or label"], "tone": "crit"},
+          {"code": "max_train_size", "state": ["None - an expanding window", "under drift, slide instead"], "changed": [0, 1], "tone": "warn"},
+          {"code": "test_size", "state": ["derived from n_splits", "set it to a meaningful period"], "changed": [0, 1], "tone": "accent"},
+          {"code": "what to report", "state": ["-", "the last fold, or the mean and spread"], "changed": [1], "tone": "good"},
+          {"code": "and the final block", "state": ["-", "a holdout tuning never touches"], "changed": [1], "tone": "violet"}]}}
+ ],
+
+ "8.5": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "Named branches give every parameter an address",
+         "caption": "**That is the practical payoff of a ColumnTransformer: because each branch is named, the imputation strategy, the rare-category threshold and the model's regularisation all have addresses in one grid** — so a single search tunes them together, refitting every candidate per fold with nothing learned from the validation rows. **The three transform-time settings in the last box are not tidiness, they are correctness:** a validation fold will contain a region the training fold never saw and a null in a column that had none, and each of those needs a decided answer rather than an exception.",
+         "cols": 3,
+         "nodes": [
+          {"id": "c", "label": "ColumnTransformer routes by dtype or name", "sub": "one Pipeline per branch", "tone": "accent"},
+          {"id": "n", "label": "Branches are named", "sub": "so every parameter has an address", "tone": "good"},
+          {"id": "g", "label": "One grid tunes imputation AND the model", "sub": "refit per fold, together", "tone": "violet"},
+          {"id": "u", "label": "handle_unknown='ignore'", "sub": "a new category becomes all zeros", "tone": "good"},
+          {"id": "m", "label": "min_frequency folds rare categories", "sub": "so the vocabulary is fold-stable", "tone": "good"},
+          {"id": "i", "label": "A constant imputer gives nulls a level", "sub": "each one a decision, not an exception", "tone": "violet"}],
+         "edges": [["c", "n"], ["n", "g"], ["g", "u"], ["u", "m"], ["m", "i"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "A two-line test that catches a leaking transformer",
+         "caption": "**A correct transformer's output for one row depends on the fitted state and that row alone — so transforming the first ten rows must give exactly the same values as transforming everything and taking the first ten.** When it does not, the transformer is computing something from the batch: a mean, a rank, a quantile, a frequency. That will leak in cross-validation and misbehave in serving, where the batch is one row. **The contract that prevents it is the same three rules every time:** `__init__` stores arguments unchanged, `fit` learns state into trailing-underscore names, `transform` only applies it.",
+         "left": "part of the contract", "codeW": 180,
+         "vars": ["must", "because"],
+         "steps": [
+          {"code": "__init__", "state": ["store arguments unchanged", "clone rebuilds from get_params"], "tone": "good"},
+          {"code": "fit", "state": ["learn state into name_ attributes", "the trailing underscore is the convention"], "changed": [0, 1], "tone": "good"},
+          {"code": "transform", "state": ["check fitted, then apply only", "no learning at transform time"], "changed": [0, 1], "tone": "good"},
+          {"code": "the test", "state": ["transform(X[:10]) == transform(X)[:10]", "exactly, not approximately"], "changed": [0, 1], "tone": "violet"},
+          {"code": "if it fails", "state": ["something is computed per batch", "it will leak, and break in serving"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "8.7": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four failures that only exist once the model is live",
+         "caption": "**Training-serving skew is the one with a structural fix: use one fitted object on both paths and the two implementations cannot diverge.** Where a reimplementation is unavoidable, a fixed sample scored through both paths in CI catches it. **The last row is the one that quietly poisons the next model:** the rows a fraud model rejects never get a label, so retraining on approved transactions only teaches the next model that everything it approves is fine. A small random slice the model does not decide is the only way to keep an unbiased sample.",
+         "left": "failure", "codeW": 190,
+         "vars": ["symptom", "defence"],
+         "steps": [
+          {"code": "training-serving skew", "state": ["inputs the model never saw in validation", "ONE fitted object on both paths"], "tone": "crit"},
+          {"code": "drift", "state": ["the population moves", "a stability index per feature"], "changed": [0, 1], "tone": "warn"},
+          {"code": "schema change", "state": ["a new category, a renamed column", "a contract check at the door"], "changed": [0, 1], "tone": "warn"},
+          {"code": "label delay", "state": ["live accuracy is unknowable for weeks", "watch drift, not score"], "changed": [0, 1], "tone": "accent"},
+          {"code": "the feedback loop", "state": ["rejected rows never get a label", "hold back a random unscored slice"], "changed": [0, 1], "tone": "crit"}]}}
+ ]
+}

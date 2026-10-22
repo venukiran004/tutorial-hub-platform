@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Before any encoding, two facts about the column: **how many distinct values does it have, and do they have an order?** A third fact about the consumer: **is the model linear, or is it a tree?** Every method below is a point in that space, and most encoding mistakes are a method applied outside its region." },
 
     { t: "dl", items: [
@@ -185,7 +189,11 @@ pd.get_dummies(test).columns                     # region_east, region_north
 
     { t: "h2", n: "02", text: "Frequency, binary, hashing and rare labels", id: "compact" },
 
-    {"kind": "matrix", "title": "When cardinality climbs, each compact encoding gives something up", "caption": "One-hot on a thousand categories is a thousand columns of mostly zeros, most with too few ones to learn anything from. Every alternative fits by discarding something, and the question is which loss the model can afford.", "cols": ["Gives up", "Reach for it when"], "rows": ["One-hot", "Frequency encoding", "Hashing", "Rare-label grouping", "Target encoding"], "cells": [[{"text": "nothing, but n columns", "tone": "good"}, "cardinality is low"], [{"text": "identity", "tone": "warn"}, "two categories may collide on count"], [{"text": "reversibility", "tone": "warn"}, "a stream, or no fit step allowed"], [{"text": "the tail", "tone": "warn"}, "the tail is genuinely uninformative"], [{"text": "safety, without care", "tone": "crit"}, "high cardinality and a real signal"]], "t": "diagram", "id": "dg-7_1-02-1"},
+    {"kind": "matrix", "title": "When cardinality climbs, each compact encoding gives something up", "caption": "One-hot on a thousand categories is a thousand columns of mostly zeros, most with too few ones to learn anything from. Every alternative fits by discarding something, and the question is which loss the model can afford.", "cols": ["Gives up", "Reach for it when"], "rows": ["One-hot", "Frequency encoding", "Hashing", "Rare-label grouping", "Target encoding"], "cells": [[{"text": "nothing, but n columns", "tone": "good"}, "cardinality is low"], [{"text": "identity", "tone": "warn"}, "two categories may collide on count"], [{"text": "reversibility", "tone": "warn"}, "a stream, or no fit step allowed"], [{"text": "the tail", "tone": "warn"}, "the tail is genuinely uninformative"], [{"text": "safety, without care", "tone": "crit"}, "high cardinality and a real signal"]], "t": "diagram", "id": "dg-7_1-02-2"},
+
+
+
+
 
 
 
@@ -286,6 +294,9 @@ df["product_cat"] = df["product_grouped"].astype("category")
     },
 
     { t: "h2", n: "03", text: "Fitting on train, and the leak when you do not", id: "leak" },
+
+    {"kind": "trace", "title": "Every encoder but one has a fit step, and the leak scales with what it learns", "caption": "**One-hot learns only a category list, so fitting it on everything leaks a little — the test set's rare values decided what “rare” means.** Anything that learns *counts* leaks much more, because the test set's frequencies end up inside a feature column. **Hashing is the only encoder with nothing to fit**, which is exactly why it is reached for in streaming settings. And the handling of an unseen category is the other half of the same decision: a value that appears only at prediction time must land somewhere defined, which is what the rare-label bucket is for.", "left": "encoder", "codeW": 170, "vars": ["what it fits", "leak if fitted on all data"], "steps": [{"code": "one-hot", "state": ["the category list", "small - which values exist"], "tone": "warn"}, {"code": "rare-label grouping", "state": ["which values are rare", "the test set defines 'rare'"], "changed": [0, 1], "tone": "warn"}, {"code": "frequency encoding", "state": ["a count per category", "LARGE - test counts in a feature"], "changed": [0, 1], "tone": "crit"}, {"code": "target encoding", "state": ["a target mean per category", "largest - the label itself"], "changed": [0, 1], "tone": "crit"}, {"code": "hashing", "state": ["NOTHING", "none - no fit, so no leak"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-7_1-03-1"},
+
 
     { t: "p", text: "**Every encoder except hashing has a fit step: the category list, the frequency table, the kept set.** Fit it on the full data and the test rows have shaped the encoding — the test set's rare categories decided what \"rare\" means, and its frequencies are in the frequency column. The leak is small for one-hot and large for anything that uses counts." },
 

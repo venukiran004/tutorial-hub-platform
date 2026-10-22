@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Six dimensions, six tests", id: "dimensions" },
 
-    {"kind": "matrix", "title": "Six dimensions, and the one that cannot be tested from the data", "caption": "Five of these are assertions you can write against the frame in front of you. Accuracy is not: asking whether a value matches reality needs something outside the dataset — a reconciliation total, a sampled audit, a second source. A pipeline that checks only the first five can be green on data that is entirely wrong.", "cols": ["Asks", "Testable from the data"], "rows": ["Completeness", "Validity", "Consistency", "Uniqueness", "Timeliness", "Accuracy"], "cells": [["is every expected value present", {"text": "yes", "tone": "good"}], ["does it match type and domain", {"text": "yes", "tone": "good"}], ["do the values agree with each other", {"text": "yes", "tone": "good"}], ["is each entity represented once", {"text": "yes", "tone": "good"}], ["is it recent, and did it arrive", {"text": "yes", "tone": "good"}], ["does it match reality", {"text": "no: needs an outside source", "tone": "crit"}]], "t": "diagram", "id": "dg-6_3-01-0"},
+    {"kind": "matrix", "title": "Six dimensions, and the one that cannot be tested from the data", "caption": "Five of these are assertions you can write against the frame in front of you. Accuracy is not: asking whether a value matches reality needs something outside the dataset — a reconciliation total, a sampled audit, a second source. A pipeline that checks only the first five can be green on data that is entirely wrong.", "cols": ["Asks", "Testable from the data"], "rows": ["Completeness", "Validity", "Consistency", "Uniqueness", "Timeliness", "Accuracy"], "cells": [["is every expected value present", {"text": "yes", "tone": "good"}], ["does it match type and domain", {"text": "yes", "tone": "good"}], ["do the values agree with each other", {"text": "yes", "tone": "good"}], ["is each entity represented once", {"text": "yes", "tone": "good"}], ["is it recent, and did it arrive", {"text": "yes", "tone": "good"}], ["does it match reality", {"text": "no: needs an outside source", "tone": "crit"}]], "t": "diagram", "id": "dg-6_3-01-1"},
+
+
+
+
 
 
 
@@ -236,7 +240,11 @@ print(f"unmapped share by hospital: {out.groupby('hospital').canonical.apply(lam
 
     { t: "h2", n: "02", text: "Hard gates and soft gates", id: "gates" },
 
-    {"kind": "matrix", "title": "Which failures should stop the pipeline", "caption": "A duplicated primary key will corrupt every join downstream. A 0.3% rate of malformed emails will not. The gate needs both kinds of check, and which is which is a business decision — recorded in code, so it can be argued with.", "cols": ["Gate", "Because"], "rows": ["Duplicate primary key", "Row count halved", "Required field null", "0.3% bad emails", "Missing rate drifting", "A new category appears"], "cells": [[{"text": "block", "tone": "crit"}, "every downstream join multiplies"], [{"text": "block", "tone": "crit"}, "a silent upstream filter"], [{"text": "block", "tone": "crit"}, "the contract said never null"], [{"text": "log and trend", "tone": "good"}, "it harms nothing downstream"], [{"text": "log and trend", "tone": "good"}, "the trend is the signal, not the value"], [{"text": "log, and alert", "tone": "warn"}, "an encoder will meet it unseen"]], "t": "diagram", "id": "dg-6_3-02-1"},
+    {"kind": "matrix", "title": "Which failures should stop the pipeline", "caption": "A duplicated primary key will corrupt every join downstream. A 0.3% rate of malformed emails will not. The gate needs both kinds of check, and which is which is a business decision — recorded in code, so it can be argued with.", "cols": ["Gate", "Because"], "rows": ["Duplicate primary key", "Row count halved", "Required field null", "0.3% bad emails", "Missing rate drifting", "A new category appears"], "cells": [[{"text": "block", "tone": "crit"}, "every downstream join multiplies"], [{"text": "block", "tone": "crit"}, "a silent upstream filter"], [{"text": "block", "tone": "crit"}, "the contract said never null"], [{"text": "log and trend", "tone": "good"}, "it harms nothing downstream"], [{"text": "log and trend", "tone": "good"}, "the trend is the signal, not the value"], [{"text": "log, and alert", "tone": "warn"}, "an encoder will meet it unseen"]], "t": "diagram", "id": "dg-6_3-02-2"},
+
+
+
+
 
 
 
@@ -395,6 +403,10 @@ except QualityError as e:
     ]},
 
     { t: "h2", n: "03", text: "Accuracy: the one that needs the outside world", id: "accuracy" },
+
+    {"kind": "trace", "title": "Every accuracy test is a comparison with something outside the table", "caption": "**A value can pass every other check and still be wrong: an email that is well-formed, unique, present and recent can belong to somebody else.** Accuracy is agreement with reality, and reality is not in the data — so there is no self-contained test for it, only three ways of reaching outside. **The miss column is what makes reconciliation insufficient on its own:** errors that net to zero pass it perfectly, and so does a figure that is wrong in both the table and the reference because they share an upstream source.", "left": "method", "codeW": 170, "vars": ["catches", "misses"], "steps": [{"code": "reconcile a total", "state": ["lost rows, doubled rows, a unit change", "errors that net to zero"], "tone": "good"}, {"code": "compare against a source of truth", "state": ["per-record disagreement", "only where both are wrong together"], "changed": [0, 1], "tone": "good"}, {"code": "manual review of a sample", "state": ["anything, including the unexpected", "rare problems - sample size limits it"], "changed": [0, 1], "tone": "accent"}, {"code": "and the limit on all three", "state": ["-", "the reference may share the same bug"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_3-03-0"},
+
+
 
     { t: "p", text: "A value can pass every test above and be wrong. An email that is well-formed, unique, present and recent can belong to someone else. **Accuracy is agreement with reality, and reality is not in the table** — so every accuracy test is a comparison against something external." },
 

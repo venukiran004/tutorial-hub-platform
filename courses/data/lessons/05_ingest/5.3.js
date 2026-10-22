@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Trees into tables", id: "trees" },
 
-    {"kind": "matrix", "title": "A nested object becomes columns; a nested array becomes rows", "caption": "The distinction decides the **grain** of your frame. An object has fixed keys, so it flattens sideways into dotted column names. An array has no fixed length, so it can only unroll downwards — one row per element, with the parent's fields repeated on each, which is a fan-out exactly like a join.", "cols": ["Becomes", "Grain after"], "rows": ["{'user': {...}}", "{'items': [...]}", "json_normalize", "record_path=", "meta=", "A relational split"], "cells": [[{"text": "user.id, user.name", "tone": "good"}, "unchanged: one row per record"], [{"text": "one row per element", "tone": "warn"}, "one row per item: a fan-out"], ["dotted names for objects", "one row per record"], [{"text": "unrolls one array", "tone": "warn"}, "one row per element of it"], ["carries parent fields down", "repeated on every element row"], [{"text": "its own table plus a key", "tone": "accent"}, "two grains, kept apart"]], "t": "diagram", "id": "dg-5_3-01-0"},
+    {"kind": "matrix", "title": "A nested object becomes columns; a nested array becomes rows", "caption": "The distinction decides the **grain** of your frame. An object has fixed keys, so it flattens sideways into dotted column names. An array has no fixed length, so it can only unroll downwards — one row per element, with the parent's fields repeated on each, which is a fan-out exactly like a join.", "cols": ["Becomes", "Grain after"], "rows": ["{'user': {...}}", "{'items': [...]}", "json_normalize", "record_path=", "meta=", "A relational split"], "cells": [[{"text": "user.id, user.name", "tone": "good"}, "unchanged: one row per record"], [{"text": "one row per element", "tone": "warn"}, "one row per item: a fan-out"], ["dotted names for objects", "one row per record"], [{"text": "unrolls one array", "tone": "warn"}, "one row per element of it"], ["carries parent fields down", "repeated on every element row"], [{"text": "its own table plus a key", "tone": "accent"}, "two grains, kept apart"]], "t": "diagram", "id": "dg-5_3-01-1"},
+
+
+
+
 
 
 
@@ -162,7 +166,11 @@ pd.concat([lines.drop(columns="items").reset_index(drop=True),
 
     { t: "h2", n: "02", text: "Records that do not match their neighbours", id: "drift" },
 
-    {"kind": "matrix", "title": "Every JSON feed drifts, and most drift is silent", "caption": "`json_normalize` fills a missing key with NaN, which is reasonable. Everything else it handles by handing you an `object` column and no warning — so a field that changed from a string to a number still parses, and only fails three steps later when something does arithmetic on it.", "cols": ["Result", "How you find out"], "rows": ["A field is added", "A field becomes optional", "A string becomes a number", "A scalar becomes an array", "The nesting deepens"], "cells": [[{"text": "a new column", "tone": "good"}, "a column-set assertion"], [{"text": "NaN where absent", "tone": "good"}, "the missing rate moves"], [{"text": "object dtype, no warning", "tone": "crit"}, "a dtype assertion per column"], [{"text": "object dtype, no warning", "tone": "crit"}, "a type check on a sample"], [{"text": "a dict inside a column", "tone": "crit"}, "nothing, until it is used"]], "t": "diagram", "id": "dg-5_3-02-1"},
+    {"kind": "matrix", "title": "Every JSON feed drifts, and most drift is silent", "caption": "`json_normalize` fills a missing key with NaN, which is reasonable. Everything else it handles by handing you an `object` column and no warning — so a field that changed from a string to a number still parses, and only fails three steps later when something does arithmetic on it.", "cols": ["Result", "How you find out"], "rows": ["A field is added", "A field becomes optional", "A string becomes a number", "A scalar becomes an array", "The nesting deepens"], "cells": [[{"text": "a new column", "tone": "good"}, "a column-set assertion"], [{"text": "NaN where absent", "tone": "good"}, "the missing rate moves"], [{"text": "object dtype, no warning", "tone": "crit"}, "a dtype assertion per column"], [{"text": "object dtype, no warning", "tone": "crit"}, "a type check on a sample"], [{"text": "a dict inside a column", "tone": "crit"}, "nothing, until it is used"]], "t": "diagram", "id": "dg-5_3-02-2"},
+
+
+
+
 
 
 
@@ -264,6 +272,11 @@ df["meta_raw"] = [json.dumps(r.get("meta")) for r in drifted]
     ]},
 
     { t: "h2", n: "03", text: "Reading JSON files", id: "files" },
+
+    {"kind": "trace", "title": "Three JSON layouts and one that streams", "caption": "**`orient=` exists because “JSON” is three different file layouts** — an array of records, a dict of columns, or a dict keyed by index — and pandas infers the wrong one often enough that stating it is worth the characters. **The row that matters operationally is the last: JSON Lines is one object per line, so it streams.** A single enormous JSON array has to be parsed entirely before the first record is available, which is why every log and event feed uses the line-delimited form, and why `lines=True` with `chunksize=` is the only shape of JSON read that scales.", "left": "the file looks like", "codeW": 190, "vars": ["orient", "streams?"], "steps": [{"code": "a JSON array of objects", "state": ["records", "no - parsed whole"], "tone": "accent"}, {"code": "one object, column to list", "state": ["columns", "no"], "changed": [0, 1], "tone": "accent"}, {"code": "one object, index to record", "state": ["index", "no"], "changed": [0, 1], "tone": "accent"}, {"code": "one object per LINE", "state": ["lines=True", "YES - with chunksize"], "changed": [0, 1], "tone": "violet"}, {"code": "nested objects", "state": ["json_normalize(sep='_')", "flatten first"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_3-03-0"},
+
+
+
 
     { t: "code", lang: "python", title: "read_json, JSON Lines, and streaming a large file", code: `
 import io

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "OVER: an aggregate that does not collapse", id: "over" },
 
-    {"kind": "compare", "title": "GROUP BY collapses; OVER does not", "caption": "They compute the same statistic. `OVER` leaves every row in place with its group's value attached, which is why it is the SQL equivalent of `groupby().transform()` — and the tool for every 'compared to its group' feature.", "columns": [{"title": "GROUP BY customer_id", "tone": "accent", "items": ["One row per customer", "The detail rows are gone", "pandas: groupby().agg()", "To compare a row with it, join back"]}, {"title": "OVER (PARTITION BY customer_id)", "tone": "good", "items": ["Every row kept", "The group value attached to each", "pandas: groupby().transform()", "The comparison is one more column"]}], "t": "diagram", "id": "dg-5_6-01-1"},
+    {"kind": "compare", "title": "GROUP BY collapses; OVER does not", "caption": "They compute the same statistic. `OVER` leaves every row in place with its group's value attached, which is why it is the SQL equivalent of `groupby().transform()` — and the tool for every 'compared to its group' feature.", "columns": [{"title": "GROUP BY customer_id", "tone": "accent", "items": ["One row per customer", "The detail rows are gone", "pandas: groupby().agg()", "To compare a row with it, join back"]}, {"title": "OVER (PARTITION BY customer_id)", "tone": "good", "items": ["Every row kept", "The group value attached to each", "pandas: groupby().transform()", "The comparison is one more column"]}], "t": "diagram", "id": "dg-5_6-01-2"},
+
+
+
+
 
 
 
@@ -177,6 +181,10 @@ GROUP BY region;
 
 
 
+
+
+
+
     { t: "code", lang: "sql", title: "ROW_NUMBER, RANK, DENSE_RANK, and the deduplication they enable", code: `
 -- THREE RANKING FUNCTIONS, differing only on ties.
 -- scores: 90, 85, 85, 70
@@ -284,6 +292,11 @@ FROM     orders;
     ]},
 
     { t: "h2", n: "03", text: "LAG, LEAD and the calculations that need the previous row", id: "lag" },
+
+    {"kind": "trace", "title": "The same five operations in pandas and in SQL", "caption": "**Every one of these is a window function in SQL and a transform or a shift in pandas, and the translation is mechanical once the pairing is in front of you** — which matters because the right place to compute them is wherever the data already is. The two details in the notes are the ones that bite: **say ROWS rather than letting RANGE include tied peers**, and remember that LAG produces a NULL at the start of every partition, not just at the start of the table. That NULL is correct and should usually stay — no previous row is not the same fact as no change.", "left": "pandas", "codeW": 220, "vars": ["SQL", "the detail"], "steps": [{"code": "groupby(k)[v].transform('sum')", "state": ["SUM(v) OVER (PARTITION BY k)", "annotate, do not collapse"], "tone": "good"}, {"code": "groupby(k)[v].cumsum()", "state": ["SUM(v) OVER (... ROWS UNBOUNDED PRECEDING)", "say ROWS; RANGE includes peers"], "changed": [0, 1], "tone": "violet"}, {"code": "groupby(k)[v].shift(1)", "state": ["LAG(v) OVER (PARTITION BY k ORDER BY t)", "NULL at each partition's start"], "changed": [0, 1], "tone": "accent"}, {"code": "groupby(k)[v].rank('min')", "state": ["RANK() OVER (PARTITION BY k ORDER BY v)", "dense gives DENSE_RANK"], "changed": [0, 1], "tone": "accent"}, {"code": "rolling(7).mean()", "state": ["AVG(v) OVER (... 6 PRECEDING)", "6, not 7 - the current row counts"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_6-03-1"},
+
+
+
 
     { t: "code", lang: "sql", title: "offsets, gaps, and sessionising in SQL", code: `
 -- LAG: the value from n rows BEFORE, in the window's order.

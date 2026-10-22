@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Skew, and what it does to a model", id: "skew" },
 
-    {"kind": "matrix", "title": "The transform family is one knob: the power of x", "caption": "Log is the limit as the power goes to zero; square root is power ½; Box-Cox fits the power from the data. They differ in what input they accept and how hard they compress the tail — which is the whole basis for choosing between them.", "cols": ["Accepts", "Compression"], "rows": ["log(x)", "log1p(x)", "sqrt(x)", "Box-Cox", "Yeo-Johnson"], "cells": [[{"text": "x > 0", "tone": "warn"}, "strongest: a 10x gap becomes a constant"], [{"text": "x >= 0", "tone": "good"}, "the same, and zeros survive"], [{"text": "x >= 0", "tone": "good"}, "mild"], [{"text": "x > 0", "tone": "warn"}, "fitted: lambda chosen from the data"], [{"text": "any sign", "tone": "good"}, "fitted; the default when sign varies"]], "t": "diagram", "id": "dg-7_5-01-0"},
+    {"kind": "matrix", "title": "The transform family is one knob: the power of x", "caption": "Log is the limit as the power goes to zero; square root is power ½; Box-Cox fits the power from the data. They differ in what input they accept and how hard they compress the tail — which is the whole basis for choosing between them.", "cols": ["Accepts", "Compression"], "rows": ["log(x)", "log1p(x)", "sqrt(x)", "Box-Cox", "Yeo-Johnson"], "cells": [[{"text": "x > 0", "tone": "warn"}, "strongest: a 10x gap becomes a constant"], [{"text": "x >= 0", "tone": "good"}, "the same, and zeros survive"], [{"text": "x >= 0", "tone": "good"}, "mild"], [{"text": "x > 0", "tone": "warn"}, "fitted: lambda chosen from the data"], [{"text": "any sign", "tone": "good"}, "fitted; the default when sign varies"]], "t": "diagram", "id": "dg-7_5-01-2"},
+
+
+
+
 
 
 
@@ -142,6 +146,9 @@ pd.Series(resid_log).skew()                                # 0.02 -- symmetric
 
     { t: "h2", n: "02", text: "The transforms", id: "transforms" },
 
+    {"kind": "trace", "title": "All of them are a power of x; the differences are input and strength", "caption": "**Log is the limiting case as the power goes to zero, square root is power one half, and Box-Cox fits the power from the data** — which makes the family one idea rather than five tricks. The practical decisions are in the first two columns. **A column containing zeros cannot take a plain log, and log1p is the fix rather than an arbitrary offset; a column with negative values needs Yeo-Johnson**, which fits a power per sign. And the fitted transforms have a parameter learned on the training set, so they belong inside the pipeline.", "left": "transform", "codeW": 160, "vars": ["accepts", "compression", "fitted?"], "steps": [{"code": "log(x)", "state": ["x above 0 only", "strong, multiplicative", "no"], "tone": "good"}, {"code": "log1p(x)", "state": ["x of 0 allowed", "strong; weak below 1", "no"], "changed": [0, 1, 2], "tone": "good"}, {"code": "sqrt(x)", "state": ["x of 0 allowed", "mild - variance stabilising", "no"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "Box-Cox", "state": ["x above 0 only", "a fitted power", "YES - on train"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "Yeo-Johnson", "state": ["any sign", "a fitted power per sign", "YES - on train"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-7_5-02-0"},
+
+
     { t: "p", text: "**Every transform in this family is a power of x.** Log is the limit as the power goes to zero; square root is power ½; Box-Cox fits the power from the data. The differences are in what input they accept and how hard they compress the tail." },
 
     { t: "code", lang: "python", title: "log, sqrt, Box-Cox and Yeo-Johnson — inputs, outputs, and choosing", code: `
@@ -260,7 +267,11 @@ suggest(rng.normal(size=n))                 # "none -- roughly symmetric"
 
     { t: "h2", n: "03", text: "Retransformation bias", id: "bias" },
 
-    {"kind": "steps", "title": "Retransformation bias: exp of the mean is not the mean", "caption": "Model a log target, predict, exponentiate, and the answer is systematically **too low** — not sometimes, always. The prediction on the log scale is the mean of the logs, which back-transforms to roughly the median rather than the mean. On a revenue forecast that is a persistent shortfall nobody can explain.", "items": [{"label": "Fit on log(y)", "desc": "the model is unbiased on the log scale", "code": "1", "tone": "accent"}, {"label": "Predict: E[log y]", "desc": "the mean of the logs", "code": "2", "tone": "accent"}, {"label": "exp(E[log y])", "desc": "back-transforms to around the median", "code": "3", "tone": "warn"}, {"label": "E[y] is larger, always", "desc": "by Jensen's inequality, for any spread", "code": "bias", "tone": "crit"}, {"label": "Correct it, or model y directly", "desc": "a smearing estimate, or a GLM with a log link", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-7_5-03-1"},
+    {"kind": "steps", "title": "Retransformation bias: exp of the mean is not the mean", "caption": "Model a log target, predict, exponentiate, and the answer is systematically **too low** — not sometimes, always. The prediction on the log scale is the mean of the logs, which back-transforms to roughly the median rather than the mean. On a revenue forecast that is a persistent shortfall nobody can explain.", "items": [{"label": "Fit on log(y)", "desc": "the model is unbiased on the log scale", "code": "1", "tone": "accent"}, {"label": "Predict: E[log y]", "desc": "the mean of the logs", "code": "2", "tone": "accent"}, {"label": "exp(E[log y])", "desc": "back-transforms to around the median", "code": "3", "tone": "warn"}, {"label": "E[y] is larger, always", "desc": "by Jensen's inequality, for any spread", "code": "bias", "tone": "crit"}, {"label": "Correct it, or model y directly", "desc": "a smearing estimate, or a GLM with a log link", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-7_5-03-3"},
+
+
+
+
 
 
 
@@ -366,6 +377,9 @@ def smear_predict(pred_t, resid_t, inverse):
     ]},
 
     { t: "h2", n: "04", text: "When skew is the signal", id: "signal" },
+
+    {"kind": "trace", "title": "Three reasons not to transform a skewed column", "caption": "**For a tree, a monotonic transform leaves every split unchanged — so logging a feature for a gradient booster is work with no effect**, while logging its *target* changes the loss being minimised, which is a real decision rather than a no-op. **The second row is the one that costs accuracy:** in fraud, the few transactions over 10,000 are the entire point, and log compresses 10,000 and 100,000 to 9.2 and 11.5 — a difference of 2.3 on a scale where typical rows already differ by more than that. The tail was the signal, and the transform removed it.", "left": "situation", "codeW": 190, "vars": ["effect of logging the feature"], "steps": [{"code": "a tree or gradient booster", "state": ["none - splits are order-based"], "tone": "warn"}, {"code": "...but logging the TARGET", "state": ["changes the loss being minimised"], "changed": [0], "tone": "violet"}, {"code": "the tail IS the signal, as in fraud", "state": ["10,000 and 100,000 become 9.2 and 11.5"], "changed": [0], "tone": "crit"}, {"code": "a feature with a hard rule at a value", "state": ["the threshold stops being a round number"], "changed": [0], "tone": "crit"}, {"code": "a linear model on amounts", "state": ["genuinely helps - the usual case"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_5-04-1"},
+
 
     { t: "code", lang: "python", title: "not every skewed column should be transformed", code: `
 # 1. TREES DO NOT CARE. A monotonic transform leaves every split

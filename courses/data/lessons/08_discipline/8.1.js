@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "Feature selection asks which columns to keep. **The three families differ in whether they consult a model at all, and if so, how.** Filters score each feature alone. Wrappers train models on subsets and compare. Embedded methods let the model's own fitting decide." },
 
     { t: "dl", items: [
@@ -167,6 +171,8 @@ cv(gb, ["linear", "u_shape", "inter_a", "inter_b"])            # 0.87  the truth
 
     { t: "h2", n: "02", text: "Wrappers and embedded methods", id: "model" },
 
+    {"kind": "trace", "title": "Four ways to score a feature's importance, and two of them measure the training data", "caption": "**Impurity importance is computed on the rows the model learned from, so a feature it overfit to scores highly on the data it memorised.** It also favours high-cardinality columns, simply because more distinct values offer more candidate thresholds, and it splits the credit between two correlated features according to whichever the tree happened to pick first. **Permutation importance on held-out data measures what the model actually relies on when predicting** — which is the question being asked. The wrapper methods see interactions, because the model does, and cost a fit per question.", "left": "method", "codeW": 180, "vars": ["measured on", "sees interactions", "bias"], "steps": [{"code": "impurity importance", "state": ["TRAINING rows", "via the model", "favours high cardinality"], "tone": "crit"}, {"code": "permutation importance", "state": ["held-out rows", "via the model", "splits credit when correlated"], "changed": [0, 1, 2], "tone": "good"}, {"code": "L1 coefficients", "state": ["training, with a penalty", "no - linear only", "picks one of a correlated pair"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "RFE, a wrapper", "state": ["whatever you score on", "yes", "one fit per step"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "and asking 1,000 questions", "state": ["one validation set", "-", "finds what fits THAT set"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-8_1-02-1"},
+
     { t: "p", text: "**A wrapper asks the model directly: does the score go up with this feature or without it?** It sees interactions because the model does. The cost is a fit per question, and the risk is that a thousand questions asked of one validation set will find features that only work on that set." },
 
     { t: "code", lang: "python", title: "RFE, L1, and the two kinds of tree importance", code: `
@@ -274,7 +280,11 @@ pd.Series(pi.importances_mean, index=X.columns).sort_values(ascending=False).rou
 
     { t: "h2", n: "03", text: "The selection leak", id: "leak" },
 
-    {"kind": "steps", "title": "The selection leak", "caption": "Choosing features by their correlation with the target, over the whole dataset, before splitting, is leakage — and a particularly convincing kind, because the selected features really do predict well on this data. With more columns than rows you can select pure noise and get a strong cross-validated score from it.", "items": [{"label": "Score every feature against the target", "desc": "on all the data, before splitting", "code": "1", "tone": "warn"}, {"label": "Keep the best k", "desc": "the choice was informed by the test rows", "code": "2", "tone": "crit"}, {"label": "Then split and cross-validate", "desc": "every fold's features were chosen using that fold", "code": "3", "tone": "crit"}, {"label": "The score is inflated", "desc": "noise columns survive if they happen to fit", "code": "bad", "tone": "crit"}, {"label": "Selection inside the pipeline", "desc": "refitted per fold, so each fold chooses from its own train", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-8_1-03-1"},
+    {"kind": "steps", "title": "The selection leak", "caption": "Choosing features by their correlation with the target, over the whole dataset, before splitting, is leakage — and a particularly convincing kind, because the selected features really do predict well on this data. With more columns than rows you can select pure noise and get a strong cross-validated score from it.", "items": [{"label": "Score every feature against the target", "desc": "on all the data, before splitting", "code": "1", "tone": "warn"}, {"label": "Keep the best k", "desc": "the choice was informed by the test rows", "code": "2", "tone": "crit"}, {"label": "Then split and cross-validate", "desc": "every fold's features were chosen using that fold", "code": "3", "tone": "crit"}, {"label": "The score is inflated", "desc": "noise columns survive if they happen to fit", "code": "bad", "tone": "crit"}, {"label": "Selection inside the pipeline", "desc": "refitted per fold, so each fold chooses from its own train", "code": "fix", "tone": "good"}], "t": "diagram", "id": "dg-8_1-03-3"},
+
+
+
+
 
 
 
@@ -348,6 +358,8 @@ cross_val_score(pipe, X_noise, y_shuf, cv=5, scoring="roc_auc").mean()    # ~0.5
     },
 
     { t: "h2", n: "04", text: "How many to keep", id: "howmany" },
+
+    {"kind": "flow", "title": "The question is not which threshold, but what the model loses", "caption": "**A cutoff on an importance score is a number with no connection to accuracy.** Scoring the model at each k inside cross-validation produces a curve, and the curve answers the actual question — with one rule for reading it: **differences smaller than the spread across folds are noise, so the right k is the smallest one that is not clearly worse.** The second half is the part that gets skipped: selection is a fit step. Choosing features on the full data and then cross-validating the model gives an optimistic score, because every fold's test rows helped choose the features.", "cols": 3, "nodes": [{"id": "t", "label": "Pick a threshold on an importance score", "sub": "unrelated to accuracy", "tone": "crit"}, {"id": "c", "label": "Instead: score the model at each k", "sub": "inside cross-validation", "tone": "good"}, {"id": "r", "label": "Read the curve, not the maximum", "sub": "differences under the fold spread are noise", "tone": "violet"}, {"id": "s", "label": "Take the smallest k that is not worse", "sub": "fewer features, same score", "tone": "good"}, {"id": "l", "label": "And selection goes INSIDE the CV", "sub": "it is a fit step like any other", "tone": "crit"}], "edges": [["t", "c"], ["c", "r"], ["r", "s"], ["s", "l"]], "t": "diagram", "id": "dg-8_1-04-2"},
 
     { t: "code", lang: "python", title: "stability across folds, and the curve that decides k", code: `
 # THE QUESTION IS NOT "WHICH THRESHOLD" BUT "WHAT DOES THE MODEL LOSE".

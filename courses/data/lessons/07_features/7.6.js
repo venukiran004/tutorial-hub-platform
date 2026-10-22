@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three ways to cut, and what each assumes", id: "cuts" },
 
-    {"kind": "matrix", "title": "Three ways to cut, and what each one assumes", "caption": "The method chooses what the bins are *for*. Equal-width gives edges a person can read and, on skewed data, bins that are empty or hold almost everything. Equal-frequency guarantees population and produces edges at arbitrary-looking values. Supervised bins use the target, so they must be fitted on training data only.", "cols": ["Produces", "Assumes"], "rows": ["pd.cut (equal width)", "pd.qcut (equal frequency)", "Supervised bins", "Binarisation", "Domain edges"], "cells": [[{"text": "readable edges", "tone": "good"}, "the range is roughly uniform"], [{"text": "equal counts", "tone": "good"}, "nothing; edges look arbitrary"], [{"text": "maximum separation", "tone": "warn"}, "a fit step: train only"], [{"text": "one cut", "tone": "accent"}, "the threshold means something"], [{"text": "edges someone can defend", "tone": "good"}, "someone knows the domain"]], "t": "diagram", "id": "dg-7_6-01-0"},
+    {"kind": "matrix", "title": "Three ways to cut, and what each one assumes", "caption": "The method chooses what the bins are *for*. Equal-width gives edges a person can read and, on skewed data, bins that are empty or hold almost everything. Equal-frequency guarantees population and produces edges at arbitrary-looking values. Supervised bins use the target, so they must be fitted on training data only.", "cols": ["Produces", "Assumes"], "rows": ["pd.cut (equal width)", "pd.qcut (equal frequency)", "Supervised bins", "Binarisation", "Domain edges"], "cells": [[{"text": "readable edges", "tone": "good"}, "the range is roughly uniform"], [{"text": "equal counts", "tone": "good"}, "nothing; edges look arbitrary"], [{"text": "maximum separation", "tone": "warn"}, "a fit step: train only"], [{"text": "one cut", "tone": "accent"}, "the threshold means something"], [{"text": "edges someone can defend", "tone": "good"}, "someone knows the domain"]], "t": "diagram", "id": "dg-7_6-01-1"},
+
+
+
+
 
 
 
@@ -204,7 +208,11 @@ df.groupby("bin_s", observed=True)["y"].agg(["size", "mean"])
 
     { t: "h2", n: "02", text: "What binning buys, and from whom", id: "buys" },
 
-    {"kind": "compare", "title": "Same operation, opposite effect", "caption": "For a linear model, binning turns one coefficient into one per bin — a step function that can follow any shape. For a tree, binning removes the ability to split anywhere inside an interval: it can now only cut at your edges. Which model is downstream decides whether this is a feature or a handicap.", "columns": [{"title": "Linear model", "tone": "good", "items": ["One coefficient becomes one per bin", "A step function, any shape", "Non-linearity without a transform", "Buys flexibility"]}, {"title": "Tree model", "tone": "crit", "items": ["It could already split anywhere", "Now it can only cut at your edges", "Resolution inside a bin is gone", "Costs flexibility"]}], "t": "diagram", "id": "dg-7_6-02-1"},
+    {"kind": "compare", "title": "Same operation, opposite effect", "caption": "For a linear model, binning turns one coefficient into one per bin — a step function that can follow any shape. For a tree, binning removes the ability to split anywhere inside an interval: it can now only cut at your edges. Which model is downstream decides whether this is a feature or a handicap.", "columns": [{"title": "Linear model", "tone": "good", "items": ["One coefficient becomes one per bin", "A step function, any shape", "Non-linearity without a transform", "Buys flexibility"]}, {"title": "Tree model", "tone": "crit", "items": ["It could already split anywhere", "Now it can only cut at your edges", "Resolution inside a bin is gone", "Costs flexibility"]}], "t": "diagram", "id": "dg-7_6-02-2"},
+
+
+
+
 
     { t: "p", text: "**For a linear model, binning turns one coefficient into one per bin — a step function that can follow any shape.** For a tree, binning removes the ability to split anywhere in the interval — it can only cut at your edges. Same operation, opposite effect, and which model is downstream decides whether it is a feature or a handicap." },
 
@@ -282,6 +290,9 @@ for k in (3, 5, 8, 12, 20):
     },
 
     { t: "h2", n: "03", text: "Binarisation: one cut", id: "binarise" },
+
+    {"kind": "trace", "title": "One cut is honest when the world already made the cut", "caption": "**Binarising throws away almost everything, which is the right trade only when the threshold exists outside your model** — eighteen for adulthood, zero for a balance, ninety days for a default, the free-shipping amount. The world has already made the decision discrete and the model should encode it, not rediscover it. **Everywhere else, one cut at a number somebody guessed is the worst of the binning options:** it loses the ordering within each side, cannot represent a non-monotonic relationship any better than a line can, and hides the arbitrariness of the threshold behind a tidy 0 and 1.", "left": "situation", "codeW": 200, "vars": ["binarise?", "why"], "steps": [{"code": "age >= 18, balance < 0, overdue > 90", "state": ["yes", "the rule exists in the world"], "tone": "good"}, {"code": "amount > the free-shipping threshold", "state": ["yes", "behaviour genuinely changes there"], "changed": [0, 1], "tone": "good"}, {"code": "a cut at a round number you chose", "state": ["no", "arbitrary, and it hides that"], "changed": [0, 1], "tone": "crit"}, {"code": "a U-shaped relationship", "state": ["no", "use quantile bins and look"], "changed": [0, 1], "tone": "crit"}, {"code": "for a tree model", "state": ["rarely", "it can find the split itself"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-7_6-03-0"},
+
 
     { t: "code", lang: "python", title: "a single threshold, and the cases where it is the right feature", code: `
 # BINARISATION: above or below one value.

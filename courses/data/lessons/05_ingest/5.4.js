@@ -30,6 +30,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "A row-oriented file stores record 1's fields, then record 2's, and so on. **To read one column you must read every byte of every row and discard most of it.** A columnar file stores all of column A, then all of column B — so a query on two columns of fifty reads two fiftieths of the file." },
 
     { t: "dl", items: [
@@ -158,7 +162,11 @@ os.path.getsize("typed.parquet") / 1e6     # smaller still with category
 
     { t: "h2", n: "02", text: "Row groups, statistics and pushdown", id: "pushdown" },
 
-    {"kind": "steps", "title": "How a filter skips most of the file without reading it", "caption": "A Parquet file is divided horizontally into row groups, and each row group records the min and max of every column. The reader compares the filter against those statistics before touching the data — so a query on a date range reads only the row groups whose range overlaps it. Sorting the file by the column you filter on is what makes this effective.", "items": [{"label": "Read the footer", "desc": "the schema and every row group's statistics", "code": "1", "tone": "accent"}, {"label": "Compare the filter to min and max", "desc": "per row group, per column, with no data read", "code": "2", "tone": "good"}, {"label": "Skip the groups that cannot match", "desc": "a date range may skip 99% of the file", "code": "3", "tone": "good"}, {"label": "Read only the needed columns", "desc": "columnar: the other columns are never touched", "code": "4", "tone": "violet"}, {"label": "Unsorted data defeats it", "desc": "every group's range covers everything, so none can be skipped", "code": "note", "tone": "crit"}], "t": "diagram", "id": "dg-5_4-02-1"},
+    {"kind": "steps", "title": "How a filter skips most of the file without reading it", "caption": "A Parquet file is divided horizontally into row groups, and each row group records the min and max of every column. The reader compares the filter against those statistics before touching the data — so a query on a date range reads only the row groups whose range overlaps it. Sorting the file by the column you filter on is what makes this effective.", "items": [{"label": "Read the footer", "desc": "the schema and every row group's statistics", "code": "1", "tone": "accent"}, {"label": "Compare the filter to min and max", "desc": "per row group, per column, with no data read", "code": "2", "tone": "good"}, {"label": "Skip the groups that cannot match", "desc": "a date range may skip 99% of the file", "code": "3", "tone": "good"}, {"label": "Read only the needed columns", "desc": "columnar: the other columns are never touched", "code": "4", "tone": "violet"}, {"label": "Unsorted data defeats it", "desc": "every group's range covers everything, so none can be skipped", "code": "note", "tone": "crit"}], "t": "diagram", "id": "dg-5_4-02-2"},
+
+
+
+
 
 
 
@@ -250,6 +258,11 @@ pq.read_schema("data.parquet")
     ]},
 
     { t: "h2", n: "03", text: "Compression and partitioning", id: "layout" },
+
+    {"kind": "trace", "title": "Four codecs on the same data, and why zstd is now the usual choice", "caption": "**Snappy is the default and the fastest; zstd is 25% smaller for a small cost and has become the normal answer** — gzip and brotli buy a little more compression for much slower reads, which is the wrong trade for a file that will be read many times. The other half of the decision is partitioning, and the failure there has a name: **a partition column with high cardinality produces thousands of tiny files, and the per-file overhead then dominates every read.** Aim for row groups and files in the hundreds of megabytes, not the hundreds of kilobytes.", "left": "compression", "codeW": 160, "vars": ["size", "read speed", "verdict"], "steps": [{"code": "none", "state": ["largest", "fastest per byte", "rarely worth it"], "tone": "warn"}, {"code": "snappy", "state": ["700 MB", "fast", "the default"], "changed": [0, 1, 2], "tone": "good"}, {"code": "zstd", "state": ["520 MB", "fast", "the usual choice now"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "gzip", "state": ["480 MB", "slow", "only for interchange"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "brotli", "state": ["470 MB", "slow to write", "archival"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-5_4-03-1"},
+
+
+
 
     { t: "code", lang: "python", title: "codecs, partitioned datasets, and the small-files problem", code: `
 # COMPRESSION CODECS: the default is snappy. The alternatives trade

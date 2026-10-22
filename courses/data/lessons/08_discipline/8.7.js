@@ -82,7 +82,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The catalogue", id: "catalogue" },
 
-    {"kind": "matrix", "title": "Each mistake has a signature you can read without running anything", "caption": "The point of a signature is that the review is cheap: a line, a pattern or an omission that is visible in the diff, with a one-line check that confirms or clears it. Reading in a fixed order matters because the earliest mistake invalidates everything measured after it.", "cols": ["Signature", "One-line check"], "rows": ["Fit before split", "No stratification", "Unshifted window", "Encoder fitted on all", "Metric on the wrong class", "Threshold at 0.5"], "cells": [[{"text": "scaler.fit(X) above the split", "tone": "crit"}, "where is the split, in line order"], [{"text": "train_test_split with no stratify", "tone": "warn"}, "class rates in each part"], [{"text": "rolling() with no shift()", "tone": "crit"}, "search the diff for shift"], [{"text": "fit on the full frame", "tone": "crit"}, "is it inside the pipeline"], [{"text": "pos_label left default", "tone": "warn"}, "which class is 1"], [{"text": "predict() not predict_proba", "tone": "warn"}, "was a threshold ever chosen"]], "t": "diagram", "id": "dg-8_7-02-0"},
+    {"kind": "matrix", "title": "Each mistake has a signature you can read without running anything", "caption": "The point of a signature is that the review is cheap: a line, a pattern or an omission that is visible in the diff, with a one-line check that confirms or clears it. Reading in a fixed order matters because the earliest mistake invalidates everything measured after it.", "cols": ["Signature", "One-line check"], "rows": ["Fit before split", "No stratification", "Unshifted window", "Encoder fitted on all", "Metric on the wrong class", "Threshold at 0.5"], "cells": [[{"text": "scaler.fit(X) above the split", "tone": "crit"}, "where is the split, in line order"], [{"text": "train_test_split with no stratify", "tone": "warn"}, "class rates in each part"], [{"text": "rolling() with no shift()", "tone": "crit"}, "search the diff for shift"], [{"text": "fit on the full frame", "tone": "crit"}, "is it inside the pipeline"], [{"text": "pos_label left default", "tone": "warn"}, "which class is 1"], [{"text": "predict() not predict_proba", "tone": "warn"}, "was a threshold ever chosen"]], "t": "diagram", "id": "dg-8_7-02-1"},
+
+
+
+
 
 
 
@@ -252,6 +256,8 @@ def review(df, y, build_features, pipeline, time_col=None, group_col=None, seed=
 
     { t: "h2", n: "04", text: "After shipping", id: "after" },
 
+    {"kind": "trace", "title": "Four failures that only exist once the model is live", "caption": "**Training-serving skew is the one with a structural fix: use one fitted object on both paths and the two implementations cannot diverge.** Where a reimplementation is unavoidable, a fixed sample scored through both paths in CI catches it. **The last row is the one that quietly poisons the next model:** the rows a fraud model rejects never get a label, so retraining on approved transactions only teaches the next model that everything it approves is fine. A small random slice the model does not decide is the only way to keep an unbiased sample.", "left": "failure", "codeW": 190, "vars": ["symptom", "defence"], "steps": [{"code": "training-serving skew", "state": ["inputs the model never saw in validation", "ONE fitted object on both paths"], "tone": "crit"}, {"code": "drift", "state": ["the population moves", "a stability index per feature"], "changed": [0, 1], "tone": "warn"}, {"code": "schema change", "state": ["a new category, a renamed column", "a contract check at the door"], "changed": [0, 1], "tone": "warn"}, {"code": "label delay", "state": ["live accuracy is unknowable for weeks", "watch drift, not score"], "changed": [0, 1], "tone": "accent"}, {"code": "the feedback loop", "state": ["rejected rows never get a label", "hold back a random unscored slice"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_7-04-0"},
+
     { t: "p", text: "Some mistakes exist only once the model is live. **Training–serving skew**: the serving code computes a feature differently — a different null handling, a different timezone, a reimplemented scaler — and the model sees inputs it was never validated on; one fitted object for both paths (8.5) removes it, and a fixed-sample comparison in CI catches it when reimplementation is unavoidable. **Drift**: the population moves. **Schema change**: a new category, a renamed column, a unit switched from pence to pounds, arriving without an error. **Feedback**: the model's decisions change the data it will be retrained on — rows it declined never get a label." },
 
     { t: "code", lang: "python", title: "A stability index per feature and a contract at the door",
@@ -297,7 +303,11 @@ def check_contract(df, contract):
 
     { t: "h2", n: "05", text: "Reproducibility", id: "repro" },
 
-    {"kind": "matrix", "title": "Reproducibility: what must be pinned", "caption": "A result nobody can reproduce is not a result. Each of these has silently changed an answer: a library minor version altering a default, an unordered groupby changing a float sum, a seed that was never set for one of three generators.", "cols": ["Pin", "What moves if you do not"], "rows": ["Library versions", "Random seeds", "Row order", "Data snapshot", "Feature code", "The environment"], "cells": [[{"text": "a lock file", "tone": "good"}, "a default changes under you"], [{"text": "all of them", "tone": "good"}, "numpy, python, and the framework"], [{"text": "sort before you reduce", "tone": "warn"}, "float sums differ by order"], [{"text": "a date or a version", "tone": "good"}, "the table was updated since"], [{"text": "one fitted object", "tone": "good"}, "training-serving skew"], [{"text": "a container or a lock", "tone": "accent"}, "the BLAS library changes a result"]], "t": "diagram", "id": "dg-8_7-05-1"},
+    {"kind": "matrix", "title": "Reproducibility: what must be pinned", "caption": "A result nobody can reproduce is not a result. Each of these has silently changed an answer: a library minor version altering a default, an unordered groupby changing a float sum, a seed that was never set for one of three generators.", "cols": ["Pin", "What moves if you do not"], "rows": ["Library versions", "Random seeds", "Row order", "Data snapshot", "Feature code", "The environment"], "cells": [[{"text": "a lock file", "tone": "good"}, "a default changes under you"], [{"text": "all of them", "tone": "good"}, "numpy, python, and the framework"], [{"text": "sort before you reduce", "tone": "warn"}, "float sums differ by order"], [{"text": "a date or a version", "tone": "good"}, "the table was updated since"], [{"text": "one fitted object", "tone": "good"}, "training-serving skew"], [{"text": "a container or a lock", "tone": "accent"}, "the BLAS library changes a result"]], "t": "diagram", "id": "dg-8_7-05-2"},
+
+
+
+
 
 
 
