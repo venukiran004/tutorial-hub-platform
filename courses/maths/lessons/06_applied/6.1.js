@@ -27,6 +27,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "An A/B test is a randomised experiment, and **most of what goes wrong happens before any data is analysed.** Each stage has a characteristic failure that produces plausible-looking output, and analysis — the part people focus on — is the last and least dangerous." },
 
     { t: "dl", items: [
@@ -147,6 +148,8 @@ for k in (0.5, 0.4, 0.2, 0.1, 0.05):
     },
 
     { t: "h2", n: "02", text: "Sample ratio mismatch", id: "srm" },
+
+    {"kind": "flow", "title": "A 49.2 / 50.8 split is not a rounding problem", "caption": "**If the split is not what you asked for, something decided who went where — and whatever that something is, it may also affect the outcome.** Bot filtering, redirect latency, a crash in one arm: every cause removes a *non-random* subset, which is selection bias with a count attached. **So the arms are no longer comparable and no analysis can repair it.** Use a strict alpha of 0.001, because this check runs on every experiment and investigating a real mismatch costs far less than trusting a broken test. And do not reweight — that assumes you know the mechanism, and if you knew it you would fix it.", "cols": 3, "nodes": [{"id": "s", "label": "A 50/50 split delivers 49.2/50.8", "sub": "chi-square on the assignment counts", "tone": "accent"}, {"id": "c", "label": "Something decided who went where", "sub": "bots, redirects, a crash in one arm", "tone": "crit"}, {"id": "n", "label": "It removed a NON-random subset", "sub": "selection bias, with a count attached", "tone": "crit"}, {"id": "i", "label": "So the arms are not comparable", "sub": "and no analysis fixes that", "tone": "crit"}, {"id": "a", "label": "Test at alpha = 0.001", "sub": "it runs on every experiment", "tone": "violet"}, {"id": "r", "label": "Do not reweight", "sub": "that assumes you know the cause", "tone": "warn"}], "edges": [["s", "c"], ["c", "n"], ["n", "i"], ["s", "a"], ["i", "r"]], "t": "diagram", "id": "dg-6_1-02-1"},
 
     { t: "p", text: "**Sample ratio mismatch is when the arms receive different numbers of users than the split intended** — and it invalidates the whole experiment rather than just the counts. Whatever decided who went where may also affect the outcome, so the arms are no longer comparable." },
 
@@ -324,6 +327,8 @@ sequential_error_rate(always_valid_ci)          # ~0.02
     },
 
     { t: "h2", n: "04", text: "Novelty, primacy and the shape of the effect", id: "novelty" },
+
+    {"kind": "compare", "title": "Two opposite effects, and both look like a result on day three", "caption": "**Both are artefacts of the change itself rather than of its value, and a single pooled number hides either one.** A pure novelty effect can show a 10.8% pooled lift with no real improvement whatsoever; primacy does the reverse and makes a good change look harmful early. **The diagnostic is cheap and worth running as a matter of course: regress the daily effect on the day number and look at the slope.** If it is significant, the pooled figure is an average over periods in which the feature did different things — so report the plateau, with the pooled number alongside.", "columns": [{"title": "Novelty - the lift decays", "tone": "warn", "items": ["users engage with anything new", "biggest effect on day one, fading", "a 10.8% pooled lift, zero real improvement", "ship it and the metric drifts back down", "cleanest estimate: the new-user segment"]}, {"title": "Primacy - the effect improves", "tone": "violet", "items": ["users are disrupted by the change", "worst effect early, recovering", "a good change that reads as harmful", "kill it and you discard a real win", "cleanest estimate: the plateau period"]}], "t": "diagram", "id": "dg-6_1-04-2"},
 
     { t: "p", text: "An effect that **changes over the course of the experiment** is not the same as one that persists, and a pooled figure averages over the change and describes no period at all. Two opposite versions exist, and both look like a result in the first few days." },
 

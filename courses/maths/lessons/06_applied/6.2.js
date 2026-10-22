@@ -155,6 +155,7 @@ ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.55, and unstable
 
 
 
+
     { t: "p", text: "OLS has several assumptions and **they are not equally important**. Only two of them bias the coefficients; the rest affect the standard errors — and the one everyone tests for, normality, matters least of all." },
 
     { t: "dl", items: [
@@ -353,6 +354,8 @@ np.sqrt(ols(X, y)["resid"].var())             # 2.94 -- interpretable`},
     ]},
 
     { t: "h2", n: "03", text: "Autocorrelation, and the diagnostic for it", id: "durbin-watson" },
+
+    {"kind": "trace", "title": "Standard errors out by a factor of three, and nothing in the output says so", "caption": "**If today's residual remembers 80% of yesterday's, the model has far less information than the row count suggests** — and the only symptom is that everything looks more significant than it is. Here the naive standard errors are three times too small, **which turns a t-statistic of 1 into an apparent 3: a null result becomes a publication.** Durbin-Watson detects it in one line, and the repair is a different variance estimator — Newey-West, or a model that states the autocorrelation explicitly — not a different regression. **The first step costs nothing: plot the residuals against time.**", "left": "residual series", "codeW": 190, "vars": ["Durbin-Watson d", "reading"], "steps": [{"code": "independent residuals", "state": ["1.92", "about 2 - what you want"], "tone": "good"}, {"code": "AR(1), rho = 0.8", "state": ["0.35", "strong positive autocorrelation"], "changed": [0, 1], "tone": "crit"}, {"code": "so the standard errors", "state": ["3.0x too small", "t of 1 reads as 3"], "changed": [0, 1], "tone": "crit"}, {"code": "d above 2.5", "state": ["alternating residuals", "often over-differencing"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-6_2-03-1"},
     {"t": "p", "text": "Independence is the assumption whose failure does the most damage, and with time-ordered data it fails quietly. If today's residual resembles yesterday's, the model has less information than the row count suggests — so the standard errors come out too small and everything looks more significant than it is."},
     {"t": "p", "text": "The **Durbin–Watson** statistic measures exactly that, comparing successive residuals:"},
     {"t": "math", "tex": "d \\;=\\; \\frac{\\sum_{t=2}^{n}(e_t - e_{t-1})^{2}}{\\sum_{t=1}^{n} e_t^{2}} \\;\\approx\\; 2(1-\\hat\\rho)"},

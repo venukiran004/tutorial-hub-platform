@@ -157,6 +157,8 @@ score3[worst].mean() - score2[worst].mean()      # ~0.0
 
     { t: "h2", n: "02", text: "Survivorship and its relatives", id: "survivorship" },
 
+    {"kind": "trace", "title": "Engine hits are rare in the data because engine hits are fatal", "caption": "**Among the bombers that came back, 5% had engine damage; among all bombers that flew, 25% did.** The instinct is to armour the wings, where the holes are. The correct answer is to armour the engines, **because the planes that would have shown you engine damage are the ones that did not return** — the missing data is precisely the data that changes the conclusion, and nothing in the surviving data reveals its absence. The general check is two questions: count who is missing, and ask whether their absence depends on the outcome.", "left": "where the bullet holes were", "codeW": 210, "vars": ["among survivors", "among all planes"], "steps": [{"code": "wings", "state": ["55% - common", "55% - unchanged"], "tone": "good"}, {"code": "engines", "state": ["5% - rare", "25% - common"], "changed": [0, 1], "tone": "crit"}, {"code": "so the holes say", "state": ["armour the wings", "wrong - armour the engines"], "changed": [0, 1], "tone": "violet"}, {"code": "the general check", "state": ["count who is missing", "did the outcome cause the absence?"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-6_4-02-1"},
+
     { t: "p", text: "**Survivorship bias is when the sample contains only what survived a process, and survival depends on the outcome.** The data that is missing is precisely the data that would change your conclusion, and nothing in the surviving data reveals its absence." },
 
     { t: "dl", items: [
@@ -328,6 +330,7 @@ simpson_check([81/87, 192/263], [234/270, 55/80], [87, 263], [270, 80])
     { t: "h2", n: "03", text: "The review checklist", id: "checklist" },
 
     {"kind": "layers", "title": "The review checklist, in the order it catches things", "caption": "Run top to bottom, because an early failure makes the later questions pointless. Most bad analyses die at the first two — how the data was collected, and what the comparison group actually is.", "items": [{"label": "how was the data collected?", "sub": "selection and survivorship beat every later correction", "tone": "crit", "side": "first"}, {"label": "what is the comparison group?", "sub": "no baseline means no effect to speak of", "tone": "crit", "side": "second"}, {"label": "was the metric chosen before the data?", "sub": "otherwise the p-value is decoration", "tone": "warn", "side": "third"}, {"label": "could a confounder explain it?", "sub": "name one and rule it out, or control for it", "tone": "warn", "side": "fourth"}, {"label": "is the effect size worth acting on?", "sub": "significance is not importance", "tone": "accent", "side": "fifth"}, {"label": "would it replicate?", "sub": "one study is a hypothesis, not a finding", "tone": "good", "side": "last"}], "t": "diagram", "id": "dg-6_4-03-0"},
+
 
 
 
