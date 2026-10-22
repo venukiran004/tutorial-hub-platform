@@ -246,6 +246,36 @@ EC.receiveLesson({
         { t: "p", text: "Keeping one known-hard question visible through a module is worth doing deliberately. It stops a sweep that improves the easy questions from reading as a solved problem." }
       ] },
 
+    { t: "code", lang: "python", title: "The splitters beyond recursive character, and what each one knows that it does not",
+      code: `from langchain_text_splitters import (RecursiveCharacterTextSplitter,
+                                      HTMLHeaderTextSplitter,
+                                      MarkdownHeaderTextSplitter,
+                                      NLTKTextSplitter, SpacyTextSplitter)
+
+# STRUCTURE-AWARE: split on the document's own headings, and keep them as
+# METADATA on every chunk -- so a chunk arrives knowing which section it is from.
+html = HTMLHeaderTextSplitter(headers_to_split_on=[("h1", "Header 1"),
+                                                   ("h2", "Header 2"),
+                                                   ("h3", "Header 3")])
+docs = html.split_text(page_html)
+docs[0].metadata        # {'Header 1': 'Billing', 'Header 2': 'Refunds'}
+# That metadata is what makes a citation specific and a filter possible, and it
+# is the reason to split structured documents structurally rather than by size.
+
+# SENTENCE-AWARE: never cut mid-sentence. Slower, and the quality shows on
+# prose where a severed clause changes the meaning of the chunk.
+NLTKTextSplitter(chunk_size=1000)                 # punkt, fast, rule-based
+SpacyTextSplitter(chunk_size=1000, pipeline="en_core_web_sm")   # a real parse
+
+# THE USUAL PRODUCTION SHAPE IS BOTH: structural first, size second, because a
+# single section can still be longer than the context you have budgeted.
+chunks = []
+for d in html.split_text(page_html):
+    for piece in RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=80).split_text(d.page_content):
+        chunks.append({"text": piece, **d.metadata})`,
+      caption: "**The header splitters attach the heading path as metadata on every chunk**, which is what turns a citation from \u201csomewhere in this document\u201d into a section, and what makes a metadata filter possible at query time. That is a bigger win than the split boundaries themselves." },
+    { t: "p", text: "**The production shape is two passes, not a choice between splitters:** split structurally so the metadata is right, then split each section by size so nothing exceeds the budget. And the sentence-aware splitters are worth their cost only on prose — on logs, code or tables there are no sentences to respect, and `RecursiveCharacterTextSplitter` with a separator list is both faster and more accurate." },
+
     { t: "exercise", kind: "lab", title: "Sweep chunking against your own corpus", difficulty: "core", minutes: 35,
       body: "Using a labelled question set, sweep chunk size, overlap and strategy independently and measure recall at several k. Report index size alongside recall. Then determine which of your observed differences are larger than your evaluation's resolution, and say what you can and cannot conclude from each.",
       requirements: [

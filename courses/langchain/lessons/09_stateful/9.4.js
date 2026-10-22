@@ -126,6 +126,33 @@ EC.receiveLesson({
       code: 'from langgraph.checkpoint.memory import InMemorySaver\nfrom langgraph.checkpoint.postgres import PostgresSaver\nfrom langgraph.checkpoint.postgres.aio import AsyncPostgresSaver\n\nwith PostgresSaver.from_conn_string(DSN) as cp:\n    cp.setup()                       # once -- it creates its tables\n    graph = builder.compile(checkpointer=cp)\n\n# and the async form, for an async graph:\nasync with AsyncPostgresSaver.from_conn_string(DSN) as cp:\n    graph = builder.compile(checkpointer=cp)',
       caption: "`InMemorySaver` for this course and for tests; the other two are the same interface over a table." },
     { t: "p", text: "Two things about swapping them that are easy to get wrong. `setup()` has to run once before the first invoke, and forgetting it fails at the first write rather than at compile — so a graph that worked in tests with `InMemorySaver` fails on its first real request. And the async saver is not interchangeable with the sync one: an async graph needs `AsyncPostgresSaver`, because the checkpoint write happens on the same event loop as the node." },
+    { t: "code", lang: "python", title: "The checkpointer classes, and the rename every tutorial predates",
+      code: `from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.checkpoint.base import BaseCheckpointSaver, CheckpointMetadata
+
+# THE CURRENT NAME IS InMemorySaver. Nearly every tutorial, blog post and
+# Stack Overflow answer says:
+#     from langgraph.checkpoint.memory import MemorySaver
+# which is the same class under its earlier name and still imports. If a
+# snippet does not run, check this before anything else -- nothing else moved.
+
+graph = builder.compile(checkpointer=InMemorySaver())
+
+# PRODUCTION: same interface, and both need their tables created once.
+with PostgresSaver.from_conn_string(DSN) as cp:
+    cp.setup()                              # idempotent; creates the tables
+    graph = builder.compile(checkpointer=cp)
+
+# WRITING YOUR OWN means implementing BaseCheckpointSaver, and the four methods
+# are the whole contract: put, put_writes, get_tuple, list.
+# CheckpointMetadata is what you get back alongside the state -- the step
+# number, the source (input, loop or update) and the parent checkpoint id,
+# which is what makes time-travel (9.9) possible rather than just storage.`,
+      caption: "**`MemorySaver` and `InMemorySaver` are the same class under two names, and the old one is what the entire body of existing tutorials imports** — so an import error here is a rename rather than a changed API. Worth knowing because it is the single most common reason a LangGraph snippet from last year fails on the first line." },
+    { t: "p", text: "**`CheckpointMetadata` is the part that makes checkpointing more than storage:** it carries the step number, the source of the write and the parent checkpoint id, which is exactly the lineage that time-travel debugging walks. And the persistent savers need `setup()` called once to create their tables — idempotent, and the thing that is forgotten in a first deployment." },
+
     { t: "exercise", kind: "build", title: "Find out what a checkpointer writes",
       difficulty: "core", minutes: 32,
       body: "Run a two-node graph with a checkpointer and list the full checkpoint history, reporting the step, the next field and the values of each. Say what makes resumption possible. Then put a large blob in the state, measure the bytes written per checkpoint, and compare the total against the same graph without it. Resume a thread and explain what happens to an accumulating key. Finally ask a fresh saver for an existing thread, and try passing a thread_id to a graph with no checkpointer.",

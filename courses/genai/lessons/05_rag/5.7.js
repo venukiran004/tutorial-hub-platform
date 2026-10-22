@@ -274,6 +274,32 @@ Answer:"""`,
         { t: "p", text: "A team that starts with hybrid search, re-ranking and query rewriting has four systems, no baseline, and no way to attribute a bad answer to any of them. A team that starts here has one number and a list of the questions that failed." }
       ] },
 
+    { t: "code", lang: "python", title: "The two helpers this pipeline is usually written with",
+      code: `from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_community.retrievers import BM25Retriever
+from langchain_core.prompts import ChatPromptTemplate
+
+# create_stuff_documents_chain: formats a list of Documents into one prompt and
+# calls the model. "Stuff" is the strategy -- put every document in the prompt --
+# as opposed to map-reduce or refine, which make several calls.
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Answer only from the context. If it is not there, say so.\\n\\n{context}"),
+    ("human", "{input}"),
+])
+combine = create_stuff_documents_chain(llm, prompt)
+combine.invoke({"input": question, "context": docs})     # docs: list[Document]
+# It owns the formatting, including the document separator and the per-document
+# template -- which is the part people reimplement with a join and get wrong,
+# because the separator is what stops two chunks reading as one passage.
+
+# BM25Retriever: the lexical half of hybrid search, in process, no index server.
+bm25 = BM25Retriever.from_documents(docs, k=5)
+# It holds the whole corpus in memory and scores every document per query, so it
+# is right for thousands of documents and wrong for millions -- at which point
+# the lexical side belongs in OpenSearch or the store's own sparse vectors.`,
+      caption: "**The document separator is the detail `create_stuff_documents_chain` gets right and a hand-written join usually does not** — without a clear delimiter two retrieved chunks read as one continuous passage, and the model attributes a claim from one to the source of the other. \u201cStuff\u201d names the strategy: everything in one prompt, one call." },
+    { t: "p", text: "**`BM25Retriever` scores the entire corpus per query in process**, which makes it ideal for a few thousand documents and unusable at a million — the lexical side then has to move into OpenSearch or into the vector store's own sparse vectors. Knowing where that line is matters, because a hybrid retriever that works perfectly in development is also the component that will fall over first." },
+
     { t: "exercise", kind: "lab", title: "Build the baseline end to end", difficulty: "core", minutes: 35,
       body: "Build a complete naive RAG pipeline over your own corpus: chunk, embed, index, retrieve, assemble a prompt with numbered sources, and generate an answer with citations. Measure recall at several k and the context tokens each k costs. Then verify that every citation the model emits resolves to a chunk you actually supplied.",
       requirements: [

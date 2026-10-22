@@ -88,6 +88,43 @@ EC.receiveLesson({
       { t: "p", text: "The model-call column is the swarm's genuine advantage \u2014 no coordination turn. The topology column is 8.8's warning: `Command` destinations do not appear in the drawing unless each node is annotated with its possible targets." },
       { t: "p", text: "But *policy point: nowhere central* is the one that usually settles it. A permission check, a budget check or an approval gate needs somewhere to live, and a swarm has no such place \u2014 so **each agent** has to implement it, consistently, forever. That is a duplication problem that grows with the agent count." }
     ] },
+    { t: "code", lang: "python", title: "The prebuilt swarm, and the handoff tool written by hand",
+      code: `from langgraph_swarm import create_swarm, create_handoff_tool
+from langgraph.types import Command
+from langchain_core.tools import tool, InjectedToolCallId
+from langchain_core.messages import ToolMessage
+from typing import Annotated
+
+# THE PREBUILT: agents hand off to each other directly, with no supervisor, and
+# the swarm remembers which agent is active across turns.
+app = create_swarm(
+    agents=[flights, hotels],
+    default_active_agent="flights",
+).compile(checkpointer=InMemorySaver())
+
+# WHAT create_handoff_tool GENERATES, written out -- because this is the one
+# piece of LangGraph plumbing worth understanding rather than importing:
+@tool
+def to_hotels(reason: str,
+              tool_call_id: Annotated[str, InjectedToolCallId]) -> Command:
+    """Hand the conversation to the hotels agent."""
+    return Command(
+        goto="hotels",                       # the routing decision
+        graph=Command.PARENT,                # route in the PARENT graph, not this one
+        update={"messages": [ToolMessage(content=f"Transferred: {reason}",
+                                         tool_call_id=tool_call_id)]},
+    )
+
+# THREE THINGS THAT MUST ALL BE RIGHT:
+#   InjectedToolCallId -- the framework fills this in; the model never sees it,
+#     and it is NOT part of the tool's schema
+#   the ToolMessage -- every tool call needs a reply, and without one the
+#     message history is malformed and the next model call errors
+#   graph=Command.PARENT -- an agent is a subgraph, so the hop happens one
+#     level up. Omit it and the goto looks for a node inside the agent itself.`,
+      caption: "**`InjectedToolCallId` is filled in by the framework and kept out of the tool's schema**, so the model never sees it and cannot get it wrong — which is the mechanism that lets a tool return a `Command` that both routes and replies. All three pieces have to be present: without the `ToolMessage` the history is malformed and the next model call fails." },
+    { t: "p", text: "**`graph=Command.PARENT` is the one people omit, and the error is confusing:** each agent is a subgraph, so a handoff is a hop in the parent graph, and without the flag the `goto` looks for a node *inside* the agent that is handing off. The swarm's other property is worth stating plainly — **it keeps the active agent in state**, so the next user turn resumes with whoever was last speaking rather than with a router deciding again." },
+
     { t: "exercise", kind: "build", title: "Build a swarm and find its loop",
       difficulty: "advanced", minutes: 32,
       body: "Build two agents that hand off to each other with Command, carrying the reason, and show a successful handoff. Then make each agent hand off to the other unconditionally and run it against a low recursion limit. Explain why neither agent is at fault. Add a hop budget and an escalation path, and explain why the budget cannot live in an agent. Finally compare swarm against supervisor on who decides, model calls, policy, topology visibility and the characteristic bug.",

@@ -327,6 +327,38 @@ for node in ast.walk(tree):
         { t: "p", text: "This is the single highest-value thing to get right in a code index, because the failure is silent and confident. 6.8\u2019s theme exactly: the dangerous failures are the ones where nothing errors." }
       ] },
 
+    { t: "code", lang: "python", title: "tree-sitter: chunking code at the boundaries the language defines",
+      code: `from tree_sitter import Language, Parser
+import tree_sitter_python as tspython
+
+parser = Parser(Language(tspython.language()))
+tree = parser.parse(source.encode("utf8"))
+
+# WHY A PARSER RATHER THAN A REGEX: the node types ARE the chunk boundaries, so
+# a function is never cut in half and a chunk never ends mid-body.
+def chunks(node, source_bytes, keep=("function_definition", "class_definition")):
+    for child in node.children:
+        if child.type in keep:
+            yield {
+                "text": source_bytes[child.start_byte:child.end_byte].decode("utf8"),
+                "kind": child.type,
+                "start_line": child.start_point[0] + 1,      # for the citation
+            }
+        else:
+            yield from chunks(child, source_bytes, keep)
+
+# TWO PROPERTIES THAT MATTER MORE THAN THE BOUNDARIES:
+#   it is error-tolerant -- a file that does not compile still parses, which is
+#     most of a real repository at any given moment
+#   the line numbers come free, and a code citation without a line number is
+#     not a citation
+#
+# One grammar per language, and they are separate packages: tree_sitter_python,
+# tree_sitter_javascript, tree_sitter_go. The same twenty lines then work for
+# every language you add a grammar for.`,
+      caption: "**Error tolerance is the property that makes this usable on a real repository**: tree-sitter parses a file that does not compile, and at any given moment much of a working codebase does not. A regex-based splitter has no notion of a function body; a parser cannot cut one in half." },
+    { t: "p", text: "**The line numbers are the second reason, and the one reviewers care about:** a retrieved code chunk cited as \u201csomewhere in `billing.py`\u201d is not a citation, and `start_point` gives you the line for free. The cost is one grammar package per language — and once the traversal is written, adding a language is a dependency rather than new code." },
+
     { t: "exercise", kind: "build", title: "Measure your repository's chunking damage", difficulty: "core", minutes: 35,
       body: "Take your own repository and measure, for a chunk size you are actually considering, what fraction of functions a naive recursive splitter breaks — stratified by function size, not as an aggregate. Then compute the AST chunk size distribution and decide where your fallback size cap belongs.",
       requirements: [

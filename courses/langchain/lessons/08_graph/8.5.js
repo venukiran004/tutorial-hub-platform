@@ -131,6 +131,37 @@ EC.receiveLesson({
 
 
     { t: "p", text: "A node's name is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x. So renaming a node changes the interrupt configuration and any persisted checkpoint's node references \u2014 it is part of the graph's public structure rather than a local label." },
+    { t: "code", lang: "python", title: "Node-level caching, and the key that decides whether it is correct",
+      code: `from langgraph.graph import StateGraph
+from langgraph.types import CachePolicy
+from langgraph.cache.memory import InMemoryCache
+
+def expensive_retrieval(state: State) -> dict:
+    return {"docs": search(state["question"])}
+
+builder = StateGraph(State)
+builder.add_node("retrieve", expensive_retrieval,
+                 cache_policy=CachePolicy(ttl=300))        # seconds
+graph = builder.compile(cache=InMemoryCache())
+
+# THE DEFAULT KEY IS THE WHOLE INPUT STATE, which is usually wrong for a graph:
+# any unrelated field -- a message count, a timestamp, a retry counter -- makes
+# every call a miss. key_func narrows it to what the node actually reads:
+builder.add_node("retrieve", expensive_retrieval,
+                 cache_policy=CachePolicy(
+                     ttl=300,
+                     key_func=lambda state: state["question"]))
+
+# WHAT THIS IS AND IS NOT:
+#   it caches a NODE's output for a repeated input, within the ttl -- which is
+#     what makes a retried or re-entered graph cheap
+#   it is NOT semantic caching (7.7): the key is exact, so a reworded question
+#     is a miss
+#   a node with side effects must not be cached, because a cache hit skips the
+#     side effect while returning the same state update`,
+      caption: "**The default cache key is the entire input state, which in a graph is almost always too broad** — one unrelated field that changes every superstep, like a message count or a retry counter, turns every lookup into a miss. `key_func` narrowed to what the node actually reads is the difference between a cache and a no-op." },
+    { t: "p", text: "**The rule that keeps this safe: never cache a node with side effects.** A cache hit skips the node body entirely while still applying its state update, so a node that writes a row or sends a message does neither on the second call and the state says it did. Caching is for pure, expensive computation — retrieval, embedding, a deterministic transform." },
+
     { t: "exercise", kind: "build", title: "Make the three node mistakes on purpose",
       difficulty: "core", minutes: 28,
       body: "Write a node as a plain function and test it without building a graph. Then make each of the three mistakes deliberately and record what the runtime does: return the whole state with an append reducer present, mutate the state in place, and return None. Explain why each is wrong even where it appears to work. Finally give the discipline that makes a node's dependencies visible, and say why a node's name is public structure.",

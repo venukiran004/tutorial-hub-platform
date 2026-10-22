@@ -237,6 +237,36 @@ EC.receiveLesson({
 
     { t: "p", text: "That ratio is the reason the ecosystem has as many integrations as it does. The cost of making something a first-class component is a single method, so people pay it \u2014 and the same mechanism is available to you for anything the library does not already have." },
 
+    { t: "code", lang: "python", title: "A custom chat model that streams, and the chunk type that makes it work",
+      code: `from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import AIMessageChunk, BaseMessage
+from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
+
+class MyChat(BaseChatModel):
+    @property
+    def _llm_type(self) -> str:
+        return "my-chat"
+
+    def _generate(self, messages, stop=None, run_manager=None, **kw) -> ChatResult:
+        text = call_my_api(messages)
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(text))])
+
+    def _stream(self, messages, stop=None, run_manager=None, **kw):
+        for piece in call_my_api_streaming(messages):
+            chunk = ChatGenerationChunk(message=AIMessageChunk(content=piece))
+            if run_manager:
+                run_manager.on_llm_new_token(piece, chunk=chunk)   # <- the callbacks
+            yield chunk
+
+# THE TWO THINGS THAT GO WRONG:
+#   yielding an AIMessage instead of an AIMessageChunk -- chunks ADD, messages
+#     do not, so the framework cannot accumulate the stream into one message
+#   forgetting on_llm_new_token -- the stream works and every callback-based
+#     feature silently does not: no token counts, no tracing, no streaming
+#     through astream_events in the chain above you`,
+      caption: "**The chunk type is load-bearing: `AIMessageChunk` defines addition so the framework can accumulate a stream into one final message, and `AIMessage` does not.** Yield the wrong one and the stream appears to work while everything downstream that expects an accumulating message breaks." },
+    { t: "p", text: "**Calling `run_manager.on_llm_new_token` is the step that connects your component to everything else**, and omitting it fails quietly in the worst way — the tokens arrive, and tracing, token counting and `astream_events` in the chain above all see nothing. Implement `_stream` and the framework derives `_generate` from it if you want only one; implement both and the sync path stops being a buffered stream." },
+
     { t: "exercise", kind: "build", title: "Write three components and find the bug",
       difficulty: "advanced", minutes: 30,
       body: "Build a custom component three ways: a function wrapped in RunnableLambda, a Runnable subclass with configuration, and an output parser with its own format instructions. Compose all three with library components into one chain and run it. Then look carefully at the result, work out why it is wrong, and make the failure loud.",

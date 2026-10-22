@@ -341,6 +341,37 @@ for q in HELD_OUT + [PAIRS[0][0]]:
         { t: "p", text: "Keep the clean base either way. A merged model cannot be un-merged, and the adapter alone is useless without the exact base it was trained against \u2014 which is why `adapter_config.json` records it." }
       ] },
 
+    { t: "code", lang: "python", title: "The current TRL config objects, which replaced TrainingArguments here",
+      code: `from trl import SFTTrainer, SFTConfig, DPOTrainer, DPOConfig
+
+# SFTConfig IS TrainingArguments plus the SFT-specific settings, so there is one
+# object rather than two and the SFT knobs are no longer passed separately:
+cfg = SFTConfig(
+    output_dir="out",
+    max_length=2048,                 # the sequence length, here rather than in the trainer
+    packing=True,                    # concatenate short examples to fill the window
+    completion_only_loss=True,       # train on the answer, NOT on the prompt
+    per_device_train_batch_size=4,
+    gradient_accumulation_steps=8,
+    learning_rate=2e-4,
+    bf16=True,
+)
+SFTTrainer(model=model, args=cfg, train_dataset=ds, peft_config=lora).train()
+
+# THE TWO ARGUMENTS THAT CHANGE THE RESULT, not just the speed:
+#   completion_only_loss -- with it off, the model is also trained to generate
+#     your prompts, which wastes capacity and teaches the wrong distribution
+#   packing -- fills every sequence instead of padding, so a dataset of short
+#     examples trains several times faster for the same number of epochs
+
+# DPOConfig is the same pattern, with the preference-specific term:
+DPOConfig(output_dir="out", beta=0.1, loss_type="sigmoid",
+          max_prompt_length=1024, max_length=2048)
+# beta is how hard the policy is held to the reference model: low drifts, high
+# barely moves. 0.1 is the usual starting point.`,
+      caption: "**`completion_only_loss` is the argument that changes what the model learns rather than how fast it learns it** — left off, the loss includes your prompt tokens, so the model is trained to generate instructions as well as answers. `packing` is the throughput one: concatenating short examples to fill the window instead of padding it can cut training time several-fold on a dataset of short pairs." },
+    { t: "p", text: "**The config objects replaced the older pattern of a `TrainingArguments` plus trainer keyword arguments**, which is worth knowing when reading any tutorial written before the change: the arguments still exist, they have moved. `DPOConfig`'s `beta` is the one preference-specific number — the strength of the pull back towards the reference model, where low lets the policy drift and high keeps it where it started." },
+
     { t: "exercise", kind: "lab", title: "Run the whole recipe and verify the merge", difficulty: "core", minutes: 40,
       body: "Run a complete LoRA fine-tune end to end on a small model: build a dozen or more examples of a clearly visible behaviour, format them with explicit role markers and an end-of-text token, record the base model's answers on held-out prompts first, train, test the same prompts, save the adapter, then merge it and verify that the merged model matches.",
       requirements: [

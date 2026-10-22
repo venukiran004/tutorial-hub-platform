@@ -131,6 +131,35 @@ EC.receiveLesson({
       code: 'from langchain_community.chat_message_histories import (\n    RedisChatMessageHistory, SQLChatMessageHistory,\n    MongoDBChatMessageHistory)\nfrom langchain_core.chat_history import BaseChatMessageHistory\n\ndef get_session_history(session_id: str) -> BaseChatMessageHistory:\n    return RedisChatMessageHistory(session_id, url=REDIS_URL, ttl=86400)\n\nRunnableWithMessageHistory(chain, get_session_history,\n                           input_messages_key="question",\n                           history_messages_key="history")',
       caption: "One factory function, and the storage is the only line that changes." },
     { t: "p", text: "The `ttl` is the argument worth noticing, because the graph equivalent does not have one: a checkpointer keeps a thread until something deletes it (9.4), while these backends can expire a session on their own. Which is the one thing the deprecated API does more cheaply than its replacement — and it is also the shape of what you lose, since a history that expires takes the audit trail with it." },
+    { t: "code", lang: "python", title: "The history class and its older name, which every tutorial still uses",
+      code: `from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
+
+# THE CURRENT NAME IS InMemoryChatMessageHistory, in langchain_core.
+# Older code and most tutorials say:
+#     from langchain.memory import ChatMessageHistory
+#     from langchain_community.chat_message_histories import ChatMessageHistory
+# Both are the same object under its earlier name, and both still import with a
+# deprecation warning. If a snippet does not run, this rename is the first
+# thing to check -- the API is unchanged.
+
+store: dict[str, InMemoryChatMessageHistory] = {}
+
+def history_for(session_id: str) -> InMemoryChatMessageHistory:
+    return store.setdefault(session_id, InMemoryChatMessageHistory())
+
+chain = RunnableWithMessageHistory(
+    runnable, history_for,
+    input_messages_key="input", history_messages_key="history")
+chain.invoke({"input": "hello"}, config={"configurable": {"session_id": "u1"}})
+
+# THE PERSISTENT IMPLEMENTATIONS keep the same interface and are what you
+# actually deploy: RedisChatMessageHistory, SQLChatMessageHistory,
+# PostgresChatMessageHistory. In-memory loses every conversation on restart
+# and is per-process, so two replicas means two half-conversations.`,
+      caption: "**`ChatMessageHistory` and `InMemoryChatMessageHistory` are the same object under two names**, and the old one is what nearly every tutorial and Stack Overflow answer still imports — so a snippet that fails to import is usually this rename rather than a changed API. Nothing about the interface moved." },
+    { t: "p", text: "**The in-memory implementation is a development convenience with two properties that rule it out in production:** the conversation dies with the process, and it is per-process, so two replicas behind a load balancer give one user two half-conversations. The Redis, SQL and Postgres implementations share the interface exactly, which makes the change a constructor and nothing else." },
+
     { t: "exercise", kind: "build", title: "Wire history, then trim it",
       difficulty: "core", minutes: 26,
       body: "Wire a message store into a chain with RunnableWithMessageHistory and run three turns against one session, then inspect what was stored. Note the deprecation warning and what it points at. Then build a long history and trim it four ways, reporting which messages survive each strategy. Explain which parameter matters most and what each strategy loses.",

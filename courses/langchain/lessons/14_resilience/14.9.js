@@ -102,6 +102,36 @@ EC.receiveLesson({
       code: 'from fastapi import FastAPI\nfrom fastapi.responses import StreamingResponse\nimport asyncio\n\napp = FastAPI()\nMODEL_CALLS = asyncio.Semaphore(20)      # the provider limit, not the HTTP one\n\n@app.post("/chat")\nasync def chat(req: ChatRequest):\n    cfg = {"configurable": {"thread_id": req.thread_id}}\n    async def gen():\n        async for tok, _ in graph.astream(req.input, cfg,\n                                          stream_mode="messages"):\n            yield tok.content\n    return StreamingResponse(gen(), media_type="text/event-stream")',
       caption: "The semaphore is in front of the model call; the HTTP server has no idea it exists." },
     { t: "p", text: "Two things this makes concrete. `thread_id` comes from the **request**, so the checkpointer does the session handling and the HTTP layer holds no state — which is what lets you run several replicas without sticky routing. And `StreamingResponse` over `stream_mode=\"messages\"` (10.3) is what keeps a long turn from looking like a hung request, which matters more under load than it does in development: a queued request that streams nothing is indistinguishable from a timeout. A managed deployment packages the same thing from a `langgraph.json`, with the server and the checkpointer already wired." },
+    { t: "code", lang: "python", title: "Talking to a deployed graph instead of importing it",
+      code: `from langgraph_sdk import get_client
+
+client = get_client(url="http://localhost:2024")      # langgraph dev, or a deployment
+
+# THE SHAPE IS THE SAME CONCEPTS OVER HTTP: assistants, threads, runs.
+thread = await client.threads.create()                 # a thread IS the checkpoint key
+async for chunk in client.runs.stream(
+        thread["thread_id"], assistant_id="agent",
+        input={"messages": [{"role": "user", "content": "hello"}]},
+        stream_mode="messages"):
+    print(chunk.event, chunk.data)
+
+# WHAT CHANGES WHEN THE GRAPH BECOMES A SERVICE:
+#   the checkpointer is the server's, not yours -- threads persist between
+#     processes and across deploys, which is what you wanted anyway
+#   a run is a background job with an id, so it survives the client
+#     disconnecting; the client can reattach and keep streaming
+#   human-in-the-loop stops needing a long-lived process: the run interrupts,
+#     the state sits in the server, and approval arrives as a separate request
+#     minutes or days later
+await client.runs.create(thread["thread_id"], "agent", input=payload,
+                         multitask_strategy="enqueue")   # or interrupt, rollback, reject
+
+# multitask_strategy is the argument with no local equivalent: it decides what
+# happens when a second message arrives on a thread that is still running.
+# Locally that case cannot occur, because there is one process and one call.`,
+      caption: "**The interrupt case is the one that changes architecture rather than deployment:** with the graph as a service, a run that pauses for approval leaves its state on the server, so the approval can arrive days later as an ordinary HTTP request. Locally the same pattern needs a process alive for the whole wait." },
+    { t: "p", text: "**`multitask_strategy` has no local equivalent, because locally the situation cannot arise** \u2014 one process, one call. As a service, a second message can land on a thread whose run is still going, and the four answers are genuinely different products: enqueue it, interrupt the current run, roll the current run back, or reject the new message. Choosing is a product decision about what a user sees when they send twice." },
+
     { t: "exercise", kind: "analysis", title: "Find where an agent breaks under load",
       difficulty: "advanced", minutes: 32,
       body: "Decompose one agent turn into its stages with timings and shares, and say which stages are worth optimising. Connect the call count per unit of work to the architectural patterns measured earlier in the course. Then measure a cache hit rate on realistic repeated traffic and explain why that cache is safe. Classify several cache candidates as safe, conditional or forbidden, and explain the one that is a security problem rather than a correctness one. Finally name the component that saturates first and say where the concurrency limit belongs.",

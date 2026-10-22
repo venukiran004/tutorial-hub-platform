@@ -266,6 +266,35 @@ print(D * 4 + M * 2 * 4)         # HNSW: + neighbour graph`,
         { t: "p", text: "The honest counter-case: at tens of millions of vectors with heavy filtered search, a dedicated vector database earns its operational cost. The mistake is assuming you are there before measuring." }
       ] },
 
+    { t: "code", lang: "python", title: "The integration packages, and the one interface they all implement",
+      code: `# Each managed store has its own package, and they all expose VectorStore --
+# so the store is a one-line swap and nothing downstream changes.
+from langchain_pinecone import PineconeVectorStore
+from langchain_qdrant import QdrantVectorStore
+from langchain_chroma import Chroma
+from langchain_community.vectorstores import FAISS
+
+store = PineconeVectorStore(index_name="docs", embedding=embeddings)
+store = QdrantVectorStore.from_existing_collection(
+    collection_name="docs", embedding=embeddings, url="http://qdrant:6333")
+
+retriever = store.as_retriever(search_type="mmr",
+                               search_kwargs={"k": 5, "fetch_k": 30, "lambda_mult": 0.5})
+
+# WHAT IS NOT PORTABLE, and it is the part that matters in production:
+#   metadata filter syntax -- Pinecone takes a Mongo-style dict, Qdrant takes
+#     its own Filter objects, Chroma takes a where clause. The retriever call
+#     looks identical and the filter does not port.
+#   hybrid search -- Qdrant and Weaviate do sparse-plus-dense natively;
+#     Pinecone has its own sparse-dense vectors; FAISS has none of it
+#   index parameters -- HNSW m and ef_construction are per-store, and they are
+#     where the recall-against-latency trade actually lives
+
+store.similarity_search("refund policy", k=5,
+                        filter={"source": {"$eq": "billing"}})   # Pinecone dialect`,
+      caption: "**The `VectorStore` interface makes the store a one-line swap, and the two things you most want to change are the two that do not port: the metadata filter dialect and hybrid search.** So a migration that looks like a one-line change is really a rewrite of every filtered query, which is worth knowing before the first one is written." },
+    { t: "p", text: "`as_retriever(search_type=\"mmr\")` is the setting worth knowing at this layer: maximal marginal relevance fetches `fetch_k` candidates and then picks `k` that are relevant *and* mutually different, which is the cheapest fix for the failure where the top five chunks are five copies of the same paragraph." },
+
     { t: "exercise", kind: "lab", title: "Measure the recall-latency trade on your own index", difficulty: "advanced", minutes: 35,
       body: "Build exact, IVF and HNSW indexes over the same vectors and measure build time, search latency and recall against exact search as ground truth. Sweep the runtime parameters \u2014 nprobe and efSearch \u2014 and find the operating point that meets your latency budget at acceptable recall. Report the memory each index adds on top of the vectors.",
       requirements: [

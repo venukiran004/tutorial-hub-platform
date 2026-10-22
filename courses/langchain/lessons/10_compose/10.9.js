@@ -121,6 +121,34 @@ EC.receiveLesson({
       code: 'from langchain_mcp_adapters.client import MultiServerMCPClient\n\nclient = MultiServerMCPClient({\n    "filesystem": {"command": "npx",\n                   "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],\n                   "transport": "stdio"},\n    "internal":   {"url": "https://tools.internal/mcp",\n                   "transport": "streamable_http"}})\n\ntools = await client.get_tools()      # discovery -- the list is not hard-coded\nagent = create_react_agent(model, tools)',
       caption: "Both transports behind one client, and `get_tools()` is §04’s discovery." },
     { t: "p", text: "The shape is the argument: the tools arrive as ordinary LangChain tools, so everything in module 3 applies to them unchanged — and `get_tools()` is a **call**, which means the tool list is a runtime value rather than something in your source. That is 12.6’s registry trade arriving from outside your system: a server that adds a tool changes what your agent can do with no deploy on your side, which is the convenience and §05’s supply-chain concern in one line." },
+    { t: "code", lang: "python", title: "Speaking MCP directly, under the adapter",
+      code: `from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+from langchain_mcp_adapters.tools import load_mcp_tools
+
+params = StdioServerParameters(command="python", args=["./my_server.py"])
+
+async with stdio_client(params) as (read, write):
+    async with ClientSession(read, write) as session:
+        await session.initialize()                     # the handshake
+        tools = await load_mcp_tools(session)          # MCP tools -> LangChain tools
+        agent = create_react_agent(llm, tools)
+
+# WHY THE SESSION IS WORTH SEEING: it is a stateful connection, not a request.
+# initialize() negotiates protocol version and capabilities, and the session
+# must outlive every tool call made through it -- so a tool list captured
+# inside the context manager and used outside it fails at call time, which is
+# the most common mistake with this API.
+
+# stdio_client spawns the server as a SUBPROCESS and talks over its pipes:
+#   stdio      a local process, one client, no network -- the default
+#   streamable HTTP   a remote server, many clients, needs auth
+#
+# Under stdio the server's stdout is the protocol channel, so a stray print()
+# in the server corrupts the stream -- server logging must go to stderr.`,
+      caption: "**The session is a stateful connection that has to outlive every tool call made through it** — capturing the tool list inside the context manager and using it after the block has exited is the mistake this API invites, and it fails at call time rather than at import. `initialize()` is the handshake that negotiates version and capabilities." },
+    { t: "p", text: "**Under stdio the server's stdout *is* the protocol channel, so a single stray `print()` in the server corrupts the stream** and the client reports a parse error that points nowhere near the cause. Server logging goes to stderr, without exception. The HTTP transport removes that hazard and adds authentication as something you now have to own." },
+
     { t: "exercise", kind: "build", title: "Measure a process boundary",
       difficulty: "advanced", minutes: 30,
       body: "Write a tool server in a separate process speaking JSON over stdio, and call it from a client. Time a batch of round trips and compare against the same operation in-process. Then exercise the failure modes: an unknown tool, a response that is not JSON, and the server crashing mid-call. Say what MCP adds over this. Finally identify the risk that is not a protocol problem.",

@@ -97,6 +97,36 @@ EC.receiveLesson({
       { t: "p", text: "You cannot check whether the model really used only the context; you can check whether `[data-retention]` is a document that was actually retrieved, and whether the claim attributed to it appears in its text. That turns an unverifiable instruction into a testable property, which is the only reason citations are worth their token cost." }
     ] },
     { t: "p", text: "That is the design principle generalised: when you cannot enforce a behaviour, ask for an output that makes the behaviour auditable. The instruction is still a request, and the citation makes compliance observable \u2014 which is what module 7 builds its evaluation on." },
+    { t: "code", lang: "python", title: "The two helpers that are this chain, written out",
+      code: `from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain
+from langchain_core.prompts import ChatPromptTemplate
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Answer using only the context below. If it is absent, say so.\\n\\n{context}"),
+    ("human", "{input}"),
+])
+
+combine = create_stuff_documents_chain(llm, prompt)       # documents -> answer
+rag = create_retrieval_chain(retriever, combine)          # question -> documents -> answer
+
+out = rag.invoke({"input": "what is the refund window?"})
+out["answer"], out["context"]      # the answer AND the documents it used
+
+# WHAT THE HELPERS OWN, and why hand-rolling this is where bugs come from:
+#   the {context} key -- create_stuff_documents_chain formats the Document list
+#     into it, including the separator between documents. A join with newlines
+#     makes two chunks read as one passage, and the model then attributes a
+#     claim from one to the source of the other.
+#   returning "context" alongside "answer" -- which is what makes a citation
+#     and an eval possible at all. A chain that returns only a string cannot be
+#     evaluated for groundedness afterwards.
+#
+# "Stuff" names the strategy: every document in one prompt, one model call --
+# as against map-reduce or refine, which make one call per document.`,
+      caption: "**`create_retrieval_chain` returns the retrieved documents alongside the answer, and that is the part worth not losing** — a chain that returns a bare string cannot be cited, cannot be evaluated for groundedness and cannot be debugged when the answer is wrong. The document separator is the other thing the helper owns and a hand-written join gets wrong." },
+    { t: "p", text: "**\u201cStuff\u201d is the name of the strategy, not of the function's quality:** everything in one prompt and one call, as opposed to map-reduce or refine which make a call per document. Stuff is right whenever the retrieved set fits the context budget, which after the chunking and top-k decisions of this module it almost always does \u2014 and the alternatives exist for summarising a whole corpus, not for answering a question." },
+
     { t: "exercise", kind: "build", title: "Build the baseline and inspect it",
       difficulty: "core", minutes: 28,
       body: "Compose a baseline RAG chain as a single LCEL expression and run it on a question the corpus answers. Identify which part is a RunnableParallel and what each branch contributes. Then inspect the message list the model received and report which message the retrieved context landed in. Finally, name the load-bearing prompt instructions and say which is different in kind from the others.",

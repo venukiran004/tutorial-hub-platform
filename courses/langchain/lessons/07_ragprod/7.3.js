@@ -113,6 +113,38 @@ EC.receiveLesson({
       ["forgetting per-message overhead", "A chat format adds tokens per message for roles and delimiters, which matters when the history is many short turns."],
       ["reserving nothing for the answer", "Fails at generation time, after the input tokens are paid for."]
     ] },
+    { t: "code", lang: "python", title: "Contextual compression: spend a model call to shrink what reaches the prompt",
+      code: `from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import (LLMChainExtractor,
+                                                       LLMChainFilter,
+                                                       EmbeddingsFilter,
+                                                       DocumentCompressorPipeline)
+from langchain_community.document_transformers import LongContextReorder
+
+# THREE COMPRESSORS, in increasing cost and increasing precision:
+EmbeddingsFilter(embeddings=emb, similarity_threshold=0.76)   # no model call
+LLMChainFilter.from_llm(llm)        # one call per document: keep or drop, whole
+LLMChainExtractor.from_llm(llm)     # one call per document: REWRITE it down to
+                                    # the sentences that bear on the question
+
+# THE PIPELINE IS THE SHAPE THAT IS AFFORDABLE: filter cheaply first, extract
+# on what survives, then reorder.
+pipeline = DocumentCompressorPipeline(transformers=[
+    EmbeddingsFilter(embeddings=emb, similarity_threshold=0.76),
+    LLMChainExtractor.from_llm(llm),
+    LongContextReorder(),            # most relevant to the ENDS of the list
+])
+retriever = ContextualCompressionRetriever(base_compressor=pipeline,
+                                           base_retriever=vector.as_retriever(k=20))
+
+# LongContextReorder exists because of the lost-in-the-middle effect: a model
+# attends least to the middle of a long context, so the best documents belong
+# first and last. It costs nothing and it is a reorder, not a compression.
+# AND THE COST TO WATCH: LLMChainExtractor is one call PER DOCUMENT, so k=20
+# is twenty extra calls and twenty chances to drop a sentence that mattered.`,
+      caption: "**`LLMChainExtractor` rewrites each document down to the sentences that bear on the question, at one model call per document** — so a top-20 retrieval becomes twenty extra calls and twenty chances to discard something that mattered. The affordable shape is a pipeline: filter by embedding first, extract only on what survives." },
+    { t: "p", text: "**`LongContextReorder` is free and worth adding unconditionally:** it puts the most relevant documents at the start and end of the list, because a model attends least to the middle of a long context. It is a reorder rather than a compression, so it changes no tokens and costs no calls — which makes it the one item in this list with no trade-off to weigh." },
+
     { t: "exercise", kind: "analysis", title: "Budget a context window",
       difficulty: "core", minutes: 30,
       body: "Measure the token length distribution of your corpus and compute how many chunks fit in several context budgets, reserving space for the output. Then show that the budget sets an effective k by measuring recall at each value. Explain what that implies for reranking under a tight budget. Construct an ordering that places the weakest documents in the middle. Finally compare a character-based token estimate against a real count.",

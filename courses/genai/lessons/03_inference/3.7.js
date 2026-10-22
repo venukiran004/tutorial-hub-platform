@@ -210,6 +210,31 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
         { t: "p", text: "What it trades against is headroom for activation spikes, which scale with the largest batch and longest sequence you admit. So raise it *together with* capping `max_model_len` and the token budget: the three are one decision, and raising the first alone is how you get an OOM three days later under an unusual traffic mix." }
       ] },
 
+    { t: "code", lang: "python", title: "TensorRT-LLM: a compiler, not a server",
+      code: `import tensorrt_llm
+from tensorrt_llm.quantization import QuantMode
+
+# THE DIFFERENCE FROM vLLM AND TGI: this one compiles. You build an engine for a
+# specific model, a specific precision, a specific max batch size and sequence
+# length, and a specific GPU architecture -- and that artefact is what runs.
+quant = QuantMode.use_weight_only(use_int4_weights=True)      # W4A16
+quant = QuantMode.from_description(quantize_weights=True, quantize_activations=True,
+                                   use_fp8_qdq=True)          # FP8 on Hopper
+
+# built with trtllm-build, then served through Triton or the LLM API:
+from tensorrt_llm import LLM, SamplingParams
+llm = LLM(model="meta-llama/Llama-3.1-8B-Instruct", tensor_parallel_size=2)
+llm.generate(["Summarise this ticket:"], SamplingParams(max_tokens=200))
+
+# WHAT THE COMPILATION BUYS: kernel fusion, in-flight batching and FP8 on
+# Hopper -- the fastest numbers published on NVIDIA hardware.
+# WHAT IT COSTS:
+#   a build step of minutes to an hour, in CI, per model and per shape
+#   an engine that is NOT portable -- a different GPU generation needs a rebuild
+#   max_batch_size and max_input_len fixed at build time, not at request time`,
+      caption: "**The engine is built for one model, one precision, one shape and one GPU generation, and it is not portable** — which is the real decision here. TensorRT-LLM wins the benchmarks on NVIDIA hardware and turns \u201cdeploy a new model\u201d into a CI build, so it pays off for a fixed model served at scale and gets in the way everywhere else." },
+    { t: "p", text: "**`max_batch_size` and `max_input_len` being fixed at build time is the constraint that catches teams out:** a request longer than the compiled sequence length is rejected rather than handled, so the shape has to be chosen from traffic you have measured. vLLM and TGI decide those at request time and give up some throughput for it, which is usually the right trade until the model stops changing." },
+
     { t: "exercise", kind: "analysis", title: "Work out when prefix caching stops mattering", difficulty: "core", minutes: 20,
       body: "Prefix caching saved 84.8% of prefill tokens on eight requests sharing a 251-token prefix. But prefill is only part of a request: the decode phase is untouched by it. Work out the saving as a share of total request cost, for a short answer and a long one, and find the point where prefix caching stops being the lever worth pulling.",
       requirements: [

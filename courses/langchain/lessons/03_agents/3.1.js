@@ -127,6 +127,30 @@ EC.receiveLesson({
       { t: "p", text: "Inside an agent, a `ToolException` is caught and returned to the model as a `ToolMessage`, so the model sees the text and can correct its own argument and try again. That makes the message a prompt: \u201cuser_id must be numeric, got 'alice'\u201d tells it what to fix; \u201cinvalid input\u201d does not." },
       { t: "p", text: "An unhandled exception does the opposite \u2014 it propagates out of the loop and kills the run. 3.7 shows both, and the difference between a self-correcting agent and a 500 is which kind of exception a tool raises." }
     ] },
+    { t: "code", lang: "python", title: "The prebuilt tools, and why the search one is the usual first demo",
+      code: `from langchain_community.tools import DuckDuckGoSearchRun, DuckDuckGoSearchResults
+from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_community.tools import WikipediaQueryRun
+
+search = DuckDuckGoSearchRun()           # needs no API key -- hence every tutorial
+search.invoke("langgraph checkpointer")  # returns one blob of text
+
+results = DuckDuckGoSearchResults(output_format="list", max_results=4)
+results.invoke("langgraph checkpointer")
+# [{'snippet': ..., 'title': ..., 'link': ...}, ...]
+
+# THE DIFFERENCE MATTERS MORE THAN IT LOOKS. The Run variant returns prose with
+# no URLs, so the model cannot cite anything and you cannot verify a claim. The
+# Results variant returns structured items with links, which is what a grounded
+# answer needs -- so prefer it in anything beyond a demo.
+
+# AND THE PRODUCTION CAVEAT: the free endpoint rate-limits aggressively and
+# returns nothing rather than an error when it does, which looks exactly like
+# "the search found no results". A paid API -- Tavily, Brave, Exa -- is the
+# usual replacement, and the tool interface is the same shape.`,
+      caption: "**The `Run` variant returns prose with no links and the `Results` variant returns structured items with URLs** — which decides whether the agent can cite anything at all, so the choice is about groundedness rather than formatting. Reach for `Results` in anything that will be read by a user." },
+    { t: "p", text: "**The failure mode in production is the one to know before it happens: the free endpoint rate-limits by returning nothing rather than an error**, which is indistinguishable from a search that found no results — so an agent reports \u201cI could not find anything\u201d and the logs show a successful tool call. A paid search API is the fix, and the tool interface is identical, so it is a one-line swap." },
+
     { t: "exercise", kind: "build", title: "Write a tool the model will actually call",
       difficulty: "core", minutes: 24,
       body: "Define a tool with the decorator and inspect everything it sends to the model. Compare three descriptions of the same function and say what each lets the model infer. Build a tool with a Pydantic args_schema including a bounded integer, and confirm the bound is enforced. Then raise a ToolException on a bad argument and explain what an agent does with it.",

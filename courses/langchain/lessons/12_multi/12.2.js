@@ -96,6 +96,38 @@ EC.receiveLesson({
       { t: "p", text: "And a router would have decided that once, for free. So the test for a supervisor is whether there is something you want to **check or record between steps** \u2014 because that is what the extra model call per turn is buying." },
       { t: "p", text: "12.3's swarm is the comparison that makes this concrete: it removes the coordination turn entirely, and with it the place where any of those four things could live." }
     ] },
+    { t: "code", lang: "python", title: "The prebuilt supervisor, and what it is doing for you",
+      code: `from langgraph_supervisor import create_supervisor
+from langgraph.prebuilt import create_react_agent
+
+research = create_react_agent(llm, [search_tool], name="research",
+                              prompt="You research facts. Report findings only.")
+maths = create_react_agent(llm, [calculator], name="maths",
+                           prompt="You do arithmetic. Return the number.")
+
+app = create_supervisor(
+    agents=[research, maths],
+    model=llm,
+    prompt=("You manage two workers. Delegate one task at a time. "
+            "Do not do the work yourself."),
+    output_mode="last_message",          # or "full_history"
+).compile(checkpointer=InMemorySaver())
+
+# WHAT IT GENERATES: one handoff tool per agent, a supervisor node that calls
+# them, and edges from every agent back to the supervisor. That is exactly the
+# graph built by hand earlier in this lesson -- which is why it is worth
+# building once before using this.
+#
+# TWO ARGUMENTS THAT CHANGE BEHAVIOUR, not just output:
+#   output_mode="full_history" puts every worker's entire message list into the
+#     supervisor's context. Correct for an audit trail, and the fastest way to
+#     exhaust a context window with three workers and ten turns.
+#   name= on each agent is NOT cosmetic: it is the handoff tool's name, so it
+#     is what the model reads when choosing. "research" delegates; "agent_2"
+#     does not.`,
+      caption: "**`name=` on each agent becomes the handoff tool's name, which is the text the supervisor model reads when deciding** — so a descriptive name is a routing improvement and `agent_2` is a routing bug. The prebuilt generates exactly the graph this lesson builds by hand: a handoff tool per agent, a supervisor node, and an edge back from each worker." },
+    { t: "p", text: "**`output_mode=\"full_history\"` is the setting that quietly exhausts a context window:** every worker's complete message list lands in the supervisor's context, so three workers and ten turns each is a conversation nobody budgeted for. `last_message` keeps the supervisor's context proportional to the number of delegations rather than to the total work done, and is the right default until an audit trail requires otherwise." },
+
     { t: "exercise", kind: "build", title: "Build a supervisor and break it twice",
       difficulty: "core", minutes: 32,
       body: "Build a supervisor loop that routes between two workers until it decides to finish, counting its turns. Show what the workers shared and explain why the name field matters. Then make the supervisor name a worker that does not exist, with and without a default branch, and compare. Then make it never finish and bound it with a turn budget and a give-up node. Finally say what actually makes a supervisor worth its coordination cost.",

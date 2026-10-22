@@ -232,6 +232,33 @@ EC.receiveLesson({
       code: 'from langchain_openai import ChatOpenAI\nfrom langchain_anthropic import ChatAnthropic\n\nmodel = ChatOpenAI(model="gpt-4o-mini", temperature=0, max_retries=2)\nmodel = ChatAnthropic(model="claude-sonnet-4-5", max_retries=2)\n\n# or without naming the provider in your code at all:\nfrom langchain.chat_models import init_chat_model\nmodel = init_chat_model("gpt-4o-mini", model_provider="openai", temperature=0)',
       caption: "Different constructors, the same `BaseChatModel` interface below them." },
     { t: "p", text: "Which is this lesson’s point from the other end: every example in this course uses a fake model because the **interface** is what the course is about, and swapping `FakeChatModel` for either line above changes nothing downstream. Note `max_retries` on the constructor — provider clients retry internally, so a `with_retry` wrapper is a **second** retry policy stacked on one you may not know is there (4.6, 14.2)." },
+    { t: "code", lang: "python", title: "The provider packages, and the three places they stop being interchangeable",
+      code: `from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_vertexai import ChatVertexAI
+from langchain_ollama import ChatOllama
+
+# Same interface, same invoke, same message objects:
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", temperature=0)
+llm = ChatAnthropic(model="claude-sonnet-4-5", max_tokens=1024)
+llm = ChatOllama(model="llama3.1")                    # local, no key
+
+# TWO GOOGLE PACKAGES, and the difference is the account rather than the model:
+#   langchain_google_genai   the Gemini API, an API key, fastest to start
+#   langchain_google_vertexai  Vertex AI, application-default credentials, IAM,
+#                              VPC controls, and the regional endpoints
+# The same model id serves both; only the auth and the governance change.
+
+# WHERE THE ABSTRACTION ENDS, and it is always these three:
+#   max_tokens -- required by Anthropic, optional elsewhere
+#   system messages -- a first-class parameter for Anthropic, a message in the
+#     list for OpenAI, and Gemini has its own system_instruction
+#   the content block shape for images, PDFs and citations differs per provider,
+#     so a multimodal message is NOT portable even though a text one is`,
+      caption: "**A text-only chain really is portable across these packages, and a multimodal one is not** — the content-block shape for images and documents is provider-specific, so the swap that works in a demo breaks on the first attachment. `max_tokens` is the other asymmetry: Anthropic requires it, so a chain written against OpenAI fails on its first Anthropic call." },
+    { t: "p", text: "**The two Google packages are a governance choice, not a model choice:** `langchain_google_genai` talks to the Gemini API with a key and is the fastest way to start, while `langchain_google_vertexai` goes through Vertex AI with application-default credentials, which is what gives you IAM, VPC controls and a regional endpoint. The same model id works through both." },
+
     { t: "exercise", kind: "build", title: "Implement a chat model and measure the protocol",
       difficulty: "core", minutes: 28,
       body: "Build a scripted chat model by implementing the one required method, and confirm which protocol methods the base class then provides. Show the four message types including a tool-call pair. Then demonstrate that three different chain constructions produce an identical message list, and measure what invoke, batch and batch-with-concurrency-limit actually cost on the same six inputs.",

@@ -124,6 +124,37 @@ EC.receiveLesson({
       code: '# tracing is two environment variables, and no code change:\n#   LANGSMITH_TRACING=true\n#   LANGSMITH_API_KEY=...\n\nfrom langsmith import traceable\nfrom langsmith.evaluation import evaluate\n\n@traceable(name="retrieve")          # a non-LangChain function, in the tree\ndef retrieve(q): ...\n\nevaluate(lambda inputs: app.invoke(inputs),\n         data="support-questions-v3",\n         evaluators=[correctness, has_citation],\n         experiment_prefix="rerank-top5")',
       caption: "The same span tree, queryable — and `experiment_prefix` is what makes two runs comparable." },
     { t: "p", text: "Two things are worth separating here. The **tree** is the same one this lesson built by hand, which is why the handler is worth writing once: a hosted tracer gives you storage, search and a diff across runs, not a different data model. And `@traceable` is the part that matters for §01’s argument — a run is only a complete tree if the functions **between** the LangChain calls are in it, and those are exactly the ones no callback can see." },
+    { t: "code", lang: "python", title: "Exporting the same traces to OpenTelemetry instead of, or as well as, LangSmith",
+      code: `from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+
+provider = TracerProvider()
+provider.add_span_processor(BatchSpanProcessor(
+    OTLPSpanExporter(endpoint="http://collector:4317", insecure=True)))
+trace.set_tracer_provider(provider)
+
+# WHY THIS RATHER THAN THE VENDOR TRACER: the LLM spans now sit in the SAME
+# trace as the HTTP request, the database queries and the downstream services.
+# A slow answer becomes one waterfall instead of two systems to correlate by
+# timestamp, which is the whole reason to care.
+
+tracer = trace.get_tracer(__name__)
+with tracer.start_as_current_span("answer_question") as span:
+    span.set_attribute("gen_ai.request.model", "gpt-4o-mini")   # the semantic
+    span.set_attribute("gen_ai.usage.input_tokens", usage.input_tokens)
+    span.set_attribute("gen_ai.usage.output_tokens", usage.output_tokens)
+    result = chain.invoke(question)
+
+# USE THE gen_ai.* SEMANTIC CONVENTIONS rather than inventing attribute names:
+# they are what makes a dashboard portable between backends, and what lets a
+# vendor's LLM view work on traces your own code emitted.
+# BatchSpanProcessor, not SimpleSpanProcessor -- the simple one exports on the
+# request path and adds its latency to every answer.`,
+      caption: "**The reason to export to OpenTelemetry is that the model calls land in the same trace as the HTTP request and the database queries** — a slow answer becomes one waterfall rather than two systems correlated by timestamp. The vendor tracer gives a better LLM-specific view and cannot show you the query that was actually slow." },
+    { t: "p", text: "**Use the `gen_ai.*` semantic conventions rather than attribute names of your own**, because that is what makes the dashboards portable and lets a vendor's LLM view read traces your own code emitted. And `BatchSpanProcessor` rather than `SimpleSpanProcessor`: the simple one exports synchronously on the request path, so its network call is added to every answer's latency." },
+
     { t: "exercise", kind: "build", title: "Build a tracer and read it",
       difficulty: "advanced", minutes: 26,
       body: "Write a callback handler that maintains a depth counter and records each span's name and duration, producing an indented tree. Run it on a nested chain containing a deliberately slow model call. Print the tree, then compute what share of the run the model call took and what was left for everything else. Finally, list the attributes worth attaching and say why they cannot be added later.",

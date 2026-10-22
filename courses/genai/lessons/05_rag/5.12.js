@@ -212,6 +212,32 @@ SV = enc.encode(SCHEMA_DOCS, normalize_embeddings=True)`,
         { t: "p", text: "And it needs the obvious guard rails: a read-only connection, a statement timeout, and a row limit. An LLM writing SQL against a production database with write permissions is a different lesson entirely." }
       ] },
 
+    { t: "code", lang: "python", title: "Text-to-SQL and the dataframe agent, and the sandbox question each one raises",
+      code: `from langchain_community.utilities import SQLDatabase
+from langchain.chains import create_sql_query_chain
+from langchain_experimental.agents import create_pandas_dataframe_agent
+
+# TEXT-TO-SQL, in the shape that is safe to run:
+db = SQLDatabase.from_uri("postgresql+psycopg://readonly@host/db",
+                          include_tables=["orders", "customers"],   # the schema the model sees
+                          sample_rows_in_table_info=3)              # rows help it a lot
+chain = create_sql_query_chain(llm, db)
+sql = chain.invoke({"question": "revenue by region last quarter"})
+# NOTE WHAT THIS RETURNS: the SQL, as text. It does not execute it, which is the
+# whole point -- the generated query is reviewable, loggable and refusable
+# before anything touches the database.
+
+# include_tables is a real control: a model shown 400 tables picks the wrong one,
+# and a model shown the three that matter usually gets it right first time.
+
+# THE DATAFRAME AGENT exists and carries a warning the API makes explicit:
+agent = create_pandas_dataframe_agent(llm, df, allow_dangerous_code=True)
+# It works by generating Python and running it with exec. The flag is named
+# honestly. In production this belongs in a sandboxed process with no network
+# and no filesystem, or not at all.`,
+      caption: "**`create_sql_query_chain` returns the SQL as text rather than executing it, and that separation is the design**: the generated query can be logged, reviewed against an allowlist, and refused before it reaches a database. Connect as a read-only role regardless, and give the model only the tables the question could need — a model shown four hundred tables picks the wrong one." },
+    { t: "p", text: "**The dataframe agent's `allow_dangerous_code=True` is an honestly named argument:** it generates Python and executes it, so the question is not whether the model is well behaved but what the process can reach. A sandboxed worker with no network and no filesystem makes it usable; a notebook on an analyst's laptop with production credentials in the environment does not." },
+
     { t: "exercise", kind: "lab", title: "Demonstrate the failure, then build the fix", difficulty: "core", minutes: 30,
       body: "Put a table of at least a thousand rows into a vector store as natural-language sentences. Ask aggregate questions \u2014 a count, a sum, a maximum, a group-wise comparison \u2014 and compare what retrieval returns against the SQL answer. Quantify the fraction of the relevant evidence a top-k retrieval actually sees. Then build schema retrieval and confirm it selects the right columns.",
       requirements: [

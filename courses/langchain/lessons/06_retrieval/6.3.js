@@ -161,6 +161,33 @@ EC.receiveLesson({
       code: "exact terms   : R@5 1.000  MRR 1.000   (dense was 0.875 / 0.781)\nnatural       : R@5 0.357  MRR 0.286   (dense was 1.000 / 0.964)",
       caption: "Perfect on the class dense missed; far worse on the class dense handled." },
     { t: "p", text: "The worst single case is `I forgot my password`, which scores above zero on **0 of 41** documents. The relevant document says *\u201cCredential recovery \u2026 signed recovery link\u201d* and contains neither *forgot* nor *password*. No value of `k1` or `b` reaches that, because the term is not in the document at all \u2014 it is the one failure lexical tuning cannot touch, and 6.4 shows what BM25 returns anyway." },
+    { t: "code", lang: "python", title: "BM25Retriever, and where it stops being the right implementation",
+      code: `from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
+
+bm25 = BM25Retriever.from_documents(docs, k=5)
+bm25.invoke("refund window for annual plans")
+
+# A CUSTOM PREPROCESSOR IS USUALLY WORTH IT, because the default splits on
+# whitespace and nothing else -- so "refund," and "refund" are different terms:
+bm25 = BM25Retriever.from_documents(
+    docs, k=5,
+    preprocess_func=lambda t: re.findall(r"[a-z0-9]+", t.lower()))
+
+# THE HYBRID FORM, which is what this module is building towards:
+hybrid = EnsembleRetriever(retrievers=[bm25, vector.as_retriever(search_kwargs={"k": 5})],
+                           weights=[0.4, 0.6])
+# EnsembleRetriever fuses with reciprocal rank fusion (6.5), so the weights act
+# on RANKS rather than on scores -- which is exactly what makes it safe to
+# combine a BM25 score with a cosine similarity.
+
+# WHERE IT STOPS: BM25Retriever holds every document in memory and scores all
+# of them per query. Thousands of documents, fine. A million, no -- and the
+# lexical side then belongs in OpenSearch or in the vector store's own sparse
+# vectors, where the inverted index does the work.`,
+      caption: "**`EnsembleRetriever` fuses on ranks rather than scores, which is the only reason combining BM25 with cosine similarity is sound** — the two score scales have nothing in common, and reciprocal rank fusion never compares them. The weights act on the fused ranks." },
+    { t: "p", text: "**The default tokeniser splits on whitespace only, so punctuation becomes part of the term** and \u201crefund,\u201d never matches \u201crefund\u201d — a `preprocess_func` is a one-line fix that measurably moves recall. And the scaling limit is hard rather than gradual: this implementation scores the whole corpus per query, so past a few hundred thousand documents the lexical half has to move to an inverted index." },
+
     { t: "exercise", kind: "build", title: "Implement BM25 from the formula",
       difficulty: "advanced", minutes: 36,
       body: "Implement BM25 scoring term by term and show each query term's contribution to one document. Verify against rank_bm25, being careful about tied scores. Compare the two IDF variants on rare and common terms, and find the corpus size where the library's variant breaks down. Sweep k1 and b, explain the result algebraically, and construct a corpus where k1 does reorder. Finally, measure both query classes.",
