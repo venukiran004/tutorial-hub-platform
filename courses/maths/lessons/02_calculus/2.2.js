@@ -194,9 +194,9 @@ g @ u_perp                                 # 0.0
 
     { t: "p", text: "Those four give you the normal equations in three lines, which is worth doing once because every regression result in the course rests on it." },
 
-    { t: "math", tex: "L = \lVert Xw - y \rVert^2 = w^\top X^\top X w - 2 w^\top X^\top y + y^\top y" },
+    { t: "math", tex: "L = \\lVert Xw - y \\rVert^2 = w^\\top X^\\top X w - 2 w^\\top X^\\top y + y^\\top y" },
 
-    { t: "math", tex: "\frac{\partial L}{\partial w} = 2X^\top X w - 2X^\top y = 0 \;\Longrightarrow\; w^* = (X^\top X)^{-1} X^\top y" },
+    { t: "math", tex: "\\frac{\\partial L}{\\partial w} = 2X^\\top X w - 2X^\\top y = 0 \\;\\Longrightarrow\\; w^* = (X^\\top X)^{-1} X^\\top y" },
 
     { t: "callout", kind: "insight", title: "The closed form is a derivation, not a recipe",
       body: [{ t: "p", text: "`XᵀX` is symmetric, so the middle term differentiates to `2XᵀXw` by the third identity, and the linear term to `2Xᵀy` by the first. Setting the gradient to zero is what makes it a minimum — and it only *is* a minimum because `XᵀX` is positive semi-definite, which is the Hessian argument of the next section. Lesson 1.7 explains why you should never actually compute that inverse." }] },

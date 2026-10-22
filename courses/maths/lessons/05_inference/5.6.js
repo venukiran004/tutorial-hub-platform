@@ -291,7 +291,7 @@ stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
 
     { t: "p", text: "One-way ANOVA compares groups on a single factor. **Two-way ANOVA takes two factors at once and asks a third question neither can answer alone**: whether the effect of one depends on the level of the other. That third question is usually the interesting one." },
 
-    { t: "math", tex: "X_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij} + \varepsilon_{ijk}" },
+    { t: "math", tex: "X_{ijk} = \\mu + \\alpha_i + \\beta_j + (\\alpha\\beta)_{ij} + \\varepsilon_{ijk}" },
 
     { t: "dl", items: [
       ["`αᵢ` — main effect of A", "Does factor A shift the mean at all, averaging over B? `H₀: all αᵢ = 0`."],
