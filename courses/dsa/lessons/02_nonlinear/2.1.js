@@ -31,6 +31,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "viz",
       title: "The same graph, two orders",
       caption: "The only difference in code is a queue versus a stack. That single substitution changes the traversal order, what the algorithm can guarantee, and which problems it solves.",
@@ -146,6 +147,8 @@ while queue:
 
     { t: "h2", n: "02", text: "Choosing", id: "choosing" },
 
+    {"kind": "tree", "title": "Read the question, then pick the traversal", "caption": "**One question decides it: what is the answer shaped like?** If it is a distance, BFS reaches the nearest node first and you stop on discovery. If it is a path or a cycle, DFS is the only one whose call stack already holds the answer. **And the row people get wrong in interviews: BFS on a weighted graph gives the fewest edges, not the shortest distance** — swap the queue for a min-heap and the same template becomes Dijkstra.", "root": {"label": "What does the question ask for?", "sub": "the answer's shape picks the traversal", "tone": "accent", "children": [{"label": "A distance, or a level", "sub": "shortest path, level order, nearest match", "tone": "good", "children": [{"label": "Edges all cost the same", "sub": "BFS - the first arrival is the nearest", "tone": "good"}, {"label": "Edges have weights", "sub": "Dijkstra - a min-heap, not a queue", "tone": "warn"}]}, {"label": "A path itself, or all of them", "sub": "and cycle detection", "tone": "violet", "children": [{"label": "DFS", "sub": "the recursion stack IS the current path", "tone": "violet"}, {"label": "A cycle", "sub": "DFS - it needs the recursion state", "tone": "violet"}]}, {"label": "Only whether a path exists", "sub": "either works; DFS is usually less code", "tone": "teal"}, {"label": "A topological order", "sub": "DFS post-order, or Kahn's with BFS", "tone": "teal"}]}, "t": "diagram", "id": "dg-2_1-02-3"},
+
     { t: "table",
       head: ["The question asks for", "Use", "Why"],
       rows: [
@@ -221,6 +224,7 @@ def dijkstra(graph: dict[T, list[tuple[T, int]]], start: T) -> dict[T, int]:
     { t: "h2", n: "03", text: "Cycles", id: "cycles" },
 
     {"kind": "cycle", "title": "Detecting a cycle in a directed graph", "caption": "DFS colours nodes white (unvisited), grey (on the current path) and black (finished). Reaching a grey node from the current path is a back edge — a cycle. Topological sort is the same walk with the finish order reversed.", "nodes": [{"label": "A", "sub": "grey — on the path", "tone": "warn"}, {"label": "B", "sub": "grey", "tone": "warn"}, {"label": "C", "sub": "grey → edge back to A", "tone": "crit"}], "centre": "back edge = cycle", "t": "diagram", "id": "dg-2_1-03-1"},
+
 
 
 
@@ -345,6 +349,7 @@ def topological_sort_dfs(graph) -> list[T]:
     { t: "h2", n: "04", text: "Recursion depth", id: "depth" },
 
     {"kind": "matrix", "title": "When recursion runs out of stack", "caption": "Python's default limit is 1000 frames, so a path-shaped tree of 10,000 nodes overflows a recursive DFS that an explicit stack handles without trouble. Raising the limit moves the crash rather than removing it.", "cols": ["recursive DFS", "explicit stack"], "rows": ["a balanced tree, 10⁶ nodes", "a path-shaped tree, 10⁴", "the depth limit", "reading the code"], "cells": [[{"text": "fine — depth is ~20", "tone": "good"}, {"text": "fine", "tone": "good"}], [{"text": "RecursionError", "tone": "crit"}, {"text": "fine", "tone": "good"}], [{"text": "1000 frames by default", "tone": "warn"}, {"text": "heap, not stack", "tone": "good"}], [{"text": "shorter and clearer", "tone": "good"}, {"text": "more code", "tone": "warn"}]], "t": "diagram", "id": "dg-2_1-04-2"},
+
 
 
     { t: "code", lang: "python", title: "when to convert to a stack", code: `

@@ -21,11 +21,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What an algorithm is, and how it is measured", id: "measure" },
 
+    {"kind": "trace", "title": "The same six growth rates, counted out at three input sizes", "caption": "**This table is the reason complexity is taught before anything else.** At n = 10 every row is instant and the distinction looks academic. At a million, O(n log n) is still a fraction of a second and O(n squared) is a million million steps — **hours of work for the same answer.** The last row is the one to remember by shape rather than by number: **O(2^n) at n = 1,000,000 is not slow, it is impossible**, and no faster machine changes that.", "left": "growth", "codeW": 120, "vars": ["n = 10", "n = 1,000", "n = 1,000,000"], "steps": [{"code": "O(1)", "state": ["1", "1", "1"], "tone": "good"}, {"code": "O(log n)", "state": ["3", "10", "20"], "changed": [0, 1, 2], "tone": "good"}, {"code": "O(n)", "state": ["10", "1,000", "1,000,000"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "O(n log n)", "state": ["33", "10,000", "20,000,000"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "O(n squared)", "state": ["100", "1,000,000", "a million million"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "O(2 to the n)", "state": ["1,024", "a 302-digit number", "impossible, not slow"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-3_2-01-3"},
+
     { t: "p", text: "An algorithm is a finite, unambiguous procedure that turns an input into an output. It is judged on correctness first and then on cost — time and memory — expressed as growth with input size: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ) (lesson 10.1). The paradigms below are strategies for *designing* one; the families in section 08 are the well-known results of applying them." },
 
     { t: "h2", n: "02", text: "Brute force", id: "brute" },
 
     {"kind": "timeline", "title": "What brute force costs as n grows", "caption": "Brute force is the right first answer and a wrong final one. The point of the paradigms that follow is to move a problem **up** this list — and the gap between the rows is why that matters more than any constant factor.", "span": 100, "tick": 20, "unit": "relative work, scaled, n = 20", "lanes": [{"label": "O(log n)", "bars": [[0, 2, "4", "good"]]}, {"label": "O(n)", "bars": [[0, 5, "20", "good"]]}, {"label": "O(n log n)", "bars": [[0, 12, "86", "accent"]]}, {"label": "O(n squared)", "bars": [[0, 28, "400", "warn"]]}, {"label": "O(2 to the n)", "bars": [[0, 70, "1,048,576", "crit"]]}, {"label": "O(n factorial)", "bars": [[0, 100, "2.4 x 10^18", "crit"]]}], "t": "diagram", "id": "dg-3_2-02-0"},
+
 
 
     { t: "p", text: "Try every candidate and keep the ones that work. It is always correct, usually exponential, and the right first move on any hard problem — because it gives you a test oracle to check the clever version against. Linear search is brute force; so is checking every pair for a two-sum; so is enumerating every permutation." },
@@ -78,6 +81,7 @@ for _ in range(1000):                            # the brute-force answer checks
     {"kind": "matrix", "title": "Greedy works, or it is wrong — there is no middle", "caption": "A greedy choice is correct only if a locally best move is part of some globally best answer. Coin change with 1, 3 and 4 is the standard counterexample: greedy takes 4 then 1 then 1 for three coins, where 3 and 3 is two.", "cols": ["greedy result", "optimal", "greedy correct?"], "rows": ["coins 1, 5, 10, 25 for 30", "coins 1, 3, 4 for 6", "intervals, by end time", "fractional knapsack"], "cells": [[{"text": "25 + 5 = 2 coins", "tone": "good"}, "2 coins", {"text": "yes, for this set", "tone": "good"}], [{"text": "4 + 1 + 1 = 3 coins", "tone": "crit"}, "3 + 3 = 2 coins", {"text": "NO", "tone": "crit"}], [{"text": "the maximum set", "tone": "good"}, "the same", {"text": "yes, provable", "tone": "good"}], [{"text": "the maximum value", "tone": "good"}, "the same", {"text": "yes, provable", "tone": "good"}]], "t": "diagram", "id": "dg-3_2-04-1"},
 
 
+
     { t: "p", text: "At each step take the locally best choice and never look back. When a locally best choice is provably globally best — Dijkstra, Huffman coding, interval scheduling by earliest finish, making change with standard coins — greedy is the fastest correct algorithm there is. When it is not provable, greedy is fast and wrong, and the coin problem shows both faces:" },
 
     { t: "code", lang: "python", title: "Greedy change-making: right for one coin set, wrong for another",
@@ -115,6 +119,8 @@ print(coins_dp(6, [1, 3, 4]))         # 2 — 3 + 3, which greedy could not find
 
     { t: "h2", n: "06", text: "Backtracking", id: "backtracking" },
 
+    {"kind": "cycle", "title": "Choose, explore, un-choose - and the prune that does the work", "caption": "**Every backtracking solution you will ever write is this loop.** The un-choose step is what makes it cheap: one set of sets serves every branch, because each branch tidies up after itself. And the prune is where the saving lives — **8-Queens by brute force is 16,777,216 boards, while abandoning a branch the moment two queens attack finds all 92 solutions in about two milliseconds.** Same search space, one check added.", "centre": "backtracking", "nodes": [{"label": "Choose", "sub": "place a queen in this column", "tone": "accent", "edge": "then"}, {"label": "Prune?", "sub": "attacked - abandon the branch", "tone": "crit", "edge": "if safe"}, {"label": "Explore", "sub": "recurse into the next row", "tone": "good", "edge": "on return"}, {"label": "Un-choose", "sub": "remove it, try the next column", "tone": "violet", "edge": "repeat"}], "t": "diagram", "id": "dg-3_2-06-4"},
+
     { t: "p", text: "Build a solution one decision at a time; the moment a partial solution breaks a constraint, undo the last decision and try the next option. It is brute force with pruning, and the pruning is everything: N-Queens by brute force means trying 8⁸ = 16,777,216 boards, while backtracking abandons a branch as soon as two queens attack." },
 
     { t: "code", lang: "python", title: "N-Queens by backtracking",
@@ -139,6 +145,7 @@ print(nqueens(8))     # 92 solutions, 2 ms here — against 16,777,216 boards fo
     { t: "h2", n: "07", text: "Randomised algorithms", id: "random" },
 
     {"kind": "matrix", "title": "Two kinds of randomised algorithm", "caption": "A Las Vegas algorithm is always right and takes a random amount of time; a Monte Carlo one is fast and sometimes wrong. Which you can tolerate is a product question, not an algorithmic one.", "cols": ["always correct?", "running time", "the example"], "rows": ["Las Vegas", "Monte Carlo"], "cells": [[{"text": "YES", "tone": "good"}, {"text": "random", "tone": "warn"}, "randomised quicksort"], [{"text": "no — bounded error", "tone": "warn"}, {"text": "fixed", "tone": "good"}, "Miller-Rabin primality"]], "t": "diagram", "id": "dg-3_2-07-2"},
+
 
 
     { t: "p", text: "Sometimes the worst case only bites when the input is adversarial, and a random choice makes every input average: quicksort with a random pivot is O(n log n) in expectation on *every* input, where a fixed pivot is O(n²) on sorted data. And sometimes an exact answer is too expensive but an estimate is enough — Monte Carlo methods sample and count." },

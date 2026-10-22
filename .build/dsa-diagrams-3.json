@@ -1,0 +1,46 @@
+{
+ "2.1": [
+  {"after": "02",
+   "d": {"kind": "tree",
+         "title": "Read the question, then pick the traversal",
+         "caption": "**One question decides it: what is the answer shaped like?** If it is a distance, BFS reaches the nearest node first and you stop on discovery. If it is a path or a cycle, DFS is the only one whose call stack already holds the answer. **And the row people get wrong in interviews: BFS on a weighted graph gives the fewest edges, not the shortest distance** — swap the queue for a min-heap and the same template becomes Dijkstra.",
+         "root": {"label": "What does the question ask for?", "sub": "the answer's shape picks the traversal", "tone": "accent",
+                  "children": [
+                   {"label": "A distance, or a level", "sub": "shortest path, level order, nearest match", "tone": "good",
+                    "children": [
+                     {"label": "Edges all cost the same", "sub": "BFS - the first arrival is the nearest", "tone": "good"},
+                     {"label": "Edges have weights", "sub": "Dijkstra - a min-heap, not a queue", "tone": "warn"}]},
+                   {"label": "A path itself, or all of them", "sub": "and cycle detection", "tone": "violet",
+                    "children": [
+                     {"label": "DFS", "sub": "the recursion stack IS the current path", "tone": "violet"},
+                     {"label": "A cycle", "sub": "DFS - it needs the recursion state", "tone": "violet"}]},
+                   {"label": "Only whether a path exists", "sub": "either works; DFS is usually less code", "tone": "teal"},
+                   {"label": "A topological order", "sub": "DFS post-order, or Kahn's with BFS", "tone": "teal"}]}}}
+ ],
+
+ "3.2": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "The same six growth rates, counted out at three input sizes",
+         "caption": "**This table is the reason complexity is taught before anything else.** At n = 10 every row is instant and the distinction looks academic. At a million, O(n log n) is still a fraction of a second and O(n squared) is a million million steps — **hours of work for the same answer.** The last row is the one to remember by shape rather than by number: **O(2^n) at n = 1,000,000 is not slow, it is impossible**, and no faster machine changes that.",
+         "left": "growth", "codeW": 120,
+         "vars": ["n = 10", "n = 1,000", "n = 1,000,000"],
+         "steps": [
+          {"code": "O(1)", "state": ["1", "1", "1"], "tone": "good"},
+          {"code": "O(log n)", "state": ["3", "10", "20"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "O(n)", "state": ["10", "1,000", "1,000,000"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "O(n log n)", "state": ["33", "10,000", "20,000,000"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "O(n squared)", "state": ["100", "1,000,000", "a million million"], "changed": [0, 1, 2], "tone": "warn"},
+          {"code": "O(2 to the n)", "state": ["1,024", "a 302-digit number", "impossible, not slow"], "changed": [0, 1, 2], "tone": "crit"}]}},
+  {"after": "06",
+   "d": {"kind": "cycle",
+         "title": "Choose, explore, un-choose - and the prune that does the work",
+         "caption": "**Every backtracking solution you will ever write is this loop.** The un-choose step is what makes it cheap: one set of sets serves every branch, because each branch tidies up after itself. And the prune is where the saving lives — **8-Queens by brute force is 16,777,216 boards, while abandoning a branch the moment two queens attack finds all 92 solutions in about two milliseconds.** Same search space, one check added.",
+         "centre": "backtracking",
+         "nodes": [
+          {"label": "Choose", "sub": "place a queen in this column", "tone": "accent", "edge": "then"},
+          {"label": "Prune?", "sub": "attacked - abandon the branch", "tone": "crit", "edge": "if safe"},
+          {"label": "Explore", "sub": "recurse into the next row", "tone": "good", "edge": "on return"},
+          {"label": "Un-choose", "sub": "remove it, try the next column", "tone": "violet", "edge": "repeat"}]}}
+ ]
+}
