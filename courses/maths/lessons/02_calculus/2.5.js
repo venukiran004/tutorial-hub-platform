@@ -129,6 +129,7 @@ r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
 
 
 
+
     { t: "p", text: "The **KKT conditions** extend Lagrange multipliers to inequality constraints, and they are best read as a four-item checklist. For a convex problem they are necessary *and* sufficient, so satisfying them proves you have found the global optimum." },
 
     { t: "dl", items: [
@@ -195,6 +196,8 @@ for bound in (5.0, 2.0):
     },
 
     { t: "h2", n: "03", text: "Regularisation is a constraint in disguise", id: "regularisation" },
+
+    {"kind": "compare", "title": "A ball has no corners; a diamond has them on the axes", "caption": "**This is the picture everyone half-remembers, and the reason behind it is one sentence: a corner of the L1 diamond is a point where a coordinate is exactly zero.** The optimum of a smooth objective meets a smooth ball at a generic point, so L2 shrinks every weight and zeroes none; it meets a diamond at a corner, so L1 sets coordinates to exactly zero. Both forms are the same problem written twice — and **the correspondence is inverse: a generous budget is a weak penalty.** Measured, with alpha at 0, 1 and 100, the squared norm goes 21.7, 20.6, 9.4.", "columns": [{"title": "L2, ridge - the constraint set is a ball", "tone": "accent", "items": ["smooth everywhere, no corners", "the optimum touches it at a generic point", "every weight shrinks, none reaches zero", "a unique solution, and a closed form", "use it to control variance, not to select"]}, {"title": "L1, lasso - the constraint set is a diamond", "tone": "violet", "items": ["corners, and each one sits on an axis", "the optimum lands on a corner", "a corner means a coordinate is exactly zero", "so it selects features as a side effect", "no closed form; solved by coordinate descent"]}], "t": "diagram", "id": "dg-2_5-03-1"},
 
     { t: "p", text: "**Ridge and lasso are constrained problems written as penalties.** Minimising `‖y − Xw‖² + α‖w‖²` is the Lagrangian of minimising the error subject to a budget on `‖w‖²`, with `α` playing the part of the multiplier." },
 

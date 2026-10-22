@@ -116,6 +116,7 @@ f(2.001) - f(2.0)          # 0.004001  -- the prediction was 0.004
 
 
 
+
     { t: "p", text: "**The chain rule says that composed functions multiply their sensitivities.** If `x` affects `u` and `u` affects `y`, then a nudge to `x` reaches `y` scaled by both factors — and this single rule, applied layer by layer, is the whole of backpropagation." },
 
     { t: "dl", items: [
@@ -240,6 +241,8 @@ a = 1 / (1 + np.exp(-z))
     ]},
 
     { t: "h2", n: "04", text: "Where derivatives do not exist", id: "nondiff" },
+
+    {"kind": "flow", "title": "How one zero vector becomes a dead model", "caption": "**The value is fine and the derivative is not.** d/ds of the square root of s is 1/(2 times the root of s), which at s = 0 divides by zero — so the gradient is 0/0, a NaN, and NaN spreads to every parameter it touches. The model then dies several steps later, far from the cause. **And note where the epsilon goes: inside the root.** Writing the root of s plus eps leaves the derivative infinite and looks exactly like a fix, which is the most common way to write this repair and not make it.", "cols": 3, "nodes": [{"id": "v", "label": "A vector that is exactly zero", "sub": "one sample in a batch, two equal points", "tone": "accent"}, {"id": "n", "label": "norm = root of the sum of squares", "sub": "value 0.0 - perfectly fine", "tone": "good"}, {"id": "d", "label": "Its derivative is v over the norm", "sub": "0/0", "tone": "crit"}, {"id": "p", "label": "NaN spreads to every parameter", "sub": "the loss dies steps later", "tone": "crit"}, {"id": "f", "label": "Fix: eps INSIDE the root", "sub": "root of (sum of squares + 1e-12)", "tone": "violet"}, {"id": "w", "label": "Not: root of the sum, plus eps", "sub": "the derivative is still infinite", "tone": "warn"}], "edges": [["v", "n"], ["n", "d"], ["d", "p"], ["p", "f"], ["f", "w", "looks the same"]], "t": "diagram", "id": "dg-2_1-04-1"},
 
     { t: "p", text: "Several functions used every day are not differentiable everywhere, and frameworks handle this by convention rather than by mathematics. **ReLU has no derivative at zero, and `|x|` has none either** — knowing what the library substitutes is occasionally the difference between a working model and a silent `NaN`." },
 

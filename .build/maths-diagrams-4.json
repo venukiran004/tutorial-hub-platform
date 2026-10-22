@@ -1,0 +1,127 @@
+{
+ "2.1": [
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "How one zero vector becomes a dead model",
+         "caption": "**The value is fine and the derivative is not.** d/ds of the square root of s is 1/(2 times the root of s), which at s = 0 divides by zero — so the gradient is 0/0, a NaN, and NaN spreads to every parameter it touches. The model then dies several steps later, far from the cause. **And note where the epsilon goes: inside the root.** Writing the root of s plus eps leaves the derivative infinite and looks exactly like a fix, which is the most common way to write this repair and not make it.",
+         "cols": 3,
+         "nodes": [
+          {"id": "v", "label": "A vector that is exactly zero", "sub": "one sample in a batch, two equal points", "tone": "accent"},
+          {"id": "n", "label": "norm = root of the sum of squares", "sub": "value 0.0 - perfectly fine", "tone": "good"},
+          {"id": "d", "label": "Its derivative is v over the norm", "sub": "0/0", "tone": "crit"},
+          {"id": "p", "label": "NaN spreads to every parameter", "sub": "the loss dies steps later", "tone": "crit"},
+          {"id": "f", "label": "Fix: eps INSIDE the root", "sub": "root of (sum of squares + 1e-12)", "tone": "violet"},
+          {"id": "w", "label": "Not: root of the sum, plus eps", "sub": "the derivative is still infinite", "tone": "warn"}],
+         "edges": [["v", "n"], ["n", "d"], ["d", "p"], ["p", "f"], ["f", "w", "looks the same"]]}}
+ ],
+
+ "2.2": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "Why the gradient is the steepest direction, in four steps",
+         "caption": "**This is a theorem, not a definition, and the proof is the dot product from lesson 1.1.** The rate of change along a unit direction u is grad dot u, which equals the length of the gradient times cos θ — and that is largest when cos θ = 1, so u must point along the gradient. Run it numerically and both agree: **the best direction found by search is 20.56°, the gradient's own angle is 20.56°, and the best rate is 8.544, which is the gradient's length.** Descent is the same statement with cos θ = −1.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "Rate along a direction u", "sub": "the directional derivative, grad dot u", "tone": "accent"},
+          {"id": "c", "label": "= length of grad, times cos of the angle", "sub": "the geometric reading of a dot product", "tone": "good"},
+          {"id": "m", "label": "Largest when cos = 1", "sub": "so u points along grad - steepest ascent", "tone": "good"},
+          {"id": "d", "label": "Smallest when cos = -1", "sub": "so descent goes along minus grad", "tone": "violet"},
+          {"id": "z", "label": "Zero when cos = 0", "sub": "move along a contour and nothing changes", "tone": "teal"},
+          {"id": "s", "label": "And the steepness IS the length", "sub": "8.544 by search, 8.544 by norm", "tone": "warn"}],
+         "edges": [["r", "c"], ["c", "m"], ["c", "d"], ["c", "z"], ["m", "s"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "A valley stretched 100 to 1, and what it costs per step",
+         "caption": "**Every number here comes from two eigenvalues: 10 and 0.1.** The largest one caps the step size, the smallest one sets the speed, and their ratio — the condition number — decides everything. At the best possible learning rate the worst direction still only contracts 2% per step, so **cutting the error tenfold takes about 114 steps, and no learning-rate tuning will change that.** The last row is the punchline: multiply the whole Hessian by 1,000 and the conditioning is identical. **A learning rate can be tuned; a condition number has to be fixed** — which is what normalisation and preconditioning are for.",
+         "left": "quantity", "codeW": 210,
+         "vars": ["value", "set by"],
+         "steps": [
+          {"code": "eigenvalues of the Hessian", "state": ["10 and 0.1", "the curvature in each direction"], "tone": "accent"},
+          {"code": "largest stable learning rate", "state": ["0.2", "the LARGEST eigenvalue"], "changed": [0, 1], "tone": "warn"},
+          {"code": "optimal learning rate", "state": ["0.198", "both ends together"], "changed": [0, 1], "tone": "good"},
+          {"code": "condition number", "state": ["100", "largest over smallest"], "changed": [0, 1], "tone": "violet"},
+          {"code": "contraction per step", "state": ["0.980 - 2% progress", "the condition number"], "changed": [0, 1], "tone": "crit"},
+          {"code": "steps to cut the error 10x", "state": ["about 114", "the condition number"], "changed": [0, 1], "tone": "crit"},
+          {"code": "the same Hessian times 1000", "state": ["condition number 100", "UNCHANGED - scale is not the issue"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "2.3": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Gradient noise as an escape mechanism, not a tolerated cost",
+         "caption": "**Start a full-batch run exactly on a saddle and it never moves: the gradient is zero, so the update is zero, forever.** Add mini-batch noise and the asymmetry does the work — the nudge is random in every coordinate, but only the negative-curvature direction *amplifies* its own perturbation, while the positive-curvature one is pushed back toward zero. Sixty noisy steps later the escaping coordinate is at 0.62 and accelerating. **Which is the real trade in batch-size tuning: a bigger batch buys a cleaner gradient and less of this.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "Sitting exactly on a saddle", "sub": "up in x, down in y", "tone": "accent"},
+          {"id": "f", "label": "Full batch: the gradient is zero", "sub": "stuck after 1,000 steps", "tone": "crit"},
+          {"id": "n", "label": "Mini-batch noise nudges both", "sub": "randomly, in every coordinate", "tone": "violet"},
+          {"id": "a", "label": "Only negative curvature amplifies it", "sub": "positive curvature pushes back", "tone": "good"},
+          {"id": "e", "label": "Escaped: 0.62 after 60 steps", "sub": "and accelerating away", "tone": "good"},
+          {"id": "b", "label": "So a bigger batch means less of this", "sub": "variance down, plateau risk up", "tone": "warn"}],
+         "edges": [["s", "f"], ["s", "n"], ["n", "a"], ["a", "e"], ["e", "b"]]}}
+ ],
+
+ "2.4": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The function of the average, against the average of the function",
+         "caption": "**Jensen's inequality is one sentence with three famous consequences, and all of them are in this table.** For a convex function the function of the average is the smaller; for a concave one it is the larger. Apply it to squaring and you get E[X]² ≤ E[X²], **which is precisely the statement that a variance cannot be negative** — not a separate fact about variance. Apply it to the logarithm and the arithmetic mean beats the geometric mean, and the same step gives the evidence lower bound that variational inference is built on.",
+         "left": "f, on the data 1, 2, 3, 10", "codeW": 210,
+         "vars": ["f(mean)", "mean of f", "so"],
+         "steps": [
+          {"code": "squaring - convex", "state": ["16.0", "28.5", "f(E) is SMALLER"], "tone": "accent"},
+          {"code": "logarithm - concave", "state": ["1.386", "1.156", "f(E) is LARGER"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "so E[X squared] - E[X] squared", "state": ["-", "12.5", "a variance cannot be negative"], "changed": [1, 2], "tone": "good"},
+          {"code": "so arithmetic vs geometric mean", "state": ["4.0", "2.783", "the arithmetic mean always wins"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "so log E[p] vs E[log p]", "state": ["-", "a computable bound", "the ELBO"], "changed": [1, 2], "tone": "violet"}]}}
+ ],
+
+ "2.5": [
+  {"after": "03",
+   "d": {"kind": "compare",
+         "title": "A ball has no corners; a diamond has them on the axes",
+         "caption": "**This is the picture everyone half-remembers, and the reason behind it is one sentence: a corner of the L1 diamond is a point where a coordinate is exactly zero.** The optimum of a smooth objective meets a smooth ball at a generic point, so L2 shrinks every weight and zeroes none; it meets a diamond at a corner, so L1 sets coordinates to exactly zero. Both forms are the same problem written twice — and **the correspondence is inverse: a generous budget is a weak penalty.** Measured, with alpha at 0, 1 and 100, the squared norm goes 21.7, 20.6, 9.4.",
+         "columns": [
+          {"title": "L2, ridge - the constraint set is a ball", "tone": "accent",
+           "items": ["smooth everywhere, no corners",
+                     "the optimum touches it at a generic point",
+                     "every weight shrinks, none reaches zero",
+                     "a unique solution, and a closed form",
+                     "use it to control variance, not to select"]},
+          {"title": "L1, lasso - the constraint set is a diamond", "tone": "violet",
+           "items": ["corners, and each one sits on an axis",
+                     "the optimum lands on a corner",
+                     "a corner means a coordinate is exactly zero",
+                     "so it selects features as a side effect",
+                     "no closed form; solved by coordinate descent"]}]}}
+ ],
+
+ "2.6": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "The correct digits double every step, until the guarantee stops applying",
+         "caption": "**Five iterations take a guess of 1.0 to the square root of 2 at machine precision** — that is what quadratic convergence means, and the third column is the whole story: 0, 1, 3, 6, then 12 or more correct digits. Nothing else in numerical computing is this fast. **The guarantee is local, though: near a simple root.** Away from one, a flat derivative divides by zero, an overshoot can cycle forever, and a function with no real root cannot converge to one — which is why production solvers bracket the root first and only then switch to Newton.",
+         "left": "iteration", "codeW": 120,
+         "vars": ["value", "correct digits"],
+         "steps": [
+          {"code": "x0", "state": ["1.0", "0"], "tone": "warn"},
+          {"code": "x1", "state": ["1.5", "1"], "changed": [0, 1], "tone": "accent"},
+          {"code": "x2", "state": ["1.4166666666666665", "3"], "changed": [0, 1], "tone": "accent"},
+          {"code": "x3", "state": ["1.4142156862745097", "6"], "changed": [0, 1], "tone": "good"},
+          {"code": "x4", "state": ["1.4142135623746899", "12"], "changed": [0, 1], "tone": "good"},
+          {"code": "x5", "state": ["1.4142135623730951", "machine precision"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "One backward pass, every gradient, at twice the cost of going forwards",
+         "caption": "**This single property is why training a billion-parameter model is possible at all.** Reverse mode records the operations the program actually ran, then walks that tape backwards applying each primitive's known derivative — and one walk produces the gradient with respect to *every* input, at roughly twice the cost of one forward pass, **no matter whether there are a thousand inputs or a billion.** Finite differences would need a billion and one evaluations for the same answer. The price is the tape: those stored intermediate values are what `.backward()` runs out of memory holding.",
+         "cols": 3,
+         "nodes": [
+          {"id": "f", "label": "Run the program, record a tape", "sub": "the operations actually executed", "tone": "accent"},
+          {"id": "b", "label": "Walk the tape backwards", "sub": "each primitive has an exact derivative", "tone": "good"},
+          {"id": "g", "label": "One walk gives EVERY gradient", "sub": "not one pass per input", "tone": "good"},
+          {"id": "c", "label": "Cost: about 2x one forward pass", "sub": "independent of the input count", "tone": "violet"},
+          {"id": "n", "label": "Finite differences: n+1 evaluations", "sub": "and about 8 correct digits at best", "tone": "warn"},
+          {"id": "m", "label": "The price is the tape in memory", "sub": "which is what backward runs out of", "tone": "crit"}],
+         "edges": [["f", "b"], ["b", "g"], ["g", "c"], ["c", "n", "against"], ["c", "m"]]}}
+ ]
+}

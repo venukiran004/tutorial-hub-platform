@@ -193,6 +193,8 @@ for t in range(1, steps + 1):
 
     { t: "h2", n: "03", text: "How much data per step", id: "batch" },
 
+    {"kind": "flow", "title": "Gradient noise as an escape mechanism, not a tolerated cost", "caption": "**Start a full-batch run exactly on a saddle and it never moves: the gradient is zero, so the update is zero, forever.** Add mini-batch noise and the asymmetry does the work — the nudge is random in every coordinate, but only the negative-curvature direction *amplifies* its own perturbation, while the positive-curvature one is pushed back toward zero. Sixty noisy steps later the escaping coordinate is at 0.62 and accelerating. **Which is the real trade in batch-size tuning: a bigger batch buys a cleaner gradient and less of this.**", "cols": 3, "nodes": [{"id": "s", "label": "Sitting exactly on a saddle", "sub": "up in x, down in y", "tone": "accent"}, {"id": "f", "label": "Full batch: the gradient is zero", "sub": "stuck after 1,000 steps", "tone": "crit"}, {"id": "n", "label": "Mini-batch noise nudges both", "sub": "randomly, in every coordinate", "tone": "violet"}, {"id": "a", "label": "Only negative curvature amplifies it", "sub": "positive curvature pushes back", "tone": "good"}, {"id": "e", "label": "Escaped: 0.62 after 60 steps", "sub": "and accelerating away", "tone": "good"}, {"id": "b", "label": "So a bigger batch means less of this", "sub": "variance down, plateau risk up", "tone": "warn"}], "edges": [["s", "f"], ["s", "n"], ["n", "a"], ["a", "e"], ["e", "b"]], "t": "diagram", "id": "dg-2_3-03-1"},
+
     { t: "p", text: "**Batch size decides how much data contributes to each gradient**, trading noise against compute. A full-dataset gradient is exact and expensive; a single-example gradient is cheap and extremely noisy — and that noise turns out to be useful rather than merely tolerable." },
 
     { t: "dl", items: [
@@ -279,6 +281,7 @@ loss = (pred - y).pow(2).sum()       # lr scales WITH batch size
     { t: "h2", n: "04", text: "Schedules", id: "schedules" },
 
     {"kind": "timeline", "title": "What a schedule does to the step size", "caption": "The same budget of steps, spent differently. A constant rate cannot both move quickly early and settle late, which is the whole argument for a schedule — and warmup exists because the very first steps of a large model are the least trustworthy.", "span": 100, "tick": 20, "unit": "% of training", "lanes": [{"label": "constant", "bars": [[0, 100, "never settles, or never moves", "crit"]]}, {"label": "step decay", "bars": [[0, 40, "high", "good"], [40, 75, "mid", "accent"], [75, 100, "low", "teal"]]}, {"label": "cosine", "bars": [[0, 100, "smooth, high to near zero", "good"]]}, {"label": "warmup + cosine", "bars": [[0, 8, "", "warn"], [8, 100, "ramp up, then decay", "good"]]}], "t": "diagram", "id": "dg-2_3-04-0"},
+
 
 
 

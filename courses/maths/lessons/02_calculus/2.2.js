@@ -114,6 +114,8 @@ np.allclose(H, H.T)                      # True -- always, for smooth f
 
     { t: "h2", n: "02", text: "Why the gradient points uphill", id: "steepest" },
 
+    {"kind": "flow", "title": "Why the gradient is the steepest direction, in four steps", "caption": "**This is a theorem, not a definition, and the proof is the dot product from lesson 1.1.** The rate of change along a unit direction u is grad dot u, which equals the length of the gradient times cos θ — and that is largest when cos θ = 1, so u must point along the gradient. Run it numerically and both agree: **the best direction found by search is 20.56°, the gradient's own angle is 20.56°, and the best rate is 8.544, which is the gradient's length.** Descent is the same statement with cos θ = −1.", "cols": 3, "nodes": [{"id": "r", "label": "Rate along a direction u", "sub": "the directional derivative, grad dot u", "tone": "accent"}, {"id": "c", "label": "= length of grad, times cos of the angle", "sub": "the geometric reading of a dot product", "tone": "good"}, {"id": "m", "label": "Largest when cos = 1", "sub": "so u points along grad - steepest ascent", "tone": "good"}, {"id": "d", "label": "Smallest when cos = -1", "sub": "so descent goes along minus grad", "tone": "violet"}, {"id": "z", "label": "Zero when cos = 0", "sub": "move along a contour and nothing changes", "tone": "teal"}, {"id": "s", "label": "And the steepness IS the length", "sub": "8.544 by search, 8.544 by norm", "tone": "warn"}], "edges": [["r", "c"], ["c", "m"], ["c", "d"], ["c", "z"], ["m", "s"]], "t": "diagram", "id": "dg-2_2-02-1"},
+
     { t: "p", text: "**The gradient points in the direction of steepest increase**, and this is a theorem rather than a definition — it follows from the dot product being maximised when two vectors align, which is the fact from lesson 1.1." },
 
     { t: "dl", items: [
@@ -176,6 +178,7 @@ g @ u_perp                                 # 0.0
 
 
 
+
     { t: "p", text: "Differentiating with respect to a vector looks unfamiliar and is mostly four results. Learn these and the derivations in the rest of this course stop needing a reference — every one is checkable by writing the scalar sum out and differentiating one component." },
 
     { t: "table",
@@ -199,6 +202,8 @@ g @ u_perp                                 # 0.0
       body: [{ t: "p", text: "`XᵀX` is symmetric, so the middle term differentiates to `2XᵀXw` by the third identity, and the linear term to `2Xᵀy` by the first. Setting the gradient to zero is what makes it a minimum — and it only *is* a minimum because `XᵀX` is positive semi-definite, which is the Hessian argument of the next section. Lesson 1.7 explains why you should never actually compute that inverse." }] },
 
     { t: "h2", n: "04", text: "The Hessian is curvature", id: "hessian" },
+
+    {"kind": "trace", "title": "A valley stretched 100 to 1, and what it costs per step", "caption": "**Every number here comes from two eigenvalues: 10 and 0.1.** The largest one caps the step size, the smallest one sets the speed, and their ratio — the condition number — decides everything. At the best possible learning rate the worst direction still only contracts 2% per step, so **cutting the error tenfold takes about 114 steps, and no learning-rate tuning will change that.** The last row is the punchline: multiply the whole Hessian by 1,000 and the conditioning is identical. **A learning rate can be tuned; a condition number has to be fixed** — which is what normalisation and preconditioning are for.", "left": "quantity", "codeW": 210, "vars": ["value", "set by"], "steps": [{"code": "eigenvalues of the Hessian", "state": ["10 and 0.1", "the curvature in each direction"], "tone": "accent"}, {"code": "largest stable learning rate", "state": ["0.2", "the LARGEST eigenvalue"], "changed": [0, 1], "tone": "warn"}, {"code": "optimal learning rate", "state": ["0.198", "both ends together"], "changed": [0, 1], "tone": "good"}, {"code": "condition number", "state": ["100", "largest over smallest"], "changed": [0, 1], "tone": "violet"}, {"code": "contraction per step", "state": ["0.980 - 2% progress", "the condition number"], "changed": [0, 1], "tone": "crit"}, {"code": "steps to cut the error 10x", "state": ["about 114", "the condition number"], "changed": [0, 1], "tone": "crit"}, {"code": "the same Hessian times 1000", "state": ["condition number 100", "UNCHANGED - scale is not the issue"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-2_2-04-2"},
 
     { t: "p", text: "**The Hessian measures curvature — how the slope itself changes as you move.** It is what distinguishes a minimum from a maximum from a saddle, and its eigenvalues (lesson 1.4) set the largest step size an optimiser can safely take." },
 

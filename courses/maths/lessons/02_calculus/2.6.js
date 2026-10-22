@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Newton's method: quadratic until it is not", id: "newton" },
 
+    {"kind": "trace", "title": "The correct digits double every step, until the guarantee stops applying", "caption": "**Five iterations take a guess of 1.0 to the square root of 2 at machine precision** — that is what quadratic convergence means, and the third column is the whole story: 0, 1, 3, 6, then 12 or more correct digits. Nothing else in numerical computing is this fast. **The guarantee is local, though: near a simple root.** Away from one, a flat derivative divides by zero, an overshoot can cycle forever, and a function with no real root cannot converge to one — which is why production solvers bracket the root first and only then switch to Newton.", "left": "iteration", "codeW": 120, "vars": ["value", "correct digits"], "steps": [{"code": "x0", "state": ["1.0", "0"], "tone": "warn"}, {"code": "x1", "state": ["1.5", "1"], "changed": [0, 1], "tone": "accent"}, {"code": "x2", "state": ["1.4166666666666665", "3"], "changed": [0, 1], "tone": "accent"}, {"code": "x3", "state": ["1.4142156862745097", "6"], "changed": [0, 1], "tone": "good"}, {"code": "x4", "state": ["1.4142135623746899", "12"], "changed": [0, 1], "tone": "good"}, {"code": "x5", "state": ["1.4142135623730951", "machine precision"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-2_6-01-1"},
+
     { t: "p", text: "**Newton's method approximates a function by its tangent line and jumps to where that line hits zero**, repeating until it converges. Near a simple root it roughly doubles the number of correct digits each step; away from one it offers no guarantee whatsoever." },
 
     { t: "dl", items: [
@@ -132,6 +134,7 @@ newton(lambda x: x*x + 1, lambda x: 2*x, 0.0)     # ZeroDivisionError
 
 
 
+
     { t: "p", text: "A **finite difference** estimates a derivative by evaluating the function at two nearby points. The surprising part is that **making the step smaller stops helping and starts hurting** — two error sources pull in opposite directions and their sum has a floor." },
 
     { t: "dl", items: [
@@ -218,6 +221,8 @@ h = np.sqrt(np.finfo(float).eps) * max(abs(x), 1.0)
     },
 
     { t: "h2", n: "03", text: "Automatic differentiation", id: "autodiff" },
+
+    {"kind": "flow", "title": "One backward pass, every gradient, at twice the cost of going forwards", "caption": "**This single property is why training a billion-parameter model is possible at all.** Reverse mode records the operations the program actually ran, then walks that tape backwards applying each primitive's known derivative — and one walk produces the gradient with respect to *every* input, at roughly twice the cost of one forward pass, **no matter whether there are a thousand inputs or a billion.** Finite differences would need a billion and one evaluations for the same answer. The price is the tape: those stored intermediate values are what `.backward()` runs out of memory holding.", "cols": 3, "nodes": [{"id": "f", "label": "Run the program, record a tape", "sub": "the operations actually executed", "tone": "accent"}, {"id": "b", "label": "Walk the tape backwards", "sub": "each primitive has an exact derivative", "tone": "good"}, {"id": "g", "label": "One walk gives EVERY gradient", "sub": "not one pass per input", "tone": "good"}, {"id": "c", "label": "Cost: about 2x one forward pass", "sub": "independent of the input count", "tone": "violet"}, {"id": "n", "label": "Finite differences: n+1 evaluations", "sub": "and about 8 correct digits at best", "tone": "warn"}, {"id": "m", "label": "The price is the tape in memory", "sub": "which is what backward runs out of", "tone": "crit"}], "edges": [["f", "b"], ["b", "g"], ["g", "c"], ["c", "n", "against"], ["c", "m"]], "t": "diagram", "id": "dg-2_6-03-2"},
 
     { t: "p", text: "**Automatic differentiation applies the chain rule to the operations a program actually executed**, each of which has a known exact derivative. It is not symbolic — it never builds a formula — and it is not numerical — it takes no step and suffers no cancellation." },
 

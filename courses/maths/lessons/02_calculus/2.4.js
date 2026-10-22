@@ -116,6 +116,7 @@ def is_convex_at(hess, x):
 
 
 
+
     { t: "p", text: "Knowing which common losses are convex tells you immediately how much you can trust a single training run. **Every classical model in this list is convex, and anything with a hidden layer is not** — a distinction with practical consequences for how results must be reported." },
 
     { t: "dl", items: [
@@ -240,6 +241,8 @@ np.mean(losses), np.std(losses), np.min(losses)
     ]},
 
     { t: "h2", n: "04", text: "Jensen's inequality", id: "jensen" },
+
+    {"kind": "trace", "title": "The function of the average, against the average of the function", "caption": "**Jensen's inequality is one sentence with three famous consequences, and all of them are in this table.** For a convex function the function of the average is the smaller; for a concave one it is the larger. Apply it to squaring and you get E[X]² ≤ E[X²], **which is precisely the statement that a variance cannot be negative** — not a separate fact about variance. Apply it to the logarithm and the arithmetic mean beats the geometric mean, and the same step gives the evidence lower bound that variational inference is built on.", "left": "f, on the data 1, 2, 3, 10", "codeW": 210, "vars": ["f(mean)", "mean of f", "so"], "steps": [{"code": "squaring - convex", "state": ["16.0", "28.5", "f(E) is SMALLER"], "tone": "accent"}, {"code": "logarithm - concave", "state": ["1.386", "1.156", "f(E) is LARGER"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "so E[X squared] - E[X] squared", "state": ["-", "12.5", "a variance cannot be negative"], "changed": [1, 2], "tone": "good"}, {"code": "so arithmetic vs geometric mean", "state": ["4.0", "2.783", "the arithmetic mean always wins"], "changed": [0, 1, 2], "tone": "good"}, {"code": "so log E[p] vs E[log p]", "state": ["-", "a computable bound", "the ELBO"], "changed": [1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-2_4-04-1"},
 
     { t: "p", text: "**Jensen's inequality says the function of an average is at most the average of the function, for any convex function.** It looks abstract and it is the reason a variance cannot be negative and the reason the ELBO is a valid bound." },
 
