@@ -457,6 +457,34 @@ stats.kruskal(*groups).pvalue`},
       { t: "p", text: "**Equal group sizes protect ANOVA from unequal variance; unequal sizes do not.** With the small group being the variable one, the true error rate reaches 15.6% — the same failure as Student's t-test, with the same fix." }
     ]},
 
+    { t: "code", lang: "python", title: "The variance test before the ANOVA, and the post-hoc after it",
+      code: `from scipy import stats
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+# BEFORE: ANOVA assumes equal variances. Two tests, and they are not
+# interchangeable.
+stats.bartlett(a, b, c)       # more powerful, and ASSUMES NORMALITY
+stats.levene(a, b, c, center="median")   # robust to non-normality -- the default
+                                         # choice unless normality is established
+# center="median" is the Brown-Forsythe variant, and it is the robust one.
+# center="mean" is the original Levene and is sensitive to skew.
+
+# AFTER: a significant F says the groups are not all equal. It does not say
+# which, and running every pairwise t-test inflates alpha (lesson 5.10).
+res = pairwise_tukeyhsd(np.concatenate([a, b, c]),
+                        groups=np.repeat(["a", "b", "c"], [len(a), len(b), len(c)]),
+                        alpha=0.05)
+print(res)
+#   group1 group2 meandiff p-adj  lower  upper  reject
+#   a      b      2.140    0.031  0.182  4.098  True
+#   a      c      0.420    0.861 -1.538  2.378  False
+#
+# p-adj IS ALREADY CORRECTED for the number of comparisons, so these p-values
+# are read directly against 0.05. The interval is the useful output: it says
+# how large the difference might be, which the F test never does.`,
+      caption: "**`levene` with `center=\"median\"` is the one to default to**, because `bartlett` is more powerful only when normality holds and badly misleading when it does not \u2014 and if you were confident about normality you would not be testing the variances. The practical risk is the usual one with assumption tests: at large n both reject departures too small to matter." },
+    { t: "p", text: "**Tukey's `p-adj` is already corrected for the number of comparisons**, which is what distinguishes it from running the pairwise t-tests yourself and the reason it is the standard post-hoc after a significant F. Read the interval rather than the flag: `reject=True` with an interval from 0.18 to 4.10 is a difference that might be trivial, and the F test offered no such information at all." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

@@ -380,7 +380,7 @@ with patch.object(Account, "balance", new_callable=PropertyMock) as balance:
 with patch.object(Account, "balance", new_callable=PropertyMock) as balance:
     balance.side_effect = TimeoutError("ledger unavailable")`,
       caption: "**`PropertyMock` is patched onto the class, not the instance** — that is the part people get wrong, and the reason a plain `mock.balance = 500` silently does something different. The payoff is the assertion: **it records each access, so you can prove the code read the property once rather than on every loop iteration.**" },
-    { t: "p", text: "The same applies to `__getitem__`, `__len__` and the rest of the dunder protocol: **a plain `Mock` does not support them, and `MagicMock` does.** When a test fails with a `TypeError` about an unsupported operation on a mock, the fix is almost always the more capable mock class rather than more setup." },
+    { t: "p", text: "The same applies to `__getitem__`, `__len__` and the rest of the dunder protocol: **a plain `Mock` does not support them, and `MagicMock` does.** When a test fails with a `TypeError` about an unsupported operation on a mock, the fix is almost always the more capable mock class rather than more setup. And for a coroutine the capable class is `AsyncMock`: patch an `async def` with a `MagicMock` and the call returns a plain object where the code awaits, which fails as `TypeError: object MagicMock can't be used in 'await' expression`. `patch` picks it automatically when the target is a coroutine function, and `new_callable=AsyncMock` is how you ask for it when it cannot tell." },
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 

@@ -191,6 +191,30 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "What to actually do about it",
       body: [{ t: "p", text: "None of this means automatic metrics are useless — it means they are *regression detectors*, not quality measures. A drop in BLEU reliably tells you something changed; a rise does not reliably tell you the system got better. So: pick one automatic metric and hold it fixed for CI, report it with the exact tokenisation and tool version, and never compare it across test sets. Then pair it with something that catches what it cannot see — an entailment check for faithfulness, targeted adversarial cases like the swapped-argument sentence above, and periodic human evaluation on a sample. The adversarial cases are cheap and worth the most: you now have one that defeats three metrics at once." }] },
 
+    { t: "code", lang: "python", title: "corpus_bleu and meteor_score, and why the corpus form is not an average",
+      code: `from nltk.translate.bleu_score import corpus_bleu, sentence_bleu, SmoothingFunction
+from nltk.translate.meteor_score import meteor_score
+
+refs = [[ref1_tokens, ref2_tokens], [ref_tokens]]      # a LIST of references per segment
+hyps = [hyp1_tokens, hyp2_tokens]
+
+# CORPUS BLEU IS NOT THE MEAN OF THE SENTENCE BLEUS. It pools the n-gram counts
+# across the whole corpus and then takes one geometric mean, so a short
+# sentence cannot drag the score the way it does in an average.
+corpus_bleu(refs, hyps)                                 # the number to report
+corpus_bleu(refs, hyps, weights=(0.5, 0.5))             # BLEU-2 instead of BLEU-4
+
+# sentence_bleu NEEDS SMOOTHING. With no 4-gram match the geometric mean is
+# exactly zero, which is why unsmoothed per-sentence BLEU is mostly zeros:
+sentence_bleu([ref_tokens], hyp_tokens,
+              smoothing_function=SmoothingFunction().method1)
+
+# METEOR aligns on stems and WordNet synonyms, so a correct paraphrase scores:
+meteor_score([ref_tokens], hyp_tokens)
+#   it also needs tokenised input, and it rewards recall more than BLEU does`,
+      caption: "**Corpus BLEU pools the n-gram counts and takes one geometric mean — it is not the average of the sentence scores**, and reporting an average of `sentence_bleu` values gives a different, lower, non-comparable number. Per-sentence BLEU also needs a smoothing function, because a single missing 4-gram sends the geometric mean to exactly zero." },
+    { t: "p", text: "**METEOR exists because BLEU cannot see a synonym:** it aligns on stems and WordNet synsets, so a correct paraphrase earns credit that BLEU scores at zero, and it weights recall more heavily. The practical consequence is that the two metrics rank systems differently on paraphrase-heavy output, and quoting one without the other is a choice worth making deliberately." },
+
     { t: "exercise", title: "Build the suite",
       tasks: [
         "Reproduce the averaging table on your own imbalanced data and find the class where macro and weighted F1 disagree most.",

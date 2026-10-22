@@ -207,6 +207,32 @@ EC.receiveLesson({
 
     { t: "p", text: "The line from ELMo to BERT is short. ELMo proved contextual representations were worth the compute and that depth stratifies linguistic information. BERT replaced the LSTMs with attention — which removed the sequential bottleneck and made genuine bidirectionality possible via the masked objective — and changed the usage pattern from frozen features to fine-tuning. The lesson that carried over is the one measured here: context has to enter the representation, and where it enters determines what the representation is good for." },
 
+    { t: "code", lang: "python", title: "ELMo as it was actually used, through AllenNLP",
+      code: `from allennlp.modules.elmo import Elmo, batch_to_ids
+
+options = "elmo_2x4096_512_2048cnn_2xhighway_options.json"
+weights = "elmo_2x4096_512_2048cnn_2xhighway_weights.hdf5"
+
+# num_output_representations is how many independently weighted mixtures of the
+# three internal layers you want -- one per downstream task that will consume them.
+elmo = Elmo(options, weights, num_output_representations=1, dropout=0.0)
+
+# THE INPUT IS CHARACTERS, not a vocabulary. batch_to_ids turns tokens into
+# character ids, which is why ELMo has no unknown-word problem at all:
+sentences = [["The", "bank", "raised", "rates"], ["We", "sat", "on", "the", "bank"]]
+ids = batch_to_ids(sentences)                   # (batch, max_len, max_chars)
+
+out = elmo(ids)
+out["elmo_representations"][0].shape            # (2, 5, 1024)
+# the two "bank" vectors differ -- which is the entire point of the lesson
+
+# THE LEARNED MIXTURE is the part people forget: the task-specific weights over
+# layer 0 (character CNN), 1 and 2 (the two biLSTM layers) are TRAINED with the
+# downstream model. Syntactic tasks learn to weight the lower layer; semantic
+# ones the upper. Freezing them to a uniform average loses most of the gain.`,
+      caption: "**The input is characters rather than a vocabulary, which is why ELMo has no unknown-word problem** — a token it has never seen still gets a representation built from its characters. And the three internal layers are not averaged: the mixture weights are learned with the downstream task, so a parser learns to weight the lower, syntactic layer and a classifier the upper, semantic one." },
+    { t: "p", text: "**This is also where the architecture shows its age.** The two biLSTM directions are trained separately and concatenated, so no layer ever sees both sides of a word at once — which is precisely the limitation BERT's masked objective removed, and the reason the field moved within a year. ELMo is worth knowing as the step that proved contextual representations work, not as something to deploy." },
+
     { t: "exercise", title: "Run the probe yourself",
       tasks: [
         "Reproduce the layer sweep on a polysemous word from your own domain and find where separation peaks.",

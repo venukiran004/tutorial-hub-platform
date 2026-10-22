@@ -106,6 +106,32 @@ EC.receiveLesson({
     { t: "callout", kind: "crit", title: "The same person scores 0.0909 and the typo pair scores 0.8000",
       body: [{ t: "p", text: "`\"John Smith\"` and `\"Smith, John\"` are certainly the same person and score **0.0909** — below almost any threshold you would set. `\"John Smith\"` and `\"Jon Smyth\"` might well be different people and score **0.8000**. Reordering moves every character, so edit distance sees a near-total rewrite; a misspelling moves two. There is no threshold that fixes this, because the ordering is wrong rather than the scale. Reordered company names — `\"Acme Corp Ltd\"` against `\"Ltd Acme Corp\"` at 0.3846 — fail the same way, and in real corporate data that reordering is common." }] },
 
+    { t: "code", lang: "python", title: "The RapidFuzz distance module, and the four metrics it keeps apart",
+      code: `from rapidfuzz.distance import Levenshtein, DamerauLevenshtein, Hamming, Indel
+
+a, b = "recieve", "receive"          # a single transposition
+
+Levenshtein.distance(a, b)            # 2 -- one delete plus one insert
+DamerauLevenshtein.distance(a, b)     # 1 -- one transposition
+Hamming.distance("karolin", "kathrin")        # 3 -- same length only
+Indel.distance(a, b)                  # 2 -- insertions and deletions, no substitution
+
+# NORMALISED FORMS, which are what a threshold should be set on:
+Levenshtein.normalized_similarity(a, b)        # 0.857, in 0..1
+DamerauLevenshtein.normalized_similarity(a, b) # 0.929
+
+# WEIGHTS: Levenshtein takes (insert, delete, replace) costs, and setting
+# replace to 2 turns it into Indel -- which is what the ratio in
+# rapidfuzz.fuzz is built on, and the reason fuzz.ratio and
+# Levenshtein.normalized_similarity disagree on the same pair.
+Levenshtein.distance(a, b, weights=(1, 1, 2))  # 2
+
+# score_cutoff stops the computation early once the distance exceeds it, which
+# is most of the speed when screening one string against a million:
+Levenshtein.distance(a, b, score_cutoff=1)     # returns 2 immediately`,
+      caption: "**`recieve` against `receive` is the whole argument for Damerau-Levenshtein: one transposition, scored as 2 by Levenshtein and 1 by Damerau.** Typed human text is full of transpositions, so the distinction changes real match rates — and `Indel`, which forbids substitution entirely, is what `fuzz.ratio` is built on, which explains why the two families give different numbers for the same pair." },
+    { t: "p", text: "**`score_cutoff` is where the speed comes from when screening at scale:** the computation abandons a pair as soon as the distance exceeds the threshold, so a million comparisons against a cutoff of 2 cost far less than a million full distances. Set thresholds on the normalised forms rather than on raw edit counts, or the same cutoff means something different for a postcode and for a company name." },
+
     { t: "exercise", title: "Implement and probe",
       tasks: [
         "Implement Levenshtein with two rows and verify all three reference values.",

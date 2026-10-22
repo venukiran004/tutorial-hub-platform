@@ -193,6 +193,33 @@ EC.receiveLesson({
 
     { t: "p", text: "In practice they are not competitors so much as different layers. A production system runs spaCy; the same team reaches for NLTK when it needs WordNet for a synonym expansion, a bundled corpus to sanity-check something, or a second implementation of an algorithm to check the first against." },
 
+    { t: "code", lang: "python", title: "VADER and FreqDist: the two NLTK pieces still worth reaching for",
+      code: `import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
+from nltk import FreqDist
+
+nltk.download("vader_lexicon", quiet=True)
+
+# VADER: a rule-based, lexicon-and-heuristics sentiment scorer. No model, no
+# training, no GPU -- and it handles the things a bag-of-words classifier does
+# not: negation, intensifiers, punctuation and capitalisation.
+sia = SentimentIntensityAnalyzer()
+sia.polarity_scores("The service was not great.")
+#   {'neg': 0.37, 'neu': 0.63, 'pos': 0.0, 'compound': -0.3865}
+sia.polarity_scores("The service was GREAT!!!")
+#   {'neg': 0.0, 'neu': 0.33, 'pos': 0.67, 'compound': 0.7778}
+#
+# compound is the one to use: the sum of the valences, normalised to -1..1.
+# The conventional cut-offs are >= 0.05 positive, <= -0.05 negative.
+
+# FreqDist is a Counter with the text-specific conveniences attached:
+fd = FreqDist(tokens)
+fd.most_common(10)
+fd.hapaxes()[:5]            # words appearing exactly once -- usually most of them
+fd.plot(20, cumulative=True)`,
+      caption: "**VADER is the baseline that keeps winning on short social text**, because the things it encodes are exactly what that register uses — negation, intensifiers, repeated punctuation, capitals as shouting. It needs no training data at all, which also makes it the honest comparison point for any fine-tuned sentiment model you are about to justify." },
+    { t: "p", text: "The weakness is the same as its strength: a fixed lexicon means **a domain word carrying strong sentiment in your data has no entry at all** — \u201csick\u201d in a product review, \u201cflat\u201d in a drinks review — and VADER scores those neutral. `FreqDist.hapaxes()` is worth running early for a related reason: the single-occurrence words are usually most of the vocabulary, and that number decides whether a count-based model has any chance." },
+
     { t: "exercise", title: "Break the normalisers",
       tasks: [
         "Find five more word triples that Porter conflates into one stem the way it does universal, university and universe.",

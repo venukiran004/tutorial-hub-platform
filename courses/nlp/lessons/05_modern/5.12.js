@@ -140,6 +140,36 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "The optimiser state is the biggest term",
       body: [{ t: "p", text: "For a 7B model, weights are 14 GB and **Adam's two fp32 moments are 56 GB** — four times the weights, and the single largest item. Add fp32 master weights and you are at 112 GB before a single activation. That is why **ZeRO stage 1**, which shards only the optimiser state, already removes half the problem, and why LoRA's saving in lesson 5.6 was so large: eliminating trainable parameters eliminates this term. The techniques compose — a large run typically uses data, tensor and pipeline parallelism together with FSDP, which is what \"3D parallelism\" refers to." }] },
 
+    { t: "code", lang: "python", title: "FSDP: sharding the states that do not fit, and the one argument that decides throughput",
+      code: `import torch
+from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
+from torch.distributed.fsdp import ShardingStrategy, MixedPrecision, CPUOffload
+from torch.distributed.fsdp.wrap import transformer_auto_wrap_policy
+
+# WHAT IS SHARDED: parameters, gradients and optimizer states -- the three
+# things that make a 7B model need far more than 7B of memory. Each rank holds
+# a slice, and gathers a layer's full parameters only while computing it.
+model = FSDP(
+    model,
+    sharding_strategy=ShardingStrategy.FULL_SHARD,       # ZeRO-3 equivalent
+    auto_wrap_policy=partial(transformer_auto_wrap_policy,
+                             transformer_layer_cls={TransformerBlock}),
+    mixed_precision=MixedPrecision(param_dtype=torch.bfloat16,
+                                   reduce_dtype=torch.float32),
+    device_id=torch.cuda.current_device(),
+)
+
+# auto_wrap_policy IS THE SETTING THAT MATTERS. Wrapping the whole model as one
+# unit means gathering every parameter at once, which defeats the point;
+# wrapping per transformer block means one block's parameters are resident at a
+# time, and the gather for block k+1 overlaps the compute for block k.
+#
+# SHARD_GRAD_OP (ZeRO-2) shards gradients and optimizer states only: more
+# memory, less communication. CPUOffload is the last resort -- it works, and
+# the PCIe transfer becomes the bottleneck.`,
+      caption: "**`auto_wrap_policy` is the difference between FSDP working and FSDP being slower than it has to be.** Wrapping the model as a single unit gathers every parameter at once, which is the memory problem you started with; wrapping per transformer block keeps one block resident and lets the gather for the next block overlap the compute for the current one." },
+    { t: "p", text: "**The strategies are a memory-against-communication dial, and the right setting depends on your interconnect.** `FULL_SHARD` holds the least and communicates the most, so it is right on NVLink and often wrong across a slow network, where `SHARD_GRAD_OP` keeps parameters resident and halves the traffic. `CPUOffload` is the option that makes an impossible model merely slow, with the PCIe link as the new bottleneck." },
+
     { t: "exercise", title: "Size a long-context deployment",
       tasks: [
         "Compute your model's KV cache at your target context, and note whether the figure assumes MHA or GQA.",

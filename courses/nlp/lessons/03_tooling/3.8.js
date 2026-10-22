@@ -175,6 +175,31 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Augmentation is a small-data technique",
       body: [{ t: "p", text: "The honest framing: EDA-style augmentation gives meaningful gains at a few hundred examples per class and approximately nothing at tens of thousands, where the model has already seen the variation you are synthesising. Before reaching for it, check whether you have a data *quantity* problem at all — if the failures are concentrated in one class or one input type, targeted collection beats augmentation decisively. And if you do augment, hold the validation and test sets **pristine**: augmenting them inflates your metrics and measures your transformation rather than your model." }] },
 
+    { t: "code", lang: "python", title: "nlpaug: augmentation at three levels, and the one that preserves the label",
+      code: `import nlpaug.augmenter.char as nac
+import nlpaug.augmenter.word as naw
+
+text = "The delivery arrived two days late and the box was damaged."
+
+# CHARACTER LEVEL -- simulates typos and OCR noise. Label-safe, and the right
+# choice when production input is typed by humans or scanned.
+nac.KeyboardAug(aug_char_p=0.1).augment(text)      # keys adjacent on a QWERTY layout
+nac.OcrAug().augment(text)                         # 0/O, l/1, rn/m confusions
+
+# WORD LEVEL -- the risky ones, because meaning can move.
+naw.SynonymAug(aug_src="wordnet").augment(text)    # WordNet synonyms
+naw.ContextualWordEmbsAug(model_path="bert-base-uncased",
+                          action="substitute").augment(text)
+naw.BackTranslationAug(from_model_name="facebook/wmt19-en-de",
+                       to_model_name="facebook/wmt19-de-en").augment(text)
+
+# THE TRAP: on a sentiment task, a WordNet synonym for "late" or "damaged" can
+# weaken or invert the label the augmented row still carries. Back-translation
+# is the safest of the word-level methods because it rewrites the whole
+# sentence under a meaning-preserving objective rather than swapping tokens.`,
+      caption: "**Character-level augmentation is label-safe and word-level is not** — a WordNet synonym substituted into \u201carrived two days late\u201d can soften the very word the sentiment label depends on, and the augmented row keeps the original label regardless. Back-translation is the safest of the word-level family because it rewrites the whole sentence under a meaning-preserving objective instead of swapping individual tokens." },
+    { t: "p", text: "**Two rules make augmentation safe rather than merely plausible: augment the training split only, and inspect a sample before trusting the pipeline.** Augmenting before the split puts near-duplicates of the same sentence on both sides of it, which inflates the validation score exactly as a duplicate row would — and reading twenty augmented examples takes a minute and catches the inverted labels no metric will show you." },
+
     { t: "exercise", title: "Build a verified augmentation pipeline",
       tasks: [
         "Run synonym replacement over 100 of your own sentences and count how many survive an entailment filter.",

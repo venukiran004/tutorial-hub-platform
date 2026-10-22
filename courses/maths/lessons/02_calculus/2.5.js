@@ -318,6 +318,36 @@ w.sum()                              # 1.0, every step
       { t: "p", text: "**If you find yourself raising a penalty weight past about 10³, the penalty is the wrong tool.** Reparameterise, or project." }
     ]},
 
+    { t: "code", lang: "python", title: "The constraint objects SciPy actually takes",
+      code: `import numpy as np
+from scipy.optimize import minimize, LinearConstraint, NonlinearConstraint, Bounds
+
+# A PORTFOLIO: minimise variance, weights summing to 1, none negative, and at
+# least 4% expected return. Three constraints, three different kinds.
+
+Sigma = np.array([[0.10, 0.02, 0.00],
+                  [0.02, 0.08, 0.01],
+                  [0.00, 0.01, 0.05]])
+mu = np.array([0.03, 0.05, 0.07])
+
+# LinearConstraint(A, lb, ub) means  lb <= A x <= ub. An EQUALITY is lb == ub.
+budget = LinearConstraint(np.ones((1, 3)), lb=1.0, ub=1.0)          # sums to 1
+ret_floor = LinearConstraint(mu.reshape(1, -1), lb=0.04, ub=np.inf)  # return >= 4%
+box = Bounds(lb=np.zeros(3), ub=np.ones(3))                          # no shorting
+
+res = minimize(lambda w: w @ Sigma @ w, x0=np.full(3, 1 / 3),
+               method="trust-constr", constraints=[budget, ret_floor], bounds=box)
+
+res.x.round(4)                 # the weights
+res.v                          # THE MULTIPLIERS -- one array per constraint
+
+# THE MULTIPLIER IS THE SHADOW PRICE from section 02, returned to you: it is
+# how much the objective would improve per unit of relaxation. A multiplier of
+# zero means that constraint is not binding and could be removed.
+# NonlinearConstraint takes a callable for anything that is not A x.`,
+      caption: "**`res.v` is the Lagrange multipliers, which is the KKT theory arriving as a return value** — each one is the shadow price of its constraint: how much the objective would improve per unit of relaxation. A multiplier of zero says that constraint is not binding at the optimum, which is the computational form of complementary slackness." },
+    { t: "p", text: "Note the two ways an equality is expressed: **`LinearConstraint` with `lb == ub` is an equality, and `lb=0.04, ub=np.inf` is a one-sided inequality** — one object covers both, which is why there is no separate equality class. `method=\"trust-constr\"` is the one that handles general constraints and returns multipliers; `SLSQP` is faster and reports less, and `Bounds` is kept separate from the constraints because a box is cheap for the solver to enforce directly." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

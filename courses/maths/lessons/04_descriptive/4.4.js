@@ -350,6 +350,34 @@ normality_report(rng.lognormal(0, 1, 5000))["max_qq_gap_sd"]   # ~7.4
       caption: "**A normality test answers \"do I have enough data to detect non-normality\", not \"is it a problem\".** Report the maximum QQ gap in standard deviations instead — it means the same thing at every sample size."
     },
 
+    { t: "code", lang: "python", title: "`boxcox`, and the lambda it fits for you",
+      code: `from scipy import stats
+
+# boxcox RETURNS TWO THINGS: the transformed data and the lambda it chose by
+# maximum likelihood for normality.
+y, lam = stats.boxcox(x)                      # x must be strictly positive
+lam.round(3)                                  # e.g. 0.112
+
+# READ THE LAMBDA -- it names the transform in a form a reader recognises:
+#   lambda ~  1.0   no transform needed
+#   lambda ~  0.5   square root
+#   lambda ~  0.0   LOG  (the limiting case; boxcox uses log exactly at 0)
+#   lambda ~ -1.0   reciprocal
+# So a fitted lambda of 0.11 says "very close to a log", and reporting log(x)
+# is usually better than reporting a power of 0.112 nobody can interpret.
+
+stats.boxcox_normmax(x)                       # just the lambda, without transforming
+stats.boxcox(x, lmbda=0.0)                    # force the log, having decided
+
+# CONFIDENCE INTERVAL ON LAMBDA, which is the argument for rounding it:
+y, lam, ci = stats.boxcox(x, alpha=0.05)
+ci                                            # if it contains 0, use the log
+
+# AND THE SKEW BEFORE AND AFTER, which is what the transform was for:
+stats.skew(x).round(3), stats.skew(y).round(3)       # 2.41 -> 0.02`,
+      caption: "**Read the fitted lambda rather than just applying it: 0.5 is a square root, 0.0 is a log, \u22121 is a reciprocal** \u2014 so a fitted 0.112 is telling you to take the logarithm, which a reader can interpret, instead of a power of 0.112 which nobody can. The confidence interval is the formal version of that argument: when it contains 0, the log is not a simplification but the supported choice." },
+    { t: "p", text: "**The hard requirement is strict positivity**, which rules out any column containing a zero \u2014 `stats.yeojohnson` is the variant that accepts zeros and negatives, fitting a power per sign. And the lambda is estimated from the data, which makes it a fitted parameter: estimate it on the training set and apply that same lambda everywhere, or the transform is a different function at training and scoring time." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

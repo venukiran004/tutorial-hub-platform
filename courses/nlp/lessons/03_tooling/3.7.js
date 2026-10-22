@@ -196,6 +196,31 @@ EC.receiveLesson({
     { t: "callout", kind: "warn", title: "Errors compound multiplicatively",
       body: [{ t: "p", text: "Five stages, each imperfect. At a generous 90% per stage the end-to-end accuracy is 0.9⁵ ≈ **59%**, and real coreference and relation extraction are well below 90%. This is why production knowledge-graph pipelines lean so hard on confidence thresholds and human review for anything consequential, and why the entity-linking step matters more than it looks — *Google, the search giant,* and *Google* and *Alphabet's search unit* must all resolve to one node or the graph fragments into near-duplicates that no query will join." }] },
 
+    { t: "code", lang: "python", title: "Coreference as a spaCy pipeline component",
+      code: `import spacy, coreferee
+
+nlp = spacy.load("en_core_web_trf")
+nlp.add_pipe("coreferee")                     # the component registers itself
+
+doc = nlp("Sarah told Priya that she would review the migration. "
+          "She thought it was risky.")
+
+# THE CHAINS: each one is a list of mention indices that refer to one entity.
+doc._.coref_chains.print()
+#   0: Sarah(0), she(5), She(11)
+#   1: migration(9), it(13)
+
+# RESOLVING A SPECIFIC PRONOUN, which is the API you actually call:
+doc._.coref_chains.resolve(doc[11])           # [Sarah]
+doc._.coref_chains.resolve(doc[13])           # [migration]
+
+# THE HARD CASE IS THE SECOND SENTENCE, and it is genuinely ambiguous: "She"
+# could be Sarah or Priya, and the model commits to one. A resolver does not
+# report its uncertainty, so a downstream pipeline that substitutes the
+# antecedent into the text has silently made a decision no one reviewed.`,
+      caption: "**The second sentence is ambiguous to a human reader too, and the resolver commits to an answer without reporting that it is a guess.** That matters for the usual downstream use — rewriting pronouns into entity names before indexing or summarising — because the rewrite is a decision nobody reviewed, and it is now in the text as a fact." },
+    { t: "p", text: "`coreferee` works over spaCy's existing parse, so the resolver inherits whatever the dependency parse got wrong; the transformer pipeline is worth the cost here for that reason. **The practical pattern is to keep the resolution as an annotation rather than a rewrite** — store the chains alongside the original text, so a later step can see both what was written and what the model thought it meant." },
+
     { t: "exercise", title: "Map the failure surface",
       tasks: [
         "Run the extractor on twenty sentences from your own domain and classify every failure by type. Rank the types by frequency.",

@@ -394,6 +394,31 @@ design_experiment(baseline=0.05, traffic_per_day=4_000,
       ]
     },
 
+    { t: "code", lang: "python", title: "Effect size for a proportion, and why it is not a difference",
+      code: `from statsmodels.stats.proportion import proportion_effectsize
+from statsmodels.stats.power import NormalIndPower, TTestIndPower
+
+# THE SAME 2-POINT DIFFERENCE, AT THREE BASE RATES:
+proportion_effectsize(0.03, 0.05)      # -0.102   3% -> 5%
+proportion_effectsize(0.48, 0.50)      # -0.040   48% -> 50%
+proportion_effectsize(0.95, 0.97)      # -0.096   95% -> 97%
+#
+# A two-point move is a much larger effect near 0 or 1 than it is near 0.5 --
+# which is why the sample size for "3% to 5%" is far smaller than for
+# "48% to 50%", and why quoting an absolute lift without the base rate does
+# not determine an experiment's size.
+#
+# The function is the arcsine transform, 2*arcsin(sqrt(p1)) - 2*arcsin(sqrt(p2)),
+# which is Cohen's h: the scale on which a proportion difference has constant
+# variance, so one power formula serves every base rate.
+
+n = NormalIndPower().solve_power(
+    effect_size=proportion_effectsize(0.05, 0.055),   # a 10% relative lift
+    alpha=0.05, power=0.80, ratio=1.0, alternative="two-sided")
+int(np.ceil(n))                        # per arm`,
+      caption: "**The same two-point difference is a bigger effect near 0 or 1 than near 0.5**, which is why an absolute lift alone does not determine a sample size \u2014 \u201c3% to 5%\u201d and \u201c48% to 50%\u201d are both two points and need very different experiments. The arcsine transform behind this function is exactly the scale on which a proportion's variance stops depending on the proportion, so one power formula can serve every base rate." },
+    { t: "p", text: "**Use `NormalIndPower` for proportions and `TTestIndPower` for means** \u2014 the two take the same arguments and solve for whichever one you leave out, which is what makes them usable in both directions: the sample size you need, or the power you actually had. The second reading is the more honest one after the fact, and it is how a null result gets reported as \u201cwe could not have detected this\u201d rather than \u201cthere is no effect\u201d." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

@@ -106,6 +106,36 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Normalisation is where most of the gain is",
       body: [{ t: "p", text: "Before choosing between metrics, normalise: lowercase, strip punctuation, collapse whitespace, expand or remove known suffixes such as *Ltd*, *Inc*, *Corporation*. `\"Smith, John\"` scoring 0.3333 rather than 1.0000 against `\"John Smith\"` is **entirely** a punctuation artefact — stripping the comma fixes it completely and costs nothing. Teams routinely reach for a more sophisticated metric when the actual problem is that their tokens carry trailing commas. Do the cheap normalisation first and re-measure before concluding a metric is inadequate." }] },
 
+    { t: "code", lang: "python", title: "MinHash and LSH: Jaccard without the pairwise comparison",
+      code: `from datasketch import MinHash, MinHashLSH
+
+# THE PROBLEM: exact Jaccard over a million documents is 500 billion pairs.
+# MinHash replaces each set with a fixed-length signature whose agreement rate
+# ESTIMATES Jaccard, and LSH finds the candidate pairs without comparing all of them.
+
+def signature(text, num_perm=128):
+    m = MinHash(num_perm=num_perm)
+    for shingle in {text[i:i + 5] for i in range(len(text) - 4)}:   # 5-char shingles
+        m.update(shingle.encode("utf8"))
+    return m
+
+m1, m2 = signature(doc1), signature(doc2)
+m1.jaccard(m2)                 # the ESTIMATE; error is about 1/sqrt(num_perm)
+# 128 permutations -> roughly +/- 0.09. For a 0.8 threshold that is fine; for
+# distinguishing 0.78 from 0.82 it is not, and num_perm has to go up.
+
+lsh = MinHashLSH(threshold=0.8, num_perm=128)
+for doc_id, text in corpus.items():
+    lsh.insert(doc_id, signature(text))
+
+lsh.query(signature(new_doc))  # candidates above ~0.8, in sub-linear time
+
+# THE THRESHOLD IS NOT A FILTER, it is where the band/row split is tuned to put
+# the S-curve. Pairs slightly below it are sometimes returned and pairs slightly
+# above are sometimes missed -- so re-score the candidates exactly if it matters.`,
+      caption: "**The signature agreement estimates Jaccard, with an error of roughly one over the square root of the permutation count** — so 128 permutations give about plus or minus 0.09, which is fine for a 0.8 cut-off and useless for telling 0.78 from 0.82. The threshold passed to LSH tunes where the probability curve rises, not a hard filter: pairs just under it sometimes come back and pairs just over it are sometimes missed." },
+    { t: "p", text: "**The shingle size is the other decision, and it is the one that decides what \u201csimilar\u201d means.** Character shingles of four or five catch near-duplicate text through typos and reformatting; word shingles catch reuse of phrasing and ignore spelling. For near-duplicate detection at corpus scale this pair — MinHash for the signature, LSH for the lookup — is the standard answer, and the exact re-score on the shortlist is what makes it precise." },
+
     { t: "exercise", title: "Measure both families",
       tasks: [
         "Compute word Jaccard and 3-gram Jaccard on 50 known-match pairs from your data and compare the distributions.",
