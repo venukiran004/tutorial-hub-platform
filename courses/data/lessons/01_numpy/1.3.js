@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two families of indexing", id: "families" },
 
-    {"kind": "matrix", "title": "One question decides view or copy: is the selection evenly spaced", "caption": "If what you asked for can be described by a start, a stop and a step, you get a view over the existing bytes. If it cannot, a new array has to be built. The last row is the exception worth memorising: `a[mask] = 0` is `__setitem__`, not indexing-then-assigning, so it writes to the original even though reading `a[mask]` would have copied.", "cols": ["Gives you", "Because"], "rows": ["a[2], a[1:5], a[::2]", "a[:, 0]", "a[[0, 3, 7]]", "a[a > 5]", "a[mask] = 0"], "cells": [[{"text": "a view", "tone": "good"}, "a stride pattern over the same bytes"], [{"text": "a view", "tone": "good"}, "a column is a stride too"], [{"text": "a copy", "tone": "warn"}, "arbitrary positions are not a stride"], [{"text": "a copy", "tone": "warn"}, "length unknown until the mask runs"], [{"text": "writes the original", "tone": "accent"}, "assignment, not indexing"]], "t": "diagram", "id": "dg-1_3-01-1"},
+    {"kind": "matrix", "title": "One question decides view or copy: is the selection evenly spaced", "caption": "If what you asked for can be described by a start, a stop and a step, you get a view over the existing bytes. If it cannot, a new array has to be built. The last row is the exception worth memorising: `a[mask] = 0` is `__setitem__`, not indexing-then-assigning, so it writes to the original even though reading `a[mask]` would have copied.", "cols": ["Gives you", "Because"], "rows": ["a[2], a[1:5], a[::2]", "a[:, 0]", "a[[0, 3, 7]]", "a[a > 5]", "a[mask] = 0"], "cells": [[{"text": "a view", "tone": "good"}, "a stride pattern over the same bytes"], [{"text": "a view", "tone": "good"}, "a column is a stride too"], [{"text": "a copy", "tone": "warn"}, "arbitrary positions are not a stride"], [{"text": "a copy", "tone": "warn"}, "length unknown until the mask runs"], [{"text": "writes the original", "tone": "accent"}, "assignment, not indexing"]], "t": "diagram", "id": "dg-1_3-01-2"},
+
+
+
+
 
 
 
@@ -153,6 +157,11 @@ np.shares_memory(X, X[:, [1]])    # False
 
     { t: "h2", n: "02", text: "Boolean masks", id: "masks" },
 
+    {"kind": "trace", "title": "Two ways a mask goes wrong, and both are about operators", "caption": "**Python's `and` asks “is this array True?”, which has no single answer, so it raises** — the fix is the element-wise operators, and the error message is clear enough once you have seen it once. **The second mistake does not raise, which makes it the dangerous one.** The bitwise operators bind tighter than comparison, so a condition written without parentheses parses as something else entirely and either errors confusingly or quietly computes a different mask. The habit that removes the whole class: **parenthesise every comparison in a compound mask, always.**", "left": "what you write", "codeW": 190, "vars": ["what happens", "fix"], "steps": [{"code": "age > 30 and spend > 500", "state": ["ValueError: truth value is ambiguous", "use & instead of and"], "tone": "crit"}, {"code": "age > 30 & spend > 500", "state": ["parses as age > (30 & spend) > 500", "parenthesise each comparison"], "changed": [0, 1], "tone": "crit"}, {"code": "(age > 30) & (spend > 500)", "state": ["the mask you meant", "-"], "changed": [0, 1], "tone": "good"}, {"code": "mask.sum() and mask.mean()", "state": ["how many, and what fraction", "True counts as 1"], "changed": [0, 1], "tone": "violet"}, {"code": "np.where and np.select", "state": ["pick element-wise, 2 or n branches", "no loop, no lambda"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-1_3-02-1"},
+
+
+
+
     { t: "p", text: "**A boolean mask is an array of `True`/`False` the same shape as the data**, used to select or to assign. It is the idiomatic way to express \"the rows where\" without a loop, and it composes — but the operators are not the Python ones." },
 
     { t: "dl", items: [
@@ -244,6 +253,10 @@ np.array([1.0, np.nan, 3.0]) > 2      # [False, False, True]
     { t: "h2", n: "03", text: "The aliasing bug", id: "aliasing" },
 
     {"kind": "matrix", "title": "View or copy, and how to tell", "caption": "The aliasing bug comes from not knowing which you have. The rule is mechanical: **basic** indexing can be expressed as a strided window, so it returns a view; **fancy** indexing cannot, so it copies. `arr.base` tells you after the fact.", "cols": ["view or copy?", "writing to it"], "rows": ["a[1:5]", "a[::2]", "a.T  /  a.reshape(...)", "a[[1, 3, 5]]", "a[a > 0]"], "cells": [[{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "VIEW when it can be", "tone": "warn"}, {"text": "changes the original", "tone": "crit"}], [{"text": "copy", "tone": "good"}, "independent"], [{"text": "copy", "tone": "good"}, "independent"]], "t": "diagram", "id": "dg-1_3-03-0"},
+
+
+
+
 
 
 

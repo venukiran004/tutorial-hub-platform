@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Timestamps, frequencies and the index", id: "index" },
 
+    {"kind": "trace", "title": "An instant, a duration, a span - and the parse that guesses", "caption": "**Most time-series confusion is a Timestamp standing in for a Period: an instant being used to mean a whole day or month.** Monthly data indexed by the first of the month is a point pretending to be a span, and a PeriodIndex says what is meant. **The parsing row is the one that corrupts data silently.** Without `format=`, pandas infers the layout from the first value and applies it to the rest — so a column where 01/03 comes before 13/03 may be read month-first, and then 13/03 either raises or becomes NaT. State the format.", "left": "what you have", "codeW": 190, "vars": ["type", "the thing to know"], "steps": [{"code": "2026-03-01 14:30", "state": ["Timestamp - an instant", "nanosecond precision, maybe a timezone"], "tone": "good"}, {"code": "90 minutes", "state": ["Timedelta - a duration", "what subtracting two Timestamps gives"], "changed": [0, 1], "tone": "good"}, {"code": "the whole of March 2026", "state": ["Period - a span", "the honest index for monthly data"], "changed": [0, 1], "tone": "violet"}, {"code": "one month later", "state": ["an Offset, not a Timedelta", "respects month lengths and weekends"], "changed": [0, 1], "tone": "violet"}, {"code": "to_datetime('01/03/2026')", "state": ["a GUESS from the first value", "1 March or 3 January - state format="], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_4-01-1"},
+
     { t: "p", text: "pandas time series rest on three types: **a `Timestamp` is an instant, a `Timedelta` is a duration, and a `Period` is a span** like \"March 2026\". Most confusion is a `Timestamp` being treated as a `Period` — a point in time standing in for a whole day." },
 
     { t: "dl", items: [
@@ -109,7 +111,11 @@ pd.infer_freq(df.index)             # "D"
 
     { t: "h2", n: "02", text: "Resampling", id: "resample" },
 
-    {"kind": "matrix", "title": "Downsampling aggregates; upsampling invents", "caption": "`resample` is a `groupby` whose keys are time bins. Going from hourly to daily combines rows you have. Going from daily to hourly creates bins you have no data for, and every fill method is a decision about what to pretend — which is where data gets invented.", "cols": ["Does", "The decision"], "rows": ["Hourly to daily", "Daily to hourly", "ffill()", "interpolate()", "asfreq()"], "cells": [[{"text": "aggregates real rows", "tone": "good"}, "which aggregate: sum or mean"], [{"text": "creates empty bins", "tone": "warn"}, "how to fill them, or whether to"], [{"text": "repeats the last value", "tone": "accent"}, "assumes it held until it changed"], [{"text": "draws a line between", "tone": "warn"}, "assumes a smooth path"], [{"text": "leaves them NaN", "tone": "good"}, "honest: the gap stays visible"]], "t": "diagram", "id": "dg-4_4-02-1"},
+    {"kind": "matrix", "title": "Downsampling aggregates; upsampling invents", "caption": "`resample` is a `groupby` whose keys are time bins. Going from hourly to daily combines rows you have. Going from daily to hourly creates bins you have no data for, and every fill method is a decision about what to pretend — which is where data gets invented.", "cols": ["Does", "The decision"], "rows": ["Hourly to daily", "Daily to hourly", "ffill()", "interpolate()", "asfreq()"], "cells": [[{"text": "aggregates real rows", "tone": "good"}, "which aggregate: sum or mean"], [{"text": "creates empty bins", "tone": "warn"}, "how to fill them, or whether to"], [{"text": "repeats the last value", "tone": "accent"}, "assumes it held until it changed"], [{"text": "draws a line between", "tone": "warn"}, "assumes a smooth path"], [{"text": "leaves them NaN", "tone": "good"}, "honest: the gap stays visible"]], "t": "diagram", "id": "dg-4_4-02-2"},
+
+
+
+
 
 
 
@@ -310,6 +316,10 @@ daily.reindex(target, method="nearest", tolerance=pd.Timedelta("12h"))
     { t: "h2", n: "03", text: "Timezones", id: "tz" },
 
     {"kind": "matrix", "title": "Timezones: the three states a timestamp can be in", "caption": "Naive, UTC-aware and local-aware are different types, and comparing across them raises or silently misleads. Store UTC, convert for display — and remember that a local time can be ambiguous twice a year.", "cols": ["what it means", "the hazard"], "rows": ["naive", "tz-aware, UTC", "tz-aware, local"], "cells": [[{"text": "no zone at all", "tone": "warn"}, {"text": "comparing with aware RAISES", "tone": "crit"}], [{"text": "an unambiguous instant", "tone": "good"}, {"text": "none — store this", "tone": "good"}], ["an instant plus a display rule", {"text": "DST makes one hour ambiguous and one absent", "tone": "crit"}]], "t": "diagram", "id": "dg-4_4-03-0"},
+
+
+
+
 
 
 

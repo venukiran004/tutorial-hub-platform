@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Moving windows", id: "windows" },
 
-    {"kind": "matrix", "title": "Three ways to compute a moving average", "caption": "A moving average slides weights along an array and takes a weighted sum, which is convolution. The `mode` argument is where the quiet error lives: `\"same\"` pads with zeros, so the first and last values are dragged towards zero — an artefact that looks like a trend.", "cols": ["Gives", "Cost"], "rows": ["np.convolve, 'valid'", "np.convolve, 'same'", "sliding_window_view", "cumsum difference", "np.gradient"], "cells": [[{"text": "n - k + 1 values", "tone": "good"}, "only where the kernel fits"], [{"text": "n values, edges wrong", "tone": "crit"}, "zero padding drags the ends down"], [{"text": "every window as a row", "tone": "good"}, "a strided view: no copy"], [{"text": "n - k + 1 values", "tone": "accent"}, "one pass; float error accumulates"], [{"text": "n values", "tone": "violet"}, "central differences, not a window"]], "t": "diagram", "id": "dg-2_6-01-1"},
+    {"kind": "matrix", "title": "Three ways to compute a moving average", "caption": "A moving average slides weights along an array and takes a weighted sum, which is convolution. The `mode` argument is where the quiet error lives: `\"same\"` pads with zeros, so the first and last values are dragged towards zero — an artefact that looks like a trend.", "cols": ["Gives", "Cost"], "rows": ["np.convolve, 'valid'", "np.convolve, 'same'", "sliding_window_view", "cumsum difference", "np.gradient"], "cells": [[{"text": "n - k + 1 values", "tone": "good"}, "only where the kernel fits"], [{"text": "n values, edges wrong", "tone": "crit"}, "zero padding drags the ends down"], [{"text": "every window as a row", "tone": "good"}, "a strided view: no copy"], [{"text": "n - k + 1 values", "tone": "accent"}, "one pass; float error accumulates"], [{"text": "n values", "tone": "violet"}, "central differences, not a window"]], "t": "diagram", "id": "dg-2_6-01-3"},
+
+
+
+
 
 
 
@@ -177,6 +181,10 @@ np.convolve(signal, decay[::-1], mode="valid")    # what you meant
 
     { t: "h2", n: "02", text: "Rates of change and accumulation", id: "calculus" },
 
+    {"kind": "trace", "title": "diff comes back one element shorter, which is what makes it awkward as a feature", "caption": "**A difference of n values has n−1 answers, so the result no longer lines up with the index it came from** — and a feature that silently shifts by one row is a bug that produces plausible numbers. `prepend` fixes the alignment explicitly. **`gradient` solves it differently, with central differences: same length, and more accurate in the interior** because it looks both ways rather than backwards only. For a time series where the spacing is uneven, pass the coordinate array and it uses the real spacing instead of assuming 1.", "left": "call, on 11 values of t squared", "codeW": 230, "vars": ["length", "what it gives"], "steps": [{"code": "np.diff(y)", "state": ["10 - one shorter", "forward differences"], "tone": "warn"}, {"code": "np.diff(y, prepend=y[0])", "state": ["11 - aligned", "first entry is 0"], "changed": [0, 1], "tone": "good"}, {"code": "np.gradient(y, t)", "state": ["11", "central differences: 0, 2, 4 ... 20"], "changed": [0, 1], "tone": "violet"}, {"code": "np.cumsum", "state": ["11", "accumulation - the inverse of diff"], "changed": [0, 1], "tone": "good"}, {"code": "np.trapezoid(y, t)", "state": ["1", "the area under the curve"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-2_6-02-1"},
+
+
+
     { t: "code", lang: "python", title: "gradient, diff and integration", code: `
 t = np.linspace(0, 10, 11)
 y = t ** 2                    # derivative is 2t
@@ -254,6 +262,10 @@ rough.std() / clean.std()     # roughly 20x more variance
     { t: "h2", n: "03", text: "Finding a period with an FFT", id: "fft" },
 
     {"kind": "steps", "title": "Finding a period with an FFT", "caption": "Four steps, and the third is where people go wrong: the x-axis of an FFT is frequency, so the period is its reciprocal, and the units follow your sample spacing rather than your intuition.", "items": [{"label": "detrend first", "desc": "a linear trend puts all the energy in the lowest bin and hides everything else", "tone": "crit", "code": "1"}, {"label": "take rfft, then the magnitudes", "desc": "real input, so the negative frequencies are redundant", "tone": "good", "code": "2"}, {"label": "convert the peak bin to a period", "desc": "period = 1 / frequency, in the units of your sample spacing", "tone": "warn", "code": "3"}, {"label": "check it against the series", "desc": "an FFT will always report a peak; plot the fold to see whether it is real", "tone": "accent", "code": "4"}], "t": "diagram", "id": "dg-2_6-03-0"},
+
+
+
+
 
 
 
@@ -353,6 +365,10 @@ dominant_periods(signal, spacing=1.0, top=3)
     },
 
     { t: "h2", n: "04", text: "Polynomials and curve fitting", id: "poly" },
+
+    {"kind": "trace", "title": "Two polynomial APIs that order their coefficients opposite ways", "caption": "**The modern class returns coefficients low-order first and the legacy function returns them high-order first, and nothing warns you** — so a fit that is read with the wrong convention produces a curve that is wrong in a way that still looks like a curve. Prefer the class: it also rescales the input domain internally, which is the reason its fit is better conditioned at higher degrees. **And the degree is the real decision, not the API:** raising it always reduces the training error and starts tracking the noise instead of the signal.", "left": "what you call", "codeW": 190, "vars": ["coefficient order", "note"], "steps": [{"code": "Polynomial.fit(x, y, deg=2)", "state": ["LOW to high", "the modern API - prefer it"], "tone": "good"}, {"code": "np.polyfit(x, y, 2)", "state": ["HIGH to low", "legacy, and still everywhere"], "changed": [0, 1], "tone": "crit"}, {"code": "why the class is better", "state": ["-", "it rescales the domain: better conditioned"], "changed": [1], "tone": "violet"}, {"code": "and raising the degree", "state": ["-", "always fits training better, noise included"], "changed": [1], "tone": "warn"}], "t": "diagram", "id": "dg-2_6-04-2"},
+
+
 
     { t: "code", lang: "python", title: "fitting, evaluating and the degree that ruins it", code: `
 x = np.linspace(0, 10, 50)

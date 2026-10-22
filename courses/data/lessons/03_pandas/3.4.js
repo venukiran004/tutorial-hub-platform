@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four ways to be missing", id: "four" },
 
-    {"kind": "matrix", "title": "Four ways to be missing, and only one test for all of them", "caption": "`np.nan` is a float, so a single missing value forces an integer column to float. `pd.NA` propagates through comparisons instead of returning `False`, which is the behaviour you want and the one that breaks code written for `NaN`. `isna()` is the only test that recognises all four.", "cols": ["Lives in", "Comparison gives"], "rows": ["np.nan", "None", "pd.NaT", "pd.NA", "isna()", "== np.nan"], "cells": [[{"text": "float columns", "tone": "warn"}, "NaN > 1 is False"], ["object columns only", "converted on entry elsewhere"], ["datetime, timedelta", "behaves like NaN, for dates"], [{"text": "Int64, boolean, string", "tone": "good"}, "pd.NA > 1 is pd.NA"], [{"text": "all four", "tone": "good"}, "the only reliable test"], [{"text": "nothing", "tone": "crit"}, "always False: NaN != NaN"]], "t": "diagram", "id": "dg-3_4-01-0"},
+    {"kind": "matrix", "title": "Four ways to be missing, and only one test for all of them", "caption": "`np.nan` is a float, so a single missing value forces an integer column to float. `pd.NA` propagates through comparisons instead of returning `False`, which is the behaviour you want and the one that breaks code written for `NaN`. `isna()` is the only test that recognises all four.", "cols": ["Lives in", "Comparison gives"], "rows": ["np.nan", "None", "pd.NaT", "pd.NA", "isna()", "== np.nan"], "cells": [[{"text": "float columns", "tone": "warn"}, "NaN > 1 is False"], ["object columns only", "converted on entry elsewhere"], ["datetime, timedelta", "behaves like NaN, for dates"], [{"text": "Int64, boolean, string", "tone": "good"}, "pd.NA > 1 is pd.NA"], [{"text": "all four", "tone": "good"}, "the only reliable test"], [{"text": "nothing", "tone": "crit"}, "always False: NaN != NaN"]], "t": "diagram", "id": "dg-3_4-01-1"},
+
+
+
+
 
 
 
@@ -168,7 +172,11 @@ pd.isna(np.nan), pd.isna(None), pd.isna(pd.NaT), pd.isna(pd.NA)
 
     { t: "h2", n: "02", text: "How missing values move through operations", id: "propagation" },
 
-    {"kind": "matrix", "title": "How a missing value moves through an operation", "caption": "The inconsistency is deliberate and it is still a trap: arithmetic propagates, comparison returns `False`, and reductions skip. A `NaN` that vanishes from a `mean()` is the same `NaN` that silently shrinks the denominator.", "cols": ["Result", "Consequence"], "rows": ["NaN + 1", "NaN > 1", "s.sum()", "s.mean()", "s == NaN", "s.count()"], "cells": [[{"text": "NaN", "tone": "warn"}, "arithmetic propagates"], [{"text": "False", "tone": "crit"}, "not missing: a definite no"], [{"text": "skips them", "tone": "accent"}, "an empty column sums to 0"], [{"text": "skips them", "tone": "crit"}, "the denominator shrinks silently"], [{"text": "all False", "tone": "crit"}, "use isna()"], [{"text": "non-missing only", "tone": "good"}, "len minus count is the gap"]], "t": "diagram", "id": "dg-3_4-02-1"},
+    {"kind": "matrix", "title": "How a missing value moves through an operation", "caption": "The inconsistency is deliberate and it is still a trap: arithmetic propagates, comparison returns `False`, and reductions skip. A `NaN` that vanishes from a `mean()` is the same `NaN` that silently shrinks the denominator.", "cols": ["Result", "Consequence"], "rows": ["NaN + 1", "NaN > 1", "s.sum()", "s.mean()", "s == NaN", "s.count()"], "cells": [[{"text": "NaN", "tone": "warn"}, "arithmetic propagates"], [{"text": "False", "tone": "crit"}, "not missing: a definite no"], [{"text": "skips them", "tone": "accent"}, "an empty column sums to 0"], [{"text": "skips them", "tone": "crit"}, "the denominator shrinks silently"], [{"text": "all False", "tone": "crit"}, "use isna()"], [{"text": "non-missing only", "tone": "good"}, "len minus count is the gap"]], "t": "diagram", "id": "dg-3_4-02-2"},
+
+
+
+
 
 
 
@@ -277,6 +285,9 @@ sales["amount"].astype("Int64")          # 100, <NA>, 200, 50, <NA>
     },
 
     { t: "h2", n: "03", text: "Filling, dropping and interpolating", id: "filling" },
+
+    {"kind": "trace", "title": "Five ways to deal with a hole, and the first one is almost never right", "caption": "**`dropna()` with no arguments removes a row if *any* column is missing, which on a wide frame can delete nearly everything** — here six rows become one. The arguments are where the control is: `subset` for the columns you actually care about, `thresh` for a tolerance, `axis=1` to drop sparse columns instead of rows. **And the habit worth adopting before any of it: add the indicator column first.** Whether a value was missing is frequently more predictive than whatever you fill in, and filling erases it — one extra column preserves the signal and makes the imputation choice far less critical.", "left": "operation", "codeW": 190, "vars": ["effect on 6 rows", "when"], "steps": [{"code": "dropna()", "state": ["1 row left - any column missing", "almost never what you meant"], "tone": "crit"}, {"code": "dropna(subset=['temp'])", "state": ["3 rows", "only this column matters"], "changed": [0, 1], "tone": "good"}, {"code": "dropna(thresh=2)", "state": ["rows with 2+ real values", "a tolerance, not all-or-nothing"], "changed": [0, 1], "tone": "good"}, {"code": "dropna(axis=1, thresh=half)", "state": ["drops sparse COLUMNS", "when a field is mostly empty"], "changed": [0, 1], "tone": "accent"}, {"code": "combine_first(backup)", "state": ["patch holes from a second source", "an outer join plus a coalesce"], "changed": [0, 1], "tone": "violet"}, {"code": "isna().astype(int) FIRST", "state": ["one extra column", "the gap itself is often predictive"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_4-03-0"},
+
 
     { t: "p", text: "The mechanics of replacing missing values are simple. **The decision about what to replace them with is not, and it belongs in 6.5 and 6.6** — this section is about doing what you decided correctly." },
 

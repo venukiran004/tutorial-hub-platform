@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Measuring what a frame actually costs", id: "measure" },
 
-    {"kind": "matrix", "title": "memory_usage lies by default", "caption": "An `object` column stores 8-byte pointers, and the default report counts only those — ignoring the 50+ byte string each one leads to. On a text-heavy frame the real figure is routinely ten times what the default prints, which is why `deep=True` is the only number worth quoting.", "cols": ["Counts", "On a text column"], "rows": ["memory_usage()", "memory_usage(deep=True)", "object dtype", "category", "string[pyarrow]"], "cells": [[{"text": "8 bytes per row", "tone": "crit"}, "the pointer only"], [{"text": "the objects too", "tone": "good"}, "often 10x the default figure"], ["a pointer per row", "plus a heap object per value"], [{"text": "codes plus one copy each", "tone": "good"}, "falls with distinct values, not rows"], [{"text": "contiguous bytes", "tone": "good"}, "no per-value Python object"]], "t": "diagram", "id": "dg-3_3-01-1"},
+    {"kind": "matrix", "title": "memory_usage lies by default", "caption": "An `object` column stores 8-byte pointers, and the default report counts only those — ignoring the 50+ byte string each one leads to. On a text-heavy frame the real figure is routinely ten times what the default prints, which is why `deep=True` is the only number worth quoting.", "cols": ["Counts", "On a text column"], "rows": ["memory_usage()", "memory_usage(deep=True)", "object dtype", "category", "string[pyarrow]"], "cells": [[{"text": "8 bytes per row", "tone": "crit"}, "the pointer only"], [{"text": "the objects too", "tone": "good"}, "often 10x the default figure"], ["a pointer per row", "plus a heap object per value"], [{"text": "codes plus one copy each", "tone": "good"}, "falls with distinct values, not rows"], [{"text": "contiguous bytes", "tone": "good"}, "no per-value Python object"]], "t": "diagram", "id": "dg-3_3-01-2"},
+
+
+
+
 
 
 
@@ -177,6 +181,9 @@ ids.astype("category").memory_usage(deep=True) / 1e6  # ~71 MB -- BIGGER
 
     { t: "h2", n: "02", text: "The three string representations", id: "strings" },
 
+    {"kind": "trace", "title": "The same 500,000 strings, three ways, and the default is the worst", "caption": "**Eleven times the memory and fifteen times the time, for the dtype you get if you do nothing** — `object` holds pointers to Python strings, so every `.str` call is a Python loop. The Arrow-backed string dtype stores contiguous bytes with offsets and runs in C. **Categorical wins on both counts here only because there are four distinct values**, and it would lose on high-cardinality text. The quiet benefit of the last two rows is the missing-value behaviour: `object` can hold `None` *or* `NaN` inconsistently, while the string dtype uses `pd.NA` every time.", "left": "dtype", "codeW": 190, "vars": ["memory", "str.upper()", "missing value"], "steps": [{"code": "object - the default", "state": ["33 MB", "180 ms - a Python loop", "None or NaN, inconsistently"], "tone": "crit"}, {"code": "string[pyarrow]", "state": ["3 MB", "12 ms - vectorised in C", "pd.NA, consistently"], "changed": [0, 1, 2], "tone": "good"}, {"code": "category, 4 distinct values", "state": ["0.5 MB", "2 ms - mapped over 4 values", "NaN, not a category"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "so the default choice", "state": ["string for text", "category for repeated labels", "object only for mixed types"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-3_3-02-1"},
+
+
     { t: "p", text: "pandas now offers three ways to hold text, and the default is the worst of them. **Choosing deliberately affects memory, speed and how missing values behave** — all three, not just one." },
 
     { t: "table",
@@ -266,6 +273,10 @@ df.convert_dtypes(dtype_backend="pyarrow")            # Arrow-backed
     { t: "h2", n: "03", text: "Categoricals beyond memory", id: "beyond" },
 
     {"kind": "matrix", "title": "What a categorical buys beyond memory", "caption": "The memory saving is the advertised benefit and the smaller one. The real wins are that a groupby can use the codes directly, that an order can be declared and then sorted on, and that an unexpected value **raises** instead of being silently accepted.", "cols": ["object dtype", "category"], "rows": ["memory, 1M rows / 5 values", "groupby", "sorting", "an unseen value"], "cells": [[{"text": "~60 MB", "tone": "crit"}, {"text": "~1 MB", "tone": "good"}], ["hashes every string", {"text": "groups on integer codes", "tone": "good"}], ["alphabetical only", {"text": "a declared order, so low < mid < high", "tone": "good"}], [{"text": "silently accepted", "tone": "crit"}, {"text": "becomes NaN — visible", "tone": "good"}]], "t": "diagram", "id": "dg-3_3-03-0"},
+
+
+
+
 
 
 

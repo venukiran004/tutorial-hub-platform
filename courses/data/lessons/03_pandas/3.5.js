@@ -32,6 +32,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "The same data has two natural layouts. **Long is the storage and computation form — every value on its own row with the keys that identify it. Wide is the presentation form — one row per entity, one column per measurement.** Neither is correct; each is right for different operations." },
 
     { t: "dl", items: [
@@ -172,7 +176,11 @@ except ValueError as e:
 
     { t: "h2", n: "02", text: "pivot_table and the aggregation you did not ask for", id: "pivot_table" },
 
-    {"kind": "matrix", "title": "pivot_table aggregates whether or not you asked it to", "caption": "`pivot_table` is `groupby` followed by `unstack`, and its default `aggfunc` is `mean` — right for a price, wrong for anything additive. It applies even when there were no duplicates to aggregate, so a sum of revenue silently becomes an average of revenue.", "cols": ["Does", "When it is wrong"], "rows": ["pivot", "pivot_table", "aggfunc='mean'", "aggfunc='sum'", "stack / unstack", "crosstab"], "cells": [[{"text": "raises on a duplicate key", "tone": "good"}, "never silent: that is the point"], [{"text": "aggregates duplicates", "tone": "warn"}, "it hides a grain you did not expect"], [{"text": "the default", "tone": "crit"}, "counts, sums, anything additive"], [{"text": "what reports usually want", "tone": "good"}, "averages, rates, prices"], ["move a level between axes", "the index must be unique"], ["counts by two keys", "it is pivot_table with len"]], "t": "diagram", "id": "dg-3_5-02-1"},
+    {"kind": "matrix", "title": "pivot_table aggregates whether or not you asked it to", "caption": "`pivot_table` is `groupby` followed by `unstack`, and its default `aggfunc` is `mean` — right for a price, wrong for anything additive. It applies even when there were no duplicates to aggregate, so a sum of revenue silently becomes an average of revenue.", "cols": ["Does", "When it is wrong"], "rows": ["pivot", "pivot_table", "aggfunc='mean'", "aggfunc='sum'", "stack / unstack", "crosstab"], "cells": [[{"text": "raises on a duplicate key", "tone": "good"}, "never silent: that is the point"], [{"text": "aggregates duplicates", "tone": "warn"}, "it hides a grain you did not expect"], [{"text": "the default", "tone": "crit"}, "counts, sums, anything additive"], [{"text": "what reports usually want", "tone": "good"}, "averages, rates, prices"], ["move a level between axes", "the index must be unique"], ["counts by two keys", "it is pivot_table with len"]], "t": "diagram", "id": "dg-3_5-02-2"},
+
+
+
+
 
 
 
@@ -259,6 +267,9 @@ cat.pivot_table(index="region", columns="product", values="qty",
     ]},
 
     { t: "h2", n: "03", text: "stack, unstack, explode and crosstab", id: "others" },
+
+    {"kind": "trace", "title": "Two primitives, and everything else is a convenience over them", "caption": "**`stack` and `unstack` move a level between the axes, and that is all any reshape does** — `pivot` is unstack after set_index, and `melt` is stack after set_index plus reset_index. Knowing that pair means never having to remember which function goes which way. **`unstack` on a grouped result is the single most useful application:** a groupby on two columns gives a MultiIndexed Series, and one call turns it into the cross-tab people actually wanted. The two to watch are in the last rows: `explode` duplicates the index, and `pivot_table` averages by default.", "left": "operation", "codeW": 160, "vars": ["what it does", "watch for"], "steps": [{"code": "stack", "state": ["columns become an inner row level", "returns a Series"], "tone": "accent"}, {"code": "unstack", "state": ["a row level becomes columns", "fill_value for absent combinations"], "changed": [0, 1], "tone": "accent"}, {"code": "...on a groupby result", "state": ["the cross-tab you wanted", "the most useful case"], "changed": [0, 1], "tone": "violet"}, {"code": "pivot", "state": ["unstack after set_index", "columns come out sorted"], "changed": [0, 1], "tone": "good"}, {"code": "pivot_table", "state": ["pivot, aggregating duplicates", "aggfunc defaults to MEAN"], "changed": [0, 1], "tone": "crit"}, {"code": "explode", "state": ["one row per list element", "the index duplicates; empty list gives NaN"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_5-03-1"},
+
 
     { t: "code", lang: "python", title: "the four other reshapes and when each fits", code: `
 # stack / unstack MOVE A LEVEL BETWEEN AXES. They are the primitives.

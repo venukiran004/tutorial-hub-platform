@@ -1,0 +1,88 @@
+{
+ "3.1": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "A hundred and thirty times faster, and only if it is sorted",
+         "caption": "**Setting the index is not what makes the lookup fast — sorting it is.** An unsorted index still scans, at the same 4 ms as filtering on a column, and nothing in the code looks different. `is_monotonic_increasing` is the one-line check worth running before you believe a lookup is cheap. **The cost side is real too: a meaningful index changes how half of pandas behaves**, turns a routine column operation into a reset-and-set, and most output formats ignore it. Set one when you look rows up by that key repeatedly, join on it, or need time slicing — not by reflex.",
+         "left": "how you look up one user", "codeW": 210,
+         "vars": ["time, 1M rows", "why"],
+         "steps": [
+          {"code": "df[df.user_id == 500_000]", "state": ["about 4 ms", "a full scan, every time"], "tone": "warn"},
+          {"code": "set_index, not sorted", "state": ["about 4 ms", "still a scan - no gain at all"], "changed": [1], "tone": "crit"},
+          {"code": "set_index, then sort_index", "state": ["about 30 microseconds", "binary search - 130x faster"], "changed": [0, 1], "tone": "good"},
+          {"code": "the check", "state": ["-", "index.is_monotonic_increasing"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "The blank label is display only, and that misleads everybody once",
+         "caption": "**pandas suppresses a repeated outer label for readability, so the second row appears to have no region — and the label is there, as `g.index[1]` shows.** Every tuple is complete. You will meet a MultiIndex whether or not you want one, because any groupby on two columns returns one. **Two things make it workable: sort the levels, because slicing an inner level requires lexsorted levels**, and use IndexSlice rather than guessing at nested brackets. When none of that is wanted, `reset_index` turns the levels back into ordinary columns.",
+         "cols": 3,
+         "nodes": [
+          {"id": "g", "label": "groupby on two columns", "sub": "you get a MultiIndex, asked for or not", "tone": "accent"},
+          {"id": "b", "label": "The repeated outer label looks blank", "sub": "display only - the tuple is complete", "tone": "crit"},
+          {"id": "s", "label": "sort_index first", "sub": "slicing needs lexsorted levels", "tone": "good"},
+          {"id": "i", "label": "pd.IndexSlice for an inner level", "sub": "a range on both levels at once", "tone": "violet"},
+          {"id": "r", "label": "Or reset_index and move on", "sub": "levels become ordinary columns", "tone": "good"}],
+         "edges": [["g", "b"], ["b", "s"], ["s", "i"], ["i", "r"]]}}
+ ],
+
+ "3.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The same 500,000 strings, three ways, and the default is the worst",
+         "caption": "**Eleven times the memory and fifteen times the time, for the dtype you get if you do nothing** — `object` holds pointers to Python strings, so every `.str` call is a Python loop. The Arrow-backed string dtype stores contiguous bytes with offsets and runs in C. **Categorical wins on both counts here only because there are four distinct values**, and it would lose on high-cardinality text. The quiet benefit of the last two rows is the missing-value behaviour: `object` can hold `None` *or* `NaN` inconsistently, while the string dtype uses `pd.NA` every time.",
+         "left": "dtype", "codeW": 190,
+         "vars": ["memory", "str.upper()", "missing value"],
+         "steps": [
+          {"code": "object - the default", "state": ["33 MB", "180 ms - a Python loop", "None or NaN, inconsistently"], "tone": "crit"},
+          {"code": "string[pyarrow]", "state": ["3 MB", "12 ms - vectorised in C", "pd.NA, consistently"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "category, 4 distinct values", "state": ["0.5 MB", "2 ms - mapped over 4 values", "NaN, not a category"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "so the default choice", "state": ["string for text", "category for repeated labels", "object only for mixed types"], "changed": [0, 1, 2], "tone": "accent"}]}}
+ ],
+
+ "3.4": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Five ways to deal with a hole, and the first one is almost never right",
+         "caption": "**`dropna()` with no arguments removes a row if *any* column is missing, which on a wide frame can delete nearly everything** — here six rows become one. The arguments are where the control is: `subset` for the columns you actually care about, `thresh` for a tolerance, `axis=1` to drop sparse columns instead of rows. **And the habit worth adopting before any of it: add the indicator column first.** Whether a value was missing is frequently more predictive than whatever you fill in, and filling erases it — one extra column preserves the signal and makes the imputation choice far less critical.",
+         "left": "operation", "codeW": 190,
+         "vars": ["effect on 6 rows", "when"],
+         "steps": [
+          {"code": "dropna()", "state": ["1 row left - any column missing", "almost never what you meant"], "tone": "crit"},
+          {"code": "dropna(subset=['temp'])", "state": ["3 rows", "only this column matters"], "changed": [0, 1], "tone": "good"},
+          {"code": "dropna(thresh=2)", "state": ["rows with 2+ real values", "a tolerance, not all-or-nothing"], "changed": [0, 1], "tone": "good"},
+          {"code": "dropna(axis=1, thresh=half)", "state": ["drops sparse COLUMNS", "when a field is mostly empty"], "changed": [0, 1], "tone": "accent"},
+          {"code": "combine_first(backup)", "state": ["patch holes from a second source", "an outer join plus a coalesce"], "changed": [0, 1], "tone": "violet"},
+          {"code": "isna().astype(int) FIRST", "state": ["one extra column", "the gap itself is often predictive"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "3.5": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Two primitives, and everything else is a convenience over them",
+         "caption": "**`stack` and `unstack` move a level between the axes, and that is all any reshape does** — `pivot` is unstack after set_index, and `melt` is stack after set_index plus reset_index. Knowing that pair means never having to remember which function goes which way. **`unstack` on a grouped result is the single most useful application:** a groupby on two columns gives a MultiIndexed Series, and one call turns it into the cross-tab people actually wanted. The two to watch are in the last rows: `explode` duplicates the index, and `pivot_table` averages by default.",
+         "left": "operation", "codeW": 160,
+         "vars": ["what it does", "watch for"],
+         "steps": [
+          {"code": "stack", "state": ["columns become an inner row level", "returns a Series"], "tone": "accent"},
+          {"code": "unstack", "state": ["a row level becomes columns", "fill_value for absent combinations"], "changed": [0, 1], "tone": "accent"},
+          {"code": "...on a groupby result", "state": ["the cross-tab you wanted", "the most useful case"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pivot", "state": ["unstack after set_index", "columns come out sorted"], "changed": [0, 1], "tone": "good"},
+          {"code": "pivot_table", "state": ["pivot, aggregating duplicates", "aggfunc defaults to MEAN"], "changed": [0, 1], "tone": "crit"},
+          {"code": "explode", "state": ["one row per list element", "the index duplicates; empty list gives NaN"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "3.7": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Three scores tied, and five different ways to rank them",
+         "caption": "**The default averages the tied positions, so three people tied for second all get rank 3 and nobody is second or fourth** — statistically defensible, and odd on a leaderboard. `min` is the competition ranking most people mean: 1, 2, 2, 2, 5. `first` breaks ties by position in the data, which is arbitrary but stable. **The choice is a presentation decision, and the default is rarely the one you would choose if asked**, which is why it is worth passing `method` explicitly every time rather than discovering the fractional ranks in a report.",
+         "left": "method", "codeW": 160,
+         "vars": ["ranks for 90, 85, 85, 70, 85", "reading"],
+         "steps": [
+          {"code": "default - average", "state": ["1, 3, 3, 5, 3", "positions 2, 3, 4 averaged"], "tone": "crit"},
+          {"code": "min", "state": ["1, 2, 2, 5, 2", "competition ranking - usually meant"], "changed": [0, 1], "tone": "good"},
+          {"code": "max", "state": ["1, 4, 4, 5, 4", "the worst of the tied positions"], "changed": [0, 1], "tone": "accent"},
+          {"code": "dense", "state": ["1, 2, 2, 3, 2", "no gap after a tie"], "changed": [0, 1], "tone": "good"},
+          {"code": "first", "state": ["1, 2, 3, 5, 4", "by position in the data - arbitrary"], "changed": [0, 1], "tone": "violet"}]}}
+ ]
+}

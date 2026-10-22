@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two APIs, and why the old one is a trap", id: "generators" },
 
-    {"kind": "compare", "title": "Two random APIs, and why the old one is not a style choice", "caption": "The legacy functions share **one global state with every piece of code in the process**. Any library that calls `np.random.*` advances it, so what your next call returns depends on what else ran first — which is a reproducibility bug that only appears when you add a dependency.", "columns": [{"title": "np.random.seed / rand", "tone": "crit", "items": ["One hidden global generator", "Any import can advance it", "Your results depend on what else ran", "No clean way to seed parallel workers", "Legacy; kept for old code"]}, {"title": "rng = default_rng(42)", "tone": "good", "items": ["The state is an object you hold", "Nothing else can touch it", "Pass it explicitly where it is needed", "SeedSequence spawns independent streams", "The API since 2019"]}], "t": "diagram", "id": "dg-1_5-01-1"},
+    {"kind": "compare", "title": "Two random APIs, and why the old one is not a style choice", "caption": "The legacy functions share **one global state with every piece of code in the process**. Any library that calls `np.random.*` advances it, so what your next call returns depends on what else ran first — which is a reproducibility bug that only appears when you add a dependency.", "columns": [{"title": "np.random.seed / rand", "tone": "crit", "items": ["One hidden global generator", "Any import can advance it", "Your results depend on what else ran", "No clean way to seed parallel workers", "Legacy; kept for old code"]}, {"title": "rng = default_rng(42)", "tone": "good", "items": ["The state is an object you hold", "Nothing else can touch it", "Pass it explicitly where it is needed", "SeedSequence spawns independent streams", "The API since 2019"]}], "t": "diagram", "id": "dg-1_5-01-3"},
+
+
+
+
 
 
 
@@ -173,6 +177,11 @@ def sample(data, n, random_state=None):
 
     { t: "h2", n: "02", text: "Splitting streams for parallel work", id: "spawn" },
 
+    {"kind": "flow", "title": "Spawn the streams; do not add to the seed", "caption": "**Handing worker i the seed plus i relies on an implementation detail rather than a documented guarantee** — nearby seeds can produce correlated or overlapping streams, and the fact that the modern generator makes this less dangerous than it used to be is not the same as it being correct. **There is a supported way and it is one line:** build one SeedSequence from the root seed and spawn a child per worker. The result is both independent *and* reproducible — the same root seed gives the same set of child streams, however many workers, in whatever order they finish.", "cols": 3, "nodes": [{"id": "w", "label": "default_rng(seed + i) per worker", "sub": "the obvious thing", "tone": "crit"}, {"id": "c", "label": "Nearby seeds can correlate or overlap", "sub": "undocumented either way", "tone": "crit"}, {"id": "s", "label": "SeedSequence(seed).spawn(n)", "sub": "n independent children", "tone": "good"}, {"id": "r", "label": "Independent AND reproducible", "sub": "same root, same set of streams", "tone": "good"}, {"id": "o", "label": "And order of completion does not matter", "sub": "each worker owns its own stream", "tone": "violet"}], "edges": [["w", "c"], ["c", "s"], ["s", "r"], ["r", "o"]], "t": "diagram", "id": "dg-1_5-02-1"},
+
+
+
+
     { t: "p", text: "**Giving each worker `seed + i` is the wrong way to seed parallel jobs.** Nearby seeds can produce correlated or overlapping streams — `SeedSequence.spawn` exists specifically to generate independent ones from a single root seed." },
 
     { t: "code", lang: "python", title: "seeding workers so the results are independent and reproducible", code: `
@@ -254,6 +263,10 @@ rng.random(5)                          # the same five values again
 
 
 
+
+
+
+
     { t: "p", text: "Seeding is necessary and not sufficient. **Several sources of run-to-run variation have nothing to do with the random number generator**, and a team that has seeded everything and still cannot reproduce a model is usually looking at one of these." },
 
     { t: "table",
@@ -295,6 +308,11 @@ json.dump(run, open(f"runs/{run_id}.json", "w"))`,
     },
 
     { t: "h2", n: "04", text: "Sampling correctly", id: "sampling" },
+
+    {"kind": "trace", "title": "Replacement is not a detail; it is which question you are asking", "caption": "**A subsample takes each row at most once; a bootstrap takes the same number of rows with repetition, and about 63.2% of the distinct rows appear at all.** That duplication is not a flaw to be corrected — it is precisely what produces the sampling variation a bootstrap is built to measure. Confusing the two gives either an impossible request or a confidence interval with no variation in it. **And the last row is the one that matters for a model:** a stratified draw keeps a rare class present, which a plain random draw of a small sample can simply miss.", "left": "what you want", "codeW": 170, "vars": ["call", "property"], "steps": [{"code": "a quick 10% look", "state": ["choice(n, replace=False)", "each row at most once"], "tone": "good"}, {"code": "a bootstrap", "state": ["choice(len(data), replace=True)", "same size, ~63.2% distinct rows"], "changed": [0, 1], "tone": "violet"}, {"code": "...and the duplicates", "state": ["-", "are the point, not a flaw"], "changed": [1], "tone": "violet"}, {"code": "a shuffle", "state": ["permutation, not shuffle in place", "keeps the original intact"], "changed": [0, 1], "tone": "accent"}, {"code": "a rare class kept", "state": ["draw within each stratum", "a plain sample can miss it entirely"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_5-04-2"},
+
+
+
 
     { t: "code", lang: "python", title: "the four sampling patterns you actually need", code: `
 rng = np.random.default_rng(0)

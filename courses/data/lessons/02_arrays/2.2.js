@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Sorting values against sorting positions", id: "argsort" },
 
-    {"kind": "matrix", "title": "Sorting the values, and sorting the positions", "caption": "`argsort` is the form that generalises: indices can be applied to any array of the same length, which is how a feature matrix and its labels stay together through a sort. The lexsort row is the one that costs people an afternoon — the **last** key in the tuple is the primary one.", "cols": ["Returns", "Reach for it when"], "rows": ["np.sort(a)", "a.sort()", "np.argsort(a)", "np.lexsort((b, a))", "np.argpartition(a, k)"], "cells": [["a sorted copy", "you only want the values"], [{"text": "None: sorts in place", "tone": "warn"}, "the original may be overwritten"], [{"text": "the sorting indices", "tone": "good"}, "other arrays must move with it"], [{"text": "sorted by a, then b", "tone": "crit"}, "multiple keys: last is primary"], [{"text": "k smallest first, unsorted", "tone": "accent"}, "top-k: O(n), not O(n log n)"]], "t": "diagram", "id": "dg-2_2-01-1"},
+    {"kind": "matrix", "title": "Sorting the values, and sorting the positions", "caption": "`argsort` is the form that generalises: indices can be applied to any array of the same length, which is how a feature matrix and its labels stay together through a sort. The lexsort row is the one that costs people an afternoon — the **last** key in the tuple is the primary one.", "cols": ["Returns", "Reach for it when"], "rows": ["np.sort(a)", "a.sort()", "np.argsort(a)", "np.lexsort((b, a))", "np.argpartition(a, k)"], "cells": [["a sorted copy", "you only want the values"], [{"text": "None: sorts in place", "tone": "warn"}, "the original may be overwritten"], [{"text": "the sorting indices", "tone": "good"}, "other arrays must move with it"], [{"text": "sorted by a, then b", "tone": "crit"}, "multiple keys: last is primary"], [{"text": "k smallest first, unsorted", "tone": "accent"}, "top-k: O(n), not O(n log n)"]], "t": "diagram", "id": "dg-2_2-01-2"},
+
+
+
+
 
 
 
@@ -182,6 +186,10 @@ top10 = top10[np.argsort(big[top10])[::-1]]     # order just those ten
 
     { t: "h2", n: "02", text: "searchsorted: binary search as a vectorised primitive", id: "searchsorted" },
 
+    {"kind": "trace", "title": "Where would this value go? Answered for a whole array at once", "caption": "**One primitive replaces a surprising number of loops**, because “which bucket does each of these million values fall into” is the same question as “where would each one be inserted”. The `side` argument is the whole specification at a boundary: left puts an exact match before the equal element, right puts it after — which is the difference between a half-open bucket and a closed one. **And the warning in the last row is unconditional: the array must be sorted, searchsorted does not check, and on unsorted input it returns a confident, meaningless answer.**", "left": "call, against [10, 20, 30, 40, 50]", "codeW": 230, "vars": ["result", "meaning"], "steps": [{"code": "searchsorted(25)", "state": ["2", "insert before index 2"], "tone": "good"}, {"code": "searchsorted([5, 25, 55])", "state": ["0, 2, 5", "vectorised - one pass"], "changed": [0, 1], "tone": "good"}, {"code": "searchsorted(30, side='left')", "state": ["2", "before the equal element"], "changed": [0, 1], "tone": "violet"}, {"code": "searchsorted(30, side='right')", "state": ["3", "after it - the other bucket"], "changed": [0, 1], "tone": "violet"}, {"code": "on [3, 1, 2], unsorted", "state": ["1", "NONSENSE - and no error"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_2-02-1"},
+
+
+
     { t: "p", text: "**`searchsorted` answers \"where would this value go?\" in O(log n)**, for a whole array of queries at once. It is the primitive behind bucketing, interval joins and merging sorted data — and it replaces a great many loops." },
 
     { t: "code", lang: "python", title: "the four things searchsorted is actually for", code: `
@@ -250,6 +258,10 @@ np.searchsorted(reference, new_values) / len(reference)
     { t: "h2", n: "03", text: "Set operations", id: "sets" },
 
     {"kind": "matrix", "title": "Set operations on arrays", "caption": "These all sort internally, so they are O(n log n) rather than the O(n) a hash set would give — but they return arrays and keep the dtype, which is usually what you want inside a vectorised pipeline. `in1d` is the one with a faster alternative.", "cols": ["gives", "note"], "rows": ["np.unique", "np.intersect1d", "np.setdiff1d", "np.isin"], "cells": [[{"text": "sorted distinct values", "tone": "good"}, "return_counts gives a frequency table free"], ["values in both", "both inputs are sorted first"], ["in the first, not the second", "order follows the sort, not the input"], [{"text": "a boolean mask", "tone": "accent"}, {"text": "the one you want for filtering", "tone": "good"}]], "t": "diagram", "id": "dg-2_2-03-0"},
+
+
+
+
 
 
 

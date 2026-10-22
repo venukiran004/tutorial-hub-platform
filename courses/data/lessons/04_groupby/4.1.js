@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three steps, one object", id: "model" },
 
-    {"kind": "steps", "title": "Split, apply, combine — and the function decides the shape", "caption": "`.groupby()` computes nothing: it holds the instructions until an aggregation asks for a result. What comes back is decided entirely by what the applied function returns — one value per group, one value per row, or a frame — which is the distinction 4.2 is built on.", "items": [{"label": "Split", "desc": "partition the rows by the key's distinct values", "code": "lazy", "tone": "accent"}, {"label": "Apply", "desc": "run the function on each partition", "code": "per group", "tone": "good"}, {"label": "One value per group", "desc": "agg: the result is one row per group", "code": "agg", "tone": "good"}, {"label": "One value per row", "desc": "transform: the original index comes back", "code": "transform", "tone": "violet"}, {"label": "Combine", "desc": "stitched together, keys as the index unless as_index=False", "code": "result", "tone": "teal"}], "t": "diagram", "id": "dg-4_1-01-0"},
+    {"kind": "steps", "title": "Split, apply, combine — and the function decides the shape", "caption": "`.groupby()` computes nothing: it holds the instructions until an aggregation asks for a result. What comes back is decided entirely by what the applied function returns — one value per group, one value per row, or a frame — which is the distinction 4.2 is built on.", "items": [{"label": "Split", "desc": "partition the rows by the key's distinct values", "code": "lazy", "tone": "accent"}, {"label": "Apply", "desc": "run the function on each partition", "code": "per group", "tone": "good"}, {"label": "One value per group", "desc": "agg: the result is one row per group", "code": "agg", "tone": "good"}, {"label": "One value per row", "desc": "transform: the original index comes back", "code": "transform", "tone": "violet"}, {"label": "Combine", "desc": "stitched together, keys as the index unless as_index=False", "code": "result", "tone": "teal"}], "t": "diagram", "id": "dg-4_1-01-1"},
+
+
+
+
 
 
 
@@ -168,6 +172,8 @@ g.get_group("n")
 
     { t: "h2", n: "02", text: "What you can group by", id: "keys" },
 
+    {"kind": "trace", "title": "Six kinds of group key, and only the first is a column", "caption": "**Everything after the first row is a key you did not have to add a column for** — which is the practical value of the section, because the usual instinct is to create a `month` column, group by it, then drop it. The callable form is the general one: any function of the index label can be a key, so “weekday against weekend” is a lambda rather than a column. **`pd.Grouper` is the groupby spelling of resample**, and it is what lets a time bucket be one key among several — month *and* product — which plain `resample` cannot express.", "left": "key", "codeW": 200, "vars": ["groups by", "when to use it"], "steps": [{"code": "'kind'", "state": ["a column's values", "the ordinary case"], "tone": "good"}, {"code": "level=0", "state": ["an index level", "after set_index, or on a MultiIndex"], "changed": [0, 1], "tone": "accent"}, {"code": "df.index.month", "state": ["a function of the index", "no column needed"], "changed": [0, 1], "tone": "violet"}, {"code": "a lambda on the label", "state": ["anything you can compute", "weekday against weekend"], "changed": [0, 1], "tone": "violet"}, {"code": "pd.Grouper(freq='MS')", "state": ["a time bucket", "a time key ALONGSIDE others"], "changed": [0, 1], "tone": "good"}, {"code": "an aligned Series", "state": ["an external label set", "a mapping you did not join in"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_1-02-0"},
+
     { t: "p", text: "**The key does not have to be a column.** It can be an index level, a function of the index, a Series aligned to the frame, a time frequency, or any list of those — which is what lets you group by month, by a derived bucket, or by an external label without adding a column first." },
 
     { t: "code", lang: "python", title: "keys beyond a column name", code: `
@@ -239,7 +245,11 @@ ts.groupby(bad_labels.to_numpy())["amount"].sum()   # x    210
 
     { t: "h2", n: "03", text: "observed and dropna: the row-count arguments", id: "rows" },
 
-    {"kind": "matrix", "title": "The two arguments that change the row count", "caption": "Both default to a value that produces rows you did not expect. With categorical keys, `observed=False` emits a row for every category **combination**, which on two categoricals is their cartesian product — most of it empty.", "cols": ["Default", "What it does"], "rows": ["observed", "dropna", "as_index", "sort"], "cells": [[{"text": "False (older pandas)", "tone": "crit"}, "a row per unseen category combination"], [{"text": "True", "tone": "warn"}, "rows with a missing key disappear"], [{"text": "True", "tone": "accent"}, "keys become the index, not columns"], [{"text": "True", "tone": "accent"}, "groups sorted by key; costs time"]], "t": "diagram", "id": "dg-4_1-03-1"},
+    {"kind": "matrix", "title": "The two arguments that change the row count", "caption": "Both default to a value that produces rows you did not expect. With categorical keys, `observed=False` emits a row for every category **combination**, which on two categoricals is their cartesian product — most of it empty.", "cols": ["Default", "What it does"], "rows": ["observed", "dropna", "as_index", "sort"], "cells": [[{"text": "False (older pandas)", "tone": "crit"}, "a row per unseen category combination"], [{"text": "True", "tone": "warn"}, "rows with a missing key disappear"], [{"text": "True", "tone": "accent"}, "keys become the index, not columns"], [{"text": "True", "tone": "accent"}, "groups sorted by key; costs time"]], "t": "diagram", "id": "dg-4_1-03-2"},
+
+
+
+
 
 
 

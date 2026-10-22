@@ -32,6 +32,10 @@ EC.receiveLesson({
 
 
 
+
+
+
+
     { t: "p", text: "**When NumPy cannot fit your data into one uniform type, it falls back to `object` dtype** — an array of pointers to Python objects. Every operation on it loops in Python, so you have a list with a worse interface and higher memory use." },
 
     { t: "dl", items: [
@@ -123,6 +127,11 @@ def assert_numeric(a, name="array"):
     ]},
 
     { t: "h2", n: "02", text: "Ragged data", id: "ragged" },
+
+    {"kind": "trace", "title": "Four shapes for data that has no rectangle, and each loses something", "caption": "**NumPy refuses ragged input, and that refusal is an improvement:** before version 1.24 it quietly produced an object array of lists, which looked like it worked right up until an operation over it silently did nothing. So the choice is explicit, and it is a choice about which loss is acceptable. **Padding is the obvious one and the expensive one** — memory grows with the longest row and every single operation afterwards has to respect the mask. The flat-array-plus-offsets form is what Arrow does internally, which is a reasonable hint about which one scales.", "left": "representation", "codeW": 190, "vars": ["what it costs", "use when"], "steps": [{"code": "a list of arrays", "state": ["no vectorisation across rows", "few rows, or per-row work dominates"], "tone": "accent"}, {"code": "pad to the longest", "state": ["memory, and a mask everywhere", "lengths are similar"], "changed": [0, 1], "tone": "warn"}, {"code": "flat values plus offsets", "state": ["indexing is manual", "many rows, mostly short"], "changed": [0, 1], "tone": "good"}, {"code": "...which is what Arrow does", "state": ["a dependency", "genuinely nested, or going to Parquet"], "changed": [0, 1], "tone": "good"}, {"code": "np.array(sessions)", "state": ["ValueError - and that is correct", "before 1.24 it made an object array"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_6-02-2"},
+
+
+
 
     { t: "p", text: "**Sequences of differing lengths have no rectangular representation**, and the workarounds each lose something. Choosing between them is a decision about which loss is acceptable, not a technicality." },
 
@@ -233,6 +242,10 @@ rows = [np.asarray(s) for s in sessions]
 
 
 
+
+
+
+
     { t: "p", text: "**A NumPy array has a fixed size.** `np.append` does not append — it allocates a new array and copies everything. Doing that in a loop is quadratic, and it is one of the most common performance mistakes in data code." },
 
     { t: "ladder",
@@ -329,6 +342,11 @@ class GrowableArray:
     },
 
     { t: "h2", n: "04", text: "When the data is too big", id: "scale" },
+
+    {"kind": "trace", "title": "Five sizes, and reaching for the big tool early is its own mistake", "caption": "**Under a gigabyte, NumPy and pandas fit comfortably with room for temporaries, and anything else is premature** — a Spark cluster for a 200 MB file is slower than the laptop. The step that buys the most is usually the second: **downcasting and categoricals often halve a frame outright**, which moves a 6 GB problem into the comfortable range without changing tools. And the last row is the one that reframes the question: with Parquet, column pruning and predicate pushdown frequently reduce a 100 GB table to a few hundred megabytes of actually-read data.", "left": "size", "codeW": 140, "vars": ["reach for", "why"], "steps": [{"code": "under 1 GB", "state": ["NumPy and pandas", "anything else is premature"], "tone": "good"}, {"code": "1 to 10 GB", "state": ["dtype care, or Polars", "downcasting often halves it"], "changed": [0, 1], "tone": "good"}, {"code": "10 to 100 GB", "state": ["Parquet, DuckDB, Polars streaming", "read only what you need; spill"], "changed": [0, 1], "tone": "accent"}, {"code": "over 100 GB", "state": ["Dask, Spark, or a warehouse", "distribute, or push to the data"], "changed": [0, 1], "tone": "violet"}, {"code": "any size, columnar", "state": ["Arrow and Parquet", "pruning can shrink it to row one"], "changed": [0, 1], "tone": "violet"}, {"code": "and the real question", "state": ["memory, cores, or a Python loop?", "only the first two are what these fix"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_6-04-3"},
+
+
+
 
     { t: "p", text: "**NumPy assumes the array fits in RAM, with room for temporaries.** Past that point the answer is a different tool, and reaching for one earlier than you need to is its own mistake." },
 

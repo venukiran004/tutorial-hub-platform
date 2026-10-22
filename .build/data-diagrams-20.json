@@ -1,0 +1,101 @@
+{
+ "1.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The same twelve bytes, read four ways",
+         "caption": "**Nothing moves. Only the rule for walking the bytes changes** — shape says how far to go in each direction, strides say how big a step is. That is why reshaping a hundred million elements takes about two hundred nanoseconds, the same as reshaping twelve. **And it is why “did this copy?” has a precise answer: can the result be described by a shape and a set of strides over the existing bytes?** If yes it is a view and it was free; if the elements you want are not evenly spaced, NumPy has no choice but to build a new ribbon. Writing through a view reaches the original, which is the aliasing bug in the next section.",
+         "left": "expression", "codeW": 170,
+         "vars": ["shape", "strides", "owns its data?"],
+         "steps": [
+          {"code": "a = np.arange(12)", "state": ["(12,)", "(8,)", "yes"], "tone": "accent"},
+          {"code": "b = a.reshape(3, 4)", "state": ["(3, 4)", "(32, 8)", "no - base is a"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "c = b.T", "state": ["(4, 3)", "(8, 32) - SWAPPED", "no - base is a"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "b[0, 0] = 999", "state": ["-", "-", "a[0] and c[0,0] are 999 too"], "changed": [2], "tone": "crit"},
+          {"code": "fancy indexing, a[[0, 5, 2]]", "state": ["(3,)", "(8,)", "YES - a copy"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ],
+
+ "1.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Two ways a mask goes wrong, and both are about operators",
+         "caption": "**Python's `and` asks “is this array True?”, which has no single answer, so it raises** — the fix is the element-wise operators, and the error message is clear enough once you have seen it once. **The second mistake does not raise, which makes it the dangerous one.** The bitwise operators bind tighter than comparison, so a condition written without parentheses parses as something else entirely and either errors confusingly or quietly computes a different mask. The habit that removes the whole class: **parenthesise every comparison in a compound mask, always.**",
+         "left": "what you write", "codeW": 190,
+         "vars": ["what happens", "fix"],
+         "steps": [
+          {"code": "age > 30 and spend > 500", "state": ["ValueError: truth value is ambiguous", "use & instead of and"], "tone": "crit"},
+          {"code": "age > 30 & spend > 500", "state": ["parses as age > (30 & spend) > 500", "parenthesise each comparison"], "changed": [0, 1], "tone": "crit"},
+          {"code": "(age > 30) & (spend > 500)", "state": ["the mask you meant", "-"], "changed": [0, 1], "tone": "good"},
+          {"code": "mask.sum() and mask.mean()", "state": ["how many, and what fraction", "True counts as 1"], "changed": [0, 1], "tone": "violet"},
+          {"code": "np.where and np.select", "state": ["pick element-wise, 2 or n branches", "no loop, no lambda"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "1.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Per-column normalisation works by luck; per-row does not",
+         "caption": "**Both reductions remove an axis, and only one of the results happens to line up again.** A column mean has shape (4), which pads to (1,4) and stretches down the rows — exactly right. A row mean has shape (3), which pads to (1,3) and meets 4 columns, so it raises. **`keepdims=True` is the whole answer: keep the axis at length 1 and broadcasting stretches it back along the axis you reduced.** And the reason to use it even where plain alignment works: on a square array the wrong version does not raise, it computes something subtly wrong — so test arrays should never be square.",
+         "left": "expression", "codeW": 200,
+         "vars": ["result shape", "against X, shape (3, 4)"],
+         "steps": [
+          {"code": "X.mean(axis=0)", "state": ["(4,)", "pads to (1,4) - works by alignment"], "tone": "good"},
+          {"code": "X.mean(axis=1)", "state": ["(3,)", "pads to (1,3) vs 4 cols - ValueError"], "changed": [0, 1], "tone": "crit"},
+          {"code": "X.mean(axis=1, keepdims=True)", "state": ["(3, 1)", "stretches across columns - correct"], "changed": [0, 1], "tone": "good"},
+          {"code": "the same on a (4, 4) array", "state": ["(4,)", "NO ERROR, and silently wrong"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so test with", "state": ["(7, 3)", "different, non-square dimensions"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "1.5": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "Spawn the streams; do not add to the seed",
+         "caption": "**Handing worker i the seed plus i relies on an implementation detail rather than a documented guarantee** — nearby seeds can produce correlated or overlapping streams, and the fact that the modern generator makes this less dangerous than it used to be is not the same as it being correct. **There is a supported way and it is one line:** build one SeedSequence from the root seed and spawn a child per worker. The result is both independent *and* reproducible — the same root seed gives the same set of child streams, however many workers, in whatever order they finish.",
+         "cols": 3,
+         "nodes": [
+          {"id": "w", "label": "default_rng(seed + i) per worker", "sub": "the obvious thing", "tone": "crit"},
+          {"id": "c", "label": "Nearby seeds can correlate or overlap", "sub": "undocumented either way", "tone": "crit"},
+          {"id": "s", "label": "SeedSequence(seed).spawn(n)", "sub": "n independent children", "tone": "good"},
+          {"id": "r", "label": "Independent AND reproducible", "sub": "same root, same set of streams", "tone": "good"},
+          {"id": "o", "label": "And order of completion does not matter", "sub": "each worker owns its own stream", "tone": "violet"}],
+         "edges": [["w", "c"], ["c", "s"], ["s", "r"], ["r", "o"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Replacement is not a detail; it is which question you are asking",
+         "caption": "**A subsample takes each row at most once; a bootstrap takes the same number of rows with repetition, and about 63.2% of the distinct rows appear at all.** That duplication is not a flaw to be corrected — it is precisely what produces the sampling variation a bootstrap is built to measure. Confusing the two gives either an impossible request or a confidence interval with no variation in it. **And the last row is the one that matters for a model:** a stratified draw keeps a rare class present, which a plain random draw of a small sample can simply miss.",
+         "left": "what you want", "codeW": 170,
+         "vars": ["call", "property"],
+         "steps": [
+          {"code": "a quick 10% look", "state": ["choice(n, replace=False)", "each row at most once"], "tone": "good"},
+          {"code": "a bootstrap", "state": ["choice(len(data), replace=True)", "same size, ~63.2% distinct rows"], "changed": [0, 1], "tone": "violet"},
+          {"code": "...and the duplicates", "state": ["-", "are the point, not a flaw"], "changed": [1], "tone": "violet"},
+          {"code": "a shuffle", "state": ["permutation, not shuffle in place", "keeps the original intact"], "changed": [0, 1], "tone": "accent"},
+          {"code": "a rare class kept", "state": ["draw within each stratum", "a plain sample can miss it entirely"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "1.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four shapes for data that has no rectangle, and each loses something",
+         "caption": "**NumPy refuses ragged input, and that refusal is an improvement:** before version 1.24 it quietly produced an object array of lists, which looked like it worked right up until an operation over it silently did nothing. So the choice is explicit, and it is a choice about which loss is acceptable. **Padding is the obvious one and the expensive one** — memory grows with the longest row and every single operation afterwards has to respect the mask. The flat-array-plus-offsets form is what Arrow does internally, which is a reasonable hint about which one scales.",
+         "left": "representation", "codeW": 190,
+         "vars": ["what it costs", "use when"],
+         "steps": [
+          {"code": "a list of arrays", "state": ["no vectorisation across rows", "few rows, or per-row work dominates"], "tone": "accent"},
+          {"code": "pad to the longest", "state": ["memory, and a mask everywhere", "lengths are similar"], "changed": [0, 1], "tone": "warn"},
+          {"code": "flat values plus offsets", "state": ["indexing is manual", "many rows, mostly short"], "changed": [0, 1], "tone": "good"},
+          {"code": "...which is what Arrow does", "state": ["a dependency", "genuinely nested, or going to Parquet"], "changed": [0, 1], "tone": "good"},
+          {"code": "np.array(sessions)", "state": ["ValueError - and that is correct", "before 1.24 it made an object array"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Five sizes, and reaching for the big tool early is its own mistake",
+         "caption": "**Under a gigabyte, NumPy and pandas fit comfortably with room for temporaries, and anything else is premature** — a Spark cluster for a 200 MB file is slower than the laptop. The step that buys the most is usually the second: **downcasting and categoricals often halve a frame outright**, which moves a 6 GB problem into the comfortable range without changing tools. And the last row is the one that reframes the question: with Parquet, column pruning and predicate pushdown frequently reduce a 100 GB table to a few hundred megabytes of actually-read data.",
+         "left": "size", "codeW": 140,
+         "vars": ["reach for", "why"],
+         "steps": [
+          {"code": "under 1 GB", "state": ["NumPy and pandas", "anything else is premature"], "tone": "good"},
+          {"code": "1 to 10 GB", "state": ["dtype care, or Polars", "downcasting often halves it"], "changed": [0, 1], "tone": "good"},
+          {"code": "10 to 100 GB", "state": ["Parquet, DuckDB, Polars streaming", "read only what you need; spill"], "changed": [0, 1], "tone": "accent"},
+          {"code": "over 100 GB", "state": ["Dask, Spark, or a warehouse", "distribute, or push to the data"], "changed": [0, 1], "tone": "violet"},
+          {"code": "any size, columnar", "state": ["Arrow and Parquet", "pruning can shrink it to row one"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and the real question", "state": ["memory, cores, or a Python loop?", "only the first two are what these fix"], "changed": [0, 1], "tone": "crit"}]}}
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "4.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Six kinds of group key, and only the first is a column",
+         "caption": "**Everything after the first row is a key you did not have to add a column for** — which is the practical value of the section, because the usual instinct is to create a `month` column, group by it, then drop it. The callable form is the general one: any function of the index label can be a key, so “weekday against weekend” is a lambda rather than a column. **`pd.Grouper` is the groupby spelling of resample**, and it is what lets a time bucket be one key among several — month *and* product — which plain `resample` cannot express.",
+         "left": "key", "codeW": 200,
+         "vars": ["groups by", "when to use it"],
+         "steps": [
+          {"code": "'kind'", "state": ["a column's values", "the ordinary case"], "tone": "good"},
+          {"code": "level=0", "state": ["an index level", "after set_index, or on a MultiIndex"], "changed": [0, 1], "tone": "accent"},
+          {"code": "df.index.month", "state": ["a function of the index", "no column needed"], "changed": [0, 1], "tone": "violet"},
+          {"code": "a lambda on the label", "state": ["anything you can compute", "weekday against weekend"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pd.Grouper(freq='MS')", "state": ["a time bucket", "a time key ALONGSIDE others"], "changed": [0, 1], "tone": "good"},
+          {"code": "an aligned Series", "state": ["an external label set", "a mapping you did not join in"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "4.4": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "An instant, a duration, a span - and the parse that guesses",
+         "caption": "**Most time-series confusion is a Timestamp standing in for a Period: an instant being used to mean a whole day or month.** Monthly data indexed by the first of the month is a point pretending to be a span, and a PeriodIndex says what is meant. **The parsing row is the one that corrupts data silently.** Without `format=`, pandas infers the layout from the first value and applies it to the rest — so a column where 01/03 comes before 13/03 may be read month-first, and then 13/03 either raises or becomes NaT. State the format.",
+         "left": "what you have", "codeW": 190,
+         "vars": ["type", "the thing to know"],
+         "steps": [
+          {"code": "2026-03-01 14:30", "state": ["Timestamp - an instant", "nanosecond precision, maybe a timezone"], "tone": "good"},
+          {"code": "90 minutes", "state": ["Timedelta - a duration", "what subtracting two Timestamps gives"], "changed": [0, 1], "tone": "good"},
+          {"code": "the whole of March 2026", "state": ["Period - a span", "the honest index for monthly data"], "changed": [0, 1], "tone": "violet"},
+          {"code": "one month later", "state": ["an Offset, not a Timedelta", "respects month lengths and weekends"], "changed": [0, 1], "tone": "violet"},
+          {"code": "to_datetime('01/03/2026')", "state": ["a GUESS from the first value", "1 March or 3 January - state format="], "changed": [0, 1], "tone": "crit"}]}}
+ ]
+}

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A row type, not a column type", id: "structured" },
 
-    {"kind": "matrix", "title": "A compound dtype describes one record's layout", "caption": "A structured array is a row type: the fields of one record sit next to each other in memory. That is why `a[\"age\"]` is a **strided** view rather than a contiguous one — the other fields sit between consecutive values, which is the opposite of how a DataFrame stores a column.", "cols": ["Is", "Consequence"], "rows": ["Compound dtype", "a[\"age\"]", "a[0]", "itemsize", "np.rec.array", "np.ma masked array"], "cells": [["named fields with byte offsets", "one record's layout, not a table's"], [{"text": "a strided view", "tone": "warn"}, "other fields sit between the values"], [{"text": "one whole record", "tone": "good"}, "the natural unit here"], ["bytes per record", "field sizes plus alignment padding"], ["attribute access: a.age", {"text": "slower; rarely worth it", "tone": "warn"}], ["an array plus a validity mask", {"text": "largely superseded", "tone": "crit"}]], "t": "diagram", "id": "dg-2_4-01-1"},
+    {"kind": "matrix", "title": "A compound dtype describes one record's layout", "caption": "A structured array is a row type: the fields of one record sit next to each other in memory. That is why `a[\"age\"]` is a **strided** view rather than a contiguous one — the other fields sit between consecutive values, which is the opposite of how a DataFrame stores a column.", "cols": ["Is", "Consequence"], "rows": ["Compound dtype", "a[\"age\"]", "a[0]", "itemsize", "np.rec.array", "np.ma masked array"], "cells": [["named fields with byte offsets", "one record's layout, not a table's"], [{"text": "a strided view", "tone": "warn"}, "other fields sit between the values"], [{"text": "one whole record", "tone": "good"}, "the natural unit here"], ["bytes per record", "field sizes plus alignment padding"], ["attribute access: a.age", {"text": "slower; rarely worth it", "tone": "warn"}], ["an array plus a validity mask", {"text": "largely superseded", "tone": "crit"}]], "t": "diagram", "id": "dg-2_4-01-2"},
+
+
+
+
 
 
 
@@ -168,6 +172,10 @@ flat = np.zeros(n)
 
 
 
+
+
+
+
     { t: "table",
       head: ["Situation", "Structured array", "DataFrame", "Why"],
       rows: [
@@ -244,6 +252,10 @@ np.load("ticks.npy").dtype.names                      # names survive
     },
 
     { t: "h2", n: "03", text: "Masked arrays", id: "masked" },
+
+    {"kind": "compare", "title": "NumPy's answer to missing data, and why pandas went elsewhere", "caption": "**A masked array keeps the data and a separate boolean array of what is invalid, and every operation respects the mask** — which is genuinely the right model, and is also why pandas did not adopt it. The mask has to be propagated through every function, so anything that leaves the masked-array world loses it, and the performance cost is paid on every operation whether or not anything is missing. **Know it exists, recognise it in older scientific code, and reach for NaN or a nullable dtype instead** — then `filled(np.nan)` is how you get back out.", "columns": [{"title": "What masking gets right", "tone": "good", "items": ["invalid is recorded separately from the value", "no sentinel value to collide with real data", "integers can be masked; NaN forces floats", "reductions skip masked entries automatically", "masked_values builds one from a sentinel"]}, {"title": "Why it is not the default", "tone": "crit", "items": ["every function must propagate the mask", "leave numpy.ma and the mask is gone", "the cost is paid whether or not data is missing", "awkward interop with pandas and scikit-learn", "so: filled(np.nan), or a nullable dtype"]}], "t": "diagram", "id": "dg-2_4-03-1"},
+
+
 
     { t: "p", text: "**A masked array pairs data with a boolean array marking invalid entries.** It is NumPy's answer to missing values, it predates pandas, and pandas deliberately went a different way — which is worth understanding before you reach for it." },
 

@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What the objects are", id: "objects" },
 
-    {"kind": "tree", "title": "A frame is columns that share one row index", "caption": "The index holds **labels**, not positions — and the default `RangeIndex` of `0..n-1` looks exactly like positions, which is where most of the confusion comes from. Each column is a Series with its own dtype; the values inside one column are not.", "root": {"label": "DataFrame", "sub": "a 2-D labelled table", "tone": "violet", "children": [{"label": "Index", "sub": "the row labels: not unique, not sorted, not positions", "tone": "accent"}, {"label": "Series: amount", "sub": "float64", "tone": "good"}, {"label": "Series: region", "sub": "category, sharing the same index", "tone": "good"}, {"label": "Series: signed_up", "sub": "datetime64[ns]", "tone": "teal"}]}, "t": "diagram", "id": "dg-3_1-01-1"},
+    {"kind": "tree", "title": "A frame is columns that share one row index", "caption": "The index holds **labels**, not positions — and the default `RangeIndex` of `0..n-1` looks exactly like positions, which is where most of the confusion comes from. Each column is a Series with its own dtype; the values inside one column are not.", "root": {"label": "DataFrame", "sub": "a 2-D labelled table", "tone": "violet", "children": [{"label": "Index", "sub": "the row labels: not unique, not sorted, not positions", "tone": "accent"}, {"label": "Series: amount", "sub": "float64", "tone": "good"}, {"label": "Series: region", "sub": "category, sharing the same index", "tone": "good"}, {"label": "Series: signed_up", "sub": "datetime64[ns]", "tone": "teal"}]}, "t": "diagram", "id": "dg-3_1-01-3"},
+
+
+
+
 
 
 
@@ -162,6 +166,10 @@ df.reset_index().columns      # ['store_id', 'sales', ...] -- not 'index'
 
 
 
+
+
+
+
     { t: "p", text: "**Every binary operation between two pandas objects aligns on the index first.** Rows present in one and not the other become `NaN`. This is deliberate and usually right — and it is why adding two columns of the same length can produce a column of nothing but `NaN`." },
 
     { t: "code", lang: "python", title: "alignment, and the failure it causes", code: `
@@ -247,6 +255,9 @@ def assert_aligned(left, right, name=""):
 
     { t: "h2", n: "03", text: "When an index earns its keep", id: "when" },
 
+    {"kind": "trace", "title": "A hundred and thirty times faster, and only if it is sorted", "caption": "**Setting the index is not what makes the lookup fast — sorting it is.** An unsorted index still scans, at the same 4 ms as filtering on a column, and nothing in the code looks different. `is_monotonic_increasing` is the one-line check worth running before you believe a lookup is cheap. **The cost side is real too: a meaningful index changes how half of pandas behaves**, turns a routine column operation into a reset-and-set, and most output formats ignore it. Set one when you look rows up by that key repeatedly, join on it, or need time slicing — not by reflex.", "left": "how you look up one user", "codeW": 210, "vars": ["time, 1M rows", "why"], "steps": [{"code": "df[df.user_id == 500_000]", "state": ["about 4 ms", "a full scan, every time"], "tone": "warn"}, {"code": "set_index, not sorted", "state": ["about 4 ms", "still a scan - no gain at all"], "changed": [1], "tone": "crit"}, {"code": "set_index, then sort_index", "state": ["about 30 microseconds", "binary search - 130x faster"], "changed": [0, 1], "tone": "good"}, {"code": "the check", "state": ["-", "index.is_monotonic_increasing"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-03-1"},
+
+
     { t: "p", text: "A meaningful index makes lookups fast and joins automatic. **It also makes half of pandas behave differently, and turns a routine operation into a two-step one.** Setting one is a decision with costs on both sides." },
 
     { t: "table",
@@ -320,6 +331,9 @@ assert d.index.is_unique, "index must be unique for reliable .loc"
     },
 
     { t: "h2", n: "04", text: "MultiIndex", id: "multiindex" },
+
+    {"kind": "flow", "title": "The blank label is display only, and that misleads everybody once", "caption": "**pandas suppresses a repeated outer label for readability, so the second row appears to have no region — and the label is there, as `g.index[1]` shows.** Every tuple is complete. You will meet a MultiIndex whether or not you want one, because any groupby on two columns returns one. **Two things make it workable: sort the levels, because slicing an inner level requires lexsorted levels**, and use IndexSlice rather than guessing at nested brackets. When none of that is wanted, `reset_index` turns the levels back into ordinary columns.", "cols": 3, "nodes": [{"id": "g", "label": "groupby on two columns", "sub": "you get a MultiIndex, asked for or not", "tone": "accent"}, {"id": "b", "label": "The repeated outer label looks blank", "sub": "display only - the tuple is complete", "tone": "crit"}, {"id": "s", "label": "sort_index first", "sub": "slicing needs lexsorted levels", "tone": "good"}, {"id": "i", "label": "pd.IndexSlice for an inner level", "sub": "a range on both levels at once", "tone": "violet"}, {"id": "r", "label": "Or reset_index and move on", "sub": "levels become ordinary columns", "tone": "good"}], "edges": [["g", "b"], ["b", "s"], ["s", "i"], ["i", "r"]], "t": "diagram", "id": "dg-3_1-04-2"},
+
 
     { t: "p", text: "**A MultiIndex is an index whose labels are tuples**, with each position called a level. You will meet one whether you want to or not: any `groupby` on more than one column returns one." },
 

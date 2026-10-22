@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The axis that disappears", id: "axis" },
 
-    {"kind": "matrix", "title": "axis is the dimension that disappears", "caption": "Reducing a `(3, 4)` array along axis 0 gives `(4,)`: the axis named is the one removed. `keepdims=True` leaves it behind as length 1 so the result still broadcasts against the source — which is what makes row normalisation a one-liner instead of a reshape.", "cols": ["Shape out", "Reads as"], "rows": ["sum(axis=0)", "sum(axis=1)", "sum(axis=None)", "sum(axis=0, keepdims)", "argmax(axis=1)"], "cells": [[{"text": "(4,)", "tone": "accent"}, "one total per column"], [{"text": "(3,)", "tone": "accent"}, "one total per row"], [{"text": "scalar", "tone": "good"}, "every axis collapsed: the default"], [{"text": "(1, 4)", "tone": "teal"}, "still broadcasts against (3, 4)"], [{"text": "(3,)", "tone": "violet"}, "the index, not the value"]], "t": "diagram", "id": "dg-1_4-01-1"},
+    {"kind": "matrix", "title": "axis is the dimension that disappears", "caption": "Reducing a `(3, 4)` array along axis 0 gives `(4,)`: the axis named is the one removed. `keepdims=True` leaves it behind as length 1 so the result still broadcasts against the source — which is what makes row normalisation a one-liner instead of a reshape.", "cols": ["Shape out", "Reads as"], "rows": ["sum(axis=0)", "sum(axis=1)", "sum(axis=None)", "sum(axis=0, keepdims)", "argmax(axis=1)"], "cells": [[{"text": "(4,)", "tone": "accent"}, "one total per column"], [{"text": "(3,)", "tone": "accent"}, "one total per row"], [{"text": "scalar", "tone": "good"}, "every axis collapsed: the default"], [{"text": "(1, 4)", "tone": "teal"}, "still broadcasts against (3, 4)"], [{"text": "(3,)", "tone": "violet"}, "the index, not the value"]], "t": "diagram", "id": "dg-1_4-01-2"},
+
+
+
+
 
 
 
@@ -169,6 +173,11 @@ missing.sum()                 # 1 -- True counts as 1
 
     { t: "h2", n: "02", text: "keepdims and the broadcast after a reduction", id: "keepdims" },
 
+    {"kind": "trace", "title": "Per-column normalisation works by luck; per-row does not", "caption": "**Both reductions remove an axis, and only one of the results happens to line up again.** A column mean has shape (4), which pads to (1,4) and stretches down the rows — exactly right. A row mean has shape (3), which pads to (1,3) and meets 4 columns, so it raises. **`keepdims=True` is the whole answer: keep the axis at length 1 and broadcasting stretches it back along the axis you reduced.** And the reason to use it even where plain alignment works: on a square array the wrong version does not raise, it computes something subtly wrong — so test arrays should never be square.", "left": "expression", "codeW": 200, "vars": ["result shape", "against X, shape (3, 4)"], "steps": [{"code": "X.mean(axis=0)", "state": ["(4,)", "pads to (1,4) - works by alignment"], "tone": "good"}, {"code": "X.mean(axis=1)", "state": ["(3,)", "pads to (1,3) vs 4 cols - ValueError"], "changed": [0, 1], "tone": "crit"}, {"code": "X.mean(axis=1, keepdims=True)", "state": ["(3, 1)", "stretches across columns - correct"], "changed": [0, 1], "tone": "good"}, {"code": "the same on a (4, 4) array", "state": ["(4,)", "NO ERROR, and silently wrong"], "changed": [0, 1], "tone": "crit"}, {"code": "so test with", "state": ["(7, 3)", "different, non-square dimensions"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_4-02-1"},
+
+
+
+
     { t: "p", text: "**Reductions remove an axis, which breaks the shape alignment you need to use the result against the original array.** `keepdims=True` keeps the axis at length 1, so broadcasting stretches it back — this is the entire reason the argument exists." },
 
     { t: "code", lang: "python", title: "why normalisation needs keepdims", code: `
@@ -240,6 +249,10 @@ softmax(np.array([[1.0, 2.0, 3.0]]))             # sums to 1 per row
     { t: "h2", n: "03", text: "Reductions and missing data", id: "nan" },
 
     {"kind": "matrix", "title": "Reductions and missing data", "caption": "A single NaN propagates through an ordinary reduction and makes the whole result NaN, which is correct and almost never what you want. The `nan*` family skips them — and then the divisor changes, which is the part that silently alters a mean.", "cols": ["with a NaN present", "what the divisor becomes"], "rows": ["np.sum", "np.nansum", "np.mean", "np.nanmean"], "cells": [[{"text": "NaN", "tone": "crit"}, "—"], [{"text": "skips it", "tone": "good"}, "n/a — a sum has none"], [{"text": "NaN", "tone": "crit"}, "n, if it worked"], [{"text": "skips it", "tone": "good"}, {"text": "the COUNT of non-NaN — not n", "tone": "warn"}]], "t": "diagram", "id": "dg-1_4-03-0"},
+
+
+
+
 
 
 

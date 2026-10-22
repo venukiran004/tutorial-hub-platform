@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Counting values", id: "counting" },
 
-    {"kind": "matrix", "title": "value_counts has three defaults, and each changes a number", "caption": "It is a `groupby`-size in disguise: sorted by count descending, with missing values dropped. `normalize=True` computes the share over the **non-missing** rows, so on a column that is 40% missing the proportions sum to 1 over the other 60%.", "cols": ["Default", "Turn it off with"], "rows": ["value_counts()", "normalize=True", "nunique()", "len(s.unique())", "rank()"], "cells": [[{"text": "drops missing, sorts desc", "tone": "warn"}, "dropna=False, sort=False"], [{"text": "share of non-missing", "tone": "crit"}, "dropna=False to include them"], [{"text": "excludes missing", "tone": "warn"}, "dropna=False"], [{"text": "includes it", "tone": "accent"}, "differs from nunique by one"], [{"text": "ties averaged: 2.5", "tone": "warn"}, "method='min' or 'dense'"]], "t": "diagram", "id": "dg-3_7-01-1"},
+    {"kind": "matrix", "title": "value_counts has three defaults, and each changes a number", "caption": "It is a `groupby`-size in disguise: sorted by count descending, with missing values dropped. `normalize=True` computes the share over the **non-missing** rows, so on a column that is 40% missing the proportions sum to 1 over the other 60%.", "cols": ["Default", "Turn it off with"], "rows": ["value_counts()", "normalize=True", "nunique()", "len(s.unique())", "rank()"], "cells": [[{"text": "drops missing, sorts desc", "tone": "warn"}, "dropna=False, sort=False"], [{"text": "share of non-missing", "tone": "crit"}, "dropna=False to include them"], [{"text": "excludes missing", "tone": "warn"}, "dropna=False"], [{"text": "includes it", "tone": "accent"}, "differs from nunique by one"], [{"text": "ties averaged: 2.5", "tone": "warn"}, "method='min' or 'dense'"]], "t": "diagram", "id": "dg-3_7-01-2"},
+
+
+
+
 
 
 
@@ -130,6 +134,10 @@ pd.Series([1, 1, 2, 2, 3]).mode()[0]      # 1 -- take the first if one is needed
     { t: "h2", n: "02", text: "Duplicates", id: "duplicates" },
 
     {"kind": "matrix", "title": "Duplicates: which copy survives", "caption": "`keep` is the argument that decides, and `keep=False` does not mean “keep none of the extras” — it means **drop every row that has a duplicate**, including the first. That difference quietly removes data.", "cols": ["duplicated() marks", "drop_duplicates() keeps"], "rows": ["keep='first'", "keep='last'", "keep=False"], "cells": [["every copy after the first", {"text": "the first of each group", "tone": "good"}], ["every copy before the last", "the last of each group"], [{"text": "EVERY copy, including the first", "tone": "crit"}, {"text": "only rows that were never duplicated", "tone": "crit"}]], "t": "diagram", "id": "dg-3_7-02-0"},
+
+
+
+
 
 
 
@@ -267,6 +275,9 @@ pd.concat([events, events]).index.duplicated().sum()    # 5
     ]},
 
     { t: "h2", n: "03", text: "Ranking and cumulative operations", id: "rank" },
+
+    {"kind": "trace", "title": "Three scores tied, and five different ways to rank them", "caption": "**The default averages the tied positions, so three people tied for second all get rank 3 and nobody is second or fourth** — statistically defensible, and odd on a leaderboard. `min` is the competition ranking most people mean: 1, 2, 2, 2, 5. `first` breaks ties by position in the data, which is arbitrary but stable. **The choice is a presentation decision, and the default is rarely the one you would choose if asked**, which is why it is worth passing `method` explicitly every time rather than discovering the fractional ranks in a report.", "left": "method", "codeW": 160, "vars": ["ranks for 90, 85, 85, 70, 85", "reading"], "steps": [{"code": "default - average", "state": ["1, 3, 3, 5, 3", "positions 2, 3, 4 averaged"], "tone": "crit"}, {"code": "min", "state": ["1, 2, 2, 5, 2", "competition ranking - usually meant"], "changed": [0, 1], "tone": "good"}, {"code": "max", "state": ["1, 4, 4, 5, 4", "the worst of the tied positions"], "changed": [0, 1], "tone": "accent"}, {"code": "dense", "state": ["1, 2, 2, 3, 2", "no gap after a tie"], "changed": [0, 1], "tone": "good"}, {"code": "first", "state": ["1, 2, 3, 5, 4", "by position in the data - arbitrary"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_7-03-1"},
+
 
     { t: "code", lang: "python", title: "rank, its tie methods, and running statistics", code: `
 scores = pd.Series([90, 85, 85, 70, 85], index=list("abcde"))

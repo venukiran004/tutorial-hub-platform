@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One block of memory, and a way to read it", id: "model" },
 
-    {"kind": "tree", "title": "An array is one buffer and three facts about how to read it", "caption": "A Python list of numbers is a list of **pointers** to separate integer objects scattered across the heap. An array is a single block of raw bytes with no per-element object at all — and `strides`, the number of bytes to step per axis, is the piece that makes a view possible.", "root": {"label": "ndarray", "sub": "one object, one buffer", "tone": "violet", "children": [{"label": "data buffer", "sub": "contiguous raw bytes, no per-element object", "tone": "accent"}, {"label": "dtype", "sub": "the type of every element, and its size", "tone": "good"}, {"label": "shape", "sub": "length along each dimension", "tone": "good"}, {"label": "strides", "sub": "bytes to step per axis: this is what views exploit", "tone": "teal"}]}, "t": "diagram", "id": "dg-1_1-01-1"},
+    {"kind": "tree", "title": "An array is one buffer and three facts about how to read it", "caption": "A Python list of numbers is a list of **pointers** to separate integer objects scattered across the heap. An array is a single block of raw bytes with no per-element object at all — and `strides`, the number of bytes to step per axis, is the piece that makes a view possible.", "root": {"label": "ndarray", "sub": "one object, one buffer", "tone": "violet", "children": [{"label": "data buffer", "sub": "contiguous raw bytes, no per-element object", "tone": "accent"}, {"label": "dtype", "sub": "the type of every element, and its size", "tone": "good"}, {"label": "shape", "sub": "length along each dimension", "tone": "good"}, {"label": "strides", "sub": "bytes to step per axis: this is what views exploit", "tone": "teal"}]}, "t": "diagram", "id": "dg-1_1-01-2"},
+
+
+
+
 
 
 
@@ -149,6 +153,11 @@ np.finfo(np.float32).eps                    # 1.19e-07
 
     { t: "h2", n: "02", text: "Why reshape and transpose are free", id: "free" },
 
+    {"kind": "trace", "title": "The same twelve bytes, read four ways", "caption": "**Nothing moves. Only the rule for walking the bytes changes** — shape says how far to go in each direction, strides say how big a step is. That is why reshaping a hundred million elements takes about two hundred nanoseconds, the same as reshaping twelve. **And it is why “did this copy?” has a precise answer: can the result be described by a shape and a set of strides over the existing bytes?** If yes it is a view and it was free; if the elements you want are not evenly spaced, NumPy has no choice but to build a new ribbon. Writing through a view reaches the original, which is the aliasing bug in the next section.", "left": "expression", "codeW": 170, "vars": ["shape", "strides", "owns its data?"], "steps": [{"code": "a = np.arange(12)", "state": ["(12,)", "(8,)", "yes"], "tone": "accent"}, {"code": "b = a.reshape(3, 4)", "state": ["(3, 4)", "(32, 8)", "no - base is a"], "changed": [0, 1, 2], "tone": "good"}, {"code": "c = b.T", "state": ["(4, 3)", "(8, 32) - SWAPPED", "no - base is a"], "changed": [0, 1, 2], "tone": "good"}, {"code": "b[0, 0] = 999", "state": ["-", "-", "a[0] and c[0,0] are 999 too"], "changed": [2], "tone": "crit"}, {"code": "fancy indexing, a[[0, 5, 2]]", "state": ["(3,)", "(8,)", "YES - a copy"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-1_1-02-1"},
+
+
+
+
     { t: "p", text: "**Reshaping does not move data — it rewrites the shape and strides.** The bytes stay exactly where they are, and only the rule for walking them changes. That is why these operations cost microseconds regardless of array size." },
 
     { t: "dl", items: [
@@ -218,6 +227,10 @@ np.ascontiguousarray(d).flags['C_CONTIGUOUS']    # True, at the cost of a copy
     { t: "h2", n: "03", text: "Choosing a dtype on purpose", id: "dtype" },
 
     {"kind": "matrix", "title": "Choosing a dtype on purpose", "caption": "The default is `float64` and it is rarely what you need. Halving the width halves the memory **and** doubles how much fits in cache, which is usually the larger win — but `float16` has about three decimal digits, so it is a storage format rather than a compute one.", "cols": ["bytes", "range or precision", "use it for"], "rows": ["int8", "int32", "float32", "float64", "float16"], "cells": [[{"text": "1", "tone": "good"}, "−128 to 127", "categorical codes, flags"], [{"text": "4", "tone": "good"}, "±2.1 billion", "ids, counts"], [{"text": "4", "tone": "good"}, "~7 digits", {"text": "almost all ML features", "tone": "good"}], [{"text": "8", "tone": "warn"}, "~16 digits", "money, accumulations"], [{"text": "2", "tone": "accent"}, {"text": "~3 digits", "tone": "crit"}, "storage, not maths"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
+
+
+
 
 
 

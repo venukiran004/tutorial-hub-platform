@@ -1,0 +1,90 @@
+{
+ "2.2": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Where would this value go? Answered for a whole array at once",
+         "caption": "**One primitive replaces a surprising number of loops**, because “which bucket does each of these million values fall into” is the same question as “where would each one be inserted”. The `side` argument is the whole specification at a boundary: left puts an exact match before the equal element, right puts it after — which is the difference between a half-open bucket and a closed one. **And the warning in the last row is unconditional: the array must be sorted, searchsorted does not check, and on unsorted input it returns a confident, meaningless answer.**",
+         "left": "call, against [10, 20, 30, 40, 50]", "codeW": 230,
+         "vars": ["result", "meaning"],
+         "steps": [
+          {"code": "searchsorted(25)", "state": ["2", "insert before index 2"], "tone": "good"},
+          {"code": "searchsorted([5, 25, 55])", "state": ["0, 2, 5", "vectorised - one pass"], "changed": [0, 1], "tone": "good"},
+          {"code": "searchsorted(30, side='left')", "state": ["2", "before the equal element"], "changed": [0, 1], "tone": "violet"},
+          {"code": "searchsorted(30, side='right')", "state": ["3", "after it - the other bucket"], "changed": [0, 1], "tone": "violet"},
+          {"code": "on [3, 1, 2], unsorted", "state": ["1", "NONSENSE - and no error"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "2.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Two rules, and every one of these follows from them",
+         "caption": "**Rule one: a letter repeated across the inputs is summed over. Rule two: a letter absent from the output is summed over.** That is the entire notation, and the table is just those two rules applied. Once they are internalised, `einsum` stops being cryptic and starts being the shortest way to say what you mean — particularly for batched and contracted operations that have no NumPy function of their own. **The one to read twice is the trace: `ii` repeats the letter *and* omits it from the output, so both rules fire at once.**",
+         "left": "subscript", "codeW": 160,
+         "vars": ["what it computes", "which rule"],
+         "steps": [
+          {"code": "'ij,jk->ik'", "state": ["a matrix product", "j repeated: summed"], "tone": "good"},
+          {"code": "'ij->ji'", "state": ["a transpose", "nothing summed, axes reordered"], "changed": [0, 1], "tone": "accent"},
+          {"code": "'ii->i'", "state": ["the diagonal", "i repeated, kept in the output"], "changed": [0, 1], "tone": "accent"},
+          {"code": "'ii'", "state": ["the trace", "repeated AND absent: both rules"], "changed": [0, 1], "tone": "violet"},
+          {"code": "'ij->j'", "state": ["column sums", "i absent: summed away"], "changed": [0, 1], "tone": "good"},
+          {"code": "'bij,bjk->bik'", "state": ["a batched matrix product", "b kept, j contracted"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four decompositions, and the one that finds a dependency you did not know about",
+         "caption": "**The SVD row is the practically important one: singular values come out sorted, so a near-zero one is a column that is almost a combination of the others.** Here the fourth is about 1e-8 and the rank comes back as 9 rather than 10 — a duplicate feature found without looking for it. **And PCA is not a separate algorithm: it is the SVD of centred data**, which is worth knowing because it explains every property PCA has. The last row is the cheap habit: `eigh` on a symmetric matrix is faster than `eig`, guarantees real eigenvalues, and returns them sorted.",
+         "left": "decomposition", "codeW": 170,
+         "vars": ["applies to", "what you use it for"],
+         "steps": [
+          {"code": "SVD", "state": ["any matrix", "PCA, rank, pseudo-inverse, low rank"], "tone": "violet"},
+          {"code": "...on a near-duplicate column", "state": ["a singular value of 1e-8", "rank 9, not 10 - found for free"], "changed": [0, 1], "tone": "crit"},
+          {"code": "QR", "state": ["any matrix", "least squares, orthonormal bases"], "changed": [0, 1], "tone": "good"},
+          {"code": "Cholesky", "state": ["symmetric positive-definite", "correlated samples, fast solves"], "changed": [0, 1], "tone": "good"},
+          {"code": "eigh, not eig", "state": ["symmetric matrices", "faster, real, and sorted"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "2.4": [
+  {"after": "03",
+   "d": {"kind": "compare",
+         "title": "NumPy's answer to missing data, and why pandas went elsewhere",
+         "caption": "**A masked array keeps the data and a separate boolean array of what is invalid, and every operation respects the mask** — which is genuinely the right model, and is also why pandas did not adopt it. The mask has to be propagated through every function, so anything that leaves the masked-array world loses it, and the performance cost is paid on every operation whether or not anything is missing. **Know it exists, recognise it in older scientific code, and reach for NaN or a nullable dtype instead** — then `filled(np.nan)` is how you get back out.",
+         "columns": [
+          {"title": "What masking gets right", "tone": "good",
+           "items": ["invalid is recorded separately from the value",
+                     "no sentinel value to collide with real data",
+                     "integers can be masked; NaN forces floats",
+                     "reductions skip masked entries automatically",
+                     "masked_values builds one from a sentinel"]},
+          {"title": "Why it is not the default", "tone": "crit",
+           "items": ["every function must propagate the mask",
+                     "leave numpy.ma and the mask is gone",
+                     "the cost is paid whether or not data is missing",
+                     "awkward interop with pandas and scikit-learn",
+                     "so: filled(np.nan), or a nullable dtype"]}]}}
+ ],
+
+ "2.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "diff comes back one element shorter, which is what makes it awkward as a feature",
+         "caption": "**A difference of n values has n−1 answers, so the result no longer lines up with the index it came from** — and a feature that silently shifts by one row is a bug that produces plausible numbers. `prepend` fixes the alignment explicitly. **`gradient` solves it differently, with central differences: same length, and more accurate in the interior** because it looks both ways rather than backwards only. For a time series where the spacing is uneven, pass the coordinate array and it uses the real spacing instead of assuming 1.",
+         "left": "call, on 11 values of t squared", "codeW": 230,
+         "vars": ["length", "what it gives"],
+         "steps": [
+          {"code": "np.diff(y)", "state": ["10 - one shorter", "forward differences"], "tone": "warn"},
+          {"code": "np.diff(y, prepend=y[0])", "state": ["11 - aligned", "first entry is 0"], "changed": [0, 1], "tone": "good"},
+          {"code": "np.gradient(y, t)", "state": ["11", "central differences: 0, 2, 4 ... 20"], "changed": [0, 1], "tone": "violet"},
+          {"code": "np.cumsum", "state": ["11", "accumulation - the inverse of diff"], "changed": [0, 1], "tone": "good"},
+          {"code": "np.trapezoid(y, t)", "state": ["1", "the area under the curve"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Two polynomial APIs that order their coefficients opposite ways",
+         "caption": "**The modern class returns coefficients low-order first and the legacy function returns them high-order first, and nothing warns you** — so a fit that is read with the wrong convention produces a curve that is wrong in a way that still looks like a curve. Prefer the class: it also rescales the input domain internally, which is the reason its fit is better conditioned at higher degrees. **And the degree is the real decision, not the API:** raising it always reduces the training error and starts tracking the noise instead of the signal.",
+         "left": "what you call", "codeW": 190,
+         "vars": ["coefficient order", "note"],
+         "steps": [
+          {"code": "Polynomial.fit(x, y, deg=2)", "state": ["LOW to high", "the modern API - prefer it"], "tone": "good"},
+          {"code": "np.polyfit(x, y, 2)", "state": ["HIGH to low", "legacy, and still everywhere"], "changed": [0, 1], "tone": "crit"},
+          {"code": "why the class is better", "state": ["-", "it rescales the domain: better conditioned"], "changed": [1], "tone": "violet"},
+          {"code": "and raising the degree", "state": ["-", "always fits training better, noise included"], "changed": [1], "tone": "warn"}]}}
+ ]
+}

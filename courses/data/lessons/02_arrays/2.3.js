@@ -20,7 +20,11 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The products, and which one you meant", id: "products" },
 
-    {"kind": "matrix", "title": "Five products, and which one you meant", "caption": "`a * b` on two (3,3) arrays gives nine independent products, not a matrix product. `np.dot` is the one to avoid in new code: it is the inner product on 1-D, the matrix product on 2-D, and something else again on higher dimensions.", "cols": ["Computes", "Note"], "rows": ["a * b", "a @ b", "np.dot(a, b)", "np.outer(a, b)", "np.einsum(...)"], "cells": [[{"text": "element-wise, broadcast", "tone": "accent"}, "nine products, not a matrix product"], [{"text": "(n,k) @ (k,m) -> (n,m)", "tone": "good"}, "batches over leading axes"], [{"text": "depends on the rank", "tone": "crit"}, "three behaviours; prefer @"], ["every pairing: (n,m)", "same as a[:,None] * b[None,:]"], [{"text": "whatever you wrote", "tone": "violet"}, "the index notation is the spec"]], "t": "diagram", "id": "dg-2_3-01-1"},
+    {"kind": "matrix", "title": "Five products, and which one you meant", "caption": "`a * b` on two (3,3) arrays gives nine independent products, not a matrix product. `np.dot` is the one to avoid in new code: it is the inner product on 1-D, the matrix product on 2-D, and something else again on higher dimensions.", "cols": ["Computes", "Note"], "rows": ["a * b", "a @ b", "np.dot(a, b)", "np.outer(a, b)", "np.einsum(...)"], "cells": [[{"text": "element-wise, broadcast", "tone": "accent"}, "nine products, not a matrix product"], [{"text": "(n,k) @ (k,m) -> (n,m)", "tone": "good"}, "batches over leading axes"], [{"text": "depends on the rank", "tone": "crit"}, "three behaviours; prefer @"], ["every pairing: (n,m)", "same as a[:,None] * b[None,:]"], [{"text": "whatever you wrote", "tone": "violet"}, "the index notation is the spec"]], "t": "diagram", "id": "dg-2_3-01-3"},
+
+
+
+
 
 
 
@@ -111,6 +115,10 @@ X / np.linalg.norm(X, axis=1, keepdims=True)      # unit rows
     { t: "h2", n: "02", text: "Solving systems: use solve, not inv", id: "solve" },
 
     {"kind": "matrix", "title": "Never invert to solve", "caption": "`inv(A) @ b` computes something you did not need and loses accuracy doing it. `solve` factorises once and substitutes, which is both faster and better conditioned — and for a least-squares problem `lstsq` is better again, because it does not form AᵀA at all.", "cols": ["cost", "accuracy", "use when"], "rows": ["inv(A) @ b", "solve(A, b)", "lstsq(A, b)"], "cells": [[{"text": "worst", "tone": "crit"}, {"text": "worst", "tone": "crit"}, {"text": "you genuinely need A⁻¹", "tone": "warn"}], [{"text": "~⅓ n³", "tone": "good"}, {"text": "good", "tone": "good"}, "a square, well-posed system"], [{"text": "more", "tone": "warn"}, {"text": "best", "tone": "good"}, {"text": "overdetermined", "tone": "good"}]], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
+
+
 
 
 
@@ -227,6 +235,10 @@ rank                          # 2, not 3 -- it detected the dependency
 
     { t: "h2", n: "03", text: "einsum", id: "einsum" },
 
+    {"kind": "trace", "title": "Two rules, and every one of these follows from them", "caption": "**Rule one: a letter repeated across the inputs is summed over. Rule two: a letter absent from the output is summed over.** That is the entire notation, and the table is just those two rules applied. Once they are internalised, `einsum` stops being cryptic and starts being the shortest way to say what you mean — particularly for batched and contracted operations that have no NumPy function of their own. **The one to read twice is the trace: `ii` repeats the letter *and* omits it from the output, so both rules fire at once.**", "left": "subscript", "codeW": 160, "vars": ["what it computes", "which rule"], "steps": [{"code": "'ij,jk->ik'", "state": ["a matrix product", "j repeated: summed"], "tone": "good"}, {"code": "'ij->ji'", "state": ["a transpose", "nothing summed, axes reordered"], "changed": [0, 1], "tone": "accent"}, {"code": "'ii->i'", "state": ["the diagonal", "i repeated, kept in the output"], "changed": [0, 1], "tone": "accent"}, {"code": "'ii'", "state": ["the trace", "repeated AND absent: both rules"], "changed": [0, 1], "tone": "violet"}, {"code": "'ij->j'", "state": ["column sums", "i absent: summed away"], "changed": [0, 1], "tone": "good"}, {"code": "'bij,bjk->bik'", "state": ["a batched matrix product", "b kept, j contracted"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-2_3-03-1"},
+
+
+
     { t: "p", text: "**`einsum` names each axis with a letter and says which ones to sum over.** Repeated letters are contracted, letters absent from the output are summed away — two rules that cover matrix products, traces, batched operations and contractions with no NumPy function of their own." },
 
     { t: "code", lang: "python", title: "the notation, from trivial to genuinely useful", code: `
@@ -305,6 +317,10 @@ A_, B_, C_ = (np.random.default_rng(i).normal(size=(200, 200))
     },
 
     { t: "h2", n: "04", text: "Decompositions", id: "decompositions" },
+
+    {"kind": "trace", "title": "Four decompositions, and the one that finds a dependency you did not know about", "caption": "**The SVD row is the practically important one: singular values come out sorted, so a near-zero one is a column that is almost a combination of the others.** Here the fourth is about 1e-8 and the rank comes back as 9 rather than 10 — a duplicate feature found without looking for it. **And PCA is not a separate algorithm: it is the SVD of centred data**, which is worth knowing because it explains every property PCA has. The last row is the cheap habit: `eigh` on a symmetric matrix is faster than `eig`, guarantees real eigenvalues, and returns them sorted.", "left": "decomposition", "codeW": 170, "vars": ["applies to", "what you use it for"], "steps": [{"code": "SVD", "state": ["any matrix", "PCA, rank, pseudo-inverse, low rank"], "tone": "violet"}, {"code": "...on a near-duplicate column", "state": ["a singular value of 1e-8", "rank 9, not 10 - found for free"], "changed": [0, 1], "tone": "crit"}, {"code": "QR", "state": ["any matrix", "least squares, orthonormal bases"], "changed": [0, 1], "tone": "good"}, {"code": "Cholesky", "state": ["symmetric positive-definite", "correlated samples, fast solves"], "changed": [0, 1], "tone": "good"}, {"code": "eigh, not eig", "state": ["symmetric matrices", "faster, real, and sorted"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-2_3-04-2"},
+
+
 
     { t: "table",
       head: ["Decomposition", "Applies to", "Gives you", "Used for"],
