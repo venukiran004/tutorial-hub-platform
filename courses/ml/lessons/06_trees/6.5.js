@@ -235,6 +235,30 @@ stack = StackingClassifier(members, final_estimator=LogisticRegression(), cv=5) 
       ]
     },
 
+    { t: "code", lang: "python", title: "`StackingRegressor`, and the cross-validation that keeps it honest",
+      code: `from sklearn.ensemble import StackingRegressor, StackingClassifier, VotingRegressor
+from sklearn.linear_model import RidgeCV
+
+stack = StackingRegressor(
+    estimators=[("ridge", RidgeCV()), ("gbm", HistGradientBoostingRegressor()),
+                ("knn", KNeighborsRegressor(15))],
+    final_estimator=RidgeCV(),
+    cv=5,                      # <- the meta-features are OUT-OF-FOLD
+    passthrough=False,         # True also gives the meta-model the raw features
+    n_jobs=-1,
+)
+
+# WHY cv= IS THE WHOLE THING: the meta-model is trained on predictions the base
+# models made for rows they had not seen. Train it on in-sample predictions and
+# it learns that the most overfit base model is the most reliable one -- the
+# classic stacking failure, and it looks excellent in training.
+#
+# For time-ordered data, pass a splitter rather than a number:
+StackingRegressor(estimators=..., final_estimator=RidgeCV(),
+                  cv=TimeSeriesSplit(n_splits=5))`,
+      caption: "**`cv=` is not a tuning knob, it is the correctness of the method.** The meta-model must see out-of-fold base predictions, or it learns to trust whichever base model memorised the training set best. And on time-ordered data an integer `cv` shuffles, so the splitter has to be passed explicitly." },
+    { t: "p", text: "`passthrough=True` hands the raw features to the meta-model alongside the base predictions, which helps when one region or segment is systematically mispredicted by every base model — and costs you the simplicity that made the meta-model interpretable. `VotingRegressor` is the no-meta-model version: fixed weights, nothing fitted on top, and nothing that can leak." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

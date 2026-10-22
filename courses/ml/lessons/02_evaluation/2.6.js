@@ -250,6 +250,28 @@ C-index = 0.789 = the ROC-AUC: for a binary outcome the concordance index is exa
       ]
     },
 
+    { t: "code", lang: "python", title: "The three internal clustering indices, and what each one rewards",
+      code: `from sklearn.metrics import (silhouette_score, calinski_harabasz_score,
+                             davies_bouldin_score)
+
+for k in (2, 3, 4, 5, 6):
+    labels = KMeans(n_clusters=k, n_init=10, random_state=0).fit_predict(X)
+    print(k,
+          round(silhouette_score(X, labels), 3),            # higher is better, -1..1
+          round(calinski_harabasz_score(X, labels), 1),     # higher is better, unbounded
+          round(davies_bouldin_score(X, labels), 3))        # LOWER is better
+
+# THEY DISAGREE, and the disagreement is informative:
+#   silhouette         per-point: how much closer to my own cluster than the next
+#   calinski_harabasz  a ratio of between-cluster to within-cluster dispersion
+#   davies_bouldin     average similarity of each cluster to its closest neighbour
+#
+# All three reward compact, well-separated, ROUGHLY SPHERICAL clusters -- so all
+# three prefer k-means output to DBSCAN output on the same data, whether or not
+# the k-means answer is the better description. None of them sees the labels.`,
+      caption: "**All three reward the same shape — compact, separated, roughly spherical — which is why they flatter k-means on data that is not spherical at all.** Note the direction: Davies-Bouldin is the one where lower is better, and reading it as higher-is-better is a mistake that silently picks the worst k. When the three disagree, that is a signal about cluster shape rather than a tie to break." },
+    { t: "p", text: "`calinski_harabasz_score` is the cheapest of the three — it is a ratio of sums of squares with no pairwise distances — so it is the one to use inside a loop over many values of `k`, with the silhouette computed once on the shortlist." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

@@ -197,6 +197,34 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
       ]
     },
 
+    { t: "code", lang: "python", title: "The three libraries behind this lesson, named",
+      code: `# GRADIENT ATTRIBUTION -- captum, from the PyTorch project.
+from captum.attr import IntegratedGradients, Saliency, DeepLift, LayerGradCam
+from captum.attr import visualization as viz
+
+ig = IntegratedGradients(model)
+attr = ig.attribute(x, target=label, baselines=torch.zeros_like(x), n_steps=50)
+viz.visualize_image_attr(attr.squeeze().permute(1, 2, 0).numpy(), method="heat_map")
+
+# THE BASELINE IS A MODELLING CHOICE, not a default: integrated gradients
+# explains the prediction RELATIVE to the baseline, so a black image answers
+# "why this class rather than nothing" and a blurred copy of the input answers
+# "why this class rather than something of the same colour".
+
+# CNN CLASS ACTIVATION -- pytorch_grad_cam, which wraps the target-layer work.
+from pytorch_grad_cam import GradCAM, GradCAMPlusPlus, EigenCAM
+from pytorch_grad_cam.utils.image import show_cam_on_image
+
+cam = GradCAM(model=model, target_layers=[model.layer4[-1]])
+heat = cam(input_tensor=x, targets=None)[0]
+show_cam_on_image(rgb_float, heat, use_rgb=True)
+
+# ATTENTION, for transformers -- bertviz, in a notebook.
+from bertviz import head_view, model_view
+head_view(attentions, tokens)        # per-head attention, layer by layer`,
+      caption: "**The baseline in integrated gradients is a question, not a parameter.** Attribution is always relative to it, so a zero tensor asks \u201cwhy this class rather than nothing at all\u201d and a blurred copy of the image asks \u201cwhy this class rather than something with the same colours\u201d — different baselines produce different and equally correct explanations, and the choice has to be stated alongside the picture." },
+    { t: "p", text: "`target_layers` is the equivalent decision for Grad-CAM: the last convolutional block gives the coarse, legible heat map people expect, and an earlier layer gives edge-level detail that rarely means anything to a reviewer. **And on attention: `bertviz` shows what the model attended to, which is not the same as what it used** — attention weights are one component of the computation, and treating them as an explanation is the most common overclaim in this area." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

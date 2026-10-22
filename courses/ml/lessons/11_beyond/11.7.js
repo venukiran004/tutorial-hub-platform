@@ -72,6 +72,30 @@ the exercise: TPR 0.85 / FPR 0.15 with base rates 0.9 / 0.6 -> PPV 0.981 / 0.895
       ["Individual fairness", "similar treatment of similar people", "is the metric of similarity defensible?", "the metric encodes the same disparities"]
     ] },
 
+    { t: "code", lang: "python", title: "Fairlearn: measure the disparity, then choose where to intervene",
+      code: `from fairlearn.metrics import MetricFrame, selection_rate, equalized_odds_difference
+from fairlearn.postprocessing import ThresholdOptimizer
+from fairlearn.reductions import ExponentiatedGradient, DemographicParity
+
+# 1. MEASURE. MetricFrame computes any metric per group and the gap between them.
+mf = MetricFrame(metrics={"selection_rate": selection_rate,
+                          "recall": recall_score, "fpr": false_positive_rate},
+                 y_true=y_test, y_pred=y_pred, sensitive_features=A_test)
+mf.by_group            # one row per group
+mf.difference()        # the largest gap, per metric
+mf.ratio()             # the ratio form, which is what some regulations specify
+
+# 2. INTERVENE, and there are three places to do it:
+#    PRE   reweight or resample the training data
+#    IN    constrain the optimisation -- ExponentiatedGradient with a constraint
+#    POST  keep the model, fit a per-group THRESHOLD
+post = ThresholdOptimizer(estimator=clf, constraints="equalized_odds",
+                          objective="accuracy_score", prefit=True)
+post.fit(X_train, y_train, sensitive_features=A_train)
+post.predict(X_test, sensitive_features=A_test)   # needs the attribute at SCORE time`,
+      caption: "**`ThresholdOptimizer` is the cheapest intervention and it has a condition that rules it out in many settings: the sensitive attribute must be available at prediction time**, because it picks a different threshold per group. Where you may not use the attribute to decide — which is often exactly where fairness is a legal requirement — the intervention has to move earlier, into the training data or the optimisation." },
+    { t: "p", text: "**`MetricFrame` is worth running even when no intervention is planned**, because the per-group table is what turns \u201cis the model fair\u201d into a specific, answerable question: which metric, between which groups, and how large. And the choice of constraint is a value judgement rather than a technical one — demographic parity and equalised odds are incompatible except in degenerate cases, so a decision has to be recorded about which one the system is accountable to." },
+
     { t: "h2", n: "02", text: "Causality: confounders, colliders and the effect of a promotion", id: "causality" },
 
     {"kind": "matrix", "title": "A confounder and a collider need opposite treatment", "caption": "This is the asymmetry that makes 'control for everything' wrong. Adjusting for a confounder removes bias; adjusting for a collider **creates** it. No amount of data distinguishes them — only a causal diagram does, which is why the diagram comes before the regression.", "cols": ["Structure", "Adjusting for it"], "rows": ["Confounder", "Collider", "Mediator", "Instrument"], "cells": [[{"text": "causes both X and Y", "tone": "accent"}, {"text": "removes bias: do it", "tone": "good"}], [{"text": "caused by both", "tone": "accent"}, {"text": "creates bias: do not", "tone": "crit"}], [{"text": "on the path X to Y", "tone": "accent"}, "blocks the effect you wanted"], [{"text": "causes X, not Y directly", "tone": "accent"}, "use it, do not adjust for it"]], "t": "diagram", "id": "dg-11_7-02-1"},

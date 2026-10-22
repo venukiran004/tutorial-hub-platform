@@ -179,6 +179,32 @@ EC.receiveLesson({
       ]
     },
 
+    { t: "code", lang: "python", title: "Two AutoML libraries, and what each one is actually searching",
+      code: `# FLAML -- cost-aware search. It spends the budget where the score is
+# improving, so cheap models are tried first and a slow one has to earn its time.
+from flaml import AutoML
+
+automl = AutoML()
+automl.fit(X_train, y_train, task="classification", metric="roc_auc",
+           time_budget=300,                       # SECONDS, not iterations
+           estimator_list=["lgbm", "xgboost", "rf", "lrl2"],
+           eval_method="cv", n_splits=5, seed=0)
+automl.best_estimator, automl.best_config, automl.best_loss
+automl.model.estimator                            # the fitted sklearn-style model
+
+# H2O -- a JVM cluster, a leaderboard, and stacked ensembles for free.
+import h2o
+from h2o.automl import H2OAutoML
+
+h2o.init()
+train = h2o.H2OFrame(df)
+aml = H2OAutoML(max_runtime_secs=600, seed=0, sort_metric="AUC",
+                exclude_algos=["DeepLearning"])
+aml.train(y="target", training_frame=train)
+aml.leaderboard.head(10)      # the top entry is usually a stacked ensemble`,
+      caption: "**`time_budget` in seconds rather than a number of trials is the honest interface**, because it is the quantity you actually have. FLAML's search is cost-aware: it tries cheap estimators first and only gives an expensive one more time if it is winning, which is why it tends to beat a random search of the same wall-clock." },
+    { t: "p", text: "Both leave the same thing to you, and it is the thing that matters: **the split, the metric and the leakage audit.** An AutoML run on a frame with a leaking column finds the leak faster than you would and reports a spectacular score. Treat the leaderboard as a search over model families, not as a result — and re-score the winner through your own pipeline and your own split before believing it." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

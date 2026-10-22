@@ -129,6 +129,36 @@ for i in range(20000):
 # PyMC / Stan: the same model in four lines, sampled by NUTS with convergence diagnostics (R̂, effective sample size, divergences) -- not executed here`,
       caption: "MCMC is exact in the limit and slow; its diagnostics — acceptance rate, autocorrelation and effective sample size, R̂ across chains — are what tell you the limit has been approached. The Laplace and variational approximations trade that guarantee for speed and put a Gaussian where the posterior may not be one; on a bounded, skewed posterior the Gaussian's spread is roughly right and its shape is wrong. In practice: conjugate or Laplace for a quick answer, NUTS for a model with tens to thousands of parameters, variational inference for millions." },
 
+    { t: "code", lang: "python", title: "PyMC and ArviZ: the model, the sampler, and the diagnostics that decide whether to trust it",
+      code: `import pymc as pm
+import arviz as az
+
+with pm.Model() as model:
+    alpha = pm.Normal("alpha", 0, 10)
+    beta = pm.Normal("beta", 0, 5, shape=X.shape[1])
+    sigma = pm.HalfNormal("sigma", 5)
+    mu = alpha + pm.math.dot(X, beta)
+    pm.Normal("y", mu=mu, sigma=sigma, observed=y)
+
+    idata = pm.sample(2000, tune=1000, chains=4, target_accept=0.9,
+                      random_seed=0)                 # NUTS, the gradient sampler
+    idata.extend(pm.sample_posterior_predictive(idata))
+
+# THE DIAGNOSTICS ARE NOT OPTIONAL. A sampler that has not converged returns
+# numbers that look exactly like a posterior.
+az.summary(idata, var_names=["alpha", "beta", "sigma"])
+#   r_hat     must be ~1.00 for every parameter. Above 1.01 means the chains
+#             disagree, and the posterior you are reading is not one thing.
+#   ess_bulk  effective sample size: 2000 draws with ess 80 is 80 draws.
+#   mcse      the Monte Carlo error on the mean -- report to that precision only.
+
+az.plot_trace(idata)                      # chains should look like white noise
+az.plot_energy(idata)                     # a bad shape means the geometry is hard
+az.plot_ppc(idata)                        # does the model generate data like yours?
+az.loo(idata)                             # out-of-sample comparison between models`,
+      caption: "**`r_hat` above 1.01 means the chains disagree, and the summary table is then averaging over several different answers** — the numbers are well formatted and meaningless. This is the practical difference between Bayesian inference and a point estimate: the fit can fail silently, so the diagnostics are part of the method rather than an optional check." },
+    { t: "p", text: "**`plot_ppc` is the one to run before any of the coefficient talk:** it draws data from the fitted model and overlays your observed data, so a model that cannot generate anything resembling your dataset is visibly wrong before anyone interprets a parameter. And `az.loo` is how two Bayesian models are compared out-of-sample — the approximate leave-one-out estimate, with a warning when the approximation itself is unreliable." },
+
     { t: "h2", n: "05", text: "Bayesian optimisation: the acquisition function", id: "bo" },
 
     {"kind": "flow", "title": "The acquisition function is where exploration is decided", "caption": "A surrogate model gives a mean and a variance at every untried point; the acquisition function turns those two numbers into one score to maximise. **Expected improvement** weighs how much better a point might be by how likely that is, so it naturally samples both near the best-so-far and where the model is simply ignorant — which is why it needs no explicit exploration parameter.", "cols": 3, "nodes": [{"id": "s", "label": "Surrogate over the space", "sub": "a GP: mean and variance everywhere", "tone": "violet"}, {"id": "m", "label": "High mean", "sub": "probably good: exploit", "tone": "accent"}, {"id": "v", "label": "High variance", "sub": "unknown: explore", "tone": "accent"}, {"id": "a", "label": "Expected improvement", "sub": "combines both into one score", "tone": "good"}, {"id": "e", "label": "Evaluate the argmax", "sub": "one expensive fit", "tone": "good"}, {"id": "u", "label": "Update and repeat", "sub": "the surrogate sharpens where it looked", "tone": "teal"}], "edges": [["s", "m"], ["s", "v"], ["m", "a"], ["v", "a"], ["a", "e"], ["e", "u"]], "t": "diagram", "id": "dg-11_2-05-4"},

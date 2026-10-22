@@ -206,6 +206,32 @@ IsolationForest(contamination=0.02).fit(shifted_batch).predict(shifted_batch)   
 
     { t: "p", text: "A streaming detector has three design choices. **Window**: refit on a sliding window (the last N rows or days), so that slow change is absorbed and the reference stays current; the window must be long enough to contain the normal cycle (a week, if weekends differ) and short enough to forget. **Cadence**: refit on a schedule, or when the flag rate leaves its expected band, and always keep the previous model so that a batch can be scored by both when the two disagree. **Latency**: the Isolation Forest scores in microseconds per row and is the streaming default; LOF needs a neighbour search against the window; an autoencoder is a forward pass. Half-Space Trees and streaming variants of the forest update the model per row without refitting, for cases where a batch refit is too slow — and the features must be computed from the *past only*, which is the discipline the fraud system below enforces." },
 
+    { t: "code", lang: "python", title: "Robust random cut forest: an isolation forest that can forget",
+      code: `import rrcf
+
+# THE PROBLEM WITH A BATCH DETECTOR ON A STREAM: retraining on a window is the
+# usual answer, and it is expensive and it is always behind. A robust random
+# cut forest supports insert and FORGET on each tree, so the model moves with
+# the stream at constant cost per point.
+
+forest = [rrcf.RCTree() for _ in range(100)]
+window = 256
+
+for i, point in enumerate(stream):
+    for tree in forest:
+        if len(tree.leaves) > window:
+            tree.forget_point(i - window)        # drop the oldest
+        tree.insert_point(point, index=i)
+
+    # CODISP -- collusive displacement: how much of the tree this point's
+    # removal would rearrange. The score, and it needs no threshold on distance.
+    score = np.mean([tree.codisp(i) for tree in forest])
+
+# The window length is the memory: short reacts fast and calls a genuine level
+# shift an anomaly, long is stable and takes a while to accept a new normal.`,
+      caption: "**This is the detector for the case the batch methods handle badly: a stream whose normal keeps moving.** Insert and forget are both per-point and constant time, so there is no retraining window to schedule and no model that is always one window behind. The score is collusive displacement — how much of the tree would rearrange if this point were removed — which needs no distance threshold of its own." },
+    { t: "p", text: "**The window length is the whole trade, and it is the same trade as the drift section above:** a short window reacts within minutes and reports every genuine level shift as an anomaly, while a long one is stable and spends an hour accepting that the new normal is normal. For a metric with a daily cycle the window has to cover at least one full period, or every morning is an anomaly." },
+
     { t: "h2", n: "07", text: "A fraud system, end to end", id: "fraud" },
 
     {"kind": "flow", "title": "A fraud system, end to end, and the two feedback paths", "caption": "The upper path is the queue, and it only ever teaches you **precision** — analysts verdict the rows you chose to show them. The lower path is what makes recall knowable: a random audit sample nobody selected, plus chargebacks that arrive weeks later. Without both, the supervised model trained on this data learns the queue's biases and nothing about the frauds the queue never surfaced.", "cols": 3, "nodes": [{"id": "t", "label": "Transaction", "sub": "features from the past only", "tone": "violet"}, {"id": "s", "label": "Score it", "sub": "against a versioned reference", "tone": "accent"}, {"id": "q", "label": "Queue, depth = capacity", "sub": "analysts verdict it", "tone": "good"}, {"id": "p", "label": "Precision at depth", "sub": "measured weekly", "tone": "good"}, {"id": "a", "label": "Random audit sample", "sub": "rows nobody selected", "tone": "teal"}, {"id": "c", "label": "Chargebacks, weeks later", "sub": "the recall estimate", "tone": "teal"}], "edges": [["t", "s"], ["s", "q"], ["q", "p"], ["t", "a"], ["a", "c"]], "t": "diagram", "id": "dg-9_5-07-6"},
@@ -325,6 +351,39 @@ IsolationForest(300).fit(X_week1[feats2])                  # refitted on week 1 
           why: "A per-feature tail detector cannot see dependence; it sees marginal extremeness. The paper's rule takes the maximum of the all-left, all-right and skew-chosen sums, so mixed-tail rows are undercounted; PyOD's implementation takes the per-feature maximum first and ranks the same row 16th, but neither sees the correlation."
         }
       ] },
+
+    { t: "code", lang: "python", title: "PyOD: the same four detectors, one interface, plus the combination step",
+      code: `from pyod.models.iforest import IForest
+from pyod.models.ocsvm import OCSVM
+from pyod.models.lof import LOF
+from pyod.models.knn import KNN
+from pyod.models.abod import ABOD
+from pyod.models.hbos import HBOS
+from pyod.models.ecod import ECOD
+from pyod.models.copod import COPOD
+from pyod.models.auto_encoder import AutoEncoder
+from pyod.models.feature_bagging import FeatureBagging
+from pyod.models.combination import average, maximization, majority_vote
+
+# ONE INTERFACE for about forty detectors, and it is not sklearn's:
+det = IForest(contamination=0.02, random_state=0).fit(X_train)
+det.labels_                      # 0 / 1 on the TRAINING data
+det.decision_scores_             # training scores -- higher is more anomalous
+det.decision_function(X_test)    # scores for new data
+det.predict(X_test)              # 0 / 1, using the contamination threshold
+
+# ECOD and COPOD are the two worth knowing beyond the classics: parameter-free,
+# deterministic, and they explain a score per DIMENSION, which the others do not.
+
+# COMBINING detectors, which is what the library is really for:
+from pyod.utils.utility import standardizer
+scores = np.column_stack([standardizer(d.decision_scores_)
+                          for d in (IForest(), LOF(), HBOS(), ECOD())])
+average(scores)        # the robust default
+maximization(scores)   # "flag if ANY detector is alarmed" -- high recall
+majority_vote(scores)  # the conservative one`,
+      caption: "**The scores have to be standardised before they are combined** — an isolation-forest score and a LOF score are on unrelated scales, so averaging them raw lets whichever has the wider range decide the ensemble. `standardizer` is the step people omit. And `contamination` is not an estimate the library makes: it is your assumption about the anomaly rate, and it sets the threshold directly." },
+    { t: "p", text: "**ECOD and COPOD are the two additions worth making to the classic four.** Both are parameter-free and deterministic — no `n_estimators`, no seed, no kernel — and both decompose a score across the dimensions, so a flagged row comes with the columns that made it unusual. That per-dimension breakdown is the thing an analyst asks for immediately and that an isolation forest cannot give." },
 
     { t: "exercise",
       kind: "Investigate",

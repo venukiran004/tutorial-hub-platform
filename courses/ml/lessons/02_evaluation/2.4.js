@@ -218,6 +218,28 @@ MSLE measures ratios:
       ]
     },
 
+    { t: "code", lang: "python", title: "`explained_variance_score`, and how it differs from R squared",
+      code: `from sklearn.metrics import r2_score, explained_variance_score
+
+# They are the same number WHEN the residuals have zero mean.
+y_true = np.array([3.0, 5.0, 7.0, 9.0])
+y_pred = np.array([2.0, 4.0, 6.0, 8.0])      # every prediction low by exactly 1
+
+r2_score(y_true, y_pred)                      # 0.80  -- the bias is penalised
+explained_variance_score(y_true, y_pred)      # 1.00  -- the bias is ignored
+
+# WHY: R squared divides the sum of squared errors by the total sum of squares,
+# so a constant offset counts against it. Explained variance divides the
+# VARIANCE of the residuals instead, and a constant offset has no variance.
+#
+# So the gap between the two IS the bias:
+#     explained_variance - r2 > 0  means the model is systematically off
+#
+# Report r2. Use explained_variance to diagnose: if it is high and r2 is low,
+# the shape is right and the level is wrong, which is a recalibration rather
+# than a modelling problem.`,
+      caption: "**The gap between the two is exactly the systematic bias**, which makes the pair a free diagnostic: a high explained variance with a low R squared says the model has the shape right and the level wrong — recalibrate rather than rebuild. R squared is the one to report, because it penalises the offset that explained variance forgives." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

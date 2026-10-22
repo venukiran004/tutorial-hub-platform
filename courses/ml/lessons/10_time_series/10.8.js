@@ -128,6 +128,29 @@ base error variances (T, A, B, C): 1300, 453, 157, 144       -- the total's mode
 #  MinT (WLS on error variances)     34.14     22.65    13.08    10.74     <- close to bottom-up, because the variances say to trust the stores`,
       caption: "Reconciliation's gain depends on where the accuracy is. Here the store models are good and the total's is not, so bottom-up wins the total and MinT — told the same thing by the variances — lands near it without discarding anything. Always reconcile: an incoherent forecast set will be reconciled anyway, by a person in a spreadsheet, badly and late. MinT is the default; `hierarchicalforecast` implements it with shrinkage for large hierarchies." },
 
+    { t: "code", lang: "python", title: "`hierarchicalforecast`: four reconciliation methods over the same base forecasts",
+      code: `from hierarchicalforecast.core import HierarchicalReconciliation
+from hierarchicalforecast.methods import BottomUp, TopDown, MiddleOut, MinTrace
+
+# S is the summing matrix: it encodes which bottom-level series add up to which
+# aggregate. tags maps each level of the hierarchy to its series names.
+hrec = HierarchicalReconciliation(reconcilers=[
+    BottomUp(),                          # forecast the leaves, sum upwards
+    TopDown(method="forecast_proportions"),   # forecast the total, split it down
+    MiddleOut(middle_level="region", top_down_method="forecast_proportions"),
+    MinTrace(method="mint_shrink"),      # optimal combination of EVERY level
+])
+reconciled = hrec.reconcile(Y_hat_df=base_forecasts, S=S, tags=tags, Y_df=train)
+
+# WHAT EACH ONE ASSUMES:
+#   BottomUp   the leaves carry the signal. Unbiased, and noisy when they are sparse.
+#   TopDown    the total is the reliable series. Stable, and it cannot represent
+#              a leaf that moves against the aggregate.
+#   MinTrace   every level's forecast is evidence; weight them by their error
+#              covariance. Usually the best, and it needs in-sample residuals.`,
+      caption: "**Reconciliation is not a tidying step applied after forecasting — it changes the numbers, and `MinTrace` usually improves every level at once.** Bottom-up and top-down each throw away one side of the evidence: the leaves know about a single store's promotion, the total is where the noise cancels, and only the optimal-combination methods use both." },
+    { t: "p", text: "**The practical requirement is coherence, and it is a hard constraint rather than a preference:** if the regional forecasts do not sum to the national one, two teams plan against two different numbers and the discrepancy is discovered in a meeting. `MinTrace` with `mint_shrink` needs in-sample residuals from the base models, which is the reason to produce base forecasts and residuals together in the same pass." },
+
     { t: "h2", n: "04", text: "Intermittent demand: Croston, SBA, TSB", id: "intermittent" },
 
     {"kind": "matrix", "title": "Intermittent demand: most days are zero", "caption": "A series that is zero four days in five breaks the usual machinery — MAPE is undefined, a mean forecast of 0.3 units is never the right order quantity, and ARIMA's residuals are not remotely normal. Croston's insight is to forecast the **size** and the **interval** separately and divide, which is why these methods are still the standard for spare parts fifty years on.", "cols": ["Forecasts", "Note"], "rows": ["Croston", "SBA", "TSB", "A plain mean", "ARIMA"], "cells": [[{"text": "size / interval, separately", "tone": "good"}, "the original; slightly biased"], [{"text": "the same, debiased", "tone": "good"}, "usually preferred to Croston"], [{"text": "updates probability every period", "tone": "good"}, "handles obsolescence"], [{"text": "a rate nobody can order", "tone": "warn"}, "0.3 units is not a decision"], [{"text": "poorly", "tone": "crit"}, "the zeros break its assumptions"]], "t": "diagram", "id": "dg-10_8-04-3"},

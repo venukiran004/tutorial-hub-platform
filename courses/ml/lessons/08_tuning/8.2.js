@@ -203,6 +203,32 @@ threshold = np.quantile(p, 1 - capacity_share)                                  
       ]
     },
 
+    { t: "code", lang: "python", title: "The imbalanced-learn samplers, by what each one actually does",
+      code: `from imblearn.over_sampling import RandomOverSampler, SMOTE, BorderlineSMOTE, ADASYN
+from imblearn.under_sampling import RandomUnderSampler, TomekLinks, EditedNearestNeighbours
+from imblearn.combine import SMOTETomek
+from imblearn.pipeline import Pipeline          # NOT sklearn's Pipeline
+
+# OVER-SAMPLING:
+RandomOverSampler()      # duplicates minority rows -- no synthesis, so no
+                         # invented points; works with categorical features
+SMOTE()                  # interpolates between a minority point and a neighbour
+BorderlineSMOTE()        # only synthesises near the decision boundary, which is
+                         # where the model is actually struggling
+ADASYN()                 # more synthesis where the local neighbourhood is hardest
+
+# CLEANING, which is the under-sampling worth knowing:
+TomekLinks()             # removes pairs of nearest neighbours in OPPOSITE classes
+                         # -- it cleans the boundary rather than thinning the bulk
+EditedNearestNeighbours()  # removes majority points their neighbours disagree with
+
+SMOTETomek()             # synthesise, then clean the boundary it blurred
+
+# imblearn's Pipeline is required: it applies samplers on fit ONLY, never on
+# transform, so the test fold is never resampled.`,
+      caption: "**`RandomOverSampler` is the one to try first, and it is usually left out of the comparison** — it invents nothing, so it cannot create a minority point in a region where the class does not exist, and it is the only option that works unchanged with categorical features. `BorderlineSMOTE` is the variant worth the upgrade, because synthesising in the easy interior of the minority class adds rows the model already classified correctly." },
+    { t: "p", text: "**The import that prevents the real bug is `imblearn.pipeline.Pipeline`.** scikit-learn's Pipeline calls `fit_transform` on every step, which would resample the validation fold too and produce a score that cannot be reproduced on real data; imblearn's version applies a sampler during `fit` and skips it during `transform`." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

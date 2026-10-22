@@ -181,6 +181,40 @@ centralised logistic regression on the pooled 1,000 rows:  w = (1.52, −1.04, 0
 #  the global model fine-tuned locally, 5 epochs 0.775    0.780   0.775   0.777     <- personalisation`,
       caption: "On a convex, well-specified model, label and feature skew cost nothing: client drift — the local updates diverging from each other, which grows with the number of local steps — is real and measurable, and FedProx's proximal term shrinks it, but the averaged model still converges to the pooled solution. The situation that breaks the global model is concept skew, and no amount of averaging fixes it, because there is no single model to find: the centralised fit is as bad. The answers are personalisation (a global model as a starting point, fine-tuned per client), clustering clients into groups that share a concept, or a model with client-specific parts. Deep models add a fourth cost, which the convex case hides: with non-convex losses, local steps move clients toward different minima and averaging them can land between." },
 
+    { t: "code", lang: "python", title: "The online learners sklearn already has, and Flower for the federated case",
+      code: `from sklearn.linear_model import SGDClassifier, PassiveAggressiveClassifier
+
+# PASSIVE-AGGRESSIVE: no learning rate. On a correct prediction it changes
+# nothing (passive); on a mistake it makes the SMALLEST update that fixes that
+# example (aggressive). That is the whole algorithm, and it is why it needs no
+# schedule to tune -- the step size comes from the size of the mistake.
+pa = PassiveAggressiveClassifier(C=0.1, random_state=0)
+for X_batch, y_batch in stream:
+    pa.partial_fit(X_batch, y_batch, classes=[0, 1])
+
+# C bounds how aggressive a single example may be, which is the only defence
+# against one mislabelled row rewriting the model.
+
+# FLOWER: the federated loop from section 03, as a client and a strategy.
+import flwr as fl
+
+class Client(fl.client.NumPyClient):
+    def get_parameters(self, config):            return get_weights(model)
+    def fit(self, parameters, config):
+        set_weights(model, parameters)
+        train_locally(model, local_data)          # the data never moves
+        return get_weights(model), len(local_data), {}
+    def evaluate(self, parameters, config):
+        set_weights(model, parameters)
+        return local_loss(model), len(local_data), {"acc": local_acc(model)}
+
+fl.server.start_server(
+    config=fl.server.ServerConfig(num_rounds=10),
+    strategy=fl.server.strategy.FedAvg(min_fit_clients=5, fraction_fit=0.3),
+)`,
+      caption: "**Passive-aggressive is the online learner with no learning rate to schedule** — it does nothing when it is right and makes the minimum correcting update when it is wrong, so the step size is derived from the mistake rather than tuned. `C` is the cap on that update, and it is the only thing standing between one mislabelled row and a rewritten model." },
+    { t: "p", text: "**The weight returned from `fit` is the number of local examples, and it is what makes federated averaging weighted** — the aggregation in section 03, written as a return value. `fraction_fit` controls how many clients take part in each round, which matters because the clients are phones: most are unreachable at any moment, and a strategy that waits for all of them never completes a round." },
+
     { t: "h2", n: "05", text: "Privacy: what an update leaks, and what it costs to hide it", id: "privacy" },
 
     {"kind": "flow", "title": "What an update leaks, and what it costs to hide it", "caption": "Keeping the data local is not privacy. A gradient is a function of the rows that produced it, and from it an attacker can often recover whether a particular record was present — sometimes the record itself. Differential privacy bounds that by **clipping and adding noise**, and the bound is paid for in accuracy: a smaller ε is a stronger guarantee and a worse model.", "cols": 3, "nodes": [{"id": "u", "label": "A client's update", "sub": "no raw data sent", "tone": "violet"}, {"id": "m", "label": "Membership inference", "sub": "was this record in the batch?", "tone": "crit"}, {"id": "r", "label": "Reconstruction", "sub": "sometimes the record itself", "tone": "crit"}, {"id": "c", "label": "Clip the update", "sub": "bound any one row's influence", "tone": "good"}, {"id": "n", "label": "Add calibrated noise", "sub": "(epsilon, delta) differential privacy", "tone": "good"}, {"id": "a", "label": "Accuracy is the price", "sub": "smaller epsilon, worse model", "tone": "warn"}], "edges": [["u", "m"], ["u", "r"], ["m", "c"], ["c", "n"], ["n", "a"]], "t": "diagram", "id": "dg-11_3-05-4"},

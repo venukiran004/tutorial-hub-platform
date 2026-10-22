@@ -262,6 +262,28 @@ at prediction time every training row is 'earlier', so the encoding is the full 
       ]
     },
 
+    { t: "code", lang: "python", title: "CatBoost's own API, and the argument the other two do not have",
+      code: `from catboost import CatBoostClassifier, CatBoostRegressor, Pool
+
+# THE DIFFERENCE: categorical columns go in RAW, by position or name.
+cat_cols = ["region", "channel", "device"]
+
+model = CatBoostClassifier(
+    iterations=2000, learning_rate=0.05, depth=6,
+    cat_features=cat_cols,            # <- no encoding step at all
+    eval_metric="AUC", random_seed=0, verbose=200,
+)
+model.fit(X_train, y_train, eval_set=(X_valid, y_valid), early_stopping_rounds=100)
+
+# Pool is CatBoost's dataset object: it holds the categorical declaration, so
+# it is the form to use when the same data is scored repeatedly.
+train_pool = Pool(X_train, y_train, cat_features=cat_cols)
+
+model.get_feature_importance(train_pool, type="PredictionValuesChange")
+model.get_feature_importance(train_pool, type="LossFunctionChange")  # slower, honest`,
+      caption: "**`cat_features` is why CatBoost exists**: the categorical columns are handed over raw and encoded internally with the ordered target statistics from section 03, so there is no encoder to fit, no leak to avoid and no unseen-category branch to write. The cost is that the model object now owns a preprocessing decision that a Pipeline would otherwise make explicit." },
+    { t: "p", text: "`LossFunctionChange` importance refits without each feature and reports the actual loss difference, which is what you want and is slow; `PredictionValuesChange` is the cheap default and shares the biases of any split-based importance. The sklearn-compatible wrapper is the same object, so `CatBoostClassifier` drops into a `Pipeline` and a `GridSearchCV` unchanged." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

@@ -243,6 +243,27 @@ Brier = 0.0100 - 0.0968 + 0.1696 = 0.0828        (measured directly: 0.0826; the
       ]
     },
 
+    { t: "code", lang: "python", title: "`calibration_curve`, and the display that plots it",
+      code: `from sklearn.calibration import calibration_curve, CalibratedClassifierCV, CalibrationDisplay
+
+prob_true, prob_pred = calibration_curve(y_test, p_hat, n_bins=10, strategy="quantile")
+# prob_pred: the mean predicted probability in each bin
+# prob_true: the observed fraction of positives in that bin
+# perfect calibration is prob_true == prob_pred, the diagonal.
+
+# strategy= IS THE ARGUMENT THAT MATTERS:
+#   "uniform"   equal-width bins -- on skewed scores most bins are empty and
+#               the last bin holds three points, so the curve is mostly noise
+#   "quantile"  equal-COUNT bins -- every point on the curve carries the same
+#               weight, which is what you want almost always
+CalibrationDisplay.from_estimator(clf, X_test, y_test, n_bins=10, strategy="quantile")
+
+# And the fix, fitted on data the model did not train on:
+CalibratedClassifierCV(clf, method="isotonic", cv=5).fit(X_train, y_train)
+CalibratedClassifierCV(clf, method="sigmoid", cv=5).fit(X_train, y_train)`,
+      caption: "**`strategy=\"quantile\"` is the non-default that makes the curve mean something** — with equal-width bins on a skewed score distribution most bins are empty and the rightmost holds a handful of points, so the wiggle at the top of the plot is sampling noise rather than miscalibration." },
+    { t: "p", text: "`method=\"isotonic\"` is non-parametric and needs a few thousand points; `method=\"sigmoid\"` (Platt scaling) fits two parameters and is the right choice on small validation sets. Both are fit steps, and `CalibratedClassifierCV` holds out folds internally so the calibrator never sees the data the base model was fitted on." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

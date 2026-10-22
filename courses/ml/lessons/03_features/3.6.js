@@ -269,6 +269,31 @@ def score(rows: pd.DataFrame) -> np.ndarray: assert list(rows.columns) == artefa
       ]
     },
 
+    { t: "code", lang: "python", title: "`make_column_transformer`, and the global config that changes what comes out",
+      code: `from sklearn.compose import make_column_transformer, make_column_selector
+from sklearn.pipeline import make_pipeline
+import sklearn
+
+# make_column_transformer names the branches for you, from the transformer class:
+pre = make_column_transformer(
+    (StandardScaler(), make_column_selector(dtype_include="number")),
+    (OneHotEncoder(handle_unknown="ignore"), make_column_selector(dtype_include=object)),
+    remainder="drop",
+)
+# the branches are called "standardscaler" and "onehotencoder" -- convenient, and
+# the reason to use the explicit ColumnTransformer instead is that YOUR names
+# survive a refactor and appear in the grid search keys.
+
+# GLOBAL CONFIG: get a DataFrame back instead of a numpy array.
+sklearn.set_config(transform_output="pandas")
+pre.fit_transform(df).columns[:5]     # real column names, through the whole pipeline
+
+sklearn.set_config(display="diagram")  # the HTML pipeline diagram in a notebook
+with sklearn.config_context(transform_output="default"):
+    ...                                # scoped, rather than process-wide`,
+      caption: "**`set_config(transform_output=\"pandas\")` is the single most useful line in this lesson** — every transformer in the pipeline then returns a DataFrame with real column names, so a feature-importance plot is labelled and a debugging session is readable. Use `config_context` to scope it rather than setting it process-wide in a library." },
+    { t: "p", text: "The trade with `make_column_transformer` is naming: it derives branch names from the class, so adding a second scaler produces `standardscaler-1` and `standardscaler-2`, and those names are what a grid-search parameter key refers to. For anything that will be tuned, the explicit `ColumnTransformer` with names you chose is worth the extra line." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

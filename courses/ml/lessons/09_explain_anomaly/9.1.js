@@ -209,6 +209,30 @@ EC.receiveLesson({
       ]
     },
 
+    { t: "code", lang: "python", title: "ALE from `alibi`, and why it is not a PDP",
+      code: `from alibi.explainers import ALE, plot_ale
+
+ale = ALE(clf.predict_proba, feature_names=feature_names, target_names=["churn"])
+exp = ale.explain(X_train.values)
+plot_ale(exp, features=["tenure", "monthly_charges"], n_cols=2)
+
+# WHAT THE DIFFERENCE IS, concretely:
+#
+#   PDP   for each value v of the feature, set EVERY row's feature to v and
+#         average the prediction. On correlated features this evaluates the
+#         model at combinations that do not exist -- a 25-year-old with 40
+#         years of tenure -- so the curve is partly an extrapolation artefact.
+#
+#   ALE   split the feature into quantile intervals; within each interval,
+#         measure the LOCAL effect of moving from the lower edge to the upper
+#         edge on the rows that are already in that interval; accumulate.
+#         Every evaluation stays inside the data.
+#
+# So where PDP and ALE disagree, the features are correlated and the PDP is
+# the one to distrust. They agree when the feature is roughly independent.`,
+      caption: "**Where a PDP and an ALE plot disagree, the features are correlated and the PDP is the one to distrust** — it averages the model's prediction over feature combinations that never occur, so part of the curve is extrapolation. ALE only ever evaluates the model on rows that really are in that interval." },
+    { t: "p", text: "`alibi` is the library that implements this alongside anchors and counterfactuals (lesson 9.2); `PartialDependenceDisplay` in scikit-learn covers PDP and ICE but not ALE. The practical workflow is to plot both for the features you intend to talk about, and treat a divergence as a finding about the data rather than a defect in either plot." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

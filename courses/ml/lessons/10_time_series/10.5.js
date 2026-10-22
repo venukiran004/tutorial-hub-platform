@@ -146,6 +146,29 @@ mean residual on promo days  +0.190   (the generator's promotion effect is log(1
 Ljung–Box(14): p = 0.000     -- autocorrelation remains; the model has missed structure`,
       caption: "The residuals name what is missing: every large one is a dated event, and the promotion effect sits in them at almost exactly its true size. A model that has missed a regressor shows it here before any backtest does. The four checks are: no autocorrelation (Ljung–Box p > 0.05 at lag min(10, n/5) or the season), zero mean, constant variance (a funnel means the interval is wrong even if the point forecast is fine), and rough normality — needed for the interval, not the point." },
 
+    { t: "code", lang: "python", title: "`statsforecast`: the same models, fitted across thousands of series at once",
+      code: `from statsforecast import StatsForecast
+from statsforecast.models import AutoARIMA, AutoETS, AutoTheta, SeasonalNaive
+
+# THE LONG FORMAT IS THE INTERFACE: unique_id, ds, y -- one frame, many series.
+sf = StatsForecast(
+    models=[AutoARIMA(season_length=7), AutoETS(season_length=7),
+            AutoTheta(season_length=7), SeasonalNaive(season_length=7)],
+    freq="D", n_jobs=-1,
+)
+sf.fit(df)                                  # df: unique_id, ds, y
+fc = sf.predict(h=28, level=[80, 95])       # point forecasts and intervals
+
+# CROSS-VALIDATION IS WALK-FORWARD BY CONSTRUCTION, which is the argument for
+# using it rather than looping statsmodels yourself:
+cv = sf.cross_validation(df=df, h=28, step_size=28, n_windows=4)
+
+# AutoARIMA selects (p, d, q)(P, D, Q) by AICc over a stepwise search -- the
+# same procedure as section 04, automated, with a seasonal differencing test
+# and a unit-root test to pick d and D rather than a judgement call.`,
+      caption: "**The reason to reach for this rather than a loop over `statsmodels` is the shape of the problem: a thousand store-item series need a thousand fitted models**, and `StatsForecast` takes one long frame, parallelises across series, and returns intervals and a walk-forward cross-validation without any of that being your code. The model selection is the AICc stepwise search from section 04." },
+    { t: "p", text: "**SeasonalNaive in the model list is not filler — it is the baseline the others have to beat**, and on short or noisy series it frequently does win. The library makes including it free, which is the main practical reason the comparison actually gets run. `AutoETS` and `AutoTheta` cover the exponential-smoothing and decomposition families from lessons 10.4 and 10.3 under the same interface." },
+
     { t: "h2", n: "05", text: "SARIMAX: things you know about the future", id: "sarimax" },
 
     {"kind": "flow", "title": "SARIMAX: a regressor must be knowable for the future you forecast", "caption": "This is the question that decides whether an exogenous variable can be used at all, and it is operational rather than statistical. Price and promotions usually qualify because **somebody sets them** in advance; weather qualifies only as far as a forecast exists, and then you are stacking one forecast's error on another's.", "cols": 3, "nodes": [{"id": "x", "label": "A candidate regressor", "sub": "price, promo, holiday, weather", "tone": "violet"}, {"id": "q", "label": "Known for the horizon?", "sub": "the deciding question", "tone": "accent"}, {"id": "y", "label": "Yes: somebody sets it", "sub": "price, promotion, calendar", "tone": "good"}, {"id": "f", "label": "Only via a forecast", "sub": "weather: errors compound", "tone": "warn"}, {"id": "n", "label": "No", "sub": "it cannot be a SARIMAX regressor", "tone": "crit"}, {"id": "v", "label": "Use VAR instead", "sub": "it forecasts the regressor too", "tone": "accent"}], "edges": [["x", "q"], ["q", "y"], ["q", "f"], ["q", "n"], ["n", "v"]], "t": "diagram", "id": "dg-10_5-05-4"},

@@ -255,6 +255,29 @@ top-2 accuracy 0.966 (the true plan is among the two highest probabilities)   to
       ]
     },
 
+    { t: "code", lang: "python", title: "The metric helpers and the two display classes",
+      code: `from sklearn.metrics import (confusion_matrix, classification_report, fbeta_score,
+                             ConfusionMatrixDisplay, RocCurveDisplay,
+                             PrecisionRecallDisplay)
+
+# fbeta_score GENERALISES F1: beta is how many times more you weigh recall.
+fbeta_score(y_true, y_pred, beta=2)      # recall counts 4x precision (beta squared)
+fbeta_score(y_true, y_pred, beta=0.5)    # precision counts 4x recall
+# beta = 1 is F1. Screening wants beta > 1; a costly intervention wants beta < 1.
+
+# THE DISPLAY CLASSES plot from an estimator or from raw predictions, and
+# return an object whose .ax_ you can keep styling:
+ConfusionMatrixDisplay.from_estimator(clf, X_test, y_test, normalize="true")
+ConfusionMatrixDisplay.from_predictions(y_true, y_pred, labels=[0, 1])
+RocCurveDisplay.from_estimator(clf, X_test, y_test, name="gradient boosting")
+PrecisionRecallDisplay.from_estimator(clf, X_test, y_test)
+
+# normalize="true" divides each ROW by its total, so the diagonal reads as
+# per-class recall. Without it, a 95/5 split makes the majority cell dominate
+# and the plot says nothing about the class you care about.`,
+      caption: "**`normalize=\"true\"` is the argument that makes a confusion-matrix plot readable on imbalanced data** — the diagonal becomes per-class recall instead of raw counts. And `fbeta_score` is the one to reach for when the costs are known: `beta` is how many times more recall is worth than precision, so a screening test uses `beta=2` and a costly intervention `beta=0.5`." },
+    { t: "p", text: "The `from_estimator` and `from_predictions` constructors are the pattern across every display class in scikit-learn, and `RocCurveDisplay` has one more use worth knowing: calling it repeatedly with `ax=` the same axes overlays several models on one plot, which is the comparison a stakeholder actually wants to see." },
+
     { t: "h2", n: "04", text: "Practice", id: "practice" },
 
     { t: "exercise",

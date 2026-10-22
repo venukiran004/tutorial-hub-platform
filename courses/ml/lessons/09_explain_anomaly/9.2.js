@@ -230,6 +230,31 @@ dice.generate_counterfactuals(x, total_CFs=3, features_to_vary=["income", "debt"
       ]
     },
 
+    { t: "code", lang: "python", title: "LIME's three explainers, and the segmentation that decides an image explanation",
+      code: `from lime.lime_tabular import LimeTabularExplainer
+from lime.lime_text import LimeTextExplainer
+from lime import lime_image
+from skimage.segmentation import quickshift, slic
+
+# TABULAR: the explainer needs the training data to know each feature's spread.
+LimeTabularExplainer(X_train.values, feature_names=cols, class_names=["stay", "churn"],
+                     discretize_continuous=True).explain_instance(x, clf.predict_proba)
+
+# TEXT: perturbation is removing words, so the explanation is per word and
+# needs no vocabulary of its own.
+LimeTextExplainer(class_names=["ham", "spam"]).explain_instance(
+    doc, pipeline.predict_proba, num_features=10)
+
+# IMAGE: perturbation is switching SUPERPIXELS off, so the segmentation IS the
+# explanation's vocabulary -- change it and the explanation changes.
+explainer = lime_image.LimeImageExplainer()
+exp = explainer.explain_instance(
+    img, model.predict,
+    segmentation_fn=lambda im: quickshift(im, kernel_size=4, max_dist=200, ratio=0.2),
+    top_labels=1, num_samples=1000)`,
+      caption: "**For an image, the segmentation is the explanation's vocabulary** — LIME can only say \"this superpixel mattered\", so a coarse `quickshift` gives a few large blobs and a fine one gives a mosaic, and the two explanations of the same prediction look nothing alike. Fix the segmentation parameters and record them, or the explanation is not reproducible." },
+    { t: "p", text: "The same sensitivity is why `discretize_continuous=True` is the tabular default: LIME fits a local linear model on perturbed samples, and binning the continuous features makes that local model stable across repeated calls. **Run any LIME explanation twice with different seeds before you show it to anyone** — if the top features move, the neighbourhood is too small or the sample count too low." },
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",

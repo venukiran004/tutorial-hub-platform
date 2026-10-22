@@ -287,6 +287,32 @@ report MAE by horizon block vs the seasonal naive and vs SARIMAX + calendar`,
         }
       ] },
 
+    { t: "code", lang: "python", title: "A foundation model applied zero-shot, in five lines",
+      code: `import torch
+from chronos import ChronosPipeline
+
+pipe = ChronosPipeline.from_pretrained("amazon/chronos-t5-small",
+                                       device_map="cpu", torch_dtype=torch.bfloat16)
+
+# NOTHING IS FITTED. The context is the series; the output is a sample of
+# possible futures, so the quantiles come out of the samples rather than from
+# a separate interval method.
+context = torch.tensor(y_history, dtype=torch.float32)
+samples = pipe.predict(context, prediction_length=28, num_samples=100)
+lo, mid, hi = torch.quantile(samples[0].float(),
+                             torch.tensor([0.1, 0.5, 0.9]), dim=0)
+
+# WHAT THIS IS GOOD FOR, concretely:
+#   a baseline in an afternoon, on a series with no history to train on
+#   a cold-start forecast for a new store or a new product
+#
+# WHAT IT IS NOT: a final answer. The M4 and M5 competitions were won by
+# hybrid and boosting methods, and a foundation model has never seen your
+# promotions, your price changes or your stockouts -- there is no place to
+# give it a covariate.`
+    , caption: "**Nothing is fitted, which is the whole proposition: a forecast for a series with no history, in an afternoon.** The output is a sample of futures rather than a point, so the intervals come from the samples directly instead of needing the conformal machinery from lesson 10.7." },
+    { t: "p", text: "**The limitation is the one that decides whether it ships: there is nowhere to put a covariate.** Your promotion calendar, price changes and stockouts are the information that actually moves the series, and a zero-shot model has never seen them. That makes these models an excellent cold-start baseline and a poor final answer — which is the same verdict the competition results give, and the reason to benchmark one against `SeasonalNaive` before believing anything about it." },
+
     { t: "exercise",
       kind: "Compute",
       title: "A reshape by hand, recursive versus direct on store B, and a falling trend",
