@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The grounded system prompt", code: `Answer the question using ONLY the provided context.
 Rules:
 1. If the answer is not in the context, reply exactly:
@@ -54,6 +55,7 @@ Rules:
 
 
 
+
     { t: "code", lang: "python", title: "Citation validation", code: `def validate_citations(answer: str, retrieved_ids: set[str]) -> bool:
     import re
     cited = set(re.findall(r"\\[(\\w+)\\]", answer))
@@ -71,7 +73,8 @@ Rules:
     { t: "h2", n: "03", id: "layer3", text: "Layer 3 \u2014 Decode for faithfulness, not creativity",
       sub: "Free, and it bounds two failures at once" },
 
-    {"kind": "matrix", "title": "Three decoding choices for faithfulness rather than creativity", "caption": "These are the cheapest interventions in the layer and the easiest to forget, because they are parameters rather than prose. **Capping `max_tokens` is the direct structural bound on confabulation** — the model cannot run past the supported content if it cannot keep generating. And structured output with a **nullable** field is an abstention path expressed in a schema, which is 1.8's strict-mode rule put to a safety use.", "cols": ["Why it works"], "rows": ["Temperature 0 to 0.3", "Cap max_tokens", "Structured output"], "cells": [[{"text": "less random invention, and it addresses the parametric conflict", "tone": "good"}], [{"text": "it cannot run past supported content and confabulate", "tone": "good"}], [{"text": "a nullable field is an abstention path in the schema", "tone": "violet"}]], "t": "diagram", "id": "dg-11_5-03-2"},
+    {"kind": "layers", "title": "Three decoding choices for faithfulness rather than creativity", "caption": "These are the cheapest interventions in the layer and the easiest to forget, because they are parameters rather than prose. **Capping `max_tokens` is the direct structural bound on confabulation** — the model cannot run past the supported content if it cannot keep generating. And structured output with a **nullable** field is an abstention path expressed in a schema, which is 1.8's strict-mode rule put to a safety use.", "items": [{"label": "Temperature 0 to 0.3", "sub": "less random invention, and it addresses the parametric conflict", "tone": "good"}, {"label": "Cap max_tokens", "sub": "it cannot run past supported content and confabulate", "tone": "good"}, {"label": "Structured output", "sub": "a nullable field is an abstention path in the schema", "tone": "violet"}], "t": "diagram", "id": "dg-11_5-03-2"},
+
 
 
 
@@ -96,6 +99,7 @@ Rules:
       sub: "The first layer with a bill" },
 
     {"kind": "trace", "title": "Verify-then-serve is not deployable as written", "caption": "11.4 timed the NLI model at 739 ms per claim, so a four-claim answer is **2,957 ms against a 3,134 ms request — a 94% latency overhead**. The honest options are a small NLI model, a GPU, or gating only the sampled share. The **0.9 threshold also deserves a look**: with a four-sentence answer, claims are scored in quarters — 0.75 or 1.0, nothing between — so a 0.9 threshold is really \"all four claims must pass\", and saying that is clearer than quoting a decimal.", "left": "quantity", "codeW": 190, "vars": ["value"], "steps": [{"code": "NLI per claim", "state": ["739 ms"], "tone": "crit"}, {"code": "four-claim answer", "state": ["2,957 ms"], "tone": "crit"}, {"code": "the request itself", "state": ["3,134 ms"], "tone": "accent"}, {"code": "overhead", "state": ["94%"], "changed": [0], "tone": "crit"}, {"code": "possible scores on 4 claims", "state": ["0, 0.25, 0.5, 0.75, 1.0"], "tone": "violet"}, {"code": "so a 0.9 threshold means", "state": ["all four must pass"], "tone": "good"}], "t": "diagram", "id": "dg-11_5-04-3"},
+
 
 
 

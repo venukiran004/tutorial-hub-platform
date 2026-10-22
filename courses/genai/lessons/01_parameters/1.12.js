@@ -113,6 +113,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "stream.py", code: `stream = client.chat.completions.create(
     model="gpt-4o",
     messages=[{"role": "user", "content": "Tell me a story"}],
@@ -175,6 +176,7 @@ if finish == "length":                         # 1.5 -- still applies to streams
 
 
 
+
     { t: "p", text: "A non-streaming request either succeeds or fails, and you find out before you have anything. A stream returns HTTP 200 as soon as the first chunk is ready — so an error at token 400 arrives *after* you have already shown the user 399 tokens." },
 
     { t: "ul", items: [
@@ -212,7 +214,8 @@ if finish in ("interrupted", "length"):
     { t: "h2", n: "04", id: "cost", text: "The one case where streaming saves money",
       sub: "Aborting, and only aborting" },
 
-    {"kind": "matrix", "title": "Streaming costs the same, unless you abandon it", "caption": "Same tokens, same price — streaming is not a discount. The exception is that a stream can be **abandoned**: stop reading, close the connection, and the server stops generating, so tokens never produced are never billed. Three situations make that worth building, and the first is simply common: in a chat UI people navigate away from long answers all the time, and closing the stream on unmount is a small change with a real saving.", "cols": ["The saving"], "rows": ["A user navigates away", "An output guardrail fires", "A repetition detector fires", "Everything else"], "cells": [[{"text": "close on unmount - common in chat, and a small change", "tone": "good"}], [{"text": "act on the partial response and stop it before completion (11.14)", "tone": "good"}], [{"text": "catch a loop early rather than paying for 400 tokens of it (1.4)", "tone": "good"}], [{"text": "no saving at all - identical tokens, identical price", "tone": "accent"}]], "t": "diagram", "id": "dg-1_12-04-2"},
+    {"kind": "layers", "title": "Streaming costs the same, unless you abandon it", "caption": "Same tokens, same price — streaming is not a discount. The exception is that a stream can be **abandoned**: stop reading, close the connection, and the server stops generating, so tokens never produced are never billed. Three situations make that worth building, and the first is simply common: in a chat UI people navigate away from long answers all the time, and closing the stream on unmount is a small change with a real saving.", "items": [{"label": "A user navigates away", "sub": "close on unmount - common in chat, and a small change", "tone": "good"}, {"label": "An output guardrail fires", "sub": "act on the partial response and stop it before completion (11.14)", "tone": "good"}, {"label": "A repetition detector fires", "sub": "catch a loop early rather than paying for 400 tokens of it (1.4)", "tone": "good"}, {"label": "Everything else", "sub": "no saving at all - identical tokens, identical price", "tone": "accent"}], "t": "diagram", "id": "dg-1_12-04-2"},
+
 
 
 

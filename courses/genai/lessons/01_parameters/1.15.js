@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Parameter", "OpenAI", "Anthropic", "Google", "HuggingFace"],
       rows: [
@@ -140,7 +141,8 @@ def call(provider, *, strict=True, **params):
     { t: "h2", n: "03", id: "choosing", text: "Choosing a model",
       sub: "The constraint that binds is rarely quality" },
 
-    {"kind": "matrix", "title": "What is actually driving each model recommendation", "caption": "Recommendation lists go stale within months; the **constraint** behind each one does not. Read the right-hand column and the list becomes reusable: two of these rows are hard limits that no amount of model progress removes — a context window is architectural, and an on-prem requirement is satisfied by no hosted model at any price.", "cols": ["The real constraint"], "rows": ["Simple classification", "Complex reasoning", "Code generation", "Under 500 ms", "100K+ context", "On-prem or private", "Cost-sensitive batches"], "cells": [[{"text": "cost and speed - the quality ceiling is not binding", "tone": "good"}], [{"text": "quality is binding, and you pay for it", "tone": "accent"}], [{"text": "a capability difference that shows up in evals", "tone": "accent"}], [{"text": "latency is binding; model size is the lever", "tone": "accent"}], [{"text": "a hard architectural limit, not a preference", "tone": "crit"}], [{"text": "a requirement no hosted model satisfies at any price", "tone": "crit"}], [{"text": "scheduling flexibility, not model choice (1.13)", "tone": "violet"}]], "t": "diagram", "id": "dg-1_15-03-1"},
+    {"kind": "layers", "title": "What is actually driving each model recommendation", "caption": "Recommendation lists go stale within months; the **constraint** behind each one does not. Read the right-hand column and the list becomes reusable: two of these rows are hard limits that no amount of model progress removes — a context window is architectural, and an on-prem requirement is satisfied by no hosted model at any price.", "items": [{"label": "Simple classification", "sub": "cost and speed - the quality ceiling is not binding", "tone": "good"}, {"label": "Complex reasoning", "sub": "quality is binding, and you pay for it", "tone": "accent"}, {"label": "Code generation", "sub": "a capability difference that shows up in evals", "tone": "accent"}, {"label": "Under 500 ms", "sub": "latency is binding; model size is the lever", "tone": "accent"}, {"label": "100K+ context", "sub": "a hard architectural limit, not a preference", "tone": "crit"}, {"label": "On-prem or private", "sub": "a requirement no hosted model satisfies at any price", "tone": "crit"}, {"label": "Cost-sensitive batches", "sub": "scheduling flexibility, not model choice (1.13)", "tone": "violet"}], "t": "diagram", "id": "dg-1_15-03-1"},
+
 
 
 
@@ -195,6 +197,7 @@ def call(provider, *, strict=True, **params):
       sub: "Less than people build, and in a different place" },
 
     {"kind": "flow", "title": "Normalising the names while the behaviours differ is worse than not abstracting", "caption": "The instinct on meeting the support matrix is to build a layer that hides it, and that is usually the wrong shape — **the differences that matter are behaviours, not parameter names**. An abstraction that smooths the names is actively misleading, because it makes switching providers *look* like a configuration change, and the eval step then gets skipped on the strength of the abstraction's promise. Switching providers is a project.", "cols": 3, "nodes": [{"id": "m", "label": "The support matrix looks like config", "sub": "names and flags", "tone": "accent"}, {"id": "l", "label": "So you build a layer", "sub": "one interface, many providers", "tone": "warn"}, {"id": "b", "label": "But the behaviours still differ", "sub": "not just the names", "tone": "crit"}, {"id": "s", "label": "Switching now looks free", "sub": "a config change", "tone": "crit"}, {"id": "e", "label": "So the eval gets skipped", "sub": "on the layer's promise", "tone": "crit"}, {"id": "p", "label": "Treat it as a project instead", "sub": "and keep the eval step", "tone": "good"}], "edges": [["m", "l"], ["l", "b"], ["b", "s"], ["s", "e"], ["e", "p"]], "t": "diagram", "id": "dg-1_15-04-2"},
+
 
 
 

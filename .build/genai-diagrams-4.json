@@ -1,223 +1,1044 @@
 {
  "2.1": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Eight principles, read as eight failures they prevent",
-         "caption": "A list of principles is hard to apply and a list of failures is not, so this is the same list inverted. The eighth is the one that separates engineering from writing and the one most often skipped: **a prompt that has not been run against a test set is an opinion.** Everything between here and 2.12 is technique that a test set is required to validate.",
-         "cols": ["What it prevents"],
-         "rows": ["Be specific and explicit", "Provide context", "Show examples", "Request structured output", "Use delimiters", "Assign a role", "Break tasks into steps", "Iterate and evaluate"],
-         "cells": [
-          ["the model resolving an ambiguity differently from you"],
-          ["a technically correct answer in the wrong register"],
-          ["a format described in words being interpreted loosely"],
-          ["prose you then have to parse with a regex"],
-          [{"text": "instructions and data blurring into each other", "tone": "warn"}],
-          ["a generic register where a specific one was wanted"],
-          ["one call doing four jobs and failing at all of them"],
-          [{"text": "\"it seems better\" replacing a measurement", "tone": "crit"}]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "A prompt is one string, and nothing in it is privileged",
-         "caption": "The model does not receive \"your instructions\" and \"the user's document\" as distinct objects. It receives **a sequence of tokens**, and whatever structure separates them is structure you put there in text. That is why delimiters are not tidiness: without them, a document containing the words *ignore the above* is indistinguishable from an instruction, which is 2.16's whole problem.",
-         "cols": 3,
-         "nodes": [
-          {"id": "i", "label": "Your instructions", "sub": "text", "tone": "accent"},
-          {"id": "d", "label": "The user's document", "sub": "also text", "tone": "accent"},
-          {"id": "o", "label": "One concatenated string", "sub": "no boundary exists yet", "tone": "crit"},
-          {"id": "x", "label": "Delimiters put one there", "sub": "XML tags, or triple backticks", "tone": "good"},
-          {"id": "c", "label": "Be consistent within a prompt", "sub": "more than picking the 'right' one", "tone": "good"},
-          {"id": "s", "label": "Still not a security boundary", "sub": "2.16 measures how weak it is", "tone": "teal"}],
-         "edges": [["i", "o"], ["d", "o"], ["o", "x"], ["x", "c"], ["c", "s"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Four failures that no rewording fixes",
-         "caption": "A great deal of time goes into rewording prompts to fix things that are not prompt failures. Rule these four out first. The last is the commonest and the least often named — **you cannot say precisely what a correct answer looks like** — and it is unfixable by prompting, because a prompt is an answer to that question rather than a substitute for it.",
-         "cols": ["It looks like", "Where it is actually fixed"],
-         "rows": ["Retrieval failure", "Parameter failure", "Capability failure", "Specification failure"],
-         "cells": [
-          [{"text": "answers from wrong or absent material", "tone": "warn"}, "the retrieval, not the prompt (M5)"],
-          [{"text": "repeats, varies, or truncates", "tone": "warn"}, "1.4, 1.7 and 1.5 respectively"],
-          [{"text": "reasoning the model cannot do", "tone": "crit"}, "a different model, or a decomposition"],
-          [{"text": "you cannot define 'correct'", "tone": "crit"}, "write the test set first (2.12)"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "Eight principles, read as eight failures they prevent",
+    "caption": "A list of principles is hard to apply and a list of failures is not, so this is the same list inverted. The eighth is the one that separates engineering from writing and the one most often skipped: **a prompt that has not been run against a test set is an opinion.** Everything between here and 2.12 is technique that a test set is required to validate.",
+    "items": [
+     {
+      "label": "Be specific and explicit",
+      "sub": "the model resolving an ambiguity differently from you"
+     },
+     {
+      "label": "Provide context",
+      "sub": "a technically correct answer in the wrong register"
+     },
+     {
+      "label": "Show examples",
+      "sub": "a format described in words being interpreted loosely"
+     },
+     {
+      "label": "Request structured output",
+      "sub": "prose you then have to parse with a regex"
+     },
+     {
+      "label": "Use delimiters",
+      "sub": "instructions and data blurring into each other",
+      "tone": "warn"
+     },
+     {
+      "label": "Assign a role",
+      "sub": "a generic register where a specific one was wanted"
+     },
+     {
+      "label": "Break tasks into steps",
+      "sub": "one call doing four jobs and failing at all of them"
+     },
+     {
+      "label": "Iterate and evaluate",
+      "sub": "\"it seems better\" replacing a measurement",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "A prompt is one string, and nothing in it is privileged",
+    "caption": "The model does not receive \"your instructions\" and \"the user's document\" as distinct objects. It receives **a sequence of tokens**, and whatever structure separates them is structure you put there in text. That is why delimiters are not tidiness: without them, a document containing the words *ignore the above* is indistinguishable from an instruction, which is 2.16's whole problem.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "Your instructions",
+      "sub": "text",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "The user's document",
+      "sub": "also text",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "One concatenated string",
+      "sub": "no boundary exists yet",
+      "tone": "crit"
+     },
+     {
+      "id": "x",
+      "label": "Delimiters put one there",
+      "sub": "XML tags, or triple backticks",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Be consistent within a prompt",
+      "sub": "more than picking the 'right' one",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Still not a security boundary",
+      "sub": "2.16 measures how weak it is",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "o"
+     ],
+     [
+      "d",
+      "o"
+     ],
+     [
+      "o",
+      "x"
+     ],
+     [
+      "x",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Four failures that no rewording fixes",
+    "caption": "A great deal of time goes into rewording prompts to fix things that are not prompt failures. Rule these four out first. The last is the commonest and the least often named — **you cannot say precisely what a correct answer looks like** — and it is unfixable by prompting, because a prompt is an answer to that question rather than a substitute for it.",
+    "cols": [
+     "It looks like",
+     "Where it is actually fixed"
+    ],
+    "rows": [
+     "Retrieval failure",
+     "Parameter failure",
+     "Capability failure",
+     "Specification failure"
+    ],
+    "cells": [
+     [
+      {
+       "text": "answers from wrong or absent material",
+       "tone": "warn"
+      },
+      "the retrieval, not the prompt (M5)"
+     ],
+     [
+      {
+       "text": "repeats, varies, or truncates",
+       "tone": "warn"
+      },
+      "1.4, 1.7 and 1.5 respectively"
+     ],
+     [
+      {
+       "text": "reasoning the model cannot do",
+       "tone": "crit"
+      },
+      "a different model, or a decomposition"
+     ],
+     [
+      {
+       "text": "you cannot define 'correct'",
+       "tone": "crit"
+      },
+      "write the test set first (2.12)"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.2": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The examples supply what the instruction left out",
-         "caption": "Zero-, one- and few-shot name the same thing at three sizes. What makes it *learning* is that behaviour on the query changes because of the examples while **nothing about the model changed** — the examples are in the context, and the weights are untouched. The mechanism in miniature: the instruction says \"classify the sentiment\" and never names a label set; the examples supply one and the model matches the pattern. Anything you can demonstrate, you do not have to describe.",
-         "cols": 3,
-         "nodes": [
-          {"id": "i", "label": "\"Classify the sentiment\"", "sub": "names no label set", "tone": "warn"},
-          {"id": "e", "label": "Two worked examples", "sub": "which supply one", "tone": "good"},
-          {"id": "m", "label": "The model matches the pattern", "sub": "in context, not in the weights", "tone": "violet"},
-          {"id": "f", "label": "Format comes free", "sub": "easier to show than to specify", "tone": "good"},
-          {"id": "w", "label": "No weights changed", "sub": "which is why it is 'in-context'", "tone": "teal"}],
-         "edges": [["i", "e"], ["e", "m"], ["m", "f"], ["m", "w"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Five rules for few-shot, three of them checkable here",
-         "caption": "Two confirmed, one **not** confirmed, two untested on this task — and the honest labelling matters more than the score. The second row is worse than the usual phrasing: it is not diminishing returns but an actual reversal, with the hard split peaking at 0.748 on two examples and falling to 0.484 on eight. The order rule did not reproduce at all: as listed, reversed and two shuffles each gave 6 of 6.",
-         "cols": ["Status", "Evidence"],
-         "rows": ["2-5 examples is best", "Diminishing returns", "Best example last", "Format consistency", "Label balance"],
-         "cells": [
-          [{"text": "confirmed", "tone": "good"}, "2 reached 6/6; 4 and 8 added nothing"],
-          [{"text": "worse than that", "tone": "crit"}, "hard: 0.748 at n=2, 0.484 at n=8"],
-          [{"text": "not confirmed", "tone": "warn"}, "four orderings, all 6 of 6"],
-          [{"text": "not tested", "tone": "accent"}, "but it is the mechanism"],
-          [{"text": "not tested", "tone": "accent"}, "applies to classification, not this"]]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "One wrong example halves the score",
-         "caption": "If the model is matching a pattern, an example that breaks the pattern should do damage out of proportion to its share of the prompt — and it does. **One mislabelled example in four takes 6 of 6 down to 3 of 6.** That is the practical argument for auditing a few-shot block the way you would audit training data: the examples are not decoration, they are the specification, and a typo in them is a bug in the task definition.",
-         "left": "example set", "codeW": 200,
-         "vars": ["correct", "accuracy"],
-         "steps": [
-          {"code": "clean", "state": ["6 of 6", "1.00"], "tone": "good"},
-          {"code": "one wrong label of four", "state": ["3 of 6", "0.50"], "changed": [0, 1], "tone": "crit", "note": "25% bad input, 50% loss"}]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "Dynamic few-shot is retrieval, pointed at examples",
-         "caption": "A fixed example set is chosen once for all queries. A dynamic one retrieves the **most similar examples for each query at request time** — which is exactly module 5's machinery applied to examples rather than documents, and it inherits all of it: an embedding model, an index, a top-k, and the same failure modes. Worth it when the task has many distinct sub-cases and one fixed set cannot represent them all.",
-         "cols": 3,
-         "nodes": [
-          {"id": "f", "label": "A fixed example set", "sub": "chosen once, for every query", "tone": "accent"},
-          {"id": "q", "label": "A query arrives", "sub": "possibly unlike all of them", "tone": "warn"},
-          {"id": "r", "label": "Retrieve the nearest examples", "sub": "embed, index, top-k", "tone": "good"},
-          {"id": "b", "label": "Build the prompt per request", "sub": "examples chosen for this query", "tone": "good"},
-          {"id": "i", "label": "Inherits M5 entirely", "sub": "including its failure modes", "tone": "violet"},
-          {"id": "w", "label": "Worth it with many sub-cases", "sub": "where one fixed set cannot cover", "tone": "teal"}],
-         "edges": [["f", "q"], ["q", "r"], ["r", "b"], ["b", "i"], ["i", "w"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The examples supply what the instruction left out",
+    "caption": "Zero-, one- and few-shot name the same thing at three sizes. What makes it *learning* is that behaviour on the query changes because of the examples while **nothing about the model changed** — the examples are in the context, and the weights are untouched. The mechanism in miniature: the instruction says \"classify the sentiment\" and never names a label set; the examples supply one and the model matches the pattern. Anything you can demonstrate, you do not have to describe.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "\"Classify the sentiment\"",
+      "sub": "names no label set",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "Two worked examples",
+      "sub": "which supply one",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "The model matches the pattern",
+      "sub": "in context, not in the weights",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "Format comes free",
+      "sub": "easier to show than to specify",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "No weights changed",
+      "sub": "which is why it is 'in-context'",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "e"
+     ],
+     [
+      "e",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ],
+     [
+      "m",
+      "w"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Five rules for few-shot, three of them checkable here",
+    "caption": "Two confirmed, one **not** confirmed, two untested on this task — and the honest labelling matters more than the score. The second row is worse than the usual phrasing: it is not diminishing returns but an actual reversal, with the hard split peaking at 0.748 on two examples and falling to 0.484 on eight. The order rule did not reproduce at all: as listed, reversed and two shuffles each gave 6 of 6.",
+    "cols": [
+     "Status",
+     "Evidence"
+    ],
+    "rows": [
+     "2-5 examples is best",
+     "Diminishing returns",
+     "Best example last",
+     "Format consistency",
+     "Label balance"
+    ],
+    "cells": [
+     [
+      {
+       "text": "confirmed",
+       "tone": "good"
+      },
+      "2 reached 6/6; 4 and 8 added nothing"
+     ],
+     [
+      {
+       "text": "worse than that",
+       "tone": "crit"
+      },
+      "hard: 0.748 at n=2, 0.484 at n=8"
+     ],
+     [
+      {
+       "text": "not confirmed",
+       "tone": "warn"
+      },
+      "four orderings, all 6 of 6"
+     ],
+     [
+      {
+       "text": "not tested",
+       "tone": "accent"
+      },
+      "but it is the mechanism"
+     ],
+     [
+      {
+       "text": "not tested",
+       "tone": "accent"
+      },
+      "applies to classification, not this"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "One wrong example halves the score",
+    "caption": "If the model is matching a pattern, an example that breaks the pattern should do damage out of proportion to its share of the prompt — and it does. **One mislabelled example in four takes 6 of 6 down to 3 of 6.** That is the practical argument for auditing a few-shot block the way you would audit training data: the examples are not decoration, they are the specification, and a typo in them is a bug in the task definition.",
+    "left": "example set",
+    "codeW": 200,
+    "vars": [
+     "correct",
+     "accuracy"
+    ],
+    "steps": [
+     {
+      "code": "clean",
+      "state": [
+       "6 of 6",
+       "1.00"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "one wrong label of four",
+      "state": [
+       "3 of 6",
+       "0.50"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "25% bad input, 50% loss"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Dynamic few-shot is retrieval, pointed at examples",
+    "caption": "A fixed example set is chosen once for all queries. A dynamic one retrieves the **most similar examples for each query at request time** — which is exactly module 5's machinery applied to examples rather than documents, and it inherits all of it: an embedding model, an index, a top-k, and the same failure modes. Worth it when the task has many distinct sub-cases and one fixed set cannot represent them all.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "A fixed example set",
+      "sub": "chosen once, for every query",
+      "tone": "accent"
+     },
+     {
+      "id": "q",
+      "label": "A query arrives",
+      "sub": "possibly unlike all of them",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Retrieve the nearest examples",
+      "sub": "embed, index, top-k",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "Build the prompt per request",
+      "sub": "examples chosen for this query",
+      "tone": "good"
+     },
+     {
+      "id": "i",
+      "label": "Inherits M5 entirely",
+      "sub": "including its failure modes",
+      "tone": "violet"
+     },
+     {
+      "id": "w",
+      "label": "Worth it with many sub-cases",
+      "sub": "where one fixed set cannot cover",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "q"
+     ],
+     [
+      "q",
+      "r"
+     ],
+     [
+      "r",
+      "b"
+     ],
+     [
+      "b",
+      "i"
+     ],
+     [
+      "i",
+      "w"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.3": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Three ways to ask, priced on the prompt side",
-         "caption": "The zero-shot form is **one clause and six tokens** — which is why it is always the first thing to try. Few-shot CoT costs 59 extra prompt tokens and buys a reasoning *shape* you want followed; structured CoT costs 42 and buys a fixed checklist. Neither is expensive on the input side, and §03 is where the real bill is.",
-         "left": "form", "codeW": 170,
-         "vars": ["prompt tokens", "extra", "buys"],
-         "steps": [
-          {"code": "direct", "state": ["25", "-", "nothing"], "tone": "accent"},
-          {"code": "zero-shot CoT", "state": ["31", "+6", "try this first"], "changed": [1], "tone": "good", "note": "one clause"},
-          {"code": "structured CoT", "state": ["67", "+42", "a fixed checklist"], "tone": "accent"},
-          {"code": "few-shot CoT", "state": ["84", "+59", "a reasoning shape"], "tone": "warn"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The real cost is on the output side, and so is the latency",
-         "caption": "Six extra prompt tokens is nothing. What chain-of-thought actually costs is that a bare answer becomes a paragraph, and **output tokens are priced several times higher than input** — 90 tokens of working is 90× the cost of the answer alone. The latency is the half users feel: from 1.12, every output token is its own forward pass, so a 90-token answer takes roughly ninety times as long to finish. Streaming hides some of it, which is one reason CoT output is often left visible.",
-         "left": "what the model emits", "codeW": 200,
-         "vars": ["output tokens", "cost at $10/1M", "forward passes"],
-         "steps": [
-          {"code": "'18'", "state": ["1", "$0.000010", "1"], "tone": "good"},
-          {"code": "one-line working", "state": ["25", "$0.000250", "25"], "changed": [1], "tone": "accent"},
-          {"code": "five numbered steps", "state": ["90", "$0.000900", "90"], "changed": [1, 2], "tone": "crit", "note": "90x the latency too"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "The reasoning is the computation, not a record of one",
-         "caption": "The steps a model writes are generated the same way everything else is — by sampling from a distribution. They are **not a trace of a computation that happened elsewhere; they *are* the computation**. Which has two consequences people conflate: a step can be wrong and the model will carry the wrong intermediate forward without noticing, and a plausible-looking chain is not evidence that the answer is right. Reading the chain tells you what it computed, not whether it was correct.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "The steps are sampled", "sub": "like any other tokens", "tone": "violet"},
-          {"id": "n", "label": "Not a log of hidden work", "sub": "there is no hidden work", "tone": "accent"},
-          {"id": "w", "label": "A step can be wrong", "sub": "and nothing checks it", "tone": "crit"},
-          {"id": "c", "label": "The error is carried forward", "sub": "into every later step", "tone": "crit"},
-          {"id": "p", "label": "A plausible chain is not evidence", "sub": "of a correct answer", "tone": "crit"},
-          {"id": "v", "label": "So verify the answer, not the prose", "sub": "2.4 votes; 2.12 measures", "tone": "good"}],
-         "edges": [["s", "n"], ["n", "w"], ["w", "c"], ["c", "p"], ["p", "v"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Three ways to ask, priced on the prompt side",
+    "caption": "The zero-shot form is **one clause and six tokens** — which is why it is always the first thing to try. Few-shot CoT costs 59 extra prompt tokens and buys a reasoning *shape* you want followed; structured CoT costs 42 and buys a fixed checklist. Neither is expensive on the input side, and §03 is where the real bill is.",
+    "left": "form",
+    "codeW": 170,
+    "vars": [
+     "prompt tokens",
+     "extra",
+     "buys"
+    ],
+    "steps": [
+     {
+      "code": "direct",
+      "state": [
+       "25",
+       "-",
+       "nothing"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "zero-shot CoT",
+      "state": [
+       "31",
+       "+6",
+       "try this first"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "one clause"
+     },
+     {
+      "code": "structured CoT",
+      "state": [
+       "67",
+       "+42",
+       "a fixed checklist"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "few-shot CoT",
+      "state": [
+       "84",
+       "+59",
+       "a reasoning shape"
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The real cost is on the output side, and so is the latency",
+    "caption": "Six extra prompt tokens is nothing. What chain-of-thought actually costs is that a bare answer becomes a paragraph, and **output tokens are priced several times higher than input** — 90 tokens of working is 90× the cost of the answer alone. The latency is the half users feel: from 1.12, every output token is its own forward pass, so a 90-token answer takes roughly ninety times as long to finish. Streaming hides some of it, which is one reason CoT output is often left visible.",
+    "left": "what the model emits",
+    "codeW": 200,
+    "vars": [
+     "output tokens",
+     "cost at $10/1M",
+     "forward passes"
+    ],
+    "steps": [
+     {
+      "code": "'18'",
+      "state": [
+       "1",
+       "$0.000010",
+       "1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "one-line working",
+      "state": [
+       "25",
+       "$0.000250",
+       "25"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "five numbered steps",
+      "state": [
+       "90",
+       "$0.000900",
+       "90"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "crit",
+      "note": "90x the latency too"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The reasoning is the computation, not a record of one",
+    "caption": "The steps a model writes are generated the same way everything else is — by sampling from a distribution. They are **not a trace of a computation that happened elsewhere; they *are* the computation**. Which has two consequences people conflate: a step can be wrong and the model will carry the wrong intermediate forward without noticing, and a plausible-looking chain is not evidence that the answer is right. Reading the chain tells you what it computed, not whether it was correct.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The steps are sampled",
+      "sub": "like any other tokens",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Not a log of hidden work",
+      "sub": "there is no hidden work",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "A step can be wrong",
+      "sub": "and nothing checks it",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "The error is carried forward",
+      "sub": "into every later step",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "A plausible chain is not evidence",
+      "sub": "of a correct answer",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "So verify the answer, not the prose",
+      "sub": "2.4 votes; 2.12 measures",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "n"
+     ],
+     [
+      "n",
+      "w"
+     ],
+     [
+      "w",
+      "c"
+     ],
+     [
+      "c",
+      "p"
+     ],
+     [
+      "p",
+      "v"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.4": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "A majority vote is a binomial, so it can be read off exactly",
-         "caption": "\"More expensive but significantly more accurate\" is quantifiable, and the table says something sharper than the slogan. **Below p = 0.5 voting makes it worse** — at 0.40 it falls from 0.4000 to 0.1744 by n=21, because the majority is reliably wrong. At exactly 0.50 it does nothing at any n. The gains are real only above the halfway line, and they are largest where the model was already good: 0.70 reaches 0.9736 at n=21.",
-         "cols": ["n=1", "n=3", "n=5", "n=9", "n=21"],
-         "rows": ["p = 0.40", "p = 0.50", "p = 0.55", "p = 0.60", "p = 0.70", "p = 0.90"],
-         "cells": [
-          ["0.4000", "0.3520", "0.3174", "0.2666", {"text": "0.1744", "tone": "crit"}],
-          ["0.5000", "0.5000", "0.5000", "0.5000", {"text": "0.5000", "tone": "warn"}],
-          ["0.5500", "0.5748", "0.5931", "0.6214", {"text": "0.6790", "tone": "good"}],
-          ["0.6000", "0.6480", "0.6826", "0.7334", {"text": "0.8256", "tone": "good"}],
-          ["0.7000", "0.7840", "0.8369", "0.9012", {"text": "0.9736", "tone": "good"}],
-          ["0.9000", "0.9720", "0.9914", "0.9991", {"text": "1.0000", "tone": "good"}]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "n=3 is the efficient point, and the shape depends on where you started",
-         "caption": "Divide the accuracy gain by the number of extra calls and the answer is unambiguous: **n=3 returns the most per call** and n=5 is defensible, while beyond that you pay linearly for a sub-linear return. The second reading is the useful one for choosing: at p=0.8 the curve is nearly exhausted by n=9 (0.1804 of a possible 0.1990), while at p=0.6 it is still climbing at n=21. A weak model has more left to gain, and needs more calls to get it.",
-         "left": "setting", "codeW": 150,
-         "vars": ["accuracy gain", "cost", "gain per extra call"],
-         "steps": [
-          {"code": "p=0.6, n=3", "state": ["+0.0480", "3x", "+0.0240"], "tone": "good", "note": "the efficient point"},
-          {"code": "p=0.6, n=5", "state": ["+0.0826", "5x", "+0.0206"], "tone": "accent"},
-          {"code": "p=0.6, n=9", "state": ["+0.1334", "9x", "+0.0167"], "tone": "warn"},
-          {"code": "p=0.6, n=21", "state": ["+0.2256", "21x", "+0.0113"], "changed": [2], "tone": "crit", "note": "still climbing"},
-          {"code": "p=0.8, n=3", "state": ["+0.0960", "3x", "+0.0480"], "tone": "good"},
-          {"code": "p=0.8, n=9", "state": ["+0.1804", "9x", "+0.0226"], "tone": "accent", "note": "0.1804 of 0.1990"},
-          {"code": "p=0.8, n=21", "state": ["+0.1990", "21x", "+0.0100"], "tone": "crit", "note": "exhausted"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "A poll and a search are not the same technique",
-         "caption": "Self-consistency samples **one** approach repeatedly and votes; tree-of-thought generates *different* approaches, scores them and continues from the best. The row that decides whether you can use the second one is the requirement: you need a way to **evaluate a partial solution**, and if your evaluator is no better than your generator the search is noise. Both are the prompt-level form of test-time compute, which is why layering either on a reasoning model is usually redundant and always expensive.",
-         "cols": ["Self-consistency", "Tree-of-thought"],
-         "rows": ["Mechanism", "Requires", "Works when", "Cost", "Fails when"],
-         "cells": [
-          ["sample N times, vote", "generate, score, select"],
-          [{"text": "an extractable answer", "tone": "good"}, {"text": "a partial-solution scorer", "tone": "warn"}],
-          ["answers are discrete", "approaches genuinely differ"],
-          [{"text": "N x base, all parallel", "tone": "good"}, {"text": "N gen + N eval, partly serial", "tone": "warn"}],
-          [{"text": "per-sample p below 0.5", "tone": "crit"}, {"text": "the evaluator is no better", "tone": "crit"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "A majority vote is a binomial, so it can be read off exactly",
+    "caption": "\"More expensive but significantly more accurate\" is quantifiable, and the table says something sharper than the slogan. **Below p = 0.5 voting makes it worse** — at 0.40 it falls from 0.4000 to 0.1744 by n=21, because the majority is reliably wrong. At exactly 0.50 it does nothing at any n. The gains are real only above the halfway line, and they are largest where the model was already good: 0.70 reaches 0.9736 at n=21.",
+    "cols": [
+     "n=1",
+     "n=3",
+     "n=5",
+     "n=9",
+     "n=21"
+    ],
+    "rows": [
+     "p = 0.40",
+     "p = 0.50",
+     "p = 0.55",
+     "p = 0.60",
+     "p = 0.70",
+     "p = 0.90"
+    ],
+    "cells": [
+     [
+      "0.4000",
+      "0.3520",
+      "0.3174",
+      "0.2666",
+      {
+       "text": "0.1744",
+       "tone": "crit"
+      }
+     ],
+     [
+      "0.5000",
+      "0.5000",
+      "0.5000",
+      "0.5000",
+      {
+       "text": "0.5000",
+       "tone": "warn"
+      }
+     ],
+     [
+      "0.5500",
+      "0.5748",
+      "0.5931",
+      "0.6214",
+      {
+       "text": "0.6790",
+       "tone": "good"
+      }
+     ],
+     [
+      "0.6000",
+      "0.6480",
+      "0.6826",
+      "0.7334",
+      {
+       "text": "0.8256",
+       "tone": "good"
+      }
+     ],
+     [
+      "0.7000",
+      "0.7840",
+      "0.8369",
+      "0.9012",
+      {
+       "text": "0.9736",
+       "tone": "good"
+      }
+     ],
+     [
+      "0.9000",
+      "0.9720",
+      "0.9914",
+      "0.9991",
+      {
+       "text": "1.0000",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "n=3 is the efficient point, and the shape depends on where you started",
+    "caption": "Divide the accuracy gain by the number of extra calls and the answer is unambiguous: **n=3 returns the most per call** and n=5 is defensible, while beyond that you pay linearly for a sub-linear return. The second reading is the useful one for choosing: at p=0.8 the curve is nearly exhausted by n=9 (0.1804 of a possible 0.1990), while at p=0.6 it is still climbing at n=21. A weak model has more left to gain, and needs more calls to get it.",
+    "left": "setting",
+    "codeW": 150,
+    "vars": [
+     "accuracy gain",
+     "cost",
+     "gain per extra call"
+    ],
+    "steps": [
+     {
+      "code": "p=0.6, n=3",
+      "state": [
+       "+0.0480",
+       "3x",
+       "+0.0240"
+      ],
+      "tone": "good",
+      "note": "the efficient point"
+     },
+     {
+      "code": "p=0.6, n=5",
+      "state": [
+       "+0.0826",
+       "5x",
+       "+0.0206"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "p=0.6, n=9",
+      "state": [
+       "+0.1334",
+       "9x",
+       "+0.0167"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "p=0.6, n=21",
+      "state": [
+       "+0.2256",
+       "21x",
+       "+0.0113"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "still climbing"
+     },
+     {
+      "code": "p=0.8, n=3",
+      "state": [
+       "+0.0960",
+       "3x",
+       "+0.0480"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "p=0.8, n=9",
+      "state": [
+       "+0.1804",
+       "9x",
+       "+0.0226"
+      ],
+      "tone": "accent",
+      "note": "0.1804 of 0.1990"
+     },
+     {
+      "code": "p=0.8, n=21",
+      "state": [
+       "+0.1990",
+       "21x",
+       "+0.0100"
+      ],
+      "tone": "crit",
+      "note": "exhausted"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "A poll and a search are not the same technique",
+    "caption": "Self-consistency samples **one** approach repeatedly and votes; tree-of-thought generates *different* approaches, scores them and continues from the best. The row that decides whether you can use the second one is the requirement: you need a way to **evaluate a partial solution**, and if your evaluator is no better than your generator the search is noise. Both are the prompt-level form of test-time compute, which is why layering either on a reasoning model is usually redundant and always expensive.",
+    "cols": [
+     "Self-consistency",
+     "Tree-of-thought"
+    ],
+    "rows": [
+     "Mechanism",
+     "Requires",
+     "Works when",
+     "Cost",
+     "Fails when"
+    ],
+    "cells": [
+     [
+      "sample N times, vote",
+      "generate, score, select"
+     ],
+     [
+      {
+       "text": "an extractable answer",
+       "tone": "good"
+      },
+      {
+       "text": "a partial-solution scorer",
+       "tone": "warn"
+      }
+     ],
+     [
+      "answers are discrete",
+      "approaches genuinely differ"
+     ],
+     [
+      {
+       "text": "N x base, all parallel",
+       "tone": "good"
+      },
+      {
+       "text": "N gen + N eval, partly serial",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "per-sample p below 0.5",
+       "tone": "crit"
+      },
+      {
+       "text": "the evaluator is no better",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  }
  ],
-
  "2.5": [
-  {"after": "01",
-   "d": {"kind": "cycle",
-         "title": "The ReAct loop",
-         "caption": "Chain-of-thought lets a model *compute* intermediate values; ReAct lets it **obtain** them, because the intermediate step is a tool call whose result comes back from outside the model. Mechanically this is 1.9's function-calling loop with the reasoning made explicit: the `Thought` lines are chain-of-thought and buy the same thing, and the `Action` lines are 1.9's step 2 — the model emitting arguments for your code to run.",
-         "centre": "until an answer",
-         "nodes": [
-          {"label": "Thought", "sub": "reason about what is needed", "tone": "violet", "edge": "then"},
-          {"label": "Action", "sub": "a tool call, with arguments", "tone": "accent", "edge": "your code runs it"},
-          {"label": "Observation", "sub": "the result, from outside", "tone": "good", "edge": "back into context"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Three details that decide whether the loop works",
-         "caption": "The assistant message goes back **verbatim** — the same rule as 1.9, and dropping it leaves the Observation replying to nothing. Tool errors are returned **as data**, not raised, so the model can retry with different arguments or explain the failure instead of the loop dying. And both limits raise rather than returning, so an exhausted budget is a visible failure rather than a quietly truncated answer.",
-         "cols": 3,
-         "nodes": [
-          {"id": "v", "label": "Append the assistant message verbatim", "sub": "including the tool call", "tone": "good"},
-          {"id": "d", "label": "Drop it and the Observation replies to nothing", "sub": "the loop drifts", "tone": "crit"},
-          {"id": "e", "label": "Return tool errors as data", "sub": "not as exceptions", "tone": "good"},
-          {"id": "r", "label": "So the model can recover", "sub": "retry, or explain", "tone": "good"},
-          {"id": "l", "label": "Step and token caps raise", "sub": "rather than returning", "tone": "violet"},
-          {"id": "f", "label": "An exhausted budget is visible", "sub": "not a short answer", "tone": "teal"}],
-         "edges": [["v", "d"], ["v", "e"], ["e", "r"], ["l", "f"], ["r", "l"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Six ways a loop fails, and the guard for each",
-         "caption": "None of these is a model-quality problem; they are all **control-flow** problems, which is why the guards are code rather than prompt wording. The first two are the ones that burn a budget silently — a loop repeating the same call, or alternating between two approaches, looks like work from the outside. The last one is the reason 1.9's trust boundary exists.",
-         "cols": ["It looks like", "The guard"],
-         "rows": ["Looping", "Thrashing", "Premature answer", "Tool obsession", "Context overflow", "Injected instruction"],
-         "cells": [
-          [{"text": "the same call, repeatedly", "tone": "crit"}, "detect repeats; say so as an Observation"],
-          [{"text": "two approaches, alternating", "tone": "crit"}, "a step cap; a progress check"],
-          [{"text": "answers from memory", "tone": "warn"}, "a search-first rule (2.15); read the trace"],
-          [{"text": "calls after it could answer", "tone": "warn"}, "cap steps; state the stop condition"],
-          [{"text": "early steps truncated away", "tone": "warn"}, "budget in tokens, not steps (1.5)"],
-          [{"text": "a tool result that instructs", "tone": "crit"}, "never act on the model alone (1.9, 2.16)"]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "The honest test: can you draw the flowchart?",
-         "caption": "If you can draw it, **write it as code** — the control flow belongs in your program, where it is deterministic, testable and cheap. A loop is for the case where you genuinely cannot, because the path depends on data you will not have until runtime. The most common over-engineering in this area is the third branch: a question answerable from the prompt does not need a loop around it, and a loop will sometimes take two steps to reach the same answer.",
-         "cols": 3,
-         "nodes": [
-          {"id": "q", "label": "Can you draw the flowchart?", "sub": "the honest test", "tone": "violet"},
-          {"id": "y", "label": "Yes, with branches", "sub": "extract, classify, summarise", "tone": "accent"},
-          {"id": "c", "label": "Write it as code", "sub": "deterministic, testable, cheap", "tone": "good"},
-          {"id": "o", "label": "Yes, with no branches", "sub": "one question, one answer", "tone": "accent"},
-          {"id": "s", "label": "One call is enough", "sub": "the commonest over-engineering", "tone": "good"},
-          {"id": "n", "label": "No - the path depends on runtime data", "sub": "one lookup, or six", "tone": "warn"},
-          {"id": "a", "label": "That is what an agent is for", "sub": "and only that", "tone": "teal"}],
-         "edges": [["q", "y"], ["y", "c"], ["q", "o"], ["o", "s"], ["q", "n"], ["n", "a"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "cycle",
+    "title": "The ReAct loop",
+    "caption": "Chain-of-thought lets a model *compute* intermediate values; ReAct lets it **obtain** them, because the intermediate step is a tool call whose result comes back from outside the model. Mechanically this is 1.9's function-calling loop with the reasoning made explicit: the `Thought` lines are chain-of-thought and buy the same thing, and the `Action` lines are 1.9's step 2 — the model emitting arguments for your code to run.",
+    "centre": "until an answer",
+    "nodes": [
+     {
+      "label": "Thought",
+      "sub": "reason about what is needed",
+      "tone": "violet",
+      "edge": "then"
+     },
+     {
+      "label": "Action",
+      "sub": "a tool call, with arguments",
+      "tone": "accent",
+      "edge": "your code runs it"
+     },
+     {
+      "label": "Observation",
+      "sub": "the result, from outside",
+      "tone": "good",
+      "edge": "back into context"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Three details that decide whether the loop works",
+    "caption": "The assistant message goes back **verbatim** — the same rule as 1.9, and dropping it leaves the Observation replying to nothing. Tool errors are returned **as data**, not raised, so the model can retry with different arguments or explain the failure instead of the loop dying. And both limits raise rather than returning, so an exhausted budget is a visible failure rather than a quietly truncated answer.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "Append the assistant message verbatim",
+      "sub": "including the tool call",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "Drop it and the Observation replies to nothing",
+      "sub": "the loop drifts",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Return tool errors as data",
+      "sub": "not as exceptions",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "So the model can recover",
+      "sub": "retry, or explain",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Step and token caps raise",
+      "sub": "rather than returning",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "An exhausted budget is visible",
+      "sub": "not a short answer",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "d"
+     ],
+     [
+      "v",
+      "e"
+     ],
+     [
+      "e",
+      "r"
+     ],
+     [
+      "l",
+      "f"
+     ],
+     [
+      "r",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Six ways a loop fails, and the guard for each",
+    "caption": "None of these is a model-quality problem; they are all **control-flow** problems, which is why the guards are code rather than prompt wording. The first two are the ones that burn a budget silently — a loop repeating the same call, or alternating between two approaches, looks like work from the outside. The last one is the reason 1.9's trust boundary exists.",
+    "cols": [
+     "It looks like",
+     "The guard"
+    ],
+    "rows": [
+     "Looping",
+     "Thrashing",
+     "Premature answer",
+     "Tool obsession",
+     "Context overflow",
+     "Injected instruction"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the same call, repeatedly",
+       "tone": "crit"
+      },
+      "detect repeats; say so as an Observation"
+     ],
+     [
+      {
+       "text": "two approaches, alternating",
+       "tone": "crit"
+      },
+      "a step cap; a progress check"
+     ],
+     [
+      {
+       "text": "answers from memory",
+       "tone": "warn"
+      },
+      "a search-first rule (2.15); read the trace"
+     ],
+     [
+      {
+       "text": "calls after it could answer",
+       "tone": "warn"
+      },
+      "cap steps; state the stop condition"
+     ],
+     [
+      {
+       "text": "early steps truncated away",
+       "tone": "warn"
+      },
+      "budget in tokens, not steps (1.5)"
+     ],
+     [
+      {
+       "text": "a tool result that instructs",
+       "tone": "crit"
+      },
+      "never act on the model alone (1.9, 2.16)"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The honest test: can you draw the flowchart?",
+    "caption": "If you can draw it, **write it as code** — the control flow belongs in your program, where it is deterministic, testable and cheap. A loop is for the case where you genuinely cannot, because the path depends on data you will not have until runtime. The most common over-engineering in this area is the third branch: a question answerable from the prompt does not need a loop around it, and a loop will sometimes take two steps to reach the same answer.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "Can you draw the flowchart?",
+      "sub": "the honest test",
+      "tone": "violet"
+     },
+     {
+      "id": "y",
+      "label": "Yes, with branches",
+      "sub": "extract, classify, summarise",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Write it as code",
+      "sub": "deterministic, testable, cheap",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Yes, with no branches",
+      "sub": "one question, one answer",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "One call is enough",
+      "sub": "the commonest over-engineering",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No - the path depends on runtime data",
+      "sub": "one lookup, or six",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "That is what an agent is for",
+      "sub": "and only that",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "y"
+     ],
+     [
+      "y",
+      "c"
+     ],
+     [
+      "q",
+      "o"
+     ],
+     [
+      "o",
+      "s"
+     ],
+     [
+      "q",
+      "n"
+     ],
+     [
+      "n",
+      "a"
+     ]
+    ]
+   }
+  }
  ]
 }

@@ -45,6 +45,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The formula is the ordinary softmax with tau inserted in one place:" },
 
     { t: "math", tex: "P(x_i) = \\frac{\\exp(z_i / \\tau)}{\\sum_j \\exp(z_j / \\tau)}" },
@@ -164,7 +165,8 @@ for t in (0.25, 0.5, 1.0, 2.0, 4.0):
     { t: "h2", n: "03", id: "generated", text: "What it looks like as text",
       sub: "The same prompt at five settings, nothing else changed" },
 
-    {"kind": "matrix", "title": "The same prompt at five temperatures", "caption": "Distributions are the mechanism; text is what anyone actually judges. The honest version of the advice is in this ladder. At 0.0 the model restates the prompt and then repeats itself verbatim — a loop, not an answer. 0.3 is still largely a restatement. 0.7 is the first setting that *goes somewhere*. 1.0 has started drifting, and 1.4 has stopped tracking the prompt at all.", "cols": ["What the output does"], "rows": ["t = 0.0", "t = 0.3", "t = 0.7", "t = 1.0", "t = 1.4"], "cells": [[{"text": "restates the prompt, then repeats itself word for word", "tone": "crit"}], [{"text": "still mostly a restatement, with one hedge added", "tone": "warn"}], [{"text": "leaves the obvious continuation and goes somewhere", "tone": "good"}], [{"text": "fluent but drifting - 'a little bag of tricks'", "tone": "warn"}], [{"text": "no longer tracking the prompt - 'all their toll'", "tone": "crit"}]], "t": "diagram", "id": "dg-1_2-03-1"},
+    {"kind": "layers", "title": "The same prompt at five temperatures", "caption": "Distributions are the mechanism; text is what anyone actually judges. The honest version of the advice is in this ladder. At 0.0 the model restates the prompt and then repeats itself verbatim — a loop, not an answer. 0.3 is still largely a restatement. 0.7 is the first setting that *goes somewhere*. 1.0 has started drifting, and 1.4 has stopped tracking the prompt at all.", "items": [{"label": "t = 0.0", "sub": "restates the prompt, then repeats itself word for word", "tone": "crit"}, {"label": "t = 0.3", "sub": "still mostly a restatement, with one hedge added", "tone": "warn"}, {"label": "t = 0.7", "sub": "leaves the obvious continuation and goes somewhere", "tone": "good"}, {"label": "t = 1.0", "sub": "fluent but drifting - 'a little bag of tricks'", "tone": "warn"}, {"label": "t = 1.4", "sub": "no longer tracking the prompt - 'all their toll'", "tone": "crit"}], "t": "diagram", "id": "dg-1_2-03-1"},
+
 
 
 
@@ -252,6 +254,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
 
 
 
+
     { t: "p", text: "The common form gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
 
     { t: "table",
@@ -279,6 +282,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
       sub: "Division by zero is undefined, so somebody wrote an `if`" },
 
     {"kind": "flow", "title": "Zero is a branch, not a limit", "caption": "τ = 0 would divide by zero, so no server computes it. `temperature=0` instead **skips the sampler entirely** and returns the argmax — a different code path, not the end of a continuum. That is why it is reproducible without a seed, and also why reproducibility stops at the model version: the argmax of a slightly different set of weights is a different token, and nothing in your request changed.", "cols": 3, "nodes": [{"id": "z", "label": "temperature=0", "sub": "would divide by zero", "tone": "warn"}, {"id": "b", "label": "So the server branches", "sub": "the sampler is skipped", "tone": "violet"}, {"id": "a", "label": "Return the argmax", "sub": "no draw, no randomness", "tone": "accent"}, {"id": "r", "label": "Reproducible with no seed", "sub": "same weights, same token", "tone": "good"}, {"id": "v", "label": "But only within a model version", "sub": "new weights, new argmax", "tone": "crit"}, {"id": "c", "label": "Deterministic is not correct", "sub": "1.1: ' Paris' ranked fifth", "tone": "teal"}], "edges": [["z", "b"], ["b", "a"], ["a", "r"], ["r", "v"], ["v", "c"]], "t": "diagram", "id": "dg-1_2-05-3"},
+
 
 
 

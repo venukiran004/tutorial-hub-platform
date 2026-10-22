@@ -26,6 +26,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table",
       head: ["Metric", "Meaning", "Watch for"],
       rows: [
@@ -54,7 +55,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "pairs", text: "Every useful metric here is a pair",
       sub: "The module's recurring structure" },
 
-    {"kind": "matrix", "title": "Every useful metric here is a pair", "caption": "A single number in this module is always ambiguous, and the pairing resolves it. **Jailbreak success against over-refusal** move in opposite directions at roughly a ten-to-one exchange rate — 11.16's curve. **Block rate against precision** separates an attack from a broken guardrail, which block rate alone confounds. And **abstention rate against context recall** is 11.6's finding: a 0.30 abstention rate means something completely different with weak recall than with good recall.", "cols": ["What the pair resolves"], "rows": ["Jailbreak / over-refusal", "Block rate / precision", "Abstention / context recall", "Faithfulness / answered", "Per call / per request"], "cells": [[{"text": "which error you chose - they trade at about ten to one", "tone": "violet"}], [{"text": "an attack from a broken guardrail", "tone": "violet"}], [{"text": "11.6: the same rate means opposite things", "tone": "violet"}], [{"text": "abstentions scoring 1.0 by construction", "tone": "crit"}], [{"text": "prompt bloat, which per-user spend hides", "tone": "crit"}]], "t": "diagram", "id": "dg-11_17-02-1"},
+    {"kind": "layers", "title": "Every useful metric here is a pair", "caption": "A single number in this module is always ambiguous, and the pairing resolves it. **Jailbreak success against over-refusal** move in opposite directions at roughly a ten-to-one exchange rate — 11.16's curve. **Block rate against precision** separates an attack from a broken guardrail, which block rate alone confounds. And **abstention rate against context recall** is 11.6's finding: a 0.30 abstention rate means something completely different with weak recall than with good recall.", "items": [{"label": "Jailbreak / over-refusal", "sub": "which error you chose - they trade at about ten to one", "tone": "violet"}, {"label": "Block rate / precision", "sub": "an attack from a broken guardrail", "tone": "violet"}, {"label": "Abstention / context recall", "sub": "11.6: the same rate means opposite things", "tone": "violet"}, {"label": "Faithfulness / answered", "sub": "abstentions scoring 1.0 by construction", "tone": "crit"}, {"label": "Per call / per request", "sub": "prompt bloat, which per-user spend hides", "tone": "crit"}], "t": "diagram", "id": "dg-11_17-02-1"},
+
 
 
 
@@ -81,6 +83,7 @@ EC.receiveLesson({
       sub: "Untrusted input to logged event" },
 
     {"kind": "flow", "title": "Assume yes, fail closed, and tune both directions", "caption": "**\"Assume YES for any user-facing LLM\"** — there is no version of a user-facing application where untrusted text does not reach the model, so the first question is not really a question. The *retrieved content* clause in the fourth input step is the one 11.15 found missing from the implementation. Output guardrails **fail closed**: any failure routes to a safe response rather than passing through. And the last line is the module's thesis compressed: **tune for harmful false negatives AND over-refusal false positives.**", "cols": 4, "nodes": [{"id": "a", "label": "Untrusted text reaching the model?", "sub": "assume yes, always", "tone": "violet"}, {"id": "i", "label": "Input: scan, redact, scope, wrap", "sub": "user AND retrieved content", "tone": "good"}, {"id": "m", "label": "Model, with a canary in the prompt", "sub": "so a leak is detectable", "tone": "good"}, {"id": "o", "label": "Output: fail closed", "sub": "any failure goes to a safe response", "tone": "good"}, {"id": "t", "label": "Tune both directions", "sub": "harmful misses and over-refusals", "tone": "teal"}], "edges": [["a", "i"], ["i", "m"], ["m", "o"], ["o", "t"]], "t": "diagram", "id": "dg-11_17-03-2"},
+
 
 
 

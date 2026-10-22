@@ -1,186 +1,780 @@
 {
  "2.16": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "The keyword sanitiser, measured on both populations",
-         "caption": "Almost everyone writes this filter first, and it is worth measuring on **both** populations — because a filter tested only against attacks looks fine. Against attacks it catches 3 of 10. Against benign input it blocks 6 of 8. That is **precision 0.33 and recall 0.30**: it misses most attacks while rejecting most legitimate users, which is the worst of both outcomes and the reason this layer is close to worthless on its own.",
-         "left": "population", "codeW": 150,
-         "vars": ["result", "reading"],
-         "steps": [
-          {"code": "10 attacks", "state": ["3 caught, 7 missed", "it does not stop them"], "tone": "crit"},
-          {"code": "8 benign inputs", "state": ["6 blocked", "6 false positives"], "changed": [0], "tone": "crit", "note": "worse than the attacks"},
-          {"code": "precision", "state": ["0.33", "most blocks are wrong"], "tone": "crit"},
-          {"code": "recall", "state": ["0.30", "most attacks get through"], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Six layers, and only one of them is structural",
-         "caption": "The ordering matters because effort distributes badly here. Teams spend weeks on the first row — **measured at 0.33 precision** — and minutes on the last, which is the only one that converts a successful injection into a *failed action*. Every other layer makes damage less likely; least privilege on tools makes it impossible, and that difference is the whole security argument.",
-         "cols": ["What it is worth"],
-         "rows": ["Keyword sanitisation", "A trained classifier", "Delimiter isolation", "Instruction hierarchy", "Output filtering", "Least privilege on tools"],
-         "cells": [
-          [{"text": "close to nothing - 0.33 precision, measured above", "tone": "crit"}],
-          ["meaningfully better, and still probabilistic"],
-          ["real but modest - raises the bar, guarantees nothing"],
-          [{"text": "real, and absent if your port broke it (2.14)", "tone": "warn"}],
-          ["catches the extraction case specifically"],
-          [{"text": "the only structural one - damage impossible, not unlikely", "tone": "good"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Indirect injection: the user is not the attacker",
-         "caption": "Direct injection is someone typing an override into a chat box. **Indirect** injection is instructions arriving in content the system retrieved — a web page, an email, a support ticket, a document in the corpus, a tool result. It is worse on every axis: the user may be a victim rather than the attacker, filtering is harder because you cannot reject every retrieved document containing imperative sentences, and the surface grows with every capability that reads external content. What helps is the same conclusion as §03 from a different direction: treat retrieved content as untrusted **at the action boundary**, not the text boundary.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "Retrieved content carries instructions", "sub": "a page, an email, a ticket", "tone": "crit"},
-          {"id": "v", "label": "The user is a victim", "sub": "not the attacker", "tone": "crit"},
-          {"id": "f", "label": "You cannot filter imperatives out", "sub": "documentation is full of them", "tone": "crit"},
-          {"id": "s", "label": "And the surface keeps growing", "sub": "browsing, email, files, MCP", "tone": "warn"},
-          {"id": "a", "label": "Untrusted at the action boundary", "sub": "not at the text boundary", "tone": "good"},
-          {"id": "l", "label": "Which is least privilege again", "sub": "section 03's last row", "tone": "teal"}],
-         "edges": [["r", "v"], ["r", "f"], ["f", "s"], ["s", "a"], ["a", "l"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The keyword sanitiser, measured on both populations",
+    "caption": "Almost everyone writes this filter first, and it is worth measuring on **both** populations — because a filter tested only against attacks looks fine. Against attacks it catches 3 of 10. Against benign input it blocks 6 of 8. That is **precision 0.33 and recall 0.30**: it misses most attacks while rejecting most legitimate users, which is the worst of both outcomes and the reason this layer is close to worthless on its own.",
+    "left": "population",
+    "codeW": 150,
+    "vars": [
+     "result",
+     "reading"
+    ],
+    "steps": [
+     {
+      "code": "10 attacks",
+      "state": [
+       "3 caught, 7 missed",
+       "it does not stop them"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "8 benign inputs",
+      "state": [
+       "6 blocked",
+       "6 false positives"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "worse than the attacks"
+     },
+     {
+      "code": "precision",
+      "state": [
+       "0.33",
+       "most blocks are wrong"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "recall",
+      "state": [
+       "0.30",
+       "most attacks get through"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Six layers, and only one of them is structural",
+    "caption": "The ordering matters because effort distributes badly here. Teams spend weeks on the first row — **measured at 0.33 precision** — and minutes on the last, which is the only one that converts a successful injection into a *failed action*. Every other layer makes damage less likely; least privilege on tools makes it impossible, and that difference is the whole security argument.",
+    "items": [
+     {
+      "label": "Keyword sanitisation",
+      "sub": "close to nothing - 0.33 precision, measured above",
+      "tone": "crit"
+     },
+     {
+      "label": "A trained classifier",
+      "sub": "meaningfully better, and still probabilistic"
+     },
+     {
+      "label": "Delimiter isolation",
+      "sub": "real but modest - raises the bar, guarantees nothing"
+     },
+     {
+      "label": "Instruction hierarchy",
+      "sub": "real, and absent if your port broke it (2.14)",
+      "tone": "warn"
+     },
+     {
+      "label": "Output filtering",
+      "sub": "catches the extraction case specifically"
+     },
+     {
+      "label": "Least privilege on tools",
+      "sub": "the only structural one - damage impossible, not unlikely",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Indirect injection: the user is not the attacker",
+    "caption": "Direct injection is someone typing an override into a chat box. **Indirect** injection is instructions arriving in content the system retrieved — a web page, an email, a support ticket, a document in the corpus, a tool result. It is worse on every axis: the user may be a victim rather than the attacker, filtering is harder because you cannot reject every retrieved document containing imperative sentences, and the surface grows with every capability that reads external content. What helps is the same conclusion as §03 from a different direction: treat retrieved content as untrusted **at the action boundary**, not the text boundary.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Retrieved content carries instructions",
+      "sub": "a page, an email, a ticket",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "The user is a victim",
+      "sub": "not the attacker",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "You cannot filter imperatives out",
+      "sub": "documentation is full of them",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "And the surface keeps growing",
+      "sub": "browsing, email, files, MCP",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "Untrusted at the action boundary",
+      "sub": "not at the text boundary",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Which is least privilege again",
+      "sub": "section 03's last row",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "v"
+     ],
+     [
+      "r",
+      "f"
+     ],
+     [
+      "f",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ],
+     [
+      "a",
+      "l"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.17": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "One checklist item is a precondition for the other six",
-         "caption": "Knowing **which prompt produced which output** is not one item among seven — it is the one the rest depend on. Without it a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data at all. It costs one field on the response and one column in the log, and it is routinely the thing missing when a team cannot explain why last month was better.",
-         "cols": 3,
-         "nodes": [
-          {"id": "v", "label": "Record the prompt version", "sub": "on every response", "tone": "violet"},
-          {"id": "a", "label": "Attribution becomes possible", "sub": "which change moved the metric", "tone": "good"},
-          {"id": "r", "label": "Rollback becomes verifiable", "sub": "you can see it took effect", "tone": "good"},
-          {"id": "b", "label": "A/B tests have data", "sub": "2.12's comparison needs the label", "tone": "good"},
-          {"id": "n", "label": "Without it, none of the three", "sub": "and no way to notice", "tone": "crit"}],
-         "edges": [["v", "a"], ["v", "r"], ["v", "b"], ["n", "v", "", "dashed"]]}},
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Git gives you five of these for free; the registry trades one away",
-         "caption": "Files in git give review, history, rollback and atomicity with the code for nothing and with no new system. The row that is the **real** trade is the fifth: in git the prompt and the parser that reads its output move together, and in a registry they do not — so a prompt change can land without the code change that handles it. The case for a registry arrives when people who cannot deploy need to change prompts, which is a genuine situation and not a tooling preference.",
-         "cols": ["Files in git", "A registry"],
-         "rows": ["Review", "Rollback", "Who can change it", "Change speed", "Tied to code version", "Audit trail"],
-         "cells": [
-          [{"text": "a pull request, with a diff", "tone": "good"}, "a UI, usually without one"],
-          ["revert and deploy", {"text": "a click", "tone": "good"}],
-          ["people who can ship code", {"text": "anyone with access", "tone": "warn"}],
-          ["a deploy cycle", {"text": "immediate", "tone": "good"}],
-          [{"text": "yes - prompt and parser move together", "tone": "good"}, {"text": "no - the real trade", "tone": "crit"}],
-          [{"text": "git history, free", "tone": "good"}, "whatever the tool records"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Halt on error rate and latency, not on quality",
-         "caption": "Note what the automatic halt condition uses. **Quality takes longer to measure than an hour** — 2.12 measured how much longer — so wiring a rollout's kill switch to a quality metric means it either never fires or fires on noise. Error rate and latency move within minutes and are unambiguous, so they catch the catastrophic cases; the quality decision is made deliberately, later, once there is enough data to support it.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "A staged rollout", "sub": "1%, 10%, 50%, 100%", "tone": "accent"},
-          {"id": "e", "label": "Halt on error rate", "sub": "moves within minutes", "tone": "good"},
-          {"id": "l", "label": "Halt on latency", "sub": "also immediate, also unambiguous", "tone": "good"},
-          {"id": "q", "label": "Not on quality", "sub": "it needs far more than an hour", "tone": "crit"},
-          {"id": "n", "label": "Or it fires on noise", "sub": "or never fires at all", "tone": "crit"},
-          {"id": "d", "label": "Quality is a later, deliberate call", "sub": "with enough data (2.12)", "tone": "teal"}],
-         "edges": [["r", "e"], ["r", "l"], ["r", "q"], ["q", "n"], ["n", "d"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "The checklist, rated rather than recited",
-         "caption": "Five are essential, and two are not prompt management at all. The second row carries the only real condition — an A/B framework is essential **at volume** and overkill below it, because 2.12's sample sizes say a low-traffic A/B cannot resolve the differences you would be running it to find. The last two rows belong to other lessons, and saying so keeps the checklist honest rather than long.",
-         "cols": ["Verdict"],
-         "rows": ["Version-controlled prompts", "An A/B framework", "An evaluation suite", "Quality per prompt version", "Rollback capability", "Cost tracking per prompt", "Injection defence", "Rate limiting"],
-         "cells": [
-          [{"text": "essential - everything else depends on it", "tone": "good"}],
-          [{"text": "essential at volume; overkill below it (2.12)", "tone": "accent"}],
-          [{"text": "essential, with 2.12's caveat about size", "tone": "good"}],
-          [{"text": "essential - and impossible without row one", "tone": "good"}],
-          [{"text": "essential, and free if prompts are in git", "tone": "good"}],
-          ["useful - it is how you find the prompt that doubled"],
-          [{"text": "essential, and not here - it is 2.16, at the action boundary", "tone": "warn"}],
-          [{"text": "ordinary API hygiene (1.16), not prompt management", "tone": "warn"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "One checklist item is a precondition for the other six",
+    "caption": "Knowing **which prompt produced which output** is not one item among seven — it is the one the rest depend on. Without it a quality change cannot be attributed, a rollback cannot be verified, and an A/B test has no data at all. It costs one field on the response and one column in the log, and it is routinely the thing missing when a team cannot explain why last month was better.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "Record the prompt version",
+      "sub": "on every response",
+      "tone": "violet"
+     },
+     {
+      "id": "a",
+      "label": "Attribution becomes possible",
+      "sub": "which change moved the metric",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Rollback becomes verifiable",
+      "sub": "you can see it took effect",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "A/B tests have data",
+      "sub": "2.12's comparison needs the label",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Without it, none of the three",
+      "sub": "and no way to notice",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "a"
+     ],
+     [
+      "v",
+      "r"
+     ],
+     [
+      "v",
+      "b"
+     ],
+     [
+      "n",
+      "v",
+      "",
+      "dashed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Git gives you five of these for free; the registry trades one away",
+    "caption": "Files in git give review, history, rollback and atomicity with the code for nothing and with no new system. The row that is the **real** trade is the fifth: in git the prompt and the parser that reads its output move together, and in a registry they do not — so a prompt change can land without the code change that handles it. The case for a registry arrives when people who cannot deploy need to change prompts, which is a genuine situation and not a tooling preference.",
+    "cols": [
+     "Files in git",
+     "A registry"
+    ],
+    "rows": [
+     "Review",
+     "Rollback",
+     "Who can change it",
+     "Change speed",
+     "Tied to code version",
+     "Audit trail"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a pull request, with a diff",
+       "tone": "good"
+      },
+      "a UI, usually without one"
+     ],
+     [
+      "revert and deploy",
+      {
+       "text": "a click",
+       "tone": "good"
+      }
+     ],
+     [
+      "people who can ship code",
+      {
+       "text": "anyone with access",
+       "tone": "warn"
+      }
+     ],
+     [
+      "a deploy cycle",
+      {
+       "text": "immediate",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "yes - prompt and parser move together",
+       "tone": "good"
+      },
+      {
+       "text": "no - the real trade",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "git history, free",
+       "tone": "good"
+      },
+      "whatever the tool records"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Halt on error rate and latency, not on quality",
+    "caption": "Note what the automatic halt condition uses. **Quality takes longer to measure than an hour** — 2.12 measured how much longer — so wiring a rollout's kill switch to a quality metric means it either never fires or fires on noise. Error rate and latency move within minutes and are unambiguous, so they catch the catastrophic cases; the quality decision is made deliberately, later, once there is enough data to support it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "A staged rollout",
+      "sub": "1%, 10%, 50%, 100%",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Halt on error rate",
+      "sub": "moves within minutes",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Halt on latency",
+      "sub": "also immediate, also unambiguous",
+      "tone": "good"
+     },
+     {
+      "id": "q",
+      "label": "Not on quality",
+      "sub": "it needs far more than an hour",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "Or it fires on noise",
+      "sub": "or never fires at all",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Quality is a later, deliberate call",
+      "sub": "with enough data (2.12)",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "e"
+     ],
+     [
+      "r",
+      "l"
+     ],
+     [
+      "r",
+      "q"
+     ],
+     [
+      "q",
+      "n"
+     ],
+     [
+      "n",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "The checklist, rated rather than recited",
+    "caption": "Five are essential, and two are not prompt management at all. The second row carries the only real condition — an A/B framework is essential **at volume** and overkill below it, because 2.12's sample sizes say a low-traffic A/B cannot resolve the differences you would be running it to find. The last two rows belong to other lessons, and saying so keeps the checklist honest rather than long.",
+    "items": [
+     {
+      "label": "Version-controlled prompts",
+      "sub": "essential - everything else depends on it",
+      "tone": "good"
+     },
+     {
+      "label": "An A/B framework",
+      "sub": "essential at volume; overkill below it (2.12)",
+      "tone": "accent"
+     },
+     {
+      "label": "An evaluation suite",
+      "sub": "essential, with 2.12's caveat about size",
+      "tone": "good"
+     },
+     {
+      "label": "Quality per prompt version",
+      "sub": "essential - and impossible without row one",
+      "tone": "good"
+     },
+     {
+      "label": "Rollback capability",
+      "sub": "essential, and free if prompts are in git",
+      "tone": "good"
+     },
+     {
+      "label": "Cost tracking per prompt",
+      "sub": "useful - it is how you find the prompt that doubled"
+     },
+     {
+      "label": "Injection defence",
+      "sub": "essential, and not here - it is 2.16, at the action boundary",
+      "tone": "warn"
+     },
+     {
+      "label": "Rate limiting",
+      "sub": "ordinary API hygiene (1.16), not prompt management",
+      "tone": "warn"
+     }
+    ]
+   }
+  }
  ],
-
  "2.18": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Same four components; the weight moves",
-         "caption": "Laid side by side the six templates have an identical structure and differ only in **which component carries the task**. That is what makes the collection useful as a diagnostic rather than a library: identify which component your task leans on, and the failure in the right-hand column tells you what you will get if you underwrite it. Three of the six lean on *context*, which is the component most often left implicit.",
-         "cols": ["Carried by", "Without it"],
-         "rows": ["Summarisation", "Entity extraction", "Classification", "Code review", "Data analysis", "Rewriting"],
-         "cells": [
-          [{"text": "output format", "tone": "violet"}, "an essay, or the wrong three bullets"],
-          [{"text": "format, plus the null clause", "tone": "violet"}, "invented values that validate"],
-          [{"text": "context", "tone": "accent"}, "labels applied inconsistently at the edges"],
-          [{"text": "context", "tone": "accent"}, "style notes where you wanted security"],
-          [{"text": "instruction", "tone": "good"}, "a description instead of an answer"],
-          [{"text": "context", "tone": "accent"}, "a fluent rewrite that changed the meaning"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Two of the six are starting points to migrate, not destinations",
-         "caption": "The entity-extraction and classification templates ask **in prose** for something a schema can guarantee. 1.8's ranking puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a thing to move off rather than a thing to polish — and the migration is mechanical: the shape becomes a schema and the template keeps only the semantics.",
-         "cols": 3,
-         "nodes": [
-          {"id": "t", "label": "A template describing JSON in prose", "sub": "extraction, classification", "tone": "warn"},
-          {"id": "r", "label": "Bottom of 1.8's four approaches", "sub": "a request, not a guarantee", "tone": "crit"},
-          {"id": "s", "label": "Move the shape to a schema", "sub": "enforced, not asked", "tone": "good"},
-          {"id": "k", "label": "Keep the semantics in the prompt", "sub": "what each field means", "tone": "good"},
-          {"id": "n", "label": "And keep the null clause", "sub": "the part no schema can say (2.7)", "tone": "violet"}],
-         "edges": [["t", "r"], ["r", "s"], ["s", "k"], ["k", "n"]]}},
-  {"after": "04",
-   "d": {"kind": "steps",
-         "title": "Four questions that produce the template",
-         "caption": "These generate a prompt rather than requiring you to find one that fits, which is why they are more useful than the six worked examples — **a template's generic parts are exactly the parts you have to replace**. The fourth is the one most often skipped, and it is mandatory rather than optional whenever the input might simply not contain the answer.",
-         "items": [
-          {"label": "Is the output consumed by code, or read by a person?", "desc": "code means a schema, and the template becomes semantics only", "code": "1", "tone": "accent"},
-          {"label": "Is there one right answer?", "desc": "yes means temperature 0 and exact match; no means a judge and a rubric", "code": "2", "tone": "accent"},
-          {"label": "Does the task select, or transform?", "desc": "selection needs a stated rule; transformation needs the invariant to preserve", "code": "3", "tone": "good"},
-          {"label": "Is the input reliable?", "desc": "if the answer may be absent, the null clause is mandatory", "code": "4", "tone": "violet"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Same four components; the weight moves",
+    "caption": "Laid side by side the six templates have an identical structure and differ only in **which component carries the task**. That is what makes the collection useful as a diagnostic rather than a library: identify which component your task leans on, and the failure in the right-hand column tells you what you will get if you underwrite it. Three of the six lean on *context*, which is the component most often left implicit.",
+    "cols": [
+     "Carried by",
+     "Without it"
+    ],
+    "rows": [
+     "Summarisation",
+     "Entity extraction",
+     "Classification",
+     "Code review",
+     "Data analysis",
+     "Rewriting"
+    ],
+    "cells": [
+     [
+      {
+       "text": "output format",
+       "tone": "violet"
+      },
+      "an essay, or the wrong three bullets"
+     ],
+     [
+      {
+       "text": "format, plus the null clause",
+       "tone": "violet"
+      },
+      "invented values that validate"
+     ],
+     [
+      {
+       "text": "context",
+       "tone": "accent"
+      },
+      "labels applied inconsistently at the edges"
+     ],
+     [
+      {
+       "text": "context",
+       "tone": "accent"
+      },
+      "style notes where you wanted security"
+     ],
+     [
+      {
+       "text": "instruction",
+       "tone": "good"
+      },
+      "a description instead of an answer"
+     ],
+     [
+      {
+       "text": "context",
+       "tone": "accent"
+      },
+      "a fluent rewrite that changed the meaning"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Two of the six are starting points to migrate, not destinations",
+    "caption": "The entity-extraction and classification templates ask **in prose** for something a schema can guarantee. 1.8's ranking puts a prompt-described format bottom of four approaches, so a template that describes a JSON shape in words is a thing to move off rather than a thing to polish — and the migration is mechanical: the shape becomes a schema and the template keeps only the semantics.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "A template describing JSON in prose",
+      "sub": "extraction, classification",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Bottom of 1.8's four approaches",
+      "sub": "a request, not a guarantee",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Move the shape to a schema",
+      "sub": "enforced, not asked",
+      "tone": "good"
+     },
+     {
+      "id": "k",
+      "label": "Keep the semantics in the prompt",
+      "sub": "what each field means",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "And keep the null clause",
+      "sub": "the part no schema can say (2.7)",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "k"
+     ],
+     [
+      "k",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "Four questions that produce the template",
+    "caption": "These generate a prompt rather than requiring you to find one that fits, which is why they are more useful than the six worked examples — **a template's generic parts are exactly the parts you have to replace**. The fourth is the one most often skipped, and it is mandatory rather than optional whenever the input might simply not contain the answer.",
+    "items": [
+     {
+      "label": "Is the output consumed by code, or read by a person?",
+      "desc": "code means a schema, and the template becomes semantics only",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Is there one right answer?",
+      "desc": "yes means temperature 0 and exact match; no means a judge and a rubric",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Does the task select, or transform?",
+      "desc": "selection needs a stated rule; transformation needs the invariant to preserve",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Is the input reliable?",
+      "desc": "if the answer may be absent, the null clause is mandatory",
+      "code": "4",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ],
-
  "2.19": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "The failure-mode table, with what each symptom really indicates",
-         "caption": "The fixes are mostly right and the right-hand column is where the value is. Two rows deserve suspicion: the first recommends moving an instruction to the end, and **§03 measures that doing so took a working prompt from 6 of 6 to 0 of 6**. And the over-refusal row suggests adding \"for educational purposes\", which is a jailbreak pattern rather than a fix — if a guardrail is firing wrongly, the threshold is the thing to change.",
-         "cols": ["What it really indicates"],
-         "rows": ["Instruction not followed", "Format drifts", "Hallucination", "Over-refusal", "Verbosity", "Inconsistency", "Context overflow"],
-         "cells": [
-          [{"text": "often position - but section 03 shows moving it can be catastrophic", "tone": "crit"}],
-          ["use a schema; a mid-prompt reminder is a weaker version of it"],
-          [{"text": "a retrieval failure if the context is missing; 11.1 if it is present", "tone": "warn"}],
-          [{"text": "a guardrail threshold - and \"educational purposes\" is a jailbreak, not a fix", "tone": "crit"}],
-          ["correct, and max_tokens will not do it (1.5)"],
-          ["correct - and 1.7 is why it still will not be identical"],
-          ["correct; check the token count before assuming (1.5)"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Six separators, everything else held constant",
-         "caption": "\"Models are sensitive to wording\" is agreed with and not acted on, so here is a number. Three separators score **6 of 6** and `a means b` scores **1 of 6** — on an identical task with identical examples. The rank column shows this is not a cliff: under `means` the right answer sits at rank 2 or 3 on five of six items, so the model understands the task and something else is winning. What is winning is the pattern — `a means b` is ordinary English that continues many ways, where `a -> b` is a format.",
-         "left": "separator", "codeW": 170,
-         "vars": ["correct", "ranks of the right answer"],
-         "steps": [
-          {"code": "a -> b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"},
-          {"code": "a | b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"},
-          {"code": "a => b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"},
-          {"code": "a: b", "state": ["4 of 6", "2,1,1,2,1,1"], "changed": [0], "tone": "warn"},
-          {"code": "a = b", "state": ["4 of 6", "2,1,1,2,1,1"], "tone": "warn"},
-          {"code": "a means b", "state": ["1 of 6", "2,3,2,2,2,1"], "changed": [0, 1], "tone": "crit", "note": "understood, outvoted"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Standard advice, applied, and catastrophic",
-         "caption": "The table's first row says to move an instruction to the end when it is not being followed — grounded advice, since recency helps in long contexts. Applied to a working few-shot prompt it went from **6 of 6 to 0 of 6**. And the third row is the one that explains it: with *no* instruction at all the prompt scores 6 of 6, so the instruction was never doing the work. In a few-shot prompt the model is continuing a **pattern** whose final line is the query awaiting its answer, and an instruction placed after that line breaks the pattern exactly where it matters.",
-         "left": "where the instruction sits", "codeW": 200,
-         "vars": ["correct"],
-         "steps": [
-          {"code": "first", "state": ["6 of 6"], "tone": "good"},
-          {"code": "last - the standard advice", "state": ["0 of 6"], "changed": [0], "tone": "crit", "note": "total collapse"},
-          {"code": "removed entirely", "state": ["6 of 6"], "changed": [0], "tone": "good", "note": "the examples were doing it"}]}},
-  {"after": "04",
-   "d": {"kind": "steps",
-         "title": "The debugging procedure, reordered by cost",
-         "caption": "The usual seven steps are all reasonable, and their usual order is the order people think of them — which is not the order of cost. Reordered, the first two are nearly free and catch the most common causes: **2.1's incident was three weeks spent on prompt versions for a truncation that was visible in the rendered request.** Changing the prompt is last, because the alternative to measuring is 31 noise-driven changes over 18 months.",
-         "items": [
-          {"label": "Look at the rendered request, not the template", "desc": "the actual string, with retrieved context and tool definitions", "code": "1", "tone": "violet"},
-          {"label": "Check the token count", "desc": "overflow looks exactly like a prompt problem (1.5)", "code": "2", "tone": "violet"},
-          {"label": "Set temperature to 0", "desc": "or you are debugging two problems at once", "code": "3", "tone": "accent"},
-          {"label": "Check the parameters", "desc": "repetition, truncation, a blank reasoning response (1.4, 1.5, 1.10)", "code": "4", "tone": "accent"},
-          {"label": "Try a stronger model", "desc": "if it succeeds the prompt is fine; if it fails no wording helps", "code": "5", "tone": "good"},
-          {"label": "Isolate", "desc": "simplest possible input, one component at a time", "code": "6", "tone": "good"},
-          {"label": "Then change the prompt, one thing at a time", "desc": "measured against a test set (2.12)", "code": "7", "tone": "teal"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "The failure-mode table, with what each symptom really indicates",
+    "caption": "The fixes are mostly right and the right-hand column is where the value is. Two rows deserve suspicion: the first recommends moving an instruction to the end, and **§03 measures that doing so took a working prompt from 6 of 6 to 0 of 6**. And the over-refusal row suggests adding \"for educational purposes\", which is a jailbreak pattern rather than a fix — if a guardrail is firing wrongly, the threshold is the thing to change.",
+    "items": [
+     {
+      "label": "Instruction not followed",
+      "sub": "often position - but section 03 shows moving it can be catastrophic",
+      "tone": "crit"
+     },
+     {
+      "label": "Format drifts",
+      "sub": "use a schema; a mid-prompt reminder is a weaker version of it"
+     },
+     {
+      "label": "Hallucination",
+      "sub": "a retrieval failure if the context is missing; 11.1 if it is present",
+      "tone": "warn"
+     },
+     {
+      "label": "Over-refusal",
+      "sub": "a guardrail threshold - and \"educational purposes\" is a jailbreak, not a fix",
+      "tone": "crit"
+     },
+     {
+      "label": "Verbosity",
+      "sub": "correct, and max_tokens will not do it (1.5)"
+     },
+     {
+      "label": "Inconsistency",
+      "sub": "correct - and 1.7 is why it still will not be identical"
+     },
+     {
+      "label": "Context overflow",
+      "sub": "correct; check the token count before assuming (1.5)"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Six separators, everything else held constant",
+    "caption": "\"Models are sensitive to wording\" is agreed with and not acted on, so here is a number. Three separators score **6 of 6** and `a means b` scores **1 of 6** — on an identical task with identical examples. The rank column shows this is not a cliff: under `means` the right answer sits at rank 2 or 3 on five of six items, so the model understands the task and something else is winning. What is winning is the pattern — `a means b` is ordinary English that continues many ways, where `a -> b` is a format.",
+    "left": "separator",
+    "codeW": 170,
+    "vars": [
+     "correct",
+     "ranks of the right answer"
+    ],
+    "steps": [
+     {
+      "code": "a -> b",
+      "state": [
+       "6 of 6",
+       "1,1,1,1,1,1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a | b",
+      "state": [
+       "6 of 6",
+       "1,1,1,1,1,1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a => b",
+      "state": [
+       "6 of 6",
+       "1,1,1,1,1,1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "a: b",
+      "state": [
+       "4 of 6",
+       "2,1,1,2,1,1"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "a = b",
+      "state": [
+       "4 of 6",
+       "2,1,1,2,1,1"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "a means b",
+      "state": [
+       "1 of 6",
+       "2,3,2,2,2,1"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "understood, outvoted"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Standard advice, applied, and catastrophic",
+    "caption": "The table's first row says to move an instruction to the end when it is not being followed — grounded advice, since recency helps in long contexts. Applied to a working few-shot prompt it went from **6 of 6 to 0 of 6**. And the third row is the one that explains it: with *no* instruction at all the prompt scores 6 of 6, so the instruction was never doing the work. In a few-shot prompt the model is continuing a **pattern** whose final line is the query awaiting its answer, and an instruction placed after that line breaks the pattern exactly where it matters.",
+    "left": "where the instruction sits",
+    "codeW": 200,
+    "vars": [
+     "correct"
+    ],
+    "steps": [
+     {
+      "code": "first",
+      "state": [
+       "6 of 6"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "last - the standard advice",
+      "state": [
+       "0 of 6"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "total collapse"
+     },
+     {
+      "code": "removed entirely",
+      "state": [
+       "6 of 6"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "the examples were doing it"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "The debugging procedure, reordered by cost",
+    "caption": "The usual seven steps are all reasonable, and their usual order is the order people think of them — which is not the order of cost. Reordered, the first two are nearly free and catch the most common causes: **2.1's incident was three weeks spent on prompt versions for a truncation that was visible in the rendered request.** Changing the prompt is last, because the alternative to measuring is 31 noise-driven changes over 18 months.",
+    "items": [
+     {
+      "label": "Look at the rendered request, not the template",
+      "desc": "the actual string, with retrieved context and tool definitions",
+      "code": "1",
+      "tone": "violet"
+     },
+     {
+      "label": "Check the token count",
+      "desc": "overflow looks exactly like a prompt problem (1.5)",
+      "code": "2",
+      "tone": "violet"
+     },
+     {
+      "label": "Set temperature to 0",
+      "desc": "or you are debugging two problems at once",
+      "code": "3",
+      "tone": "accent"
+     },
+     {
+      "label": "Check the parameters",
+      "desc": "repetition, truncation, a blank reasoning response (1.4, 1.5, 1.10)",
+      "code": "4",
+      "tone": "accent"
+     },
+     {
+      "label": "Try a stronger model",
+      "desc": "if it succeeds the prompt is fine; if it fails no wording helps",
+      "code": "5",
+      "tone": "good"
+     },
+     {
+      "label": "Isolate",
+      "desc": "simplest possible input, one component at a time",
+      "code": "6",
+      "tone": "good"
+     },
+     {
+      "label": "Then change the prompt, one thing at a time",
+      "desc": "measured against a test set (2.12)",
+      "code": "7",
+      "tone": "teal"
+     }
+    ]
+   }
+  }
  ]
 }

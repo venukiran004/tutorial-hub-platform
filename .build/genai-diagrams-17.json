@@ -1,203 +1,972 @@
 {
  "6.1": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Hit@K was one metric; the others need the whole relevant set",
-         "caption": "Every measurement in module 5 asked a binary question: did *any* chunk in the top k come from the right document and contain the answer. That is Hit@K, and the five other standard metrics need **the full set of relevant chunks**, which has to be labelled. Building it changes the character of the golden set: across these twenty queries the relevant set runs from **1 chunk to 39**, with a median of 6 — so a single query's precision ceiling at k=5 varies from 0.20 to 1.00 before the retriever does anything.",
-         "left": "relevant chunks per query", "codeW": 220,
-         "vars": ["value"],
-         "steps": [
-          {"code": "minimum", "state": ["1"], "tone": "accent"},
-          {"code": "median", "state": ["6"], "tone": "good"},
-          {"code": "mean", "state": ["9.9"], "tone": "accent"},
-          {"code": "maximum", "state": ["39"], "changed": [0], "tone": "crit", "note": "P@5 caps at 1.00 or 0.20"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The re-ranking claim: true on a weak first stage, false on a strong one",
-         "caption": "The claim is falsifiable — a cross-encoder is supposed to move MRR and nDCG once the right chunk is already in the set. On the dense retriever it does, and more: **every metric improves**, with Hit@5 reaching 1.00. On RRF fusion, which was already at Hit@5 = 1.00, the same re-ranker **takes Hit@5 down to 0.90** and moves MRR and R@5 slightly backwards. So a cross-encoder is not a free improvement; it is a second opinion that can overrule a better first one.",
-         "left": "configuration", "codeW": 190,
-         "vars": ["Hit@5", "P@5", "MRR", "nDCG@5"],
-         "steps": [
-          {"code": "dense, before", "state": ["0.95", "0.53", "0.84", "0.63"], "tone": "accent"},
-          {"code": "dense + cross-encoder", "state": ["1.00", "0.63", "0.88", "0.74"], "changed": [0, 3], "tone": "good", "note": "every metric up"},
-          {"code": "RRF fusion, before", "state": ["1.00", "0.59", "0.88", "0.71"], "tone": "accent"},
-          {"code": "RRF + cross-encoder", "state": ["0.90", "0.63", "0.87", "0.73"], "changed": [0, 2], "tone": "crit", "note": "Hit@5 goes backwards"}]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Precision and recall move in opposite directions, so k is a choice of metric",
-         "caption": "As k rises, Hit@k and R@k climb and **P@k collapses, 0.75 to 0.26**. nDCG@k is nearly flat across the whole range, which makes it the one number that does not simply restate your choice of k. The practical consequence: \"optimise recall first\" is good advice precisely because recall is the only one of these that cannot be bought by changing k, and the others can.",
-         "left": "k", "codeW": 110,
-         "vars": ["Hit@k", "P@k", "R@k", "nDCG@k"],
-         "steps": [
-          {"code": "1", "state": ["0.75", "0.75", "0.14", "0.75"], "tone": "accent"},
-          {"code": "3", "state": ["0.90", "0.62", "0.30", "0.65"], "tone": "accent"},
-          {"code": "5", "state": ["0.95", "0.53", "0.39", "0.63"], "tone": "good"},
-          {"code": "10", "state": ["0.95", "0.39", "0.52", "0.63"], "changed": [1], "tone": "warn"},
-          {"code": "20", "state": ["1.00", "0.26", "0.63", "0.62"], "changed": [1, 2], "tone": "crit", "note": "nDCG barely moved"}]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Two RAGAS scores restate the IR metrics; two see something new",
-         "caption": "The metrics above grade **retrieval** and need no model, so they are free, deterministic and CI-able. RAGAS grades the **generation** on top, and its scores are LLM-judged — more expensive, non-deterministic, and measuring things no IR metric can reach. Which is the useful split: context precision and recall overlap with P@K and R@K and should probably be taken from those instead, and **faithfulness and answer relevancy have no cheaper substitute**.",
-         "cols": ["Question", "Layer"],
-         "rows": ["Context precision", "Context recall", "Faithfulness", "Answer relevancy"],
-         "cells": [
-          ["are the chunks relevant, and well ranked?", {"text": "retrieval - overlaps P@K", "tone": "warn"}],
-          ["did retrieval find everything?", {"text": "retrieval - overlaps R@K", "tone": "warn"}],
-          ["is every claim supported by the context?", {"text": "generation - nothing else sees it", "tone": "good"}],
-          ["does the answer address the question?", {"text": "generation - nothing else sees it", "tone": "good"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Hit@K was one metric; the others need the whole relevant set",
+    "caption": "Every measurement in module 5 asked a binary question: did *any* chunk in the top k come from the right document and contain the answer. That is Hit@K, and the five other standard metrics need **the full set of relevant chunks**, which has to be labelled. Building it changes the character of the golden set: across these twenty queries the relevant set runs from **1 chunk to 39**, with a median of 6 — so a single query's precision ceiling at k=5 varies from 0.20 to 1.00 before the retriever does anything.",
+    "left": "relevant chunks per query",
+    "codeW": 220,
+    "vars": [
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "minimum",
+      "state": [
+       "1"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "median",
+      "state": [
+       "6"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "mean",
+      "state": [
+       "9.9"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "maximum",
+      "state": [
+       "39"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "P@5 caps at 1.00 or 0.20"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The re-ranking claim: true on a weak first stage, false on a strong one",
+    "caption": "The claim is falsifiable — a cross-encoder is supposed to move MRR and nDCG once the right chunk is already in the set. On the dense retriever it does, and more: **every metric improves**, with Hit@5 reaching 1.00. On RRF fusion, which was already at Hit@5 = 1.00, the same re-ranker **takes Hit@5 down to 0.90** and moves MRR and R@5 slightly backwards. So a cross-encoder is not a free improvement; it is a second opinion that can overrule a better first one.",
+    "left": "configuration",
+    "codeW": 190,
+    "vars": [
+     "Hit@5",
+     "P@5",
+     "MRR",
+     "nDCG@5"
+    ],
+    "steps": [
+     {
+      "code": "dense, before",
+      "state": [
+       "0.95",
+       "0.53",
+       "0.84",
+       "0.63"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "dense + cross-encoder",
+      "state": [
+       "1.00",
+       "0.63",
+       "0.88",
+       "0.74"
+      ],
+      "changed": [
+       0,
+       3
+      ],
+      "tone": "good",
+      "note": "every metric up"
+     },
+     {
+      "code": "RRF fusion, before",
+      "state": [
+       "1.00",
+       "0.59",
+       "0.88",
+       "0.71"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "RRF + cross-encoder",
+      "state": [
+       "0.90",
+       "0.63",
+       "0.87",
+       "0.73"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "crit",
+      "note": "Hit@5 goes backwards"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Precision and recall move in opposite directions, so k is a choice of metric",
+    "caption": "As k rises, Hit@k and R@k climb and **P@k collapses, 0.75 to 0.26**. nDCG@k is nearly flat across the whole range, which makes it the one number that does not simply restate your choice of k. The practical consequence: \"optimise recall first\" is good advice precisely because recall is the only one of these that cannot be bought by changing k, and the others can.",
+    "left": "k",
+    "codeW": 110,
+    "vars": [
+     "Hit@k",
+     "P@k",
+     "R@k",
+     "nDCG@k"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "0.75",
+       "0.75",
+       "0.14",
+       "0.75"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "3",
+      "state": [
+       "0.90",
+       "0.62",
+       "0.30",
+       "0.65"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "5",
+      "state": [
+       "0.95",
+       "0.53",
+       "0.39",
+       "0.63"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "10",
+      "state": [
+       "0.95",
+       "0.39",
+       "0.52",
+       "0.63"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "20",
+      "state": [
+       "1.00",
+       "0.26",
+       "0.63",
+       "0.62"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "crit",
+      "note": "nDCG barely moved"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Two RAGAS scores restate the IR metrics; two see something new",
+    "caption": "The metrics above grade **retrieval** and need no model, so they are free, deterministic and CI-able. RAGAS grades the **generation** on top, and its scores are LLM-judged — more expensive, non-deterministic, and measuring things no IR metric can reach. Which is the useful split: context precision and recall overlap with P@K and R@K and should probably be taken from those instead, and **faithfulness and answer relevancy have no cheaper substitute**.",
+    "cols": [
+     "Question",
+     "Layer"
+    ],
+    "rows": [
+     "Context precision",
+     "Context recall",
+     "Faithfulness",
+     "Answer relevancy"
+    ],
+    "cells": [
+     [
+      "are the chunks relevant, and well ranked?",
+      {
+       "text": "retrieval - overlaps P@K",
+       "tone": "warn"
+      }
+     ],
+     [
+      "did retrieval find everything?",
+      {
+       "text": "retrieval - overlaps R@K",
+       "tone": "warn"
+      }
+     ],
+     [
+      "is every claim supported by the context?",
+      {
+       "text": "generation - nothing else sees it",
+       "tone": "good"
+      }
+     ],
+     [
+      "does the answer address the question?",
+      {
+       "text": "generation - nothing else sees it",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
  ],
-
  "6.2": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "The scale ladder correlates with memory, not latency",
-         "caption": "The standard thresholds — under 100K, 100K to 10M, beyond — track something real, and 5.5 measured what. At **one million vectors flat search is 74.5 ms**, which is still small beside an LLM call; the number that has become a problem is **1,536 MB of RAM**. So the ladder's rungs are memory boundaries wearing latency's clothes, and the decisions they force — quantize, shard, move off-heap — are all about bytes.",
-         "left": "vectors", "codeW": 150,
-         "vars": ["flat search ms", "MB at 384 dims"],
-         "steps": [
-          {"code": "1,000", "state": ["0.100", "1.5"], "tone": "good"},
-          {"code": "10,000", "state": ["1.404", "15.4"], "tone": "good"},
-          {"code": "100,000", "state": ["8.442", "153.6"], "tone": "good", "note": "latency still fine"},
-          {"code": "1,000,000", "state": ["74.548", "1536.0"], "changed": [1], "tone": "warn", "note": "memory is the issue"},
-          {"code": "10,000,000", "state": ["854.505", "15360.0"], "changed": [1], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Three update strategies, and when each is the only option",
-         "caption": "The index clock and the query clock run separately, and this is the decision about how fast the slow one ticks. **Incremental by content hash is the right default** — 6.8 measures the hash check at 1.3 ms against a 13.2-second rebuild. A full rebuild is the only option when the embedding model changes, because 6.8's mismatch measurement shows mixed vectors silently halve recall. Event-driven has the lowest staleness and needs the source system to cooperate.",
-         "cols": ["When it is right", "Cost"],
-         "rows": ["Full rebuild", "Incremental by hash", "Event-driven"],
-         "cells": [
-          [{"text": "the embedding model changed", "tone": "violet"}, "13.2 s here; everything, every time"],
-          [{"text": "the default", "tone": "good"}, "a 1.3 ms hash check"],
-          [{"text": "staleness must be minimal", "tone": "accent"}, "the source must emit events"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A rebuild in place is worse than stale — it is arbitrary",
-         "caption": "A full rebuild has a failure mode incremental updates do not: **while it runs the index is partially populated**, so queries return whatever has been written so far. That is not stale data, which is at least consistent and explainable — it is an arbitrary subset, and a user who asks the same question twice during the rebuild gets two different answers for no reason they could discover. Build into a new index and swap an alias.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "Rebuild in place", "sub": "writing as it goes", "tone": "crit"},
-          {"id": "p", "label": "Partially populated", "sub": "for the whole run", "tone": "crit"},
-          {"id": "a", "label": "Answers are arbitrary", "sub": "worse than stale", "tone": "crit"},
-          {"id": "n", "label": "Build into a new index", "sub": "the old one keeps serving", "tone": "good"},
-          {"id": "s", "label": "Then swap the alias", "sub": "atomically", "tone": "good"},
-          {"id": "k", "label": "And keep the old one briefly", "sub": "so a rollback is a second swap", "tone": "teal"}],
-         "edges": [["r", "p"], ["p", "a"], ["a", "n"], ["n", "s"], ["s", "k"]]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "The production checklist, weighted by what this module measured",
-         "caption": "Two items change rank once measured. **Re-ranking is conditional, not high** — 6.1 measured it helping a weak first stage and *hurting* a strong one, so it needs a before-and-after on your own set. And **evaluation is the highest-weight item** because nothing else on the list is decidable without it. The cheapest item is incremental indexing, at a 1.3 ms hash check.",
-         "cols": ["Weight", "Because"],
-         "rows": ["Evaluation pipeline", "Hybrid search", "Fallback for no context", "PII filtering on retrieval", "Metadata filtering", "Source citations", "Incremental indexing", "Monitoring", "Re-ranking", "Caching"],
-         "cells": [
-          [{"text": "highest", "tone": "good"}, "nothing else is decidable without it"],
-          [{"text": "high", "tone": "good"}, "100% recall@5 for nine lines, no model"],
-          [{"text": "high", "tone": "good"}, "governs the 5% retrieval misses"],
-          [{"text": "mandatory", "tone": "crit"}, "where tenancy exists; pre-filter or leak"],
-          [{"text": "high", "tone": "good"}, "where the predicate is exact"],
-          [{"text": "high", "tone": "good"}, "cheap, and load-bearing for trust"],
-          [{"text": "high", "tone": "good"}, "the cheapest item: a 1.3 ms hash"],
-          ["high", "log scores, not just ids"],
-          [{"text": "conditional", "tone": "warn"}, "helped a weak stage, hurt a strong one"],
-          ["medium", "a latency feature, not a cost one"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "The scale ladder correlates with memory, not latency",
+    "caption": "The standard thresholds — under 100K, 100K to 10M, beyond — track something real, and 5.5 measured what. At **one million vectors flat search is 74.5 ms**, which is still small beside an LLM call; the number that has become a problem is **1,536 MB of RAM**. So the ladder's rungs are memory boundaries wearing latency's clothes, and the decisions they force — quantize, shard, move off-heap — are all about bytes.",
+    "left": "vectors",
+    "codeW": 150,
+    "vars": [
+     "flat search ms",
+     "MB at 384 dims"
+    ],
+    "steps": [
+     {
+      "code": "1,000",
+      "state": [
+       "0.100",
+       "1.5"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "10,000",
+      "state": [
+       "1.404",
+       "15.4"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "100,000",
+      "state": [
+       "8.442",
+       "153.6"
+      ],
+      "tone": "good",
+      "note": "latency still fine"
+     },
+     {
+      "code": "1,000,000",
+      "state": [
+       "74.548",
+       "1536.0"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn",
+      "note": "memory is the issue"
+     },
+     {
+      "code": "10,000,000",
+      "state": [
+       "854.505",
+       "15360.0"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Three update strategies, and when each is the only option",
+    "caption": "The index clock and the query clock run separately, and this is the decision about how fast the slow one ticks. **Incremental by content hash is the right default** — 6.8 measures the hash check at 1.3 ms against a 13.2-second rebuild. A full rebuild is the only option when the embedding model changes, because 6.8's mismatch measurement shows mixed vectors silently halve recall. Event-driven has the lowest staleness and needs the source system to cooperate.",
+    "cols": [
+     "When it is right",
+     "Cost"
+    ],
+    "rows": [
+     "Full rebuild",
+     "Incremental by hash",
+     "Event-driven"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the embedding model changed",
+       "tone": "violet"
+      },
+      "13.2 s here; everything, every time"
+     ],
+     [
+      {
+       "text": "the default",
+       "tone": "good"
+      },
+      "a 1.3 ms hash check"
+     ],
+     [
+      {
+       "text": "staleness must be minimal",
+       "tone": "accent"
+      },
+      "the source must emit events"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A rebuild in place is worse than stale — it is arbitrary",
+    "caption": "A full rebuild has a failure mode incremental updates do not: **while it runs the index is partially populated**, so queries return whatever has been written so far. That is not stale data, which is at least consistent and explainable — it is an arbitrary subset, and a user who asks the same question twice during the rebuild gets two different answers for no reason they could discover. Build into a new index and swap an alias.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Rebuild in place",
+      "sub": "writing as it goes",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "Partially populated",
+      "sub": "for the whole run",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Answers are arbitrary",
+      "sub": "worse than stale",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "Build into a new index",
+      "sub": "the old one keeps serving",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Then swap the alias",
+      "sub": "atomically",
+      "tone": "good"
+     },
+     {
+      "id": "k",
+      "label": "And keep the old one briefly",
+      "sub": "so a rollback is a second swap",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "p"
+     ],
+     [
+      "p",
+      "a"
+     ],
+     [
+      "a",
+      "n"
+     ],
+     [
+      "n",
+      "s"
+     ],
+     [
+      "s",
+      "k"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "The production checklist, weighted by what this module measured",
+    "caption": "Two items change rank once measured. **Re-ranking is conditional, not high** — 6.1 measured it helping a weak first stage and *hurting* a strong one, so it needs a before-and-after on your own set. And **evaluation is the highest-weight item** because nothing else on the list is decidable without it. The cheapest item is incremental indexing, at a 1.3 ms hash check.",
+    "cols": [
+     "Weight",
+     "Because"
+    ],
+    "rows": [
+     "Evaluation pipeline",
+     "Hybrid search",
+     "Fallback for no context",
+     "PII filtering on retrieval",
+     "Metadata filtering",
+     "Source citations",
+     "Incremental indexing",
+     "Monitoring",
+     "Re-ranking",
+     "Caching"
+    ],
+    "cells": [
+     [
+      {
+       "text": "highest",
+       "tone": "good"
+      },
+      "nothing else is decidable without it"
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      "100% recall@5 for nine lines, no model"
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      "governs the 5% retrieval misses"
+     ],
+     [
+      {
+       "text": "mandatory",
+       "tone": "crit"
+      },
+      "where tenancy exists; pre-filter or leak"
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      "where the predicate is exact"
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      "cheap, and load-bearing for trust"
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      "the cheapest item: a 1.3 ms hash"
+     ],
+     [
+      "high",
+      "log scores, not just ids"
+     ],
+     [
+      {
+       "text": "conditional",
+       "tone": "warn"
+      },
+      "helped a weak stage, hurt a strong one"
+     ],
+     [
+      "medium",
+      "a latency feature, not a cost one"
+     ]
+    ]
+   }
+  }
  ],
-
  "6.3": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Parsing, which sits before the highest-leverage decision",
-         "caption": "5.4 established chunking as the highest-leverage decision in the pipeline. Parsing sits **before** it with the same property and far less attention: **a table flattened into a column of orphaned numbers cannot be rescued by any chunk size, any embedding model or any re-ranker.** Two rows lose nothing if you are careful and the rest lose structure that was the meaning — and the last row loses *everything* if you skip it.",
-         "cols": ["What it loses if you are careless"],
-         "rows": ["PDF, text layer", "PDF, scanned", "PDF, tables", "HTML", "Word", "PowerPoint", "Markdown", "Code", "Images and charts"],
-         "cells": [
-          ["running headers and page numbers become content"],
-          [{"text": "OCR noise embeds as plausible nonsense", "tone": "crit"}],
-          [{"text": "row-column structure, which is the entire meaning", "tone": "crit"}],
-          ["nothing - but navigation and ads become chunks"],
-          ["heading levels, which are free section metadata"],
-          ["slide boundaries, which are natural chunk edges"],
-          [{"text": "nothing - the easy case (5.4)", "tone": "good"}],
-          [{"text": "function boundaries - 6.6 is about this", "tone": "warn"}],
-          [{"text": "everything, if you skip it", "tone": "crit"}]]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Standard RAG works on turn one and breaks on turn two",
-         "caption": "Embedding the latest user message works until the message stops being self-contained — and **a follow-up usually is not, because the subject lives in the previous turn**. *\"And what about the second one?\"* embeds to nothing useful. The fix is a generation before the retrieval: rewrite the follow-up into a standalone question using the history, then retrieve on the rewrite. Same shape as HyDE, same cost: a full model call on the critical path.",
-         "cols": 3,
-         "nodes": [
-          {"id": "t", "label": "Turn 1: a self-contained question", "sub": "embeds fine", "tone": "good"},
-          {"id": "f", "label": "Turn 2: \"and the second one?\"", "sub": "the subject is in turn 1", "tone": "crit"},
-          {"id": "e", "label": "Embedding it retrieves noise", "sub": "there is nothing to match", "tone": "crit"},
-          {"id": "r", "label": "Rewrite to standalone first", "sub": "using the history", "tone": "good"},
-          {"id": "s", "label": "Then retrieve on the rewrite", "sub": "same shape as HyDE (5.8)", "tone": "good"},
-          {"id": "c", "label": "A model call on the critical path", "sub": "which is the cost", "tone": "warn"}],
-         "edges": [["t", "f"], ["f", "e"], ["e", "r"], ["r", "s"], ["s", "c"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "If a constraint is exactly expressible, it is a filter",
-         "caption": "Stated as a rule: **this tenant, this year, this department, this access level — these should be filters, not hopes about cosine similarity.** An embedding has no notion of exactness, so a constraint expressed in the query text is a preference the retriever may ignore. And the ordering matters as much as the existence: 6.8 measures post-filtering returning 19 foreign rows at identical recall, because it searched everything and dropped afterwards.",
-         "cols": 3,
-         "nodes": [
-          {"id": "e", "label": "An exact constraint", "sub": "tenant, year, access level", "tone": "violet"},
-          {"id": "q", "label": "Put it in the query text", "sub": "a hope about similarity", "tone": "crit"},
-          {"id": "f", "label": "Make it a filter", "sub": "the store enforces it", "tone": "good"},
-          {"id": "p", "label": "Pre-filter, not post-filter", "sub": "restrict, then search", "tone": "good"},
-          {"id": "l", "label": "Post-filtering still read the data", "sub": "19 foreign rows (6.8)", "tone": "crit"}],
-         "edges": [["e", "q"], ["e", "f"], ["f", "p"], ["p", "l"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Parsing, which sits before the highest-leverage decision",
+    "caption": "5.4 established chunking as the highest-leverage decision in the pipeline. Parsing sits **before** it with the same property and far less attention: **a table flattened into a column of orphaned numbers cannot be rescued by any chunk size, any embedding model or any re-ranker.** Two rows lose nothing if you are careful and the rest lose structure that was the meaning — and the last row loses *everything* if you skip it.",
+    "items": [
+     {
+      "label": "PDF, text layer",
+      "sub": "running headers and page numbers become content"
+     },
+     {
+      "label": "PDF, scanned",
+      "sub": "OCR noise embeds as plausible nonsense",
+      "tone": "crit"
+     },
+     {
+      "label": "PDF, tables",
+      "sub": "row-column structure, which is the entire meaning",
+      "tone": "crit"
+     },
+     {
+      "label": "HTML",
+      "sub": "nothing - but navigation and ads become chunks"
+     },
+     {
+      "label": "Word",
+      "sub": "heading levels, which are free section metadata"
+     },
+     {
+      "label": "PowerPoint",
+      "sub": "slide boundaries, which are natural chunk edges"
+     },
+     {
+      "label": "Markdown",
+      "sub": "nothing - the easy case (5.4)",
+      "tone": "good"
+     },
+     {
+      "label": "Code",
+      "sub": "function boundaries - 6.6 is about this",
+      "tone": "warn"
+     },
+     {
+      "label": "Images and charts",
+      "sub": "everything, if you skip it",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Standard RAG works on turn one and breaks on turn two",
+    "caption": "Embedding the latest user message works until the message stops being self-contained — and **a follow-up usually is not, because the subject lives in the previous turn**. *\"And what about the second one?\"* embeds to nothing useful. The fix is a generation before the retrieval: rewrite the follow-up into a standalone question using the history, then retrieve on the rewrite. Same shape as HyDE, same cost: a full model call on the critical path.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Turn 1: a self-contained question",
+      "sub": "embeds fine",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Turn 2: \"and the second one?\"",
+      "sub": "the subject is in turn 1",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Embedding it retrieves noise",
+      "sub": "there is nothing to match",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "Rewrite to standalone first",
+      "sub": "using the history",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Then retrieve on the rewrite",
+      "sub": "same shape as HyDE (5.8)",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "A model call on the critical path",
+      "sub": "which is the cost",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "f"
+     ],
+     [
+      "f",
+      "e"
+     ],
+     [
+      "e",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "If a constraint is exactly expressible, it is a filter",
+    "caption": "Stated as a rule: **this tenant, this year, this department, this access level — these should be filters, not hopes about cosine similarity.** An embedding has no notion of exactness, so a constraint expressed in the query text is a preference the retriever may ignore. And the ordering matters as much as the existence: 6.8 measures post-filtering returning 19 foreign rows at identical recall, because it searched everything and dropped afterwards.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "An exact constraint",
+      "sub": "tenant, year, access level",
+      "tone": "violet"
+     },
+     {
+      "id": "q",
+      "label": "Put it in the query text",
+      "sub": "a hope about similarity",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Make it a filter",
+      "sub": "the store enforces it",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Pre-filter, not post-filter",
+      "sub": "restrict, then search",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Post-filtering still read the data",
+      "sub": "19 foreign rows (6.8)",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "q"
+     ],
+     [
+      "e",
+      "f"
+     ],
+     [
+      "f",
+      "p"
+     ],
+     [
+      "p",
+      "l"
+     ]
+    ]
+   }
+  }
  ],
-
  "6.4": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Proof that multi-hop is structural, not a tuning problem",
-         "caption": "Every improvement so far has been a dial — better chunking moved recall a few points, hybrid search took 95% to 100%, HyDE moved one query from rank 15 to rank 1. This is not a dial. The question *\"What companies did the CEO of the acquirer of Instagram work for?\"* needs four hops, and the check is simple: **does any chunk contain both endpoints?** Across all six chunks the answer is no, every time. There is no k, no re-ranker and no embedding model that retrieves a passage which does not exist.",
-         "left": "chunk", "codeW": 170,
-         "vars": ["has both 'Instagram' and 'Synapse'?"],
-         "steps": [
-          {"code": "instagram.md, founding", "state": ["no"], "tone": "crit"},
-          {"code": "instagram.md, acquisition", "state": ["no"], "tone": "crit"},
-          {"code": "meta.md, rename", "state": ["no"], "tone": "crit"},
-          {"code": "meta.md, leadership", "state": ["no"], "tone": "crit"},
-          {"code": "zuckerberg.md, founding", "state": ["no"], "tone": "crit"},
-          {"code": "zuckerberg.md, before", "state": ["no"], "tone": "crit", "note": "0 of 6 - the answer is a path"}]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Three question shapes with the same property",
-         "caption": "They share it for one reason: **the answer is not written down in any passage.** A multi-hop answer is a path. An aggregation answer is a union over fifty documents. A relationship answer is an edge sequence, recorded only if somebody happened to write that particular sentence. A graph stores the edges explicitly, which is what makes the traversal possible at all — and the cost is an extraction step that has to get the entities right.",
-         "cols": 3,
-         "nodes": [
-          {"id": "m", "label": "Multi-hop", "sub": "the answer is a path", "tone": "crit"},
-          {"id": "a", "label": "Aggregation", "sub": "a union over fifty documents", "tone": "crit"},
-          {"id": "r", "label": "Relationship", "sub": "an edge sequence", "tone": "crit"},
-          {"id": "n", "label": "None is written in a passage", "sub": "so none can be retrieved", "tone": "violet"},
-          {"id": "g", "label": "A graph stores the edges", "sub": "so traversal becomes possible", "tone": "good"},
-          {"id": "e", "label": "At the cost of extraction", "sub": "entities have to resolve", "tone": "warn"}],
-         "edges": [["m", "n"], ["a", "n"], ["r", "n"], ["n", "g"], ["g", "e"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Community summaries give corpus-level questions something to retrieve",
-         "caption": "GraphRAG's extra step answers the aggregation case: detect communities of related entities, **summarise each with a model**, and route broad questions to those summaries rather than to chunks. *\"What are the main themes in this corpus?\"* then has a target, which standard RAG never does. The cheap version — label propagation, where each node repeatedly adopts its neighbours' commonest label — **converged in 2 passes** and recovered the obvious structure: Apple and its people, Meta and its people, and Zuckerberg's pre-Facebook projects as a third group.",
-         "cols": 3,
-         "nodes": [
-          {"id": "g", "label": "The entity graph", "sub": "nodes and edges", "tone": "accent"},
-          {"id": "c", "label": "Detect communities", "sub": "label propagation: 2 passes", "tone": "violet"},
-          {"id": "s", "label": "Summarise each with a model", "sub": "once, at index time", "tone": "good"},
-          {"id": "r", "label": "Route broad questions there", "sub": "not to chunks", "tone": "good"},
-          {"id": "t", "label": "\"Main themes?\" now has a target", "sub": "which no chunk ever was", "tone": "teal"}],
-         "edges": [["g", "c"], ["c", "s"], ["s", "r"], ["r", "t"]]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Seven scenarios, and two where the answer is neither",
-         "caption": "GraphRAG is the answer for four of these and **overkill for three**. The two rows worth dwelling on are the ones where both options are wrong: aggregation over a table is exactly and cheaply answered by 5.12's text-to-SQL, and under about fifty documents **you should put all of it in the context** — retrieval is the wrong tool too, not merely the weaker one.",
-         "cols": ["Standard", "Graph", "Why"],
-         "rows": ["Simple factual Q and A", "Multi-hop", "Relationship queries", "Corpus-level summary", "Aggregation over 50 docs", "Fewer than ~50 docs", "Large interconnected corpus"],
-         "cells": [
-          [{"text": "yes", "tone": "good"}, "overkill", "95% recall@5 finds it"],
-          [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "0 of 6 chunks hold both ends"],
-          [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "the answer is an edge sequence"],
-          [{"text": "no", "tone": "crit"}, {"text": "yes", "tone": "good"}, "no chunk states a theme"],
-          [{"text": "no", "tone": "crit"}, "sometimes", {"text": "SQL is exact and cheaper", "tone": "violet"}],
-          [{"text": "yes", "tone": "good"}, "overkill", {"text": "put it all in context", "tone": "violet"}],
-          ["struggles", {"text": "yes", "tone": "good"}, "the case it was built for"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Proof that multi-hop is structural, not a tuning problem",
+    "caption": "Every improvement so far has been a dial — better chunking moved recall a few points, hybrid search took 95% to 100%, HyDE moved one query from rank 15 to rank 1. This is not a dial. The question *\"What companies did the CEO of the acquirer of Instagram work for?\"* needs four hops, and the check is simple: **does any chunk contain both endpoints?** Across all six chunks the answer is no, every time. There is no k, no re-ranker and no embedding model that retrieves a passage which does not exist.",
+    "left": "chunk",
+    "codeW": 170,
+    "vars": [
+     "has both 'Instagram' and 'Synapse'?"
+    ],
+    "steps": [
+     {
+      "code": "instagram.md, founding",
+      "state": [
+       "no"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "instagram.md, acquisition",
+      "state": [
+       "no"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "meta.md, rename",
+      "state": [
+       "no"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "meta.md, leadership",
+      "state": [
+       "no"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "zuckerberg.md, founding",
+      "state": [
+       "no"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "zuckerberg.md, before",
+      "state": [
+       "no"
+      ],
+      "tone": "crit",
+      "note": "0 of 6 - the answer is a path"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Three question shapes with the same property",
+    "caption": "They share it for one reason: **the answer is not written down in any passage.** A multi-hop answer is a path. An aggregation answer is a union over fifty documents. A relationship answer is an edge sequence, recorded only if somebody happened to write that particular sentence. A graph stores the edges explicitly, which is what makes the traversal possible at all — and the cost is an extraction step that has to get the entities right.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "Multi-hop",
+      "sub": "the answer is a path",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Aggregation",
+      "sub": "a union over fifty documents",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "Relationship",
+      "sub": "an edge sequence",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "None is written in a passage",
+      "sub": "so none can be retrieved",
+      "tone": "violet"
+     },
+     {
+      "id": "g",
+      "label": "A graph stores the edges",
+      "sub": "so traversal becomes possible",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "At the cost of extraction",
+      "sub": "entities have to resolve",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "n"
+     ],
+     [
+      "a",
+      "n"
+     ],
+     [
+      "r",
+      "n"
+     ],
+     [
+      "n",
+      "g"
+     ],
+     [
+      "g",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Community summaries give corpus-level questions something to retrieve",
+    "caption": "GraphRAG's extra step answers the aggregation case: detect communities of related entities, **summarise each with a model**, and route broad questions to those summaries rather than to chunks. *\"What are the main themes in this corpus?\"* then has a target, which standard RAG never does. The cheap version — label propagation, where each node repeatedly adopts its neighbours' commonest label — **converged in 2 passes** and recovered the obvious structure: Apple and its people, Meta and its people, and Zuckerberg's pre-Facebook projects as a third group.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "g",
+      "label": "The entity graph",
+      "sub": "nodes and edges",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Detect communities",
+      "sub": "label propagation: 2 passes",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Summarise each with a model",
+      "sub": "once, at index time",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Route broad questions there",
+      "sub": "not to chunks",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "\"Main themes?\" now has a target",
+      "sub": "which no chunk ever was",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "g",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ],
+     [
+      "s",
+      "r"
+     ],
+     [
+      "r",
+      "t"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Seven scenarios, and two where the answer is neither",
+    "caption": "GraphRAG is the answer for four of these and **overkill for three**. The two rows worth dwelling on are the ones where both options are wrong: aggregation over a table is exactly and cheaply answered by 5.12's text-to-SQL, and under about fifty documents **you should put all of it in the context** — retrieval is the wrong tool too, not merely the weaker one.",
+    "cols": [
+     "Standard",
+     "Graph",
+     "Why"
+    ],
+    "rows": [
+     "Simple factual Q and A",
+     "Multi-hop",
+     "Relationship queries",
+     "Corpus-level summary",
+     "Aggregation over 50 docs",
+     "Fewer than ~50 docs",
+     "Large interconnected corpus"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "overkill",
+      "95% recall@5 finds it"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "0 of 6 chunks hold both ends"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "the answer is an edge sequence"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "no chunk states a theme"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "sometimes",
+      {
+       "text": "SQL is exact and cheaper",
+       "tone": "violet"
+      }
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "overkill",
+      {
+       "text": "put it all in context",
+       "tone": "violet"
+      }
+     ],
+     [
+      "struggles",
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "the case it was built for"
+     ]
+    ]
+   }
+  }
  ]
 }

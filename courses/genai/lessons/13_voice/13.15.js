@@ -22,6 +22,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Every number in this module \u2014 the 1,650 ms budget, the 700 ms endpointer, the 60 ms playout buffer, the 160 ms barge-in \u2014 was measured in the environment where voice agents get built: a laptop, a good network, and headphones. That is not a criticism of the numbers; it is the observation that the environment is a parameter, and it is set to its most favourable value in every development loop." },
 
     { t: "table",
@@ -97,6 +98,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A car is the worst listening environment in normal use: road noise rising with speed, HVAC, wind, passengers, music, and a microphone some distance from the speaker's mouth. Mic arrays and beamforming help \u2014 the array can steer toward the driver's seat and attenuate everything else \u2014 and speaker identification matters because the driver's requests and a back-seat passenger's are not equivalent." },
 
     { t: "p", text: "The requirement that actually drives the architecture is different, though: **it has to work in a tunnel.** An assistant that stops functioning when connectivity drops is not acceptable in a car, and that cannot be fixed with a retry." },
@@ -114,7 +116,8 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "pitfalls", text: "The nine pitfalls",
       sub: "Which is to say, the module in reverse" },
 
-    {"kind": "matrix", "title": "Nine pitfalls, each priced by the lesson that measured it", "caption": "The list closes the module because every row has a number attached rather than a warning. **Fixed silence endpointing leaves 42.4% of the budget untouched. Evaluating on typed text reports 100% where the real figure is 38%. Ignoring entity error rate hides a 41.2% figure behind a 10.6% WER.** And two rows are structural rather than costly: no echo cancellation produces the stuttering demo, and a deep jitter buffer makes barge-in unreachable by construction.", "cols": ["What it costs"], "rows": ["Fixed silence endpointing", "No barge-in", "No echo cancellation", "History not truncated", "Markdown in a spoken answer", "Waiting for the response", "Silent tool calls", "Evaluating on typed text", "Ignoring entity error rate"], "cells": [[{"text": "42.4% of the budget, untouched", "tone": "crit"}], ["an agent that is a recording"], [{"text": "the agent interrupts itself - the stuttering demo", "tone": "crit"}], [{"text": "17.5% phantom context over a ten-turn call", "tone": "crit"}], ["21 strings read aloud as punctuation"], [{"text": "no cancellation point, so no barge-in either", "tone": "crit"}], ["2,550 ms of silence where 890 was available"], [{"text": "100% reported where the real figure is 38%", "tone": "crit"}], [{"text": "10.6% WER hiding a 41.2% entity error rate", "tone": "crit"}]], "t": "diagram", "id": "dg-13_15-04-2"},
+    {"kind": "layers", "title": "Nine pitfalls, each priced by the lesson that measured it", "caption": "The list closes the module because every row has a number attached rather than a warning. **Fixed silence endpointing leaves 42.4% of the budget untouched. Evaluating on typed text reports 100% where the real figure is 38%. Ignoring entity error rate hides a 41.2% figure behind a 10.6% WER.** And two rows are structural rather than costly: no echo cancellation produces the stuttering demo, and a deep jitter buffer makes barge-in unreachable by construction.", "items": [{"label": "Fixed silence endpointing", "sub": "42.4% of the budget, untouched", "tone": "crit"}, {"label": "No barge-in", "sub": "an agent that is a recording"}, {"label": "No echo cancellation", "sub": "the agent interrupts itself - the stuttering demo", "tone": "crit"}, {"label": "History not truncated", "sub": "17.5% phantom context over a ten-turn call", "tone": "crit"}, {"label": "Markdown in a spoken answer", "sub": "21 strings read aloud as punctuation"}, {"label": "Waiting for the response", "sub": "no cancellation point, so no barge-in either", "tone": "crit"}, {"label": "Silent tool calls", "sub": "2,550 ms of silence where 890 was available"}, {"label": "Evaluating on typed text", "sub": "100% reported where the real figure is 38%", "tone": "crit"}, {"label": "Ignoring entity error rate", "sub": "10.6% WER hiding a 41.2% entity error rate", "tone": "crit"}], "t": "diagram", "id": "dg-13_15-04-2"},
+
 
 
 

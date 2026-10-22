@@ -57,7 +57,8 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "removed", text: "What speech takes away",
       sub: "Three affordances every text interface quietly depends on" },
 
-    {"kind": "matrix", "title": "What speech takes away, and why the latency budget is the obvious half", "caption": "Modelling a voice agent as a chat agent with audio bolted to each end fails for a reason more interesting than latency: **the interface affordances your text product relies on stop existing.** No delete key, so a mistyped name is never fixed before it is sent. No scrollback, so a caller holds the conversation in working memory instead of re-reading it. Every mitigation that depends on the user seeing and revising is gone.", "cols": ["What disappears"], "rows": ["No delete key", "No scrollback", "No skimming", "No visible structure"], "cells": [[{"text": "a misspoken name is sent as-is; there is no revision step", "tone": "crit"}], [{"text": "the caller holds the conversation in working memory", "tone": "crit"}], ["the answer is consumed serially, at the speed you say it"], [{"text": "lists, headings and emphasis have no audio equivalent (13.8)", "tone": "warn"}]], "t": "diagram", "id": "dg-13_1-02-0"},
+    {"kind": "layers", "title": "What speech takes away, and why the latency budget is the obvious half", "caption": "Modelling a voice agent as a chat agent with audio bolted to each end fails for a reason more interesting than latency: **the interface affordances your text product relies on stop existing.** No delete key, so a mistyped name is never fixed before it is sent. No scrollback, so a caller holds the conversation in working memory instead of re-reading it. Every mitigation that depends on the user seeing and revising is gone.", "items": [{"label": "No delete key", "sub": "a misspoken name is sent as-is; there is no revision step", "tone": "crit"}, {"label": "No scrollback", "sub": "the caller holds the conversation in working memory", "tone": "crit"}, {"label": "No skimming", "sub": "the answer is consumed serially, at the speed you say it"}, {"label": "No visible structure", "sub": "lists, headings and emphasis have no audio equivalent (13.8)", "tone": "warn"}], "t": "diagram", "id": "dg-13_1-02-0"},
+
 
 
 
@@ -79,6 +80,7 @@ EC.receiveLesson({
       sub: "Three regions, and the boundaries are not where engineers put them" },
 
     {"kind": "matrix", "title": "Five perception bands, and the two numbers worth memorising", "caption": "Latency does not degrade experience linearly — **crossing a threshold changes what the user believes is happening.** The two to memorise are **800 ms**, under which a turn feels responsive, and **1,200 ms**, over which it reads as thinking. The cascaded pipeline in 13.3 lands at **1,650 ms — in the band where users repeat themselves**, which is the worst possible place to be, because the repeat arrives mid-response and triggers an interruption on a turn that was merely slow.", "cols": ["How it reads", "What the user does"], "rows": ["under ~300 ms", "300-800 ms", "800-1200 ms", "1200-2000 ms", "over ~2000 ms"], "cells": [[{"text": "indistinguishable from a person", "tone": "good"}, "nothing - the rhythm holds"], [{"text": "responsive", "tone": "good"}, "nothing conscious"], ["noticeable", "registers a wait; may fill it"], [{"text": "thinking", "tone": "crit"}, {"text": "repeats themselves - the worst case", "tone": "crit"}], [{"text": "broken", "tone": "crit"}, "says hello, repeats, or hangs up"]], "t": "diagram", "id": "dg-13_1-03-1"},
+
 
 
 
@@ -106,6 +108,7 @@ EC.receiveLesson({
       sub: "The number on the dashboard and the number the user feels" },
 
     {"kind": "trace", "title": "Identical medians, 17.1% against 96.1% bad calls", "caption": "Time to first audio is **heavy-tailed** — a sum of stages, several with long right tails — so the median says almost nothing on its own. Two agents with an **identical 700 ms median** give 70.3% responsive turns against 57.1%, and the conjunction over a twelve-turn call amplifies it: **17.1% of calls go badly against 96.1%**. A call is not one draw from the distribution; it is twelve, and the width parameter is what decides the product.", "left": "distribution", "codeW": 150, "vars": ["median", "responsive", "thinking", "bad call"], "steps": [{"code": "tight", "state": ["700 ms", "70.3%", "1.6%", "17.1%"], "tone": "good"}, {"code": "loose", "state": ["700 ms", "57.1%", "23.6%", "96.1%"], "changed": [3], "tone": "crit", "note": "the same median"}], "t": "diagram", "id": "dg-13_1-04-2"},
+
 
 
 
@@ -149,6 +152,7 @@ EC.receiveLesson({
       sub: "The shape of the problem, before any of the mechanisms" },
 
     {"kind": "flow", "title": "Three things to check before approving a faster model", "caption": "The scenario: a text eval scoring 0.91 task success and a median time to first audio of 1,400 ms, and a proposal to buy a faster model. **Check the p95 first** — above 1,500 ms you have a variance problem and a faster median will not fix it. Check whether the eval was run on audio, because 13.12 measures a text harness reporting 100% where the real figure is 38%. And check the endpointer: **13.3 shows halving the model's TTFT buys 10.6% while endpointing is 42.4% of the budget.** A faster model is on the list, fourth.", "cols": 3, "nodes": [{"id": "p", "label": "Check the p95", "sub": "above 1,500 ms is variance, not speed", "tone": "violet"}, {"id": "e", "label": "Was the eval run on audio?", "sub": "13.12: 100% reported, 38% real", "tone": "violet"}, {"id": "n", "label": "Check the endpointer", "sub": "42.4% of the budget", "tone": "violet"}, {"id": "m", "label": "A faster model buys 10.6%", "sub": "halving its TTFT", "tone": "warn"}, {"id": "f", "label": "So it is fourth on the list", "sub": "not first", "tone": "good"}], "edges": [["p", "m"], ["e", "m"], ["n", "m"], ["m", "f"]], "t": "diagram", "id": "dg-13_1-05-3"},
+
 
 
 

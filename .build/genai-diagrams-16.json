@@ -1,244 +1,1090 @@
 {
  "5.7": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The whole pipeline, and the one failure it guarantees",
-         "caption": "Twelve documents, 1,241 chunks at a mean of 338 characters, embedded in 13.2 seconds into a 1.82 MB index. Every piece of it works, and a naive pipeline still has one **guaranteed** failure: retrieval returns five chunks that do not contain the answer. On this corpus that is **5% of questions at k=5 and 25% at k=1** — so the prompt has to say what to do in that case, which is why §02 is about the template rather than the retrieval.",
-         "cols": 4,
-         "nodes": [
-          {"id": "c", "label": "Chunk", "sub": "1,241 at 338 chars", "tone": "accent"},
-          {"id": "e", "label": "Embed", "sub": "13.2 s, 1.82 MB index", "tone": "accent"},
-          {"id": "r", "label": "Retrieve k=5", "sub": "11 ms, 423 tokens", "tone": "accent"},
-          {"id": "g", "label": "Generate with citations", "sub": "one call", "tone": "good"},
-          {"id": "f", "label": "5% of the time the answer is absent", "sub": "25% at k=1", "tone": "crit"}],
-         "edges": [["c", "e"], ["e", "r"], ["r", "g"], ["r", "f", "", "dashed"]]}},
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Four clauses, each preventing a different failure",
-         "caption": "**\"Using only the sources\"** is the clause that makes this RAG rather than a model answering from memory with some documents nearby — without it, retrieved text competes with parametric knowledge and you cannot tell which produced the answer. The second has to match the numbering in the context exactly, or you get citation-shaped text that refers to nothing. And the question goes **last**, because 1.13's caching rule makes everything before it a cacheable prefix.",
-         "cols": ["Prevents"],
-         "rows": ["Scope to the context", "Define the citation format", "Say what to do on failure", "Put the question last"],
-         "cells": [
-          [{"text": "answering from memory, indistinguishably", "tone": "crit"}],
-          [{"text": "citation-shaped text that resolves to nothing", "tone": "crit"}],
-          [{"text": "a confident answer to the 5% with no answer present", "tone": "crit"}],
-          [{"text": "breaking the cacheable prefix (1.13)", "tone": "warn"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Three things have to line up, and most implementations get two",
-         "caption": "A retriever knows which chunk it used, so it can produce a citation that resolves — but only if the numbering in the context, the format in the rules and the mapping you keep in code all agree. **Number the chunks** so there is something to refer to; **keep the mapping** back to chunk, document and score; and **check that every emitted citation resolves**, which is four lines of regex and catches a model emitting `[7]` when five sources were supplied.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "Number the chunks in the context", "sub": "[1] ... [5]", "tone": "good"},
-          {"id": "m", "label": "Keep the mapping in code", "sub": "chunk, document, score", "tone": "good"},
-          {"id": "f", "label": "Match the format in the rules", "sub": "or the brackets mean nothing", "tone": "good"},
-          {"id": "c", "label": "Check every citation resolves", "sub": "four lines of regex", "tone": "violet"},
-          {"id": "e", "label": "Catches [7] of five sources", "sub": "which happens", "tone": "crit"},
-          {"id": "s", "label": "Resolving is not the same as supported", "sub": "5.13 is about the rest", "tone": "teal"}],
-         "edges": [["n", "m"], ["m", "f"], ["f", "c"], ["c", "e"], ["e", "s"]]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Six things this pipeline cannot do, and where each is fixed",
-         "caption": "A working pipeline is the start of the module rather than the end of it, and this is the map of the rest. The fourth row is the one with **no mechanism at all**: k chunks are ranked independently, so a question needing facts from several documents has nothing in this design that composes them. The fifth is the one people try hardest to fix with better retrieval, and 5.12 shows retrieval is the wrong instrument entirely.",
-         "cols": ["Measured here", "Fixed in"],
-         "rows": ["No shared vocabulary", "Exact identifiers", "Right doc, wrong passage", "Facts across documents", "Needs aggregation", "The same question again"],
-         "cells": [
-          [{"text": "'Why divide alpha by r?' at rank 15", "tone": "crit"}, "5.8, 5.9"],
-          ["dense search has no exact match", "5.9 BM25 and fusion"],
-          ["doc recall 100%, chunk recall 95%", "5.4, 5.10"],
-          [{"text": "no mechanism - k chunks ranked alone", "tone": "crit"}, "5.11 agentic"],
-          [{"text": "retrieval returns a sample", "tone": "crit"}, "5.12 query the data"],
-          ["full cost paid every time", "5.13 caching"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The whole pipeline, and the one failure it guarantees",
+    "caption": "Twelve documents, 1,241 chunks at a mean of 338 characters, embedded in 13.2 seconds into a 1.82 MB index. Every piece of it works, and a naive pipeline still has one **guaranteed** failure: retrieval returns five chunks that do not contain the answer. On this corpus that is **5% of questions at k=5 and 25% at k=1** — so the prompt has to say what to do in that case, which is why §02 is about the template rather than the retrieval.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "Chunk",
+      "sub": "1,241 at 338 chars",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Embed",
+      "sub": "13.2 s, 1.82 MB index",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "Retrieve k=5",
+      "sub": "11 ms, 423 tokens",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "Generate with citations",
+      "sub": "one call",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "5% of the time the answer is absent",
+      "sub": "25% at k=1",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "e"
+     ],
+     [
+      "e",
+      "r"
+     ],
+     [
+      "r",
+      "g"
+     ],
+     [
+      "r",
+      "f",
+      "",
+      "dashed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "Four clauses, each preventing a different failure",
+    "caption": "**\"Using only the sources\"** is the clause that makes this RAG rather than a model answering from memory with some documents nearby — without it, retrieved text competes with parametric knowledge and you cannot tell which produced the answer. The second has to match the numbering in the context exactly, or you get citation-shaped text that refers to nothing. And the question goes **last**, because 1.13's caching rule makes everything before it a cacheable prefix.",
+    "items": [
+     {
+      "label": "Scope to the context",
+      "sub": "answering from memory, indistinguishably",
+      "tone": "crit"
+     },
+     {
+      "label": "Define the citation format",
+      "sub": "citation-shaped text that resolves to nothing",
+      "tone": "crit"
+     },
+     {
+      "label": "Say what to do on failure",
+      "sub": "a confident answer to the 5% with no answer present",
+      "tone": "crit"
+     },
+     {
+      "label": "Put the question last",
+      "sub": "breaking the cacheable prefix (1.13)",
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Three things have to line up, and most implementations get two",
+    "caption": "A retriever knows which chunk it used, so it can produce a citation that resolves — but only if the numbering in the context, the format in the rules and the mapping you keep in code all agree. **Number the chunks** so there is something to refer to; **keep the mapping** back to chunk, document and score; and **check that every emitted citation resolves**, which is four lines of regex and catches a model emitting `[7]` when five sources were supplied.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "Number the chunks in the context",
+      "sub": "[1] ... [5]",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Keep the mapping in code",
+      "sub": "chunk, document, score",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Match the format in the rules",
+      "sub": "or the brackets mean nothing",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Check every citation resolves",
+      "sub": "four lines of regex",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "Catches [7] of five sources",
+      "sub": "which happens",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Resolving is not the same as supported",
+      "sub": "5.13 is about the rest",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ],
+     [
+      "f",
+      "c"
+     ],
+     [
+      "c",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Six things this pipeline cannot do, and where each is fixed",
+    "caption": "A working pipeline is the start of the module rather than the end of it, and this is the map of the rest. The fourth row is the one with **no mechanism at all**: k chunks are ranked independently, so a question needing facts from several documents has nothing in this design that composes them. The fifth is the one people try hardest to fix with better retrieval, and 5.12 shows retrieval is the wrong instrument entirely.",
+    "cols": [
+     "Measured here",
+     "Fixed in"
+    ],
+    "rows": [
+     "No shared vocabulary",
+     "Exact identifiers",
+     "Right doc, wrong passage",
+     "Facts across documents",
+     "Needs aggregation",
+     "The same question again"
+    ],
+    "cells": [
+     [
+      {
+       "text": "'Why divide alpha by r?' at rank 15",
+       "tone": "crit"
+      },
+      "5.8, 5.9"
+     ],
+     [
+      "dense search has no exact match",
+      "5.9 BM25 and fusion"
+     ],
+     [
+      "doc recall 100%, chunk recall 95%",
+      "5.4, 5.10"
+     ],
+     [
+      {
+       "text": "no mechanism - k chunks ranked alone",
+       "tone": "crit"
+      },
+      "5.11 agentic"
+     ],
+     [
+      {
+       "text": "retrieval returns a sample",
+       "tone": "crit"
+      },
+      "5.12 query the data"
+     ],
+     [
+      "full cost paid every time",
+      "5.13 caching"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.8": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "A question and its answer are different kinds of text",
-         "caption": "Retrieval compares a question to a passage, and the two are written by different people. **A question is short, interrogative, and uses the vocabulary of someone who does not know the answer**; the passage is declarative, longer, and uses the vocabulary of someone who does. The module has carried one case of this since 5.1: *\"Why divide alpha by r?\"* at rank 15, where the answering passage says *volume knob* and never says *divide*.",
-         "cols": 3,
-         "nodes": [
-          {"id": "q", "label": "The question", "sub": "short, interrogative", "tone": "accent"},
-          {"id": "n", "label": "Written by someone who does not know", "sub": "so: the wrong vocabulary", "tone": "warn"},
-          {"id": "p", "label": "The passage", "sub": "declarative, longer", "tone": "accent"},
-          {"id": "k", "label": "Written by someone who does", "sub": "'volume knob'", "tone": "good"},
-          {"id": "g", "label": "The gap is lexical, not semantic", "sub": "rank 15, at every chunking", "tone": "crit"},
-          {"id": "f", "label": "So fix the query, not the index", "sub": "which is this lesson", "tone": "violet"}],
-         "edges": [["q", "n"], ["p", "k"], ["n", "g"], ["k", "g"], ["g", "f"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "HyDE works, step-back makes it worse",
-         "caption": "Four formulations of the same twenty questions. **HyDE — retrieving with a hypothetical answer instead of the question — takes r@1 from 75% to 90%**, which is the largest query-side gain in the module. Step-back, generalising the question first, takes it **down to 40%**: the general form retrieves passages about the general topic, which is not what was asked. And concatenating the question with its hypothetical answer gives 100% at k=3, the best result here.",
-         "left": "query used for retrieval", "codeW": 210,
-         "vars": ["r@1", "r@3", "r@5"],
-         "steps": [
-          {"code": "the question itself", "state": ["75%", "90%", "95%"], "tone": "accent"},
-          {"code": "HyDE - a hypothetical answer", "state": ["90%", "95%", "95%"], "changed": [0], "tone": "good"},
-          {"code": "step-back - the general form", "state": ["40%", "65%", "75%"], "changed": [0, 1], "tone": "crit", "note": "much worse"},
-          {"code": "question + HyDE together", "state": ["85%", "100%", "100%"], "changed": [1, 2], "tone": "good", "note": "the best here"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Testing my own hypothetical answers for leakage",
-         "caption": "The HyDE result has an obvious objection: I wrote the hypothetical answers by hand and I have read these documents closely, so I may have been measuring my knowledge of the answer rather than the technique. The clearest case is the stuck question, whose hypothetical answer contained **\"volume knob\" — the corpus's own idiosyncratic metaphor**, which no model generating blind would produce. Removing it: **rank 1**, better than the leaky version. The technique survives its own audit.",
-         "left": "query used", "codeW": 220,
-         "vars": ["rank"],
-         "steps": [
-          {"code": "the question as asked", "state": ["15"], "tone": "crit"},
-          {"code": "HyDE WITH the corpus phrase", "state": ["2"], "changed": [0], "tone": "warn", "note": "possibly leaked"},
-          {"code": "HyDE WITHOUT that phrase", "state": ["1"], "changed": [0], "tone": "good", "note": "better without it"},
-          {"code": "HyDE, plainer still", "state": ["3"], "tone": "good", "note": "still far above 15"}]}},
-  {"after": "05",
-   "d": {"kind": "trace",
-         "title": "What each formulation costs per query",
-         "caption": "The arithmetic is simple and decides whether any of this is worth it. HyDE and step-back each add **one LLM call before the search** — which on a RAG pipeline roughly doubles latency, because the search itself was 11 ms. Multi-query adds one call and **three searches**. So HyDE's 15-point r@1 gain costs a model call on every query, and the alternative in 5.9 costs 0.18 seconds of index build, once.",
-         "left": "approach", "codeW": 210,
-         "vars": ["LLM calls", "searches"],
-         "steps": [
-          {"code": "plain retrieval", "state": ["0", "1"], "tone": "good"},
-          {"code": "HyDE", "state": ["1", "1"], "changed": [0], "tone": "warn", "note": "doubles latency"},
-          {"code": "step-back", "state": ["1", "1"], "tone": "crit", "note": "and it scored worse"},
-          {"code": "multi-query, 3 variants", "state": ["1", "3"], "changed": [1], "tone": "warn"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A question and its answer are different kinds of text",
+    "caption": "Retrieval compares a question to a passage, and the two are written by different people. **A question is short, interrogative, and uses the vocabulary of someone who does not know the answer**; the passage is declarative, longer, and uses the vocabulary of someone who does. The module has carried one case of this since 5.1: *\"Why divide alpha by r?\"* at rank 15, where the answering passage says *volume knob* and never says *divide*.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "The question",
+      "sub": "short, interrogative",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Written by someone who does not know",
+      "sub": "so: the wrong vocabulary",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "The passage",
+      "sub": "declarative, longer",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "Written by someone who does",
+      "sub": "'volume knob'",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "The gap is lexical, not semantic",
+      "sub": "rank 15, at every chunking",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "So fix the query, not the index",
+      "sub": "which is this lesson",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "n"
+     ],
+     [
+      "p",
+      "k"
+     ],
+     [
+      "n",
+      "g"
+     ],
+     [
+      "k",
+      "g"
+     ],
+     [
+      "g",
+      "f"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "HyDE works, step-back makes it worse",
+    "caption": "Four formulations of the same twenty questions. **HyDE — retrieving with a hypothetical answer instead of the question — takes r@1 from 75% to 90%**, which is the largest query-side gain in the module. Step-back, generalising the question first, takes it **down to 40%**: the general form retrieves passages about the general topic, which is not what was asked. And concatenating the question with its hypothetical answer gives 100% at k=3, the best result here.",
+    "left": "query used for retrieval",
+    "codeW": 210,
+    "vars": [
+     "r@1",
+     "r@3",
+     "r@5"
+    ],
+    "steps": [
+     {
+      "code": "the question itself",
+      "state": [
+       "75%",
+       "90%",
+       "95%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "HyDE - a hypothetical answer",
+      "state": [
+       "90%",
+       "95%",
+       "95%"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "step-back - the general form",
+      "state": [
+       "40%",
+       "65%",
+       "75%"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "much worse"
+     },
+     {
+      "code": "question + HyDE together",
+      "state": [
+       "85%",
+       "100%",
+       "100%"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "good",
+      "note": "the best here"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Testing my own hypothetical answers for leakage",
+    "caption": "The HyDE result has an obvious objection: I wrote the hypothetical answers by hand and I have read these documents closely, so I may have been measuring my knowledge of the answer rather than the technique. The clearest case is the stuck question, whose hypothetical answer contained **\"volume knob\" — the corpus's own idiosyncratic metaphor**, which no model generating blind would produce. Removing it: **rank 1**, better than the leaky version. The technique survives its own audit.",
+    "left": "query used",
+    "codeW": 220,
+    "vars": [
+     "rank"
+    ],
+    "steps": [
+     {
+      "code": "the question as asked",
+      "state": [
+       "15"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "HyDE WITH the corpus phrase",
+      "state": [
+       "2"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "possibly leaked"
+     },
+     {
+      "code": "HyDE WITHOUT that phrase",
+      "state": [
+       "1"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "better without it"
+     },
+     {
+      "code": "HyDE, plainer still",
+      "state": [
+       "3"
+      ],
+      "tone": "good",
+      "note": "still far above 15"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "What each formulation costs per query",
+    "caption": "The arithmetic is simple and decides whether any of this is worth it. HyDE and step-back each add **one LLM call before the search** — which on a RAG pipeline roughly doubles latency, because the search itself was 11 ms. Multi-query adds one call and **three searches**. So HyDE's 15-point r@1 gain costs a model call on every query, and the alternative in 5.9 costs 0.18 seconds of index build, once.",
+    "left": "approach",
+    "codeW": 210,
+    "vars": [
+     "LLM calls",
+     "searches"
+    ],
+    "steps": [
+     {
+      "code": "plain retrieval",
+      "state": [
+       "0",
+       "1"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "HyDE",
+      "state": [
+       "1",
+       "1"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "doubles latency"
+     },
+     {
+      "code": "step-back",
+      "state": [
+       "1",
+       "1"
+      ],
+      "tone": "crit",
+      "note": "and it scored worse"
+     },
+     {
+      "code": "multi-query, 3 variants",
+      "state": [
+       "1",
+       "3"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     }
+    ]
+   }
+  }
  ],
-
  "5.9": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "A formula with no model beats the embeddings at k=1",
-         "caption": "BM25 weights each query term by how rare it is across the corpus and dampens repetition and length. There is no model and no training — and it indexes 1,187 chunks in **0.18 seconds against 26.9 to embed them, 150× faster**. Its strength is the dense retriever's blind spot: an embedding is a lossy summary, so a rare identifier contributes little to the vector and may be swamped, while **BM25 treats a rare term as the most informative thing in the query**. Here it wins at k=1 and at k=10.",
-         "left": "retriever", "codeW": 180,
-         "vars": ["build", "r@1", "r@5", "r@10"],
-         "steps": [
-          {"code": "dense (MiniLM)", "state": ["26.9 s", "75%", "95%", "95%"], "tone": "accent"},
-          {"code": "sparse (BM25)", "state": ["0.18 s", "80%", "90%", "100%"], "changed": [0, 1, 3], "tone": "good", "note": "150x cheaper to build"}]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Where they disagree, which is the argument for having both",
-         "caption": "Thirteen of the twenty questions are tied at rank 1, so the aggregate hides the interesting part: on the seven that differ, **dense wins 3 and BM25 wins 4**, and the cases are qualitatively different. Dense wins where the query paraphrases — *\"What does top_p do?\"*. BM25 wins where a rare term carries the question, including the stuck one: **rank 10 against dense's 15**. Neither is better; they fail on different things, which is exactly the condition under which fusion helps.",
-         "left": "question", "codeW": 220,
-         "vars": ["dense", "BM25", "better"],
-         "steps": [
-          {"code": "What does top_p do?", "state": ["1", "2", "dense"], "tone": "accent"},
-          {"code": "What is the formula for LoRA?", "state": ["1", "8", "dense"], "changed": [1], "tone": "accent"},
-          {"code": "What is continuous batching?", "state": ["2", "1", "BM25"], "tone": "good"},
-          {"code": "What is self-consistency?", "state": ["4", "1", "BM25"], "changed": [0], "tone": "good"},
-          {"code": "Why divide alpha by r?", "state": ["15", "10", "BM25"], "tone": "warn", "note": "still not found"},
-          {"code": "13 further questions", "state": ["1", "1", "tied"], "tone": "violet"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "RRF, which works because it throws the scores away",
-         "caption": "Averaging the scores does not work: a cosine similarity of 0.58 and a BM25 score of 14.2 are not on the same scale, not bounded the same way, and move differently across queries — so any weighting is a guess that needs recalibrating whenever either side changes. RRF uses **only the ranks**, summing 1/(k + rank). The result beats both inputs at every cutoff: **100% at r@5 against 95% and 90% alone**, and the k parameter barely matters, which is what makes it safe to deploy without tuning.",
-         "left": "retriever", "codeW": 160,
-         "vars": ["r@1", "r@3", "r@5", "r@10"],
-         "steps": [
-          {"code": "dense alone", "state": ["75%", "90%", "95%", "95%"], "tone": "accent"},
-          {"code": "BM25 alone", "state": ["80%", "85%", "90%", "100%"], "tone": "accent"},
-          {"code": "RRF k=10", "state": ["75%", "95%", "95%", "100%"], "tone": "good"},
-          {"code": "RRF k=60", "state": ["80%", "95%", "100%", "100%"], "changed": [2], "tone": "good", "note": "beats both inputs"},
-          {"code": "RRF k=200", "state": ["80%", "95%", "100%", "100%"], "tone": "good", "note": "k barely matters"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "A formula with no model beats the embeddings at k=1",
+    "caption": "BM25 weights each query term by how rare it is across the corpus and dampens repetition and length. There is no model and no training — and it indexes 1,187 chunks in **0.18 seconds against 26.9 to embed them, 150× faster**. Its strength is the dense retriever's blind spot: an embedding is a lossy summary, so a rare identifier contributes little to the vector and may be swamped, while **BM25 treats a rare term as the most informative thing in the query**. Here it wins at k=1 and at k=10.",
+    "left": "retriever",
+    "codeW": 180,
+    "vars": [
+     "build",
+     "r@1",
+     "r@5",
+     "r@10"
+    ],
+    "steps": [
+     {
+      "code": "dense (MiniLM)",
+      "state": [
+       "26.9 s",
+       "75%",
+       "95%",
+       "95%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "sparse (BM25)",
+      "state": [
+       "0.18 s",
+       "80%",
+       "90%",
+       "100%"
+      ],
+      "changed": [
+       0,
+       1,
+       3
+      ],
+      "tone": "good",
+      "note": "150x cheaper to build"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Where they disagree, which is the argument for having both",
+    "caption": "Thirteen of the twenty questions are tied at rank 1, so the aggregate hides the interesting part: on the seven that differ, **dense wins 3 and BM25 wins 4**, and the cases are qualitatively different. Dense wins where the query paraphrases — *\"What does top_p do?\"*. BM25 wins where a rare term carries the question, including the stuck one: **rank 10 against dense's 15**. Neither is better; they fail on different things, which is exactly the condition under which fusion helps.",
+    "left": "question",
+    "codeW": 220,
+    "vars": [
+     "dense",
+     "BM25",
+     "better"
+    ],
+    "steps": [
+     {
+      "code": "What does top_p do?",
+      "state": [
+       "1",
+       "2",
+       "dense"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "What is the formula for LoRA?",
+      "state": [
+       "1",
+       "8",
+       "dense"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "What is continuous batching?",
+      "state": [
+       "2",
+       "1",
+       "BM25"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "What is self-consistency?",
+      "state": [
+       "4",
+       "1",
+       "BM25"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Why divide alpha by r?",
+      "state": [
+       "15",
+       "10",
+       "BM25"
+      ],
+      "tone": "warn",
+      "note": "still not found"
+     },
+     {
+      "code": "13 further questions",
+      "state": [
+       "1",
+       "1",
+       "tied"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "RRF, which works because it throws the scores away",
+    "caption": "Averaging the scores does not work: a cosine similarity of 0.58 and a BM25 score of 14.2 are not on the same scale, not bounded the same way, and move differently across queries — so any weighting is a guess that needs recalibrating whenever either side changes. RRF uses **only the ranks**, summing 1/(k + rank). The result beats both inputs at every cutoff: **100% at r@5 against 95% and 90% alone**, and the k parameter barely matters, which is what makes it safe to deploy without tuning.",
+    "left": "retriever",
+    "codeW": 160,
+    "vars": [
+     "r@1",
+     "r@3",
+     "r@5",
+     "r@10"
+    ],
+    "steps": [
+     {
+      "code": "dense alone",
+      "state": [
+       "75%",
+       "90%",
+       "95%",
+       "95%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "BM25 alone",
+      "state": [
+       "80%",
+       "85%",
+       "90%",
+       "100%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "RRF k=10",
+      "state": [
+       "75%",
+       "95%",
+       "95%",
+       "100%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "RRF k=60",
+      "state": [
+       "80%",
+       "95%",
+       "100%",
+       "100%"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "beats both inputs"
+     },
+     {
+      "code": "RRF k=200",
+      "state": [
+       "80%",
+       "95%",
+       "100%",
+       "100%"
+      ],
+      "tone": "good",
+      "note": "k barely matters"
+     }
+    ]
+   }
+  }
  ],
-
  "5.10": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Six patterns, and the one that is free",
-         "caption": "The first row is the one to take first and the easiest to miss: **smaller chunks with no other change gave 90% r@1 at 103 context tokens against 75% at 230** — better retrieval for *fewer* tokens. Everything below it costs something. Small-to-big and sentence window change what is **returned**; Self-RAG and corrective RAG change **control flow**, adding a grading step and a branch, and that is a different kind of commitment — one or more extra model calls on every query.",
-         "cols": ["Changes", "Extra cost", "Worth it when"],
-         "rows": ["Small chunks, flat", "Small-to-big", "Sentence window", "Self-RAG", "Corrective RAG", "Adaptive RAG"],
-         "cells": [
-          [{"text": "granularity", "tone": "good"}, {"text": "fewer tokens", "tone": "good"}, "almost always"],
-          ["what is returned", {"text": "12x context", "tone": "crit"}, "chunks cannot stand alone"],
-          ["what is returned", {"text": "about 3x", "tone": "warn"}, "same reason, cheaper"],
-          [{"text": "control flow", "tone": "violet"}, "1+ calls", "failure rate justifies grading"],
-          [{"text": "control flow", "tone": "violet"}, "1+ calls", "a second source exists"],
-          ["whether to retrieve", "1 call", {"text": "much traffic needs none", "tone": "good"}]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Six patterns, and the one that is free",
+    "caption": "The first row is the one to take first and the easiest to miss: **smaller chunks with no other change gave 90% r@1 at 103 context tokens against 75% at 230** — better retrieval for *fewer* tokens. Everything below it costs something. Small-to-big and sentence window change what is **returned**; Self-RAG and corrective RAG change **control flow**, adding a grading step and a branch, and that is a different kind of commitment — one or more extra model calls on every query.",
+    "cols": [
+     "Changes",
+     "Extra cost",
+     "Worth it when"
+    ],
+    "rows": [
+     "Small chunks, flat",
+     "Small-to-big",
+     "Sentence window",
+     "Self-RAG",
+     "Corrective RAG",
+     "Adaptive RAG"
+    ],
+    "cells": [
+     [
+      {
+       "text": "granularity",
+       "tone": "good"
+      },
+      {
+       "text": "fewer tokens",
+       "tone": "good"
+      },
+      "almost always"
+     ],
+     [
+      "what is returned",
+      {
+       "text": "12x context",
+       "tone": "crit"
+      },
+      "chunks cannot stand alone"
+     ],
+     [
+      "what is returned",
+      {
+       "text": "about 3x",
+       "tone": "warn"
+      },
+      "same reason, cheaper"
+     ],
+     [
+      {
+       "text": "control flow",
+       "tone": "violet"
+      },
+      "1+ calls",
+      "failure rate justifies grading"
+     ],
+     [
+      {
+       "text": "control flow",
+       "tone": "violet"
+      },
+      "1+ calls",
+      "a second source exists"
+     ],
+     [
+      "whether to retrieve",
+      "1 call",
+      {
+       "text": "much traffic needs none",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
  ],
-
  "5.11": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "Three build-time decisions become runtime ones",
-         "caption": "5.7's pipeline decides everything in advance: always retrieve, always from the one index, always k=5, always once. An agentic system hands each of those to the model. **Only the first reduces cost** — a question answerable from general knowledge does not need the index, and skipping it saves the tokens and the latency, which is why adaptive RAG is the one to reach for soonest. The third is the one that genuinely requires an agent, because the second query cannot be written until the first returns.",
-         "cols": 3,
-         "nodes": [
-          {"id": "w", "label": "Whether to retrieve", "sub": "skip it when unnecessary", "tone": "good"},
-          {"id": "c", "label": "The only one that cuts cost", "sub": "reach for it first", "tone": "good"},
-          {"id": "r", "label": "Where to retrieve from", "sub": "index, SQL, or the web", "tone": "accent"},
-          {"id": "f", "label": "And the worst failure mode", "sub": "see section 03", "tone": "warn"},
-          {"id": "a", "label": "Whether to retrieve again", "sub": "multi-hop", "tone": "violet"},
-          {"id": "n", "label": "The case that needs an agent", "sub": "query 2 depends on query 1", "tone": "violet"}],
-         "edges": [["w", "c"], ["r", "f"], ["a", "n"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Routing, by the shape of the question",
-         "caption": "Each row has exactly one right source and the reason is structural rather than a quality judgement. **SQL for figures** because 5.12 measures retrieval returning a *sample* of rows that cannot be aggregated; a changelog for *what changed last week* because the index is only as fresh as its last build. The last row is the multi-hop case: the second query cannot be written until the first returns, which no amount of better routing removes.",
-         "cols": ["Source", "Why not the others"],
-         "rows": ["How does our retry work?", "What was Q4 revenue?", "What changed in the API?", "Which model, which quant?"],
-         "cells": [
-          [{"text": "the vector index", "tone": "good"}, "SQL has no prose; the web does not know you"],
-          [{"text": "SQL", "tone": "good"}, {"text": "retrieval returns a sample (5.12)", "tone": "crit"}],
-          [{"text": "the changelog", "tone": "good"}, "the index is as fresh as its last build"],
-          [{"text": "both, in sequence", "tone": "violet"}, {"text": "query 2 needs query 1's answer", "tone": "warn"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Three build-time decisions become runtime ones",
+    "caption": "5.7's pipeline decides everything in advance: always retrieve, always from the one index, always k=5, always once. An agentic system hands each of those to the model. **Only the first reduces cost** — a question answerable from general knowledge does not need the index, and skipping it saves the tokens and the latency, which is why adaptive RAG is the one to reach for soonest. The third is the one that genuinely requires an agent, because the second query cannot be written until the first returns.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "w",
+      "label": "Whether to retrieve",
+      "sub": "skip it when unnecessary",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "The only one that cuts cost",
+      "sub": "reach for it first",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Where to retrieve from",
+      "sub": "index, SQL, or the web",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "And the worst failure mode",
+      "sub": "see section 03",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "Whether to retrieve again",
+      "sub": "multi-hop",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "The case that needs an agent",
+      "sub": "query 2 depends on query 1",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "w",
+      "c"
+     ],
+     [
+      "r",
+      "f"
+     ],
+     [
+      "a",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Routing, by the shape of the question",
+    "caption": "Each row has exactly one right source and the reason is structural rather than a quality judgement. **SQL for figures** because 5.12 measures retrieval returning a *sample* of rows that cannot be aggregated; a changelog for *what changed last week* because the index is only as fresh as its last build. The last row is the multi-hop case: the second query cannot be written until the first returns, which no amount of better routing removes.",
+    "cols": [
+     "Source",
+     "Why not the others"
+    ],
+    "rows": [
+     "How does our retry work?",
+     "What was Q4 revenue?",
+     "What changed in the API?",
+     "Which model, which quant?"
+    ],
+    "cells": [
+     [
+      {
+       "text": "the vector index",
+       "tone": "good"
+      },
+      "SQL has no prose; the web does not know you"
+     ],
+     [
+      {
+       "text": "SQL",
+       "tone": "good"
+      },
+      {
+       "text": "retrieval returns a sample (5.12)",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "the changelog",
+       "tone": "good"
+      },
+      "the index is as fresh as its last build"
+     ],
+     [
+      {
+       "text": "both, in sequence",
+       "tone": "violet"
+      },
+      {
+       "text": "query 2 needs query 1's answer",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
  ],
-
  "5.12": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Existential questions a sample answers; universal ones it cannot",
-         "caption": "The dividing line is logical rather than technical. **One matching row proves an existential claim** — *show me an EMEA order* — and no sample proves a universal one. *How many orders are from EMEA?* was **687 against a retrieved sample of 5**, and no amount of better retrieval closes that, because the instrument returns a sample by construction. The last row is the reminder that this is not an argument against retrieval: prose is exactly what it is for.",
-         "cols": ["Sample enough?", "Why"],
-         "rows": ["Show me an EMEA order", "Acme's most recent order", "How many are from EMEA?", "Highest average region?", "The largest single order", "Describe our returns policy"],
-         "cells": [
-          [{"text": "yes", "tone": "good"}, "existential - one row proves it"],
-          [{"text": "sometimes", "tone": "warn"}, "only if ranking surfaced the right one"],
-          [{"text": "no", "tone": "crit"}, "687 rows against a sample of 5"],
-          [{"text": "no", "tone": "crit"}, "every row in every group, then compared"],
-          [{"text": "no", "tone": "crit"}, "the largest row need not look relevant"],
-          [{"text": "yes", "tone": "good"}, "not structured data - prose, so retrieval"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "The retrieval problem is upstream of the query",
-         "caption": "There **is** a real retrieval problem in text-to-SQL and it is not over the rows. A production schema may have two hundred tables and thousands of columns, which does not fit in a prompt — and even where it fits, it buries the relevant few in noise. So the vector search runs over **column and table descriptions**, and the measurement shows it working: every question matched the column that answers it, with *How many orders are from EMEA?* landing on `orders.region`.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "200 tables, thousands of columns", "sub": "it does not fit in a prompt", "tone": "crit"},
-          {"id": "n", "label": "And where it fits, it is noise", "sub": "the relevant few are buried", "tone": "warn"},
-          {"id": "e", "label": "Embed the schema descriptions", "sub": "columns and tables, not rows", "tone": "violet"},
-          {"id": "r", "label": "Retrieve ten columns, not two thousand", "sub": "'EMEA' -> orders.region", "tone": "good"},
-          {"id": "g", "label": "Then generate SQL against those", "sub": "a small, relevant schema", "tone": "good"}],
-         "edges": [["s", "n"], ["n", "e"], ["e", "r"], ["r", "g"]]}},
-  {"after": "04",
-   "d": {"kind": "steps",
-         "title": "The architecture that works, and why its failures are loud",
-         "caption": "The model never sees two thousand rows and never does arithmetic. What it produces is **a query**, and the database does the counting, summing and grouping — exactly, over every row, which is the thing retrieval cannot do. The property that makes this safe is the failure mode: **a wrong query usually fails loudly** with a syntax error, a missing column or an empty result, all of which are catchable and retryable. A wrong retrieval returns plausible rows.",
-         "items": [
-          {"label": "Retrieve the relevant schema", "desc": "vector search over column and table descriptions", "code": "1", "tone": "accent"},
-          {"label": "Generate SQL against that schema", "desc": "one call; a SQL grammar makes invalid output impossible (3.13)", "code": "2", "tone": "accent"},
-          {"label": "Execute it", "desc": "the database counts, sums and groups over every row", "code": "3", "tone": "good"},
-          {"label": "Return the result, and the query alongside it", "desc": "so the answer is checkable", "code": "4", "tone": "good"},
-          {"label": "Wrong queries fail loudly", "desc": "syntax error, missing column, empty result - all retryable", "code": "5", "tone": "violet"}]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Existential questions a sample answers; universal ones it cannot",
+    "caption": "The dividing line is logical rather than technical. **One matching row proves an existential claim** — *show me an EMEA order* — and no sample proves a universal one. *How many orders are from EMEA?* was **687 against a retrieved sample of 5**, and no amount of better retrieval closes that, because the instrument returns a sample by construction. The last row is the reminder that this is not an argument against retrieval: prose is exactly what it is for.",
+    "cols": [
+     "Sample enough?",
+     "Why"
+    ],
+    "rows": [
+     "Show me an EMEA order",
+     "Acme's most recent order",
+     "How many are from EMEA?",
+     "Highest average region?",
+     "The largest single order",
+     "Describe our returns policy"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "existential - one row proves it"
+     ],
+     [
+      {
+       "text": "sometimes",
+       "tone": "warn"
+      },
+      "only if ranking surfaced the right one"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "687 rows against a sample of 5"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "every row in every group, then compared"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "the largest row need not look relevant"
+     ],
+     [
+      {
+       "text": "yes",
+       "tone": "good"
+      },
+      "not structured data - prose, so retrieval"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The retrieval problem is upstream of the query",
+    "caption": "There **is** a real retrieval problem in text-to-SQL and it is not over the rows. A production schema may have two hundred tables and thousands of columns, which does not fit in a prompt — and even where it fits, it buries the relevant few in noise. So the vector search runs over **column and table descriptions**, and the measurement shows it working: every question matched the column that answers it, with *How many orders are from EMEA?* landing on `orders.region`.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "200 tables, thousands of columns",
+      "sub": "it does not fit in a prompt",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "And where it fits, it is noise",
+      "sub": "the relevant few are buried",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "Embed the schema descriptions",
+      "sub": "columns and tables, not rows",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Retrieve ten columns, not two thousand",
+      "sub": "'EMEA' -> orders.region",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Then generate SQL against those",
+      "sub": "a small, relevant schema",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "n"
+     ],
+     [
+      "n",
+      "e"
+     ],
+     [
+      "e",
+      "r"
+     ],
+     [
+      "r",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "steps",
+    "title": "The architecture that works, and why its failures are loud",
+    "caption": "The model never sees two thousand rows and never does arithmetic. What it produces is **a query**, and the database does the counting, summing and grouping — exactly, over every row, which is the thing retrieval cannot do. The property that makes this safe is the failure mode: **a wrong query usually fails loudly** with a syntax error, a missing column or an empty result, all of which are catchable and retryable. A wrong retrieval returns plausible rows.",
+    "items": [
+     {
+      "label": "Retrieve the relevant schema",
+      "desc": "vector search over column and table descriptions",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Generate SQL against that schema",
+      "desc": "one call; a SQL grammar makes invalid output impossible (3.13)",
+      "code": "2",
+      "tone": "accent"
+     },
+     {
+      "label": "Execute it",
+      "desc": "the database counts, sums and groups over every row",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Return the result, and the query alongside it",
+      "desc": "so the answer is checkable",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "Wrong queries fail loudly",
+      "desc": "syntax error, missing column, empty result - all retryable",
+      "code": "5",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ],
-
  "5.13": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Three properties of a citation, in increasing difficulty",
-         "caption": "5.7 built the first one. **It resolves**: `[2]` maps to a chunk that was actually supplied — four lines of regex, and it catches a model emitting `[7]` when five sources were given. **It is supported**: the claim in the sentence is actually in the cited chunk, and *nothing in the generation mechanism enforces this*, because the model is conditioned on all five passages at once. **It is checkable**: a reader can verify it in seconds, which is a product decision and the cheapest of the three to get right.",
-         "cols": ["What it means", "Enforced by"],
-         "rows": ["It resolves", "It is supported", "It is checkable"],
-         "cells": [
-          ["[2] maps to a supplied chunk", {"text": "four lines of regex", "tone": "good"}],
-          ["the claim is in that chunk", {"text": "nothing in the mechanism", "tone": "crit"}],
-          ["a reader verifies in seconds", {"text": "a product decision", "tone": "accent"}]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Four things to log, because the output cannot tell you which failed",
-         "caption": "A RAG failure arrives as *\"the answer was wrong\"*, and 5.1 established that the two causes — retrieval missed it, or the model misread it — are **indistinguishable from the output**. Separating them afterwards requires the middle of the pipeline. The first row is the one people forget: if HyDE or a rewrite ran, **the text that was embedded is not the text the user typed**, and that is the first thing to check.",
-         "cols": ["Why"],
-         "rows": ["The query, and any rewrite", "Chunk ids with scores", "Which stages ran", "The assembled context"],
-         "cells": [
-          [{"text": "after HyDE, what was embedded is not what was typed", "tone": "crit"}],
-          [{"text": "ids and scores, not text - was the right chunk at rank 6, or absent?", "tone": "good"}],
-          [{"text": "a bad answer from a cache hit is a different investigation", "tone": "accent"}],
-          ["so you can see exactly what the model was asked to read"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three properties of a citation, in increasing difficulty",
+    "caption": "5.7 built the first one. **It resolves**: `[2]` maps to a chunk that was actually supplied — four lines of regex, and it catches a model emitting `[7]` when five sources were given. **It is supported**: the claim in the sentence is actually in the cited chunk, and *nothing in the generation mechanism enforces this*, because the model is conditioned on all five passages at once. **It is checkable**: a reader can verify it in seconds, which is a product decision and the cheapest of the three to get right.",
+    "cols": [
+     "What it means",
+     "Enforced by"
+    ],
+    "rows": [
+     "It resolves",
+     "It is supported",
+     "It is checkable"
+    ],
+    "cells": [
+     [
+      "[2] maps to a supplied chunk",
+      {
+       "text": "four lines of regex",
+       "tone": "good"
+      }
+     ],
+     [
+      "the claim is in that chunk",
+      {
+       "text": "nothing in the mechanism",
+       "tone": "crit"
+      }
+     ],
+     [
+      "a reader verifies in seconds",
+      {
+       "text": "a product decision",
+       "tone": "accent"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Four things to log, because the output cannot tell you which failed",
+    "caption": "A RAG failure arrives as *\"the answer was wrong\"*, and 5.1 established that the two causes — retrieval missed it, or the model misread it — are **indistinguishable from the output**. Separating them afterwards requires the middle of the pipeline. The first row is the one people forget: if HyDE or a rewrite ran, **the text that was embedded is not the text the user typed**, and that is the first thing to check.",
+    "items": [
+     {
+      "label": "The query, and any rewrite",
+      "sub": "after HyDE, what was embedded is not what was typed",
+      "tone": "crit"
+     },
+     {
+      "label": "Chunk ids with scores",
+      "sub": "ids and scores, not text - was the right chunk at rank 6, or absent?",
+      "tone": "good"
+     },
+     {
+      "label": "Which stages ran",
+      "sub": "a bad answer from a cache hit is a different investigation",
+      "tone": "accent"
+     },
+     {
+      "label": "The assembled context",
+      "sub": "so you can see exactly what the model was asked to read"
+     }
+    ]
+   }
+  }
  ]
 }

@@ -119,6 +119,7 @@ KV = enc.encode(keys, normalize_embeddings=True)
 
 
 
+
     { t: "p", text: "5.7 built the mechanism: number the sources in the context, keep a mapping back to chunk, document and score, and check that every emitted citation resolves. That gives a citation that *points at something*. Two harder properties remain." },
 
     { t: "dl", items: [
@@ -137,7 +138,8 @@ KV = enc.encode(keys, normalize_embeddings=True)
     { t: "h2", n: "03", id: "observability", text: "What to log",
       sub: "Enough to diagnose a bad answer a week later" },
 
-    {"kind": "matrix", "title": "Four things to log, because the output cannot tell you which failed", "caption": "A RAG failure arrives as *\"the answer was wrong\"*, and 5.1 established that the two causes — retrieval missed it, or the model misread it — are **indistinguishable from the output**. Separating them afterwards requires the middle of the pipeline. The first row is the one people forget: if HyDE or a rewrite ran, **the text that was embedded is not the text the user typed**, and that is the first thing to check.", "cols": ["Why"], "rows": ["The query, and any rewrite", "Chunk ids with scores", "Which stages ran", "The assembled context"], "cells": [[{"text": "after HyDE, what was embedded is not what was typed", "tone": "crit"}], [{"text": "ids and scores, not text - was the right chunk at rank 6, or absent?", "tone": "good"}], [{"text": "a bad answer from a cache hit is a different investigation", "tone": "accent"}], ["so you can see exactly what the model was asked to read"]], "t": "diagram", "id": "dg-5_13-03-1"},
+    {"kind": "layers", "title": "Four things to log, because the output cannot tell you which failed", "caption": "A RAG failure arrives as *\"the answer was wrong\"*, and 5.1 established that the two causes — retrieval missed it, or the model misread it — are **indistinguishable from the output**. Separating them afterwards requires the middle of the pipeline. The first row is the one people forget: if HyDE or a rewrite ran, **the text that was embedded is not the text the user typed**, and that is the first thing to check.", "items": [{"label": "The query, and any rewrite", "sub": "after HyDE, what was embedded is not what was typed", "tone": "crit"}, {"label": "Chunk ids with scores", "sub": "ids and scores, not text - was the right chunk at rank 6, or absent?", "tone": "good"}, {"label": "Which stages ran", "sub": "a bad answer from a cache hit is a different investigation", "tone": "accent"}, {"label": "The assembled context", "sub": "so you can see exactly what the model was asked to read"}], "t": "diagram", "id": "dg-5_13-03-1"},
+
 
 
 

@@ -24,6 +24,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Failure mode 2 \u2014 the floating alias", code: `Monday:    "...-latest" -> snapshot-2026-03-11    JSON parse failures: 0.4%
 Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <- no deploy of yours`,
       hl: [2],
@@ -39,7 +40,8 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
     { t: "h2", n: "02", id: "prompts", text: "Prompts do not transfer",
       sub: "Six things that break" },
 
-    {"kind": "matrix", "title": "Six ways a prompt fails to transfer", "caption": "The second row is the one that costs money rather than quality: **a reasoning model does chain-of-thought natively, so your \"think step by step\" instruction makes it *over*-think and inflates cost** — the prompt that helped on the old model is actively harmful on the new one. And the last two rows are the silent pair: verbosity that adds 40% length with no quality gain, and a changed system-against-user weighting that destabilises a persona nobody re-tested.", "cols": ["Typical symptom"], "rows": ["Few-shot count and order", "\"Think step by step\"", "Output-format instructions", "Refusal boundaries", "Verbosity and tone", "System-prompt adherence"], "cells": [["accuracy drops on the same examples"], [{"text": "a reasoning model over-thinks, and cost rises", "tone": "crit"}], [{"text": "JSON in code fences, or an unexpected preamble", "tone": "crit"}], [{"text": "a safer model refuses legitimate domain requests", "tone": "warn"}], [{"text": "40% longer, no quality gain", "tone": "warn"}], ["persona stability changes with the weighting"]], "t": "diagram", "id": "dg-12_4-02-1"},
+    {"kind": "layers", "title": "Six ways a prompt fails to transfer", "caption": "The second row is the one that costs money rather than quality: **a reasoning model does chain-of-thought natively, so your \"think step by step\" instruction makes it *over*-think and inflates cost** — the prompt that helped on the old model is actively harmful on the new one. And the last two rows are the silent pair: verbosity that adds 40% length with no quality gain, and a changed system-against-user weighting that destabilises a persona nobody re-tested.", "items": [{"label": "Few-shot count and order", "sub": "accuracy drops on the same examples"}, {"label": "\"Think step by step\"", "sub": "a reasoning model over-thinks, and cost rises", "tone": "crit"}, {"label": "Output-format instructions", "sub": "JSON in code fences, or an unexpected preamble", "tone": "crit"}, {"label": "Refusal boundaries", "sub": "a safer model refuses legitimate domain requests", "tone": "warn"}, {"label": "Verbosity and tone", "sub": "40% longer, no quality gain", "tone": "warn"}, {"label": "System-prompt adherence", "sub": "persona stability changes with the weighting"}], "t": "diagram", "id": "dg-12_4-02-1"},
+
 
 
 
@@ -74,6 +76,7 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
       sub: "The worst class, because it is silent" },
 
     {"kind": "trace", "title": "The real tokenizer spread is 4.9%, not 9.2%", "caption": "The usual illustration is 4,010 against 4,380 tokens — a 9.2% gap. Measured across five tokenizers on the same text the real spread is **4.9%**, narrower than advertised. Which sharpens rather than dismisses the risk: **the danger is less that models differ from each other and more that a context guard calibrated on an optimistic tokens-per-word figure is wrong in the unsafe direction.** t5-small at 1.527 tokens per word and roberta at the top of the range are both plausible assumptions, and only one of them overflows.", "left": "tokenizer", "codeW": 190, "vars": ["tokens", "tokens/word"], "steps": [{"code": "t5-small", "state": ["4,636", "1.527"], "tone": "good"}, {"code": "bert-base-uncased", "state": ["4,694", "1.546"], "tone": "accent"}, {"code": "gpt2", "state": ["4,861", "1.601"], "changed": [0], "tone": "warn"}, {"code": "spread across five", "state": ["4.9%", "not 9.2%"], "tone": "violet", "note": "narrower than claimed"}], "t": "diagram", "id": "dg-12_4-03-2"},
+
 
 
 

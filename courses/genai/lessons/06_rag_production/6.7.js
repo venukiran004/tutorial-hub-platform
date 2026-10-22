@@ -35,6 +35,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "The framing is right: a RAG query is a pipeline and each stage scales differently, so you scale the bottleneck. 6.2 already measured where the bottleneck is, which turns the list from advice into a priority order." },
 
     { t: "table",
@@ -66,6 +67,7 @@ EC.receiveLesson({
       sub: "Context is the dominant cost and the one you control exactly" },
 
     {"kind": "trace", "title": "A context budget is enforceable by arithmetic, unlike most cost levers", "caption": "Generation dominates cost and generation cost scales with the retrieved context, so **the context budget is the main lever** — and unlike routing or model choice it is enforced by counting rather than estimated. At a median chunk of 99 tokens, a 3,000-token budget holds about 30 chunks and fills to **99%**; an 8,000-token budget runs out of *chunks* before it runs out of budget, filling only 51%. Which is the detail worth knowing: past some point the cap stops binding and the corpus does.", "left": "budget", "codeW": 130, "vars": ["chunks in", "tokens used", "% of budget"], "steps": [{"code": "500", "state": ["13", "484", "97%"], "tone": "good"}, {"code": "1,000", "state": ["17", "839", "84%"], "tone": "good"}, {"code": "2,000", "state": ["31", "1,928", "96%"], "tone": "accent"}, {"code": "3,000", "state": ["47", "2,962", "99%"], "changed": [2], "tone": "warn", "note": "the cap binds"}, {"code": "8,000", "state": ["64", "4,114", "51%"], "changed": [0, 2], "tone": "violet", "note": "now the corpus binds"}], "t": "diagram", "id": "dg-6_7-02-1"},
+
 
 
 
@@ -135,7 +137,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "coordination", text: "Coordinating retrievers",
       sub: "Five problems, and fusion only solves the first" },
 
-    {"kind": "matrix", "title": "Fusion solved one of these five", "caption": "RRF genuinely settles incomparable scores — it uses rank position only, and deduplication falls out for free. The other four are untouched by it. **Source conflicts are the one people assume fusion handles**: two sources disagree on a fact, fusion ranks both highly, and says nothing whatever about which is true. That needs an explicit authority order, which is a product decision rather than a retrieval one.", "cols": ["Status"], "rows": ["Incomparable scores", "Source conflicts", "Redundant retrieval", "Context contention", "Routing"], "cells": [[{"text": "solved - RRF uses rank only, and dedupes for free", "tone": "good"}], [{"text": "untouched - fusion ranks both and says nothing about truth", "tone": "crit"}], [{"text": "partly - dedupe handles copies; agentic loops need a cap", "tone": "warn"}], [{"text": "untouched - dedupe, re-rank and compress; do not append", "tone": "warn"}], [{"text": "untouched - and a misroute poisons the context", "tone": "crit"}]], "t": "diagram", "id": "dg-6_7-03-2"},
+    {"kind": "layers", "title": "Fusion solved one of these five", "caption": "RRF genuinely settles incomparable scores — it uses rank position only, and deduplication falls out for free. The other four are untouched by it. **Source conflicts are the one people assume fusion handles**: two sources disagree on a fact, fusion ranks both highly, and says nothing whatever about which is true. That needs an explicit authority order, which is a product decision rather than a retrieval one.", "items": [{"label": "Incomparable scores", "sub": "solved - RRF uses rank only, and dedupes for free", "tone": "good"}, {"label": "Source conflicts", "sub": "untouched - fusion ranks both and says nothing about truth", "tone": "crit"}, {"label": "Redundant retrieval", "sub": "partly - dedupe handles copies; agentic loops need a cap", "tone": "warn"}, {"label": "Context contention", "sub": "untouched - dedupe, re-rank and compress; do not append", "tone": "warn"}, {"label": "Routing", "sub": "untouched - and a misroute poisons the context", "tone": "crit"}], "t": "diagram", "id": "dg-6_7-03-2"},
+
 
 
 
@@ -173,6 +176,7 @@ EC.receiveLesson({
       sub: "Deterministic checks around a probabilistic component" },
 
     {"kind": "flow", "title": "Guardrails are what make the RAG promise a guarantee rather than a tendency", "caption": "The promise is precise: the answer is **grounded in retrieved context, safe, and drawn only from sources the user may see.** Each clause needs its own mechanism, and the order matters — the access check has to happen *before* retrieval, because 6.8 measures post-filtering returning 19 foreign rows, having already read them. Grounding is checked after generation, against the context that was actually supplied.", "cols": 4, "nodes": [{"id": "a", "label": "Access check, before retrieval", "sub": "pre-filter by tenant", "tone": "violet"}, {"id": "r", "label": "Retrieve within that scope", "sub": "nothing foreign is ever read", "tone": "good"}, {"id": "g", "label": "Generate, scoped to the context", "sub": "5.7's clause", "tone": "good"}, {"id": "c", "label": "Check grounding after", "sub": "every claim against a chunk", "tone": "good"}, {"id": "s", "label": "Safety check on the output", "sub": "the last gate", "tone": "accent"}], "edges": [["a", "r"], ["r", "g"], ["g", "c"], ["c", "s"]], "t": "diagram", "id": "dg-6_7-04-3"},
+
 
 
 

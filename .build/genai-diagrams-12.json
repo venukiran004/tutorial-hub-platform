@@ -1,148 +1,722 @@
 {
  "3.12": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "The blended rate, which depends on your traffic's shape",
-         "caption": "Providers price output at 4–5× input, because output tokens are produced one forward pass at a time while input is prefilled in parallel. So the rate you actually pay depends on your ratio — a RAG service sending 3,000 tokens of context for a 150-token answer sits nowhere near the headline output price. Blended at 3 input per output, the spread across this list is **23×**, from $0.262 to $6.000 per million.",
-         "left": "provider", "codeW": 180,
-         "vars": ["$/1M in", "$/1M out", "blended"],
-         "steps": [
-          {"code": "GPT-4o-mini", "state": ["0.15", "0.60", "0.262"], "tone": "good"},
-          {"code": "Llama 3.1 70B hosted", "state": ["0.50", "0.70", "0.550"], "tone": "good", "note": "output barely dearer"},
-          {"code": "GPT-4o", "state": ["2.50", "10.00", "4.375"], "changed": [2], "tone": "accent"},
-          {"code": "Claude Sonnet", "state": ["3.00", "15.00", "6.000"], "changed": [2], "tone": "warn", "note": "23x the first row"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The 10-million-token rule, checked against capacity",
-         "caption": "\"Self-host above 10 million tokens a day\" is worth checking rather than accepting. One A100 at 1,500 tokens/sec flat out for 24 hours is **129.6 million tokens** — so 10M/day is **7.7% utilisation of a single GPU**, which costs $4.80 per million and is *more* than GPT-4o-mini's blended $0.26. The real break-even depends entirely on which API you are leaving: 8.0M/day against Claude Sonnet, and **182.9M/day against GPT-4o-mini — 141% of one GPU**, meaning you cannot get there on a single card at all.",
-         "left": "leaving which API", "codeW": 180,
-         "vars": ["break-even tok/day", "as % of one GPU"],
-         "steps": [
-          {"code": "one A100, 100% busy", "state": ["129.6M", "100%"], "tone": "violet"},
-          {"code": "Claude Sonnet", "state": ["8.0M", "6%"], "tone": "good"},
-          {"code": "GPT-4o", "state": ["11.0M", "8%"], "tone": "good", "note": "the rule works here"},
-          {"code": "Llama 3.1 70B hosted", "state": ["87.3M", "67%"], "changed": [0], "tone": "warn"},
-          {"code": "GPT-4o-mini", "state": ["182.9M", "141%"], "changed": [0, 1], "tone": "crit", "note": "more than one GPU"}]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Peak-to-mean is what actually kills the economics",
-         "caption": "The break-even figures assume you can run a GPU at whatever utilisation the volume implies, and in production you cannot — **you provision for peak and pay for it around the clock**. A mild 3:1 business-hours pattern means paying for three times the hardware the mean needs. At 500M tokens/day the cost per million runs from $0.384 at a flat profile to **$3.744 at 10:1** — a factor of 9.75 decided entirely by the traffic shape, not by the model, the framework or the hardware.",
-         "left": "tokens/day and peak:mean", "codeW": 200,
-         "vars": ["GPUs", "$/1M", "utilisation"],
-         "steps": [
-          {"code": "100M, flat", "state": ["1", "0.480", "77.2%"], "tone": "good"},
-          {"code": "100M, 3:1", "state": ["3", "1.440", "25.7%"], "changed": [1], "tone": "warn"},
-          {"code": "100M, 10:1", "state": ["8", "3.840", "9.6%"], "changed": [1], "tone": "crit"},
-          {"code": "500M, flat", "state": ["4", "0.384", "96.5%"], "tone": "good", "note": "the best case"},
-          {"code": "500M, 3:1", "state": ["12", "1.152", "32.2%"], "tone": "warn"},
-          {"code": "500M, 10:1", "state": ["39", "3.744", "9.9%"], "changed": [1], "tone": "crit", "note": "9.75x the flat cost"}]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Nine levers, ordered by measured effect",
-         "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.",
-         "cols": ["Effect"],
-         "rows": ["Keep the GPU busy", "Flatten peak-to-mean", "Reserved or spot pricing", "A smaller model", "Quantization", "Batching", "Prefix caching", "Output length limits", "Speculative decoding"],
-         "cells": [
-          [{"text": "up to 20x - the largest lever here", "tone": "good"}],
-          [{"text": "3:1 to 1:1 takes $1.13 to $0.38 at scale", "tone": "good"}],
-          [{"text": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}],
-          [{"text": "23x spread across the price list", "tone": "good"}],
-          ["4x memory, which converts to batch size"],
-          [{"text": "5.2x measured - already on by default", "tone": "accent"}],
-          [{"text": "up to 2.8x on RAG traffic", "tone": "accent"}],
-          ["linear in the tokens not generated"],
-          [{"text": "1.13x measured - the smallest here", "tone": "warn"}]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The blended rate, which depends on your traffic's shape",
+    "caption": "Providers price output at 4–5× input, because output tokens are produced one forward pass at a time while input is prefilled in parallel. So the rate you actually pay depends on your ratio — a RAG service sending 3,000 tokens of context for a 150-token answer sits nowhere near the headline output price. Blended at 3 input per output, the spread across this list is **23×**, from $0.262 to $6.000 per million.",
+    "left": "provider",
+    "codeW": 180,
+    "vars": [
+     "$/1M in",
+     "$/1M out",
+     "blended"
+    ],
+    "steps": [
+     {
+      "code": "GPT-4o-mini",
+      "state": [
+       "0.15",
+       "0.60",
+       "0.262"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Llama 3.1 70B hosted",
+      "state": [
+       "0.50",
+       "0.70",
+       "0.550"
+      ],
+      "tone": "good",
+      "note": "output barely dearer"
+     },
+     {
+      "code": "GPT-4o",
+      "state": [
+       "2.50",
+       "10.00",
+       "4.375"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "Claude Sonnet",
+      "state": [
+       "3.00",
+       "15.00",
+       "6.000"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "warn",
+      "note": "23x the first row"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The 10-million-token rule, checked against capacity",
+    "caption": "\"Self-host above 10 million tokens a day\" is worth checking rather than accepting. One A100 at 1,500 tokens/sec flat out for 24 hours is **129.6 million tokens** — so 10M/day is **7.7% utilisation of a single GPU**, which costs $4.80 per million and is *more* than GPT-4o-mini's blended $0.26. The real break-even depends entirely on which API you are leaving: 8.0M/day against Claude Sonnet, and **182.9M/day against GPT-4o-mini — 141% of one GPU**, meaning you cannot get there on a single card at all.",
+    "left": "leaving which API",
+    "codeW": 180,
+    "vars": [
+     "break-even tok/day",
+     "as % of one GPU"
+    ],
+    "steps": [
+     {
+      "code": "one A100, 100% busy",
+      "state": [
+       "129.6M",
+       "100%"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "Claude Sonnet",
+      "state": [
+       "8.0M",
+       "6%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "GPT-4o",
+      "state": [
+       "11.0M",
+       "8%"
+      ],
+      "tone": "good",
+      "note": "the rule works here"
+     },
+     {
+      "code": "Llama 3.1 70B hosted",
+      "state": [
+       "87.3M",
+       "67%"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "GPT-4o-mini",
+      "state": [
+       "182.9M",
+       "141%"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "more than one GPU"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Peak-to-mean is what actually kills the economics",
+    "caption": "The break-even figures assume you can run a GPU at whatever utilisation the volume implies, and in production you cannot — **you provision for peak and pay for it around the clock**. A mild 3:1 business-hours pattern means paying for three times the hardware the mean needs. At 500M tokens/day the cost per million runs from $0.384 at a flat profile to **$3.744 at 10:1** — a factor of 9.75 decided entirely by the traffic shape, not by the model, the framework or the hardware.",
+    "left": "tokens/day and peak:mean",
+    "codeW": 200,
+    "vars": [
+     "GPUs",
+     "$/1M",
+     "utilisation"
+    ],
+    "steps": [
+     {
+      "code": "100M, flat",
+      "state": [
+       "1",
+       "0.480",
+       "77.2%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "100M, 3:1",
+      "state": [
+       "3",
+       "1.440",
+       "25.7%"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "100M, 10:1",
+      "state": [
+       "8",
+       "3.840",
+       "9.6%"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "500M, flat",
+      "state": [
+       "4",
+       "0.384",
+       "96.5%"
+      ],
+      "tone": "good",
+      "note": "the best case"
+     },
+     {
+      "code": "500M, 3:1",
+      "state": [
+       "12",
+       "1.152",
+       "32.2%"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "500M, 10:1",
+      "state": [
+       "39",
+       "3.744",
+       "9.9%"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "9.75x the flat cost"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "layers",
+    "title": "Nine levers, ordered by measured effect",
+    "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.",
+    "items": [
+     {
+      "label": "Keep the GPU busy",
+      "sub": "up to 20x - the largest lever here",
+      "tone": "good"
+     },
+     {
+      "label": "Flatten peak-to-mean",
+      "sub": "3:1 to 1:1 takes $1.13 to $0.38 at scale",
+      "tone": "good"
+     },
+     {
+      "label": "Reserved or spot pricing",
+      "sub": "$2.00/hr to $0.60/hr, so 3.3x",
+      "tone": "good"
+     },
+     {
+      "label": "A smaller model",
+      "sub": "23x spread across the price list",
+      "tone": "good"
+     },
+     {
+      "label": "Quantization",
+      "sub": "4x memory, which converts to batch size"
+     },
+     {
+      "label": "Batching",
+      "sub": "5.2x measured - already on by default",
+      "tone": "accent"
+     },
+     {
+      "label": "Prefix caching",
+      "sub": "up to 2.8x on RAG traffic",
+      "tone": "accent"
+     },
+     {
+      "label": "Output length limits",
+      "sub": "linear in the tokens not generated"
+     },
+     {
+      "label": "Speculative decoding",
+      "sub": "1.13x measured - the smallest here",
+      "tone": "warn"
+     }
+    ]
+   }
+  }
  ],
-
  "3.13": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "At most states, one token in 50,257 is legal",
-         "caption": "Writing the grammar for `{\"name\": \"\", \"age\": }` as a ten-state machine and counting legal continuations at each state gives a startling distribution: at eight of the ten states **exactly one token is allowed — 0.002% of the vocabulary**. Only inside a string value does the model have real freedom, at 93.993%. Which reframes constrained decoding: it is not mostly nudging a distribution, it is mostly **removing all choice**, and the model's opinion only matters in the value positions.",
-         "left": "state", "codeW": 150,
-         "vars": ["tokens allowed", "share of vocab", "example"],
-         "steps": [
-          {"code": "start", "state": ["1", "0.002%", "'{'"], "tone": "crit"},
-          {"code": "k1", "state": ["1", "0.002%", "'\"'"], "tone": "crit"},
-          {"code": "c1", "state": ["1", "0.002%", "':'"], "tone": "crit"},
-          {"code": "v1open", "state": ["1", "0.002%", "'\"'"], "tone": "crit"},
-          {"code": "v1body", "state": ["47,238", "93.993%", "'A', 'B', 'C'"], "changed": [0, 1], "tone": "good", "note": "the only free state"},
-          {"code": "comma", "state": ["1", "0.002%", "','"], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "0 of 5 unconstrained, 5 of 5 constrained — and one of them is wrong",
-         "caption": "Unconstrained, **none** of the five prompts produced valid JSON: one emitted forty-six zeros, another looped `JSON: \"Sam is 7\"` repeatedly. Constrained, all five are schema-valid. But read the fifth output: the input said *Priya, 29* and the model emitted **`{\"name\":\"John Doe\",\"age\":34}`** — perfectly valid and entirely invented. And the third gives Sam an age of 0. Constrained decoding guarantees the shape and says nothing about the content, which is 2.7's point arriving with a worked example.",
-         "left": "input", "codeW": 150,
-         "vars": ["unconstrained", "constrained"],
-         "steps": [
-          {"code": "John is 30", "state": ["46 zeros", "name John, age 30"], "tone": "good"},
-          {"code": "Maria is 42", "state": ["prose about JSON", "name Maria, age 42"], "tone": "good"},
-          {"code": "Sam is 7", "state": ["a repeating loop", "name Sam, age 0"], "changed": [1], "tone": "warn", "note": "valid, wrong"},
-          {"code": "Priya, 29", "state": ["'I'm a bit of a nerd'", "name John Doe, age 34"], "changed": [1], "tone": "crit", "note": "valid, invented"},
-          {"code": "totals", "state": ["0 of 5 valid", "5 of 5 valid"], "tone": "violet"}]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Why the published overhead is 'slight', and how to make it 7.3x",
-         "caption": "Building the mask per step costs **7.30× the forward pass** — 1076 ms against 147 — which is nowhere near 'slight'. Precomputing the mask per grammar state brings it to **0.98×, inside the noise**. So the published figure is right about the technique and silent about the implementation: the cost is entirely in whether the automaton's masks are built once or rebuilt on every token, and a naive implementation is seven times slower than no constraint at all.",
-         "left": "implementation", "codeW": 220,
-         "vars": ["time", "vs plain"],
-         "steps": [
-          {"code": "forward pass only", "state": ["147.38 ms", "1.00x"], "tone": "accent"},
-          {"code": "forward + mask + argmax", "state": ["1076.00 ms", "7.30x"], "changed": [0, 1], "tone": "crit", "note": "mask built per step"},
-          {"code": "forward + precomputed mask", "state": ["145.01 ms", "0.98x"], "changed": [0, 1], "tone": "good", "note": "inside the noise"}]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "At most states, one token in 50,257 is legal",
+    "caption": "Writing the grammar for `{\"name\": \"\", \"age\": }` as a ten-state machine and counting legal continuations at each state gives a startling distribution: at eight of the ten states **exactly one token is allowed — 0.002% of the vocabulary**. Only inside a string value does the model have real freedom, at 93.993%. Which reframes constrained decoding: it is not mostly nudging a distribution, it is mostly **removing all choice**, and the model's opinion only matters in the value positions.",
+    "left": "state",
+    "codeW": 150,
+    "vars": [
+     "tokens allowed",
+     "share of vocab",
+     "example"
+    ],
+    "steps": [
+     {
+      "code": "start",
+      "state": [
+       "1",
+       "0.002%",
+       "'{'"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "k1",
+      "state": [
+       "1",
+       "0.002%",
+       "'\"'"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "c1",
+      "state": [
+       "1",
+       "0.002%",
+       "':'"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "v1open",
+      "state": [
+       "1",
+       "0.002%",
+       "'\"'"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "v1body",
+      "state": [
+       "47,238",
+       "93.993%",
+       "'A', 'B', 'C'"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good",
+      "note": "the only free state"
+     },
+     {
+      "code": "comma",
+      "state": [
+       "1",
+       "0.002%",
+       "','"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "0 of 5 unconstrained, 5 of 5 constrained — and one of them is wrong",
+    "caption": "Unconstrained, **none** of the five prompts produced valid JSON: one emitted forty-six zeros, another looped `JSON: \"Sam is 7\"` repeatedly. Constrained, all five are schema-valid. But read the fifth output: the input said *Priya, 29* and the model emitted **`{\"name\":\"John Doe\",\"age\":34}`** — perfectly valid and entirely invented. And the third gives Sam an age of 0. Constrained decoding guarantees the shape and says nothing about the content, which is 2.7's point arriving with a worked example.",
+    "left": "input",
+    "codeW": 150,
+    "vars": [
+     "unconstrained",
+     "constrained"
+    ],
+    "steps": [
+     {
+      "code": "John is 30",
+      "state": [
+       "46 zeros",
+       "name John, age 30"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Maria is 42",
+      "state": [
+       "prose about JSON",
+       "name Maria, age 42"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Sam is 7",
+      "state": [
+       "a repeating loop",
+       "name Sam, age 0"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn",
+      "note": "valid, wrong"
+     },
+     {
+      "code": "Priya, 29",
+      "state": [
+       "'I'm a bit of a nerd'",
+       "name John Doe, age 34"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit",
+      "note": "valid, invented"
+     },
+     {
+      "code": "totals",
+      "state": [
+       "0 of 5 valid",
+       "5 of 5 valid"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Why the published overhead is 'slight', and how to make it 7.3x",
+    "caption": "Building the mask per step costs **7.30× the forward pass** — 1076 ms against 147 — which is nowhere near 'slight'. Precomputing the mask per grammar state brings it to **0.98×, inside the noise**. So the published figure is right about the technique and silent about the implementation: the cost is entirely in whether the automaton's masks are built once or rebuilt on every token, and a naive implementation is seven times slower than no constraint at all.",
+    "left": "implementation",
+    "codeW": 220,
+    "vars": [
+     "time",
+     "vs plain"
+    ],
+    "steps": [
+     {
+      "code": "forward pass only",
+      "state": [
+       "147.38 ms",
+       "1.00x"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "forward + mask + argmax",
+      "state": [
+       "1076.00 ms",
+       "7.30x"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "mask built per step"
+     },
+     {
+      "code": "forward + precomputed mask",
+      "state": [
+       "145.01 ms",
+       "0.98x"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good",
+      "note": "inside the noise"
+     }
+    ]
+   }
+  }
  ],
-
  "3.14": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Bradley-Terry recovers the true strengths to 2.6 Elo",
-         "caption": "A vote is a **comparison, not a score** — nobody ever rates a model in isolation. Bradley–Terry turns a pile of comparisons into one strength per model by assuming P(A beats B) depends only on the difference. Fitted on synthetic votes from known strengths, it recovers them to a mean error of **2.6 Elo and a max of 6.1**. The functional form is chess Elo's, which is why the 400-point scale is familiar; the difference is that Elo updates incrementally while the Arena fits all votes at once by maximum likelihood — more efficient, and it gives honest confidence intervals.",
-         "left": "model", "codeW": 130,
-         "vars": ["fitted theta", "Elo @1200", "true"],
-         "steps": [
-          {"code": "model-A", "state": ["0.7612", "1332.2", "1300.0"], "tone": "accent"},
-          {"code": "model-B", "state": ["0.4935", "1285.7", "1250.0"], "tone": "accent"},
-          {"code": "model-C", "state": ["0.4123", "1271.6", "1240.0"], "tone": "accent"},
-          {"code": "model-D", "state": ["-0.4266", "1125.9", "1100.0"], "tone": "accent"},
-          {"code": "model-E", "state": ["-1.2403", "984.5", "950.0"], "tone": "accent"},
-          {"code": "recovery error", "state": ["mean 2.6", "max 6.1", "Elo"], "tone": "good"}]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A 5-point gap needs 18,548 votes to establish",
-         "caption": "Leaderboards are read as rankings, so invert the formula and ask what a small gap is worth. A **5-Elo gap is a 50.72% win rate** — and seeing that at 95% confidence takes 18,548 votes. A 10-point gap takes 4,636. Which means that for most of a leaderboard's middle, the ordering is **not resolved by the data behind it**, and the confidence intervals confirm it: at 1,000 votes the interval width is about 46 Elo, so any gap smaller than that is indistinguishable from zero.",
-         "left": "Elo gap", "codeW": 120,
-         "vars": ["win probability", "votes to see it at 95%"],
-         "steps": [
-          {"code": "5", "state": ["0.5072", "18,548"], "tone": "crit"},
-          {"code": "10", "state": ["0.5144", "4,636"], "changed": [1], "tone": "crit"},
-          {"code": "25", "state": ["0.5359", "741"], "tone": "warn"},
-          {"code": "50", "state": ["0.5715", "184"], "changed": [1], "tone": "accent"},
-          {"code": "100", "state": ["0.6401", "45"], "tone": "good"},
-          {"code": "400", "state": ["0.9091", "2"], "tone": "good"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A single number forces transitivity, and preferences need not be transitive",
-         "caption": "Bradley–Terry assumes one strength per model, which **forces transitivity**: if A beats B and B beats C, it cannot represent C beating A. Real preferences need not cooperate — one model is better at code, another at prose, a third at brevity, and a voter population mixing those tasks produces a genuine cycle. Fed a perfect rock-paper-scissors (each beats the next 60%), the fit returns **1202, 1200, 1199**: three models declared equal, with the entire structure of the data erased.",
-         "cols": 3,
-         "nodes": [
-          {"id": "a", "label": "A beats B 60%", "sub": "", "tone": "accent"},
-          {"id": "b", "label": "B beats C 60%", "sub": "", "tone": "accent"},
-          {"id": "c", "label": "C beats A 60%", "sub": "a genuine cycle", "tone": "violet"},
-          {"id": "f", "label": "One strength per model", "sub": "forces transitivity", "tone": "warn"},
-          {"id": "r", "label": "Fitted: 1202, 1200, 1199", "sub": "declared equal", "tone": "crit"},
-          {"id": "e", "label": "The structure is erased", "sub": "not approximated - erased", "tone": "crit"}],
-         "edges": [["a", "b"], ["b", "c"], ["c", "f"], ["f", "r"], ["r", "e"]]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Five benchmarks, and what each is blind to",
-         "caption": "The Arena's blindness is the important one: **voters reward fluency and format, and cannot check facts they do not know** — so a confidently wrong answer in a clean format beats a hedged correct one. Every automated alternative inherits its judge's biases instead, especially toward verbosity and the judge's own model family. None of these measures correctness on your task, which is what 2.12's test set is for.",
-         "cols": ["Measures", "Blind to"],
-         "rows": ["Chatbot Arena", "Arena Hard", "MMLU", "HumanEval / MBPP", "MT-Bench"],
-         "cells": [
-          ["human preference at scale", {"text": "correctness - voters reward fluency", "tone": "crit"}],
-          ["an automated proxy on hard prompts", {"text": "whatever the judge is bad at", "tone": "warn"}],
-          ["breadth of knowledge, multiple choice", {"text": "generation quality entirely", "tone": "warn"}],
-          ["code that passes tests", "everything outside code; style and security"],
-          ["multi-turn quality, model-judged", {"text": "judge bias toward verbosity", "tone": "warn"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Bradley-Terry recovers the true strengths to 2.6 Elo",
+    "caption": "A vote is a **comparison, not a score** — nobody ever rates a model in isolation. Bradley–Terry turns a pile of comparisons into one strength per model by assuming P(A beats B) depends only on the difference. Fitted on synthetic votes from known strengths, it recovers them to a mean error of **2.6 Elo and a max of 6.1**. The functional form is chess Elo's, which is why the 400-point scale is familiar; the difference is that Elo updates incrementally while the Arena fits all votes at once by maximum likelihood — more efficient, and it gives honest confidence intervals.",
+    "left": "model",
+    "codeW": 130,
+    "vars": [
+     "fitted theta",
+     "Elo @1200",
+     "true"
+    ],
+    "steps": [
+     {
+      "code": "model-A",
+      "state": [
+       "0.7612",
+       "1332.2",
+       "1300.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "model-B",
+      "state": [
+       "0.4935",
+       "1285.7",
+       "1250.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "model-C",
+      "state": [
+       "0.4123",
+       "1271.6",
+       "1240.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "model-D",
+      "state": [
+       "-0.4266",
+       "1125.9",
+       "1100.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "model-E",
+      "state": [
+       "-1.2403",
+       "984.5",
+       "950.0"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "recovery error",
+      "state": [
+       "mean 2.6",
+       "max 6.1",
+       "Elo"
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A 5-point gap needs 18,548 votes to establish",
+    "caption": "Leaderboards are read as rankings, so invert the formula and ask what a small gap is worth. A **5-Elo gap is a 50.72% win rate** — and seeing that at 95% confidence takes 18,548 votes. A 10-point gap takes 4,636. Which means that for most of a leaderboard's middle, the ordering is **not resolved by the data behind it**, and the confidence intervals confirm it: at 1,000 votes the interval width is about 46 Elo, so any gap smaller than that is indistinguishable from zero.",
+    "left": "Elo gap",
+    "codeW": 120,
+    "vars": [
+     "win probability",
+     "votes to see it at 95%"
+    ],
+    "steps": [
+     {
+      "code": "5",
+      "state": [
+       "0.5072",
+       "18,548"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "10",
+      "state": [
+       "0.5144",
+       "4,636"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "25",
+      "state": [
+       "0.5359",
+       "741"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "50",
+      "state": [
+       "0.5715",
+       "184"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "100",
+      "state": [
+       "0.6401",
+       "45"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "400",
+      "state": [
+       "0.9091",
+       "2"
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A single number forces transitivity, and preferences need not be transitive",
+    "caption": "Bradley–Terry assumes one strength per model, which **forces transitivity**: if A beats B and B beats C, it cannot represent C beating A. Real preferences need not cooperate — one model is better at code, another at prose, a third at brevity, and a voter population mixing those tasks produces a genuine cycle. Fed a perfect rock-paper-scissors (each beats the next 60%), the fit returns **1202, 1200, 1199**: three models declared equal, with the entire structure of the data erased.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "A beats B 60%",
+      "sub": "",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "B beats C 60%",
+      "sub": "",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "C beats A 60%",
+      "sub": "a genuine cycle",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "One strength per model",
+      "sub": "forces transitivity",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Fitted: 1202, 1200, 1199",
+      "sub": "declared equal",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "The structure is erased",
+      "sub": "not approximated - erased",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "b"
+     ],
+     [
+      "b",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ],
+     [
+      "f",
+      "r"
+     ],
+     [
+      "r",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Five benchmarks, and what each is blind to",
+    "caption": "The Arena's blindness is the important one: **voters reward fluency and format, and cannot check facts they do not know** — so a confidently wrong answer in a clean format beats a hedged correct one. Every automated alternative inherits its judge's biases instead, especially toward verbosity and the judge's own model family. None of these measures correctness on your task, which is what 2.12's test set is for.",
+    "cols": [
+     "Measures",
+     "Blind to"
+    ],
+    "rows": [
+     "Chatbot Arena",
+     "Arena Hard",
+     "MMLU",
+     "HumanEval / MBPP",
+     "MT-Bench"
+    ],
+    "cells": [
+     [
+      "human preference at scale",
+      {
+       "text": "correctness - voters reward fluency",
+       "tone": "crit"
+      }
+     ],
+     [
+      "an automated proxy on hard prompts",
+      {
+       "text": "whatever the judge is bad at",
+       "tone": "warn"
+      }
+     ],
+     [
+      "breadth of knowledge, multiple choice",
+      {
+       "text": "generation quality entirely",
+       "tone": "warn"
+      }
+     ],
+     [
+      "code that passes tests",
+      "everything outside code; style and security"
+     ],
+     [
+      "multi-turn quality, model-judged",
+      {
+       "text": "judge bias toward verbosity",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
  ]
 }

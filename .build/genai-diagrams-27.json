@@ -1,93 +1,437 @@
 {
  "10.13": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Two metrics, four verdicts, and no theorising required",
-         "caption": "This is the cheapest diagnostic in the module: **context recall and faithfulness read together name the broken layer.** Low recall with high faithfulness is a **retrieval** failure — the model was scrupulously faithful to context that did not contain the answer. High recall with low faithfulness is a **generation** failure. High on both means neither moved and the **ground truth or the judge** did, which is the case people never consider. Low on both is systemic: an empty index, the wrong tenant, a truncated prompt.",
-         "cols": ["Faithfulness", "Verdict"],
-         "rows": ["Context recall low", "Context recall high", "Both high", "Both low"],
-         "cells": [
-          [{"text": "high", "tone": "good"}, {"text": "retrieval - faithful to wrong context", "tone": "crit"}],
-          [{"text": "low", "tone": "crit"}, {"text": "generation - it was there, ignored", "tone": "crit"}],
-          [{"text": "high", "tone": "good"}, {"text": "the ground truth or the judge moved", "tone": "warn"}],
-          [{"text": "low", "tone": "crit"}, "systemic - index, tenant, truncation"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "The incident, metric by metric",
-         "caption": "Answer accuracy fell from 0.95 to 0.60 — the symptom. **Context recall collapsed from 0.93 to 0.48 and faithfulness did not move at all**, staying at 0.95, which is exactly §01's retrieval-failure signature. The mechanism is two rows lower: mean top-1 similarity went from 0.78 to 0.41. And the last row is the one that would have caught it weeks earlier: **empty-retrieval rate from 0.4% to 11.2%, an alarm nobody had set**, costing nothing to compute.",
-         "left": "metric", "codeW": 190,
-         "vars": ["four weeks ago", "today", "read"],
-         "steps": [
-          {"code": "Answer accuracy", "state": ["0.95", "0.60", "the symptom"], "tone": "warn"},
-          {"code": "Context recall", "state": ["0.93", "0.48", "collapsed"], "changed": [1], "tone": "crit"},
-          {"code": "Context precision", "state": ["0.71", "0.44", "fell with it"], "tone": "crit"},
-          {"code": "Faithfulness", "state": ["0.96", "0.95", "unchanged"], "changed": [2], "tone": "good", "note": "the diagnosis"},
-          {"code": "Mean top-1 similarity", "state": ["0.78", "0.41", "the mechanism"], "changed": [1], "tone": "crit"},
-          {"code": "Empty-retrieval rate", "state": ["0.4%", "11.2%", "nobody had set it"], "changed": [1], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Slice before you theorise: a 21% cohort inside a 60% headline",
-         "caption": "The headline fell from 0.95 to 0.60 and the average is a **mix of two populations behaving completely differently.** Questions about existing docs are 60% of traffic and fell from 0.96 to 0.86 — unwelcome and unremarkable. Questions about the new product line are 40% of traffic and fell from 0.86 to **0.21**. One slice turns \"quality regressed\" into \"the new product line has no usable documents in the index\", which is a different investigation and a different fix.",
-         "left": "cohort", "codeW": 200,
-         "vars": ["share", "was", "now"],
-         "steps": [
-          {"code": "existing product docs (A)", "state": ["60%", "0.96", "0.86"], "tone": "warn"},
-          {"code": "the new product line (B)", "state": ["40%", "0.86", "0.21"], "changed": [2], "tone": "crit", "note": "the real failure"},
-          {"code": "the headline average", "state": ["100%", "0.95", "0.60"], "tone": "violet", "note": "hides both"}]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Walking the stack bottom-up, attribute by attribute",
-         "caption": "Comparing a healthy trace against a failing one, **most attributes are identical** — same index, same 20 results returned, same pinned model, no truncation. Three differ and they tell the whole story: **`above_threshold` is 0 against 6**, so nothing cleared the cut-off; `rerank.top_score` is **0.31 against 0.78**, so the best available chunk was weakly related; and the chunk IDs are all from the **old** product manual. The search worked perfectly and there was nothing right to find.",
-         "left": "span attribute", "codeW": 200,
-         "vars": ["healthy", "failing"],
-         "steps": [
-          {"code": "retrieve.index", "state": ["support-docs-v4", "the same"], "tone": "good"},
-          {"code": "retrieve.returned", "state": ["20", "20"], "tone": "good", "note": "the search worked"},
-          {"code": "retrieve.above_threshold", "state": ["6", "0"], "changed": [1], "tone": "crit"},
-          {"code": "rerank.top_score", "state": ["0.78", "0.31"], "changed": [1], "tone": "crit"},
-          {"code": "retrieve.chunk_ids", "state": ["mixed docs", "all the OLD manual"], "changed": [1], "tone": "crit"},
-          {"code": "llm.generate.model", "state": ["pinned", "the same pin"], "tone": "good"},
-          {"code": "prompt_tokens", "state": ["1842", "1799"], "tone": "good", "note": "no truncation"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Two metrics, four verdicts, and no theorising required",
+    "caption": "This is the cheapest diagnostic in the module: **context recall and faithfulness read together name the broken layer.** Low recall with high faithfulness is a **retrieval** failure — the model was scrupulously faithful to context that did not contain the answer. High recall with low faithfulness is a **generation** failure. High on both means neither moved and the **ground truth or the judge** did, which is the case people never consider. Low on both is systemic: an empty index, the wrong tenant, a truncated prompt.",
+    "cols": [
+     "Faithfulness",
+     "Verdict"
+    ],
+    "rows": [
+     "Context recall low",
+     "Context recall high",
+     "Both high",
+     "Both low"
+    ],
+    "cells": [
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      {
+       "text": "retrieval - faithful to wrong context",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "low",
+       "tone": "crit"
+      },
+      {
+       "text": "generation - it was there, ignored",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "high",
+       "tone": "good"
+      },
+      {
+       "text": "the ground truth or the judge moved",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "low",
+       "tone": "crit"
+      },
+      "systemic - index, tenant, truncation"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The incident, metric by metric",
+    "caption": "Answer accuracy fell from 0.95 to 0.60 — the symptom. **Context recall collapsed from 0.93 to 0.48 and faithfulness did not move at all**, staying at 0.95, which is exactly §01's retrieval-failure signature. The mechanism is two rows lower: mean top-1 similarity went from 0.78 to 0.41. And the last row is the one that would have caught it weeks earlier: **empty-retrieval rate from 0.4% to 11.2%, an alarm nobody had set**, costing nothing to compute.",
+    "left": "metric",
+    "codeW": 190,
+    "vars": [
+     "four weeks ago",
+     "today",
+     "read"
+    ],
+    "steps": [
+     {
+      "code": "Answer accuracy",
+      "state": [
+       "0.95",
+       "0.60",
+       "the symptom"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "Context recall",
+      "state": [
+       "0.93",
+       "0.48",
+       "collapsed"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "Context precision",
+      "state": [
+       "0.71",
+       "0.44",
+       "fell with it"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "Faithfulness",
+      "state": [
+       "0.96",
+       "0.95",
+       "unchanged"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "good",
+      "note": "the diagnosis"
+     },
+     {
+      "code": "Mean top-1 similarity",
+      "state": [
+       "0.78",
+       "0.41",
+       "the mechanism"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "Empty-retrieval rate",
+      "state": [
+       "0.4%",
+       "11.2%",
+       "nobody had set it"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Slice before you theorise: a 21% cohort inside a 60% headline",
+    "caption": "The headline fell from 0.95 to 0.60 and the average is a **mix of two populations behaving completely differently.** Questions about existing docs are 60% of traffic and fell from 0.96 to 0.86 — unwelcome and unremarkable. Questions about the new product line are 40% of traffic and fell from 0.86 to **0.21**. One slice turns \"quality regressed\" into \"the new product line has no usable documents in the index\", which is a different investigation and a different fix.",
+    "left": "cohort",
+    "codeW": 200,
+    "vars": [
+     "share",
+     "was",
+     "now"
+    ],
+    "steps": [
+     {
+      "code": "existing product docs (A)",
+      "state": [
+       "60%",
+       "0.96",
+       "0.86"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "the new product line (B)",
+      "state": [
+       "40%",
+       "0.86",
+       "0.21"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "crit",
+      "note": "the real failure"
+     },
+     {
+      "code": "the headline average",
+      "state": [
+       "100%",
+       "0.95",
+       "0.60"
+      ],
+      "tone": "violet",
+      "note": "hides both"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Walking the stack bottom-up, attribute by attribute",
+    "caption": "Comparing a healthy trace against a failing one, **most attributes are identical** — same index, same 20 results returned, same pinned model, no truncation. Three differ and they tell the whole story: **`above_threshold` is 0 against 6**, so nothing cleared the cut-off; `rerank.top_score` is **0.31 against 0.78**, so the best available chunk was weakly related; and the chunk IDs are all from the **old** product manual. The search worked perfectly and there was nothing right to find.",
+    "left": "span attribute",
+    "codeW": 200,
+    "vars": [
+     "healthy",
+     "failing"
+    ],
+    "steps": [
+     {
+      "code": "retrieve.index",
+      "state": [
+       "support-docs-v4",
+       "the same"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "retrieve.returned",
+      "state": [
+       "20",
+       "20"
+      ],
+      "tone": "good",
+      "note": "the search worked"
+     },
+     {
+      "code": "retrieve.above_threshold",
+      "state": [
+       "6",
+       "0"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "rerank.top_score",
+      "state": [
+       "0.78",
+       "0.31"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "retrieve.chunk_ids",
+      "state": [
+       "mixed docs",
+       "all the OLD manual"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "llm.generate.model",
+      "state": [
+       "pinned",
+       "the same pin"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "prompt_tokens",
+      "state": [
+       "1842",
+       "1799"
+      ],
+      "tone": "good",
+      "note": "no truncation"
+     }
+    ]
+   }
+  }
  ],
-
  "10.14": [
-  {"after": "01",
-   "d": {"kind": "steps",
-         "title": "Two experiments, ten minutes, no metrics and no labels",
-         "caption": "Before any statistics: **run the retriever on its own with no model involved.** Give it the failing queries and look at what comes back — if the right chunk is not there, you have a retrieval problem and nothing about the model matters. **Then run the generator with hand-picked perfect context**: paste in the chunks that should have been retrieved, and if the answer is now correct, generation is fine. Between them they name the broken layer with **no metrics, no judge and no labels** — the statistical version needs a labelled set and a day.",
-         "items": [
-          {"label": "Run the retriever alone, on the failing queries", "desc": "no model involved; look at what comes back", "code": "1", "tone": "violet"},
-          {"label": "Right chunk absent? It is retrieval", "desc": "and nothing about the model matters", "code": "2", "tone": "good"},
-          {"label": "Run the generator with hand-picked perfect context", "desc": "paste the chunks that should have been found", "code": "3", "tone": "violet"},
-          {"label": "Answer now correct? Generation is fine", "desc": "so the layer is named", "code": "4", "tone": "good"},
-          {"label": "Ten minutes, no judge, no labelled set", "desc": "the statistical version needs both, and a day", "code": "5", "tone": "teal"}]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Slice freely in an incident, sparingly in an alert rule",
-         "caption": "The runbook says to slice, and it is right — 10.13 found a 21% cohort inside a 60% headline. But **every slice divides the sample**, and 10.12's arithmetic says the detectable effect grows as the slice shrinks. Neither the runbook nor the alerting guidance mentions this, and **the two instructions genuinely conflict**. The resolution is to separate the activities: slicing is for investigation, where you already know something is wrong and are hunting for where. For small slices you do want to alert on, lengthen the window instead.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "Slice: it found a 21% cohort", "sub": "inside a 60% headline", "tone": "good"},
-          {"id": "d", "label": "But each slice divides the sample", "sub": "and the margin grows", "tone": "crit"},
-          {"id": "c", "label": "The two instructions conflict", "sub": "and neither mentions it", "tone": "crit"},
-          {"id": "i", "label": "Slice freely when investigating", "sub": "you already know it is wrong", "tone": "good"},
-          {"id": "a", "label": "Sparingly in an alert rule", "sub": "or it pages on noise", "tone": "good"},
-          {"id": "w", "label": "Small slice you must alert on?", "sub": "lengthen the window", "tone": "violet"}],
-         "edges": [["s", "d"], ["d", "c"], ["c", "i"], ["c", "a"], ["a", "w"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Eight pitfalls, and the step each one breaks",
-         "caption": "The first is the one that makes everything else impossible: **retrieval and generation failures look identical in the final answer, so you cannot debug what you did not capture.** The third is the one that makes \"nothing changed\" unprovable — model alias, embedding model, prompt template, index and chunking config, and without **all five** the claim cannot be checked. And the seventh is 10.10's finding: head sampling at 5% keeps a random 5% and throws away the failures.",
-         "cols": ["Why it hurts"],
-         "rows": ["Logging only the answer", "One number, no slices", "No version pins", "A judge in the request path", "Alerting on any drop", "Tracing without attributes", "Head sampling at 5%", "Shipping PII to a vendor"],
-         "cells": [
-          [{"text": "retrieval and generation failures look identical", "tone": "crit"}],
-          [{"text": "it hid a 21% cohort inside a 60% headline", "tone": "crit"}],
-          [{"text": "five of them, and without all five 'nothing changed' is unprovable", "tone": "crit"}],
-          ["a second of latency and a second failure mode, for a score you can defer"],
-          [{"text": "200 samples carry +-3 points; people stop reading alerts", "tone": "warn"}],
-          [{"text": "a tree of names with no scores or token counts is a pretty picture", "tone": "warn"}],
-          [{"text": "you keep a random 5% and throw away the failures", "tone": "crit"}],
-          [{"text": "redact at export - once in their store it is in their backups", "tone": "crit"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "Two experiments, ten minutes, no metrics and no labels",
+    "caption": "Before any statistics: **run the retriever on its own with no model involved.** Give it the failing queries and look at what comes back — if the right chunk is not there, you have a retrieval problem and nothing about the model matters. **Then run the generator with hand-picked perfect context**: paste in the chunks that should have been retrieved, and if the answer is now correct, generation is fine. Between them they name the broken layer with **no metrics, no judge and no labels** — the statistical version needs a labelled set and a day.",
+    "items": [
+     {
+      "label": "Run the retriever alone, on the failing queries",
+      "desc": "no model involved; look at what comes back",
+      "code": "1",
+      "tone": "violet"
+     },
+     {
+      "label": "Right chunk absent? It is retrieval",
+      "desc": "and nothing about the model matters",
+      "code": "2",
+      "tone": "good"
+     },
+     {
+      "label": "Run the generator with hand-picked perfect context",
+      "desc": "paste the chunks that should have been found",
+      "code": "3",
+      "tone": "violet"
+     },
+     {
+      "label": "Answer now correct? Generation is fine",
+      "desc": "so the layer is named",
+      "code": "4",
+      "tone": "good"
+     },
+     {
+      "label": "Ten minutes, no judge, no labelled set",
+      "desc": "the statistical version needs both, and a day",
+      "code": "5",
+      "tone": "teal"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Slice freely in an incident, sparingly in an alert rule",
+    "caption": "The runbook says to slice, and it is right — 10.13 found a 21% cohort inside a 60% headline. But **every slice divides the sample**, and 10.12's arithmetic says the detectable effect grows as the slice shrinks. Neither the runbook nor the alerting guidance mentions this, and **the two instructions genuinely conflict**. The resolution is to separate the activities: slicing is for investigation, where you already know something is wrong and are hunting for where. For small slices you do want to alert on, lengthen the window instead.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Slice: it found a 21% cohort",
+      "sub": "inside a 60% headline",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "But each slice divides the sample",
+      "sub": "and the margin grows",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "The two instructions conflict",
+      "sub": "and neither mentions it",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "Slice freely when investigating",
+      "sub": "you already know it is wrong",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "Sparingly in an alert rule",
+      "sub": "or it pages on noise",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "Small slice you must alert on?",
+      "sub": "lengthen the window",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "d"
+     ],
+     [
+      "d",
+      "c"
+     ],
+     [
+      "c",
+      "i"
+     ],
+     [
+      "c",
+      "a"
+     ],
+     [
+      "a",
+      "w"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Eight pitfalls, and the step each one breaks",
+    "caption": "The first is the one that makes everything else impossible: **retrieval and generation failures look identical in the final answer, so you cannot debug what you did not capture.** The third is the one that makes \"nothing changed\" unprovable — model alias, embedding model, prompt template, index and chunking config, and without **all five** the claim cannot be checked. And the seventh is 10.10's finding: head sampling at 5% keeps a random 5% and throws away the failures.",
+    "items": [
+     {
+      "label": "Logging only the answer",
+      "sub": "retrieval and generation failures look identical",
+      "tone": "crit"
+     },
+     {
+      "label": "One number, no slices",
+      "sub": "it hid a 21% cohort inside a 60% headline",
+      "tone": "crit"
+     },
+     {
+      "label": "No version pins",
+      "sub": "five of them, and without all five 'nothing changed' is unprovable",
+      "tone": "crit"
+     },
+     {
+      "label": "A judge in the request path",
+      "sub": "a second of latency and a second failure mode, for a score you can defer"
+     },
+     {
+      "label": "Alerting on any drop",
+      "sub": "200 samples carry +-3 points; people stop reading alerts",
+      "tone": "warn"
+     },
+     {
+      "label": "Tracing without attributes",
+      "sub": "a tree of names with no scores or token counts is a pretty picture",
+      "tone": "warn"
+     },
+     {
+      "label": "Head sampling at 5%",
+      "sub": "you keep a random 5% and throw away the failures",
+      "tone": "crit"
+     },
+     {
+      "label": "Shipping PII to a vendor",
+      "sub": "redact at export - once in their store it is in their backups",
+      "tone": "crit"
+     }
+    ]
+   }
+  }
  ]
 }

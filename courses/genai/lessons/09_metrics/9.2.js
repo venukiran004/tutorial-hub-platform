@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "math", tex: "\\text{PPL} = \\exp\\!\\left(-\\frac{1}{N}\\sum_{i=1}^{N}\\ln p(x_i \\mid x_{<i})\\right) = 2^{-\\frac{1}{N}\\sum_{i=1}^{N}\\log_2 p(x_i \\mid x_{<i})}" },
 
     { t: "p", text: "Perplexity is the **exponential of the cross-entropy**. That is the whole definition. Use natural log with `exp`, or log base 2 with a power of 2 \u2014 they give the same number, and mixing them is the commonest implementation bug." },
@@ -63,7 +64,8 @@ ppl = 2 ** -mean`,
     { t: "h2", n: "02", id: "lies", text: "The three ways it lies",
       sub: "All three are about comparability" },
 
-    {"kind": "matrix", "title": "Three ways perplexity lies", "caption": "All three are the same structural problem: perplexity is a statement about **a model, a tokenizer and a corpus together**, and it gets quoted as a statement about the model alone. A bigger vocabulary splits text into fewer tokens and changes the number without changing quality. Perplexity on Wikipedia and on legal contracts are different numbers about different things. And a low figure on an instruction-tuned model says nothing about helpfulness.", "cols": ["Why"], "rows": ["Not across tokenizers", "Not across datasets", "Not a quality measure"], "cells": [[{"text": "a bigger vocabulary gives fewer tokens - the number moves, the model does not", "tone": "crit"}], [{"text": "Wikipedia and legal contracts are different numbers about different things", "tone": "crit"}], [{"text": "low perplexity is not helpfulness, safety or correctness", "tone": "crit"}]], "t": "diagram", "id": "dg-9_2-02-1"},
+    {"kind": "layers", "title": "Three ways perplexity lies", "caption": "All three are the same structural problem: perplexity is a statement about **a model, a tokenizer and a corpus together**, and it gets quoted as a statement about the model alone. A bigger vocabulary splits text into fewer tokens and changes the number without changing quality. Perplexity on Wikipedia and on legal contracts are different numbers about different things. And a low figure on an instruction-tuned model says nothing about helpfulness.", "items": [{"label": "Not across tokenizers", "sub": "a bigger vocabulary gives fewer tokens - the number moves, the model does not", "tone": "crit"}, {"label": "Not across datasets", "sub": "Wikipedia and legal contracts are different numbers about different things", "tone": "crit"}, {"label": "Not a quality measure", "sub": "low perplexity is not helpfulness, safety or correctness", "tone": "crit"}], "t": "diagram", "id": "dg-9_2-02-1"},
+
 
 
 

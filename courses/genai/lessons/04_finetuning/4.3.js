@@ -97,6 +97,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
 
 
 
+
     { t: "p", text: "The low-rank story is an empirical claim about what fine-tuning does, so it can be checked. In 4.1 I fine-tuned every parameter of GPT-2 and saved the difference between the trained and original weights for 36 matrices. The singular values of those differences say how much of each update lives in how few directions." },
 
     { t: "code", lang: "python", title: "g43.py \u2014 the spectrum of a real \u0394W", code: `deltas = torch.load("g43_deltas.pt")          # W_after - W_before, from 4.1
@@ -168,6 +169,7 @@ r99 = int((cum < 0.99).sum()) + 1`,
 
 
 
+
     { t: "p", text: "If capturing 45% of an update were enough on its own, you could approximate anything. The question is whether `\u0394W` is special, so I ran the same decomposition on a random matrix of identical shape and standard deviation." },
 
     { t: "code", lang: "python", title: "g43.py \u2014 real update against random noise", code: `rnd = torch.randn(shape) * float(deltas[n0].std())    # same shape, same spread
@@ -194,7 +196,8 @@ sr = torch.linalg.svdvals(rnd)`,
     { t: "h2", n: "04", id: "practical", text: "What LoRA gives you besides cheap training",
       sub: "Three properties that follow from freezing the base" },
 
-    {"kind": "matrix", "title": "Three things LoRA buys that have nothing to do with training cost", "caption": "The cheap-training argument is the famous one and arguably the least important of the four. **The base cannot be damaged** — 4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748, permanently, and a LoRA run cannot do that because W₀ is never written to. Remove the adapter and the original model is back byte for byte. And an adapter is tens of megabytes rather than tens of gigabytes, so you can keep dozens and serve several from one base.", "cols": ["What it buys"], "rows": ["The base is untouched", "Adapters are small", "They can be merged away"], "cells": [[{"text": "4.1's forgetting is impossible - W0 is never written", "tone": "good"}], [{"text": "24,576 numbers against 1.77 million; dozens, served from one base", "tone": "good"}], [{"text": "W0 + BA is just a matrix - fold it in and ship a normal model", "tone": "violet"}]], "t": "diagram", "id": "dg-4_3-04-2"},
+    {"kind": "layers", "title": "Three things LoRA buys that have nothing to do with training cost", "caption": "The cheap-training argument is the famous one and arguably the least important of the four. **The base cannot be damaged** — 4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748, permanently, and a LoRA run cannot do that because W₀ is never written to. Remove the adapter and the original model is back byte for byte. And an adapter is tens of megabytes rather than tens of gigabytes, so you can keep dozens and serve several from one base.", "items": [{"label": "The base is untouched", "sub": "4.1's forgetting is impossible - W0 is never written", "tone": "good"}, {"label": "Adapters are small", "sub": "24,576 numbers against 1.77 million; dozens, served from one base", "tone": "good"}, {"label": "They can be merged away", "sub": "W0 + BA is just a matrix - fold it in and ship a normal model", "tone": "violet"}], "t": "diagram", "id": "dg-4_3-04-2"},
+
 
 
 

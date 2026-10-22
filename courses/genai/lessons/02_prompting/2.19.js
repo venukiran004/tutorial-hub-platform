@@ -18,7 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "failure-modes", text: "The failure-mode table",
       sub: "Seven symptoms, and what each one actually indicates" },
 
-    {"kind": "matrix", "title": "The failure-mode table, with what each symptom really indicates", "caption": "The fixes are mostly right and the right-hand column is where the value is. Two rows deserve suspicion: the first recommends moving an instruction to the end, and **§03 measures that doing so took a working prompt from 6 of 6 to 0 of 6**. And the over-refusal row suggests adding \"for educational purposes\", which is a jailbreak pattern rather than a fix — if a guardrail is firing wrongly, the threshold is the thing to change.", "cols": ["What it really indicates"], "rows": ["Instruction not followed", "Format drifts", "Hallucination", "Over-refusal", "Verbosity", "Inconsistency", "Context overflow"], "cells": [[{"text": "often position - but section 03 shows moving it can be catastrophic", "tone": "crit"}], ["use a schema; a mid-prompt reminder is a weaker version of it"], [{"text": "a retrieval failure if the context is missing; 11.1 if it is present", "tone": "warn"}], [{"text": "a guardrail threshold - and \"educational purposes\" is a jailbreak, not a fix", "tone": "crit"}], ["correct, and max_tokens will not do it (1.5)"], ["correct - and 1.7 is why it still will not be identical"], ["correct; check the token count before assuming (1.5)"]], "t": "diagram", "id": "dg-2_19-01-0"},
+    {"kind": "layers", "title": "The failure-mode table, with what each symptom really indicates", "caption": "The fixes are mostly right and the right-hand column is where the value is. Two rows deserve suspicion: the first recommends moving an instruction to the end, and **§03 measures that doing so took a working prompt from 6 of 6 to 0 of 6**. And the over-refusal row suggests adding \"for educational purposes\", which is a jailbreak pattern rather than a fix — if a guardrail is firing wrongly, the threshold is the thing to change.", "items": [{"label": "Instruction not followed", "sub": "often position - but section 03 shows moving it can be catastrophic", "tone": "crit"}, {"label": "Format drifts", "sub": "use a schema; a mid-prompt reminder is a weaker version of it"}, {"label": "Hallucination", "sub": "a retrieval failure if the context is missing; 11.1 if it is present", "tone": "warn"}, {"label": "Over-refusal", "sub": "a guardrail threshold - and \"educational purposes\" is a jailbreak, not a fix", "tone": "crit"}, {"label": "Verbosity", "sub": "correct, and max_tokens will not do it (1.5)"}, {"label": "Inconsistency", "sub": "correct - and 1.7 is why it still will not be identical"}, {"label": "Context overflow", "sub": "correct; check the token count before assuming (1.5)"}], "t": "diagram", "id": "dg-2_19-01-0"},
+
 
 
 
@@ -67,6 +68,7 @@ EC.receiveLesson({
       sub: "Six separators, same examples, same task" },
 
     {"kind": "trace", "title": "Six separators, everything else held constant", "caption": "\"Models are sensitive to wording\" is agreed with and not acted on, so here is a number. Three separators score **6 of 6** and `a means b` scores **1 of 6** — on an identical task with identical examples. The rank column shows this is not a cliff: under `means` the right answer sits at rank 2 or 3 on five of six items, so the model understands the task and something else is winning. What is winning is the pattern — `a means b` is ordinary English that continues many ways, where `a -> b` is a format.", "left": "separator", "codeW": 170, "vars": ["correct", "ranks of the right answer"], "steps": [{"code": "a -> b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"}, {"code": "a | b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"}, {"code": "a => b", "state": ["6 of 6", "1,1,1,1,1,1"], "tone": "good"}, {"code": "a: b", "state": ["4 of 6", "2,1,1,2,1,1"], "changed": [0], "tone": "warn"}, {"code": "a = b", "state": ["4 of 6", "2,1,1,2,1,1"], "tone": "warn"}, {"code": "a means b", "state": ["1 of 6", "2,3,2,2,2,1"], "changed": [0, 1], "tone": "crit", "note": "understood, outvoted"}], "t": "diagram", "id": "dg-2_19-02-1"},
+
 
 
 
@@ -152,6 +154,7 @@ SEPARATORS = {
 
 
 
+
     { t: "p", text: "The failure-mode table's first row recommends moving an instruction to the end when it is not being followed. That advice has real grounding — recency helps in long contexts, and it is standard guidance. Here is what it did to a working few-shot prompt." },
 
     { t: "code", lang: "python", title: "g219.py — instruction position", code: `INSTR = "Give the opposite of each word."
@@ -180,6 +183,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
       sub: "Cheapest and most likely first" },
 
     {"kind": "steps", "title": "The debugging procedure, reordered by cost", "caption": "The usual seven steps are all reasonable, and their usual order is the order people think of them — which is not the order of cost. Reordered, the first two are nearly free and catch the most common causes: **2.1's incident was three weeks spent on prompt versions for a truncation that was visible in the rendered request.** Changing the prompt is last, because the alternative to measuring is 31 noise-driven changes over 18 months.", "items": [{"label": "Look at the rendered request, not the template", "desc": "the actual string, with retrieved context and tool definitions", "code": "1", "tone": "violet"}, {"label": "Check the token count", "desc": "overflow looks exactly like a prompt problem (1.5)", "code": "2", "tone": "violet"}, {"label": "Set temperature to 0", "desc": "or you are debugging two problems at once", "code": "3", "tone": "accent"}, {"label": "Check the parameters", "desc": "repetition, truncation, a blank reasoning response (1.4, 1.5, 1.10)", "code": "4", "tone": "accent"}, {"label": "Try a stronger model", "desc": "if it succeeds the prompt is fine; if it fails no wording helps", "code": "5", "tone": "good"}, {"label": "Isolate", "desc": "simplest possible input, one component at a time", "code": "6", "tone": "good"}, {"label": "Then change the prompt, one thing at a time", "desc": "measured against a test set (2.12)", "code": "7", "tone": "teal"}], "t": "diagram", "id": "dg-2_19-04-3"},
+
 
 
 

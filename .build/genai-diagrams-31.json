@@ -1,247 +1,1103 @@
 {
  "13.1": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "What speech takes away, and why the latency budget is the obvious half",
-         "caption": "Modelling a voice agent as a chat agent with audio bolted to each end fails for a reason more interesting than latency: **the interface affordances your text product relies on stop existing.** No delete key, so a mistyped name is never fixed before it is sent. No scrollback, so a caller holds the conversation in working memory instead of re-reading it. Every mitigation that depends on the user seeing and revising is gone.",
-         "cols": ["What disappears"],
-         "rows": ["No delete key", "No scrollback", "No skimming", "No visible structure"],
-         "cells": [
-          [{"text": "a misspoken name is sent as-is; there is no revision step", "tone": "crit"}],
-          [{"text": "the caller holds the conversation in working memory", "tone": "crit"}],
-          ["the answer is consumed serially, at the speed you say it"],
-          [{"text": "lists, headings and emphasis have no audio equivalent (13.8)", "tone": "warn"}]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Five perception bands, and the two numbers worth memorising",
-         "caption": "Latency does not degrade experience linearly — **crossing a threshold changes what the user believes is happening.** The two to memorise are **800 ms**, under which a turn feels responsive, and **1,200 ms**, over which it reads as thinking. The cascaded pipeline in 13.3 lands at **1,650 ms — in the band where users repeat themselves**, which is the worst possible place to be, because the repeat arrives mid-response and triggers an interruption on a turn that was merely slow.",
-         "cols": ["How it reads", "What the user does"],
-         "rows": ["under ~300 ms", "300-800 ms", "800-1200 ms", "1200-2000 ms", "over ~2000 ms"],
-         "cells": [
-          [{"text": "indistinguishable from a person", "tone": "good"}, "nothing - the rhythm holds"],
-          [{"text": "responsive", "tone": "good"}, "nothing conscious"],
-          ["noticeable", "registers a wait; may fill it"],
-          [{"text": "thinking", "tone": "crit"}, {"text": "repeats themselves - the worst case", "tone": "crit"}],
-          [{"text": "broken", "tone": "crit"}, "says hello, repeats, or hangs up"]]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Identical medians, 17.1% against 96.1% bad calls",
-         "caption": "Time to first audio is **heavy-tailed** — a sum of stages, several with long right tails — so the median says almost nothing on its own. Two agents with an **identical 700 ms median** give 70.3% responsive turns against 57.1%, and the conjunction over a twelve-turn call amplifies it: **17.1% of calls go badly against 96.1%**. A call is not one draw from the distribution; it is twelve, and the width parameter is what decides the product.",
-         "left": "distribution", "codeW": 150,
-         "vars": ["median", "responsive", "thinking", "bad call"],
-         "steps": [
-          {"code": "tight", "state": ["700 ms", "70.3%", "1.6%", "17.1%"], "tone": "good"},
-          {"code": "loose", "state": ["700 ms", "57.1%", "23.6%", "96.1%"], "changed": [3], "tone": "crit", "note": "the same median"}]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "Three things to check before approving a faster model",
-         "caption": "The scenario: a text eval scoring 0.91 task success and a median time to first audio of 1,400 ms, and a proposal to buy a faster model. **Check the p95 first** — above 1,500 ms you have a variance problem and a faster median will not fix it. Check whether the eval was run on audio, because 13.12 measures a text harness reporting 100% where the real figure is 38%. And check the endpointer: **13.3 shows halving the model's TTFT buys 10.6% while endpointing is 42.4% of the budget.** A faster model is on the list, fourth.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "Check the p95", "sub": "above 1,500 ms is variance, not speed", "tone": "violet"},
-          {"id": "e", "label": "Was the eval run on audio?", "sub": "13.12: 100% reported, 38% real", "tone": "violet"},
-          {"id": "n", "label": "Check the endpointer", "sub": "42.4% of the budget", "tone": "violet"},
-          {"id": "m", "label": "A faster model buys 10.6%", "sub": "halving its TTFT", "tone": "warn"},
-          {"id": "f", "label": "So it is fourth on the list", "sub": "not first", "tone": "good"}],
-         "edges": [["p", "m"], ["e", "m"], ["n", "m"], ["m", "f"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "layers",
+    "title": "What speech takes away, and why the latency budget is the obvious half",
+    "caption": "Modelling a voice agent as a chat agent with audio bolted to each end fails for a reason more interesting than latency: **the interface affordances your text product relies on stop existing.** No delete key, so a mistyped name is never fixed before it is sent. No scrollback, so a caller holds the conversation in working memory instead of re-reading it. Every mitigation that depends on the user seeing and revising is gone.",
+    "items": [
+     {
+      "label": "No delete key",
+      "sub": "a misspoken name is sent as-is; there is no revision step",
+      "tone": "crit"
+     },
+     {
+      "label": "No scrollback",
+      "sub": "the caller holds the conversation in working memory",
+      "tone": "crit"
+     },
+     {
+      "label": "No skimming",
+      "sub": "the answer is consumed serially, at the speed you say it"
+     },
+     {
+      "label": "No visible structure",
+      "sub": "lists, headings and emphasis have no audio equivalent (13.8)",
+      "tone": "warn"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Five perception bands, and the two numbers worth memorising",
+    "caption": "Latency does not degrade experience linearly — **crossing a threshold changes what the user believes is happening.** The two to memorise are **800 ms**, under which a turn feels responsive, and **1,200 ms**, over which it reads as thinking. The cascaded pipeline in 13.3 lands at **1,650 ms — in the band where users repeat themselves**, which is the worst possible place to be, because the repeat arrives mid-response and triggers an interruption on a turn that was merely slow.",
+    "cols": [
+     "How it reads",
+     "What the user does"
+    ],
+    "rows": [
+     "under ~300 ms",
+     "300-800 ms",
+     "800-1200 ms",
+     "1200-2000 ms",
+     "over ~2000 ms"
+    ],
+    "cells": [
+     [
+      {
+       "text": "indistinguishable from a person",
+       "tone": "good"
+      },
+      "nothing - the rhythm holds"
+     ],
+     [
+      {
+       "text": "responsive",
+       "tone": "good"
+      },
+      "nothing conscious"
+     ],
+     [
+      "noticeable",
+      "registers a wait; may fill it"
+     ],
+     [
+      {
+       "text": "thinking",
+       "tone": "crit"
+      },
+      {
+       "text": "repeats themselves - the worst case",
+       "tone": "crit"
+      }
+     ],
+     [
+      {
+       "text": "broken",
+       "tone": "crit"
+      },
+      "says hello, repeats, or hangs up"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Identical medians, 17.1% against 96.1% bad calls",
+    "caption": "Time to first audio is **heavy-tailed** — a sum of stages, several with long right tails — so the median says almost nothing on its own. Two agents with an **identical 700 ms median** give 70.3% responsive turns against 57.1%, and the conjunction over a twelve-turn call amplifies it: **17.1% of calls go badly against 96.1%**. A call is not one draw from the distribution; it is twelve, and the width parameter is what decides the product.",
+    "left": "distribution",
+    "codeW": 150,
+    "vars": [
+     "median",
+     "responsive",
+     "thinking",
+     "bad call"
+    ],
+    "steps": [
+     {
+      "code": "tight",
+      "state": [
+       "700 ms",
+       "70.3%",
+       "1.6%",
+       "17.1%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "loose",
+      "state": [
+       "700 ms",
+       "57.1%",
+       "23.6%",
+       "96.1%"
+      ],
+      "changed": [
+       3
+      ],
+      "tone": "crit",
+      "note": "the same median"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Three things to check before approving a faster model",
+    "caption": "The scenario: a text eval scoring 0.91 task success and a median time to first audio of 1,400 ms, and a proposal to buy a faster model. **Check the p95 first** — above 1,500 ms you have a variance problem and a faster median will not fix it. Check whether the eval was run on audio, because 13.12 measures a text harness reporting 100% where the real figure is 38%. And check the endpointer: **13.3 shows halving the model's TTFT buys 10.6% while endpointing is 42.4% of the budget.** A faster model is on the list, fourth.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "Check the p95",
+      "sub": "above 1,500 ms is variance, not speed",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "Was the eval run on audio?",
+      "sub": "13.12: 100% reported, 38% real",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Check the endpointer",
+      "sub": "42.4% of the budget",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "A faster model buys 10.6%",
+      "sub": "halving its TTFT",
+      "tone": "warn"
+     },
+     {
+      "id": "f",
+      "label": "So it is fourth on the list",
+      "sub": "not first",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "m"
+     ],
+     [
+      "e",
+      "m"
+     ],
+     [
+      "n",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ]
+    ]
+   }
+  }
  ],
-
  "13.2": [
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Speech-native removes the ASR latency and keeps the ASR bill",
-         "caption": "This is the detail that breaks most speech-native cost models. **You still need a transcript** — for quality review, dispute resolution, the eval set, any text-based guardrail, and in a regulated industry because you are required to have one. So you run recognition over the call anyway. The good news: **it is off the critical path**, so it can run after the call, in batch, at a cheaper tier, adding zero latency. The bad news: **it costs the same money it did in the cascade.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "Speech-native: no ASR stage", "sub": "two stages of latency gone", "tone": "good"},
-          {"id": "t", "label": "But you still need a transcript", "sub": "review, disputes, evals, guardrails", "tone": "crit"},
-          {"id": "o", "label": "Off the critical path", "sub": "batch, after the call, cheaper tier", "tone": "good"},
-          {"id": "z", "label": "Zero added latency", "sub": "which is the real win", "tone": "good"},
-          {"id": "b", "label": "And the same bill", "sub": "the latency went, the cost did not", "tone": "crit"}],
-         "edges": [["s", "t"], ["t", "o"], ["o", "z"], ["o", "b"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Seven situations, and the default for anyone who has not measured",
-         "caption": "Two rows are about **boundaries rather than quality**: regulated work and tool-heavy agents need text between thought and speech, and you cannot bolt that on afterwards. The last row is the honest default: **cascade, because it is the one you can instrument** — and 13.3 shows most of the 730 ms gap is recoverable for free, so the choice is rarely as forced as it looks.",
-         "cols": ["Choose", "Because"],
-         "rows": ["Regulated industry", "Tool-heavy task agent", "Conversation is the product", "Latency differentiates", "High volume, thin margin", "Multilingual code-switching", "You have measured nothing"],
-         "cells": [
-          [{"text": "cascade", "tone": "good"}, "guardrails need text boundaries"],
-          [{"text": "cascade", "tone": "good"}, "tool correctness is a text problem"],
-          [{"text": "speech-native", "tone": "accent"}, "prosody and interruption survive"],
-          [{"text": "speech-native", "tone": "accent"}, "730 ms is real; spend it if you can"],
-          [{"text": "cascade", "tone": "good"}, "the premium is $110k/month at 10k calls/day"],
-          [{"text": "speech-native", "tone": "accent"}, "no language to commit to mid-utterance"],
-          [{"text": "cascade", "tone": "violet"}, "it is the one you can instrument"]]}}
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Speech-native removes the ASR latency and keeps the ASR bill",
+    "caption": "This is the detail that breaks most speech-native cost models. **You still need a transcript** — for quality review, dispute resolution, the eval set, any text-based guardrail, and in a regulated industry because you are required to have one. So you run recognition over the call anyway. The good news: **it is off the critical path**, so it can run after the call, in batch, at a cheaper tier, adding zero latency. The bad news: **it costs the same money it did in the cascade.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "Speech-native: no ASR stage",
+      "sub": "two stages of latency gone",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "But you still need a transcript",
+      "sub": "review, disputes, evals, guardrails",
+      "tone": "crit"
+     },
+     {
+      "id": "o",
+      "label": "Off the critical path",
+      "sub": "batch, after the call, cheaper tier",
+      "tone": "good"
+     },
+     {
+      "id": "z",
+      "label": "Zero added latency",
+      "sub": "which is the real win",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "And the same bill",
+      "sub": "the latency went, the cost did not",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "t"
+     ],
+     [
+      "t",
+      "o"
+     ],
+     [
+      "o",
+      "z"
+     ],
+     [
+      "o",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Seven situations, and the default for anyone who has not measured",
+    "caption": "Two rows are about **boundaries rather than quality**: regulated work and tool-heavy agents need text between thought and speech, and you cannot bolt that on afterwards. The last row is the honest default: **cascade, because it is the one you can instrument** — and 13.3 shows most of the 730 ms gap is recoverable for free, so the choice is rarely as forced as it looks.",
+    "cols": [
+     "Choose",
+     "Because"
+    ],
+    "rows": [
+     "Regulated industry",
+     "Tool-heavy task agent",
+     "Conversation is the product",
+     "Latency differentiates",
+     "High volume, thin margin",
+     "Multilingual code-switching",
+     "You have measured nothing"
+    ],
+    "cells": [
+     [
+      {
+       "text": "cascade",
+       "tone": "good"
+      },
+      "guardrails need text boundaries"
+     ],
+     [
+      {
+       "text": "cascade",
+       "tone": "good"
+      },
+      "tool correctness is a text problem"
+     ],
+     [
+      {
+       "text": "speech-native",
+       "tone": "accent"
+      },
+      "prosody and interruption survive"
+     ],
+     [
+      {
+       "text": "speech-native",
+       "tone": "accent"
+      },
+      "730 ms is real; spend it if you can"
+     ],
+     [
+      {
+       "text": "cascade",
+       "tone": "good"
+      },
+      "the premium is $110k/month at 10k calls/day"
+     ],
+     [
+      {
+       "text": "speech-native",
+       "tone": "accent"
+      },
+      "no language to commit to mid-utterance"
+     ],
+     [
+      {
+       "text": "cascade",
+       "tone": "violet"
+      },
+      "it is the one you can instrument"
+     ]
+    ]
+   }
+  }
  ],
-
  "13.3": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Halving each stage, and where the roadmap should go",
-         "caption": "A budget tells you where the time is; **a sensitivity analysis tells you what an improvement is worth**, which is the question a roadmap needs. Halving a stage is a rough unit of serious engineering effort. The answer is unambiguous: **endpointing is 42.4% of the budget and halving it buys 21.2%**, against 10.6% for halving the model's time to first token. Three of the seven stages are worth under 4% each, which is where attention usually goes.",
-         "left": "halve this stage", "codeW": 190,
-         "vars": ["saves", "new total", "better by"],
-         "steps": [
-          {"code": "endpoint silence", "state": ["350 ms", "1,300 ms", "21.2%"], "tone": "good", "note": "42.4% of the budget"},
-          {"code": "LLM time to first token", "state": ["175 ms", "1,475 ms", "10.6%"], "tone": "accent"},
-          {"code": "LLM first clause", "state": ["100 ms", "1,550 ms", "6.1%"], "tone": "accent"},
-          {"code": "TTS first chunk", "state": ["90 ms", "1,560 ms", "5.5%"], "tone": "warn"},
-          {"code": "ASR finalisation", "state": ["60 ms", "1,590 ms", "3.6%"], "tone": "warn"},
-          {"code": "playout buffer", "state": ["30 ms", "1,620 ms", "1.8%"], "tone": "crit"},
-          {"code": "network to LLM", "state": ["20 ms", "1,630 ms", "1.2%"], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "1,650 against 920, and 200 ms of it is one threshold",
-         "caption": "The speech-native pipeline is **the only one of the two that lands inside 13.1's responsive band**. The cascade at 1,650 ms sits where users repeat themselves. That is not a marginal difference in a metric — it is a different product. And note where the gap comes from: of the 730 ms, **200 ms is the endpoint threshold alone**, which is a configuration choice rather than an architectural one.",
-         "left": "stage", "codeW": 170,
-         "vars": ["cascade", "speech-native"],
-         "steps": [
-          {"code": "endpoint silence", "state": ["700 ms", "500 ms"], "changed": [1], "tone": "accent", "note": "a config choice"},
-          {"code": "ASR finalisation", "state": ["120 ms", "-"], "tone": "good"},
-          {"code": "model first output", "state": ["550 ms", "320 ms"], "tone": "good"},
-          {"code": "TTS first chunk", "state": ["180 ms", "-"], "tone": "good"},
-          {"code": "time to first audio", "state": ["1,650 ms", "920 ms"], "changed": [0, 1], "tone": "violet", "note": "730 ms apart"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A sensitivity ranking is not a plan",
-         "caption": "A sensitivity analysis ranks changes **individually**, and a target needs combinations — whose costs do not add the way milliseconds do. **Two optimisations might save 300 ms between them, cost ten engineering weeks and raise the per-call price; a third might save 200 ms for a configuration change.** So the ranking is the input to a plan rather than the plan: order by milliseconds per unit of effort and risk, not by milliseconds.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "The sensitivity ranking", "sub": "milliseconds per stage", "tone": "accent"},
-          {"id": "c", "label": "Costs do not add like milliseconds", "sub": "weeks, risk, per-call price", "tone": "crit"},
-          {"id": "t", "label": "Two changes: 300 ms, ten weeks", "sub": "and a higher unit cost", "tone": "warn"},
-          {"id": "o", "label": "One change: 200 ms, a config edit", "sub": "and no risk", "tone": "good"},
-          {"id": "p", "label": "So order by ms per unit of effort", "sub": "not by ms", "tone": "violet"}],
-         "edges": [["r", "c"], ["c", "t"], ["c", "o"], ["t", "p"], ["o", "p"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Halving each stage, and where the roadmap should go",
+    "caption": "A budget tells you where the time is; **a sensitivity analysis tells you what an improvement is worth**, which is the question a roadmap needs. Halving a stage is a rough unit of serious engineering effort. The answer is unambiguous: **endpointing is 42.4% of the budget and halving it buys 21.2%**, against 10.6% for halving the model's time to first token. Three of the seven stages are worth under 4% each, which is where attention usually goes.",
+    "left": "halve this stage",
+    "codeW": 190,
+    "vars": [
+     "saves",
+     "new total",
+     "better by"
+    ],
+    "steps": [
+     {
+      "code": "endpoint silence",
+      "state": [
+       "350 ms",
+       "1,300 ms",
+       "21.2%"
+      ],
+      "tone": "good",
+      "note": "42.4% of the budget"
+     },
+     {
+      "code": "LLM time to first token",
+      "state": [
+       "175 ms",
+       "1,475 ms",
+       "10.6%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "LLM first clause",
+      "state": [
+       "100 ms",
+       "1,550 ms",
+       "6.1%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "TTS first chunk",
+      "state": [
+       "90 ms",
+       "1,560 ms",
+       "5.5%"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "ASR finalisation",
+      "state": [
+       "60 ms",
+       "1,590 ms",
+       "3.6%"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "playout buffer",
+      "state": [
+       "30 ms",
+       "1,620 ms",
+       "1.8%"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "network to LLM",
+      "state": [
+       "20 ms",
+       "1,630 ms",
+       "1.2%"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "1,650 against 920, and 200 ms of it is one threshold",
+    "caption": "The speech-native pipeline is **the only one of the two that lands inside 13.1's responsive band**. The cascade at 1,650 ms sits where users repeat themselves. That is not a marginal difference in a metric — it is a different product. And note where the gap comes from: of the 730 ms, **200 ms is the endpoint threshold alone**, which is a configuration choice rather than an architectural one.",
+    "left": "stage",
+    "codeW": 170,
+    "vars": [
+     "cascade",
+     "speech-native"
+    ],
+    "steps": [
+     {
+      "code": "endpoint silence",
+      "state": [
+       "700 ms",
+       "500 ms"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent",
+      "note": "a config choice"
+     },
+     {
+      "code": "ASR finalisation",
+      "state": [
+       "120 ms",
+       "-"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "model first output",
+      "state": [
+       "550 ms",
+       "320 ms"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "TTS first chunk",
+      "state": [
+       "180 ms",
+       "-"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "time to first audio",
+      "state": [
+       "1,650 ms",
+       "920 ms"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "violet",
+      "note": "730 ms apart"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A sensitivity ranking is not a plan",
+    "caption": "A sensitivity analysis ranks changes **individually**, and a target needs combinations — whose costs do not add the way milliseconds do. **Two optimisations might save 300 ms between them, cost ten engineering weeks and raise the per-call price; a third might save 200 ms for a configuration change.** So the ranking is the input to a plan rather than the plan: order by milliseconds per unit of effort and risk, not by milliseconds.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "The sensitivity ranking",
+      "sub": "milliseconds per stage",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Costs do not add like milliseconds",
+      "sub": "weeks, risk, per-call price",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Two changes: 300 ms, ten weeks",
+      "sub": "and a higher unit cost",
+      "tone": "warn"
+     },
+     {
+      "id": "o",
+      "label": "One change: 200 ms, a config edit",
+      "sub": "and no risk",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "So order by ms per unit of effort",
+      "sub": "not by ms",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "c"
+     ],
+     [
+      "c",
+      "t"
+     ],
+     [
+      "c",
+      "o"
+     ],
+     [
+      "t",
+      "p"
+     ],
+     [
+      "o",
+      "p"
+     ]
+    ]
+   }
+  }
  ],
-
  "13.4": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Five blocks of arithmetic, and no audio library anywhere",
-         "caption": "Worth noticing what kind of program this is: **no audio library, no model call, no network — arithmetic over a table of constants.** And it is still the most useful artefact in the module, because **the constants are the design and the arithmetic is the argument.** A voice pipeline is a latency allocation problem before it is an engineering one, and this is the form in which that problem can be argued about.",
-         "cols": ["Question it answers", "Output"],
-         "rows": ["stage budgets", "sensitivity loop", "endpointing distribution", "barge-in budget", "cost block"],
-         "cells": [
-          ["where does the time go?", "1,650 ms cascaded, 920 speech-native"],
-          [{"text": "what is each improvement worth?", "tone": "good"}, "endpointing 21.2%, model TTFT 10.6%"],
-          [{"text": "what does patience cost?", "tone": "violet"}, "700 ms cuts off 6.1% of turns"],
-          ["how fast must it stop talking?", "160 ms, against a ~200 ms limit"],
-          ["what does a call cost?", "$0.0681, and TTS is the largest line"]]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "A table that says why each stage exists is a table you can argue with",
-         "caption": "**A table of stage names and durations invites someone to ask for all of them to be smaller.** A table that also says *why* each one exists turns every row into a trade with a named cost. Then \"reduce the playout buffer to 30 ms\" is visibly **a decision to accept more gaps mid-word on bad connections**, rather than a free 30 ms — and the conversation moves from optimisation to policy, which is where it belongs.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "Names and durations only", "sub": "invites 'make them all smaller'", "tone": "warn"},
-          {"id": "w", "label": "Add why each one exists", "sub": "one column", "tone": "good"},
-          {"id": "t", "label": "Each row becomes a trade", "sub": "with a named cost", "tone": "good"},
-          {"id": "b", "label": "'30 ms buffer' means", "sub": "accept gaps mid-word on bad links", "tone": "violet"},
-          {"id": "p", "label": "Optimisation becomes policy", "sub": "which is where it belongs", "tone": "teal"}],
-         "edges": [["n", "w"], ["w", "t"], ["t", "b"], ["b", "p"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The endpointing frontier, as a probability",
-         "caption": "Model intra-utterance pauses as lognormal with a 220 ms median, and for any threshold **the fraction of pauses longer than it is exactly the fraction of turns the agent talks over.** That turns a tuning knob into a frontier you can read: **300 ms cuts off 34 turns in 100; 700 ms cuts off 6.1; 1,200 ms cuts off 1.2** — and every step down that column is paid for in latency on *every* turn, not just the interrupted ones.",
-         "left": "threshold", "codeW": 150,
-         "vars": ["P(cut the user off)", "per 100 turns"],
-         "steps": [
-          {"code": "300 ms", "state": ["0.340", "34.0"], "tone": "crit"},
-          {"code": "500 ms", "state": ["0.137", "13.7"], "changed": [0], "tone": "crit"},
-          {"code": "700 ms", "state": ["0.061", "6.1"], "changed": [0], "tone": "accent", "note": "the usual default"},
-          {"code": "900 ms", "state": ["0.030", "3.0"], "tone": "warn"},
-          {"code": "1,200 ms", "state": ["0.012", "1.2"], "tone": "warn", "note": "and 1,200 ms on every turn"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Five blocks of arithmetic, and no audio library anywhere",
+    "caption": "Worth noticing what kind of program this is: **no audio library, no model call, no network — arithmetic over a table of constants.** And it is still the most useful artefact in the module, because **the constants are the design and the arithmetic is the argument.** A voice pipeline is a latency allocation problem before it is an engineering one, and this is the form in which that problem can be argued about.",
+    "cols": [
+     "Question it answers",
+     "Output"
+    ],
+    "rows": [
+     "stage budgets",
+     "sensitivity loop",
+     "endpointing distribution",
+     "barge-in budget",
+     "cost block"
+    ],
+    "cells": [
+     [
+      "where does the time go?",
+      "1,650 ms cascaded, 920 speech-native"
+     ],
+     [
+      {
+       "text": "what is each improvement worth?",
+       "tone": "good"
+      },
+      "endpointing 21.2%, model TTFT 10.6%"
+     ],
+     [
+      {
+       "text": "what does patience cost?",
+       "tone": "violet"
+      },
+      "700 ms cuts off 6.1% of turns"
+     ],
+     [
+      "how fast must it stop talking?",
+      "160 ms, against a ~200 ms limit"
+     ],
+     [
+      "what does a call cost?",
+      "$0.0681, and TTS is the largest line"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "A table that says why each stage exists is a table you can argue with",
+    "caption": "**A table of stage names and durations invites someone to ask for all of them to be smaller.** A table that also says *why* each one exists turns every row into a trade with a named cost. Then \"reduce the playout buffer to 30 ms\" is visibly **a decision to accept more gaps mid-word on bad connections**, rather than a free 30 ms — and the conversation moves from optimisation to policy, which is where it belongs.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "Names and durations only",
+      "sub": "invites 'make them all smaller'",
+      "tone": "warn"
+     },
+     {
+      "id": "w",
+      "label": "Add why each one exists",
+      "sub": "one column",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Each row becomes a trade",
+      "sub": "with a named cost",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "'30 ms buffer' means",
+      "sub": "accept gaps mid-word on bad links",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "Optimisation becomes policy",
+      "sub": "which is where it belongs",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "w"
+     ],
+     [
+      "w",
+      "t"
+     ],
+     [
+      "t",
+      "b"
+     ],
+     [
+      "b",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The endpointing frontier, as a probability",
+    "caption": "Model intra-utterance pauses as lognormal with a 220 ms median, and for any threshold **the fraction of pauses longer than it is exactly the fraction of turns the agent talks over.** That turns a tuning knob into a frontier you can read: **300 ms cuts off 34 turns in 100; 700 ms cuts off 6.1; 1,200 ms cuts off 1.2** — and every step down that column is paid for in latency on *every* turn, not just the interrupted ones.",
+    "left": "threshold",
+    "codeW": 150,
+    "vars": [
+     "P(cut the user off)",
+     "per 100 turns"
+    ],
+    "steps": [
+     {
+      "code": "300 ms",
+      "state": [
+       "0.340",
+       "34.0"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "500 ms",
+      "state": [
+       "0.137",
+       "13.7"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "700 ms",
+      "state": [
+       "0.061",
+       "6.1"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "accent",
+      "note": "the usual default"
+     },
+     {
+      "code": "900 ms",
+      "state": [
+       "0.030",
+       "3.0"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "1,200 ms",
+      "state": [
+       "0.012",
+       "1.2"
+      ],
+      "tone": "warn",
+      "note": "and 1,200 ms on every turn"
+     }
+    ]
+   }
+  }
  ],
-
  "13.5": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "A silence timer listens to the one signal that is least informative",
-         "caption": "The standard rule — no speech for N ms, so the turn is over — **is wrong in a way no amount of tuning fixes**, because people pause inside sentences for reasons that have nothing to do with being finished. Meanwhile **a genuine end of turn is often marked by no silence at all**: a falling pitch contour, a completed syntactic structure, a question's rising tone. Humans use those, which is why their turn-taking gap is 200 ms rather than 700 — and a silence timer discards every one of them.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "No speech for N ms, so it is over", "sub": "the standard rule", "tone": "accent"},
-          {"id": "p", "label": "People pause mid-sentence", "sub": "for unrelated reasons", "tone": "crit"},
-          {"id": "e", "label": "And end turns with no silence", "sub": "falling pitch, completed syntax", "tone": "crit"},
-          {"id": "h", "label": "Humans use those signals", "sub": "hence a 200 ms gap, not 700", "tone": "good"},
-          {"id": "d", "label": "A timer discards all of them", "sub": "and uses the least informative one", "tone": "crit"}],
-         "edges": [["r", "p"], ["r", "e"], ["e", "h"], ["h", "d"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "The frontier, with the latency cost beside it",
-         "caption": "The table is usually read as a tuning guide and it is really a **frontier**: each threshold buys an interruption rate at the price of adding the same number of milliseconds to **every** turn. 300 ms cuts off 34 turns in 100; 1,500 ms cuts off 0.5 and adds 1.5 seconds to all of them. There is no setting on this curve that is good — which is §04's point, because a semantic endpointer is not a point on it.",
-         "left": "threshold", "codeW": 160,
-         "vars": ["added latency", "P(cut off)", "per 100 turns"],
-         "steps": [
-          {"code": "300 ms", "state": ["+300 ms", "0.340", "34.0"], "tone": "crit"},
-          {"code": "500 ms", "state": ["+500 ms", "0.137", "13.7"], "tone": "crit"},
-          {"code": "700 ms", "state": ["+700 ms", "0.061", "6.1"], "changed": [1], "tone": "accent"},
-          {"code": "900 ms", "state": ["+900 ms", "0.030", "3.0"], "tone": "warn"},
-          {"code": "1,200 ms", "state": ["+1,200 ms", "0.012", "1.2"], "tone": "warn"},
-          {"code": "1,500 ms", "state": ["+1,500 ms", "0.005", "0.5"], "changed": [0], "tone": "crit", "note": "on every turn"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A silence timer listens to the one signal that is least informative",
+    "caption": "The standard rule — no speech for N ms, so the turn is over — **is wrong in a way no amount of tuning fixes**, because people pause inside sentences for reasons that have nothing to do with being finished. Meanwhile **a genuine end of turn is often marked by no silence at all**: a falling pitch contour, a completed syntactic structure, a question's rising tone. Humans use those, which is why their turn-taking gap is 200 ms rather than 700 — and a silence timer discards every one of them.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "No speech for N ms, so it is over",
+      "sub": "the standard rule",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "People pause mid-sentence",
+      "sub": "for unrelated reasons",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "And end turns with no silence",
+      "sub": "falling pitch, completed syntax",
+      "tone": "crit"
+     },
+     {
+      "id": "h",
+      "label": "Humans use those signals",
+      "sub": "hence a 200 ms gap, not 700",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "A timer discards all of them",
+      "sub": "and uses the least informative one",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "p"
+     ],
+     [
+      "r",
+      "e"
+     ],
+     [
+      "e",
+      "h"
+     ],
+     [
+      "h",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The frontier, with the latency cost beside it",
+    "caption": "The table is usually read as a tuning guide and it is really a **frontier**: each threshold buys an interruption rate at the price of adding the same number of milliseconds to **every** turn. 300 ms cuts off 34 turns in 100; 1,500 ms cuts off 0.5 and adds 1.5 seconds to all of them. There is no setting on this curve that is good — which is §04's point, because a semantic endpointer is not a point on it.",
+    "left": "threshold",
+    "codeW": 160,
+    "vars": [
+     "added latency",
+     "P(cut off)",
+     "per 100 turns"
+    ],
+    "steps": [
+     {
+      "code": "300 ms",
+      "state": [
+       "+300 ms",
+       "0.340",
+       "34.0"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "500 ms",
+      "state": [
+       "+500 ms",
+       "0.137",
+       "13.7"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "700 ms",
+      "state": [
+       "+700 ms",
+       "0.061",
+       "6.1"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "900 ms",
+      "state": [
+       "+900 ms",
+       "0.030",
+       "3.0"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "1,200 ms",
+      "state": [
+       "+1,200 ms",
+       "0.012",
+       "1.2"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "1,500 ms",
+      "state": [
+       "+1,500 ms",
+       "0.005",
+       "0.5"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "on every turn"
+     }
+    ]
+   }
+  }
  ],
-
  "13.6": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The stuttering demo, and why headphones hide it",
-         "caption": "Before any of the rest works, **the agent must not hear itself.** If the microphone picks up the speaker output — which it does on a laptop, a phone handset, a speakerphone and a car — the voice activity detector sees speech for the entire time the agent is talking, and **barge-in fires immediately and continuously**. The agent speaks two or three words, cuts out, starts again, cuts out, with nobody talking to it. **On headphones everything works perfectly**, which is why this ships.",
-         "cols": 3,
-         "nodes": [
-          {"id": "m", "label": "The mic hears the speaker", "sub": "laptop, handset, car", "tone": "crit"},
-          {"id": "v", "label": "VAD sees speech throughout", "sub": "the agent's own voice", "tone": "crit"},
-          {"id": "b", "label": "Barge-in fires continuously", "sub": "two words, cut, two words, cut", "tone": "crit"},
-          {"id": "h", "label": "On headphones it is perfect", "sub": "which is why it ships", "tone": "warn"},
-          {"id": "a", "label": "AEC subtracts the known output", "sub": "a filtered copy, from the input", "tone": "good"}],
-         "edges": [["m", "v"], ["v", "b"], ["b", "h"], ["h", "a"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "\"As I already mentioned\" is a state bug, not a hallucination",
-         "caption": "**The model is reading its own transcript correctly** — the transcript is wrong. When a user interrupts, the generated text that was never spoken stays in the history, so the model believes it said things the user never heard. That is what makes it a **state-management bug rather than a model-quality bug**, and why no amount of prompting fixes it: truncate the assistant turn to what was actually played out. 13.15 prices the omission at **17.5% phantom context over a ten-turn call.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "i", "label": "The user interrupts", "sub": "playout stops mid-sentence", "tone": "accent"},
-          {"id": "t", "label": "The unspoken text stays in history", "sub": "all of it", "tone": "crit"},
-          {"id": "m", "label": "The model reads it correctly", "sub": "and says 'as I mentioned'", "tone": "crit"},
-          {"id": "s", "label": "A state bug, not a model bug", "sub": "so prompting cannot fix it", "tone": "violet"},
-          {"id": "f", "label": "Truncate to what was played", "sub": "17.5% phantom context otherwise", "tone": "good"}],
-         "edges": [["i", "t"], ["t", "m"], ["m", "s"], ["s", "f"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The stuttering demo, and why headphones hide it",
+    "caption": "Before any of the rest works, **the agent must not hear itself.** If the microphone picks up the speaker output — which it does on a laptop, a phone handset, a speakerphone and a car — the voice activity detector sees speech for the entire time the agent is talking, and **barge-in fires immediately and continuously**. The agent speaks two or three words, cuts out, starts again, cuts out, with nobody talking to it. **On headphones everything works perfectly**, which is why this ships.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "The mic hears the speaker",
+      "sub": "laptop, handset, car",
+      "tone": "crit"
+     },
+     {
+      "id": "v",
+      "label": "VAD sees speech throughout",
+      "sub": "the agent's own voice",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Barge-in fires continuously",
+      "sub": "two words, cut, two words, cut",
+      "tone": "crit"
+     },
+     {
+      "id": "h",
+      "label": "On headphones it is perfect",
+      "sub": "which is why it ships",
+      "tone": "warn"
+     },
+     {
+      "id": "a",
+      "label": "AEC subtracts the known output",
+      "sub": "a filtered copy, from the input",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "v"
+     ],
+     [
+      "v",
+      "b"
+     ],
+     [
+      "b",
+      "h"
+     ],
+     [
+      "h",
+      "a"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "\"As I already mentioned\" is a state bug, not a hallucination",
+    "caption": "**The model is reading its own transcript correctly** — the transcript is wrong. When a user interrupts, the generated text that was never spoken stays in the history, so the model believes it said things the user never heard. That is what makes it a **state-management bug rather than a model-quality bug**, and why no amount of prompting fixes it: truncate the assistant turn to what was actually played out. 13.15 prices the omission at **17.5% phantom context over a ten-turn call.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "The user interrupts",
+      "sub": "playout stops mid-sentence",
+      "tone": "accent"
+     },
+     {
+      "id": "t",
+      "label": "The unspoken text stays in history",
+      "sub": "all of it",
+      "tone": "crit"
+     },
+     {
+      "id": "m",
+      "label": "The model reads it correctly",
+      "sub": "and says 'as I mentioned'",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "A state bug, not a model bug",
+      "sub": "so prompting cannot fix it",
+      "tone": "violet"
+     },
+     {
+      "id": "f",
+      "label": "Truncate to what was played",
+      "sub": "17.5% phantom context otherwise",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "t"
+     ],
+     [
+      "t",
+      "m"
+     ],
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "f"
+     ]
+    ]
+   }
+  }
  ],
-
  "13.7": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Every stage has something useful to say before it is done",
-         "caption": "The naive pipeline treats each stage as a function and every stage waits for its predecessor. The streamed pipeline treats each as a **generator**. The unit that matters in the middle is the **clause**: you do not synthesise token by token, because prosody — pitch, stress, the shape of a phrase — depends on where the phrase ends, so **a clause of roughly twelve tokens is the smallest unit that sounds natural.** And playout emits nothing, but it can be **flushed**, which is what makes barge-in possible at all.",
-         "cols": ["Can emit early", "Which enables"],
-         "rows": ["ASR", "LLM", "TTS", "playout"],
-         "cells": [
-          ["partial hypotheses, revised", {"text": "speculative prefill, live captions", "tone": "good"}],
-          ["tokens as they are sampled", "synthesis starts on the first clause"],
-          ["audio chunks per clause", "playout starts before synthesis finishes"],
-          [{"text": "nothing - it is the sink", "tone": "accent"}, {"text": "but it can be flushed - hence barge-in", "tone": "violet"}]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Streaming saves 420 ms of the response and zero of the first audio",
-         "caption": "The full response goes from 2,410 ms serial to 1,990 ms streamed — **420 ms, widening with the length of the answer**, because every additional clause is additive in a serial pipeline and hidden in a streamed one. And **time to first audio is 1,650 ms in both. Not approximately — identically, to the millisecond.** The path to the first sound is a chain: endpointing, finalisation, network, prefill, one clause, synthesis, playout. Overlapping stages cannot shorten a chain; **only removing a link can**, which is §03.",
-         "left": "measure", "codeW": 190,
-         "vars": ["serial", "streamed"],
-         "steps": [
-          {"code": "full response", "state": ["2,410 ms", "1,990 ms"], "changed": [1], "tone": "good", "note": "420 ms, and it widens"},
-          {"code": "time to first audio", "state": ["1,650 ms", "1,650 ms"], "tone": "crit", "note": "identical, to the ms"},
-          {"code": "because it is a chain", "state": ["7 links", "still 7 links"], "tone": "violet"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Speculative prefill removes a link instead of overlapping one",
-         "caption": "During the endpointing window — **700 ms of deliberate waiting** — the pipeline is doing nothing at all, and it already has a partial transcript that is probably close to final. So prefill on it. The saving depends entirely on **how much of the speculative prefill survives**: if the partial's prefix is byte-identical to the final prompt's prefix, everything up to the divergence point is reusable. Measured: **175 ms if half is reusable, 290 ms if nearly all of it is.**",
-         "left": "how much survives", "codeW": 190,
-         "vars": ["saved"],
-         "steps": [
-          {"code": "the window is idle", "state": ["700 ms of nothing"], "tone": "crit"},
-          {"code": "half the prefill reusable", "state": ["175 ms"], "tone": "good"},
-          {"code": "nearly all reusable", "state": ["290 ms"], "changed": [0], "tone": "good"},
-          {"code": "and it removes a link", "state": ["unlike overlapping"], "tone": "violet"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Every stage has something useful to say before it is done",
+    "caption": "The naive pipeline treats each stage as a function and every stage waits for its predecessor. The streamed pipeline treats each as a **generator**. The unit that matters in the middle is the **clause**: you do not synthesise token by token, because prosody — pitch, stress, the shape of a phrase — depends on where the phrase ends, so **a clause of roughly twelve tokens is the smallest unit that sounds natural.** And playout emits nothing, but it can be **flushed**, which is what makes barge-in possible at all.",
+    "cols": [
+     "Can emit early",
+     "Which enables"
+    ],
+    "rows": [
+     "ASR",
+     "LLM",
+     "TTS",
+     "playout"
+    ],
+    "cells": [
+     [
+      "partial hypotheses, revised",
+      {
+       "text": "speculative prefill, live captions",
+       "tone": "good"
+      }
+     ],
+     [
+      "tokens as they are sampled",
+      "synthesis starts on the first clause"
+     ],
+     [
+      "audio chunks per clause",
+      "playout starts before synthesis finishes"
+     ],
+     [
+      {
+       "text": "nothing - it is the sink",
+       "tone": "accent"
+      },
+      {
+       "text": "but it can be flushed - hence barge-in",
+       "tone": "violet"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Streaming saves 420 ms of the response and zero of the first audio",
+    "caption": "The full response goes from 2,410 ms serial to 1,990 ms streamed — **420 ms, widening with the length of the answer**, because every additional clause is additive in a serial pipeline and hidden in a streamed one. And **time to first audio is 1,650 ms in both. Not approximately — identically, to the millisecond.** The path to the first sound is a chain: endpointing, finalisation, network, prefill, one clause, synthesis, playout. Overlapping stages cannot shorten a chain; **only removing a link can**, which is §03.",
+    "left": "measure",
+    "codeW": 190,
+    "vars": [
+     "serial",
+     "streamed"
+    ],
+    "steps": [
+     {
+      "code": "full response",
+      "state": [
+       "2,410 ms",
+       "1,990 ms"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "420 ms, and it widens"
+     },
+     {
+      "code": "time to first audio",
+      "state": [
+       "1,650 ms",
+       "1,650 ms"
+      ],
+      "tone": "crit",
+      "note": "identical, to the ms"
+     },
+     {
+      "code": "because it is a chain",
+      "state": [
+       "7 links",
+       "still 7 links"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Speculative prefill removes a link instead of overlapping one",
+    "caption": "During the endpointing window — **700 ms of deliberate waiting** — the pipeline is doing nothing at all, and it already has a partial transcript that is probably close to final. So prefill on it. The saving depends entirely on **how much of the speculative prefill survives**: if the partial's prefix is byte-identical to the final prompt's prefix, everything up to the divergence point is reusable. Measured: **175 ms if half is reusable, 290 ms if nearly all of it is.**",
+    "left": "how much survives",
+    "codeW": 190,
+    "vars": [
+     "saved"
+    ],
+    "steps": [
+     {
+      "code": "the window is idle",
+      "state": [
+       "700 ms of nothing"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "half the prefill reusable",
+      "state": [
+       "175 ms"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "nearly all reusable",
+      "state": [
+       "290 ms"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "and it removes a link",
+      "state": [
+       "unlike overlapping"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ]
 }

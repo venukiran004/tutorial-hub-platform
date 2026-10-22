@@ -1,209 +1,896 @@
 {
  "6.5": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "Not degraded — absent",
-         "caption": "6.3 covered parsing as a quality problem: a table flattened into orphaned numbers. This is the case where **there is no text layer to parse badly in the first place** — a chart in a paper, a diagram in a manual, a scanned filing. Standard text RAG does not get worse on these; the content simply never enters the index, so the retriever cannot return it at any k and the evaluation in §05 shows exactly that: **Hit@5 of 0.00** on image queries.",
-         "cols": 3,
-         "nodes": [
-          {"id": "c", "label": "A chart, a diagram, a scan", "sub": "no text layer", "tone": "accent"},
-          {"id": "p", "label": "The parser extracts nothing", "sub": "or a caption at best", "tone": "warn"},
-          {"id": "i", "label": "Nothing enters the index", "sub": "there is no chunk", "tone": "crit"},
-          {"id": "r", "label": "No k retrieves it", "sub": "Hit@5 = 0.00", "tone": "crit"},
-          {"id": "d", "label": "Absent, not degraded", "sub": "which is why tuning cannot help", "tone": "violet"}],
-         "edges": [["c", "p"], ["p", "i"], ["i", "r"], ["r", "d"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Summarise then embed is the structurally correct choice, not just the pragmatic one",
-         "caption": "Option B sends each image or table to a vision model, gets a text description, and embeds **that** with the same text model as everything else. It is usually presented as a pragmatic compromise, and it is better than that: once every stored vector comes from one model, **every comparison is text-to-text in one space** — so there is no modality gap to calibrate, no cross-modal score to reconcile, and the fusion problems of 6.7 do not arise. The cost is a vision call per asset at index time, paid once.",
-         "cols": 3,
-         "nodes": [
-          {"id": "a", "label": "An image or a table", "sub": "no text of its own", "tone": "accent"},
-          {"id": "v", "label": "A vision model describes it", "sub": "once, at index time", "tone": "violet"},
-          {"id": "e", "label": "Embed the description", "sub": "with the same text model", "tone": "good"},
-          {"id": "o", "label": "One model, one space", "sub": "every comparison is text-to-text", "tone": "good"},
-          {"id": "n", "label": "No modality gap to calibrate", "sub": "and no cross-modal scores", "tone": "good"},
-          {"id": "c", "label": "Cost: one vision call per asset", "sub": "paid once, not per query", "tone": "teal"}],
-         "edges": [["a", "v"], ["v", "e"], ["e", "o"], ["o", "n"], ["n", "c"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "ColPali removes four pipeline stages by removing extraction",
-         "caption": "The opposite line: stop extracting anything. Treat each page as an image, embed it into **many** vectors rather than one, and compute late interaction between query tokens and page patches at query time — MaxSim, the ColBERT mechanism. What it buys is the disappearance of the four stages that caused most of this module's problems. **Chunking — 5.4's highest-leverage and fiddliest decision — does not exist**, and layout becomes a feature rather than a casualty.",
-         "cols": ["What it removes"],
-         "rows": ["No OCR", "No chunking", "No parsing", "Layout is a feature"],
-         "cells": [
-          [{"text": "nothing to get wrong on a scan, and no noise embedded as nonsense", "tone": "good"}],
-          [{"text": "5.4's highest-leverage decision simply does not exist", "tone": "good"}],
-          ["no table extraction, no boilerplate stripping, no running-header bug"],
-          [{"text": "a table is seen as a table; a figure sits beside its caption", "tone": "violet"}]]}},
-  {"after": "05",
-   "d": {"kind": "trace",
-         "title": "Why an aggregate score is actively misleading here",
-         "caption": "Measure each modality independently, because the aggregate hides a total failure. **Images are retrieved 0.00 of the time** and the overall Hit@5 is still a respectable-looking 0.76 — because most queries are text queries, and text works. A dashboard reporting the overall number would show a healthy system with an entire modality missing from the index, and nothing in the trend would ever reveal it.",
-         "left": "query modality", "codeW": 150,
-         "vars": ["n", "Hit@5", "MRR", "nDCG@5"],
-         "steps": [
-          {"code": "text", "state": ["40", "0.95", "0.84", "0.63"], "tone": "good"},
-          {"code": "table", "state": ["15", "0.73", "0.61", "0.48"], "changed": [1], "tone": "warn"},
-          {"code": "image", "state": ["12", "0.00", "0.00", "0.00"], "changed": [1, 2, 3], "tone": "crit", "note": "a total failure"},
-          {"code": "overall", "state": ["67", "0.76", "0.67", "0.52"], "tone": "violet", "note": "looks healthy"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Not degraded — absent",
+    "caption": "6.3 covered parsing as a quality problem: a table flattened into orphaned numbers. This is the case where **there is no text layer to parse badly in the first place** — a chart in a paper, a diagram in a manual, a scanned filing. Standard text RAG does not get worse on these; the content simply never enters the index, so the retriever cannot return it at any k and the evaluation in §05 shows exactly that: **Hit@5 of 0.00** on image queries.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "A chart, a diagram, a scan",
+      "sub": "no text layer",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "The parser extracts nothing",
+      "sub": "or a caption at best",
+      "tone": "warn"
+     },
+     {
+      "id": "i",
+      "label": "Nothing enters the index",
+      "sub": "there is no chunk",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "No k retrieves it",
+      "sub": "Hit@5 = 0.00",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Absent, not degraded",
+      "sub": "which is why tuning cannot help",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "p"
+     ],
+     [
+      "p",
+      "i"
+     ],
+     [
+      "i",
+      "r"
+     ],
+     [
+      "r",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Summarise then embed is the structurally correct choice, not just the pragmatic one",
+    "caption": "Option B sends each image or table to a vision model, gets a text description, and embeds **that** with the same text model as everything else. It is usually presented as a pragmatic compromise, and it is better than that: once every stored vector comes from one model, **every comparison is text-to-text in one space** — so there is no modality gap to calibrate, no cross-modal score to reconcile, and the fusion problems of 6.7 do not arise. The cost is a vision call per asset at index time, paid once.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "An image or a table",
+      "sub": "no text of its own",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "A vision model describes it",
+      "sub": "once, at index time",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "Embed the description",
+      "sub": "with the same text model",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "One model, one space",
+      "sub": "every comparison is text-to-text",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No modality gap to calibrate",
+      "sub": "and no cross-modal scores",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Cost: one vision call per asset",
+      "sub": "paid once, not per query",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "v"
+     ],
+     [
+      "v",
+      "e"
+     ],
+     [
+      "e",
+      "o"
+     ],
+     [
+      "o",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "ColPali removes four pipeline stages by removing extraction",
+    "caption": "The opposite line: stop extracting anything. Treat each page as an image, embed it into **many** vectors rather than one, and compute late interaction between query tokens and page patches at query time — MaxSim, the ColBERT mechanism. What it buys is the disappearance of the four stages that caused most of this module's problems. **Chunking — 5.4's highest-leverage and fiddliest decision — does not exist**, and layout becomes a feature rather than a casualty.",
+    "items": [
+     {
+      "label": "No OCR",
+      "sub": "nothing to get wrong on a scan, and no noise embedded as nonsense",
+      "tone": "good"
+     },
+     {
+      "label": "No chunking",
+      "sub": "5.4's highest-leverage decision simply does not exist",
+      "tone": "good"
+     },
+     {
+      "label": "No parsing",
+      "sub": "no table extraction, no boilerplate stripping, no running-header bug"
+     },
+     {
+      "label": "Layout is a feature",
+      "sub": "a table is seen as a table; a figure sits beside its caption",
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "Why an aggregate score is actively misleading here",
+    "caption": "Measure each modality independently, because the aggregate hides a total failure. **Images are retrieved 0.00 of the time** and the overall Hit@5 is still a respectable-looking 0.76 — because most queries are text queries, and text works. A dashboard reporting the overall number would show a healthy system with an entire modality missing from the index, and nothing in the trend would ever reveal it.",
+    "left": "query modality",
+    "codeW": 150,
+    "vars": [
+     "n",
+     "Hit@5",
+     "MRR",
+     "nDCG@5"
+    ],
+    "steps": [
+     {
+      "code": "text",
+      "state": [
+       "40",
+       "0.95",
+       "0.84",
+       "0.63"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "table",
+      "state": [
+       "15",
+       "0.73",
+       "0.61",
+       "0.48"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "image",
+      "state": [
+       "12",
+       "0.00",
+       "0.00",
+       "0.00"
+      ],
+      "changed": [
+       1,
+       2,
+       3
+      ],
+      "tone": "crit",
+      "note": "a total failure"
+     },
+     {
+      "code": "overall",
+      "state": [
+       "67",
+       "0.76",
+       "0.67",
+       "0.52"
+      ],
+      "tone": "violet",
+      "note": "looks healthy"
+     }
+    ]
+   }
+  }
  ],
-
  "6.6": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Five ways code is not prose",
-         "caption": "Each row breaks an assumption from module 5. **A function boundary is not a hint — it is the unit of meaning**, unlike a paragraph break, so recursive splitting on characters is simply wrong here. Understanding a function needs its imports and sometimes its callers, which is 6.4's multi-hop argument in a domain where the edges are in the syntax. And the last row breaks 6.2's nightly rebuild: a repository changes **every commit**.",
-         "cols": ["What it breaks"],
-         "rows": ["Structure is strict", "Dependencies cross files", "Several representations", "Context is long-range", "It changes constantly"],
-         "cells": [
-          [{"text": "a function boundary is the unit, not a hint", "tone": "violet"}],
-          [{"text": "6.4's multi-hop case, with edges in the syntax", "tone": "warn"}],
-          ["raw text, AST, docstring or summary - you choose what to embed"],
-          [{"text": "a fix may span ten files; no top-5 covers that", "tone": "crit"}],
-          [{"text": "every commit, not nightly - 6.2's default stops working", "tone": "crit"}]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The relations are free, and most of them point outside the graph",
-         "caption": "Code is the one domain where 6.4's graph needs **no extraction model at all** — calls, inherits and imports are in the syntax, so a parser recovers them exactly and the entity-resolution problem disappears. What replaces it is visible in the third row: of 372 edges, **only 116 resolve to a node inside the graph — 31%**. The rest point at the standard library, third-party packages and dynamic calls, so graph expansion mostly walks off the edge of what you indexed.",
-         "left": "the repository graph", "codeW": 220,
-         "vars": ["count"],
-         "steps": [
-          {"code": "nodes: functions and classes", "state": ["149"], "tone": "accent"},
-          {"code": "edges: calls and inherits", "state": ["372"], "tone": "accent"},
-          {"code": "edges resolving inside the graph", "state": ["116 = 31%"], "changed": [0], "tone": "crit", "note": "69% point outward"},
-          {"code": "callees per function", "state": ["median 2, p90 5, max 12"], "tone": "good", "note": "so expansion is bounded"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Five code embedding models, and the dimension cost nobody prices",
-         "caption": "The first row is a good all-rounder and **3,072 dimensions is 8× the storage of 384** — 6.2's memory arithmetic applies directly, so at a million chunks that is the difference between 1.5 GB and 12 GB of RAM. The last row's 8K context is the one specification that matters structurally rather than marginally: a whole-class chunk does not fit in 512 tokens, and 5.3 measured what silent truncation does.",
-         "cols": ["Dims", "Note"],
-         "rows": ["text-embedding-3-large", "Voyage Code 2", "CodeBERT", "StarEncoder", "Jina Code v2"],
-         "cells": [
-          ["3072", {"text": "good all-rounder; 8x the storage of 384", "tone": "warn"}],
-          ["1536", {"text": "trained on code; called best-in-class", "tone": "good"}],
-          ["768", "open-source, strongest on classification"],
-          ["1024", "trained on The Stack, multilingual"],
-          ["768", {"text": "8K context - whole-class chunks fit", "tone": "good"}]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "A stale code index is worse than a stale prose index",
-         "caption": "6.2 made incremental indexing by content hash the sensible default. For code it is **the only workable design**, because the slow clock is not nightly — it is every commit. And the failure is nastier than in prose: a stale code index tells you about **a function signature that no longer exists**, and the answer looks exactly as authoritative as a correct one, with a file path and a line number attached.",
-         "cols": 3,
-         "nodes": [
-          {"id": "c", "label": "The repository changes per commit", "sub": "not nightly", "tone": "accent"},
-          {"id": "h", "label": "So: hash-based incremental, always", "sub": "the only workable design", "tone": "good"},
-          {"id": "s", "label": "A stale entry names a dead signature", "sub": "removed last week", "tone": "crit"},
-          {"id": "a", "label": "And it looks authoritative", "sub": "path and line number attached", "tone": "crit"},
-          {"id": "g", "label": "Index on the commit hook", "sub": "or accept answers about dead code", "tone": "violet"}],
-         "edges": [["c", "h"], ["h", "s"], ["s", "a"], ["a", "g"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "layers",
+    "title": "Five ways code is not prose",
+    "caption": "Each row breaks an assumption from module 5. **A function boundary is not a hint — it is the unit of meaning**, unlike a paragraph break, so recursive splitting on characters is simply wrong here. Understanding a function needs its imports and sometimes its callers, which is 6.4's multi-hop argument in a domain where the edges are in the syntax. And the last row breaks 6.2's nightly rebuild: a repository changes **every commit**.",
+    "items": [
+     {
+      "label": "Structure is strict",
+      "sub": "a function boundary is the unit, not a hint",
+      "tone": "violet"
+     },
+     {
+      "label": "Dependencies cross files",
+      "sub": "6.4's multi-hop case, with edges in the syntax",
+      "tone": "warn"
+     },
+     {
+      "label": "Several representations",
+      "sub": "raw text, AST, docstring or summary - you choose what to embed"
+     },
+     {
+      "label": "Context is long-range",
+      "sub": "a fix may span ten files; no top-5 covers that",
+      "tone": "crit"
+     },
+     {
+      "label": "It changes constantly",
+      "sub": "every commit, not nightly - 6.2's default stops working",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The relations are free, and most of them point outside the graph",
+    "caption": "Code is the one domain where 6.4's graph needs **no extraction model at all** — calls, inherits and imports are in the syntax, so a parser recovers them exactly and the entity-resolution problem disappears. What replaces it is visible in the third row: of 372 edges, **only 116 resolve to a node inside the graph — 31%**. The rest point at the standard library, third-party packages and dynamic calls, so graph expansion mostly walks off the edge of what you indexed.",
+    "left": "the repository graph",
+    "codeW": 220,
+    "vars": [
+     "count"
+    ],
+    "steps": [
+     {
+      "code": "nodes: functions and classes",
+      "state": [
+       "149"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "edges: calls and inherits",
+      "state": [
+       "372"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "edges resolving inside the graph",
+      "state": [
+       "116 = 31%"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "69% point outward"
+     },
+     {
+      "code": "callees per function",
+      "state": [
+       "median 2, p90 5, max 12"
+      ],
+      "tone": "good",
+      "note": "so expansion is bounded"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Five code embedding models, and the dimension cost nobody prices",
+    "caption": "The first row is a good all-rounder and **3,072 dimensions is 8× the storage of 384** — 6.2's memory arithmetic applies directly, so at a million chunks that is the difference between 1.5 GB and 12 GB of RAM. The last row's 8K context is the one specification that matters structurally rather than marginally: a whole-class chunk does not fit in 512 tokens, and 5.3 measured what silent truncation does.",
+    "cols": [
+     "Dims",
+     "Note"
+    ],
+    "rows": [
+     "text-embedding-3-large",
+     "Voyage Code 2",
+     "CodeBERT",
+     "StarEncoder",
+     "Jina Code v2"
+    ],
+    "cells": [
+     [
+      "3072",
+      {
+       "text": "good all-rounder; 8x the storage of 384",
+       "tone": "warn"
+      }
+     ],
+     [
+      "1536",
+      {
+       "text": "trained on code; called best-in-class",
+       "tone": "good"
+      }
+     ],
+     [
+      "768",
+      "open-source, strongest on classification"
+     ],
+     [
+      "1024",
+      "trained on The Stack, multilingual"
+     ],
+     [
+      "768",
+      {
+       "text": "8K context - whole-class chunks fit",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "A stale code index is worse than a stale prose index",
+    "caption": "6.2 made incremental indexing by content hash the sensible default. For code it is **the only workable design**, because the slow clock is not nightly — it is every commit. And the failure is nastier than in prose: a stale code index tells you about **a function signature that no longer exists**, and the answer looks exactly as authoritative as a correct one, with a file path and a line number attached.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "The repository changes per commit",
+      "sub": "not nightly",
+      "tone": "accent"
+     },
+     {
+      "id": "h",
+      "label": "So: hash-based incremental, always",
+      "sub": "the only workable design",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "A stale entry names a dead signature",
+      "sub": "removed last week",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "And it looks authoritative",
+      "sub": "path and line number attached",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "Index on the commit hook",
+      "sub": "or accept answers about dead code",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "h"
+     ],
+     [
+      "h",
+      "s"
+     ],
+     [
+      "s",
+      "a"
+     ],
+     [
+      "a",
+      "g"
+     ]
+    ]
+   }
+  }
  ],
-
  "6.7": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Six stages, and the one that is 75% of the request",
-         "caption": "\"Scale the bottleneck\" is right, and 6.2 already measured where it is — which turns the list from advice into a priority order. **Re-ranking is 2,405 ms for 20 candidates on CPU: three quarters of the request.** Vector search is 11 ms, so scaling it is a *memory* decision rather than a latency one, and embedding the query is about 1% and almost never worth touching. The cheapest request remains one that never runs.",
-         "cols": ["Measured", "Worth doing?"],
-         "rows": ["Cache", "Embed query", "Vector search", "Re-rank", "LLM generate", "Boundary"],
-         "cells": [
-          ["a hit costs nothing", {"text": "first - the cheapest request never runs", "tone": "good"}],
-          ["inside the 11 ms", {"text": "rarely - about 1% of the request", "tone": "warn"}],
-          ["11 ms; 9.2 ms at 200k", {"text": "for memory, not latency", "tone": "accent"}],
-          [{"text": "2,405 ms for 20 candidates", "tone": "crit"}, {"text": "this is the lever - 75%", "tone": "good"}],
-          ["hundreds of ms", {"text": "yes - and streaming changes perception most", "tone": "good"}],
-          ["-", {"text": "yes - it makes a spike degrade, not collapse", "tone": "good"}]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A context budget is enforceable by arithmetic, unlike most cost levers",
-         "caption": "Generation dominates cost and generation cost scales with the retrieved context, so **the context budget is the main lever** — and unlike routing or model choice it is enforced by counting rather than estimated. At a median chunk of 99 tokens, a 3,000-token budget holds about 30 chunks and fills to **99%**; an 8,000-token budget runs out of *chunks* before it runs out of budget, filling only 51%. Which is the detail worth knowing: past some point the cap stops binding and the corpus does.",
-         "left": "budget", "codeW": 130,
-         "vars": ["chunks in", "tokens used", "% of budget"],
-         "steps": [
-          {"code": "500", "state": ["13", "484", "97%"], "tone": "good"},
-          {"code": "1,000", "state": ["17", "839", "84%"], "tone": "good"},
-          {"code": "2,000", "state": ["31", "1,928", "96%"], "tone": "accent"},
-          {"code": "3,000", "state": ["47", "2,962", "99%"], "changed": [2], "tone": "warn", "note": "the cap binds"},
-          {"code": "8,000", "state": ["64", "4,114", "51%"], "changed": [0, 2], "tone": "violet", "note": "now the corpus binds"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Fusion solved one of these five",
-         "caption": "RRF genuinely settles incomparable scores — it uses rank position only, and deduplication falls out for free. The other four are untouched by it. **Source conflicts are the one people assume fusion handles**: two sources disagree on a fact, fusion ranks both highly, and says nothing whatever about which is true. That needs an explicit authority order, which is a product decision rather than a retrieval one.",
-         "cols": ["Status"],
-         "rows": ["Incomparable scores", "Source conflicts", "Redundant retrieval", "Context contention", "Routing"],
-         "cells": [
-          [{"text": "solved - RRF uses rank only, and dedupes for free", "tone": "good"}],
-          [{"text": "untouched - fusion ranks both and says nothing about truth", "tone": "crit"}],
-          [{"text": "partly - dedupe handles copies; agentic loops need a cap", "tone": "warn"}],
-          [{"text": "untouched - dedupe, re-rank and compress; do not append", "tone": "warn"}],
-          [{"text": "untouched - and a misroute poisons the context", "tone": "crit"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Guardrails are what make the RAG promise a guarantee rather than a tendency",
-         "caption": "The promise is precise: the answer is **grounded in retrieved context, safe, and drawn only from sources the user may see.** Each clause needs its own mechanism, and the order matters — the access check has to happen *before* retrieval, because 6.8 measures post-filtering returning 19 foreign rows, having already read them. Grounding is checked after generation, against the context that was actually supplied.",
-         "cols": 4,
-         "nodes": [
-          {"id": "a", "label": "Access check, before retrieval", "sub": "pre-filter by tenant", "tone": "violet"},
-          {"id": "r", "label": "Retrieve within that scope", "sub": "nothing foreign is ever read", "tone": "good"},
-          {"id": "g", "label": "Generate, scoped to the context", "sub": "5.7's clause", "tone": "good"},
-          {"id": "c", "label": "Check grounding after", "sub": "every claim against a chunk", "tone": "good"},
-          {"id": "s", "label": "Safety check on the output", "sub": "the last gate", "tone": "accent"}],
-         "edges": [["a", "r"], ["r", "g"], ["g", "c"], ["c", "s"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Six stages, and the one that is 75% of the request",
+    "caption": "\"Scale the bottleneck\" is right, and 6.2 already measured where it is — which turns the list from advice into a priority order. **Re-ranking is 2,405 ms for 20 candidates on CPU: three quarters of the request.** Vector search is 11 ms, so scaling it is a *memory* decision rather than a latency one, and embedding the query is about 1% and almost never worth touching. The cheapest request remains one that never runs.",
+    "cols": [
+     "Measured",
+     "Worth doing?"
+    ],
+    "rows": [
+     "Cache",
+     "Embed query",
+     "Vector search",
+     "Re-rank",
+     "LLM generate",
+     "Boundary"
+    ],
+    "cells": [
+     [
+      "a hit costs nothing",
+      {
+       "text": "first - the cheapest request never runs",
+       "tone": "good"
+      }
+     ],
+     [
+      "inside the 11 ms",
+      {
+       "text": "rarely - about 1% of the request",
+       "tone": "warn"
+      }
+     ],
+     [
+      "11 ms; 9.2 ms at 200k",
+      {
+       "text": "for memory, not latency",
+       "tone": "accent"
+      }
+     ],
+     [
+      {
+       "text": "2,405 ms for 20 candidates",
+       "tone": "crit"
+      },
+      {
+       "text": "this is the lever - 75%",
+       "tone": "good"
+      }
+     ],
+     [
+      "hundreds of ms",
+      {
+       "text": "yes - and streaming changes perception most",
+       "tone": "good"
+      }
+     ],
+     [
+      "-",
+      {
+       "text": "yes - it makes a spike degrade, not collapse",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A context budget is enforceable by arithmetic, unlike most cost levers",
+    "caption": "Generation dominates cost and generation cost scales with the retrieved context, so **the context budget is the main lever** — and unlike routing or model choice it is enforced by counting rather than estimated. At a median chunk of 99 tokens, a 3,000-token budget holds about 30 chunks and fills to **99%**; an 8,000-token budget runs out of *chunks* before it runs out of budget, filling only 51%. Which is the detail worth knowing: past some point the cap stops binding and the corpus does.",
+    "left": "budget",
+    "codeW": 130,
+    "vars": [
+     "chunks in",
+     "tokens used",
+     "% of budget"
+    ],
+    "steps": [
+     {
+      "code": "500",
+      "state": [
+       "13",
+       "484",
+       "97%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "1,000",
+      "state": [
+       "17",
+       "839",
+       "84%"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "2,000",
+      "state": [
+       "31",
+       "1,928",
+       "96%"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "3,000",
+      "state": [
+       "47",
+       "2,962",
+       "99%"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "warn",
+      "note": "the cap binds"
+     },
+     {
+      "code": "8,000",
+      "state": [
+       "64",
+       "4,114",
+       "51%"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "violet",
+      "note": "now the corpus binds"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Fusion solved one of these five",
+    "caption": "RRF genuinely settles incomparable scores — it uses rank position only, and deduplication falls out for free. The other four are untouched by it. **Source conflicts are the one people assume fusion handles**: two sources disagree on a fact, fusion ranks both highly, and says nothing whatever about which is true. That needs an explicit authority order, which is a product decision rather than a retrieval one.",
+    "items": [
+     {
+      "label": "Incomparable scores",
+      "sub": "solved - RRF uses rank only, and dedupes for free",
+      "tone": "good"
+     },
+     {
+      "label": "Source conflicts",
+      "sub": "untouched - fusion ranks both and says nothing about truth",
+      "tone": "crit"
+     },
+     {
+      "label": "Redundant retrieval",
+      "sub": "partly - dedupe handles copies; agentic loops need a cap",
+      "tone": "warn"
+     },
+     {
+      "label": "Context contention",
+      "sub": "untouched - dedupe, re-rank and compress; do not append",
+      "tone": "warn"
+     },
+     {
+      "label": "Routing",
+      "sub": "untouched - and a misroute poisons the context",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Guardrails are what make the RAG promise a guarantee rather than a tendency",
+    "caption": "The promise is precise: the answer is **grounded in retrieved context, safe, and drawn only from sources the user may see.** Each clause needs its own mechanism, and the order matters — the access check has to happen *before* retrieval, because 6.8 measures post-filtering returning 19 foreign rows, having already read them. Grounding is checked after generation, against the context that was actually supplied.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Access check, before retrieval",
+      "sub": "pre-filter by tenant",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Retrieve within that scope",
+      "sub": "nothing foreign is ever read",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Generate, scoped to the context",
+      "sub": "5.7's clause",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Check grounding after",
+      "sub": "every claim against a chunk",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "Safety check on the output",
+      "sub": "the last gate",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "r"
+     ],
+     [
+      "r",
+      "g"
+     ],
+     [
+      "g",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ]
+    ]
+   }
+  }
  ],
-
  "6.8": [
-  {"after": "01",
-   "d": {"kind": "steps",
-         "title": "The four-part shape, and why the order is the point",
-         "caption": "An answer that jumps to the permanent fix skips the part being tested: **whether you can stop the bleeding before you understand the cause.** Each incident in this lesson is reproduced on the corpus used throughout modules 5 and 6 — 1,187 chunks, 20 golden queries, 95% recall@5 at baseline — so every failure arrives with a measured signature rather than a description.",
-         "items": [
-          {"label": "Symptom", "desc": "what the user or the dashboard actually reports", "code": "1", "tone": "accent"},
-          {"label": "Immediate", "desc": "stop the bleeding, before the cause is understood", "code": "2", "tone": "violet"},
-          {"label": "Root cause", "desc": "the measured signature, not the plausible story", "code": "3", "tone": "good"},
-          {"label": "Permanent", "desc": "and the check that would have caught it", "code": "4", "tone": "good"}]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Stale answers, and the 1.3 ms check that prevents them",
-         "caption": "The symptom is a policy or price that changed yesterday and an answer still giving the old value. The cause is that the index is behind the source of truth — re-indexing is batch or manual, or the document was edited and never re-embedded. The arithmetic makes the fix obvious: **hashing twelve documents takes 1.3 ms**, re-embedding the one that changed takes 1.3 s, and rebuilding everything takes 13.2 s. The check costs a thousandth of the action it saves.",
-         "left": "operation", "codeW": 220,
-         "vars": ["cost"],
-         "steps": [
-          {"code": "hash 12 documents (359,549 chars)", "state": ["1.3 ms"], "tone": "good"},
-          {"code": "documents reported changed", "state": ["0"], "tone": "good"},
-          {"code": "after editing one", "state": ["1 changed"], "tone": "accent"},
-          {"code": "re-embed the changed document", "state": ["1.3 s, 116 chunks"], "tone": "good"},
-          {"code": "rebuild everything", "state": ["13.2 s"], "changed": [0], "tone": "warn", "note": "the hash saves 90%"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "The one incident in this lesson that actually errors",
-         "caption": "Latency spikes and OOM are the odd case: **the process dies**, so unlike every other failure here it is not silent. The causes are the index growing past memory — HNSW graphs are RAM-hungry — or `ef_search`/`nprobe` tuned up for accuracy at the cost of memory and time. The immediate move trades recall for survival; the permanent one is a **memory projection at target corpus size**, which is the check nobody runs because latency looks fine right up to the moment it does not exist.",
-         "cols": 3,
-         "nodes": [
-          {"id": "g", "label": "The index grew past memory", "sub": "HNSW graphs are RAM-hungry", "tone": "crit"},
-          {"id": "t", "label": "Or ef_search / nprobe tuned up", "sub": "accuracy bought with memory", "tone": "crit"},
-          {"id": "d", "label": "The process dies", "sub": "the one loud failure here", "tone": "crit"},
-          {"id": "i", "label": "Immediate: lower ef, cap top_k", "sub": "trade recall for survival", "tone": "warn"},
-          {"id": "p", "label": "Permanent: project memory at target size", "sub": "1.5 GB per million vectors", "tone": "good"},
-          {"id": "l", "label": "Latency looked fine throughout", "sub": "which is why nobody projected", "tone": "teal"}],
-         "edges": [["g", "d"], ["t", "d"], ["d", "i"], ["i", "p"], ["p", "l"]]}},
-  {"after": "06",
-   "d": {"kind": "trace",
-         "title": "Matching dimensions, mismatched models, and nothing errors",
-         "caption": "Both models output 384 dimensions, so **the call succeeds and returns results** — ranked, scored and plausible. Recall halves from 95% to 50%, and the only signal is in the scores: mean top-1 similarity falls from **0.5698 to 0.2356**. That is why the permanent fix is a score-distribution monitor rather than a dimension check: a dimension mismatch raises, and this does not.",
-         "left": "configuration", "codeW": 220,
-         "vars": ["recall@5", "mean top-1 similarity"],
-         "steps": [
-          {"code": "matched - both all-MiniLM-L6-v2", "state": ["95%", "0.5698"], "tone": "good"},
-          {"code": "mismatched query model", "state": ["50%", "0.2356"], "changed": [0, 1], "tone": "crit", "note": "no error raised"},
-          {"code": "so monitor", "state": ["the score distribution", "not the dimensions"], "tone": "violet"}]}},
-  {"after": "07",
-   "d": {"kind": "trace",
-         "title": "Identical recall, 19 leaked rows",
-         "caption": "The two approaches score **the same on retrieval quality** — 95% recall@5 either way — and differ entirely in whether they read data the user may not see. Post-filtering searches everything and drops afterwards: 19 foreign rows entered the top 5 and were discarded *after being read*. Pre-filtering restricts the search space first and leaks nothing, **by construction rather than by diligence**. Which is the whole argument: a correctness property you get from the architecture does not depend on anyone remembering it.",
-         "left": "approach", "codeW": 230,
-         "vars": ["recall@5", "leaked rows"],
-         "steps": [
-          {"code": "post-filter: search all, drop after", "state": ["95%", "19"], "tone": "crit"},
-          {"code": "pre-filter: restrict, then search", "state": ["95%", "0"], "changed": [1], "tone": "good", "note": "same recall, no leak"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "steps",
+    "title": "The four-part shape, and why the order is the point",
+    "caption": "An answer that jumps to the permanent fix skips the part being tested: **whether you can stop the bleeding before you understand the cause.** Each incident in this lesson is reproduced on the corpus used throughout modules 5 and 6 — 1,187 chunks, 20 golden queries, 95% recall@5 at baseline — so every failure arrives with a measured signature rather than a description.",
+    "items": [
+     {
+      "label": "Symptom",
+      "desc": "what the user or the dashboard actually reports",
+      "code": "1",
+      "tone": "accent"
+     },
+     {
+      "label": "Immediate",
+      "desc": "stop the bleeding, before the cause is understood",
+      "code": "2",
+      "tone": "violet"
+     },
+     {
+      "label": "Root cause",
+      "desc": "the measured signature, not the plausible story",
+      "code": "3",
+      "tone": "good"
+     },
+     {
+      "label": "Permanent",
+      "desc": "and the check that would have caught it",
+      "code": "4",
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Stale answers, and the 1.3 ms check that prevents them",
+    "caption": "The symptom is a policy or price that changed yesterday and an answer still giving the old value. The cause is that the index is behind the source of truth — re-indexing is batch or manual, or the document was edited and never re-embedded. The arithmetic makes the fix obvious: **hashing twelve documents takes 1.3 ms**, re-embedding the one that changed takes 1.3 s, and rebuilding everything takes 13.2 s. The check costs a thousandth of the action it saves.",
+    "left": "operation",
+    "codeW": 220,
+    "vars": [
+     "cost"
+    ],
+    "steps": [
+     {
+      "code": "hash 12 documents (359,549 chars)",
+      "state": [
+       "1.3 ms"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "documents reported changed",
+      "state": [
+       "0"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "after editing one",
+      "state": [
+       "1 changed"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "re-embed the changed document",
+      "state": [
+       "1.3 s, 116 chunks"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "rebuild everything",
+      "state": [
+       "13.2 s"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "the hash saves 90%"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The one incident in this lesson that actually errors",
+    "caption": "Latency spikes and OOM are the odd case: **the process dies**, so unlike every other failure here it is not silent. The causes are the index growing past memory — HNSW graphs are RAM-hungry — or `ef_search`/`nprobe` tuned up for accuracy at the cost of memory and time. The immediate move trades recall for survival; the permanent one is a **memory projection at target corpus size**, which is the check nobody runs because latency looks fine right up to the moment it does not exist.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "g",
+      "label": "The index grew past memory",
+      "sub": "HNSW graphs are RAM-hungry",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Or ef_search / nprobe tuned up",
+      "sub": "accuracy bought with memory",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "The process dies",
+      "sub": "the one loud failure here",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "Immediate: lower ef, cap top_k",
+      "sub": "trade recall for survival",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "Permanent: project memory at target size",
+      "sub": "1.5 GB per million vectors",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Latency looked fine throughout",
+      "sub": "which is why nobody projected",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "g",
+      "d"
+     ],
+     [
+      "t",
+      "d"
+     ],
+     [
+      "d",
+      "i"
+     ],
+     [
+      "i",
+      "p"
+     ],
+     [
+      "p",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "trace",
+    "title": "Matching dimensions, mismatched models, and nothing errors",
+    "caption": "Both models output 384 dimensions, so **the call succeeds and returns results** — ranked, scored and plausible. Recall halves from 95% to 50%, and the only signal is in the scores: mean top-1 similarity falls from **0.5698 to 0.2356**. That is why the permanent fix is a score-distribution monitor rather than a dimension check: a dimension mismatch raises, and this does not.",
+    "left": "configuration",
+    "codeW": 220,
+    "vars": [
+     "recall@5",
+     "mean top-1 similarity"
+    ],
+    "steps": [
+     {
+      "code": "matched - both all-MiniLM-L6-v2",
+      "state": [
+       "95%",
+       "0.5698"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "mismatched query model",
+      "state": [
+       "50%",
+       "0.2356"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "no error raised"
+     },
+     {
+      "code": "so monitor",
+      "state": [
+       "the score distribution",
+       "not the dimensions"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "07",
+   "d": {
+    "kind": "trace",
+    "title": "Identical recall, 19 leaked rows",
+    "caption": "The two approaches score **the same on retrieval quality** — 95% recall@5 either way — and differ entirely in whether they read data the user may not see. Post-filtering searches everything and drops afterwards: 19 foreign rows entered the top 5 and were discarded *after being read*. Pre-filtering restricts the search space first and leaks nothing, **by construction rather than by diligence**. Which is the whole argument: a correctness property you get from the architecture does not depend on anyone remembering it.",
+    "left": "approach",
+    "codeW": 230,
+    "vars": [
+     "recall@5",
+     "leaked rows"
+    ],
+    "steps": [
+     {
+      "code": "post-filter: search all, drop after",
+      "state": [
+       "95%",
+       "19"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "pre-filter: restrict, then search",
+      "state": [
+       "95%",
+       "0"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "same recall, no leak"
+     }
+    ]
+   }
+  }
  ]
 }

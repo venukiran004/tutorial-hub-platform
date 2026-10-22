@@ -35,6 +35,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "6.3 covered parsing as a quality problem \u2014 a table flattened into a column of orphaned numbers. This lesson is about the cases where there is no text layer to parse badly in the first place: a chart in a scientific paper, a diagram in a technical manual, a scanned filing. Standard text RAG does not degrade on these, it is simply blind to them." },
 
     { t: "ul", items: [
@@ -166,6 +167,7 @@ TV = T @ V.T                                  # text against image`,
 
 
 
+
     { t: "p", text: "Option B sends each image or table to a vision model, gets a text description, and embeds *that* with the same text model as everything else. It is usually presented it as a pragmatic choice. The measurement shows it is the structurally correct one: once every stored vector comes from one text model, every comparison is text-to-text and a single ranked list means something again." },
 
     { t: "code", lang: "python", title: "describe at ingestion, embed the description", code: `def describe_image(image_path: str) -> str:
@@ -198,7 +200,8 @@ TV = T @ V.T                                  # text against image`,
     { t: "h2", n: "04", id: "colpali", text: "Option C, ColPali",
       sub: "Delete the parsing stage instead of improving it" },
 
-    {"kind": "matrix", "title": "ColPali removes four pipeline stages by removing extraction", "caption": "The opposite line: stop extracting anything. Treat each page as an image, embed it into **many** vectors rather than one, and compute late interaction between query tokens and page patches at query time — MaxSim, the ColBERT mechanism. What it buys is the disappearance of the four stages that caused most of this module's problems. **Chunking — 5.4's highest-leverage and fiddliest decision — does not exist**, and layout becomes a feature rather than a casualty.", "cols": ["What it removes"], "rows": ["No OCR", "No chunking", "No parsing", "Layout is a feature"], "cells": [[{"text": "nothing to get wrong on a scan, and no noise embedded as nonsense", "tone": "good"}], [{"text": "5.4's highest-leverage decision simply does not exist", "tone": "good"}], ["no table extraction, no boilerplate stripping, no running-header bug"], [{"text": "a table is seen as a table; a figure sits beside its caption", "tone": "violet"}]], "t": "diagram", "id": "dg-6_5-04-2"},
+    {"kind": "layers", "title": "ColPali removes four pipeline stages by removing extraction", "caption": "The opposite line: stop extracting anything. Treat each page as an image, embed it into **many** vectors rather than one, and compute late interaction between query tokens and page patches at query time — MaxSim, the ColBERT mechanism. What it buys is the disappearance of the four stages that caused most of this module's problems. **Chunking — 5.4's highest-leverage and fiddliest decision — does not exist**, and layout becomes a feature rather than a casualty.", "items": [{"label": "No OCR", "sub": "nothing to get wrong on a scan, and no noise embedded as nonsense", "tone": "good"}, {"label": "No chunking", "sub": "5.4's highest-leverage decision simply does not exist", "tone": "good"}, {"label": "No parsing", "sub": "no table extraction, no boilerplate stripping, no running-header bug"}, {"label": "Layout is a feature", "sub": "a table is seen as a table; a figure sits beside its caption", "tone": "violet"}], "t": "diagram", "id": "dg-6_5-04-2"},
+
 
 
 
@@ -242,6 +245,7 @@ TV = T @ V.T                                  # text against image`,
       sub: "An aggregate number hides the modality that does not work" },
 
     {"kind": "trace", "title": "Why an aggregate score is actively misleading here", "caption": "Measure each modality independently, because the aggregate hides a total failure. **Images are retrieved 0.00 of the time** and the overall Hit@5 is still a respectable-looking 0.76 — because most queries are text queries, and text works. A dashboard reporting the overall number would show a healthy system with an entire modality missing from the index, and nothing in the trend would ever reveal it.", "left": "query modality", "codeW": 150, "vars": ["n", "Hit@5", "MRR", "nDCG@5"], "steps": [{"code": "text", "state": ["40", "0.95", "0.84", "0.63"], "tone": "good"}, {"code": "table", "state": ["15", "0.73", "0.61", "0.48"], "changed": [1], "tone": "warn"}, {"code": "image", "state": ["12", "0.00", "0.00", "0.00"], "changed": [1, 2, 3], "tone": "crit", "note": "a total failure"}, {"code": "overall", "state": ["67", "0.76", "0.67", "0.52"], "tone": "violet", "note": "looks healthy"}], "t": "diagram", "id": "dg-6_5-05-3"},
+
 
 
 

@@ -1,170 +1,796 @@
 {
  "4.1": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The first three modules never touched a weight",
-         "caption": "Everything in modules 1 to 3 changed the output by changing the **input** or the **decoding** — a different prompt, a retrieved document, a different temperature — with the weights fixed throughout. Fine-tuning is the other lever entirely. The training-course analogy is good for a reason worth making explicit: training changes what somebody does **by default**, which is exactly what moving the weights does. A prompt is an instruction you repeat; fine-tuning is a habit you install.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "Modules 1-2: the input", "sub": "prompt, examples, context", "tone": "accent"},
-          {"id": "d", "label": "Module 3: the decoding", "sub": "and how it is served", "tone": "accent"},
-          {"id": "w", "label": "Weights fixed throughout", "sub": "every lever so far", "tone": "accent"},
-          {"id": "f", "label": "Fine-tuning moves the weights", "sub": "loss, backprop, update", "tone": "violet"},
-          {"id": "r", "label": "An instruction you repeat", "sub": "every single call", "tone": "good"},
-          {"id": "h", "label": "A habit you install", "sub": "the default changes", "tone": "good"}],
-         "edges": [["p", "w"], ["d", "w"], ["w", "f"], ["p", "r"], ["f", "h"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A voice learned from twelve examples, and the limits of it",
-         "caption": "All 124 million parameters, twelve question-and-answer pairs in a fixed voice, 32.6 seconds, loss from 4.295 to 0.466. **The style generalised** — held-out questions come back in the voice, unprompted. What did not generalise is the content: asked *What is two plus two?* the model answers **\"They be callin' me Cap'n, matey!\"** It learned the register perfectly and learned nothing about answering, which is the distinction the next lesson is built on.",
-         "left": "epoch", "codeW": 130,
-         "vars": ["loss", "what it learned"],
-         "steps": [
-          {"code": "1", "state": ["4.295", ""], "tone": "accent"},
-          {"code": "4", "state": ["1.521", ""], "tone": "accent"},
-          {"code": "8", "state": ["0.466", "the voice, reliably"], "changed": [0], "tone": "good"},
-          {"code": "'Recommend a book?'", "state": ["", "in voice, vacuous"], "tone": "warn"},
-          {"code": "'What is two plus two?'", "state": ["", "'They be callin' me Cap'n'"], "tone": "crit", "note": "style yes, content no"}]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Catastrophic forgetting, sized on a tiny task",
-         "caption": "Moving weights to fit your examples moves them away from whatever else they were doing. Twelve examples and eight epochs take general perplexity from **5.386 to 6.748 — 1.25× worse at everything else**, in exchange for a voice. Carry on to twelve epochs and the training loss keeps falling beautifully (0.2389) while generic perplexity reaches 7.207. **The two curves move in opposite directions**, which is why 'low learning rate, few epochs' is the standard prescription and why the generic metric has to be watched rather than assumed.",
-         "left": "epochs", "codeW": 130,
-         "vars": ["style loss", "generic perplexity", "vs baseline"],
-         "steps": [
-          {"code": "0 - baseline", "state": ["-", "5.386", "1.00x"], "tone": "good"},
-          {"code": "1", "state": ["4.4345", "", ""], "tone": "accent"},
-          {"code": "4", "state": ["1.4502", "", ""], "tone": "accent"},
-          {"code": "8", "state": ["0.4574", "6.748", "1.25x"], "changed": [1, 2], "tone": "warn"},
-          {"code": "12", "state": ["0.2389", "7.207", "1.34x"], "changed": [0, 1], "tone": "crit", "note": "opposite directions"}]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Four questions that decide it",
-         "caption": "The last question is the useful one and the one nobody asks: **if the behaviour is describable in a sentence, describe it in a sentence.** Fine-tuning earns its cost when the pattern is one you can *demonstrate but not state* — which is exactly when examples beat instructions. The second row is the one the measurements in §02 and 4.2 settle: facts arrive garbled, and updating one means another training run.",
-         "cols": ["Then", "Because"],
-         "rows": ["A behaviour or a voice", "Fresh or private facts", "Still exploring", "Describable in a sentence"],
-         "cells": [
-          [{"text": "fine-tune", "tone": "good"}, "a voice transferred from twelve examples"],
-          [{"text": "retrieval", "tone": "violet"}, "facts arrive garbled; updates need retraining"],
-          [{"text": "prompt", "tone": "good"}, "free and instant; nothing stable to bake in"],
-          [{"text": "just describe it", "tone": "crit"}, "fine-tuning is for what you cannot state"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The first three modules never touched a weight",
+    "caption": "Everything in modules 1 to 3 changed the output by changing the **input** or the **decoding** — a different prompt, a retrieved document, a different temperature — with the weights fixed throughout. Fine-tuning is the other lever entirely. The training-course analogy is good for a reason worth making explicit: training changes what somebody does **by default**, which is exactly what moving the weights does. A prompt is an instruction you repeat; fine-tuning is a habit you install.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "Modules 1-2: the input",
+      "sub": "prompt, examples, context",
+      "tone": "accent"
+     },
+     {
+      "id": "d",
+      "label": "Module 3: the decoding",
+      "sub": "and how it is served",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "Weights fixed throughout",
+      "sub": "every lever so far",
+      "tone": "accent"
+     },
+     {
+      "id": "f",
+      "label": "Fine-tuning moves the weights",
+      "sub": "loss, backprop, update",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "An instruction you repeat",
+      "sub": "every single call",
+      "tone": "good"
+     },
+     {
+      "id": "h",
+      "label": "A habit you install",
+      "sub": "the default changes",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "w"
+     ],
+     [
+      "d",
+      "w"
+     ],
+     [
+      "w",
+      "f"
+     ],
+     [
+      "p",
+      "r"
+     ],
+     [
+      "f",
+      "h"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A voice learned from twelve examples, and the limits of it",
+    "caption": "All 124 million parameters, twelve question-and-answer pairs in a fixed voice, 32.6 seconds, loss from 4.295 to 0.466. **The style generalised** — held-out questions come back in the voice, unprompted. What did not generalise is the content: asked *What is two plus two?* the model answers **\"They be callin' me Cap'n, matey!\"** It learned the register perfectly and learned nothing about answering, which is the distinction the next lesson is built on.",
+    "left": "epoch",
+    "codeW": 130,
+    "vars": [
+     "loss",
+     "what it learned"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "4.295",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "4",
+      "state": [
+       "1.521",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "8",
+      "state": [
+       "0.466",
+       "the voice, reliably"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "'Recommend a book?'",
+      "state": [
+       "",
+       "in voice, vacuous"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "'What is two plus two?'",
+      "state": [
+       "",
+       "'They be callin' me Cap'n'"
+      ],
+      "tone": "crit",
+      "note": "style yes, content no"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Catastrophic forgetting, sized on a tiny task",
+    "caption": "Moving weights to fit your examples moves them away from whatever else they were doing. Twelve examples and eight epochs take general perplexity from **5.386 to 6.748 — 1.25× worse at everything else**, in exchange for a voice. Carry on to twelve epochs and the training loss keeps falling beautifully (0.2389) while generic perplexity reaches 7.207. **The two curves move in opposite directions**, which is why 'low learning rate, few epochs' is the standard prescription and why the generic metric has to be watched rather than assumed.",
+    "left": "epochs",
+    "codeW": 130,
+    "vars": [
+     "style loss",
+     "generic perplexity",
+     "vs baseline"
+    ],
+    "steps": [
+     {
+      "code": "0 - baseline",
+      "state": [
+       "-",
+       "5.386",
+       "1.00x"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "1",
+      "state": [
+       "4.4345",
+       "",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "4",
+      "state": [
+       "1.4502",
+       "",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "8",
+      "state": [
+       "0.4574",
+       "6.748",
+       "1.25x"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "12",
+      "state": [
+       "0.2389",
+       "7.207",
+       "1.34x"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "opposite directions"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "matrix",
+    "title": "Four questions that decide it",
+    "caption": "The last question is the useful one and the one nobody asks: **if the behaviour is describable in a sentence, describe it in a sentence.** Fine-tuning earns its cost when the pattern is one you can *demonstrate but not state* — which is exactly when examples beat instructions. The second row is the one the measurements in §02 and 4.2 settle: facts arrive garbled, and updating one means another training run.",
+    "cols": [
+     "Then",
+     "Because"
+    ],
+    "rows": [
+     "A behaviour or a voice",
+     "Fresh or private facts",
+     "Still exploring",
+     "Describable in a sentence"
+    ],
+    "cells": [
+     [
+      {
+       "text": "fine-tune",
+       "tone": "good"
+      },
+      "a voice transferred from twelve examples"
+     ],
+     [
+      {
+       "text": "retrieval",
+       "tone": "violet"
+      },
+      "facts arrive garbled; updates need retraining"
+     ],
+     [
+      {
+       "text": "prompt",
+       "tone": "good"
+      },
+      "free and instant; nothing stable to bake in"
+     ],
+     [
+      {
+       "text": "just describe it",
+       "tone": "crit"
+      },
+      "fine-tuning is for what you cannot state"
+     ]
+    ]
+   }
+  }
  ],
-
  "4.2": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Three mechanisms, and the column the decision should turn on",
-         "caption": "Better instructions, a reference binder, or a training course. The **cost per call** column is where the decision usually gets made in practice — and the **last** column is where it should be made, because a mechanism you cannot change quickly is a mechanism you will be living with. Prompting and retrieval are edits; fine-tuning is a training run.",
-         "cols": ["Where the change lives", "Per call", "Changing it later"],
-         "rows": ["Prompting", "Retrieval", "Fine-tuning"],
-         "cells": [
-          ["in the request, every time", {"text": "instruction tokens, forever", "tone": "warn"}, {"text": "edit a string", "tone": "good"}],
-          ["in the context, at answer time", {"text": "retrieved tokens plus a lookup", "tone": "warn"}, {"text": "edit a document", "tone": "good"}],
-          [{"text": "in the weights", "tone": "violet"}, {"text": "nothing", "tone": "good"}, {"text": "another training run", "tone": "crit"}]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A format task: zero-shot fails completely, both alternatives work",
-         "caption": "Every answer must begin with the literal tag `[ANS]` — deliberately trivial so success is unambiguous. Zero-shot gets it **0 of 4 times**: the instruction is in the prompt and the model simply does not comply. Few-shot gets it, at 147 prompt tokens carried on every call. Fine-tuning gets it at **11**. For a pure behaviour with no facts in it, this is the case where fine-tuning is straightforwardly the right answer.",
-         "left": "approach", "codeW": 190,
-         "vars": ["format followed", "prompt tokens"],
-         "steps": [
-          {"code": "zero-shot prompt", "state": ["0 of 4", "24"], "tone": "crit", "note": "instruction ignored"},
-          {"code": "few-shot, 8 examples", "state": ["4 of 4", "147"], "changed": [0, 1], "tone": "accent"},
-          {"code": "fine-tuned", "state": ["4 of 4", "11"], "changed": [1], "tone": "good", "note": "13x less context"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "A fact task, where the ranking inverts",
-         "caption": "The fact is invented — the capital of a country that does not exist — so the base model cannot already know it, and zero-shot confirms that by answering *\"The capital of Zanthia is Zanthia\"*. **Retrieval gets 2 of 4**, failing on phrasings it should handle. Fine-tuning on four phrasings gets all four and answers cleanly: *\"The capital of Zanthia is Morrowbridge.\"* Which looks like a win for fine-tuning until you ask what happens when the capital changes — one is a document edit and the other is a training run.",
-         "left": "approach", "codeW": 190,
-         "vars": ["correct", "per-call cost"],
-         "steps": [
-          {"code": "zero-shot", "state": ["0 of 4", "cannot know it"], "tone": "crit"},
-          {"code": "retrieval", "state": ["2 of 4", "35 tokens, every call"], "changed": [0], "tone": "warn"},
-          {"code": "fine-tuned, 10 epochs", "state": ["4 of 4", "11 tokens"], "changed": [0, 1], "tone": "good"},
-          {"code": "when the fact changes", "state": ["edit a document", "vs retrain"], "tone": "violet", "note": "the real comparison"}]}},
-  {"after": "05",
-   "d": {"kind": "trace",
-         "title": "136 tokens per call, forever, against 27 seconds once",
-         "caption": "The arithmetic that decides this at volume. Few-shot carries 147 prompt tokens on **every** call; the fine-tuned model carries 11. Over a thousand calls that is **136,000 tokens saved** against a one-off cost of 27 seconds of training. Which is why the fine-tuning case gets stronger with volume and weaker with change — the saving is per call and the cost is per *version*, so a prompt you will revise next week never repays it.",
-         "left": "approach", "codeW": 190,
-         "vars": ["prompt tokens", "x 1,000 calls", "one-off"],
-         "steps": [
-          {"code": "zero-shot", "state": ["24", "24,000", "none"], "tone": "accent", "note": "but it failed"},
-          {"code": "retrieval", "state": ["35", "35,000", "index build"], "tone": "accent"},
-          {"code": "few-shot, 8 examples", "state": ["147", "147,000", "none"], "changed": [1], "tone": "warn"},
-          {"code": "fine-tuned", "state": ["11", "11,000", "27 s training"], "changed": [1, 2], "tone": "good", "note": "136k tokens saved"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Three mechanisms, and the column the decision should turn on",
+    "caption": "Better instructions, a reference binder, or a training course. The **cost per call** column is where the decision usually gets made in practice — and the **last** column is where it should be made, because a mechanism you cannot change quickly is a mechanism you will be living with. Prompting and retrieval are edits; fine-tuning is a training run.",
+    "cols": [
+     "Where the change lives",
+     "Per call",
+     "Changing it later"
+    ],
+    "rows": [
+     "Prompting",
+     "Retrieval",
+     "Fine-tuning"
+    ],
+    "cells": [
+     [
+      "in the request, every time",
+      {
+       "text": "instruction tokens, forever",
+       "tone": "warn"
+      },
+      {
+       "text": "edit a string",
+       "tone": "good"
+      }
+     ],
+     [
+      "in the context, at answer time",
+      {
+       "text": "retrieved tokens plus a lookup",
+       "tone": "warn"
+      },
+      {
+       "text": "edit a document",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "in the weights",
+       "tone": "violet"
+      },
+      {
+       "text": "nothing",
+       "tone": "good"
+      },
+      {
+       "text": "another training run",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A format task: zero-shot fails completely, both alternatives work",
+    "caption": "Every answer must begin with the literal tag `[ANS]` — deliberately trivial so success is unambiguous. Zero-shot gets it **0 of 4 times**: the instruction is in the prompt and the model simply does not comply. Few-shot gets it, at 147 prompt tokens carried on every call. Fine-tuning gets it at **11**. For a pure behaviour with no facts in it, this is the case where fine-tuning is straightforwardly the right answer.",
+    "left": "approach",
+    "codeW": 190,
+    "vars": [
+     "format followed",
+     "prompt tokens"
+    ],
+    "steps": [
+     {
+      "code": "zero-shot prompt",
+      "state": [
+       "0 of 4",
+       "24"
+      ],
+      "tone": "crit",
+      "note": "instruction ignored"
+     },
+     {
+      "code": "few-shot, 8 examples",
+      "state": [
+       "4 of 4",
+       "147"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "fine-tuned",
+      "state": [
+       "4 of 4",
+       "11"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "13x less context"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "A fact task, where the ranking inverts",
+    "caption": "The fact is invented — the capital of a country that does not exist — so the base model cannot already know it, and zero-shot confirms that by answering *\"The capital of Zanthia is Zanthia\"*. **Retrieval gets 2 of 4**, failing on phrasings it should handle. Fine-tuning on four phrasings gets all four and answers cleanly: *\"The capital of Zanthia is Morrowbridge.\"* Which looks like a win for fine-tuning until you ask what happens when the capital changes — one is a document edit and the other is a training run.",
+    "left": "approach",
+    "codeW": 190,
+    "vars": [
+     "correct",
+     "per-call cost"
+    ],
+    "steps": [
+     {
+      "code": "zero-shot",
+      "state": [
+       "0 of 4",
+       "cannot know it"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "retrieval",
+      "state": [
+       "2 of 4",
+       "35 tokens, every call"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "fine-tuned, 10 epochs",
+      "state": [
+       "4 of 4",
+       "11 tokens"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "when the fact changes",
+      "state": [
+       "edit a document",
+       "vs retrain"
+      ],
+      "tone": "violet",
+      "note": "the real comparison"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "trace",
+    "title": "136 tokens per call, forever, against 27 seconds once",
+    "caption": "The arithmetic that decides this at volume. Few-shot carries 147 prompt tokens on **every** call; the fine-tuned model carries 11. Over a thousand calls that is **136,000 tokens saved** against a one-off cost of 27 seconds of training. Which is why the fine-tuning case gets stronger with volume and weaker with change — the saving is per call and the cost is per *version*, so a prompt you will revise next week never repays it.",
+    "left": "approach",
+    "codeW": 190,
+    "vars": [
+     "prompt tokens",
+     "x 1,000 calls",
+     "one-off"
+    ],
+    "steps": [
+     {
+      "code": "zero-shot",
+      "state": [
+       "24",
+       "24,000",
+       "none"
+      ],
+      "tone": "accent",
+      "note": "but it failed"
+     },
+     {
+      "code": "retrieval",
+      "state": [
+       "35",
+       "35,000",
+       "index build"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "few-shot, 8 examples",
+      "state": [
+       "147",
+       "147,000",
+       "none"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "fine-tuned",
+      "state": [
+       "11",
+       "11,000",
+       "27 s training"
+      ],
+      "changed": [
+       1,
+       2
+      ],
+      "tone": "good",
+      "note": "136k tokens saved"
+     }
+    ]
+   }
+  }
  ],
-
  "4.3": [
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Checking the low-rank claim against a real fine-tune",
-         "caption": "The low-rank story is an empirical claim about what fine-tuning does, so it can be checked — and 4.1's full fine-tune left 36 weight deltas to decompose. The honest answer is that it is **not very low rank**: rank 8 captures 45.2% of the attention update, and reaching 84% needs rank 64. So LoRA is not reproducing ΔW faithfully at the ranks people use, and §03 is about why it works anyway.",
-         "cols": ["r=1", "r=8", "r=16", "r=64"],
-         "rows": ["attn.c_attn", "attn.c_proj", "mlp.c_fc"],
-         "cells": [
-          [{"text": "12.8%", "tone": "crit"}, {"text": "45.2%", "tone": "warn"}, "57.9%", {"text": "84.0%", "tone": "good"}],
-          [{"text": "24.4%", "tone": "warn"}, "56.7%", "67.7%", {"text": "88.0%", "tone": "good"}],
-          [{"text": "17.6%", "tone": "crit"}, {"text": "43.8%", "tone": "warn"}, "56.6%", {"text": "82.6%", "tone": "good"}]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "What makes 45% enough: the comparison against noise",
-         "caption": "If capturing 45% of an update were enough on its own, you could approximate anything — so the question is whether ΔW is **special**. Run the same decomposition on a random matrix of identical shape and standard deviation: rank 8 captures **2.5% against the real delta's 45.2%**, and reaching 90% takes rank 559 against 103. So ΔW really is concentrated in a small number of directions; it is just not concentrated in *eight* of them, and 45% of the right directions turns out to be enough to carry the behaviour.",
-         "left": "matrix", "codeW": 170,
-         "vars": ["r=1", "r=8", "r=16", "rank for 90%"],
-         "steps": [
-          {"code": "real delta-W", "state": ["12.8%", "45.2%", "57.9%", "103"], "tone": "good"},
-          {"code": "random, same std", "state": ["0.3%", "2.5%", "4.9%", "559"], "changed": [1, 3], "tone": "crit", "note": "18x less at r=8"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Three things LoRA buys that have nothing to do with training cost",
-         "caption": "The cheap-training argument is the famous one and arguably the least important of the four. **The base cannot be damaged** — 4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748, permanently, and a LoRA run cannot do that because W₀ is never written to. Remove the adapter and the original model is back byte for byte. And an adapter is tens of megabytes rather than tens of gigabytes, so you can keep dozens and serve several from one base.",
-         "cols": ["What it buys"],
-         "rows": ["The base is untouched", "Adapters are small", "They can be merged away"],
-         "cells": [
-          [{"text": "4.1's forgetting is impossible - W0 is never written", "tone": "good"}],
-          [{"text": "24,576 numbers against 1.77 million; dozens, served from one base", "tone": "good"}],
-          [{"text": "W0 + BA is just a matrix - fold it in and ship a normal model", "tone": "violet"}]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Checking the low-rank claim against a real fine-tune",
+    "caption": "The low-rank story is an empirical claim about what fine-tuning does, so it can be checked — and 4.1's full fine-tune left 36 weight deltas to decompose. The honest answer is that it is **not very low rank**: rank 8 captures 45.2% of the attention update, and reaching 84% needs rank 64. So LoRA is not reproducing ΔW faithfully at the ranks people use, and §03 is about why it works anyway.",
+    "cols": [
+     "r=1",
+     "r=8",
+     "r=16",
+     "r=64"
+    ],
+    "rows": [
+     "attn.c_attn",
+     "attn.c_proj",
+     "mlp.c_fc"
+    ],
+    "cells": [
+     [
+      {
+       "text": "12.8%",
+       "tone": "crit"
+      },
+      {
+       "text": "45.2%",
+       "tone": "warn"
+      },
+      "57.9%",
+      {
+       "text": "84.0%",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "24.4%",
+       "tone": "warn"
+      },
+      "56.7%",
+      "67.7%",
+      {
+       "text": "88.0%",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "17.6%",
+       "tone": "crit"
+      },
+      {
+       "text": "43.8%",
+       "tone": "warn"
+      },
+      "56.6%",
+      {
+       "text": "82.6%",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "What makes 45% enough: the comparison against noise",
+    "caption": "If capturing 45% of an update were enough on its own, you could approximate anything — so the question is whether ΔW is **special**. Run the same decomposition on a random matrix of identical shape and standard deviation: rank 8 captures **2.5% against the real delta's 45.2%**, and reaching 90% takes rank 559 against 103. So ΔW really is concentrated in a small number of directions; it is just not concentrated in *eight* of them, and 45% of the right directions turns out to be enough to carry the behaviour.",
+    "left": "matrix",
+    "codeW": 170,
+    "vars": [
+     "r=1",
+     "r=8",
+     "r=16",
+     "rank for 90%"
+    ],
+    "steps": [
+     {
+      "code": "real delta-W",
+      "state": [
+       "12.8%",
+       "45.2%",
+       "57.9%",
+       "103"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "random, same std",
+      "state": [
+       "0.3%",
+       "2.5%",
+       "4.9%",
+       "559"
+      ],
+      "changed": [
+       1,
+       3
+      ],
+      "tone": "crit",
+      "note": "18x less at r=8"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Three things LoRA buys that have nothing to do with training cost",
+    "caption": "The cheap-training argument is the famous one and arguably the least important of the four. **The base cannot be damaged** — 4.1 measured a full fine-tune taking general perplexity from 5.386 to 6.748, permanently, and a LoRA run cannot do that because W₀ is never written to. Remove the adapter and the original model is back byte for byte. And an adapter is tens of megabytes rather than tens of gigabytes, so you can keep dozens and serve several from one base.",
+    "items": [
+     {
+      "label": "The base is untouched",
+      "sub": "4.1's forgetting is impossible - W0 is never written",
+      "tone": "good"
+     },
+     {
+      "label": "Adapters are small",
+      "sub": "24,576 numbers against 1.77 million; dozens, served from one base",
+      "tone": "good"
+     },
+     {
+      "label": "They can be merged away",
+      "sub": "W0 + BA is just a matrix - fold it in and ship a normal model",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ],
-
  "4.4": [
-  {"after": "01",
-   "d": {"kind": "matrix",
-         "title": "Five symbols, and which two are trained",
-         "caption": "A LoRA layer computes the base output exactly as before and adds a second term: the input passes through `A` into an r-dimensional bottleneck, back out through `B`, and is scaled by α/r. **Only A and B are trained** — W₀ is frozen, which is precisely why 4.1's forgetting cannot happen. The row to notice is B, initialised to **zero**, which §02 is about.",
-         "cols": ["What it is", "Trained?"],
-         "rows": ["W0", "A", "B", "r", "alpha"],
-         "cells": [
-          ["the pretrained matrix", {"text": "no - frozen", "tone": "good"}],
-          ["r x d_in, projects down", {"text": "yes - small and random", "tone": "violet"}],
-          ["d_out x r, projects back up", {"text": "yes - initialised to ZERO", "tone": "violet"}],
-          ["the rank: the add-on's capacity", "no - chosen"],
-          ["the strength numerator", "no - chosen, usually 2r"]]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "B = 0 means the wrapped model is bit-for-bit the original",
-         "caption": "With `B = 0` the product `BA` is the zero matrix, so the add-on contributes nothing and **the wrapped model is bit-for-bit the model you started with**. Training moves B away from zero gradually, so the adapter *fades in* rather than perturbing a working model from the first step. If both matrices started random the first forward pass would already be a damaged model, and the first gradient would be computed against that damage.",
-         "cols": 3,
-         "nodes": [
-          {"id": "b", "label": "B initialised to zero", "sub": "A small and random", "tone": "violet"},
-          {"id": "z", "label": "BA is the zero matrix", "sub": "the add-on contributes nothing", "tone": "accent"},
-          {"id": "o", "label": "Bit-for-bit the original", "sub": "at step 0", "tone": "good"},
-          {"id": "f", "label": "B moves away gradually", "sub": "the adapter fades in", "tone": "good"},
-          {"id": "r", "label": "Both random instead", "sub": "step 0 is a damaged model", "tone": "crit"},
-          {"id": "g", "label": "And the first gradient fights it", "sub": "which is why it is not done", "tone": "crit"}],
-         "edges": [["b", "z"], ["z", "o"], ["o", "f"], ["r", "g"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "What alpha/r is for, and the arithmetic worth following",
-         "caption": "The stated reason is that a bigger `r` makes `BA` produce bigger numbers, so dividing by r cancels that and lets capacity and strength be tuned separately. **The intent is clearly right** — changing the rank should not silently change how hard the adapter pushes. It is worth following the arithmetic through rather than taking it on faith, because the convention α = 2r then means the scale is held at 2 regardless of r, so the dial people think they are turning when they raise α alongside r is not moving at all.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "A bigger r", "sub": "more terms in the sum", "tone": "accent"},
-          {"id": "b", "label": "BA produces bigger numbers", "sub": "so capacity changes strength", "tone": "warn"},
-          {"id": "s", "label": "Divide by r", "sub": "the two become separable", "tone": "good"},
-          {"id": "c", "label": "The convention: alpha = 2r", "sub": "widely used", "tone": "violet"},
-          {"id": "h", "label": "So alpha/r is held at 2", "sub": "whatever r you choose", "tone": "violet"},
-          {"id": "n", "label": "Raising both moves nothing", "sub": "which is the thing to know", "tone": "teal"}],
-         "edges": [["r", "b"], ["b", "s"], ["s", "c"], ["c", "h"], ["h", "n"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "matrix",
+    "title": "Five symbols, and which two are trained",
+    "caption": "A LoRA layer computes the base output exactly as before and adds a second term: the input passes through `A` into an r-dimensional bottleneck, back out through `B`, and is scaled by α/r. **Only A and B are trained** — W₀ is frozen, which is precisely why 4.1's forgetting cannot happen. The row to notice is B, initialised to **zero**, which §02 is about.",
+    "cols": [
+     "What it is",
+     "Trained?"
+    ],
+    "rows": [
+     "W0",
+     "A",
+     "B",
+     "r",
+     "alpha"
+    ],
+    "cells": [
+     [
+      "the pretrained matrix",
+      {
+       "text": "no - frozen",
+       "tone": "good"
+      }
+     ],
+     [
+      "r x d_in, projects down",
+      {
+       "text": "yes - small and random",
+       "tone": "violet"
+      }
+     ],
+     [
+      "d_out x r, projects back up",
+      {
+       "text": "yes - initialised to ZERO",
+       "tone": "violet"
+      }
+     ],
+     [
+      "the rank: the add-on's capacity",
+      "no - chosen"
+     ],
+     [
+      "the strength numerator",
+      "no - chosen, usually 2r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "B = 0 means the wrapped model is bit-for-bit the original",
+    "caption": "With `B = 0` the product `BA` is the zero matrix, so the add-on contributes nothing and **the wrapped model is bit-for-bit the model you started with**. Training moves B away from zero gradually, so the adapter *fades in* rather than perturbing a working model from the first step. If both matrices started random the first forward pass would already be a damaged model, and the first gradient would be computed against that damage.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "B initialised to zero",
+      "sub": "A small and random",
+      "tone": "violet"
+     },
+     {
+      "id": "z",
+      "label": "BA is the zero matrix",
+      "sub": "the add-on contributes nothing",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "Bit-for-bit the original",
+      "sub": "at step 0",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "B moves away gradually",
+      "sub": "the adapter fades in",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Both random instead",
+      "sub": "step 0 is a damaged model",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "And the first gradient fights it",
+      "sub": "which is why it is not done",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "z"
+     ],
+     [
+      "z",
+      "o"
+     ],
+     [
+      "o",
+      "f"
+     ],
+     [
+      "r",
+      "g"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "What alpha/r is for, and the arithmetic worth following",
+    "caption": "The stated reason is that a bigger `r` makes `BA` produce bigger numbers, so dividing by r cancels that and lets capacity and strength be tuned separately. **The intent is clearly right** — changing the rank should not silently change how hard the adapter pushes. It is worth following the arithmetic through rather than taking it on faith, because the convention α = 2r then means the scale is held at 2 regardless of r, so the dial people think they are turning when they raise α alongside r is not moving at all.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "A bigger r",
+      "sub": "more terms in the sum",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "BA produces bigger numbers",
+      "sub": "so capacity changes strength",
+      "tone": "warn"
+     },
+     {
+      "id": "s",
+      "label": "Divide by r",
+      "sub": "the two become separable",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "The convention: alpha = 2r",
+      "sub": "widely used",
+      "tone": "violet"
+     },
+     {
+      "id": "h",
+      "label": "So alpha/r is held at 2",
+      "sub": "whatever r you choose",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Raising both moves nothing",
+      "sub": "which is the thing to know",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "b"
+     ],
+     [
+      "b",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ],
+     [
+      "c",
+      "h"
+     ],
+     [
+      "h",
+      "n"
+     ]
+    ]
+   }
+  }
  ]
 }

@@ -1,205 +1,928 @@
 {
  "2.6": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "A persona moves the distribution more than a parameter change does",
-         "caption": "Two things in this measurement are worth separating. The **magnitude** is real and not small — the expert persona shifts the distribution by 0.1354 nats, against 0.0390 for the same question at temperature 1.0 versus 0.9, so a persona is doing more than a parameter change people take seriously. And **the argmax moved**, from `' to'` to `' the'` — which temperature cannot do at all, because it rescales without reordering.",
-         "left": "persona", "codeW": 130,
-         "vars": ["top token", "2nd token", "KL from none"],
-         "steps": [
-          {"code": "none", "state": ["' to'", "' that'", "0.0000"], "tone": "accent"},
-          {"code": "expert", "state": ["' the'", "' to'", "0.1354"], "changed": [0, 2], "tone": "crit", "note": "the argmax moved"},
-          {"code": "teacher", "state": ["' that'", "' to'", "0.0731"], "changed": [0], "tone": "warn"},
-          {"code": "child", "state": ["' that'", "' to'", "0.0585"], "tone": "warn"},
-          {"code": "for scale: t=1.0 vs 0.9", "state": ["", "", "0.0390"], "tone": "violet", "note": "smaller than all three"}]}},
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "A persona earns its tokens only when it implies behaviour",
-         "caption": "\"You are a world-class expert\" does almost nothing, because **there is no such thing as the world-class-expert register** — it says nothing the model can act on. A persona that names a role with specific concerns does something, because the training data contains text written by people with those concerns, and conditioning on the role makes those continuations more likely.",
-         "cols": 3,
-         "nodes": [
-          {"id": "v", "label": "\"A world-class expert\"", "sub": "flattering, and empty", "tone": "crit"},
-          {"id": "n", "label": "No such register exists", "sub": "nothing to condition on", "tone": "crit"},
-          {"id": "s", "label": "\"A senior database engineer\"", "sub": "a role with specific concerns", "tone": "good"},
-          {"id": "t", "label": "Which exists in the training data", "sub": "vocabulary, priorities, register", "tone": "good"},
-          {"id": "c", "label": "So the continuations shift", "sub": "measurably - see section 01", "tone": "violet"},
-          {"id": "r", "label": "Name concerns, not excellence", "sub": "the practical rule", "tone": "teal"}],
-         "edges": [["v", "n"], ["s", "t"], ["t", "c"], ["c", "r"], ["n", "r"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "A persona shifts register; it adds nothing",
-         "caption": "Telling a model it is a cardiologist does not give it medical knowledge it lacks — it shifts the register toward text written by cardiologists, which can make **a wrong answer sound more authoritative** rather than make it right. Nor does it add capability: if the task needs reasoning the model cannot do, \"you are a brilliant mathematician\" supplies none of it. Both failures are dangerous in the same direction, because the output gets more confident while staying wrong.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "\"You are a cardiologist\"", "sub": "a conditioning signal", "tone": "accent"},
-          {"id": "k", "label": "No knowledge is added", "sub": "the weights are unchanged", "tone": "crit"},
-          {"id": "c", "label": "No capability is added", "sub": "reasoning it cannot do, it cannot do", "tone": "crit"},
-          {"id": "r", "label": "Only the register moves", "sub": "vocabulary and confidence", "tone": "warn"},
-          {"id": "w", "label": "So a wrong answer sounds expert", "sub": "which is worse than sounding unsure", "tone": "crit"},
-          {"id": "t", "label": "Both failures point the same way", "sub": "more confident, equally wrong", "tone": "teal"}],
-         "edges": [["p", "k"], ["p", "c"], ["k", "r"], ["c", "r"], ["r", "w"], ["w", "t"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Three roles make the omission impossible",
-         "caption": "This works for a reason worth naming. A single call asked for \"an evaluation\" will **pick a register and stay in it**, and the concerns of the other roles simply never appear — not because the model disagrees with them, but because it had to choose. Asking for all three in one response forces it to produce considerations it would otherwise have selected between, which is why the technique adds coverage rather than quality.",
-         "cols": 3,
-         "nodes": [
-          {"id": "o", "label": "\"Evaluate this proposal\"", "sub": "one call, one register", "tone": "warn"},
-          {"id": "p", "label": "The model picks one and stays", "sub": "the others never appear", "tone": "crit"},
-          {"id": "m", "label": "Ask as three named roles", "sub": "engineer, lawyer, customer", "tone": "good"},
-          {"id": "f", "label": "Each must be answered", "sub": "the omission is impossible", "tone": "good"},
-          {"id": "c", "label": "It buys coverage", "sub": "not depth, and not quality", "tone": "violet"},
-          {"id": "s", "label": "So use it to find blind spots", "sub": "then judge separately", "tone": "teal"}],
-         "edges": [["o", "p"], ["p", "m"], ["m", "f"], ["f", "c"], ["c", "s"]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "The delete test",
-         "caption": "A persona is *context* — one of 2.1's four components — and it is seductive because it is easy to write and feels like it covers a lot. It routinely gets used in place of the **instruction** and **format** components, which it cannot substitute for. The test is one line: delete the persona and ask whether the prompt still says what you want. If it does not, the persona was carrying the specification, and carrying it badly — because a register is not a requirement and cannot be checked against one.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "Delete the persona", "sub": "the whole line", "tone": "violet"},
-          {"id": "s", "label": "Does the prompt still say what you want?", "sub": "instruction, format, context", "tone": "accent"},
-          {"id": "y", "label": "Yes: the persona was context", "sub": "keep it, or do not", "tone": "good"},
-          {"id": "n", "label": "No: it was the specification", "sub": "and an unwritten one", "tone": "crit"},
-          {"id": "w", "label": "A register is not a requirement", "sub": "so nothing can check it", "tone": "crit"},
-          {"id": "f", "label": "Write the requirement instead", "sub": "then decide about the persona", "tone": "good"}],
-         "edges": [["p", "s"], ["s", "y"], ["s", "n"], ["n", "w"], ["w", "f"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "A persona moves the distribution more than a parameter change does",
+    "caption": "Two things in this measurement are worth separating. The **magnitude** is real and not small — the expert persona shifts the distribution by 0.1354 nats, against 0.0390 for the same question at temperature 1.0 versus 0.9, so a persona is doing more than a parameter change people take seriously. And **the argmax moved**, from `' to'` to `' the'` — which temperature cannot do at all, because it rescales without reordering.",
+    "left": "persona",
+    "codeW": 130,
+    "vars": [
+     "top token",
+     "2nd token",
+     "KL from none"
+    ],
+    "steps": [
+     {
+      "code": "none",
+      "state": [
+       "' to'",
+       "' that'",
+       "0.0000"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "expert",
+      "state": [
+       "' the'",
+       "' to'",
+       "0.1354"
+      ],
+      "changed": [
+       0,
+       2
+      ],
+      "tone": "crit",
+      "note": "the argmax moved"
+     },
+     {
+      "code": "teacher",
+      "state": [
+       "' that'",
+       "' to'",
+       "0.0731"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "child",
+      "state": [
+       "' that'",
+       "' to'",
+       "0.0585"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "for scale: t=1.0 vs 0.9",
+      "state": [
+       "",
+       "",
+       "0.0390"
+      ],
+      "tone": "violet",
+      "note": "smaller than all three"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "A persona earns its tokens only when it implies behaviour",
+    "caption": "\"You are a world-class expert\" does almost nothing, because **there is no such thing as the world-class-expert register** — it says nothing the model can act on. A persona that names a role with specific concerns does something, because the training data contains text written by people with those concerns, and conditioning on the role makes those continuations more likely.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "v",
+      "label": "\"A world-class expert\"",
+      "sub": "flattering, and empty",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "No such register exists",
+      "sub": "nothing to condition on",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "\"A senior database engineer\"",
+      "sub": "a role with specific concerns",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Which exists in the training data",
+      "sub": "vocabulary, priorities, register",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "So the continuations shift",
+      "sub": "measurably - see section 01",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Name concerns, not excellence",
+      "sub": "the practical rule",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "v",
+      "n"
+     ],
+     [
+      "s",
+      "t"
+     ],
+     [
+      "t",
+      "c"
+     ],
+     [
+      "c",
+      "r"
+     ],
+     [
+      "n",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "A persona shifts register; it adds nothing",
+    "caption": "Telling a model it is a cardiologist does not give it medical knowledge it lacks — it shifts the register toward text written by cardiologists, which can make **a wrong answer sound more authoritative** rather than make it right. Nor does it add capability: if the task needs reasoning the model cannot do, \"you are a brilliant mathematician\" supplies none of it. Both failures are dangerous in the same direction, because the output gets more confident while staying wrong.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "\"You are a cardiologist\"",
+      "sub": "a conditioning signal",
+      "tone": "accent"
+     },
+     {
+      "id": "k",
+      "label": "No knowledge is added",
+      "sub": "the weights are unchanged",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "No capability is added",
+      "sub": "reasoning it cannot do, it cannot do",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "Only the register moves",
+      "sub": "vocabulary and confidence",
+      "tone": "warn"
+     },
+     {
+      "id": "w",
+      "label": "So a wrong answer sounds expert",
+      "sub": "which is worse than sounding unsure",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Both failures point the same way",
+      "sub": "more confident, equally wrong",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "k"
+     ],
+     [
+      "p",
+      "c"
+     ],
+     [
+      "k",
+      "r"
+     ],
+     [
+      "c",
+      "r"
+     ],
+     [
+      "r",
+      "w"
+     ],
+     [
+      "w",
+      "t"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Three roles make the omission impossible",
+    "caption": "This works for a reason worth naming. A single call asked for \"an evaluation\" will **pick a register and stay in it**, and the concerns of the other roles simply never appear — not because the model disagrees with them, but because it had to choose. Asking for all three in one response forces it to produce considerations it would otherwise have selected between, which is why the technique adds coverage rather than quality.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "\"Evaluate this proposal\"",
+      "sub": "one call, one register",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "The model picks one and stays",
+      "sub": "the others never appear",
+      "tone": "crit"
+     },
+     {
+      "id": "m",
+      "label": "Ask as three named roles",
+      "sub": "engineer, lawyer, customer",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Each must be answered",
+      "sub": "the omission is impossible",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "It buys coverage",
+      "sub": "not depth, and not quality",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "So use it to find blind spots",
+      "sub": "then judge separately",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "p"
+     ],
+     [
+      "p",
+      "m"
+     ],
+     [
+      "m",
+      "f"
+     ],
+     [
+      "f",
+      "c"
+     ],
+     [
+      "c",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The delete test",
+    "caption": "A persona is *context* — one of 2.1's four components — and it is seductive because it is easy to write and feels like it covers a lot. It routinely gets used in place of the **instruction** and **format** components, which it cannot substitute for. The test is one line: delete the persona and ask whether the prompt still says what you want. If it does not, the persona was carrying the specification, and carrying it badly — because a register is not a requirement and cannot be checked against one.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "Delete the persona",
+      "sub": "the whole line",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Does the prompt still say what you want?",
+      "sub": "instruction, format, context",
+      "tone": "accent"
+     },
+     {
+      "id": "y",
+      "label": "Yes: the persona was context",
+      "sub": "keep it, or do not",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No: it was the specification",
+      "sub": "and an unwritten one",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "A register is not a requirement",
+      "sub": "so nothing can check it",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Write the requirement instead",
+      "sub": "then decide about the persona",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "s"
+     ],
+     [
+      "s",
+      "y"
+     ],
+     [
+      "s",
+      "n"
+     ],
+     [
+      "n",
+      "w"
+     ],
+     [
+      "w",
+      "f"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.7": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "A request, and a guarantee, priced",
-         "caption": "Describing the format in the prompt costs 58 tokens; the generated JSON Schema costs 176 — **3.0× as much, and the only one of the two the model cannot violate**. That is usually a trade worth making, because 118 tokens is far cheaper than a parse failure. The thing that beats both for a format a schema cannot express is a literal example of the output: describing a structure in prose invites interpretation, and showing it does not.",
-         "left": "how the format is given", "codeW": 210,
-         "vars": ["tokens", "status"],
-         "steps": [
-          {"code": "described in the prompt", "state": ["58", "a request"], "tone": "warn"},
-          {"code": "a generated JSON Schema", "state": ["176", "a guarantee"], "changed": [0, 1], "tone": "good", "note": "3.0x, and enforced"},
-          {"code": "the difference", "state": ["+118", "cheaper than one failure"], "tone": "violet"}]}},
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "What the schema enforces, and what still has to be said somewhere",
-         "caption": "Structured output makes the **shape** part of a format prompt redundant and nothing else. Everything about what the fields *mean* still has to be stated, and a schema has exactly one place to put it: `description`. The fifth row is the important one — *use null rather than guessing* is unexpressible and is precisely the instruction that prevents invented values. The last row is the check that catches hallucination, and it lives in code.",
-         "cols": ["In the schema?", "Where it lives"],
-         "rows": ["Is a string", "One of three values", "An ISO 8601 date", "Summary is one sentence", "Use null, do not guess", "end_date after start_date", "Entity is in the source"],
-         "cells": [
-          [{"text": "yes - type", "tone": "good"}, "schema, enforced"],
-          [{"text": "yes - enum", "tone": "good"}, "schema, enforced"],
-          [{"text": "yes - format", "tone": "good"}, "schema, enforced"],
-          [{"text": "no", "tone": "warn"}, "the prompt, or a description"],
-          [{"text": "no", "tone": "crit"}, "the prompt - and this is the one"],
-          [{"text": "no", "tone": "crit"}, "code, after parsing (1.8)"],
-          [{"text": "no", "tone": "crit"}, "code - it catches hallucination"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Strip, yes. Repair, no.",
-         "caption": "The instinct to write a tolerant parser is right about stripping fences and finding the first `{`, and **wrong about repairing**. Repair libraries are good at their job and that is the problem: they turn malformed output into a *valid object that nobody specified*, so the loud failure you wanted becomes a row in a database with a plausible gap in it, found during an audit months later if at all. Retry instead — a failed parse is cheap to retry, usually succeeds, and when it does not that escalation is a real signal about the prompt or the input.",
-         "cols": 3,
-         "nodes": [
-          {"id": "o", "label": "Output that may not parse", "sub": "no schema available", "tone": "accent"},
-          {"id": "s", "label": "Strip fences, find the first brace", "sub": "safe, and worth doing", "tone": "good"},
-          {"id": "r", "label": "Repair the JSON", "sub": "trailing commas, quotes", "tone": "crit"},
-          {"id": "u", "label": "A valid object nobody specified", "sub": "with a plausible gap", "tone": "crit"},
-          {"id": "a", "label": "Found in an audit, months later", "sub": "if at all", "tone": "crit"},
-          {"id": "t", "label": "Retry instead", "sub": "cheap, and usually works", "tone": "good"},
-          {"id": "e", "label": "A repeated failure is a signal", "sub": "about the prompt or the input", "tone": "teal"}],
-         "edges": [["o", "s"], ["s", "r"], ["r", "u"], ["u", "a"], ["s", "t"], ["t", "e"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Three cases where there is no schema to lean on",
-         "caption": "The first is a solved problem — a forced tool call is structured output under another name, available wherever function calling is. The second is honest about its limits: you cannot write a schema for fields you have not seen, so JSON mode plus your own validation is the real answer. The third generalises furthest: **any output with a structure you rely on deserves a post-condition**, JSON or not, and the post-condition is what turns \"it sometimes gets it wrong\" into a number on a dashboard.",
-         "cols": ["What to do instead"],
-         "rows": ["No schema mode at all", "Open-ended extraction", "Output that is not JSON"],
-         "cells": [
-          [{"text": "a forced tool call (1.8) - equivalent, and widely available", "tone": "good"}],
-          [{"text": "JSON mode plus your own validation; you cannot schema unseen fields", "tone": "warn"}],
-          [{"text": "a literal example, plus a post-condition that the structure is present", "tone": "violet"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "A request, and a guarantee, priced",
+    "caption": "Describing the format in the prompt costs 58 tokens; the generated JSON Schema costs 176 — **3.0× as much, and the only one of the two the model cannot violate**. That is usually a trade worth making, because 118 tokens is far cheaper than a parse failure. The thing that beats both for a format a schema cannot express is a literal example of the output: describing a structure in prose invites interpretation, and showing it does not.",
+    "left": "how the format is given",
+    "codeW": 210,
+    "vars": [
+     "tokens",
+     "status"
+    ],
+    "steps": [
+     {
+      "code": "described in the prompt",
+      "state": [
+       "58",
+       "a request"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "a generated JSON Schema",
+      "state": [
+       "176",
+       "a guarantee"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good",
+      "note": "3.0x, and enforced"
+     },
+     {
+      "code": "the difference",
+      "state": [
+       "+118",
+       "cheaper than one failure"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "What the schema enforces, and what still has to be said somewhere",
+    "caption": "Structured output makes the **shape** part of a format prompt redundant and nothing else. Everything about what the fields *mean* still has to be stated, and a schema has exactly one place to put it: `description`. The fifth row is the important one — *use null rather than guessing* is unexpressible and is precisely the instruction that prevents invented values. The last row is the check that catches hallucination, and it lives in code.",
+    "cols": [
+     "In the schema?",
+     "Where it lives"
+    ],
+    "rows": [
+     "Is a string",
+     "One of three values",
+     "An ISO 8601 date",
+     "Summary is one sentence",
+     "Use null, do not guess",
+     "end_date after start_date",
+     "Entity is in the source"
+    ],
+    "cells": [
+     [
+      {
+       "text": "yes - type",
+       "tone": "good"
+      },
+      "schema, enforced"
+     ],
+     [
+      {
+       "text": "yes - enum",
+       "tone": "good"
+      },
+      "schema, enforced"
+     ],
+     [
+      {
+       "text": "yes - format",
+       "tone": "good"
+      },
+      "schema, enforced"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "warn"
+      },
+      "the prompt, or a description"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "the prompt - and this is the one"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "code, after parsing (1.8)"
+     ],
+     [
+      {
+       "text": "no",
+       "tone": "crit"
+      },
+      "code - it catches hallucination"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Strip, yes. Repair, no.",
+    "caption": "The instinct to write a tolerant parser is right about stripping fences and finding the first `{`, and **wrong about repairing**. Repair libraries are good at their job and that is the problem: they turn malformed output into a *valid object that nobody specified*, so the loud failure you wanted becomes a row in a database with a plausible gap in it, found during an audit months later if at all. Retry instead — a failed parse is cheap to retry, usually succeeds, and when it does not that escalation is a real signal about the prompt or the input.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "Output that may not parse",
+      "sub": "no schema available",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Strip fences, find the first brace",
+      "sub": "safe, and worth doing",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Repair the JSON",
+      "sub": "trailing commas, quotes",
+      "tone": "crit"
+     },
+     {
+      "id": "u",
+      "label": "A valid object nobody specified",
+      "sub": "with a plausible gap",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Found in an audit, months later",
+      "sub": "if at all",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Retry instead",
+      "sub": "cheap, and usually works",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "A repeated failure is a signal",
+      "sub": "about the prompt or the input",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "s"
+     ],
+     [
+      "s",
+      "r"
+     ],
+     [
+      "r",
+      "u"
+     ],
+     [
+      "u",
+      "a"
+     ],
+     [
+      "s",
+      "t"
+     ],
+     [
+      "t",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Three cases where there is no schema to lean on",
+    "caption": "The first is a solved problem — a forced tool call is structured output under another name, available wherever function calling is. The second is honest about its limits: you cannot write a schema for fields you have not seen, so JSON mode plus your own validation is the real answer. The third generalises furthest: **any output with a structure you rely on deserves a post-condition**, JSON or not, and the post-condition is what turns \"it sometimes gets it wrong\" into a number on a dashboard.",
+    "items": [
+     {
+      "label": "No schema mode at all",
+      "sub": "a forced tool call (1.8) - equivalent, and widely available",
+      "tone": "good"
+     },
+     {
+      "label": "Open-ended extraction",
+      "sub": "JSON mode plus your own validation; you cannot schema unseen fields",
+      "tone": "warn"
+     },
+     {
+      "label": "Output that is not JSON",
+      "sub": "a literal example, plus a post-condition that the structure is present",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ],
-
  "2.8": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "A three-call chain is 1.90x, not 3x",
-         "caption": "The naive expectation is that three calls cost three times one, and they do not — **the document is sent once**. Step 1 consumes 3,200 input tokens and replaces them with 300 tokens of claims, so steps 2 and 3 see 500 and 600 tokens rather than the paper. That is the whole reason decomposition is affordable. What it does cost is latency: one round trip becomes three sequential ones, and that is not recoverable by any amount of parallelism.",
-         "left": "call", "codeW": 160,
-         "vars": ["input", "output"],
-         "steps": [
-          {"code": "single call", "state": ["3,200", "400"], "tone": "accent", "note": "$0.012000"},
-          {"code": "1 extract claims", "state": ["3,200", "300"], "tone": "violet", "note": "the document, once"},
-          {"code": "2 find evidence", "state": ["500", "400"], "changed": [0], "tone": "good", "note": "claims, not the paper"},
-          {"code": "3 write review", "state": ["600", "500"], "tone": "good"},
-          {"code": "chain total", "state": ["4,300", "1,200"], "tone": "warn", "note": "$0.022750 = 1.90x"},
-          {"code": "latency", "state": ["3 round trips", "sequential"], "tone": "crit"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Error compounds, and the arithmetic is unforgiving",
-         "caption": "A later step working on a wrong intermediate cannot recover — it produces a competent answer to the wrong question. At a very good 0.95 per step, **eight steps is 0.663**. At 0.80 per step, five steps is 0.328. This is the case against decomposing indefinitely and the reason a long agent loop is fragile where a short chain is not. It also explains a counterintuitive observation: adding a step to \"improve quality\" can *reduce* end-to-end accuracy, because the new step's own failure rate multiplies in.",
-         "cols": ["2 steps", "3 steps", "5 steps", "8 steps"],
-         "rows": ["0.99 per step", "0.95 per step", "0.90 per step", "0.80 per step"],
-         "cells": [
-          ["0.980", "0.970", "0.951", {"text": "0.923", "tone": "good"}],
-          ["0.903", "0.857", "0.774", {"text": "0.663", "tone": "warn"}],
-          ["0.810", "0.729", "0.590", {"text": "0.430", "tone": "crit"}],
-          ["0.640", "0.512", "0.328", {"text": "0.168", "tone": "crit"}]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Three reasons to decompose, and one that is not a reason",
-         "caption": "The first three each buy something a single call cannot give you — different parameters per step, a failure *location*, or a cheap model on the cheap steps, which is often a larger saving than any prompt optimisation. The last row is the common mistake: splitting a call because the prompt got long **moves** the complexity rather than reducing it, and adds two more places to fail at the measured price of 1.90×.",
-         "cols": ["Because"],
-         "rows": ["Steps want different params", "You need a failure location", "Steps want different models", "The prompt got long"],
-         "cells": [
-          [{"text": "one call has one temperature, and must compromise", "tone": "good"}],
-          [{"text": "\"step 2 returned an empty list\" is debuggable; \"it is wrong\" is not", "tone": "good"}],
-          [{"text": "the expensive model only where the reasoning is", "tone": "good"}],
-          [{"text": "not a reason - 1.90x cost, 3x latency, more failure modes", "tone": "crit"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "A three-call chain is 1.90x, not 3x",
+    "caption": "The naive expectation is that three calls cost three times one, and they do not — **the document is sent once**. Step 1 consumes 3,200 input tokens and replaces them with 300 tokens of claims, so steps 2 and 3 see 500 and 600 tokens rather than the paper. That is the whole reason decomposition is affordable. What it does cost is latency: one round trip becomes three sequential ones, and that is not recoverable by any amount of parallelism.",
+    "left": "call",
+    "codeW": 160,
+    "vars": [
+     "input",
+     "output"
+    ],
+    "steps": [
+     {
+      "code": "single call",
+      "state": [
+       "3,200",
+       "400"
+      ],
+      "tone": "accent",
+      "note": "$0.012000"
+     },
+     {
+      "code": "1 extract claims",
+      "state": [
+       "3,200",
+       "300"
+      ],
+      "tone": "violet",
+      "note": "the document, once"
+     },
+     {
+      "code": "2 find evidence",
+      "state": [
+       "500",
+       "400"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "claims, not the paper"
+     },
+     {
+      "code": "3 write review",
+      "state": [
+       "600",
+       "500"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "chain total",
+      "state": [
+       "4,300",
+       "1,200"
+      ],
+      "tone": "warn",
+      "note": "$0.022750 = 1.90x"
+     },
+     {
+      "code": "latency",
+      "state": [
+       "3 round trips",
+       "sequential"
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Error compounds, and the arithmetic is unforgiving",
+    "caption": "A later step working on a wrong intermediate cannot recover — it produces a competent answer to the wrong question. At a very good 0.95 per step, **eight steps is 0.663**. At 0.80 per step, five steps is 0.328. This is the case against decomposing indefinitely and the reason a long agent loop is fragile where a short chain is not. It also explains a counterintuitive observation: adding a step to \"improve quality\" can *reduce* end-to-end accuracy, because the new step's own failure rate multiplies in.",
+    "cols": [
+     "2 steps",
+     "3 steps",
+     "5 steps",
+     "8 steps"
+    ],
+    "rows": [
+     "0.99 per step",
+     "0.95 per step",
+     "0.90 per step",
+     "0.80 per step"
+    ],
+    "cells": [
+     [
+      "0.980",
+      "0.970",
+      "0.951",
+      {
+       "text": "0.923",
+       "tone": "good"
+      }
+     ],
+     [
+      "0.903",
+      "0.857",
+      "0.774",
+      {
+       "text": "0.663",
+       "tone": "warn"
+      }
+     ],
+     [
+      "0.810",
+      "0.729",
+      "0.590",
+      {
+       "text": "0.430",
+       "tone": "crit"
+      }
+     ],
+     [
+      "0.640",
+      "0.512",
+      "0.328",
+      {
+       "text": "0.168",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Three reasons to decompose, and one that is not a reason",
+    "caption": "The first three each buy something a single call cannot give you — different parameters per step, a failure *location*, or a cheap model on the cheap steps, which is often a larger saving than any prompt optimisation. The last row is the common mistake: splitting a call because the prompt got long **moves** the complexity rather than reducing it, and adds two more places to fail at the measured price of 1.90×.",
+    "items": [
+     {
+      "label": "Steps want different params",
+      "sub": "one call has one temperature, and must compromise",
+      "tone": "good"
+     },
+     {
+      "label": "You need a failure location",
+      "sub": "\"step 2 returned an empty list\" is debuggable; \"it is wrong\" is not",
+      "tone": "good"
+     },
+     {
+      "label": "Steps want different models",
+      "sub": "the expensive model only where the reasoning is",
+      "tone": "good"
+     },
+     {
+      "label": "The prompt got long",
+      "sub": "not a reason - 1.90x cost, 3x latency, more failure modes",
+      "tone": "crit"
+     }
+    ]
+   }
+  }
  ],
-
  "2.9": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "\"What's in this image?\" asks for the wrong thing",
-         "caption": "A description is almost never what a system wants, and that question invites one. 2.1's four-component check applies to vision exactly as it does to text: **the image is the input**, and the instruction, the context and the output format all still have to be supplied. An image in the request does not answer any of the other three.",
-         "cols": 4,
-         "nodes": [
-          {"id": "i", "label": "The image", "sub": "the input component", "tone": "accent"},
-          {"id": "n", "label": "Instruction", "sub": "which question, exactly", "tone": "good"},
-          {"id": "c", "label": "Context", "sub": "what kind of document, what for", "tone": "good"},
-          {"id": "f", "label": "Output format", "sub": "fields, not prose", "tone": "good"},
-          {"id": "d", "label": "Supply none and you get a description", "sub": "which nothing can consume", "tone": "crit"}],
-         "edges": [["i", "n"], ["n", "c"], ["c", "f"], ["i", "d", "", "dashed"]]}},
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Order inside the content array, and what each one is for",
-         "caption": "The array is a sequence of tokens like everything else, so instructions placed *before* the image condition the model as it reads the image, and instructions after are read afterwards. Both have a use. The last row is the one that silently corrupts comparisons: **without labels between images the model conflates them**. And prompt caching applies here too — a fixed instruction and reference image first, varying image last, keeps a cacheable prefix worth hundreds of image tokens.",
-         "cols": ["Effect", "Use when"],
-         "rows": ["Instruction, then image", "Image, then question", "Instruction, image, restate", "Images with labels between"],
-         "cells": [
-          [{"text": "it knows what to look for while reading", "tone": "good"}, "a specific extraction - the usual case"],
-          ["it reads, then is asked", "several questions of one image"],
-          ["both", "long instructions, risk of drift"],
-          [{"text": "each image is identified", "tone": "violet"}, "comparison - or it conflates them"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The tile arithmetic, and the cliff at 513 pixels",
-         "caption": "`detail=\"low\"` is a **flat 85 tokens** at any size, which is the cheapest useful thing in the vision API. `detail=\"high\"` is 85 plus 170 per 512-pixel tile, so a square image is 255 tokens up to 512×512 and **765 from 513×513 upward, forever** — the step is a cliff, not a slope, and resizing to 512 before upload is a 3× saving that costs one line.",
-         "left": "image", "codeW": 170,
-         "vars": ["tiles", "tokens"],
-         "steps": [
-          {"code": "any size, detail=low", "state": ["-", "85"], "tone": "good", "note": "flat, always"},
-          {"code": "512x512, detail=high", "state": ["1", "255"], "tone": "accent"},
-          {"code": "513x513, detail=high", "state": ["4", "765"], "changed": [0, 1], "tone": "crit", "note": "one pixel, 3x the cost"},
-          {"code": "2048x2048, detail=high", "state": ["4", "765"], "tone": "warn", "note": "and no more above that"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Four things to do to the image before it costs anything",
-         "caption": "A vision model is **expensive per pixel and cheap to reason with**, so anything you can do to the image beforehand is work done once, in code, rather than work the model repeats on every request. The last row is the combination that wins on forms and invoices: the OCR text gives exact strings the model would otherwise read from pixels, and the image gives the layout OCR threw away.",
-         "cols": ["What it buys"],
-         "rows": ["Crop to the region", "Rotate and deskew", "Split multi-page documents", "Run OCR alongside"],
-         "cells": [
-          [{"text": "removes distractors, and often drops you a size tier", "tone": "good"}],
-          ["an angled photo is as hard for the model as for a person"],
-          [{"text": "one call per page beats eight images - and failures get a location", "tone": "good"}],
-          [{"text": "exact strings plus the layout - together they beat either alone", "tone": "violet"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "\"What's in this image?\" asks for the wrong thing",
+    "caption": "A description is almost never what a system wants, and that question invites one. 2.1's four-component check applies to vision exactly as it does to text: **the image is the input**, and the instruction, the context and the output format all still have to be supplied. An image in the request does not answer any of the other three.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "The image",
+      "sub": "the input component",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Instruction",
+      "sub": "which question, exactly",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Context",
+      "sub": "what kind of document, what for",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "Output format",
+      "sub": "fields, not prose",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "Supply none and you get a description",
+      "sub": "which nothing can consume",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "n"
+     ],
+     [
+      "n",
+      "c"
+     ],
+     [
+      "c",
+      "f"
+     ],
+     [
+      "i",
+      "d",
+      "",
+      "dashed"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Order inside the content array, and what each one is for",
+    "caption": "The array is a sequence of tokens like everything else, so instructions placed *before* the image condition the model as it reads the image, and instructions after are read afterwards. Both have a use. The last row is the one that silently corrupts comparisons: **without labels between images the model conflates them**. And prompt caching applies here too — a fixed instruction and reference image first, varying image last, keeps a cacheable prefix worth hundreds of image tokens.",
+    "cols": [
+     "Effect",
+     "Use when"
+    ],
+    "rows": [
+     "Instruction, then image",
+     "Image, then question",
+     "Instruction, image, restate",
+     "Images with labels between"
+    ],
+    "cells": [
+     [
+      {
+       "text": "it knows what to look for while reading",
+       "tone": "good"
+      },
+      "a specific extraction - the usual case"
+     ],
+     [
+      "it reads, then is asked",
+      "several questions of one image"
+     ],
+     [
+      "both",
+      "long instructions, risk of drift"
+     ],
+     [
+      {
+       "text": "each image is identified",
+       "tone": "violet"
+      },
+      "comparison - or it conflates them"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The tile arithmetic, and the cliff at 513 pixels",
+    "caption": "`detail=\"low\"` is a **flat 85 tokens** at any size, which is the cheapest useful thing in the vision API. `detail=\"high\"` is 85 plus 170 per 512-pixel tile, so a square image is 255 tokens up to 512×512 and **765 from 513×513 upward, forever** — the step is a cliff, not a slope, and resizing to 512 before upload is a 3× saving that costs one line.",
+    "left": "image",
+    "codeW": 170,
+    "vars": [
+     "tiles",
+     "tokens"
+    ],
+    "steps": [
+     {
+      "code": "any size, detail=low",
+      "state": [
+       "-",
+       "85"
+      ],
+      "tone": "good",
+      "note": "flat, always"
+     },
+     {
+      "code": "512x512, detail=high",
+      "state": [
+       "1",
+       "255"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "513x513, detail=high",
+      "state": [
+       "4",
+       "765"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "one pixel, 3x the cost"
+     },
+     {
+      "code": "2048x2048, detail=high",
+      "state": [
+       "4",
+       "765"
+      ],
+      "tone": "warn",
+      "note": "and no more above that"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "Four things to do to the image before it costs anything",
+    "caption": "A vision model is **expensive per pixel and cheap to reason with**, so anything you can do to the image beforehand is work done once, in code, rather than work the model repeats on every request. The last row is the combination that wins on forms and invoices: the OCR text gives exact strings the model would otherwise read from pixels, and the image gives the layout OCR threw away.",
+    "items": [
+     {
+      "label": "Crop to the region",
+      "sub": "removes distractors, and often drops you a size tier",
+      "tone": "good"
+     },
+     {
+      "label": "Rotate and deskew",
+      "sub": "an angled photo is as hard for the model as for a person"
+     },
+     {
+      "label": "Split multi-page documents",
+      "sub": "one call per page beats eight images - and failures get a location",
+      "tone": "good"
+     },
+     {
+      "label": "Run OCR alongside",
+      "sub": "exact strings plus the layout - together they beat either alone",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ]
 }

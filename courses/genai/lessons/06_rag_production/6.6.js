@@ -18,7 +18,8 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "different", text: "Five ways code is not prose",
       sub: "Each one breaks a different assumption from M5" },
 
-    {"kind": "matrix", "title": "Five ways code is not prose", "caption": "Each row breaks an assumption from module 5. **A function boundary is not a hint — it is the unit of meaning**, unlike a paragraph break, so recursive splitting on characters is simply wrong here. Understanding a function needs its imports and sometimes its callers, which is 6.4's multi-hop argument in a domain where the edges are in the syntax. And the last row breaks 6.2's nightly rebuild: a repository changes **every commit**.", "cols": ["What it breaks"], "rows": ["Structure is strict", "Dependencies cross files", "Several representations", "Context is long-range", "It changes constantly"], "cells": [[{"text": "a function boundary is the unit, not a hint", "tone": "violet"}], [{"text": "6.4's multi-hop case, with edges in the syntax", "tone": "warn"}], ["raw text, AST, docstring or summary - you choose what to embed"], [{"text": "a fix may span ten files; no top-5 covers that", "tone": "crit"}], [{"text": "every commit, not nightly - 6.2's default stops working", "tone": "crit"}]], "t": "diagram", "id": "dg-6_6-01-0"},
+    {"kind": "layers", "title": "Five ways code is not prose", "caption": "Each row breaks an assumption from module 5. **A function boundary is not a hint — it is the unit of meaning**, unlike a paragraph break, so recursive splitting on characters is simply wrong here. Understanding a function needs its imports and sometimes its callers, which is 6.4's multi-hop argument in a domain where the edges are in the syntax. And the last row breaks 6.2's nightly rebuild: a repository changes **every commit**.", "items": [{"label": "Structure is strict", "sub": "a function boundary is the unit, not a hint", "tone": "violet"}, {"label": "Dependencies cross files", "sub": "6.4's multi-hop case, with edges in the syntax", "tone": "warn"}, {"label": "Several representations", "sub": "raw text, AST, docstring or summary - you choose what to embed"}, {"label": "Context is long-range", "sub": "a fix may span ten files; no top-5 covers that", "tone": "crit"}, {"label": "It changes constantly", "sub": "every commit, not nightly - 6.2's default stops working", "tone": "crit"}], "t": "diagram", "id": "dg-6_6-01-0"},
+
 
 
 
@@ -190,6 +191,7 @@ for node in ast.walk(tree):
 
 
 
+
     { t: "p", text: "Code is the one domain where 6.4\u2019s knowledge graph needs no extraction model at all. The relations \u2014 calls, inherits, imports \u2014 are in the syntax, so a parser recovers them exactly. That removes the entity-resolution problem that made graph building hard, and replaces it with a different one." },
 
     { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph the usual treatment builds", code: `class CodeGraph:
@@ -230,6 +232,7 @@ for node in ast.walk(tree):
       sub: "Semantic misses symbols; symbol search misses intent" },
 
     {"kind": "matrix", "title": "Five code embedding models, and the dimension cost nobody prices", "caption": "The first row is a good all-rounder and **3,072 dimensions is 8× the storage of 384** — 6.2's memory arithmetic applies directly, so at a million chunks that is the difference between 1.5 GB and 12 GB of RAM. The last row's 8K context is the one specification that matters structurally rather than marginally: a whole-class chunk does not fit in 512 tokens, and 5.3 measured what silent truncation does.", "cols": ["Dims", "Note"], "rows": ["text-embedding-3-large", "Voyage Code 2", "CodeBERT", "StarEncoder", "Jina Code v2"], "cells": [["3072", {"text": "good all-rounder; 8x the storage of 384", "tone": "warn"}], ["1536", {"text": "trained on code; called best-in-class", "tone": "good"}], ["768", "open-source, strongest on classification"], ["1024", "trained on The Stack, multilingual"], ["768", {"text": "8K context - whole-class chunks fit", "tone": "good"}]], "t": "diagram", "id": "dg-6_6-04-2"},
+
 
 
 
@@ -291,6 +294,7 @@ for node in ast.walk(tree):
       sub: "Every commit is an ingest" },
 
     {"kind": "flow", "title": "A stale code index is worse than a stale prose index", "caption": "6.2 made incremental indexing by content hash the sensible default. For code it is **the only workable design**, because the slow clock is not nightly — it is every commit. And the failure is nastier than in prose: a stale code index tells you about **a function signature that no longer exists**, and the answer looks exactly as authoritative as a correct one, with a file path and a line number attached.", "cols": 3, "nodes": [{"id": "c", "label": "The repository changes per commit", "sub": "not nightly", "tone": "accent"}, {"id": "h", "label": "So: hash-based incremental, always", "sub": "the only workable design", "tone": "good"}, {"id": "s", "label": "A stale entry names a dead signature", "sub": "removed last week", "tone": "crit"}, {"id": "a", "label": "And it looks authoritative", "sub": "path and line number attached", "tone": "crit"}, {"id": "g", "label": "Index on the commit hook", "sub": "or accept answers about dead code", "tone": "violet"}], "edges": [["c", "h"], ["h", "s"], ["s", "a"], ["a", "g"]], "t": "diagram", "id": "dg-6_6-05-3"},
+
 
 
 
