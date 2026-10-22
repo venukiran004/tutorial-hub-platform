@@ -112,6 +112,7 @@ A @ np.array([3.0, 2.0])     # [8., 2.]
 
 
 
+
     { t: "p", text: "A handful of transformations account for most matrices you will meet, and each has a signature you can recognise by eye. The **determinant** is the single number that summarises what a transformation does to area or volume." },
 
     { t: "dl", items: [
@@ -240,6 +241,8 @@ X @ A                   # [[6., 5.], [2., 1.]]   <- silently WRONG
     ]},
 
     { t: "h2", n: "04", text: "Linear, and what it excludes", id: "linear" },
+
+    {"kind": "flow", "title": "Set the scale factor to zero, and the definition forbids translation", "caption": "**This is a two-line proof with a large consequence.** Homogeneity says f(kv) = k f(v); put k = 0 and you get f(0) = 0, so *every* matrix sends the origin to the origin. Which means the most ordinary transformation there is — sliding something sideways — is not linear, and no 2×2 matrix can do it. **The repair is to add a coordinate that is always 1**, which turns a translation into a shear one dimension up: homogeneous coordinates, the reason graphics uses 4×4 matrices for 3-D, and the reason a layer is Wx + b rather than Wx.", "cols": 3, "nodes": [{"id": "r", "label": "Additivity and homogeneity", "sub": "the two rules that define linear", "tone": "accent"}, {"id": "z", "label": "Put the scale factor k = 0", "sub": "f(0) = 0 f(u) = 0", "tone": "violet"}, {"id": "o", "label": "So the origin can never move", "sub": "for every matrix, always", "tone": "violet"}, {"id": "t", "label": "Translation is therefore NOT linear", "sub": "nor is squaring, nor an activation", "tone": "crit"}, {"id": "f", "label": "Add a coordinate that is always 1", "sub": "a shift becomes a shear one dim up", "tone": "good"}, {"id": "b", "label": "Which is why a layer is Wx + b", "sub": "the bias is the extra column", "tone": "good"}], "edges": [["r", "z"], ["z", "o"], ["o", "t"], ["t", "f"], ["f", "b"]], "t": "diagram", "id": "dg-1_2-04-1"},
 
     { t: "p", text: "**Linear** has a precise definition that excludes a great deal, and \"linear model\" in machine learning means something looser. A transformation is linear when it satisfies two rules, and those two rules are what make matrices sufficient to describe it." },
 

@@ -123,6 +123,7 @@ vecs[:, 1] / vecs[0, 1] # [1., -2.]   (normalised to match our working)
 
 
 
+
     { t: "p", text: "The eigenvalues tell you what happens when a transformation is applied **repeatedly** — which is the situation in every iterative algorithm, every Markov chain, and every recurrent network. The largest one dominates everything else." },
 
     { t: "dl", items: [
@@ -259,6 +260,8 @@ for i in range(vecs.shape[1]):
     ]},
 
     { t: "h2", n: "04", text: "Eigenvalues of a covariance matrix", id: "covariance" },
+
+    {"kind": "trace", "title": "Four numbers from one covariance matrix, and PCA is already finished", "caption": "**Every quantity PCA reports is in this table, computed before PCA is mentioned.** The eigenvalues *are* the variances along their own directions, so dividing them by their sum gives the explained-variance ratio — not a separate idea bolted on, just arithmetic. **And the trace is conserved: 1.785 before, 1.785 after.** The eigendecomposition redistributes the total spread into independent directions; it never creates or destroys any. Here one direction holds 96% of it, which is what “the data is really one-dimensional” means.", "left": "what you compute", "codeW": 190, "vars": ["value", "what it is"], "steps": [{"code": "the covariance matrix", "state": ["[[1.033, 0.826], [0.826, 0.752]]", "symmetric, always"], "tone": "accent"}, {"code": "its eigenvalues", "state": ["1.706 and 0.079", "variance along each direction"], "changed": [0, 1], "tone": "good"}, {"code": "each over their sum", "state": ["0.956 and 0.044", "the explained-variance ratio"], "changed": [0, 1], "tone": "violet"}, {"code": "trace vs sum of eigenvalues", "state": ["1.785 = 1.785", "total spread is conserved"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_4-04-1"},
 
     { t: "p", text: "The **covariance matrix** records how every pair of variables move together, and its eigendecomposition is the bridge to PCA. Its eigenvectors are the directions of independent variation in the data, and its eigenvalues are how much variance each direction carries." },
 

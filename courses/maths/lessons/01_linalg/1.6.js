@@ -148,6 +148,7 @@ np.allclose(np.abs(Vt[:2]), np.abs(comps.T))     # True, up to sign
 
 
 
+
     { t: "p", text: "PCA operates on variance, which makes it sensitive to how the data is prepared. **Centring is not optional** — without it the first component points at the mean rather than at the spread. **Scaling is a genuine decision** with no default right answer." },
 
     { t: "dl", items: [
@@ -202,6 +203,8 @@ np.abs(c_std[:, 0]).round(3)          # [0.707, 0.707] -- both counted
     ]},
 
     { t: "h2", n: "03", text: "What a component is not", id: "not" },
+
+    {"kind": "trace", "title": "99.75% of the variance, and none of the signal", "caption": "**Two columns: one loud and meaningless, one quiet and decisive.** PCA has never seen the labels, so it ranks by spread and puts the noise first. Keep one component “retaining 99.75% of the information” and you have thrown away the only column that predicts anything — **correlation with the target drops from 0.79 to roughly zero.** This is the whole warning about PCA in one measurement: explained variance is explained *variance*, not explained target. If the reduction must respect the label, use a method that sees it.", "left": "the column, and its component", "codeW": 210, "vars": ["share of variance", "correlation with y"], "steps": [{"code": "noise, sd 10 - becomes PC1", "state": ["99.75%", "about 0.00 - useless"], "tone": "crit"}, {"code": "signal, sd 0.5 - becomes PC2", "state": ["0.25%", "0.79 - the answer"], "changed": [0, 1], "tone": "good"}, {"code": "so keeping one component", "state": ["keeps 99.75%", "keeps nothing that predicts"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_6-03-1"},
 
     { t: "p", text: "PCA is routinely misused because two plausible-sounding beliefs about it are false: that the top components carry the useful signal, and that components mean something. **PCA maximises variance, and variance is not relevance.**" },
 

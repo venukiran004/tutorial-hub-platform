@@ -207,6 +207,7 @@ err.round(4)            # 0.0186 -- and 98% of it is the noise we WANTED
 
 
 
+
     { t: "p", text: "Eigendecomposition and SVD are related but not interchangeable, and choosing the wrong one is a common source of confusion. **SVD always exists; eigendecomposition often does not** — and for symmetric positive semi-definite matrices they coincide." },
 
     { t: "dl", items: [
@@ -263,6 +264,8 @@ np.sqrt(np.abs(np.linalg.eigvalsh(B.T @ B)))[::-1]    # [1.414e0, 1.05e-8]
     },
 
     { t: "h2", n: "04", text: "The pseudoinverse", id: "pinv" },
+
+    {"kind": "steps", "title": "An inverse for matrices that do not have one", "caption": "**The construction is one idea: invert what you can and leave alone what you cannot.** Transpose the factorisation and reciprocate the non-zero singular values. What comes back depends on the shape of the problem, and in both cases it is the sensible answer rather than an error. **Step four is the one that bites in practice** — a singular value of 1e-16 is almost certainly noise, and reciprocating it multiplies that noise by 1e+16, so everything below a tolerance is treated as zero instead.", "items": [{"label": "Factorise, then reciprocate", "desc": "A = U S V-transpose, so A-plus = V S-inverse U-transpose, inverting only the singular values that are not near zero", "tone": "accent"}, {"label": "More equations than unknowns", "desc": "overdetermined, usually no exact solution: A-plus b returns the least-squares answer, the closest reachable point", "tone": "good"}, {"label": "More unknowns than equations", "desc": "underdetermined, infinitely many solutions: A-plus b returns the shortest one, the minimum-norm answer", "tone": "good"}, {"label": "Below the tolerance, treat as zero", "desc": "pinv discards singular values under rcond times the largest; inverting 1e-16 would amplify noise by 1e+16", "tone": "crit"}], "t": "diagram", "id": "dg-1_5-04-1"},
 
     { t: "p", text: "The **pseudoinverse** gives a sensible answer where a true inverse does not exist — a non-square matrix, or a singular one. It is the SVD with the singular values reciprocated, and it is what `lstsq` computes underneath." },
 

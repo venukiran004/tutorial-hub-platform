@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Why the rule is the rule", id: "rule" },
 
+    {"kind": "flow", "title": "The row-times-column rule is forced, and the shape rule falls out of it", "caption": "**Nothing about matrix multiplication was chosen for convenience.** Applying B then A has to be the same as applying the single matrix AB — that is what composition means — and row-against-column is the only definition that delivers it. The shape rule is the same fact restated: **B's output lives in the space A takes as input, so the inner dimensions must match.** Which makes a shape error a type error rather than an arithmetic one: you are feeding a function something from the wrong space.", "cols": 3, "nodes": [{"id": "c", "label": "Composition must hold", "sub": "A(Bx) = (AB)x for every x", "tone": "accent"}, {"id": "r", "label": "Only one rule satisfies it", "sub": "row i of A dotted with column j of B", "tone": "good"}, {"id": "s", "label": "(m x k) @ (k x n) gives (m x n)", "sub": "the inner k is summed over and vanishes", "tone": "good"}, {"id": "w", "label": "Because B outputs into A's input space", "sub": "the shared k is that space", "tone": "violet"}, {"id": "e", "label": "So a shape error is a TYPE error", "sub": "the wrong space, not bad arithmetic", "tone": "crit"}, {"id": "x", "label": "And A @ B is not A * B", "sub": "the second is element-by-element", "tone": "warn"}], "edges": [["c", "r"], ["r", "s"], ["s", "w"], ["w", "e"], ["r", "x"]], "t": "diagram", "id": "dg-1_3-01-1"},
+
     { t: "p", text: "Matrix multiplication looks arbitrary when you first meet it — rows against columns, and dimensions that must line up in a particular way. **The rule is forced, not chosen**: it is the only definition that makes `(AB)v` equal `A(Bv)`, which is what composition requires." },
 
     { t: "dl", items: [
@@ -148,6 +150,7 @@ np.linalg.matrix_rank(W)             # 5, not 100
     { t: "h2", n: "03", text: "Three things a linear system can do", id: "systems" },
 
     {"kind": "tree", "title": "What a linear system can do", "caption": "Three outcomes and no others, decided by comparing the rank of the matrix with the rank of the augmented matrix and with the number of unknowns. “No solution” and “infinitely many” are both common in practice, which is why least squares exists.", "root": {"label": "Ax = b", "sub": "compare rank(A), rank([A|b]), n", "tone": "accent", "children": [{"label": "exactly one", "sub": "rank(A) = rank([A|b]) = n", "tone": "good", "edge": "full rank"}, {"label": "infinitely many", "sub": "rank(A) = rank([A|b]) < n", "tone": "warn", "edge": "free variables"}, {"label": "none", "sub": "rank(A) < rank([A|b])", "tone": "crit", "edge": "inconsistent"}]}, "t": "diagram", "id": "dg-1_3-03-0"},
+
 
 
 

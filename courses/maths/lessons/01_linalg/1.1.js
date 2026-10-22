@@ -92,6 +92,8 @@ np.linalg.norm(v_hat)                  # 1.0
 
     { t: "h2", n: "02", text: "The dot product", id: "dot" },
 
+    {"kind": "trace", "title": "One number, and its sign is the whole intuition", "caption": "**Read the middle column and the dot product stops being a formula.** It is positive when two vectors broadly agree, exactly zero when they are perpendicular, and negative when they oppose — and the size says how strongly. The first row is computed both ways in the lesson and gives 24 either way: **3×4 + 4×3, or 5 × 5 × cos 16.26°.** That is why one operation serves both similarity search and projection, and why a neuron is a dot product: *how much does this input agree with what I am looking for?*", "left": "a and b", "codeW": 170, "vars": ["a dot b", "angle", "what it means"], "steps": [{"code": "[3, 4] and [4, 3]", "state": ["24", "16.26 deg", "they broadly agree"], "tone": "good"}, {"code": "[1, 0] and [0, 1]", "state": ["0", "90 deg", "orthogonal - no shared part"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "[1, 0] and [-1, 0]", "state": ["-1", "180 deg", "they oppose"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "so the sign alone", "state": ["+ / 0 / -", "under / at / over 90", "agree / unrelated / oppose"], "changed": [0, 1, 2], "tone": "accent"}], "t": "diagram", "id": "dg-1_1-02-1"},
+
     { t: "p", text: "The **dot product** multiplies two vectors element by element and adds the results, collapsing two lists into a single number. That number answers a question about alignment: it is positive when the vectors point broadly the same way, zero when they are perpendicular, and negative when they oppose." },
 
     { t: "dl", items: [
@@ -136,6 +138,7 @@ np.array([1, 0]) @ np.array([-1, 0])    # -1.0 -- opposite
     { t: "h2", n: "03", text: "Which norm, and why it changes the answer", id: "norms" },
 
     {"kind": "matrix", "title": "Three norms, three different answers", "caption": "A norm is a choice, not a fact, and the choice changes which vector counts as “big”. For `[3, 4]` the three disagree — and the reason L1 produces sparse solutions is visible here: it charges the same for every unit of every coordinate.", "cols": ["value for [3, 4]", "what it charges for", "where it is used"], "rows": ["L1 — sum of |x|", "L2 — root sum of squares", "L∞ — the largest |x|"], "cells": [[{"text": "7", "tone": "accent"}, "every unit equally", {"text": "lasso — gives sparsity", "tone": "good"}], [{"text": "5", "tone": "good"}, "large values much more", "ridge, least squares, distance"], [{"text": "4", "tone": "warn"}, "only the worst coordinate", "worst-case bounds"]], "t": "diagram", "id": "dg-1_1-03-0"},
+
 
 
 
@@ -238,6 +241,8 @@ resid @ b                           # 0.0  (to floating point)
     },
 
     { t: "h2", n: "05", text: "What breaks in high dimensions", id: "high-d" },
+
+    {"kind": "trace", "title": "Two measurements, four dimensions, and your 2-D intuition expiring", "caption": "**Both columns are measured in the lesson, and both say the same thing: there is simply too much room.** In two dimensions two random directions overlap a lot (mean |cos| 0.637) and the furthest point is 38 times further than the nearest. In a thousand dimensions every pair of random vectors is effectively perpendicular, and **the furthest point is only 30% further away than the nearest one** — at which point “nearest neighbour” has stopped ranking anything. This is the curse of dimensionality, in two numbers.", "left": "dimensions", "codeW": 130, "vars": ["mean |cos| of 2 random vectors", "furthest / nearest distance"], "steps": [{"code": "2", "state": ["0.637 - often similar", "38.51x"], "tone": "good"}, {"code": "10", "state": ["0.246", "-"], "changed": [0], "tone": "accent"}, {"code": "100", "state": ["0.080", "2.06x"], "changed": [0, 1], "tone": "warn"}, {"code": "1,000", "state": ["0.025 - perpendicular", "1.30x - ranking is dead"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_1-05-2"},
 
     { t: "p", text: "Every intuition in this lesson was formed in two or three dimensions, and most of it stops being true above about ten. **Distances concentrate, everything becomes nearly orthogonal to everything else, and volume flees to the corners** — so \"nearest neighbour\" gradually stops meaning anything." },
 
