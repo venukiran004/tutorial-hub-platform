@@ -52,6 +52,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Three summaries, three questions", id: "three" },
 
+    {"kind": "trace", "title": "Eleven salaries, three summaries, and all three are correct", "caption": "**Mean, median and mode are not three attempts at one number** — each answers a different question, so disagreeing is what they are supposed to do. Here one 340 pulls the mean to 72.4, a figure nobody earns and above all but one person. **The mean is still the right answer if the question is about the payroll total, because total = mean × count.** It is the wrong answer to “what does a typical employee earn”. And the ratio of the two is a free skew detector: 72.4 over 44.0 is 1.65, so a tail is pulling hard.", "left": "summary", "codeW": 160, "vars": ["value", "the question it answers"], "steps": [{"code": "mean", "state": ["72.4", "share the total equally"], "tone": "accent"}, {"code": "median", "state": ["44.0", "what does the middle person get"], "changed": [0, 1], "tone": "good"}, {"code": "mode", "state": ["38", "the most common value"], "changed": [0, 1], "tone": "violet"}, {"code": "mean over median", "state": ["1.65", "above 1.2 means a tail is pulling"], "changed": [0, 1], "tone": "warn"}, {"code": "and for growth rates", "state": ["geometric mean", "multiplicative quantities"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_1-02-0"},
+
     { t: "p", text: "**Mean, median and mode are not three attempts at the same number** — they answer three different questions, and for skewed data they give very different answers. Choosing between them is a decision about which question you meant to ask." },
 
     { t: "dl", items: [
@@ -256,6 +258,8 @@ hmean([1,2,4]), gmean([1,2,4]), np.mean([1,2,4])   # 1.714, 2.0, 2.333`},
     ]},
 
     { t: "h2", n: "04", text: "When no single number is honest", id: "multimodal" },
+
+    {"kind": "trace", "title": "Nothing takes 62 ms, and the percentiles say where the seam is", "caption": "**The mean lands in the empty gap between two populations, describing a request that does not exist.** Seventy per cent of these requests are cache hits near 12 ms and thirty per cent are misses near 180 ms, so the median is also misleading — it says “typical is 16 ms” while a third of traffic takes fifteen times that. **The sixfold jump between p70 and p75 is the signature**, because a smooth distribution cannot rise that fast across five percentiles. The honest report is not a number with a caveat; it is two numbers and a weight.", "left": "statistic", "codeW": 140, "vars": ["value", "what it describes"], "steps": [{"code": "mean", "state": ["62.3 ms", "nothing - the gap between groups"], "tone": "crit"}, {"code": "median", "state": ["15.6 ms", "the hits only"], "changed": [0, 1], "tone": "warn"}, {"code": "p70", "state": ["25.4 ms", "still inside the hits"], "changed": [0, 1], "tone": "good"}, {"code": "p75", "state": ["148.9 ms", "SIX TIMES p70 - the seam"], "changed": [0, 1], "tone": "crit"}, {"code": "p90 and p99", "state": ["205.1 and 273.4 ms", "the misses"], "changed": [0, 1], "tone": "violet"}, {"code": "the honest report", "state": ["70% near 12, 30% near 180", "two numbers and a weight"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_1-04-1"},
 
     { t: "p", text: "Sometimes no single number is honest, because the data is a **mixture of distinct populations**. A mean that falls in the empty gap between two groups describes a case that does not exist, and the right response is to report the structure instead." },
 

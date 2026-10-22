@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Order statistics and the interpolation problem", id: "definitions" },
 
+    {"kind": "trace", "title": "How much data a percentile needs before it means anything", "caption": "**Resample standard normal data and recompute the p99: at n = 50 the estimate itself has a standard deviation of 0.42**, on data whose entire spread is 1. That is not a precise number about the tail, it is noise with a decimal point — because the p99 position at n = 50 sits between the two largest values, so half the “estimate” is one observation. **The working rule is to want about ten observations past the percentile: 1,000 for a p99 and 10,000 for a p99.9.** Below that, the nine competing interpolation rules are all extrapolating from the maximum, differently.", "left": "sample size", "codeW": 150, "vars": ["sd of the p99 estimate", "verdict"], "steps": [{"code": "n = 50", "state": ["0.421", "noise - the data's own sd is 1"], "tone": "crit"}, {"code": "n = 200", "state": ["0.238", "still too wide to report"], "changed": [0, 1], "tone": "warn"}, {"code": "n = 1,000", "state": ["0.107", "usable for a p99"], "changed": [0, 1], "tone": "good"}, {"code": "n = 10,000", "state": ["0.034", "solid"], "changed": [0, 1], "tone": "good"}, {"code": "the rule", "state": ["about 10 points past it", "1,000 for p99, 10,000 for p99.9"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_3-01-1"},
+
     { t: "p", text: "A percentile is a position in the sorted data, and the requested position almost never lands exactly on an observation. **Every definition of a percentile is a rule for what to do in between** — and there are at least nine of them, which disagree." },
 
     { t: "dl", items: [
@@ -147,6 +149,7 @@ for n in (50, 200, 1000, 10_000):
     { t: "h2", n: "02", text: "The IQR and the box plot's hidden rule", id: "iqr" },
 
     {"kind": "layers", "title": "The box plot's hidden rule", "caption": "The whiskers are **not** the minimum and maximum: they reach to the furthest point within 1.5 × IQR, and anything past that is drawn as an outlier. So a box plot is already making a judgement about your data before you read it.", "items": [{"label": "outliers", "sub": "beyond 1.5 × IQR from the nearest quartile, drawn individually", "tone": "crit", "side": "judged"}, {"label": "upper whisker", "sub": "the furthest actual point WITHIN the fence — not the maximum", "tone": "warn", "side": "not max"}, {"label": "Q3", "sub": "75th percentile — the top of the box", "tone": "accent", "side": "75%"}, {"label": "median", "sub": "the line inside the box, not the mean", "tone": "good", "side": "50%"}, {"label": "Q1", "sub": "25th percentile — IQR is Q3 − Q1", "tone": "accent", "side": "25%"}, {"label": "lower whisker", "sub": "the furthest actual point within the lower fence", "tone": "warn", "side": "not min"}], "t": "diagram", "id": "dg-4_3-02-0"},
+
 
 
 

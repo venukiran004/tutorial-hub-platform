@@ -1,0 +1,124 @@
+{
+ "4.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Eleven salaries, three summaries, and all three are correct",
+         "caption": "**Mean, median and mode are not three attempts at one number** — each answers a different question, so disagreeing is what they are supposed to do. Here one 340 pulls the mean to 72.4, a figure nobody earns and above all but one person. **The mean is still the right answer if the question is about the payroll total, because total = mean × count.** It is the wrong answer to “what does a typical employee earn”. And the ratio of the two is a free skew detector: 72.4 over 44.0 is 1.65, so a tail is pulling hard.",
+         "left": "summary", "codeW": 160,
+         "vars": ["value", "the question it answers"],
+         "steps": [
+          {"code": "mean", "state": ["72.4", "share the total equally"], "tone": "accent"},
+          {"code": "median", "state": ["44.0", "what does the middle person get"], "changed": [0, 1], "tone": "good"},
+          {"code": "mode", "state": ["38", "the most common value"], "changed": [0, 1], "tone": "violet"},
+          {"code": "mean over median", "state": ["1.65", "above 1.2 means a tail is pulling"], "changed": [0, 1], "tone": "warn"},
+          {"code": "and for growth rates", "state": ["geometric mean", "multiplicative quantities"], "changed": [0, 1], "tone": "teal"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Nothing takes 62 ms, and the percentiles say where the seam is",
+         "caption": "**The mean lands in the empty gap between two populations, describing a request that does not exist.** Seventy per cent of these requests are cache hits near 12 ms and thirty per cent are misses near 180 ms, so the median is also misleading — it says “typical is 16 ms” while a third of traffic takes fifteen times that. **The sixfold jump between p70 and p75 is the signature**, because a smooth distribution cannot rise that fast across five percentiles. The honest report is not a number with a caveat; it is two numbers and a weight.",
+         "left": "statistic", "codeW": 140,
+         "vars": ["value", "what it describes"],
+         "steps": [
+          {"code": "mean", "state": ["62.3 ms", "nothing - the gap between groups"], "tone": "crit"},
+          {"code": "median", "state": ["15.6 ms", "the hits only"], "changed": [0, 1], "tone": "warn"},
+          {"code": "p70", "state": ["25.4 ms", "still inside the hits"], "changed": [0, 1], "tone": "good"},
+          {"code": "p75", "state": ["148.9 ms", "SIX TIMES p70 - the seam"], "changed": [0, 1], "tone": "crit"},
+          {"code": "p90 and p99", "state": ["205.1 and 273.4 ms", "the misses"], "changed": [0, 1], "tone": "violet"},
+          {"code": "the honest report", "state": ["70% near 12, 30% near 180", "two numbers and a weight"], "changed": [0, 1], "tone": "teal"}]}}
+ ],
+
+ "4.2": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The divisor is a question about what you are doing, and the libraries disagree",
+         "caption": "**One degree of freedom is consumed for each parameter estimated from the same data — that is the entire rule**, and n−1 is simply the common case of estimating one mean. When nothing is being estimated, n is correct. **The last two rows are the practical hazard: `np.var` divides by n and `pandas.var` divides by n−1**, a 14% difference at n = 8 with no error and no warning. Move a calculation between the two during a refactor and the number changes silently, which is why stating `ddof` explicitly is worth seven characters every time.",
+         "left": "what you are doing", "codeW": 210,
+         "vars": ["divisor", "why"],
+         "steps": [
+          {"code": "estimating from a sample", "state": ["n - 1", "the mean came from this data"], "tone": "good"},
+          {"code": "describing a whole population", "state": ["n", "nothing is being estimated"], "changed": [0, 1], "tone": "accent"},
+          {"code": "the true mean is known", "state": ["n", "no degree of freedom used"], "changed": [1], "tone": "accent"},
+          {"code": "regression with p predictors", "state": ["n - p - 1", "each fitted parameter costs one"], "changed": [0, 1], "tone": "violet"},
+          {"code": "np.var, default", "state": ["n - gives 4.0", "ddof=0"], "changed": [0, 1], "tone": "crit"},
+          {"code": "pandas var, default", "state": ["n-1 - gives 4.571", "ddof=1 - a 14% gap"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "One bad reading in a thousand multiplies the standard deviation by twenty-one",
+         "caption": "**The IQR and the MAD do not move at all.** That is the whole argument for robust dispersion, and it matters most in the case you actually care about: **the outlier inflates the very scale used to judge it**, so a classic z-score makes the bad value look less extreme than it is. The name for that circularity is masking, and it is why standard-deviation-based outlier detection fails exactly when there is something to detect. The 1.4826 factor exists so the MAD is on the same scale as sigma and can be dropped straight in.",
+         "left": "measure of spread", "codeW": 180,
+         "vars": ["1,000 clean", "plus one reading of 10,000", "breakdown point"],
+         "steps": [
+          {"code": "standard deviation", "state": ["15.06", "313.5 - twenty-one times", "1/n"], "tone": "crit"},
+          {"code": "IQR", "state": ["20.13", "20.15 - unmoved", "25%"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "MAD, scaled by 1.4826", "state": ["14.98", "14.99 - unmoved", "50%, the maximum"], "changed": [0, 1, 2], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "401 is not bigger than 29.7 when the units differ",
+         "caption": "**Comparing two standard deviations across different quantities is not a comparison at all** — one is in milliseconds and the other in requests per second. Dividing by the mean removes the units, and the ranking reverses: **latency is the more variable of the two, at 14.8% against 8.0%.** The condition in the last row is the one people skip: the coefficient of variation needs a true zero. On Celsius it changes when you switch to Fahrenheit, which makes it an artefact of the scale rather than a property of the data.",
+         "left": "quantity", "codeW": 170,
+         "vars": ["standard deviation", "CV = sd over mean"],
+         "steps": [
+          {"code": "latency, in ms", "state": ["29.7 ms", "0.148"], "tone": "accent"},
+          {"code": "throughput, in req/s", "state": ["401.0 req/s", "0.080"], "changed": [0, 1], "tone": "accent"},
+          {"code": "which is more variable?", "state": ["unanswerable - units differ", "latency, clearly"], "changed": [0, 1], "tone": "violet"},
+          {"code": "but on Celsius", "state": ["fine", "meaningless - no true zero"], "changed": [0, 1], "tone": "crit"},
+          {"code": "robust version", "state": ["IQR", "IQR over the median"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "4.3": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "How much data a percentile needs before it means anything",
+         "caption": "**Resample standard normal data and recompute the p99: at n = 50 the estimate itself has a standard deviation of 0.42**, on data whose entire spread is 1. That is not a precise number about the tail, it is noise with a decimal point — because the p99 position at n = 50 sits between the two largest values, so half the “estimate” is one observation. **The working rule is to want about ten observations past the percentile: 1,000 for a p99 and 10,000 for a p99.9.** Below that, the nine competing interpolation rules are all extrapolating from the maximum, differently.",
+         "left": "sample size", "codeW": 150,
+         "vars": ["sd of the p99 estimate", "verdict"],
+         "steps": [
+          {"code": "n = 50", "state": ["0.421", "noise - the data's own sd is 1"], "tone": "crit"},
+          {"code": "n = 200", "state": ["0.238", "still too wide to report"], "changed": [0, 1], "tone": "warn"},
+          {"code": "n = 1,000", "state": ["0.107", "usable for a p99"], "changed": [0, 1], "tone": "good"},
+          {"code": "n = 10,000", "state": ["0.034", "solid"], "changed": [0, 1], "tone": "good"},
+          {"code": "the rule", "state": ["about 10 points past it", "1,000 for p99, 10,000 for p99.9"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "4.4": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Four moments, and the first two carry no information",
+         "caption": "**Standardising forces the first moment to 0 and the second to 1, by construction** — so shape only starts at the third. The third is asymmetry and the fourth is tail weight, and both are dimensionless, which is what makes them comparable between any two datasets. **The fourth moment of a normal is exactly 3, and that is where “excess kurtosis” comes from:** subtract 3 so a normal reads 0 and the number means “compared with a normal”. The convention is a real trap — scipy reports excess by default, R's `e1071` reports raw, so “our kurtosis is 3” is ambiguous until you say which.",
+         "left": "standardised moment", "codeW": 190,
+         "vars": ["on 500,000 normals", "what it describes"],
+         "steps": [
+          {"code": "k = 1", "state": ["0.0", "nothing - forced by centring"], "tone": "warn"},
+          {"code": "k = 2", "state": ["1.0", "nothing - forced by scaling"], "changed": [0, 1], "tone": "warn"},
+          {"code": "k = 3, skewness", "state": ["0.001", "asymmetry, with a sign"], "changed": [0, 1], "tone": "good"},
+          {"code": "k = 4, kurtosis", "state": ["3.0", "tail weight - raw"], "changed": [0, 1], "tone": "accent"},
+          {"code": "k = 4, minus 3", "state": ["0.001", "excess - compared with a normal"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The same tiny deviation, rejected 8% of the time and then 100%",
+         "caption": "**The data is identical in every row — only the sample size changes — and the deviation is far too small to affect any analysis.** A normality test's null hypothesis is “exactly normal”, which no real data satisfies, so what the test actually measures is whether you have enough data to notice. **That makes it useless in both directions: it misses what matters at small n and rejects what does not at large n.** Report a size instead: the largest QQ departure in standard deviations means the same thing at every sample size, and the real question is whether your method survives the departure.",
+         "left": "sample size", "codeW": 150,
+         "vars": ["rejects normality", "the deviation"],
+         "steps": [
+          {"code": "n = 30", "state": ["8% of the time", "unchanged throughout"], "tone": "good"},
+          {"code": "n = 100", "state": ["17%", "unchanged"], "changed": [0], "tone": "accent"},
+          {"code": "n = 1,000", "state": ["84%", "unchanged"], "changed": [0], "tone": "warn"},
+          {"code": "n = 5,000", "state": ["100%", "unchanged"], "changed": [0], "tone": "crit"},
+          {"code": "so the test measures", "state": ["your sample size", "not whether it matters"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "4.5": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Five relationships, and the two coefficients disagree on three of them",
+         "caption": "**Pearson asks “how close to a straight line” and Spearman asks “does it consistently increase”** — so on the exponential, Pearson's 0.847 against Spearman's 1.000 is not Pearson failing. It is the correct answer to a different question: the relationship is perfectly ordered and not at all straight. **The last row is the warning: a parabola scores about zero on both**, because it rises and then falls, so neither coefficient sees one of the strongest relationships in the list. Only mutual information catches a non-monotonic dependence.",
+         "left": "the true relationship", "codeW": 170,
+         "vars": ["Pearson", "Spearman", "reading"],
+         "steps": [
+          {"code": "linear", "state": ["+0.993", "+0.993", "both agree"], "tone": "good"},
+          {"code": "exponential", "state": ["+0.847", "+1.000", "perfectly ordered, not straight"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "logarithmic", "state": ["+0.947", "+0.999", "same story, milder"], "changed": [0, 1, 2], "tone": "violet"},
+          {"code": "a step function", "state": ["+0.866", "+0.866", "monotonic, so both see it"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "a parabola", "state": ["+0.027", "+0.031", "BOTH BLIND - use mutual information"], "changed": [0, 1, 2], "tone": "crit"}]}}
+ ]
+}

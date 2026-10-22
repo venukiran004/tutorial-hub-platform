@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Pearson, Spearman and what each sees", id: "pearson-spearman" },
 
+    {"kind": "trace", "title": "Five relationships, and the two coefficients disagree on three of them", "caption": "**Pearson asks “how close to a straight line” and Spearman asks “does it consistently increase”** — so on the exponential, Pearson's 0.847 against Spearman's 1.000 is not Pearson failing. It is the correct answer to a different question: the relationship is perfectly ordered and not at all straight. **The last row is the warning: a parabola scores about zero on both**, because it rises and then falls, so neither coefficient sees one of the strongest relationships in the list. Only mutual information catches a non-monotonic dependence.", "left": "the true relationship", "codeW": 170, "vars": ["Pearson", "Spearman", "reading"], "steps": [{"code": "linear", "state": ["+0.993", "+0.993", "both agree"], "tone": "good"}, {"code": "exponential", "state": ["+0.847", "+1.000", "perfectly ordered, not straight"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "logarithmic", "state": ["+0.947", "+0.999", "same story, milder"], "changed": [0, 1, 2], "tone": "violet"}, {"code": "a step function", "state": ["+0.866", "+0.866", "monotonic, so both see it"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "a parabola", "state": ["+0.027", "+0.031", "BOTH BLIND - use mutual information"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-4_5-01-1"},
+
     { t: "p", text: "**Pearson measures how close a relationship is to a straight line; Spearman measures whether it is consistently increasing or decreasing.** They answer different questions, so Pearson reporting a lower value on a curved relationship is not a failure — it is the correct answer to its own question." },
 
     { t: "dl", items: [
@@ -220,6 +222,7 @@ def max_leverage(x):
     { t: "h2", n: "03", text: "The four alternatives to causation", id: "alternatives" },
 
     {"kind": "matrix", "title": "The four alternatives to causation", "caption": "Before claiming X causes Y, four other explanations have to be ruled out, and only the last is addressed by a bigger sample. This is the checklist that separates an analyst from a dashboard.", "cols": ["the alternative", "what fixes it"], "rows": ["reverse causation", "a confounder", "selection effect", "chance"], "cells": [[{"text": "Y causes X", "tone": "warn"}, "timing, or an intervention"], [{"text": "Z causes both", "tone": "crit"}, {"text": "randomise, or control for Z", "tone": "good"}], [{"text": "the sample was not neutral", "tone": "crit"}, "ask how the data was collected"], [{"text": "it is noise", "tone": "accent"}, {"text": "more data — the ONLY one it fixes", "tone": "good"}]], "t": "diagram", "id": "dg-4_5-03-0"},
+
 
 
 

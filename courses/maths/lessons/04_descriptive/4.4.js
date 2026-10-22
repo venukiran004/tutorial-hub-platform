@@ -20,6 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Moments, standardised", id: "moments" },
 
+    {"kind": "trace", "title": "Four moments, and the first two carry no information", "caption": "**Standardising forces the first moment to 0 and the second to 1, by construction** — so shape only starts at the third. The third is asymmetry and the fourth is tail weight, and both are dimensionless, which is what makes them comparable between any two datasets. **The fourth moment of a normal is exactly 3, and that is where “excess kurtosis” comes from:** subtract 3 so a normal reads 0 and the number means “compared with a normal”. The convention is a real trap — scipy reports excess by default, R's `e1071` reports raw, so “our kurtosis is 3” is ambiguous until you say which.", "left": "standardised moment", "codeW": 190, "vars": ["on 500,000 normals", "what it describes"], "steps": [{"code": "k = 1", "state": ["0.0", "nothing - forced by centring"], "tone": "warn"}, {"code": "k = 2", "state": ["1.0", "nothing - forced by scaling"], "changed": [0, 1], "tone": "warn"}, {"code": "k = 3, skewness", "state": ["0.001", "asymmetry, with a sign"], "changed": [0, 1], "tone": "good"}, {"code": "k = 4, kurtosis", "state": ["3.0", "tail weight - raw"], "changed": [0, 1], "tone": "accent"}, {"code": "k = 4, minus 3", "state": ["0.001", "excess - compared with a normal"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_4-01-1"},
+
     { t: "p", text: "**Moments describe a distribution's shape one power at a time**: the first gives location, the second spread, the third asymmetry and the fourth tail weight. Standardising them removes units, so the numbers are comparable across any two datasets." },
 
     { t: "dl", items: [
@@ -94,6 +96,7 @@ for name, sample in [
     { t: "h2", n: "02", text: "Kurtosis measures tails", id: "kurtosis" },
 
     {"kind": "matrix", "title": "Kurtosis is about tails, not peaks", "caption": "The common description — “peakedness” — is wrong and leads people to misread it. Kurtosis is driven by the fourth power of deviations, so it is dominated by what happens far from the mean.", "cols": ["excess kurtosis", "what it means", "example"], "rows": ["leptokurtic", "mesokurtic", "platykurtic"], "cells": [[{"text": "> 0", "tone": "crit"}, {"text": "fat tails, more outliers", "tone": "crit"}, "asset returns"], [{"text": "= 0", "tone": "good"}, "the normal reference", "the normal itself"], [{"text": "< 0", "tone": "accent"}, "thin tails, fewer", "the uniform"]], "t": "diagram", "id": "dg-4_4-02-0"},
+
 
 
 
@@ -257,6 +260,8 @@ np.mean([stats.skew(rng.lognormal(0, 1, 30)) for _ in range(3000)])  # ~2.4`},
     ]},
 
     { t: "h2", n: "03", text: "Normality tests, and why they stop being useful", id: "normality" },
+
+    {"kind": "trace", "title": "The same tiny deviation, rejected 8% of the time and then 100%", "caption": "**The data is identical in every row — only the sample size changes — and the deviation is far too small to affect any analysis.** A normality test's null hypothesis is “exactly normal”, which no real data satisfies, so what the test actually measures is whether you have enough data to notice. **That makes it useless in both directions: it misses what matters at small n and rejects what does not at large n.** Report a size instead: the largest QQ departure in standard deviations means the same thing at every sample size, and the real question is whether your method survives the departure.", "left": "sample size", "codeW": 150, "vars": ["rejects normality", "the deviation"], "steps": [{"code": "n = 30", "state": ["8% of the time", "unchanged throughout"], "tone": "good"}, {"code": "n = 100", "state": ["17%", "unchanged"], "changed": [0], "tone": "accent"}, {"code": "n = 1,000", "state": ["84%", "unchanged"], "changed": [0], "tone": "warn"}, {"code": "n = 5,000", "state": ["100%", "unchanged"], "changed": [0], "tone": "crit"}, {"code": "so the test measures", "state": ["your sample size", "not whether it matters"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_4-03-2"},
 
     { t: "p", text: "**A normality test answers \"do I have enough data to detect non-normality\", not \"is non-normality a problem\".** At large `n` it rejects deviations too small to matter; at small `n` it misses ones that do — failing in the damaging direction at both ends." },
 

@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "**The sample variance divides by `n − 1` because the sample mean sits closer to your data than the true mean does.** Squared deviations measured from it are therefore systematically too small — by exactly a factor of `(n−1)/n`, which is precisely what the correction cancels." },
 
     { t: "dl", items: [
@@ -168,6 +169,8 @@ c4(5)                                # 0.9400
 
     { t: "h2", n: "02", text: "When `n` is the right divisor", id: "when-n" },
 
+    {"kind": "trace", "title": "The divisor is a question about what you are doing, and the libraries disagree", "caption": "**One degree of freedom is consumed for each parameter estimated from the same data — that is the entire rule**, and n−1 is simply the common case of estimating one mean. When nothing is being estimated, n is correct. **The last two rows are the practical hazard: `np.var` divides by n and `pandas.var` divides by n−1**, a 14% difference at n = 8 with no error and no warning. Move a calculation between the two during a refactor and the number changes silently, which is why stating `ddof` explicitly is worth seven characters every time.", "left": "what you are doing", "codeW": 210, "vars": ["divisor", "why"], "steps": [{"code": "estimating from a sample", "state": ["n - 1", "the mean came from this data"], "tone": "good"}, {"code": "describing a whole population", "state": ["n", "nothing is being estimated"], "changed": [0, 1], "tone": "accent"}, {"code": "the true mean is known", "state": ["n", "no degree of freedom used"], "changed": [1], "tone": "accent"}, {"code": "regression with p predictors", "state": ["n - p - 1", "each fitted parameter costs one"], "changed": [0, 1], "tone": "violet"}, {"code": "np.var, default", "state": ["n - gives 4.0", "ddof=0"], "changed": [0, 1], "tone": "crit"}, {"code": "pandas var, default", "state": ["n-1 - gives 4.571", "ddof=1 - a 14% gap"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
     { t: "p", text: "`n − 1` is not universally right. **When nothing is being estimated — you have the whole population, or the true mean is known independently — dividing by `n` is correct**, because no degree of freedom was consumed." },
 
     { t: "dl", items: [
@@ -236,6 +239,8 @@ for n in (5, 10, 30, 100):
     },
 
     { t: "h2", n: "03", text: "Robust dispersion", id: "robust" },
+
+    {"kind": "trace", "title": "One bad reading in a thousand multiplies the standard deviation by twenty-one", "caption": "**The IQR and the MAD do not move at all.** That is the whole argument for robust dispersion, and it matters most in the case you actually care about: **the outlier inflates the very scale used to judge it**, so a classic z-score makes the bad value look less extreme than it is. The name for that circularity is masking, and it is why standard-deviation-based outlier detection fails exactly when there is something to detect. The 1.4826 factor exists so the MAD is on the same scale as sigma and can be dropped straight in.", "left": "measure of spread", "codeW": 180, "vars": ["1,000 clean", "plus one reading of 10,000", "breakdown point"], "steps": [{"code": "standard deviation", "state": ["15.06", "313.5 - twenty-one times", "1/n"], "tone": "crit"}, {"code": "IQR", "state": ["20.13", "20.15 - unmoved", "25%"], "changed": [0, 1, 2], "tone": "good"}, {"code": "MAD, scaled by 1.4826", "state": ["14.98", "14.99 - unmoved", "50%, the maximum"], "changed": [0, 1, 2], "tone": "good"}], "t": "diagram", "id": "dg-4_2-03-2"},
 
     { t: "p", text: "The standard deviation has the same weakness as the mean — **one bad value can multiply it many times over**, and it is exactly the value you were trying to detect that does the damage. Robust measures of spread avoid that circularity." },
 
@@ -322,6 +327,8 @@ np.abs(robust_z(dirty)).max()                              # 660.5
     },
 
     { t: "h2", n: "04", text: "Comparing across scales", id: "cv" },
+
+    {"kind": "trace", "title": "401 is not bigger than 29.7 when the units differ", "caption": "**Comparing two standard deviations across different quantities is not a comparison at all** — one is in milliseconds and the other in requests per second. Dividing by the mean removes the units, and the ranking reverses: **latency is the more variable of the two, at 14.8% against 8.0%.** The condition in the last row is the one people skip: the coefficient of variation needs a true zero. On Celsius it changes when you switch to Fahrenheit, which makes it an artefact of the scale rather than a property of the data.", "left": "quantity", "codeW": 170, "vars": ["standard deviation", "CV = sd over mean"], "steps": [{"code": "latency, in ms", "state": ["29.7 ms", "0.148"], "tone": "accent"}, {"code": "throughput, in req/s", "state": ["401.0 req/s", "0.080"], "changed": [0, 1], "tone": "accent"}, {"code": "which is more variable?", "state": ["unanswerable - units differ", "latency, clearly"], "changed": [0, 1], "tone": "violet"}, {"code": "but on Celsius", "state": ["fine", "meaningless - no true zero"], "changed": [0, 1], "tone": "crit"}, {"code": "robust version", "state": ["IQR", "IQR over the median"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-04-3"},
 
     { t: "p", text: "A standard deviation cannot be compared across quantities with different units or magnitudes. **The coefficient of variation divides the spread by the mean**, producing a dimensionless figure — but only where the quantity has a meaningful zero." },
 
