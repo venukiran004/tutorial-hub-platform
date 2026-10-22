@@ -20,7 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four stages", id: "stages" },
 
-    {"kind": "steps", "title": "From the text of a query to the rows that come back", "caption": "Only the last stage touches data. Everything before it is the engine deciding *how*, from a cost model and a set of statistics that may be days out of date — which is why a query that was fast last month can be slow today with no change to its text.", "items": [{"label": "Parse", "desc": "text to a tree; rejects syntax it cannot read", "code": "syntax", "tone": "accent"}, {"label": "Analyse", "desc": "binds names to tables and columns, resolves types", "code": "names", "tone": "accent"}, {"label": "Rewrite and plan", "desc": "a logical plan, then the cheapest physical plan it can estimate", "code": "cost", "tone": "violet"}, {"label": "Execute", "desc": "the plan runs; rows flow up the tree from the leaves", "code": "rows", "tone": "good"}], "t": "diagram", "id": "dg-5_1-01-0"},
+    {"kind": "steps", "title": "From the text of a query to the rows that come back", "caption": "Only the last stage touches data. Everything before it is the engine deciding *how*, from a cost model and a set of statistics that may be days out of date — which is why a query that was fast last month can be slow today with no change to its text.", "items": [{"label": "Parse", "desc": "text to a tree; rejects syntax it cannot read", "code": "syntax", "tone": "accent"}, {"label": "Analyse", "desc": "binds names to tables and columns, resolves types", "code": "names", "tone": "accent"}, {"label": "Rewrite and plan", "desc": "a logical plan, then the cheapest physical plan it can estimate", "code": "cost", "tone": "violet"}, {"label": "Execute", "desc": "the plan runs; rows flow up the tree from the leaves", "code": "rows", "tone": "good"}], "t": "diagram", "id": "dg-5_1-01-1"},
+
+
+
 
 
 
@@ -76,6 +79,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "A plan is a tree, evaluated from the leaves", id: "tree" },
 
+    {"kind": "tree", "title": "Read a plan from the leaves up, comparing believed against actual", "caption": "**Rows flow upward, so the node at the bottom decides how much work every node above it does** — which is why reading a plan top-down tells you almost nothing. Start at the leaves: what did each scan read, and what did its filter remove? Then at each node ask the only question that matters: **how many rows did the planner believe would flow through here, and how many actually did?** Here the join was estimated at about 4 rows and produced 10. A small gap is normal; a gap of a thousandfold is the cause of the slow query, not a detail of it.", "root": {"label": "HASH_GROUP_BY", "sub": "one row per country - the top, read LAST", "tone": "accent", "children": [{"label": "HASH_JOIN, customer_id", "sub": "estimated about 4 rows, actually 10", "tone": "crit", "children": [{"label": "SEQ_SCAN customers", "sub": "projects customer_id, country", "tone": "good"}, {"label": "SEQ_SCAN orders", "sub": "filter: status = 'paid' - read FIRST", "tone": "good"}]}]}, "t": "diagram", "id": "dg-5_1-02-0"},
+
+
+
     { t: "p", text: "A physical plan is a tree whose leaves read tables and whose internal nodes combine what their children produce. Rows flow upward. **The join at the bottom decides how many rows reach the aggregate above it; the estimate on each node is what the planner believed would flow through it, and the actual count — when EXPLAIN ANALYZE is used — is what did.** Reading a plan means reading from the leaves up, and comparing believed to actual at each step." },
 
     { t: "code", lang: "sql", title: "A real physical plan: paid orders per country (DuckDB, trimmed)",
@@ -110,7 +117,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The cost model and selectivity", id: "cost" },
 
-    {"kind": "matrix", "title": "Why the planner refuses the index you built", "caption": "A full scan reads pages in order, which is cheap per row; an index scan jumps to a random page per row. Past roughly a few per cent of the table, reading everything in order wins — so an index on a column where 90% of rows match is correctly ignored.", "cols": ["Planner picks", "Because"], "rows": ["status = 'paid' (90%)", "status = 'refunded' (5%)", "A 300-row table", "Stats are stale", "ORDER BY the index's key"], "cells": [[{"text": "a sequential scan", "tone": "accent"}, "random reads would cost more"], [{"text": "the index", "tone": "good"}, "few rows; the jumps are worth it"], [{"text": "a sequential scan", "tone": "accent"}, "the whole table is one or two pages"], [{"text": "the wrong thing", "tone": "crit"}, "it estimates from an old histogram"], [{"text": "the index", "tone": "good"}, "the sort is already done"]], "t": "diagram", "id": "dg-5_1-03-1"},
+    {"kind": "matrix", "title": "Why the planner refuses the index you built", "caption": "A full scan reads pages in order, which is cheap per row; an index scan jumps to a random page per row. Past roughly a few per cent of the table, reading everything in order wins — so an index on a column where 90% of rows match is correctly ignored.", "cols": ["Planner picks", "Because"], "rows": ["status = 'paid' (90%)", "status = 'refunded' (5%)", "A 300-row table", "Stats are stale", "ORDER BY the index's key"], "cells": [[{"text": "a sequential scan", "tone": "accent"}, "random reads would cost more"], [{"text": "the index", "tone": "good"}, "few rows; the jumps are worth it"], [{"text": "a sequential scan", "tone": "accent"}, "the whole table is one or two pages"], [{"text": "the wrong thing", "tone": "crit"}, "it estimates from an old histogram"], [{"text": "the index", "tone": "good"}, "the sort is already done"]], "t": "diagram", "id": "dg-5_1-03-2"},
+
+
+
 
 
 

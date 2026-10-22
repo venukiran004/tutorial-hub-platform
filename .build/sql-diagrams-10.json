@@ -1,0 +1,99 @@
+{
+ "5.1": [
+  {"after": "02",
+   "d": {"kind": "tree",
+         "title": "Read a plan from the leaves up, comparing believed against actual",
+         "caption": "**Rows flow upward, so the node at the bottom decides how much work every node above it does** — which is why reading a plan top-down tells you almost nothing. Start at the leaves: what did each scan read, and what did its filter remove? Then at each node ask the only question that matters: **how many rows did the planner believe would flow through here, and how many actually did?** Here the join was estimated at about 4 rows and produced 10. A small gap is normal; a gap of a thousandfold is the cause of the slow query, not a detail of it.",
+         "root": {"label": "HASH_GROUP_BY", "sub": "one row per country - the top, read LAST", "tone": "accent",
+                  "children": [
+                   {"label": "HASH_JOIN, customer_id", "sub": "estimated about 4 rows, actually 10", "tone": "crit",
+                    "children": [
+                     {"label": "SEQ_SCAN customers", "sub": "projects customer_id, country", "tone": "good"},
+                     {"label": "SEQ_SCAN orders", "sub": "filter: status = 'paid' - read FIRST", "tone": "good"}]}]}}}
+ ],
+
+ "5.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Three refinements, and the first query never touches the table",
+         "caption": "**The first two rows are the same index and the same seek — the only difference is whether the column you selected happens to be in the index.** When it is, the engine answers from the index alone and the plan says COVERING; when it is not, it seeks and then fetches every matching row from the table. PostgreSQL's INCLUDE adds payload columns to the leaves without putting them in the sort key, which covers the second query too. **A partial index is the cheapest of the three by a wide margin:** indexing only the 5% of refunded rows costs a twentieth of the size and is maintained only when those rows change.",
+         "left": "index, and what you select", "codeW": 220,
+         "vars": ["plan", "why"],
+         "steps": [
+          {"code": "(customer_id, placed_at), select placed_at", "state": ["COVERING INDEX - no table visit", "every column needed is in the index"], "tone": "good"},
+          {"code": "the same index, select status", "state": ["INDEX, then fetch each row", "status is not in the index"], "changed": [0, 1], "tone": "warn"},
+          {"code": "...INCLUDE (status)", "state": ["covering again", "payload in the leaves, not the sort"], "changed": [0, 1], "tone": "good"},
+          {"code": "partial: WHERE status = 'refunded'", "state": ["covers 5% of the table", "a twentieth of the size to maintain"], "changed": [0, 1], "tone": "violet"},
+          {"code": "expression: on lower(email)", "state": ["makes that predicate sargable", "the query must match it exactly"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Two of these come up routinely, and each answers something a B-tree cannot",
+         "caption": "**A B-tree is the right answer to almost everything, and these two cover the cases where it is no answer at all.** A leading-wildcard LIKE cannot use a sorted tree — there is no prefix to bound the search — and **GIN with the trigram extension is the only index that helps it**, by indexing three-character fragments. BRIN is the other: a few kilobytes of per-block minimum and maximum, which lets a range predicate skip whole blocks. **On an append-only log table a B-tree can end up larger than the data it indexes, and BRIN is kilobytes** — but only because the rows arrive in timestamp order.",
+         "left": "index type", "codeW": 130,
+         "vars": ["what it answers", "when to reach for it"],
+         "steps": [
+          {"code": "B-tree", "state": ["equality, ranges, prefix LIKE, ORDER BY", "the default, for almost everything"], "tone": "good"},
+          {"code": "GIN + pg_trgm", "state": ["LIKE '%middle%' and ILIKE", "the ONLY index that helps those"], "changed": [0, 1], "tone": "violet"},
+          {"code": "BRIN", "state": ["ranges, by skipping whole blocks", "append-only time series - kilobytes"], "changed": [0, 1], "tone": "violet"},
+          {"code": "GiST", "state": ["overlaps, contains, nearest", "geometry, ranges, exclusion constraints"], "changed": [0, 1], "tone": "accent"},
+          {"code": "hash", "state": ["equality only", "rarely - B-trees do equality well"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "5.4": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "An OR needs rows from two places; a NOT asks for everything except",
+         "caption": "**These two fail for opposite reasons.** An OR across two columns needs rows from two different regions of two different indexes, which engines handle by combining the two index results — a bitmap OR, a multi-index OR, an index merge — and where that is unavailable the rewrite is a UNION of two sargable halves. **A negation is harder, because “everything except paid” cannot be read as a range**, so even a selective one may scan. The fix is to give the planner something to seek: name the wanted values in an IN list, or index the exceptions with a partial index.",
+         "cols": 3,
+         "nodes": [
+          {"id": "o", "label": "customer_id = X OR placed_at = Y", "sub": "two columns, two indexes", "tone": "accent"},
+          {"id": "b", "label": "The engine combines both index results", "sub": "bitmap OR, or an index merge", "tone": "good"},
+          {"id": "u", "label": "Where it cannot: UNION two queries", "sub": "each half sargable on its own", "tone": "good"},
+          {"id": "n", "label": "status <> 'paid'", "sub": "10% of rows, and still a scan", "tone": "crit"},
+          {"id": "w", "label": "Because EXCEPT is not a range", "sub": "there is nothing to seek between", "tone": "crit"},
+          {"id": "f", "label": "Name the values, or index the exceptions", "sub": "IN ('refunded','cancelled'), or partial", "tone": "violet"}],
+         "edges": [["o", "b"], ["b", "u"], ["n", "w"], ["w", "f"]]}}
+ ],
+
+ "5.5": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Drive the join from the side the predicates shrink most",
+         "caption": "**The filter is on the country, so the join should start from customers and probe outward** — every row that flows upward is then a row somebody asked for. Start from the other end and you scan 800,000 line items, probe orders for each, probe customers for each, and only then discard almost all of it. **The planner chooses this correctly whenever its row estimates are right**, which is why lesson 5.1 comes first: when the estimates are wrong it starts from the wrong side, and the signature in the plan is a large table scanned first with a small one probed per row.",
+         "cols": 3,
+         "nodes": [
+          {"id": "f", "label": "The predicate is on customers", "sub": "country = 'NG'", "tone": "accent"},
+          {"id": "s", "label": "So scan customers first", "sub": "the smallest surviving input", "tone": "good"},
+          {"id": "p", "label": "Probe orders per customer", "sub": "then items per order", "tone": "good"},
+          {"id": "w", "label": "Every row that flows is wanted", "sub": "88 ms", "tone": "good"},
+          {"id": "r", "label": "The other order: scan 800,000 items", "sub": "then filter on country at the end", "tone": "crit"},
+          {"id": "e", "label": "Which the planner picks if estimates are wrong", "sub": "big table scanned, small one probed", "tone": "crit"}],
+         "edges": [["f", "s"], ["s", "p"], ["p", "w"], ["r", "e"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "561 ms against 0 ms, for numbers that changed only in the current month",
+         "caption": "**The monthly report reads every order and every line item since the beginning, every single run, to produce a few hundred numbers** — and all but one row of that output is identical to yesterday's. Storing those numbers turns the report into a scan of a few hundred rows. A materialised view is the same thing with the database owning the rebuild, which means it can be indexed and refreshed without blocking readers. **The real design question is freshness, and the hybrid is usually the right answer:** the current month live from the base tables, everything older from the summary.",
+         "left": "how the report runs", "codeW": 200,
+         "vars": ["time", "what it reads"],
+         "steps": [
+          {"code": "from the base tables, every run", "state": ["561 ms", "800,000 line items"], "tone": "crit"},
+          {"code": "from a summary table", "state": ["0 ms", "a few hundred rows"], "changed": [0, 1], "tone": "good"},
+          {"code": "a materialised view", "state": ["same, plus an index", "the database owns the rebuild"], "changed": [0, 1], "tone": "good"},
+          {"code": "the cost moves to", "state": ["the refresh", "nightly, or incremental"], "changed": [0, 1], "tone": "violet"},
+          {"code": "the usual answer", "state": ["hybrid", "this month live, older from summary"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.6": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Same symptom, four signatures, four different fixes",
+         "caption": "**“Slow” is a symptom; the plan carries the signature, and the signature names the fix.** The first two rows look identical from outside the database and have nothing in common inside it: a sequential scan that discarded two million rows wants an index, while a nested loop that ran two million times on an estimate of twelve wants ANALYZE — **no index will fix a bad estimate.** And the third is the one that needs no new object at all: an unsargable predicate is a rewrite, and rewriting `date_trunc` as a half-open range took 820 ms to 12 ms with the existing index.",
+         "left": "signature in the plan", "codeW": 230,
+         "vars": ["cause", "fix"],
+         "steps": [
+          {"code": "Seq Scan, rows removed by filter >> rows kept", "state": ["missing index", "CREATE INDEX on the predicate"], "tone": "accent"},
+          {"code": "Nested Loop, loops = 2,140,000, estimate 12", "state": ["stale statistics", "ANALYZE - an index will not help"], "changed": [0, 1], "tone": "crit"},
+          {"code": "Seq Scan with a function in the Filter", "state": ["unsargable predicate", "rewrite it - 820 ms to 12 ms"], "changed": [0, 1], "tone": "violet"},
+          {"code": "rows out of a join exceed both inputs", "state": ["fan-out", "pre-aggregate to parent grain"], "changed": [0, 1], "tone": "warn"}]}}
+ ]
+}

@@ -20,7 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Find the query that matters", id: "find" },
 
-    {"kind": "matrix", "title": "The slowest query is rarely the one to fix", "caption": "Total time is calls times mean time, and that product is what the database actually spends. A 40-second nightly report costs 40 seconds a day; a 30-millisecond lookup running 2,000 times a minute costs an hour a day.", "cols": ["Total per day", "Fix it"], "rows": ["40 s, once a night", "30 ms, 2,000 per minute", "2 s, 100 per hour", "500 ms, twice a day"], "cells": [[{"text": "40 seconds", "tone": "good"}, "no: it costs almost nothing"], [{"text": "about an hour", "tone": "crit"}, "yes: this is the bill"], [{"text": "80 minutes", "tone": "crit"}, "yes"], [{"text": "1 second", "tone": "good"}, "no"]], "t": "diagram", "id": "dg-5_6-01-0"},
+    {"kind": "matrix", "title": "The slowest query is rarely the one to fix", "caption": "Total time is calls times mean time, and that product is what the database actually spends. A 40-second nightly report costs 40 seconds a day; a 30-millisecond lookup running 2,000 times a minute costs an hour a day.", "cols": ["Total per day", "Fix it"], "rows": ["40 s, once a night", "30 ms, 2,000 per minute", "2 s, 100 per hour", "500 ms, twice a day"], "cells": [[{"text": "40 seconds", "tone": "good"}, "no: it costs almost nothing"], [{"text": "about an hour", "tone": "crit"}, "yes: this is the bill"], [{"text": "80 minutes", "tone": "crit"}, "yes"], [{"text": "1 second", "tone": "good"}, "no"]], "t": "diagram", "id": "dg-5_6-01-1"},
+
+
+
 
 
 
@@ -57,7 +60,10 @@ ORDER  BY total_exec_time DESC LIMIT 5;
 
     { t: "h2", n: "02", text: "The procedure", id: "procedure" },
 
-    {"kind": "steps", "title": "The sequence, every time", "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.", "items": [{"label": "Find the query that matters", "desc": "order by total time, not by mean time", "code": "1", "tone": "accent"}, {"label": "Reproduce it as the application runs it", "desc": "same parameters, same types, prepared or not", "code": "2", "tone": "accent"}, {"label": "Read the plan with ANALYZE", "desc": "estimates against actuals, not costs alone", "code": "3", "tone": "violet"}, {"label": "Find the widest node", "desc": "actual rows x loops; that is where the time is", "code": "4", "tone": "warn"}, {"label": "Classify it", "desc": "bad estimate, missing index, unsargable predicate, fan-out", "code": "5", "tone": "warn"}, {"label": "Change one thing and measure again", "desc": "two changes at once and you learn nothing", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-5_6-02-1"},
+    {"kind": "steps", "title": "The sequence, every time", "caption": "Diagnosis, not guesswork. Each step narrows what the next one has to consider, and the last step is the only one that changes anything.", "items": [{"label": "Find the query that matters", "desc": "order by total time, not by mean time", "code": "1", "tone": "accent"}, {"label": "Reproduce it as the application runs it", "desc": "same parameters, same types, prepared or not", "code": "2", "tone": "accent"}, {"label": "Read the plan with ANALYZE", "desc": "estimates against actuals, not costs alone", "code": "3", "tone": "violet"}, {"label": "Find the widest node", "desc": "actual rows x loops; that is where the time is", "code": "4", "tone": "warn"}, {"label": "Classify it", "desc": "bad estimate, missing index, unsargable predicate, fan-out", "code": "5", "tone": "warn"}, {"label": "Change one thing and measure again", "desc": "two changes at once and you learn nothing", "code": "6", "tone": "good"}], "t": "diagram", "id": "dg-5_6-02-2"},
+
+
+
 
 
 
@@ -123,6 +129,10 @@ ROLLBACK;
     },
 
     { t: "h2", n: "03", text: "The causes and their signatures", id: "causes" },
+
+    {"kind": "trace", "title": "Same symptom, four signatures, four different fixes", "caption": "**“Slow” is a symptom; the plan carries the signature, and the signature names the fix.** The first two rows look identical from outside the database and have nothing in common inside it: a sequential scan that discarded two million rows wants an index, while a nested loop that ran two million times on an estimate of twelve wants ANALYZE — **no index will fix a bad estimate.** And the third is the one that needs no new object at all: an unsargable predicate is a rewrite, and rewriting `date_trunc` as a half-open range took 820 ms to 12 ms with the existing index.", "left": "signature in the plan", "codeW": 230, "vars": ["cause", "fix"], "steps": [{"code": "Seq Scan, rows removed by filter >> rows kept", "state": ["missing index", "CREATE INDEX on the predicate"], "tone": "accent"}, {"code": "Nested Loop, loops = 2,140,000, estimate 12", "state": ["stale statistics", "ANALYZE - an index will not help"], "changed": [0, 1], "tone": "crit"}, {"code": "Seq Scan with a function in the Filter", "state": ["unsargable predicate", "rewrite it - 820 ms to 12 ms"], "changed": [0, 1], "tone": "violet"}, {"code": "rows out of a join exceed both inputs", "state": ["fan-out", "pre-aggregate to parent grain"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_6-03-0"},
+
+
 
     { t: "p", text: "Step five is a lookup. Each cause leaves a recognisable mark in the plan, and each has one fix. **Read the signature, not the symptom**: 'slow' is the symptom; 'Seq Scan with two million rows removed by filter on an equality predicate' is a signature, and its fix is an index — while 'Nested Loop with loops = 2 million on an estimate of 12' has the same symptom, a different signature, and a fix that is ANALYZE." },
 

@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Join order: start from the smallest input", id: "order" },
 
+    {"kind": "flow", "title": "Drive the join from the side the predicates shrink most", "caption": "**The filter is on the country, so the join should start from customers and probe outward** — every row that flows upward is then a row somebody asked for. Start from the other end and you scan 800,000 line items, probe orders for each, probe customers for each, and only then discard almost all of it. **The planner chooses this correctly whenever its row estimates are right**, which is why lesson 5.1 comes first: when the estimates are wrong it starts from the wrong side, and the signature in the plan is a large table scanned first with a small one probed per row.", "cols": 3, "nodes": [{"id": "f", "label": "The predicate is on customers", "sub": "country = 'NG'", "tone": "accent"}, {"id": "s", "label": "So scan customers first", "sub": "the smallest surviving input", "tone": "good"}, {"id": "p", "label": "Probe orders per customer", "sub": "then items per order", "tone": "good"}, {"id": "w", "label": "Every row that flows is wanted", "sub": "88 ms", "tone": "good"}, {"id": "r", "label": "The other order: scan 800,000 items", "sub": "then filter on country at the end", "tone": "crit"}, {"id": "e", "label": "Which the planner picks if estimates are wrong", "sub": "big table scanned, small one probed", "tone": "crit"}], "edges": [["f", "s"], ["s", "p"], ["p", "w"], ["r", "e"]], "t": "diagram", "id": "dg-5_5-01-0"},
+
+
+
     { t: "p", text: "For a three-table join the planner considers the orders and algorithms and picks the cheapest estimated plan — which almost always means **start from whichever table the predicates shrink the most, then join outward through indexes or hashes.** A filter on a customer's country should drive the join from customers, not from the far larger items table. The planner does this when its estimates are right (5.1); when they are not, it starts from the wrong side, and the plan shows a large table scanned first with a small one probed per row." },
 
     { t: "code", lang: "sql", title: "A filtered three-table join, driven from the filtered side (SQLite, measured)",
@@ -48,7 +52,10 @@ WHERE  c.country = 'NG';
 
     { t: "h2", n: "02", text: "Aggregate before you join", id: "preagg" },
 
-    {"kind": "compare", "title": "Aggregate before you join, not after", "caption": "Both queries return revenue per customer. The first carries every line item through the join and groups 19 rows down to 7; the second groups the items to one row per order first, so the join runs on the small side. At a few million line items that reordering is the whole difference.", "columns": [{"title": "Join, then aggregate", "tone": "warn", "items": ["One row per line item through the join", "The join does the multiplying", "GROUP BY collapses it afterwards", "Every item row carries every joined column"]}, {"title": "Aggregate, then join", "tone": "good", "items": ["Items collapsed to one row per order first", "The join runs on the smaller side", "The same answer, less work", "Pre-aggregation: the first thing to try"]}], "t": "diagram", "id": "dg-5_5-02-0"},
+    {"kind": "compare", "title": "Aggregate before you join, not after", "caption": "Both queries return revenue per customer. The first carries every line item through the join and groups 19 rows down to 7; the second groups the items to one row per order first, so the join runs on the small side. At a few million line items that reordering is the whole difference.", "columns": [{"title": "Join, then aggregate", "tone": "warn", "items": ["One row per line item through the join", "The join does the multiplying", "GROUP BY collapses it afterwards", "Every item row carries every joined column"]}, {"title": "Aggregate, then join", "tone": "good", "items": ["Items collapsed to one row per order first", "The join runs on the smaller side", "The same answer, less work", "Pre-aggregation: the first thing to try"]}], "t": "diagram", "id": "dg-5_5-02-2"},
+
+
+
 
 
 
@@ -74,7 +81,10 @@ GROUP  BY o.customer_id;
 
     { t: "h2", n: "03", text: "COUNT DISTINCT, exact and approximate", id: "distinct" },
 
-    {"kind": "matrix", "title": "Counting distinct things, exactly and approximately", "caption": "An exact `COUNT(DISTINCT x)` must remember every key it has seen — a hash of every distinct value, which for a billion events is memory the query does not get. HyperLogLog trades a small, bounded error for constant memory, and for 'roughly how many users' that is the right trade.", "cols": ["Memory", "Error"], "rows": ["COUNT(DISTINCT x)", "HyperLogLog", "APPROX_COUNT_DISTINCT", "COUNT(*) on a pre-agg"], "cells": [[{"text": "one entry per distinct key", "tone": "crit"}, "none: it is exact"], [{"text": "a few kB, fixed", "tone": "good"}, "around 2% relative"], [{"text": "a few kB, fixed", "tone": "good"}, "the same sketch, named per engine"], [{"text": "none at query time", "tone": "accent"}, "none, if the table is current"]], "t": "diagram", "id": "dg-5_5-03-1"},
+    {"kind": "matrix", "title": "Counting distinct things, exactly and approximately", "caption": "An exact `COUNT(DISTINCT x)` must remember every key it has seen — a hash of every distinct value, which for a billion events is memory the query does not get. HyperLogLog trades a small, bounded error for constant memory, and for 'roughly how many users' that is the right trade.", "cols": ["Memory", "Error"], "rows": ["COUNT(DISTINCT x)", "HyperLogLog", "APPROX_COUNT_DISTINCT", "COUNT(*) on a pre-agg"], "cells": [[{"text": "one entry per distinct key", "tone": "crit"}, "none: it is exact"], [{"text": "a few kB, fixed", "tone": "good"}, "around 2% relative"], [{"text": "a few kB, fixed", "tone": "good"}, "the same sketch, named per engine"], [{"text": "none at query time", "tone": "accent"}, "none, if the table is current"]], "t": "diagram", "id": "dg-5_5-03-3"},
+
+
+
 
 
 
@@ -101,6 +111,10 @@ SELECT APPROX_COUNT_DISTINCT(customer_id) FROM orders;                          
     },
 
     { t: "h2", n: "04", text: "Summary tables and materialised views", id: "summary" },
+
+    {"kind": "trace", "title": "561 ms against 0 ms, for numbers that changed only in the current month", "caption": "**The monthly report reads every order and every line item since the beginning, every single run, to produce a few hundred numbers** — and all but one row of that output is identical to yesterday's. Storing those numbers turns the report into a scan of a few hundred rows. A materialised view is the same thing with the database owning the rebuild, which means it can be indexed and refreshed without blocking readers. **The real design question is freshness, and the hybrid is usually the right answer:** the current month live from the base tables, everything older from the summary.", "left": "how the report runs", "codeW": 200, "vars": ["time", "what it reads"], "steps": [{"code": "from the base tables, every run", "state": ["561 ms", "800,000 line items"], "tone": "crit"}, {"code": "from a summary table", "state": ["0 ms", "a few hundred rows"], "changed": [0, 1], "tone": "good"}, {"code": "a materialised view", "state": ["same, plus an index", "the database owns the rebuild"], "changed": [0, 1], "tone": "good"}, {"code": "the cost moves to", "state": ["the refresh", "nightly, or incremental"], "changed": [0, 1], "tone": "violet"}, {"code": "the usual answer", "state": ["hybrid", "this month live, older from summary"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_5-04-1"},
+
+
 
     { t: "p", text: "A monthly revenue report reads every order and item since the beginning, every time it runs, to produce a few hundred numbers that changed only for the current month. **A summary table stores those numbers; the report reads the summary.** A materialised view is a summary table the database knows how to rebuild — `REFRESH MATERIALIZED VIEW` — and can index. The design question is freshness: rebuild nightly, refresh incrementally for the changed periods, or keep the current month live from the base tables and everything older from the summary." },
 

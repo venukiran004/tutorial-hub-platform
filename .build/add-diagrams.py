@@ -4,8 +4,9 @@
 Each .build/<course>-diagrams-*.json maps a lesson id to a list of
 {"after": "<h2 n>", "d": {...diagram spec...}}. The diagram block is placed
 directly after the h2 block with that number, so the figure opens the
-section. A marker id makes the insertion idempotent: re-running replaces
-the earlier copy rather than adding a second one.
+section. Every figure carries a marker id, and each lesson's existing
+markers are dropped before its figures are inserted -- so re-running
+replaces rather than duplicates, whatever order the spec files merge in.
 
 Run: python .build/add-diagrams.py python
 """
@@ -51,15 +52,23 @@ for lid, items in specs.items():
         missing.append(lid); continue
     src = io.open(path, encoding="utf-8").read()
     lines = src.split("\n")
+    # Drop every figure already inserted into this lesson, by marker prefix,
+    # before placing the current set. Keying a marker on the position in the
+    # merged spec list means the key moves whenever a spec file is added, so
+    # matching one marker at a time would leave the old copy behind.
+    prefix = '"id": "dg-%s-' % lid.replace(".", "_")
+    kept = [l for l in lines if prefix not in l]
+    carried = len(lines) - len(kept)
+    lines = kept
     for k, it in enumerate(items):
         marker = "dg-%s-%s-%d" % (lid.replace(".", "_"), it["after"], k)
         d = dict(it["d"]); d["t"] = "diagram"; d["id"] = marker
         block = "    " + json.dumps(d, ensure_ascii=False) + ","
-        # drop an earlier copy
-        before = len(lines)
-        lines = [l for l in lines if ('"id": "%s"' % marker) not in l]
-        if len(lines) < before: replaced += 1
-        else: added += 1
+        if carried > 0:
+            carried -= 1
+            replaced += 1
+        else:
+            added += 1
         if it["after"] == "top":
             # a bank lesson has no h2: place the figure first, right after "blocks": [
             idx = next((i for i, l in enumerate(lines) if re.match(r'^\s*"?blocks"?: \[', l)), None)

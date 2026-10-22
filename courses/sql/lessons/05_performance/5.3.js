@@ -95,7 +95,10 @@ SELECT COUNT(*) FROM orders WHERE placed_at LIKE '%:30:00';
 
     { t: "h2", n: "02", text: "Composite indexes and the leftmost prefix", id: "composite" },
 
-    {"kind": "matrix", "title": "The leftmost prefix rule, on one composite index", "caption": "`(customer_id, placed_at)` is sorted by customer, and within each customer by time. A predicate can use the index only from the left: skip the first column and the sort order is no help at all, because the times of different customers are interleaved.", "cols": ["Uses the index", "Because"], "rows": ["WHERE customer_id = 4", "... AND placed_at > x", "WHERE placed_at > x", "ORDER BY cust, placed_at", "ORDER BY placed_at"], "cells": [[{"text": "yes", "tone": "good"}, "the leading column"], [{"text": "yes, fully", "tone": "good"}, "both columns, left to right"], [{"text": "no", "tone": "crit"}, "the leading column is not constrained"], [{"text": "yes, no sort needed", "tone": "good"}, "this is the index's own order"], [{"text": "no", "tone": "crit"}, "times are interleaved across customers"]], "t": "diagram", "id": "dg-5_3-02-0"},
+    {"kind": "matrix", "title": "The leftmost prefix rule, on one composite index", "caption": "`(customer_id, placed_at)` is sorted by customer, and within each customer by time. A predicate can use the index only from the left: skip the first column and the sort order is no help at all, because the times of different customers are interleaved.", "cols": ["Uses the index", "Because"], "rows": ["WHERE customer_id = 4", "... AND placed_at > x", "WHERE placed_at > x", "ORDER BY cust, placed_at", "ORDER BY placed_at"], "cells": [[{"text": "yes", "tone": "good"}, "the leading column"], [{"text": "yes, fully", "tone": "good"}, "both columns, left to right"], [{"text": "no", "tone": "crit"}, "the leading column is not constrained"], [{"text": "yes, no sort needed", "tone": "good"}, "this is the index's own order"], [{"text": "no", "tone": "crit"}, "times are interleaved across customers"]], "t": "diagram", "id": "dg-5_3-02-2"},
+
+
+
 
 
 
@@ -125,6 +128,10 @@ SELECT order_id, placed_at FROM orders WHERE customer_id = 4242 ORDER BY placed_
 
     { t: "h2", n: "03", text: "Covering, partial and expression indexes", id: "special" },
 
+    {"kind": "trace", "title": "Three refinements, and the first query never touches the table", "caption": "**The first two rows are the same index and the same seek — the only difference is whether the column you selected happens to be in the index.** When it is, the engine answers from the index alone and the plan says COVERING; when it is not, it seeks and then fetches every matching row from the table. PostgreSQL's INCLUDE adds payload columns to the leaves without putting them in the sort key, which covers the second query too. **A partial index is the cheapest of the three by a wide margin:** indexing only the 5% of refunded rows costs a twentieth of the size and is maintained only when those rows change.", "left": "index, and what you select", "codeW": 220, "vars": ["plan", "why"], "steps": [{"code": "(customer_id, placed_at), select placed_at", "state": ["COVERING INDEX - no table visit", "every column needed is in the index"], "tone": "good"}, {"code": "the same index, select status", "state": ["INDEX, then fetch each row", "status is not in the index"], "changed": [0, 1], "tone": "warn"}, {"code": "...INCLUDE (status)", "state": ["covering again", "payload in the leaves, not the sort"], "changed": [0, 1], "tone": "good"}, {"code": "partial: WHERE status = 'refunded'", "state": ["covers 5% of the table", "a twentieth of the size to maintain"], "changed": [0, 1], "tone": "violet"}, {"code": "expression: on lower(email)", "state": ["makes that predicate sargable", "the query must match it exactly"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-0"},
+
+
+
     { t: "p", text: "Three refinements, each for a specific shape of query. **A covering index** holds every column the query touches, so the engine answers from the index and never visits the table — PostgreSQL's `INCLUDE (col)` adds payload columns to the leaves without putting them in the sort. **A partial index** covers only the rows a WHERE clause selects — the 5 % of refunded orders — and is a fraction of the size, maintained only when those rows change. **An expression index** stores a computed value so a predicate written with that expression becomes sargable (5.4)." },
 
     { t: "code", lang: "sql", title: "Covering, partial, expression — and the unique index that is a constraint (measured)",
@@ -153,6 +160,10 @@ CREATE UNIQUE INDEX customers_email ON customers (LOWER(email));
 
     { t: "h2", n: "04", text: "Beyond the B-tree", id: "beyond" },
 
+    {"kind": "trace", "title": "Two of these come up routinely, and each answers something a B-tree cannot", "caption": "**A B-tree is the right answer to almost everything, and these two cover the cases where it is no answer at all.** A leading-wildcard LIKE cannot use a sorted tree — there is no prefix to bound the search — and **GIN with the trigram extension is the only index that helps it**, by indexing three-character fragments. BRIN is the other: a few kilobytes of per-block minimum and maximum, which lets a range predicate skip whole blocks. **On an append-only log table a B-tree can end up larger than the data it indexes, and BRIN is kilobytes** — but only because the rows arrive in timestamp order.", "left": "index type", "codeW": 130, "vars": ["what it answers", "when to reach for it"], "steps": [{"code": "B-tree", "state": ["equality, ranges, prefix LIKE, ORDER BY", "the default, for almost everything"], "tone": "good"}, {"code": "GIN + pg_trgm", "state": ["LIKE '%middle%' and ILIKE", "the ONLY index that helps those"], "changed": [0, 1], "tone": "violet"}, {"code": "BRIN", "state": ["ranges, by skipping whole blocks", "append-only time series - kilobytes"], "changed": [0, 1], "tone": "violet"}, {"code": "GiST", "state": ["overlaps, contains, nearest", "geometry, ranges, exclusion constraints"], "changed": [0, 1], "tone": "accent"}, {"code": "hash", "state": ["equality only", "rarely - B-trees do equality well"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_3-04-1"},
+
+
+
     { t: "table",
       head: ["Index type", "Structure", "Answers", "Use for"],
       rows: [
@@ -170,7 +181,10 @@ CREATE UNIQUE INDEX customers_email ON customers (LOWER(email));
 
     { t: "h2", n: "05", text: "What an index costs", id: "cost" },
 
-    {"kind": "timeline", "title": "What indexes cost on the way in", "caption": "Measured: inserting 50,000 orders takes 54 ms into a bare table, 82 ms with one secondary index and 259 ms with four — five times the cost. Indexes are paid for on every write and repaid only on the reads that use them, which is why `pg_stat_user_indexes.idx_scan = 0` is a column worth checking.", "span": 270, "tick": 60, "lanes": [{"label": "No index", "bars": [[0, 54, "54 ms", "good"]]}, {"label": "One index", "bars": [[0, 82, "82 ms", "accent"]]}, {"label": "Four indexes", "bars": [[0, 259, "259 ms: five times the bare table", "crit"]]}], "t": "diagram", "id": "dg-5_3-05-1"},
+    {"kind": "timeline", "title": "What indexes cost on the way in", "caption": "Measured: inserting 50,000 orders takes 54 ms into a bare table, 82 ms with one secondary index and 259 ms with four — five times the cost. Indexes are paid for on every write and repaid only on the reads that use them, which is why `pg_stat_user_indexes.idx_scan = 0` is a column worth checking.", "span": 270, "tick": 60, "lanes": [{"label": "No index", "bars": [[0, 54, "54 ms", "good"]]}, {"label": "One index", "bars": [[0, 82, "82 ms", "accent"]]}, {"label": "Four indexes", "bars": [[0, 259, "259 ms: five times the bare table", "crit"]]}], "t": "diagram", "id": "dg-5_3-05-3"},
+
+
+
 
 
 

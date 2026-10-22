@@ -19,7 +19,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The rule", id: "rule" },
 
-    {"kind": "matrix", "title": "The same rows, two predicates, measured", "caption": "Each pair selects the identical rows. The difference is whether the indexed column stands alone on its side of the operator: transform it and the engine must compute the expression for every row, which is a scan. Move the transform to the constant side and the index can be seeked.", "cols": ["Time", "What the engine did"], "rows": ["substr(placed_at,1,7) = ...", "placed_at >= ... AND <", "LIKE '%:30:00'", "LIKE '2025-03%'", "zip_code = 12345", "zip_code = '12345'"], "cells": [[{"text": "22.8 ms", "tone": "crit"}, "scan: a function on the column"], [{"text": "0.9 ms", "tone": "good"}, "covering index, range seek"], [{"text": "27.6 ms", "tone": "crit"}, "scan: the wildcard leads"], [{"text": "1.6 ms", "tone": "good"}, "a prefix is rewritten to a range"], [{"text": "scan", "tone": "crit"}, "the TEXT column is cast per row"], [{"text": "seek", "tone": "good"}, "text against text: no cast"]], "t": "diagram", "id": "dg-5_4-01-0"},
+    {"kind": "matrix", "title": "The same rows, two predicates, measured", "caption": "Each pair selects the identical rows. The difference is whether the indexed column stands alone on its side of the operator: transform it and the engine must compute the expression for every row, which is a scan. Move the transform to the constant side and the index can be seeked.", "cols": ["Time", "What the engine did"], "rows": ["substr(placed_at,1,7) = ...", "placed_at >= ... AND <", "LIKE '%:30:00'", "LIKE '2025-03%'", "zip_code = 12345", "zip_code = '12345'"], "cells": [[{"text": "22.8 ms", "tone": "crit"}, "scan: a function on the column"], [{"text": "0.9 ms", "tone": "good"}, "covering index, range seek"], [{"text": "27.6 ms", "tone": "crit"}, "scan: the wildcard leads"], [{"text": "1.6 ms", "tone": "good"}, "a prefix is rewritten to a range"], [{"text": "scan", "tone": "crit"}, "the TEXT column is cast per row"], [{"text": "seek", "tone": "good"}, "text against text: no cast"]], "t": "diagram", "id": "dg-5_4-01-1"},
+
+
+
 
 
 
@@ -60,7 +63,10 @@ SELECT COUNT(*) FROM orders WHERE placed_at LIKE '2025-03%';
 
     { t: "h2", n: "02", text: "The rewrites", id: "rewrites" },
 
-    {"kind": "layers", "title": "Four ways to break an index, strongest first", "caption": "Each of these is the same mistake: the stored value is transformed before the comparison, so the index's sort order no longer applies to what is being compared.", "items": [{"label": "A function on the column", "sub": "LOWER(col), DATE(col), COALESCE(col, 0)", "tone": "crit", "side": "expression idx"}, {"label": "An implicit cast on the column", "sub": "a TEXT column against an INTEGER literal", "tone": "crit", "side": "quote it"}, {"label": "Arithmetic on the column", "sub": "col + INTERVAL '1 day' > now()", "tone": "warn", "side": "move it right"}, {"label": "A leading wildcard", "sub": "LIKE '%term' cannot use a B-tree at all", "tone": "warn", "side": "trigram index"}], "t": "diagram", "id": "dg-5_4-02-1"},
+    {"kind": "layers", "title": "Four ways to break an index, strongest first", "caption": "Each of these is the same mistake: the stored value is transformed before the comparison, so the index's sort order no longer applies to what is being compared.", "items": [{"label": "A function on the column", "sub": "LOWER(col), DATE(col), COALESCE(col, 0)", "tone": "crit", "side": "expression idx"}, {"label": "An implicit cast on the column", "sub": "a TEXT column against an INTEGER literal", "tone": "crit", "side": "quote it"}, {"label": "Arithmetic on the column", "sub": "col + INTERVAL '1 day' > now()", "tone": "warn", "side": "move it right"}, {"label": "A leading wildcard", "sub": "LIKE '%term' cannot use a B-tree at all", "tone": "warn", "side": "trigram index"}], "t": "diagram", "id": "dg-5_4-02-2"},
+
+
+
 
 
 
@@ -89,6 +95,10 @@ SELECT COUNT(*) FROM orders WHERE placed_at LIKE '2025-03%';
     ]},
 
     { t: "h2", n: "03", text: "OR, NOT and the shapes that surprise", id: "shapes" },
+
+    {"kind": "flow", "title": "An OR needs rows from two places; a NOT asks for everything except", "caption": "**These two fail for opposite reasons.** An OR across two columns needs rows from two different regions of two different indexes, which engines handle by combining the two index results — a bitmap OR, a multi-index OR, an index merge — and where that is unavailable the rewrite is a UNION of two sargable halves. **A negation is harder, because “everything except paid” cannot be read as a range**, so even a selective one may scan. The fix is to give the planner something to seek: name the wanted values in an IN list, or index the exceptions with a partial index.", "cols": 3, "nodes": [{"id": "o", "label": "customer_id = X OR placed_at = Y", "sub": "two columns, two indexes", "tone": "accent"}, {"id": "b", "label": "The engine combines both index results", "sub": "bitmap OR, or an index merge", "tone": "good"}, {"id": "u", "label": "Where it cannot: UNION two queries", "sub": "each half sargable on its own", "tone": "good"}, {"id": "n", "label": "status <> 'paid'", "sub": "10% of rows, and still a scan", "tone": "crit"}, {"id": "w", "label": "Because EXCEPT is not a range", "sub": "there is nothing to seek between", "tone": "crit"}, {"id": "f", "label": "Name the values, or index the exceptions", "sub": "IN ('refunded','cancelled'), or partial", "tone": "violet"}], "edges": [["o", "b"], ["b", "u"], ["n", "w"], ["w", "f"]], "t": "diagram", "id": "dg-5_4-03-0"},
+
+
 
     { t: "p", text: "`customer_id = 4242 OR placed_at = '2025-03-03 10:30:00'` needs rows from two different regions of two different indexes. PostgreSQL, SQLite and SQL Server union the two index results with a bitmap or a multi-index OR; MySQL's index merge does the same when it can. **Where the engine cannot, the rewrite is a UNION of two sargable queries.** Negations are different: `status <> 'paid'` is 10 % of the table here and the planner may still scan, because 'everything except' cannot be read as a range — a partial index on the exceptions, or an IN list of the wanted values, gives it something to seek." },
 
