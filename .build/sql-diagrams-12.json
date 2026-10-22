@@ -1,0 +1,96 @@
+{
+ "7.1": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "A failed statement inside a transaction leaves a decision to make",
+         "caption": "**The second INSERT violates the primary key, the driver raises, and now the transaction is open with one statement applied and one failed.** Whichever branch you take must be explicit: without a ROLLBACK the first row stays pending, and a connection returned to a pool mid-transaction carries that state to the next request. **The real point is the except clause, not the BEGIN** — code that opens a transaction and has no rollback path is code that half-applies changes the first time anything goes wrong. A context manager does both ends for you, which is why it is the form to default to.",
+         "cols": 3,
+         "nodes": [
+          {"id": "b", "label": "BEGIN", "sub": "autocommit is off for the block", "tone": "accent"},
+          {"id": "i", "label": "First INSERT applies", "sub": "pending, not visible outside", "tone": "good"},
+          {"id": "d", "label": "Second INSERT duplicates the key", "sub": "the driver raises", "tone": "crit"},
+          {"id": "r", "label": "ROLLBACK in the except clause", "sub": "both rows gone - count is 0", "tone": "good"},
+          {"id": "n", "label": "No rollback: still open, half applied", "sub": "and a pooled connection carries it on", "tone": "crit"},
+          {"id": "c", "label": "A context manager does both ends", "sub": "commit on exit, rollback on raise", "tone": "violet"}],
+         "edges": [["b", "i"], ["i", "d"], ["d", "r"], ["d", "n"], ["r", "c"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four operational patterns, and the failure each one is there to prevent",
+         "caption": "**Each row is one line of setup against one class of incident.** The pool cap is the one people set too high: a pool larger than the server's connection limit does not increase throughput, it converts a traffic spike into a refused connection for everybody. **And the timeout belongs on the server, not only in the client** — a client-side timeout stops you waiting and leaves the query running, still holding its connection and its locks. The retry has two preconditions that are easy to skip: only on transient error classes, and only for work that is idempotent.",
+         "left": "concern", "codeW": 160,
+         "vars": ["pattern", "failure it prevents"],
+         "steps": [
+          {"code": "throughput", "state": ["executemany or COPY, in one transaction", "minutes of per-row commits"], "tone": "good"},
+          {"code": "connections", "state": ["a pool, capped below max_connections", "connection exhaustion under a spike"], "changed": [0, 1], "tone": "good"},
+          {"code": "hung queries", "state": ["a SERVER-side statement timeout", "a query holding a lock for an hour"], "changed": [0, 1], "tone": "violet"},
+          {"code": "transient failures", "state": ["bounded retry with backoff", "a deploy blip becoming an outage"], "changed": [0, 1], "tone": "accent"},
+          {"code": "...but only when", "state": ["the error class is transient", "and the work is idempotent"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "7.2": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Strictly less than, because the checkout event is the order",
+         "caption": "**Every join condition in this feature table says strictly before the order's timestamp, and the measurement shows why.** For order 108 three events precede it and two do not — and one of those two is the checkout event, which carries the order's own timestamp. **Admit it and the feature “events in the last 7 days” contains the event that happened because the order happened**, which is a leak that looks like a brilliant feature in training and predicts nothing in production. The same cut-off discipline applies to prior orders, prior spend and days since last.",
+         "left": "order", "codeW": 160,
+         "vars": ["events strictly before", "at or after", "what the leak would be"],
+         "steps": [
+          {"code": "108, placed 13:45", "state": ["3 - legitimate history", "2", "the checkout event itself"], "tone": "accent"},
+          {"code": "110, placed 17:25", "state": ["2", "1", "the checkout event itself"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "so the condition must be", "state": ["occurred_at < placed_at", "strictly", "not <="], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "and the same for prior orders", "state": ["b.placed_at < a.placed_at", "cancelled excluded", "-"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ],
+
+ "7.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Three samples, and only one of them is reproducible anywhere",
+         "caption": "**A seeded random is reproducible within one engine and one session, and nowhere else** — the draw depends on row order and row count, so it changes the day a row is inserted and differs between engines. That is fine for a one-off look and wrong for a train/test split somebody must reproduce. **The hash-of-the-key method is the one that survives everything:** the same key always lands in the same bucket, on any engine, however the table grows. Stratifying is a different concern — row-number within each stratum — and TABLESAMPLE samples pages rather than rows, so it is fast and only approximately proportional.",
+         "left": "method", "codeW": 190,
+         "vars": ["reproducible?", "use for"],
+         "steps": [
+          {"code": "random() with a seed", "state": ["one engine, one session only", "a quick look"], "tone": "warn"},
+          {"code": "random() unseeded", "state": ["no - a new set every run", "nothing you must defend"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ROW_NUMBER within each tier", "state": ["yes, given a deterministic order", "a stratified sample"], "changed": [0, 1], "tone": "good"},
+          {"code": "hash the key, keep a bucket range", "state": ["YES - anywhere, as the table grows", "a train/test split"], "changed": [0, 1], "tone": "violet"},
+          {"code": "TABLESAMPLE", "state": ["samples pages, not rows", "fast, approximate scans"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "7.5": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Three interview questions whose whole difficulty is the edge case",
+         "caption": "**In each one the obvious query is right and the follow-up is about the row that is missing from it.** The inner self-join correctly excludes the CEO, whose manager is NULL — and the interviewer's next question is how to include them, which is a LEFT JOIN. **The anti-join has the trap worth saying out loud: NOT IN against a nullable column returns nothing at all**, which is lesson 1.2 arriving in an interview. Say which spelling you are using and why, because the reason is the answer they are listening for.",
+         "left": "question", "codeW": 190,
+         "vars": ["the query", "the edge case they are holding"],
+         "steps": [
+          {"code": "earns more than their manager", "state": ["self-join, m.id = e.manager_id", "the CEO: manager_id is NULL"], "tone": "accent"},
+          {"code": "customers who never ordered", "state": ["NOT EXISTS, or LEFT JOIN IS NULL", "NOT IN returns zero rows on a NULL"], "changed": [0, 1], "tone": "crit"},
+          {"code": "find the duplicates", "state": ["GROUP BY the key HAVING COUNT(*) > 1", "which copy to keep"], "changed": [0, 1], "tone": "good"},
+          {"code": "second highest salary", "state": ["DENSE_RANK = 2", "ties, and only one salary existing"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Consecutive dates and consecutive row numbers advance together",
+         "caption": "**That is the entire gaps-and-islands trick: subtract the row number from the date and the result is constant inside a streak**, so grouping by that constant gives one group per streak. Nothing else in SQL does this as cheaply, and the same shape answers consecutive logins, sessionisation and uptime runs. **The DISTINCT on the first line is not tidiness — it is load-bearing:** a duplicate login on one date advances the row number without advancing the date, which breaks the arithmetic and splits one streak into two.",
+         "left": "step", "codeW": 190,
+         "vars": ["what it produces"],
+         "steps": [
+          {"code": "SELECT DISTINCT user_id, login_date", "state": ["one row per user per day - REQUIRED"], "tone": "crit"},
+          {"code": "ROW_NUMBER() OVER (PARTITION BY user, ORDER BY date)", "state": ["1, 2, 3 ... within each user"], "changed": [0], "tone": "accent"},
+          {"code": "login_date minus that many days", "state": ["constant inside a streak"], "changed": [0], "tone": "violet"},
+          {"code": "GROUP BY user, that constant", "state": ["one group per streak"], "changed": [0], "tone": "good"},
+          {"code": "MIN, MAX, COUNT per group", "state": ["start, end and length of each streak"], "changed": [0], "tone": "good"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Four shapes that answer most reporting questions",
+         "caption": "**Conditional aggregation is the one to internalise: a FILTER clause, or a CASE inside a SUM, pivots rows into columns without any pivot syntax** — and it is portable to every engine, which the dedicated PIVOT keywords are not. Median has a portable spelling and a short native one, and knowing both is the point: the native function is clearer where it exists. **And the last row is the shape people reach for a self-join to do** — first and last value per group, in one row, from two window functions rather than two joins.",
+         "left": "what you need", "codeW": 190,
+         "vars": ["how", "note"],
+         "steps": [
+          {"code": "a median", "state": ["ROW_NUMBER, take the middle one or two", "portable; 122500 here"], "tone": "good"},
+          {"code": "...natively", "state": ["percentile_cont, or median()", "clearer where it exists"], "changed": [0, 1], "tone": "good"},
+          {"code": "a pivot", "state": ["COUNT(*) FILTER, or SUM(CASE WHEN)", "portable - unlike PIVOT syntax"], "changed": [0, 1], "tone": "violet"},
+          {"code": "first and last per group", "state": ["FIRST_VALUE and LAST_VALUE over a frame", "one row, no self-join"], "changed": [0, 1], "tone": "accent"},
+          {"code": "group against company total", "state": ["an aggregate beside a window over ()", "both grains in one pass"], "changed": [0, 1], "tone": "accent"}]}}
+ ]
+}

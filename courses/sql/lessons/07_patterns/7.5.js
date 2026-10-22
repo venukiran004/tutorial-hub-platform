@@ -19,7 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Ranking: second highest, top n per group", id: "ranking" },
 
-    {"kind": "matrix", "title": "The dozen questions, and what each one is really testing", "caption": "Every interview draws from the same small set, and each is a concept in a costume. Naming the concept out loud — 'this is a ties question, so DENSE_RANK' — is most of the answer, and it is what the follow-up question is aimed at.", "cols": ["Tests", "The tool"], "rows": ["Second-highest salary", "Top n per group", "Consecutive days", "Running total", "Duplicates", "Median"], "cells": [[{"text": "ties", "tone": "accent"}, "DENSE_RANK = 2"], [{"text": "ranking in a partition", "tone": "accent"}, "ROW_NUMBER, filtered outside"], [{"text": "gaps and islands", "tone": "good"}, "date minus ROW_NUMBER"], [{"text": "the frame", "tone": "good"}, "SUM OVER (ORDER BY ...)"], [{"text": "grain", "tone": "warn"}, "GROUP BY key HAVING COUNT(*) > 1"], [{"text": "the engine's gaps", "tone": "violet"}, "percentile_cont, or a window trick"]], "t": "diagram", "id": "dg-7_5-01-0"},
+    {"kind": "matrix", "title": "The dozen questions, and what each one is really testing", "caption": "Every interview draws from the same small set, and each is a concept in a costume. Naming the concept out loud — 'this is a ties question, so DENSE_RANK' — is most of the answer, and it is what the follow-up question is aimed at.", "cols": ["Tests", "The tool"], "rows": ["Second-highest salary", "Top n per group", "Consecutive days", "Running total", "Duplicates", "Median"], "cells": [[{"text": "ties", "tone": "accent"}, "DENSE_RANK = 2"], [{"text": "ranking in a partition", "tone": "accent"}, "ROW_NUMBER, filtered outside"], [{"text": "gaps and islands", "tone": "good"}, "date minus ROW_NUMBER"], [{"text": "the frame", "tone": "good"}, "SUM OVER (ORDER BY ...)"], [{"text": "grain", "tone": "warn"}, "GROUP BY key HAVING COUNT(*) > 1"], [{"text": "the engine's gaps", "tone": "violet"}, "percentile_cont, or a window trick"]], "t": "diagram", "id": "dg-7_5-01-3"},
+
+
 
 
 
@@ -58,6 +60,8 @@ WHERE r <= 2 ORDER BY department, salary DESC, name;
 
     { t: "h2", n: "02", text: "Self-joins and anti-joins", id: "joins" },
 
+    {"kind": "trace", "title": "Three interview questions whose whole difficulty is the edge case", "caption": "**In each one the obvious query is right and the follow-up is about the row that is missing from it.** The inner self-join correctly excludes the CEO, whose manager is NULL — and the interviewer's next question is how to include them, which is a LEFT JOIN. **The anti-join has the trap worth saying out loud: NOT IN against a nullable column returns nothing at all**, which is lesson 1.2 arriving in an interview. Say which spelling you are using and why, because the reason is the answer they are listening for.", "left": "question", "codeW": 190, "vars": ["the query", "the edge case they are holding"], "steps": [{"code": "earns more than their manager", "state": ["self-join, m.id = e.manager_id", "the CEO: manager_id is NULL"], "tone": "accent"}, {"code": "customers who never ordered", "state": ["NOT EXISTS, or LEFT JOIN IS NULL", "NOT IN returns zero rows on a NULL"], "changed": [0, 1], "tone": "crit"}, {"code": "find the duplicates", "state": ["GROUP BY the key HAVING COUNT(*) > 1", "which copy to keep"], "changed": [0, 1], "tone": "good"}, {"code": "second highest salary", "state": ["DENSE_RANK = 2", "ties, and only one salary existing"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-7_5-02-0"},
+
     { t: "code", lang: "sql", title: "More than their manager; never ordered; duplicates (executed)",
       hl: [2, 3, 8, 10, 15, 18],
       code: `-- employees earning more than their manager: the table joined to itself, once as employee and once as manager
@@ -89,6 +93,8 @@ DELETE FROM emails WHERE id NOT IN (SELECT MIN(id) FROM emails GROUP BY email); 
     ]},
 
     { t: "h2", n: "03", text: "Sequences: consecutive days, gaps, running totals", id: "sequences" },
+
+    {"kind": "trace", "title": "Consecutive dates and consecutive row numbers advance together", "caption": "**That is the entire gaps-and-islands trick: subtract the row number from the date and the result is constant inside a streak**, so grouping by that constant gives one group per streak. Nothing else in SQL does this as cheaply, and the same shape answers consecutive logins, sessionisation and uptime runs. **The DISTINCT on the first line is not tidiness — it is load-bearing:** a duplicate login on one date advances the row number without advancing the date, which breaks the arithmetic and splits one streak into two.", "left": "step", "codeW": 190, "vars": ["what it produces"], "steps": [{"code": "SELECT DISTINCT user_id, login_date", "state": ["one row per user per day - REQUIRED"], "tone": "crit"}, {"code": "ROW_NUMBER() OVER (PARTITION BY user, ORDER BY date)", "state": ["1, 2, 3 ... within each user"], "changed": [0], "tone": "accent"}, {"code": "login_date minus that many days", "state": ["constant inside a streak"], "changed": [0], "tone": "violet"}, {"code": "GROUP BY user, that constant", "state": ["one group per streak"], "changed": [0], "tone": "good"}, {"code": "MIN, MAX, COUNT per group", "state": ["start, end and length of each streak"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_5-03-1"},
 
     { t: "code", lang: "sql", title: "Consecutive login days — the gaps-and-islands trick (executed)",
       hl: [2, 3, 5, 6, 10, 11],
@@ -129,6 +135,8 @@ SELECT month, rev, LAG(rev) OVER (ORDER BY month) AS prev,
     },
 
     { t: "h2", n: "04", text: "Aggregation shapes: median, pivot, first and last", id: "aggregates" },
+
+    {"kind": "trace", "title": "Four shapes that answer most reporting questions", "caption": "**Conditional aggregation is the one to internalise: a FILTER clause, or a CASE inside a SUM, pivots rows into columns without any pivot syntax** — and it is portable to every engine, which the dedicated PIVOT keywords are not. Median has a portable spelling and a short native one, and knowing both is the point: the native function is clearer where it exists. **And the last row is the shape people reach for a self-join to do** — first and last value per group, in one row, from two window functions rather than two joins.", "left": "what you need", "codeW": 190, "vars": ["how", "note"], "steps": [{"code": "a median", "state": ["ROW_NUMBER, take the middle one or two", "portable; 122500 here"], "tone": "good"}, {"code": "...natively", "state": ["percentile_cont, or median()", "clearer where it exists"], "changed": [0, 1], "tone": "good"}, {"code": "a pivot", "state": ["COUNT(*) FILTER, or SUM(CASE WHEN)", "portable - unlike PIVOT syntax"], "changed": [0, 1], "tone": "violet"}, {"code": "first and last per group", "state": ["FIRST_VALUE and LAST_VALUE over a frame", "one row, no self-join"], "changed": [0, 1], "tone": "accent"}, {"code": "group against company total", "state": ["an aggregate beside a window over ()", "both grains in one pass"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-7_5-04-2"},
 
     { t: "code", lang: "sql", title: "Median, conditional pivot, first-and-last in one row, group versus company (executed)",
       hl: [2, 3, 7, 8, 12, 13, 17],
@@ -175,7 +183,9 @@ FROM   employees GROUP BY department ORDER BY dept_avg DESC;
 
     { t: "h2", n: "05", text: "How to talk through it", id: "method" },
 
-    {"kind": "steps", "title": "How to talk through one", "caption": "The code is the smallest part of the answer. What is being assessed is whether you state the grain, name the edge case before it is pointed out, and say what you would check — which is the same discipline the rest of this course has been about.", "items": [{"label": "Say the grain of the answer", "desc": "one row per what: per customer, per customer-month", "code": "1", "tone": "accent"}, {"label": "Name the edge case first", "desc": "ties, NULLs, customers with no orders, months with none", "code": "2", "tone": "good"}, {"label": "Write the simplest version", "desc": "a CTE per step, named, rather than one nested block", "code": "3", "tone": "good"}, {"label": "Say how you would check it", "desc": "a row count you can predict, a spot-check on one key", "code": "4", "tone": "violet"}, {"label": "Offer the scale caveat", "desc": "what you would change at a billion rows, and why", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-7_5-05-1"},
+    {"kind": "steps", "title": "How to talk through one", "caption": "The code is the smallest part of the answer. What is being assessed is whether you state the grain, name the edge case before it is pointed out, and say what you would check — which is the same discipline the rest of this course has been about.", "items": [{"label": "Say the grain of the answer", "desc": "one row per what: per customer, per customer-month", "code": "1", "tone": "accent"}, {"label": "Name the edge case first", "desc": "ties, NULLs, customers with no orders, months with none", "code": "2", "tone": "good"}, {"label": "Write the simplest version", "desc": "a CTE per step, named, rather than one nested block", "code": "3", "tone": "good"}, {"label": "Say how you would check it", "desc": "a row count you can predict, a spot-check on one key", "code": "4", "tone": "violet"}, {"label": "Offer the scale caveat", "desc": "what you would change at a billion rows, and why", "code": "5", "tone": "teal"}], "t": "diagram", "id": "dg-7_5-05-4"},
+
+
 
 
 

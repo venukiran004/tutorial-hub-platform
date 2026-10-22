@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "INSERT: rows, queries and what came back", id: "insert" },
 
+    {"kind": "flow", "title": "RETURNING, and why the summary has rows for customers with nothing to summarise", "caption": "**RETURNING hands back the rows as stored** — defaults filled in, generated keys assigned — which saves the round trip that a separate SELECT would cost, and is the only reliable way to learn an identity value. The second half is a design decision that looks like a detail: **the status filter sits in the ON clause rather than in WHERE, so customers with no paid orders get a zero row instead of no row.** A summary table that omits them is one that everybody downstream will have to LEFT JOIN and COALESCE for ever.", "cols": 3, "nodes": [{"id": "i", "label": "INSERT ... RETURNING", "sub": "the rows as stored, in one round trip", "tone": "accent"}, {"id": "d", "label": "Defaults and generated keys included", "sub": "the only reliable way to get an identity", "tone": "good"}, {"id": "s", "label": "INSERT ... SELECT builds the summary", "sub": "one statement, no client loop", "tone": "good"}, {"id": "o", "label": "The status filter goes in ON, not WHERE", "sub": "or the childless parents vanish", "tone": "violet"}, {"id": "z", "label": "So Iker and Mara get a zero row", "sub": "0 orders, 0.00 revenue", "tone": "violet"}, {"id": "w", "label": "Otherwise everyone downstream COALESCEs", "sub": "for ever", "tone": "warn"}], "edges": [["i", "d"], ["d", "s"], ["s", "o"], ["o", "z"], ["z", "w"]], "t": "diagram", "id": "dg-6_3-01-0"},
+
+
     { t: "code", lang: "sql", title: "Multi-row INSERT with RETURNING, and INSERT … SELECT to build a summary table (executed)",
       hl: [1, 4, 7, 8],
       code: `INSERT INTO customers (customer_id, name, country, tier, signed_up) VALUES
@@ -57,7 +60,9 @@ GROUP BY c.customer_id;                                     -- 10 rows`,
 
     { t: "h2", n: "02", text: "Upsert: ON CONFLICT and EXCLUDED", id: "upsert" },
 
-    {"kind": "steps", "title": "What an upsert actually does", "caption": "`ON CONFLICT` needs a unique constraint to conflict *against* — without one there is nothing to detect, and the statement inserts a duplicate. `EXCLUDED` is the row that was proposed, which is how the update reaches the new values.", "items": [{"label": "INSERT INTO t (...) VALUES (...)", "desc": "the proposed row", "code": "1", "tone": "accent"}, {"label": "ON CONFLICT (key)", "desc": "needs a UNIQUE or PRIMARY KEY on that column", "code": "2", "tone": "warn"}, {"label": "DO UPDATE SET col = EXCLUDED.col", "desc": "EXCLUDED is the row that was proposed", "code": "3", "tone": "good"}, {"label": "DO NOTHING", "desc": "the other choice: keep what is already there", "code": "or", "tone": "violet"}, {"label": "RETURNING *", "desc": "tells you which rows were written", "code": "4", "tone": "teal"}], "t": "diagram", "id": "dg-6_3-02-0"},
+    {"kind": "steps", "title": "What an upsert actually does", "caption": "`ON CONFLICT` needs a unique constraint to conflict *against* — without one there is nothing to detect, and the statement inserts a duplicate. `EXCLUDED` is the row that was proposed, which is how the update reaches the new values.", "items": [{"label": "INSERT INTO t (...) VALUES (...)", "desc": "the proposed row", "code": "1", "tone": "accent"}, {"label": "ON CONFLICT (key)", "desc": "needs a UNIQUE or PRIMARY KEY on that column", "code": "2", "tone": "warn"}, {"label": "DO UPDATE SET col = EXCLUDED.col", "desc": "EXCLUDED is the row that was proposed", "code": "3", "tone": "good"}, {"label": "DO NOTHING", "desc": "the other choice: keep what is already there", "code": "or", "tone": "violet"}, {"label": "RETURNING *", "desc": "tells you which rows were written", "code": "4", "tone": "teal"}], "t": "diagram", "id": "dg-6_3-02-3"},
+
+
 
 
 
@@ -108,6 +113,9 @@ WHERE  customer_stats.n_orders IS DISTINCT FROM EXCLUDED.n_orders OR customer_st
 
     { t: "h2", n: "03", text: "UPDATE … FROM, DELETE … USING, MERGE", id: "from" },
 
+    {"kind": "trace", "title": "Four ways to let one table drive changes in another", "caption": "**All four exist so that the decision about which rows to change can come from a query rather than from a client loop.** The pattern worth copying is the WHERE on the last line of the UPDATE: comparing the new values against the stored ones means **only genuinely stale rows are written**, which keeps the row count honest, avoids waking every trigger, and leaves updated_at meaning “when this actually changed”. MERGE is the standard's single statement for insert-or-update-or-delete, and the dialect spellings differ more than the semantics do.", "left": "statement", "codeW": 190, "vars": ["what it does", "the detail that matters"], "steps": [{"code": "UPDATE ... FROM (subquery) t", "state": ["a join drives the update", "put the comparison in WHERE"], "tone": "good"}, {"code": "...WHERE s.n <> t.n OR s.rev <> t.rev", "state": ["writes only stale rows", "updated_at stays meaningful"], "changed": [0, 1], "tone": "violet"}, {"code": "DELETE ... USING other", "state": ["another table chooses the rows", "the same shape, deleting"], "changed": [0, 1], "tone": "good"}, {"code": "MERGE", "state": ["insert, update and delete in one", "the standard spelling of upsert"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-6_3-03-1"},
+
+
     { t: "code", lang: "sql", title: "Changes driven by another table (executed)",
       hl: [2, 3, 4, 5, 11, 15, 16, 17],
       code: `-- refresh only the summary rows that are stale: the derived table t is joined to the target
@@ -132,6 +140,9 @@ WHEN NOT MATCHED THEN INSERT (customer_id, name, country, tier, signed_up) VALUE
     },
 
     { t: "h2", n: "04", text: "Delete, soft delete, audit", id: "delete" },
+
+    {"kind": "compare", "title": "Three ways to remove a row, and they are not substitutes", "caption": "**The soft delete's hidden cost is in the second bullet: every query in the system now needs a predicate, and the one that forgets it is a bug nobody notices.** A view is what keeps that honest — queries read the view, the table is for administration. And uniqueness needs attention: an email can only be reused after the old account is deleted if the unique index is partial. **ON DELETE CASCADE deserves the same care:** it is correct along ownership edges, where a child cannot exist without its parent, and wrong for anything merely related.", "columns": [{"title": "Hard DELETE - the row is gone", "tone": "warn", "items": ["no undo, and no history", "foreign keys block, cascade or set null", "a cascade can remove far more than intended", "right for sessions, staging, expired tokens", "and for a legal erasure request"]}, {"title": "Soft delete - a timestamp is set", "tone": "violet", "items": ["undo is possible, and who did it is recorded", "EVERY query now needs deleted_at IS NULL", "so expose a view and keep the table for admin", "unique constraints need a partial index", "right for customers, orders, documents"]}], "t": "diagram", "id": "dg-6_3-04-2"},
+
 
     { t: "table",
       head: ["Approach", "What happens", "Costs", "Use when"],
@@ -168,7 +179,9 @@ CREATE TRIGGER customers_audit AFTER UPDATE OR DELETE ON customers FOR EACH ROW 
 
     { t: "h2", n: "05", text: "Bulk: the shape of the load", id: "bulk" },
 
-    {"kind": "matrix", "title": "Loading ten million rows", "caption": "The shape of the load matters more than the engine. Row-at-a-time insertion spends almost all of its time on round trips and per-statement overhead; the bulk paths exist because they skip both.", "cols": ["Relative cost", "Why"], "rows": ["One INSERT per row", "Multi-row VALUES", "COPY / LOAD DATA", "COPY, indexes dropped"], "cells": [[{"text": "slowest by far", "tone": "crit"}, "a round trip and a parse per row"], [{"text": "much faster", "tone": "warn"}, "one parse, one round trip per batch"], [{"text": "fastest path in", "tone": "good"}, "no per-row parsing at all"], [{"text": "faster still", "tone": "accent"}, "build the indexes once, at the end"]], "t": "diagram", "id": "dg-6_3-05-1"},
+    {"kind": "matrix", "title": "Loading ten million rows", "caption": "The shape of the load matters more than the engine. Row-at-a-time insertion spends almost all of its time on round trips and per-statement overhead; the bulk paths exist because they skip both.", "cols": ["Relative cost", "Why"], "rows": ["One INSERT per row", "Multi-row VALUES", "COPY / LOAD DATA", "COPY, indexes dropped"], "cells": [[{"text": "slowest by far", "tone": "crit"}, "a round trip and a parse per row"], [{"text": "much faster", "tone": "warn"}, "one parse, one round trip per batch"], [{"text": "fastest path in", "tone": "good"}, "no per-row parsing at all"], [{"text": "faster still", "tone": "accent"}, "build the indexes once, at the end"]], "t": "diagram", "id": "dg-6_3-05-4"},
+
+
 
 
 

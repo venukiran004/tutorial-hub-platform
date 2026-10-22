@@ -19,7 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "DDL: cheap changes and expensive ones", id: "ddl" },
 
-    {"kind": "matrix", "title": "Which schema changes are cheap and which lock the table", "caption": "The cost is decided by whether existing rows must be rewritten or verified. Adding a nullable column is a catalogue edit; adding a NOT NULL column with no default has to touch every row, and on a large table under load that is an outage.", "cols": ["Cost", "Why"], "rows": ["ADD COLUMN, nullable", "ADD COLUMN NOT NULL", "DROP COLUMN", "ALTER TYPE", "ADD CHECK", "CREATE INDEX"], "cells": [[{"text": "instant", "tone": "good"}, "a catalogue entry; no rows touched"], [{"text": "rewrites or verifies", "tone": "crit"}, "every existing row needs a value"], [{"text": "instant", "tone": "good"}, "marked dead; space reclaimed later"], [{"text": "usually a rewrite", "tone": "crit"}, "every value must be converted"], [{"text": "scans the table", "tone": "warn"}, "NOT VALID defers it, then VALIDATE"], [{"text": "locks writes", "tone": "warn"}, "CONCURRENTLY avoids it, more slowly"]], "t": "diagram", "id": "dg-6_6-01-0"},
+    {"kind": "matrix", "title": "Which schema changes are cheap and which lock the table", "caption": "The cost is decided by whether existing rows must be rewritten or verified. Adding a nullable column is a catalogue edit; adding a NOT NULL column with no default has to touch every row, and on a large table under load that is an outage.", "cols": ["Cost", "Why"], "rows": ["ADD COLUMN, nullable", "ADD COLUMN NOT NULL", "DROP COLUMN", "ALTER TYPE", "ADD CHECK", "CREATE INDEX"], "cells": [[{"text": "instant", "tone": "good"}, "a catalogue entry; no rows touched"], [{"text": "rewrites or verifies", "tone": "crit"}, "every existing row needs a value"], [{"text": "instant", "tone": "good"}, "marked dead; space reclaimed later"], [{"text": "usually a rewrite", "tone": "crit"}, "every value must be converted"], [{"text": "scans the table", "tone": "warn"}, "NOT VALID defers it, then VALIDATE"], [{"text": "locks writes", "tone": "warn"}, "CONCURRENTLY avoids it, more slowly"]], "t": "diagram", "id": "dg-6_6-01-2"},
+
+
 
 
 
@@ -54,6 +56,9 @@ ALTER TABLE orders ALTER COLUMN order_id TYPE BIGINT;                  -- expens
     ]},
 
     { t: "h2", n: "02", text: "Views: naming, hiding, stabilising", id: "views" },
+
+    {"kind": "trace", "title": "A view is a name; a materialised view is a table", "caption": "**A plain view saves nothing — its query runs every time — so it is a naming and access-control tool, not a performance one.** The failure that follows is specific and common: a view containing GROUP BY or DISTINCT may not let the planner push an outer WHERE through it, so filtering one customer out of a big view aggregates the whole table and then discards almost all of it. **Materialising it changes the kind of object: it is stored, it can be indexed, and it is stale until refreshed.** Freshness is the price, and it is the whole decision.", "left": "object", "codeW": 190, "vars": ["stored?", "indexable", "cost"], "steps": [{"code": "VIEW", "state": ["no - the query reruns", "no", "names a concept, hides a rule"], "tone": "accent"}, {"code": "...with GROUP BY or DISTINCT", "state": ["no", "no", "an outer WHERE may not push down"], "changed": [2], "tone": "crit"}, {"code": "MATERIALIZED VIEW", "state": ["yes - it is a table", "yes", "stale until refreshed"], "changed": [0, 1, 2], "tone": "good"}, {"code": "a view on a view on a view", "state": ["no", "no", "a query nobody can EXPLAIN"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-6_6-02-0"},
+
 
     { t: "code", lang: "sql", title: "A view that names a business concept, and the queries that use it (executed)",
       hl: [1, 2, 3, 6, 10, 11],
@@ -93,6 +98,9 @@ REFRESH MATERIALIZED VIEW CONCURRENTLY customer_revenue;                     -- 
     ]},
 
     { t: "h2", n: "03", text: "Triggers and procedures", id: "triggers" },
+
+    {"kind": "flow", "title": "The WHEN clause is what stops an audit trigger lying", "caption": "**Without it the trigger fires on every UPDATE of the column, including the ones that set it to the value it already had** — so the audit log fills with changes that did not happen, and “who changed this” becomes unanswerable. One line comparing old to new makes the log mean something. **The general caution about triggers is that they are invisible at the call site:** the application sees one UPDATE and the database does three things, so a slow write has a cause that is not in any query the application wrote. Which is also why a function is the safer default: it computes, and changes nothing.", "cols": 3, "nodes": [{"id": "t", "label": "AFTER UPDATE OF tier, FOR EACH ROW", "sub": "four updates arrive", "tone": "accent"}, {"id": "w", "label": "WHEN OLD.tier IS NOT NEW.tier", "sub": "only real changes pass", "tone": "violet"}, {"id": "a", "label": "Two audit rows, not four", "sub": "the log now means something", "tone": "good"}, {"id": "i", "label": "But a trigger is invisible at the call site", "sub": "one UPDATE, three things happen", "tone": "crit"}, {"id": "f", "label": "A function computes and changes nothing", "sub": "callable in any SELECT - the safer default", "tone": "good"}, {"id": "p", "label": "A procedure owns its own transaction", "sub": "for a job, not for a query", "tone": "accent"}], "edges": [["t", "w"], ["w", "a"], ["a", "i"], ["i", "f"], ["f", "p"]], "t": "diagram", "id": "dg-6_6-03-1"},
+
 
     { t: "code", lang: "sql", title: "An audit trigger that fires only on a real change (executed on SQLite; PostgreSQL uses a trigger function)",
       hl: [2, 3, 4, 7, 8, 9, 10],
@@ -142,7 +150,9 @@ CALL archive_old_orders(DATE '2024-07-01', 1000);`,
 
     { t: "h2", n: "04", text: "Migrations and expand–contract", id: "migrations" },
 
-    {"kind": "steps", "title": "Expand and contract: a breaking change in safe steps", "caption": "The rule is that the schema and the application are never required to deploy together. Each step leaves both the old and the new code working, so any step can be rolled back on its own.", "items": [{"label": "Expand: add the new column, nullable", "desc": "old code ignores it; nothing breaks", "code": "1", "tone": "good"}, {"label": "Write to both", "desc": "deploy code that fills old and new", "code": "2", "tone": "accent"}, {"label": "Backfill in batches", "desc": "old rows get the new value, a chunk at a time", "code": "3", "tone": "accent"}, {"label": "Read from the new one", "desc": "deploy; the old column is now unread", "code": "4", "tone": "violet"}, {"label": "Contract: stop writing, then drop", "desc": "two deploys apart, so a rollback is possible", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-6_6-04-1"},
+    {"kind": "steps", "title": "Expand and contract: a breaking change in safe steps", "caption": "The rule is that the schema and the application are never required to deploy together. Each step leaves both the old and the new code working, so any step can be rolled back on its own.", "items": [{"label": "Expand: add the new column, nullable", "desc": "old code ignores it; nothing breaks", "code": "1", "tone": "good"}, {"label": "Write to both", "desc": "deploy code that fills old and new", "code": "2", "tone": "accent"}, {"label": "Backfill in batches", "desc": "old rows get the new value, a chunk at a time", "code": "3", "tone": "accent"}, {"label": "Read from the new one", "desc": "deploy; the old column is now unread", "code": "4", "tone": "violet"}, {"label": "Contract: stop writing, then drop", "desc": "two deploys apart, so a rollback is possible", "code": "5", "tone": "warn"}], "t": "diagram", "id": "dg-6_6-04-3"},
+
+
 
 
 

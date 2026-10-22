@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The lost update, reproduced", id: "lost" },
 
+    {"kind": "trace", "title": "Two sales, ten in stock, and three units vanish with no error", "caption": "**Both connections read 10 before either wrote, so each computed its answer from a value that was true at the time and is not any more.** The stock ends at 6 — B's 10 minus 4 — and A's sale of three has disappeared. **No isolation level below SERIALIZABLE prevents this**, because neither transaction did anything wrong by its own lights: each read a committed value and wrote a value. The fixes are to make the write depend on the read: UPDATE with an expression rather than a literal, SELECT FOR UPDATE, or a version column checked in the WHERE.", "left": "step", "codeW": 190, "vars": ["A sees", "B sees", "stock row"], "steps": [{"code": "start", "state": ["-", "-", "10"], "tone": "accent"}, {"code": "A reads", "state": ["10", "-", "10"], "changed": [0], "tone": "good"}, {"code": "B reads", "state": ["10", "10", "10"], "changed": [1], "tone": "good"}, {"code": "A writes 10 - 3", "state": ["7", "10, stale", "7"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "B writes 10 - 4", "state": ["7, stale", "6", "6"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "expected", "state": ["-", "-", "3 - A's sale is lost"], "changed": [2], "tone": "crit"}], "t": "diagram", "id": "dg-6_2-01-0"},
+
+
     { t: "p", text: "Two connections, A and B, each sell from a stock of ten. Each reads the quantity, subtracts its sale, and writes the result. Both reads happen before either write. **The final quantity is 6 — B's 10 − 4 — and A's sale of three has vanished without an error.** No isolation level below SERIALIZABLE stops this, because each transaction did nothing wrong by its own lights: it read a committed value and wrote a value." },
 
     { t: "code", lang: "python", title: "Two connections, one row, and the sale that disappears (executed against SQLite)",
@@ -38,7 +41,9 @@ b.execute("UPDATE stock SET qty = ? WHERE product_id = 1", (qb - 4,))         # 
 
     { t: "h2", n: "02", text: "The anomalies and the levels", id: "levels" },
 
-    {"kind": "matrix", "title": "Five anomalies against three isolation levels", "caption": "READ COMMITTED — the default on PostgreSQL and SQL Server — permits four of the five. That is not a bug: the levels are a contract about what the engine will prevent, and anything it does not prevent is yours to prevent with a lock, an atomic write or a constraint.", "cols": ["READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "rows": ["Dirty read", "Non-repeatable read", "Phantom", "Lost update", "Write skew"], "cells": [[{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented in PG", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "PG aborts the writer", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-02-0"},
+    {"kind": "matrix", "title": "Five anomalies against three isolation levels", "caption": "READ COMMITTED — the default on PostgreSQL and SQL Server — permits four of the five. That is not a bug: the levels are a contract about what the engine will prevent, and anything it does not prevent is yours to prevent with a lock, an atomic write or a constraint.", "cols": ["READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"], "rows": ["Dirty read", "Non-repeatable read", "Phantom", "Lost update", "Write skew"], "cells": [[{"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "prevented in PG", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "PG aborts the writer", "tone": "warn"}, {"text": "prevented", "tone": "good"}], [{"text": "allowed", "tone": "crit"}, {"text": "allowed", "tone": "crit"}, {"text": "prevented", "tone": "good"}]], "t": "diagram", "id": "dg-6_2-02-1"},
+
+
 
 
 
@@ -66,7 +71,9 @@ b.execute("UPDATE stock SET qty = ? WHERE product_id = 1", (qb - 4,))         # 
 
     { t: "h2", n: "03", text: "Three fixes that work at any level", id: "fixes" },
 
-    {"kind": "matrix", "title": "Three fixes that work at any isolation level", "caption": "Each removes the read-modify-write gap rather than asking the engine to police it. The third is the one to reach for first, because a single statement cannot interleave with itself.", "cols": ["How", "Costs"], "rows": ["SELECT ... FOR UPDATE", "A version column", "One atomic statement", "SERIALIZABLE"], "cells": [[{"text": "lock the row, then write", "tone": "good"}, "writers queue behind each other"], [{"text": "WHERE version = :v, check rows", "tone": "good"}, "the caller must retry"], [{"text": "SET stock = stock - 1", "tone": "accent"}, "nothing: no gap to interleave in"], [{"text": "the engine detects conflicts", "tone": "violet"}, "serialisation failures to retry"]], "t": "diagram", "id": "dg-6_2-03-1"},
+    {"kind": "matrix", "title": "Three fixes that work at any isolation level", "caption": "Each removes the read-modify-write gap rather than asking the engine to police it. The third is the one to reach for first, because a single statement cannot interleave with itself.", "cols": ["How", "Costs"], "rows": ["SELECT ... FOR UPDATE", "A version column", "One atomic statement", "SERIALIZABLE"], "cells": [[{"text": "lock the row, then write", "tone": "good"}, "writers queue behind each other"], [{"text": "WHERE version = :v, check rows", "tone": "good"}, "the caller must retry"], [{"text": "SET stock = stock - 1", "tone": "accent"}, "nothing: no gap to interleave in"], [{"text": "the engine detects conflicts", "tone": "violet"}, "serialisation failures to retry"]], "t": "diagram", "id": "dg-6_2-03-2"},
+
+
 
 
 

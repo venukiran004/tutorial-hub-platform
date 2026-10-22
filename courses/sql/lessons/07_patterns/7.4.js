@@ -19,7 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Hash splits: deterministic by key", id: "hash" },
 
-    {"kind": "compare", "title": "A hash split and ORDER BY random()", "caption": "A hash of the key is deterministic: the same row lands in the same fold today, tomorrow and on another machine, and a new row joins a fold without moving any existing one. `random()` gives a different split on every run, which makes a result impossible to reproduce.", "columns": [{"title": "MOD(ABS(HASH(id)), 10)", "tone": "good", "items": ["The same row, the same fold, always", "No sort: it is one expression per row", "New rows do not move old ones", "Reproducible across machines"]}, {"title": "ORDER BY random() LIMIT n", "tone": "crit", "items": ["A different split every run", "Sorts the whole table to take n", "A result nobody can reproduce", "A seed helps, and is easy to forget"]}], "t": "diagram", "id": "dg-7_4-01-0"},
+    {"kind": "compare", "title": "A hash split and ORDER BY random()", "caption": "A hash of the key is deterministic: the same row lands in the same fold today, tomorrow and on another machine, and a new row joins a fold without moving any existing one. `random()` gives a different split on every run, which makes a result impossible to reproduce.", "columns": [{"title": "MOD(ABS(HASH(id)), 10)", "tone": "good", "items": ["The same row, the same fold, always", "No sort: it is one expression per row", "New rows do not move old ones", "Reproducible across machines"]}, {"title": "ORDER BY random() LIMIT n", "tone": "crit", "items": ["A different split every run", "Sorts the whole table to take n", "A result nobody can reproduce", "A seed helps, and is easy to forget"]}], "t": "diagram", "id": "dg-7_4-01-1"},
+
+
 
 
 
@@ -52,6 +54,8 @@ SELECT customer_id, ('0x' || substr(md5(customer_id::VARCHAR), 1, 8))::BIGINT % 
 
     { t: "h2", n: "02", text: "Random, stratified, TABLESAMPLE", id: "sampling" },
 
+    {"kind": "trace", "title": "Three samples, and only one of them is reproducible anywhere", "caption": "**A seeded random is reproducible within one engine and one session, and nowhere else** — the draw depends on row order and row count, so it changes the day a row is inserted and differs between engines. That is fine for a one-off look and wrong for a train/test split somebody must reproduce. **The hash-of-the-key method is the one that survives everything:** the same key always lands in the same bucket, on any engine, however the table grows. Stratifying is a different concern — row-number within each stratum — and TABLESAMPLE samples pages rather than rows, so it is fast and only approximately proportional.", "left": "method", "codeW": 190, "vars": ["reproducible?", "use for"], "steps": [{"code": "random() with a seed", "state": ["one engine, one session only", "a quick look"], "tone": "warn"}, {"code": "random() unseeded", "state": ["no - a new set every run", "nothing you must defend"], "changed": [0, 1], "tone": "crit"}, {"code": "ROW_NUMBER within each tier", "state": ["yes, given a deterministic order", "a stratified sample"], "changed": [0, 1], "tone": "good"}, {"code": "hash the key, keep a bucket range", "state": ["YES - anywhere, as the table grows", "a train/test split"], "changed": [0, 1], "tone": "violet"}, {"code": "TABLESAMPLE", "state": ["samples pages, not rows", "fast, approximate scans"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-7_4-02-0"},
+
     { t: "code", lang: "sql", title: "Three ways to take a sample (executed)",
       hl: [2, 3, 7, 8, 9, 13, 14],
       code: `-- 1. seeded random: reproducible within one engine and one session; the draw depends on row order and count
@@ -74,7 +78,9 @@ SELECT COUNT(*) FROM orders USING SAMPLE 50% (bernoulli, 1);              -- 8 o
 
     { t: "h2", n: "03", text: "The split that leaks", id: "leak" },
 
-    {"kind": "matrix", "title": "The split that leaks", "caption": "A random row-level split puts rows of the same entity, or the same moment, on both sides — and the model then scores well by recognising something it has already seen. The grain of the split must match the grain the prediction is made at.", "cols": ["Leaks when", "Split on"], "rows": ["Rows of one customer", "Several visits of a session", "A time series", "Near-duplicate rows", "Grouped records"], "cells": [[{"text": "both sides hold the same person", "tone": "crit"}, "hash the customer id"], [{"text": "one session spans the split", "tone": "crit"}, "hash the session id"], [{"text": "the future is in training", "tone": "crit"}, "a cut-off date, not a hash"], [{"text": "the twin is on the other side", "tone": "warn"}, "de-duplicate before splitting"], [{"text": "a group is divided", "tone": "crit"}, "hash the group key"]], "t": "diagram", "id": "dg-7_4-03-1"},
+    {"kind": "matrix", "title": "The split that leaks", "caption": "A random row-level split puts rows of the same entity, or the same moment, on both sides — and the model then scores well by recognising something it has already seen. The grain of the split must match the grain the prediction is made at.", "cols": ["Leaks when", "Split on"], "rows": ["Rows of one customer", "Several visits of a session", "A time series", "Near-duplicate rows", "Grouped records"], "cells": [[{"text": "both sides hold the same person", "tone": "crit"}, "hash the customer id"], [{"text": "one session spans the split", "tone": "crit"}, "hash the session id"], [{"text": "the future is in training", "tone": "crit"}, "a cut-off date, not a hash"], [{"text": "the twin is on the other side", "tone": "warn"}, "de-duplicate before splitting"], [{"text": "a group is divided", "tone": "crit"}, "hash the group key"]], "t": "diagram", "id": "dg-7_4-03-2"},
+
+
 
 
 

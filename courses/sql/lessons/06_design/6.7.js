@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The engines", id: "engines" },
 
+    {"kind": "trace", "title": "Three engines you will actually meet, and where each one lives", "caption": "**A data professional works with three of these constantly** — PostgreSQL where the application lives, a warehouse where the analysis lives, and DuckDB or SQLite on their own laptop. The habits that transfer are the whole of modules 1 to 5; what does not transfer is the list of places where identical text means different things. **The two defaults worth carrying in your head are in the middle rows:** MySQL's isolation default is REPEATABLE READ rather than READ COMMITTED, and SQLite's typing is dynamic, so a column can hold a string where you expect a number.", "left": "engine", "codeW": 160, "vars": ["where it lives", "the thing to remember"], "steps": [{"code": "PostgreSQL", "state": ["the operational database", "strictest types, transactional DDL"], "tone": "good"}, {"code": "MySQL / MariaDB", "state": ["web applications", "REPEATABLE READ by default; DDL commits"], "changed": [0, 1], "tone": "accent"}, {"code": "SQLite", "state": ["embedded: phones, tests, files", "DYNAMIC typing - a column accepts anything"], "changed": [0, 1], "tone": "crit"}, {"code": "DuckDB", "state": ["analysis on one machine", "columnar, and reads Parquet directly"], "changed": [0, 1], "tone": "violet"}, {"code": "a warehouse", "state": ["where the analysis lives", "columnar, separated storage and compute"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_7-01-0"},
+
+
     { t: "table",
       head: ["Engine", "Role", "Storage", "Distinctive"],
       rows: [
@@ -36,7 +39,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The differences that produce wrong answers", id: "silent" },
 
-    {"kind": "matrix", "title": "The differences that produce a wrong answer, not an error", "caption": "Dialect differences that raise a syntax error are harmless — you fix them immediately. These are the ones that run and return something plausible on the other engine, which is why portable code writes the explicit form every time.", "cols": ["PostgreSQL", "Elsewhere"], "rows": ["7 / 2", "|| as concat", "LIMIT m, n", "Identifier case", "LIKE case", "Transactional DDL"], "cells": [[{"text": "3: integer division", "tone": "warn"}, "MySQL gives 3.5"], [{"text": "concatenation", "tone": "good"}, "MySQL: logical OR by default"], [{"text": "not accepted", "tone": "accent"}, "MySQL: offset first, then count"], [{"text": "folds to lower", "tone": "warn"}, "others fold up, or are sensitive"], [{"text": "case-sensitive", "tone": "warn"}, "MySQL: insensitive by collation"], [{"text": "yes: roll a migration back", "tone": "good"}, "MySQL: no; a failure leaves it half done"]], "t": "diagram", "id": "dg-6_7-02-0"},
+    {"kind": "matrix", "title": "The differences that produce a wrong answer, not an error", "caption": "Dialect differences that raise a syntax error are harmless — you fix them immediately. These are the ones that run and return something plausible on the other engine, which is why portable code writes the explicit form every time.", "cols": ["PostgreSQL", "Elsewhere"], "rows": ["7 / 2", "|| as concat", "LIMIT m, n", "Identifier case", "LIKE case", "Transactional DDL"], "cells": [[{"text": "3: integer division", "tone": "warn"}, "MySQL gives 3.5"], [{"text": "concatenation", "tone": "good"}, "MySQL: logical OR by default"], [{"text": "not accepted", "tone": "accent"}, "MySQL: offset first, then count"], [{"text": "folds to lower", "tone": "warn"}, "others fold up, or are sensitive"], [{"text": "case-sensitive", "tone": "warn"}, "MySQL: insensitive by collation"], [{"text": "yes: roll a migration back", "tone": "good"}, "MySQL: no; a failure leaves it half done"]], "t": "diagram", "id": "dg-6_7-02-1"},
+
+
 
 
 
@@ -83,7 +88,9 @@ SELECT 'Abc' ILIKE 'a%';   -- PostgreSQL / DuckDB: true, explicitly     -- porta
 
     { t: "h2", n: "03", text: "Row, column, embedded: choosing an engine", id: "choose" },
 
-    {"kind": "matrix", "title": "Row, column, embedded", "caption": "The storage layout decides what the engine is good at, and it is not a matter of maturity. A row store fetches a whole record in one page read; a column store reads one column of a billion rows without touching the others.", "cols": ["Good at", "Reach for it when"], "rows": ["Row store", "Column store", "Embedded", "Document store"], "cells": [[{"text": "point reads and writes", "tone": "accent"}, "an application's own database"], [{"text": "scanning few columns", "tone": "good"}, "analytics over many rows"], [{"text": "no server at all", "tone": "violet"}, "a file, a notebook, a test"], [{"text": "shapes that vary", "tone": "teal"}, "no schema is agreed yet"]], "t": "diagram", "id": "dg-6_7-03-1"},
+    {"kind": "matrix", "title": "Row, column, embedded", "caption": "The storage layout decides what the engine is good at, and it is not a matter of maturity. A row store fetches a whole record in one page read; a column store reads one column of a billion rows without touching the others.", "cols": ["Good at", "Reach for it when"], "rows": ["Row store", "Column store", "Embedded", "Document store"], "cells": [[{"text": "point reads and writes", "tone": "accent"}, "an application's own database"], [{"text": "scanning few columns", "tone": "good"}, "analytics over many rows"], [{"text": "no server at all", "tone": "violet"}, "a file, a notebook, a test"], [{"text": "shapes that vary", "tone": "teal"}, "no schema is agreed yet"]], "t": "diagram", "id": "dg-6_7-03-2"},
+
+
 
 
 

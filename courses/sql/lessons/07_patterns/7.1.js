@@ -19,7 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The injection, reproduced", id: "injection" },
 
-    {"kind": "compare", "title": "The f-string and the parameter", "caption": "A parameter is not an escaping function — the value never becomes part of the statement's text. The engine parses the query once, with a placeholder where the value goes, so there is no string for an input to break out of.", "columns": [{"title": "f\"... WHERE name = '{name}'\"", "tone": "crit", "items": ["The value becomes SQL text", "An apostrophe ends the literal", "' OR 1=1 -- returns every row", "Escaping by hand is a losing game"]}, {"title": "cur.execute(sql, (name,))", "tone": "good", "items": ["The value is sent separately", "The statement is parsed once", "The input can never be code", "Also lets the plan be reused"]}], "t": "diagram", "id": "dg-7_1-01-0"},
+    {"kind": "compare", "title": "The f-string and the parameter", "caption": "A parameter is not an escaping function — the value never becomes part of the statement's text. The engine parses the query once, with a placeholder where the value goes, so there is no string for an input to break out of.", "columns": [{"title": "f\"... WHERE name = '{name}'\"", "tone": "crit", "items": ["The value becomes SQL text", "An apostrophe ends the literal", "' OR 1=1 -- returns every row", "Escaping by hand is a losing game"]}, {"title": "cur.execute(sql, (name,))", "tone": "good", "items": ["The value is sent separately", "The statement is parsed once", "The input can never be code", "Also lets the plan be reused"]}], "t": "diagram", "id": "dg-7_1-01-2"},
+
+
 
 
 
@@ -65,7 +67,9 @@ con.execute("SELECT name FROM customers WHERE customer_id = $cid", {"cid": 4})  
 
     { t: "h2", n: "02", text: "What parameters cannot do", id: "limits" },
 
-    {"kind": "matrix", "title": "What a parameter cannot be", "caption": "A placeholder stands where a *value* goes. Anything the parser needs in order to understand the statement cannot be a parameter — and that is the point at which people reach back for string formatting, so these are the places to validate against an allow-list.", "cols": ["As a parameter", "Instead"], "rows": ["A value in WHERE", "A table name", "A column name", "ORDER BY direction", "A list for IN", "An identifier in DDL"], "cells": [[{"text": "yes", "tone": "good"}, "this is what placeholders are for"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "map 'asc'/'desc' through a dict"], [{"text": "driver-specific", "tone": "warn"}, "= ANY(:array), or expand the list"], [{"text": "no", "tone": "crit"}, "the driver's identifier quoter"]], "t": "diagram", "id": "dg-7_1-02-1"},
+    {"kind": "matrix", "title": "What a parameter cannot be", "caption": "A placeholder stands where a *value* goes. Anything the parser needs in order to understand the statement cannot be a parameter — and that is the point at which people reach back for string formatting, so these are the places to validate against an allow-list.", "cols": ["As a parameter", "Instead"], "rows": ["A value in WHERE", "A table name", "A column name", "ORDER BY direction", "A list for IN", "An identifier in DDL"], "cells": [[{"text": "yes", "tone": "good"}, "this is what placeholders are for"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "an allow-list, then compose"], [{"text": "no", "tone": "crit"}, "map 'asc'/'desc' through a dict"], [{"text": "driver-specific", "tone": "warn"}, "= ANY(:array), or expand the list"], [{"text": "no", "tone": "crit"}, "the driver's identifier quoter"]], "t": "diagram", "id": "dg-7_1-02-3"},
+
+
 
 
 
@@ -98,6 +102,8 @@ cur.execute(f"SELECT * FROM customers ORDER BY {SORTS[sort_key]} {direction}")`,
 
     { t: "h2", n: "03", text: "Transactions from Python", id: "transactions" },
 
+    {"kind": "flow", "title": "A failed statement inside a transaction leaves a decision to make", "caption": "**The second INSERT violates the primary key, the driver raises, and now the transaction is open with one statement applied and one failed.** Whichever branch you take must be explicit: without a ROLLBACK the first row stays pending, and a connection returned to a pool mid-transaction carries that state to the next request. **The real point is the except clause, not the BEGIN** — code that opens a transaction and has no rollback path is code that half-applies changes the first time anything goes wrong. A context manager does both ends for you, which is why it is the form to default to.", "cols": 3, "nodes": [{"id": "b", "label": "BEGIN", "sub": "autocommit is off for the block", "tone": "accent"}, {"id": "i", "label": "First INSERT applies", "sub": "pending, not visible outside", "tone": "good"}, {"id": "d", "label": "Second INSERT duplicates the key", "sub": "the driver raises", "tone": "crit"}, {"id": "r", "label": "ROLLBACK in the except clause", "sub": "both rows gone - count is 0", "tone": "good"}, {"id": "n", "label": "No rollback: still open, half applied", "sub": "and a pooled connection carries it on", "tone": "crit"}, {"id": "c", "label": "A context manager does both ends", "sub": "commit on exit, rollback on raise", "tone": "violet"}], "edges": [["b", "i"], ["i", "d"], ["d", "r"], ["d", "n"], ["r", "c"]], "t": "diagram", "id": "dg-7_1-03-0"},
+
     { t: "code", lang: "python", title: "Explicit transactions, rollback on error, and the context-manager forms (executed)",
       hl: [2, 3, 4, 5, 9, 10, 11, 12, 16, 17, 20, 21],
       code: `# explicit, works on every DB-API driver
@@ -127,6 +133,8 @@ with con:                                                       # commits on suc
     },
 
     { t: "h2", n: "04", text: "Bulk, pools, timeouts, retries", id: "ops" },
+
+    {"kind": "trace", "title": "Four operational patterns, and the failure each one is there to prevent", "caption": "**Each row is one line of setup against one class of incident.** The pool cap is the one people set too high: a pool larger than the server's connection limit does not increase throughput, it converts a traffic spike into a refused connection for everybody. **And the timeout belongs on the server, not only in the client** — a client-side timeout stops you waiting and leaves the query running, still holding its connection and its locks. The retry has two preconditions that are easy to skip: only on transient error classes, and only for work that is idempotent.", "left": "concern", "codeW": 160, "vars": ["pattern", "failure it prevents"], "steps": [{"code": "throughput", "state": ["executemany or COPY, in one transaction", "minutes of per-row commits"], "tone": "good"}, {"code": "connections", "state": ["a pool, capped below max_connections", "connection exhaustion under a spike"], "changed": [0, 1], "tone": "good"}, {"code": "hung queries", "state": ["a SERVER-side statement timeout", "a query holding a lock for an hour"], "changed": [0, 1], "tone": "violet"}, {"code": "transient failures", "state": ["bounded retry with backoff", "a deploy blip becoming an outage"], "changed": [0, 1], "tone": "accent"}, {"code": "...but only when", "state": ["the error class is transient", "and the work is idempotent"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-7_1-04-1"},
 
     { t: "code", lang: "python", title: "The four operational patterns",
       hl: [2, 3, 7, 8, 9, 13, 14, 19, 20, 21, 22, 23],

@@ -1,0 +1,146 @@
+{
+ "6.1": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "A savepoint is a bookmark, not a second transaction",
+         "caption": "**Rolling back to a savepoint undoes part of the work and leaves the transaction open** — which is the tool for “try this step, and if it fails, skip it and carry on”. Here Bruno's update is rolled back to the bookmark while Emeka's, made before it, stays pending and then commits. **The row that catches people out is the first one: in autocommit, every statement is already its own transaction**, so two statements that must succeed together need an explicit BEGIN. Without one, there is nothing for a later failure to roll back.",
+         "left": "statement", "codeW": 220,
+         "vars": ["Emeka, id 5", "Bruno, id 2"],
+         "steps": [
+          {"code": "BEGIN", "state": ["standard", "standard"], "tone": "accent"},
+          {"code": "UPDATE ... id = 5", "state": ["plus, pending", "standard"], "changed": [0], "tone": "good"},
+          {"code": "SAVEPOINT before_bruno", "state": ["plus, pending", "standard"], "tone": "violet"},
+          {"code": "UPDATE ... id = 2", "state": ["plus, pending", "plus, pending"], "changed": [1], "tone": "good"},
+          {"code": "ROLLBACK TO SAVEPOINT", "state": ["plus, STILL pending", "standard - undone"], "changed": [1], "tone": "violet"},
+          {"code": "COMMIT", "state": ["plus - permanent", "standard"], "changed": [0], "tone": "good"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Ten thousand rows, two ways, and the difference is the number of flushes",
+         "caption": "**A COMMIT does not return until the log records are on durable storage, so the cost of a commit is an fsync** — and ten thousand commits means ten thousand flushes. Wrap the same inserts in one transaction and there is one. **That is the single most common cause of “why is my load so slow”, and it is not the inserts.** The last row is the deliberate trade: acknowledging before the flush can lose the last few hundred milliseconds of commits in a crash while corrupting nothing — reasonable for a metrics table, never for an order.",
+         "left": "how the rows go in", "codeW": 200,
+         "vars": ["commits", "log flushes", "time"],
+         "steps": [
+          {"code": "autocommit, one row at a time", "state": ["10,000", "10,000", "40 to 120 s"], "tone": "crit"},
+          {"code": "one BEGIN ... COMMIT", "state": ["1", "1", "1 to 2 s"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "synchronous_commit = off", "state": ["1", "deferred", "faster still"], "changed": [1, 2], "tone": "warn"},
+          {"code": "...and the risk", "state": ["-", "lose about 600 ms on a crash", "nothing is corrupted"], "changed": [1, 2], "tone": "violet"}]}}
+ ],
+
+ "6.2": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Two sales, ten in stock, and three units vanish with no error",
+         "caption": "**Both connections read 10 before either wrote, so each computed its answer from a value that was true at the time and is not any more.** The stock ends at 6 — B's 10 minus 4 — and A's sale of three has disappeared. **No isolation level below SERIALIZABLE prevents this**, because neither transaction did anything wrong by its own lights: each read a committed value and wrote a value. The fixes are to make the write depend on the read: UPDATE with an expression rather than a literal, SELECT FOR UPDATE, or a version column checked in the WHERE.",
+         "left": "step", "codeW": 190,
+         "vars": ["A sees", "B sees", "stock row"],
+         "steps": [
+          {"code": "start", "state": ["-", "-", "10"], "tone": "accent"},
+          {"code": "A reads", "state": ["10", "-", "10"], "changed": [0], "tone": "good"},
+          {"code": "B reads", "state": ["10", "10", "10"], "changed": [1], "tone": "good"},
+          {"code": "A writes 10 - 3", "state": ["7", "10, stale", "7"], "changed": [0, 1, 2], "tone": "warn"},
+          {"code": "B writes 10 - 4", "state": ["7, stale", "6", "6"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "expected", "state": ["-", "-", "3 - A's sale is lost"], "changed": [2], "tone": "crit"}]}}
+ ],
+
+ "6.3": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "RETURNING, and why the summary has rows for customers with nothing to summarise",
+         "caption": "**RETURNING hands back the rows as stored** — defaults filled in, generated keys assigned — which saves the round trip that a separate SELECT would cost, and is the only reliable way to learn an identity value. The second half is a design decision that looks like a detail: **the status filter sits in the ON clause rather than in WHERE, so customers with no paid orders get a zero row instead of no row.** A summary table that omits them is one that everybody downstream will have to LEFT JOIN and COALESCE for ever.",
+         "cols": 3,
+         "nodes": [
+          {"id": "i", "label": "INSERT ... RETURNING", "sub": "the rows as stored, in one round trip", "tone": "accent"},
+          {"id": "d", "label": "Defaults and generated keys included", "sub": "the only reliable way to get an identity", "tone": "good"},
+          {"id": "s", "label": "INSERT ... SELECT builds the summary", "sub": "one statement, no client loop", "tone": "good"},
+          {"id": "o", "label": "The status filter goes in ON, not WHERE", "sub": "or the childless parents vanish", "tone": "violet"},
+          {"id": "z", "label": "So Iker and Mara get a zero row", "sub": "0 orders, 0.00 revenue", "tone": "violet"},
+          {"id": "w", "label": "Otherwise everyone downstream COALESCEs", "sub": "for ever", "tone": "warn"}],
+         "edges": [["i", "d"], ["d", "s"], ["s", "o"], ["o", "z"], ["z", "w"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four ways to let one table drive changes in another",
+         "caption": "**All four exist so that the decision about which rows to change can come from a query rather than from a client loop.** The pattern worth copying is the WHERE on the last line of the UPDATE: comparing the new values against the stored ones means **only genuinely stale rows are written**, which keeps the row count honest, avoids waking every trigger, and leaves updated_at meaning “when this actually changed”. MERGE is the standard's single statement for insert-or-update-or-delete, and the dialect spellings differ more than the semantics do.",
+         "left": "statement", "codeW": 190,
+         "vars": ["what it does", "the detail that matters"],
+         "steps": [
+          {"code": "UPDATE ... FROM (subquery) t", "state": ["a join drives the update", "put the comparison in WHERE"], "tone": "good"},
+          {"code": "...WHERE s.n <> t.n OR s.rev <> t.rev", "state": ["writes only stale rows", "updated_at stays meaningful"], "changed": [0, 1], "tone": "violet"},
+          {"code": "DELETE ... USING other", "state": ["another table chooses the rows", "the same shape, deleting"], "changed": [0, 1], "tone": "good"},
+          {"code": "MERGE", "state": ["insert, update and delete in one", "the standard spelling of upsert"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "04",
+   "d": {"kind": "compare",
+         "title": "Three ways to remove a row, and they are not substitutes",
+         "caption": "**The soft delete's hidden cost is in the second bullet: every query in the system now needs a predicate, and the one that forgets it is a bug nobody notices.** A view is what keeps that honest — queries read the view, the table is for administration. And uniqueness needs attention: an email can only be reused after the old account is deleted if the unique index is partial. **ON DELETE CASCADE deserves the same care:** it is correct along ownership edges, where a child cannot exist without its parent, and wrong for anything merely related.",
+         "columns": [
+          {"title": "Hard DELETE - the row is gone", "tone": "warn",
+           "items": ["no undo, and no history",
+                     "foreign keys block, cascade or set null",
+                     "a cascade can remove far more than intended",
+                     "right for sessions, staging, expired tokens",
+                     "and for a legal erasure request"]},
+          {"title": "Soft delete - a timestamp is set", "tone": "violet",
+           "items": ["undo is possible, and who did it is recorded",
+                     "EVERY query now needs deleted_at IS NULL",
+                     "so expose a view and keep the table for admin",
+                     "unique constraints need a partial index",
+                     "right for customers, orders, documents"]}]}}
+ ],
+
+ "6.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Pick a key, then pick each delete action deliberately",
+         "caption": "**A surrogate key without a UNIQUE on the natural identifier is how duplicate customers get created** — the surrogate guarantees the row is distinct, which is not the same as the customer being distinct. So they go in together, always. **The UUID row carries the detail that bites at scale: random UUIDs scatter inserts across the whole index**, and UUIDv7 is time-ordered, which fixes it. And the delete actions are a modelling statement: RESTRICT by default, CASCADE only down an ownership edge, where the child genuinely cannot exist without the parent.",
+         "left": "choice", "codeW": 190,
+         "vars": ["for", "against"],
+         "steps": [
+          {"code": "surrogate identity key", "state": ["small, stable, opaque, cheap joins", "needs a UNIQUE on the natural key"], "tone": "good"},
+          {"code": "UUID, random", "state": ["generated anywhere, safe to expose", "16 bytes, and inserts scatter"], "changed": [0, 1], "tone": "warn"},
+          {"code": "UUIDv7", "state": ["the same, and time-ordered", "prefer it over v4"], "changed": [0, 1], "tone": "good"},
+          {"code": "natural key alone", "state": ["self-describing, no extra column", "business values change"], "changed": [0, 1], "tone": "crit"},
+          {"code": "ON DELETE RESTRICT", "state": ["the safe default", "-"], "changed": [0, 1], "tone": "good"},
+          {"code": "ON DELETE CASCADE", "state": ["correct down an ownership edge", "removes what you did not look at"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "6.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "A view is a name; a materialised view is a table",
+         "caption": "**A plain view saves nothing — its query runs every time — so it is a naming and access-control tool, not a performance one.** The failure that follows is specific and common: a view containing GROUP BY or DISTINCT may not let the planner push an outer WHERE through it, so filtering one customer out of a big view aggregates the whole table and then discards almost all of it. **Materialising it changes the kind of object: it is stored, it can be indexed, and it is stale until refreshed.** Freshness is the price, and it is the whole decision.",
+         "left": "object", "codeW": 190,
+         "vars": ["stored?", "indexable", "cost"],
+         "steps": [
+          {"code": "VIEW", "state": ["no - the query reruns", "no", "names a concept, hides a rule"], "tone": "accent"},
+          {"code": "...with GROUP BY or DISTINCT", "state": ["no", "no", "an outer WHERE may not push down"], "changed": [2], "tone": "crit"},
+          {"code": "MATERIALIZED VIEW", "state": ["yes - it is a table", "yes", "stale until refreshed"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "a view on a view on a view", "state": ["no", "no", "a query nobody can EXPLAIN"], "changed": [0, 1, 2], "tone": "crit"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "The WHEN clause is what stops an audit trigger lying",
+         "caption": "**Without it the trigger fires on every UPDATE of the column, including the ones that set it to the value it already had** — so the audit log fills with changes that did not happen, and “who changed this” becomes unanswerable. One line comparing old to new makes the log mean something. **The general caution about triggers is that they are invisible at the call site:** the application sees one UPDATE and the database does three things, so a slow write has a cause that is not in any query the application wrote. Which is also why a function is the safer default: it computes, and changes nothing.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "AFTER UPDATE OF tier, FOR EACH ROW", "sub": "four updates arrive", "tone": "accent"},
+          {"id": "w", "label": "WHEN OLD.tier IS NOT NEW.tier", "sub": "only real changes pass", "tone": "violet"},
+          {"id": "a", "label": "Two audit rows, not four", "sub": "the log now means something", "tone": "good"},
+          {"id": "i", "label": "But a trigger is invisible at the call site", "sub": "one UPDATE, three things happen", "tone": "crit"},
+          {"id": "f", "label": "A function computes and changes nothing", "sub": "callable in any SELECT - the safer default", "tone": "good"},
+          {"id": "p", "label": "A procedure owns its own transaction", "sub": "for a job, not for a query", "tone": "accent"}],
+         "edges": [["t", "w"], ["w", "a"], ["a", "i"], ["i", "f"], ["f", "p"]]}}
+ ],
+
+ "6.7": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three engines you will actually meet, and where each one lives",
+         "caption": "**A data professional works with three of these constantly** — PostgreSQL where the application lives, a warehouse where the analysis lives, and DuckDB or SQLite on their own laptop. The habits that transfer are the whole of modules 1 to 5; what does not transfer is the list of places where identical text means different things. **The two defaults worth carrying in your head are in the middle rows:** MySQL's isolation default is REPEATABLE READ rather than READ COMMITTED, and SQLite's typing is dynamic, so a column can hold a string where you expect a number.",
+         "left": "engine", "codeW": 160,
+         "vars": ["where it lives", "the thing to remember"],
+         "steps": [
+          {"code": "PostgreSQL", "state": ["the operational database", "strictest types, transactional DDL"], "tone": "good"},
+          {"code": "MySQL / MariaDB", "state": ["web applications", "REPEATABLE READ by default; DDL commits"], "changed": [0, 1], "tone": "accent"},
+          {"code": "SQLite", "state": ["embedded: phones, tests, files", "DYNAMIC typing - a column accepts anything"], "changed": [0, 1], "tone": "crit"},
+          {"code": "DuckDB", "state": ["analysis on one machine", "columnar, and reads Parquet directly"], "changed": [0, 1], "tone": "violet"},
+          {"code": "a warehouse", "state": ["where the analysis lives", "columnar, separated storage and compute"], "changed": [0, 1], "tone": "violet"}]}}
+ ]
+}

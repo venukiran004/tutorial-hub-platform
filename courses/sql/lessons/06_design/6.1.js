@@ -19,6 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "BEGIN, COMMIT, ROLLBACK", id: "begin" },
 
+    {"kind": "trace", "title": "A savepoint is a bookmark, not a second transaction", "caption": "**Rolling back to a savepoint undoes part of the work and leaves the transaction open** — which is the tool for “try this step, and if it fails, skip it and carry on”. Here Bruno's update is rolled back to the bookmark while Emeka's, made before it, stays pending and then commits. **The row that catches people out is the first one: in autocommit, every statement is already its own transaction**, so two statements that must succeed together need an explicit BEGIN. Without one, there is nothing for a later failure to roll back.", "left": "statement", "codeW": 220, "vars": ["Emeka, id 5", "Bruno, id 2"], "steps": [{"code": "BEGIN", "state": ["standard", "standard"], "tone": "accent"}, {"code": "UPDATE ... id = 5", "state": ["plus, pending", "standard"], "changed": [0], "tone": "good"}, {"code": "SAVEPOINT before_bruno", "state": ["plus, pending", "standard"], "tone": "violet"}, {"code": "UPDATE ... id = 2", "state": ["plus, pending", "plus, pending"], "changed": [1], "tone": "good"}, {"code": "ROLLBACK TO SAVEPOINT", "state": ["plus, STILL pending", "standard - undone"], "changed": [1], "tone": "violet"}, {"code": "COMMIT", "state": ["plus - permanent", "standard"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-6_1-01-0"},
+
+
     { t: "p", text: "`BEGIN` opens a transaction; every statement until `COMMIT` or `ROLLBACK` belongs to it. Inside, the transaction sees its own changes; outside, nobody sees them until COMMIT. **A ROLLBACK undoes every statement since BEGIN as if they had not run.** A SAVEPOINT is a bookmark inside the transaction: `ROLLBACK TO SAVEPOINT` undoes back to the bookmark and leaves the rest of the transaction open — the tool for 'try this step, and if it fails, skip it and carry on'." },
 
     { t: "code", lang: "sql", title: "A transaction with a savepoint, and a rollback that undoes a delete (SQLite, executed)",
@@ -56,7 +59,9 @@ SELECT COUNT(*) FROM orders;                                        -- 12: nobod
 
     { t: "h2", n: "02", text: "The four letters, and what enforces each", id: "acid" },
 
-    {"kind": "matrix", "title": "The four letters, and what actually enforces each", "caption": "Only one of the four is free. Atomicity and durability are the engine's own machinery; consistency is whatever constraints you declared, and isolation is a level you chose — usually the default, which permits more than most people expect (6.2).", "cols": ["Promise", "Enforced by"], "rows": ["Atomicity", "Consistency", "Isolation", "Durability"], "cells": [["all of the statements, or none", {"text": "the engine, via the undo log", "tone": "good"}], ["the data still obeys its rules", {"text": "the constraints you declared", "tone": "warn"}], ["concurrent runs do not corrupt", {"text": "the isolation level you chose", "tone": "warn"}], ["a committed write survives a crash", {"text": "the write-ahead log and fsync", "tone": "good"}]], "t": "diagram", "id": "dg-6_1-02-0"},
+    {"kind": "matrix", "title": "The four letters, and what actually enforces each", "caption": "Only one of the four is free. Atomicity and durability are the engine's own machinery; consistency is whatever constraints you declared, and isolation is a level you chose — usually the default, which permits more than most people expect (6.2).", "cols": ["Promise", "Enforced by"], "rows": ["Atomicity", "Consistency", "Isolation", "Durability"], "cells": [["all of the statements, or none", {"text": "the engine, via the undo log", "tone": "good"}], ["the data still obeys its rules", {"text": "the constraints you declared", "tone": "warn"}], ["concurrent runs do not corrupt", {"text": "the isolation level you chose", "tone": "warn"}], ["a committed write survives a crash", {"text": "the write-ahead log and fsync", "tone": "good"}]], "t": "diagram", "id": "dg-6_1-02-2"},
+
+
 
 
 
@@ -111,6 +116,9 @@ SELECT COUNT(*) FROM orders;                                        -- 12: nobod
 
     { t: "h2", n: "03", text: "Durability has a price", id: "durability" },
 
+    {"kind": "trace", "title": "Ten thousand rows, two ways, and the difference is the number of flushes", "caption": "**A COMMIT does not return until the log records are on durable storage, so the cost of a commit is an fsync** — and ten thousand commits means ten thousand flushes. Wrap the same inserts in one transaction and there is one. **That is the single most common cause of “why is my load so slow”, and it is not the inserts.** The last row is the deliberate trade: acknowledging before the flush can lose the last few hundred milliseconds of commits in a crash while corrupting nothing — reasonable for a metrics table, never for an order.", "left": "how the rows go in", "codeW": 200, "vars": ["commits", "log flushes", "time"], "steps": [{"code": "autocommit, one row at a time", "state": ["10,000", "10,000", "40 to 120 s"], "tone": "crit"}, {"code": "one BEGIN ... COMMIT", "state": ["1", "1", "1 to 2 s"], "changed": [0, 1, 2], "tone": "good"}, {"code": "synchronous_commit = off", "state": ["1", "deferred", "faster still"], "changed": [1, 2], "tone": "warn"}, {"code": "...and the risk", "state": ["-", "lose about 600 ms on a crash", "nothing is corrupted"], "changed": [1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-6_1-03-1"},
+
+
     { t: "p", text: "COMMIT does not return until the transaction's log records are on durable storage — an `fsync`, which on a spinning disk is milliseconds and on an SSD is still far slower than memory. **That is why ten thousand single-row inserts in autocommit take minutes and the same rows in one transaction take seconds**: one flush per commit against one flush in total. It is also the dial that trades safety for speed: `synchronous_commit = off` acknowledges before the flush and can lose the last few hundred milliseconds of commits in a crash — acceptable for a metrics table, not for an order." },
 
     { t: "code", lang: "sql", title: "One transaction versus ten thousand, and the dial",
@@ -132,7 +140,9 @@ SET synchronous_commit = off;      -- per session or per transaction: fine for l
 
     { t: "h2", n: "04", text: "Idempotent loads: the pipeline's atomicity", id: "idempotent" },
 
-    {"kind": "steps", "title": "An idempotent load: the pipeline's version of atomicity", "caption": "A pipeline that is re-run after a failure must not double-count. Wrapping the delete and the insert in one transaction makes the re-run safe: either the partition is replaced or nothing changed, and no reader ever sees the gap between the two.", "items": [{"label": "BEGIN", "desc": "nothing is visible to anyone else yet", "code": "1", "tone": "accent"}, {"label": "DELETE FROM target WHERE day = :day", "desc": "removes whatever a previous run left", "code": "2", "tone": "warn"}, {"label": "INSERT INTO target SELECT ... WHERE day = :day", "desc": "writes this run's rows", "code": "3", "tone": "good"}, {"label": "COMMIT", "desc": "both become visible at the same instant", "code": "4", "tone": "good"}, {"label": "Re-run it", "desc": "the same day's rows are replaced, not added again", "code": "safe", "tone": "violet"}], "t": "diagram", "id": "dg-6_1-04-1"},
+    {"kind": "steps", "title": "An idempotent load: the pipeline's version of atomicity", "caption": "A pipeline that is re-run after a failure must not double-count. Wrapping the delete and the insert in one transaction makes the re-run safe: either the partition is replaced or nothing changed, and no reader ever sees the gap between the two.", "items": [{"label": "BEGIN", "desc": "nothing is visible to anyone else yet", "code": "1", "tone": "accent"}, {"label": "DELETE FROM target WHERE day = :day", "desc": "removes whatever a previous run left", "code": "2", "tone": "warn"}, {"label": "INSERT INTO target SELECT ... WHERE day = :day", "desc": "writes this run's rows", "code": "3", "tone": "good"}, {"label": "COMMIT", "desc": "both become visible at the same instant", "code": "4", "tone": "good"}, {"label": "Re-run it", "desc": "the same day's rows are replaced, not added again", "code": "safe", "tone": "violet"}], "t": "diagram", "id": "dg-6_1-04-3"},
+
+
 
 
 

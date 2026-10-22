@@ -19,7 +19,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Five constraints, five refusals", id: "constraints" },
 
-    {"kind": "matrix", "title": "Five constraints, five refusals", "caption": "Every rule left to the application is a rule the database will eventually see broken, because some other writer will not have read your code. NOT NULL is the cheapest and the most valuable: a column that can be NULL will be, and every query on it then needs a COALESCE branch.", "cols": ["Refuses", "Side effect"], "rows": ["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK", "NOT NULL"], "cells": [["a duplicate or null identity", {"text": "implies UNIQUE + NOT NULL; indexes it", "tone": "good"}], ["a value with no parent row", {"text": "also blocks deleting the parent", "tone": "warn"}], ["two rows sharing a value", {"text": "creates an index: free fast lookups", "tone": "good"}], ["a row failing a boolean rule", {"text": "true or NULL passes, not false", "tone": "warn"}], ["an absent value", {"text": "removes a branch from every query", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-01-0"},
+    {"kind": "matrix", "title": "Five constraints, five refusals", "caption": "Every rule left to the application is a rule the database will eventually see broken, because some other writer will not have read your code. NOT NULL is the cheapest and the most valuable: a column that can be NULL will be, and every query on it then needs a COALESCE branch.", "cols": ["Refuses", "Side effect"], "rows": ["PRIMARY KEY", "FOREIGN KEY", "UNIQUE", "CHECK", "NOT NULL"], "cells": [["a duplicate or null identity", {"text": "implies UNIQUE + NOT NULL; indexes it", "tone": "good"}], ["a value with no parent row", {"text": "also blocks deleting the parent", "tone": "warn"}], ["two rows sharing a value", {"text": "creates an index: free fast lookups", "tone": "good"}], ["a row failing a boolean rule", {"text": "true or NULL passes, not false", "tone": "warn"}], ["an absent value", {"text": "removes a branch from every query", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-01-1"},
+
+
 
 
 
@@ -57,6 +59,9 @@ SELECT COUNT(*) FROM orders2;                                                   
     ]},
 
     { t: "h2", n: "02", text: "Keys: what to choose and what to cascade", id: "keys" },
+
+    {"kind": "trace", "title": "Pick a key, then pick each delete action deliberately", "caption": "**A surrogate key without a UNIQUE on the natural identifier is how duplicate customers get created** — the surrogate guarantees the row is distinct, which is not the same as the customer being distinct. So they go in together, always. **The UUID row carries the detail that bites at scale: random UUIDs scatter inserts across the whole index**, and UUIDv7 is time-ordered, which fixes it. And the delete actions are a modelling statement: RESTRICT by default, CASCADE only down an ownership edge, where the child genuinely cannot exist without the parent.", "left": "choice", "codeW": 190, "vars": ["for", "against"], "steps": [{"code": "surrogate identity key", "state": ["small, stable, opaque, cheap joins", "needs a UNIQUE on the natural key"], "tone": "good"}, {"code": "UUID, random", "state": ["generated anywhere, safe to expose", "16 bytes, and inserts scatter"], "changed": [0, 1], "tone": "warn"}, {"code": "UUIDv7", "state": ["the same, and time-ordered", "prefer it over v4"], "changed": [0, 1], "tone": "good"}, {"code": "natural key alone", "state": ["self-describing, no extra column", "business values change"], "changed": [0, 1], "tone": "crit"}, {"code": "ON DELETE RESTRICT", "state": ["the safe default", "-"], "changed": [0, 1], "tone": "good"}, {"code": "ON DELETE CASCADE", "state": ["correct down an ownership edge", "removes what you did not look at"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_4-02-0"},
+
 
     { t: "code", lang: "sql", title: "Surrogate primary, natural unique, and foreign keys with deliberate delete actions",
       hl: [2, 4, 8, 9, 13],
@@ -169,7 +174,9 @@ SELECT order_id, TRIM(UNNEST(string_split(products, ','))) AS product, TRIM(UNNE
 
     { t: "h2", n: "04", text: "When to denormalise", id: "denorm" },
 
-    {"kind": "compare", "title": "A surrogate key and a natural one", "caption": "They are not alternatives: use a surrogate as the primary key so that a business identifier can change without cascading updates through every child table, and declare the natural key UNIQUE so the database still enforces what makes a row real.", "columns": [{"title": "Surrogate: a serial or UUID", "tone": "good", "items": ["No business meaning at all", "Never has to change", "Narrow: cheap in every child table", "Says nothing about duplicates"]}, {"title": "Natural: ISBN, country code", "tone": "accent", "items": ["Inherently identifies the thing", "Changes when the business changes", "Can be wide and composite", "Enforce it with UNIQUE regardless"]}], "t": "diagram", "id": "dg-6_4-04-1"},
+    {"kind": "compare", "title": "A surrogate key and a natural one", "caption": "They are not alternatives: use a surrogate as the primary key so that a business identifier can change without cascading updates through every child table, and declare the natural key UNIQUE so the database still enforces what makes a row real.", "columns": [{"title": "Surrogate: a serial or UUID", "tone": "good", "items": ["No business meaning at all", "Never has to change", "Narrow: cheap in every child table", "Says nothing about duplicates"]}, {"title": "Natural: ISBN, country code", "tone": "accent", "items": ["Inherently identifies the thing", "Changes when the business changes", "Can be wide and composite", "Enforce it with UNIQUE regardless"]}], "t": "diagram", "id": "dg-6_4-04-2"},
+
+
 
 
 
