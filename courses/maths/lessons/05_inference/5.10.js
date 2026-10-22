@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The arithmetic, and why it is unavoidable", id: "arithmetic" },
 
+    {"kind": "trace", "title": "At twenty tests a false positive is more likely than not", "caption": "**Alpha is a *per-test* error rate, so running many tests does not risk a false positive — it guarantees one.** Twenty tests at the 5% level give a 64% chance of at least one, and at a hundred tests it is essentially certain. **The expected-count form is the more useful one, because it does not saturate:** alpha times m says a 20,000-gene scan produces about 1,000 findings from noise alone, which “99.4%” does not convey. Correlation between tests softens this but never removes it — at rho = 0.95 across 20 tests the rate is still nearly four times nominal.", "left": "tests run at the 5% level", "codeW": 200, "vars": ["P(at least one false positive)", "expected count"], "steps": [{"code": "1", "state": ["5.0%", "0.05"], "tone": "good"}, {"code": "5", "state": ["22.6%", "0.25"], "changed": [0, 1], "tone": "accent"}, {"code": "10", "state": ["40.1%", "0.5"], "changed": [0, 1], "tone": "warn"}, {"code": "20", "state": ["64.2% - more likely than not", "1.0"], "changed": [0, 1], "tone": "crit"}, {"code": "100", "state": ["99.4%", "5.0"], "changed": [0, 1], "tone": "crit"}, {"code": "20,000 genes", "state": ["certain", "1,000 from noise alone"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_10-01-1"},
+
+
+
     { t: "p", text: "**`α` is a per-test error rate, so running many tests guarantees false positives.** Twenty tests at `α = 0.05` give a 64% chance of at least one, and the expected count `α × m` is the more useful form — a 20,000-gene scan yields 1,000 from noise alone." },
 
     { t: "dl", items: [
@@ -111,6 +115,9 @@ correlated_hits(20, rho=0.95)     # 0.183
     { t: "h2", n: "02", text: "Two error rates, two different jobs", id: "two-rates" },
 
     {"kind": "matrix", "title": "Two error rates, two different jobs", "caption": "Controlling the family-wise rate asks that you make **no** false claims; controlling the false discovery rate asks that few of your claims be false. Which you want depends on whether a single false positive is expensive or merely inconvenient.", "cols": ["controls", "use when", "the method"], "rows": ["FWER", "FDR"], "cells": [[{"text": "P(any false positive)", "tone": "crit"}, "one false claim is costly", "Bonferroni, or Holm"], [{"text": "the share of claims false", "tone": "accent"}, "cheap screening at scale", {"text": "Benjamini–Hochberg", "tone": "good"}]], "t": "diagram", "id": "dg-5_10-02-0"},
+
+
+
 
 
 
@@ -304,6 +311,10 @@ def experiment_readout(primary_p, secondary_ps, alpha=0.05, q=0.10):
     ]},
 
     { t: "h2", n: "03", text: "Multiplicity you did not notice", id: "hidden" },
+
+    {"kind": "trace", "title": "The tests nobody counted as tests", "caption": "**Explicit multiplicity is easy to see and easy to correct; this is the kind that does the damage**, because none of it is recorded as a test. Five binary splits give 31 subgroups, and hunting through them reaches a 34% false-positive rate on data with no effect. A 25-metric dashboard turns something green 72% of the time under the null. **And nobody corrects across experiments: a hundred experiments a year at the 5% level ships five noise features annually.** The one deliberate exception is the guardrail metric — correcting those makes you less likely to detect harm, which inverts their purpose.", "left": "hidden source", "codeW": 190, "vars": ["how many tests", "false-positive rate"], "steps": [{"code": "five binary subgroup splits", "state": ["31 combinations", "33.9%"], "tone": "crit"}, {"code": "a 25-metric dashboard", "state": ["25 at once", "72% turns something green"], "changed": [0, 1], "tone": "crit"}, {"code": "specification search", "state": ["dozens of pipelines", "one gets reported"], "changed": [0, 1], "tone": "warn"}, {"code": "100 experiments a year", "state": ["100, uncorrected", "five noise features shipped"], "changed": [0, 1], "tone": "crit"}, {"code": "guardrail metrics", "state": ["do NOT correct these", "correcting hides harm"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_10-03-2"},
+
+
 
     { t: "p", text: "Explicit multiplicity is easy to see and easy to correct. **The damaging kind is the multiplicity nobody counted as tests** — subgroups, dashboards, time windows, model specifications and repeated experiments over a year." },
 

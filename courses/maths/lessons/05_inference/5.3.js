@@ -183,6 +183,10 @@ for n_ in (25, 250, 25_000):
 
     { t: "h2", n: "02", text: "What width costs", id: "width" },
 
+    {"kind": "trace", "title": "Precision is expensive, confidence is cheap, and variance reduction is free", "caption": "**This ordering surprises almost everyone.** Width is twice the critical value times sigma over the root of n, so **halving the width costs four times the data, every time** — while going from 95% to 99.9% confidence costs only 68% more width. The third lever is the one teams forget: **pairing or regressing out a pre-experiment covariate narrows the interval without collecting a single extra observation.** At a correlation of 0.8 pairing multiplies the effective sample size by five, and CUPED typically cuts variance by a third to a half, permanently.", "left": "lever", "codeW": 190, "vars": ["what it does", "price"], "steps": [{"code": "n from 100 to 400", "state": ["half-width 2.940 to 1.470", "4x the data - expensive"], "tone": "crit"}, {"code": "n from 400 to 1,600", "state": ["1.470 to 0.735", "4x again"], "changed": [0, 1], "tone": "crit"}, {"code": "95% to 99.9% confidence", "state": ["68% wider", "cheap - just say it"], "changed": [0, 1], "tone": "good"}, {"code": "pairing at rho = 0.8", "state": ["5x the effective sample", "FREE - a design choice"], "changed": [0, 1], "tone": "violet"}, {"code": "CUPED on a covariate", "state": ["30 to 50% less variance", "free, and permanent"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-02-0"},
+
+
+
     { t: "p", text: "Interval width is `2 × critical value × σ/√n`, and each of those three factors is a lever with a very different price. **Precision is expensive and confidence is cheap** — which is the opposite of most people's expectation." },
 
     { t: "dl", items: [

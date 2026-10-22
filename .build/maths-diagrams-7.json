@@ -1,0 +1,170 @@
+{
+ "5.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Three conditions, and what to do when each one breaks",
+         "caption": "**The theorem makes the distribution of the *mean* normal — not the data — and it asks for three things, all of which fail in real work.** Knowing which one broke tells you what to do instead, which is the only reason to memorise the list. **Finite variance is the one that fails totally rather than gradually:** the mean of 10,000 Cauchy samples is distributed like a single Cauchy sample, so averaging buys you nothing at all. And the convergence rate is governed by skewness, so n > 25 times the squared skew is the usable rule before trusting a tail probability.",
+         "left": "condition", "codeW": 170,
+         "vars": ["broken by", "what to do"],
+         "steps": [
+          {"code": "independent", "state": ["clustering, time series, networks", "cluster-robust errors, or a block bootstrap"], "tone": "warn"},
+          {"code": "identically distributed", "state": ["the population shifting mid-sample", "segment, or model the drift"], "changed": [0, 1], "tone": "warn"},
+          {"code": "finite variance", "state": ["a Pareto tail index at or below 2", "no averaging helps - use a median"], "changed": [0, 1], "tone": "crit"},
+          {"code": "and the RATE depends on", "state": ["skewness", "want n above 25 times skew squared"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.2": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three estimators of one variance, and the unbiased one loses",
+         "caption": "**The three differ only in the denominator, and the unbiased choice is not the most accurate.** Dividing by n−1 is correct on average across samples; dividing by n+1 is biased further still and yet has the smallest mean squared error — the error you actually pay. **Unbiasedness is a constraint you may choose to impose, not the goal**, and imposing it costs accuracy here. That is the whole bias-variance trade in one table, and shrinkage is this trade used deliberately: pull an estimate towards a prior guess, lose a little bias, gain more variance back.",
+         "left": "divide the sum of squares by", "codeW": 220,
+         "vars": ["bias", "variance", "MSE"],
+         "steps": [
+          {"code": "n - 1, the unbiased choice", "state": ["about 0", "largest", "largest"], "tone": "warn"},
+          {"code": "n, the MLE", "state": ["biased low", "smaller", "smaller"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "n + 1", "state": ["biased further", "smallest", "SMALLEST - the winner"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "so what to optimise", "state": ["-", "-", "MSE = bias squared + variance"], "changed": [2], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four guarantees, all of them asymptotic",
+         "caption": "**Every promise maximum likelihood makes is about what happens as n grows without bound**, which is exactly why the failure cases are all small-n or boundary cases. **Invariance is the one worth knowing:** the MLE of any function of a parameter is that function of the MLE, so the MLE of sigma is the square root of the MLE of sigma squared, immediately. Unbiased estimation offers nothing of the kind — the unbiased estimator of a variance does not square-root into an unbiased estimator of a standard deviation.",
+         "left": "guarantee", "codeW": 190,
+         "vars": ["what it says", "and the small print"],
+         "steps": [
+          {"code": "consistent", "state": ["converges to the truth", "as n goes to infinity"], "tone": "good"},
+          {"code": "efficient", "state": ["hits the Cramer-Rao bound", "asymptotically"], "changed": [0, 1], "tone": "good"},
+          {"code": "asymptotically normal", "state": ["where its standard errors come from", "asymptotically"], "changed": [0, 1], "tone": "good"},
+          {"code": "invariant", "state": ["MLE of g is g of the MLE", "holds exactly, at any n"], "changed": [0, 1], "tone": "violet"},
+          {"code": "where it fails", "state": ["perfect separation, boundaries, small n", "no asymptotics to lean on"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "5.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Precision is expensive, confidence is cheap, and variance reduction is free",
+         "caption": "**This ordering surprises almost everyone.** Width is twice the critical value times sigma over the root of n, so **halving the width costs four times the data, every time** — while going from 95% to 99.9% confidence costs only 68% more width. The third lever is the one teams forget: **pairing or regressing out a pre-experiment covariate narrows the interval without collecting a single extra observation.** At a correlation of 0.8 pairing multiplies the effective sample size by five, and CUPED typically cuts variance by a third to a half, permanently.",
+         "left": "lever", "codeW": 190,
+         "vars": ["what it does", "price"],
+         "steps": [
+          {"code": "n from 100 to 400", "state": ["half-width 2.940 to 1.470", "4x the data - expensive"], "tone": "crit"},
+          {"code": "n from 400 to 1,600", "state": ["1.470 to 0.735", "4x again"], "changed": [0, 1], "tone": "crit"},
+          {"code": "95% to 99.9% confidence", "state": ["68% wider", "cheap - just say it"], "changed": [0, 1], "tone": "good"},
+          {"code": "pairing at rho = 0.8", "state": ["5x the effective sample", "FREE - a design choice"], "changed": [0, 1], "tone": "violet"},
+          {"code": "CUPED on a covariate", "state": ["30 to 50% less variance", "free, and permanent"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.6": [
+  {"after": "01",
+   "d": {"kind": "flow",
+         "title": "Why the discrepancy is divided by what was expected",
+         "caption": "**A gap of 10 is enormous where 12 were expected and invisible where 10,000 were** — dividing by the expected count is what makes those two comparable, and it is the whole design of the statistic. The output worth reporting is not the total: **the standardised residual per cell, anything beyond plus or minus 2, names the cell that drove the result**, which is the actionable part. And the approximation needs expected counts of roughly 5 or more; below that, use Fisher's exact test or a permutation instead of trusting the table.",
+         "cols": 3,
+         "nodes": [
+          {"id": "o", "label": "Observed counts per cell", "sub": "43, 52, 61, 48, 55, 41", "tone": "accent"},
+          {"id": "e", "label": "Expected under the model", "sub": "50 each, if the die is fair", "tone": "good"},
+          {"id": "d", "label": "Square the gap, divide by expected", "sub": "so a gap of 10 scales with the cell", "tone": "violet"},
+          {"id": "s", "label": "Sum over cells: chi-square 5.28", "sub": "5 degrees of freedom - no evidence", "tone": "good"},
+          {"id": "r", "label": "Report the per-cell residual", "sub": "beyond plus or minus 2 names the cell", "tone": "violet"},
+          {"id": "f", "label": "Expected below about 5?", "sub": "use Fisher exact, or a permutation", "tone": "crit"}],
+         "edges": [["o", "d"], ["e", "d"], ["d", "s"], ["s", "r"], ["d", "f"]]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Read the interaction first, or the main effects will lie to you",
+         "caption": "**A main effect is an average over the other factor's levels, so if the factor did different things at different levels, that average is meaningless** — and an average of +10 and −10 is zero. A drug that helps one group and harms another shows no main effect at all while being extremely consequential. **Which fixes the reading order: interaction first, and only if it is absent do the main effects mean what they appear to mean.** Two separate one-way tests cannot find this, because neither design has a term for it.",
+         "cols": 3,
+         "nodes": [
+          {"id": "i", "label": "Test the interaction first", "sub": "does A's effect depend on B?", "tone": "accent"},
+          {"id": "y", "label": "Significant interaction", "sub": "report effects per level of B", "tone": "crit"},
+          {"id": "a", "label": "An average of +10 and -10 is zero", "sub": "so the main effect hides it", "tone": "crit"},
+          {"id": "n", "label": "No interaction", "sub": "now the main effects are readable", "tone": "good"},
+          {"id": "s", "label": "Two one-way tests cannot see it", "sub": "neither design has the term", "tone": "violet"}],
+         "edges": [["i", "y"], ["y", "a"], ["i", "n"], ["a", "s"]]}}
+ ],
+
+ "5.7": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Six defensible choices take a 5% false-positive rate to 23%",
+         "caption": "**Nobody in this sequence is being dishonest, and that is the point.** Each step is an ordinary analytic decision — the data looked skewed, so a non-parametric test; those two points looked like outliers, so a standard 2-sigma rule — and each is made *after* seeing the data. Take the best p-value of the six on data with no effect at all and you are wrong nearly a quarter of the time. **Optional stopping is worse on its own, at 28%, and with unlimited patience it converges to 100%.** Pre-registration costs a document and eliminates the entire class.",
+         "left": "choices made after seeing the data", "codeW": 230,
+         "vars": ["false-positive rate"],
+         "steps": [
+          {"code": "one planned test", "state": ["5% - as advertised"], "tone": "good"},
+          {"code": "plus a non-parametric alternative", "state": ["rising"], "changed": [0], "tone": "warn"},
+          {"code": "plus an outlier rule, a transform, a covariate", "state": ["rising"], "changed": [0], "tone": "warn"},
+          {"code": "best of six, on data with NO effect", "state": ["23%"], "changed": [0], "tone": "crit"},
+          {"code": "peeking until significant", "state": ["28%, and 100% with patience"], "changed": [0], "tone": "crit"},
+          {"code": "pre-registered", "state": ["5% - the class is gone"], "changed": [0], "tone": "violet"}]}}
+ ],
+
+ "5.8": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Highly significant, and of no consequence whatsoever",
+         "caption": "**Two million observations and a difference of 0.05 in a hundred: p = 0.0009, which any journal would call highly significant.** Now read the effect: Cohen's d of 0.0032, two distributions overlapping 99.87%, and a randomly chosen treatment case beating a randomly chosen control case 50.1% of the time instead of 50.0%. **The result is real, replicable and worth nothing** — significance and importance are independent, and a p-value cannot tell them apart. Which is why the comparison that matters is the interval against the smallest effect you would act on, not against zero.",
+         "left": "what you report", "codeW": 200,
+         "vars": ["value", "reading"],
+         "steps": [
+          {"code": "p-value, at n = 2 million", "state": ["0.0009", "highly significant"], "tone": "crit"},
+          {"code": "the actual difference", "state": ["100.00 against 100.05", "0.05%"], "changed": [0, 1], "tone": "warn"},
+          {"code": "Cohen's d", "state": ["0.0032", "far below small"], "changed": [0, 1], "tone": "good"},
+          {"code": "overlap of the two groups", "state": ["99.87%", "effectively the same distribution"], "changed": [0, 1], "tone": "good"},
+          {"code": "probability of superiority", "state": ["50.1%", "a coin flip"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.10": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "At twenty tests a false positive is more likely than not",
+         "caption": "**Alpha is a *per-test* error rate, so running many tests does not risk a false positive — it guarantees one.** Twenty tests at the 5% level give a 64% chance of at least one, and at a hundred tests it is essentially certain. **The expected-count form is the more useful one, because it does not saturate:** alpha times m says a 20,000-gene scan produces about 1,000 findings from noise alone, which “99.4%” does not convey. Correlation between tests softens this but never removes it — at rho = 0.95 across 20 tests the rate is still nearly four times nominal.",
+         "left": "tests run at the 5% level", "codeW": 200,
+         "vars": ["P(at least one false positive)", "expected count"],
+         "steps": [
+          {"code": "1", "state": ["5.0%", "0.05"], "tone": "good"},
+          {"code": "5", "state": ["22.6%", "0.25"], "changed": [0, 1], "tone": "accent"},
+          {"code": "10", "state": ["40.1%", "0.5"], "changed": [0, 1], "tone": "warn"},
+          {"code": "20", "state": ["64.2% - more likely than not", "1.0"], "changed": [0, 1], "tone": "crit"},
+          {"code": "100", "state": ["99.4%", "5.0"], "changed": [0, 1], "tone": "crit"},
+          {"code": "20,000 genes", "state": ["certain", "1,000 from noise alone"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "The tests nobody counted as tests",
+         "caption": "**Explicit multiplicity is easy to see and easy to correct; this is the kind that does the damage**, because none of it is recorded as a test. Five binary splits give 31 subgroups, and hunting through them reaches a 34% false-positive rate on data with no effect. A 25-metric dashboard turns something green 72% of the time under the null. **And nobody corrects across experiments: a hundred experiments a year at the 5% level ships five noise features annually.** The one deliberate exception is the guardrail metric — correcting those makes you less likely to detect harm, which inverts their purpose.",
+         "left": "hidden source", "codeW": 190,
+         "vars": ["how many tests", "false-positive rate"],
+         "steps": [
+          {"code": "five binary subgroup splits", "state": ["31 combinations", "33.9%"], "tone": "crit"},
+          {"code": "a 25-metric dashboard", "state": ["25 at once", "72% turns something green"], "changed": [0, 1], "tone": "crit"},
+          {"code": "specification search", "state": ["dozens of pipelines", "one gets reported"], "changed": [0, 1], "tone": "warn"},
+          {"code": "100 experiments a year", "state": ["100, uncorrected", "five noise features shipped"], "changed": [0, 1], "tone": "crit"},
+          {"code": "guardrail metrics", "state": ["do NOT correct these", "correcting hides harm"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.11": [
+  {"after": "02",
+   "d": {"kind": "steps",
+         "title": "Three bootstrap intervals, each correcting what the last one ignored",
+         "caption": "**What separates them is bias and skew, and on skewed data the difference in actual coverage is several percentage points** — which is the only thing that matters about an interval. Start at the percentile method, add a location correction, then add corrections for median bias and for skew. **BCa is the modern default, and the reason to reach past the simple one is that the percentile interval is optimistic exactly when the estimator is biased** — the case you cannot see from inside the bootstrap. Verify coverage by simulation rather than trusting the nominal level.",
+         "items": [
+          {"label": "Percentile", "desc": "take the 2.5th and 97.5th percentiles of the bootstrap values; simple, and optimistic whenever the estimator is biased", "tone": "good"},
+          {"label": "Basic", "desc": "reflect around the observed value to correct for location bias, which is why the quantiles come out reversed", "tone": "accent"},
+          {"label": "BCa", "desc": "corrects median bias with z-zero and skew with an acceleration term from the jackknife; the modern default", "tone": "violet"},
+          {"label": "Then check coverage", "desc": "simulate it rather than assuming the level; a 95% interval covering 89% of the time is the failure you cannot see", "tone": "crit"}]}}
+ ],
+
+ "5.12": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Sixty heads in a hundred: borderline significant, and the evidence favours the null",
+         "caption": "**A two-sided binomial test gives roughly p = 0.057 — the classic “trend” — while the Bayes factor is 0.91, very slightly favouring fairness.** They disagree because they ask different questions. The p-value asks how surprising 60 heads would be if the coin were fair. The Bayes factor asks whether a model free to assume *any* bias predicted this data better than one that assumes none — **and a model free to put its mass anywhere pays for that freedom.** This is the Jeffreys-Lindley effect, and it is why a borderline p-value is weaker evidence than it feels. A Bayes factor below a third is the statement no frequentist test can make: evidence *for* the null.",
+         "left": "quantity", "codeW": 190,
+         "vars": ["value", "reading"],
+         "steps": [
+          {"code": "P(data | fair coin)", "state": ["1.084e-02", "the null predicted it this well"], "tone": "accent"},
+          {"code": "P(data | any bias allowed)", "state": ["9.901e-03", "slightly worse, despite the freedom"], "changed": [0, 1], "tone": "accent"},
+          {"code": "Bayes factor", "state": ["0.91", "a shade in favour of the NULL"], "changed": [0, 1], "tone": "violet"},
+          {"code": "the p-value, same data", "state": ["about 0.057", "reported as a trend"], "changed": [0, 1], "tone": "crit"},
+          {"code": "below one third", "state": ["moderate evidence FOR the null", "no p-value can say this"], "changed": [0, 1], "tone": "good"}]}}
+ ]
+}

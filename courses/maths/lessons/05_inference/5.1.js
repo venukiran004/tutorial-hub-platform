@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "Three distributions get confused constantly, and keeping them apart is what makes the rest of inference straightforward. **The population has a spread, each sample has a spread, and the collection of sample summaries has its own spread** — and it is the third that every p-value and confidence interval is about." },
 
     { t: "dl", items: [
@@ -136,6 +139,10 @@ stats.skew(means)                 # 0.29
     ]},
 
     { t: "h2", n: "02", text: "The CLT, stated properly", id: "clt" },
+
+    {"kind": "trace", "title": "Three conditions, and what to do when each one breaks", "caption": "**The theorem makes the distribution of the *mean* normal — not the data — and it asks for three things, all of which fail in real work.** Knowing which one broke tells you what to do instead, which is the only reason to memorise the list. **Finite variance is the one that fails totally rather than gradually:** the mean of 10,000 Cauchy samples is distributed like a single Cauchy sample, so averaging buys you nothing at all. And the convergence rate is governed by skewness, so n > 25 times the squared skew is the usable rule before trusting a tail probability.", "left": "condition", "codeW": 170, "vars": ["broken by", "what to do"], "steps": [{"code": "independent", "state": ["clustering, time series, networks", "cluster-robust errors, or a block bootstrap"], "tone": "warn"}, {"code": "identically distributed", "state": ["the population shifting mid-sample", "segment, or model the drift"], "changed": [0, 1], "tone": "warn"}, {"code": "finite variance", "state": ["a Pareto tail index at or below 2", "no averaging helps - use a median"], "changed": [0, 1], "tone": "crit"}, {"code": "and the RATE depends on", "state": ["skewness", "want n above 25 times skew squared"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_1-02-1"},
+
+
 
     { t: "p", text: "**The central limit theorem says the distribution of a sample mean becomes normal as the sample grows** — whatever the population looks like. It has three conditions, all of which fail in real work, and knowing which one has failed tells you what to do instead." },
 

@@ -173,6 +173,9 @@ normal_posterior(100, 15, np.array([120., 118., 125.]), sigma=10)
 
 
 
+
+
+
     { t: "p", text: "**A credible interval supports the reading a confidence interval cannot**: there really is a 95% probability the parameter lies inside it. That is what the prior buys — and with a flat prior and a decent sample the two intervals usually agree numerically while meaning different things." },
 
     { t: "dl", items: [
@@ -403,6 +406,10 @@ d["expected_loss_keep"] / d["expected_loss_ship"]     # 37x
     },
 
     { t: "h2", n: "04", text: "Bayes factors: evidence without a threshold", id: "bayes-factor" },
+
+    {"kind": "trace", "title": "Sixty heads in a hundred: borderline significant, and the evidence favours the null", "caption": "**A two-sided binomial test gives roughly p = 0.057 — the classic “trend” — while the Bayes factor is 0.91, very slightly favouring fairness.** They disagree because they ask different questions. The p-value asks how surprising 60 heads would be if the coin were fair. The Bayes factor asks whether a model free to assume *any* bias predicted this data better than one that assumes none — **and a model free to put its mass anywhere pays for that freedom.** This is the Jeffreys-Lindley effect, and it is why a borderline p-value is weaker evidence than it feels. A Bayes factor below a third is the statement no frequentist test can make: evidence *for* the null.", "left": "quantity", "codeW": 190, "vars": ["value", "reading"], "steps": [{"code": "P(data | fair coin)", "state": ["1.084e-02", "the null predicted it this well"], "tone": "accent"}, {"code": "P(data | any bias allowed)", "state": ["9.901e-03", "slightly worse, despite the freedom"], "changed": [0, 1], "tone": "accent"}, {"code": "Bayes factor", "state": ["0.91", "a shade in favour of the NULL"], "changed": [0, 1], "tone": "violet"}, {"code": "the p-value, same data", "state": ["about 0.057", "reported as a trend"], "changed": [0, 1], "tone": "crit"}, {"code": "below one third", "state": ["moderate evidence FOR the null", "no p-value can say this"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_12-04-1"},
+
+
     {"t": "p", "text": "A p-value cannot say anything in favour of the null. A **Bayes factor** can, because it is a ratio of how well each hypothesis predicted the data that arrived:"},
     {"t": "math", "tex": "BF_{10} \\;=\\; \\frac{P(D \\mid H_1)}{P(D \\mid H_0)} \\;=\\; \\frac{\\text{posterior odds}}{\\text{prior odds}}"},
     {"t": "p", "text": "So `BF₁₀ = 5` means the data are five times better predicted by the alternative, and `BF₁₀ = 0.2` means they are five times better predicted by the **null** — a statement no frequentist test produces. The conventional reading is a scale rather than a cutoff, which is the point: there is no 0.05 to game."},

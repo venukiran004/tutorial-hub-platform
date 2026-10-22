@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "**Power is the probability of detecting an effect that is really there.** It is locked together with effect size, sample size and `α` — fix any three and the fourth is determined, which is what makes study design a calculation rather than a guess." },
 
     { t: "dl", items: [
@@ -197,6 +200,10 @@ power_two_sample(0.3, 50)        # 0.318 for a pre-specified d = 0.3
     ]},
 
     { t: "h2", n: "02", text: "Significance is not importance", id: "importance" },
+
+    {"kind": "trace", "title": "Highly significant, and of no consequence whatsoever", "caption": "**Two million observations and a difference of 0.05 in a hundred: p = 0.0009, which any journal would call highly significant.** Now read the effect: Cohen's d of 0.0032, two distributions overlapping 99.87%, and a randomly chosen treatment case beating a randomly chosen control case 50.1% of the time instead of 50.0%. **The result is real, replicable and worth nothing** — significance and importance are independent, and a p-value cannot tell them apart. Which is why the comparison that matters is the interval against the smallest effect you would act on, not against zero.", "left": "what you report", "codeW": 200, "vars": ["value", "reading"], "steps": [{"code": "p-value, at n = 2 million", "state": ["0.0009", "highly significant"], "tone": "crit"}, {"code": "the actual difference", "state": ["100.00 against 100.05", "0.05%"], "changed": [0, 1], "tone": "warn"}, {"code": "Cohen's d", "state": ["0.0032", "far below small"], "changed": [0, 1], "tone": "good"}, {"code": "overlap of the two groups", "state": ["99.87%", "effectively the same distribution"], "changed": [0, 1], "tone": "good"}, {"code": "probability of superiority", "state": ["50.1%", "a coin flip"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_8-02-1"},
+
+
 
     { t: "p", text: "**Statistical significance and practical importance are independent.** With enough data any non-zero difference becomes significant, and with too little an important one goes undetected — so a p-value alone cannot distinguish the two cases." },
 

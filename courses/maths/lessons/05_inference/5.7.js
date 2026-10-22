@@ -27,6 +27,9 @@ EC.receiveLesson({
 
 
 
+
+
+
     { t: "p", text: "**A p-value is the probability of data at least this extreme, assuming the null hypothesis is true.** Read the conditioning bar carefully: it assumes the null and speaks about the data. Everyone wants the reverse, and the two are different quantities related by Bayes." },
 
     { t: "dl", items: [
@@ -99,6 +102,9 @@ stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
     { t: "h2", n: "02", text: "Five misreadings, each with a number", id: "misreadings" },
 
     {"kind": "matrix", "title": "Five misreadings, each with a number", "caption": "The middle column is what people infer; the right column is what is actually true. The last row is the one that costs most in practice — two studies either side of 0.05 are usually telling you the same thing.", "cols": ["the inference drawn", "what is actually the case"], "rows": ["p = 0.03", "p = 0.20", "p = 0.049 vs 0.051", "p = 0.001", "p = 0.04 and p = 0.06"], "cells": [[{"text": "97% chance the effect is real", "tone": "crit"}, "data this extreme is uncommon IF H₀ holds"], [{"text": "there is no effect", "tone": "crit"}, {"text": "absence of evidence; check the power", "tone": "warn"}], [{"text": "one works, one does not", "tone": "crit"}, {"text": "indistinguishable — α is a convention", "tone": "warn"}], [{"text": "a large, important effect", "tone": "crit"}, "a tiny effect in a huge sample does this"], [{"text": "they disagree", "tone": "crit"}, {"text": "they broadly agree", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-02-1"},
+
+
+
 
 
 
@@ -253,6 +259,10 @@ np.percentile(null_ps, [5, 25, 50, 75, 95])
     ]},
 
     { t: "h2", n: "03", text: "P-hacking without meaning to", id: "p-hacking" },
+
+    {"kind": "trace", "title": "Six defensible choices take a 5% false-positive rate to 23%", "caption": "**Nobody in this sequence is being dishonest, and that is the point.** Each step is an ordinary analytic decision — the data looked skewed, so a non-parametric test; those two points looked like outliers, so a standard 2-sigma rule — and each is made *after* seeing the data. Take the best p-value of the six on data with no effect at all and you are wrong nearly a quarter of the time. **Optional stopping is worse on its own, at 28%, and with unlimited patience it converges to 100%.** Pre-registration costs a document and eliminates the entire class.", "left": "choices made after seeing the data", "codeW": 230, "vars": ["false-positive rate"], "steps": [{"code": "one planned test", "state": ["5% - as advertised"], "tone": "good"}, {"code": "plus a non-parametric alternative", "state": ["rising"], "changed": [0], "tone": "warn"}, {"code": "plus an outlier rule, a transform, a covariate", "state": ["rising"], "changed": [0], "tone": "warn"}, {"code": "best of six, on data with NO effect", "state": ["23%"], "changed": [0], "tone": "crit"}, {"code": "peeking until significant", "state": ["28%, and 100% with patience"], "changed": [0], "tone": "crit"}, {"code": "pre-registered", "state": ["5% - the class is gone"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_7-03-2"},
+
+
 
     { t: "p", text: "**P-hacking rarely involves anyone being dishonest.** It is the accumulation of ordinary analytic choices made *after* seeing the data — and six defensible decisions take the false-positive rate from 5% to 23% on data with no effect at all." },
 

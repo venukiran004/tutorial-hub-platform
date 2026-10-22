@@ -148,6 +148,10 @@ for B in (100, 1_000, 10_000, 100_000):
 
     { t: "h2", n: "02", text: "Three intervals, increasing sophistication", id: "intervals" },
 
+    {"kind": "steps", "title": "Three bootstrap intervals, each correcting what the last one ignored", "caption": "**What separates them is bias and skew, and on skewed data the difference in actual coverage is several percentage points** — which is the only thing that matters about an interval. Start at the percentile method, add a location correction, then add corrections for median bias and for skew. **BCa is the modern default, and the reason to reach past the simple one is that the percentile interval is optimistic exactly when the estimator is biased** — the case you cannot see from inside the bootstrap. Verify coverage by simulation rather than trusting the nominal level.", "items": [{"label": "Percentile", "desc": "take the 2.5th and 97.5th percentiles of the bootstrap values; simple, and optimistic whenever the estimator is biased", "tone": "good"}, {"label": "Basic", "desc": "reflect around the observed value to correct for location bias, which is why the quantiles come out reversed", "tone": "accent"}, {"label": "BCa", "desc": "corrects median bias with z-zero and skew with an acceleration term from the jackknife; the modern default", "tone": "violet"}, {"label": "Then check coverage", "desc": "simulate it rather than assuming the level; a 95% interval covering 89% of the time is the failure you cannot see", "tone": "crit"}], "t": "diagram", "id": "dg-5_11-02-0"},
+
+
+
     { t: "p", text: "There are three standard ways to turn a bootstrap distribution into an interval, in increasing sophistication. **What separates them is how they handle bias and skew** — and on skewed data the difference in actual coverage is several percentage points." },
 
     { t: "dl", items: [

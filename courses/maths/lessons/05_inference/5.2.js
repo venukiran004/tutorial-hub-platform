@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three properties, and the one that matters", id: "properties" },
 
+    {"kind": "trace", "title": "Three estimators of one variance, and the unbiased one loses", "caption": "**The three differ only in the denominator, and the unbiased choice is not the most accurate.** Dividing by n−1 is correct on average across samples; dividing by n+1 is biased further still and yet has the smallest mean squared error — the error you actually pay. **Unbiasedness is a constraint you may choose to impose, not the goal**, and imposing it costs accuracy here. That is the whole bias-variance trade in one table, and shrinkage is this trade used deliberately: pull an estimate towards a prior guess, lose a little bias, gain more variance back.", "left": "divide the sum of squares by", "codeW": 220, "vars": ["bias", "variance", "MSE"], "steps": [{"code": "n - 1, the unbiased choice", "state": ["about 0", "largest", "largest"], "tone": "warn"}, {"code": "n, the MLE", "state": ["biased low", "smaller", "smaller"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "n + 1", "state": ["biased further", "smallest", "SMALLEST - the winner"], "changed": [0, 1, 2], "tone": "good"}, {"code": "so what to optimise", "state": ["-", "-", "MSE = bias squared + variance"], "changed": [2], "tone": "violet"}], "t": "diagram", "id": "dg-5_2-01-0"},
+
+
+
     { t: "p", text: "**An estimator is a recipe for turning data into a number**, and there is always more than one. Judging between them means trading bias against variance — and mean squared error, which combines both, is the quantity you actually pay." },
 
     { t: "dl", items: [
@@ -258,6 +262,10 @@ stats.gamma.fit(data, floc=0)[0::2]                # (2.48, 3.02)
     },
 
     { t: "h2", n: "03", text: "What MLE guarantees, and where it fails", id: "guarantees" },
+
+    {"kind": "trace", "title": "Four guarantees, all of them asymptotic", "caption": "**Every promise maximum likelihood makes is about what happens as n grows without bound**, which is exactly why the failure cases are all small-n or boundary cases. **Invariance is the one worth knowing:** the MLE of any function of a parameter is that function of the MLE, so the MLE of sigma is the square root of the MLE of sigma squared, immediately. Unbiased estimation offers nothing of the kind — the unbiased estimator of a variance does not square-root into an unbiased estimator of a standard deviation.", "left": "guarantee", "codeW": 190, "vars": ["what it says", "and the small print"], "steps": [{"code": "consistent", "state": ["converges to the truth", "as n goes to infinity"], "tone": "good"}, {"code": "efficient", "state": ["hits the Cramer-Rao bound", "asymptotically"], "changed": [0, 1], "tone": "good"}, {"code": "asymptotically normal", "state": ["where its standard errors come from", "asymptotically"], "changed": [0, 1], "tone": "good"}, {"code": "invariant", "state": ["MLE of g is g of the MLE", "holds exactly, at any n"], "changed": [0, 1], "tone": "violet"}, {"code": "where it fails", "state": ["perfect separation, boundaries, small n", "no asymptotics to lean on"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-03-1"},
+
+
 
     { t: "p", text: "Maximum likelihood comes with strong guarantees — **all of them asymptotic**, meaning they describe behaviour as the sample grows without bound. At small `n`, or near a boundary, several fail outright." },
 

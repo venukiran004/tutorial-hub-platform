@@ -20,6 +20,10 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Chi-square: comparing counts against a model", id: "chi-square" },
 
+    {"kind": "flow", "title": "Why the discrepancy is divided by what was expected", "caption": "**A gap of 10 is enormous where 12 were expected and invisible where 10,000 were** — dividing by the expected count is what makes those two comparable, and it is the whole design of the statistic. The output worth reporting is not the total: **the standardised residual per cell, anything beyond plus or minus 2, names the cell that drove the result**, which is the actionable part. And the approximation needs expected counts of roughly 5 or more; below that, use Fisher's exact test or a permutation instead of trusting the table.", "cols": 3, "nodes": [{"id": "o", "label": "Observed counts per cell", "sub": "43, 52, 61, 48, 55, 41", "tone": "accent"}, {"id": "e", "label": "Expected under the model", "sub": "50 each, if the die is fair", "tone": "good"}, {"id": "d", "label": "Square the gap, divide by expected", "sub": "so a gap of 10 scales with the cell", "tone": "violet"}, {"id": "s", "label": "Sum over cells: chi-square 5.28", "sub": "5 degrees of freedom - no evidence", "tone": "good"}, {"id": "r", "label": "Report the per-cell residual", "sub": "beyond plus or minus 2 names the cell", "tone": "violet"}, {"id": "f", "label": "Expected below about 5?", "sub": "use Fisher exact, or a permutation", "tone": "crit"}], "edges": [["o", "d"], ["e", "d"], ["d", "s"], ["s", "r"], ["d", "f"]], "t": "diagram", "id": "dg-5_6-01-0"},
+
+
+
     { t: "p", text: "**Chi-square compares observed counts against what a model predicts**, dividing each discrepancy by the count expected there. That division is what makes the comparison fair: a gap of 10 matters enormously where 12 were expected and not at all where 10,000 were." },
 
     { t: "dl", items: [
@@ -288,6 +292,10 @@ stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
     },
 
     { t: "h2", n: "03", text: "Two factors, and the interaction between them", id: "two-way" },
+
+    {"kind": "flow", "title": "Read the interaction first, or the main effects will lie to you", "caption": "**A main effect is an average over the other factor's levels, so if the factor did different things at different levels, that average is meaningless** — and an average of +10 and −10 is zero. A drug that helps one group and harms another shows no main effect at all while being extremely consequential. **Which fixes the reading order: interaction first, and only if it is absent do the main effects mean what they appear to mean.** Two separate one-way tests cannot find this, because neither design has a term for it.", "cols": 3, "nodes": [{"id": "i", "label": "Test the interaction first", "sub": "does A's effect depend on B?", "tone": "accent"}, {"id": "y", "label": "Significant interaction", "sub": "report effects per level of B", "tone": "crit"}, {"id": "a", "label": "An average of +10 and -10 is zero", "sub": "so the main effect hides it", "tone": "crit"}, {"id": "n", "label": "No interaction", "sub": "now the main effects are readable", "tone": "good"}, {"id": "s", "label": "Two one-way tests cannot see it", "sub": "neither design has the term", "tone": "violet"}], "edges": [["i", "y"], ["y", "a"], ["i", "n"], ["a", "s"]], "t": "diagram", "id": "dg-5_6-03-1"},
+
+
 
     { t: "p", text: "One-way ANOVA compares groups on a single factor. **Two-way ANOVA takes two factors at once and asks a third question neither can answer alone**: whether the effect of one depends on the level of the other. That third question is usually the interesting one." },
 
