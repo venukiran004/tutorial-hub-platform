@@ -35,6 +35,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "SequentialAgent", id: "sequential" },
 
+    {"kind": "trace", "title": "Three agents, three events, three state keys", "caption": "**The hand-off is confirmed by the last line: the critic's assembled instruction contained the writer's text**, which is `output_key` plus templating doing the work with no wiring of your own. The point of the measurement is the row above it: **every child reports `is_final_response()` as true**, so a front end that renders every final event shows all three drafts — the filtering problem from lesson 1.5, arriving as soon as you compose agents. **And a sequential pipeline costs zero routing calls**, where an LLM coordinator over the same three agents costs at least three and can mis-route.", "left": "event", "codeW": 150, "vars": ["author", "state key written", "is_final_response()"], "steps": [{"code": "'A draft about ADK.'", "state": ["writer", "draft", "TRUE"], "tone": "accent"}, {"code": "'Too vague; add an example.'", "state": ["critic", "critique", "TRUE"], "changed": [0, 1], "tone": "accent"}, {"code": "'A draft about ADK, with an example.'", "state": ["reviser", "final", "TRUE"], "changed": [0, 1], "tone": "accent"}, {"code": "so a UI rendering all finals", "state": ["shows three answers", "-", "filter by author"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "and the routing cost", "state": ["zero extra model calls", "-", "cannot mis-route"], "changed": [0, 2], "tone": "good"}], "t": "diagram", "id": "dg-2_3-02-0"},
+
+
     { t: "code", lang: "python", title: "Write, critique, revise",
       code: `w = LlmAgent(name="writer",  model=llm1, instruction="Write a draft.", output_key="draft")
 c = LlmAgent(name="critic",  model=llm2, instruction="Critique this draft: {draft}", output_key="critique")

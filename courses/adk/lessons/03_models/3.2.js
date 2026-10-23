@@ -56,6 +56,8 @@ async for event in runner.run_async(user_id="u1", session_id="s1", new_message=m
 
     { t: "h2", n: "02", text: "Other providers", id: "providers" },
 
+    {"kind": "trace", "title": "Four ways to reach a model, and one contract underneath all of them", "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.", "left": "how you reach it", "codeW": 190, "vars": ["example", "when"], "steps": [{"code": "a model string", "state": ["'gemini-2.5-pro', 'claude-3-5-sonnet@...'", "first-party, on Vertex AI"], "tone": "good"}, {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"}, {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"}, {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-0"},
+
     { t: "code", lang: "python", title: "The adapters ADK ships",
       code: `from google.adk.models import Gemini, Claude, Gemma, LiteLlm, ApigeeLlm, FallbackModel
 from google.adk.agents import LlmAgent

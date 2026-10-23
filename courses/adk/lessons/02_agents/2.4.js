@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "A custom agent is an async generator", id: "custom" },
 
+    {"kind": "trace", "title": "Four things a custom agent yields, and the one that does not work", "caption": "**`BaseAgent` asks for one method, and everything the framework needs happens through what you yield.** An event needs only an invocation id and an author — content is optional, so an event can exist purely to carry a state delta or an escalation. **The last row is the mistake everyone makes once:** assigning to `ctx.session.state` looks like it works and does not persist, because the delta on the event is what the session service applies. And the dividing line for reaching for this at all: a custom agent is for control *flow*; work that calls an API belongs in a tool, where it is testable alone and visible to the model.", "left": "what you do", "codeW": 190, "vars": ["mechanism", "effect"], "steps": [{"code": "produce output", "state": ["yield an Event with content", "the user sees it"], "tone": "good"}, {"code": "change state", "state": ["EventActions(state_delta={...})", "the service applies it on append"], "changed": [0, 1], "tone": "good"}, {"code": "delegate to a sub-agent", "state": ["run it and re-yield its events", "its events carry its own author"], "changed": [0, 1], "tone": "accent"}, {"code": "stop an enclosing loop", "state": ["EventActions(escalate=True)", "no content needed"], "changed": [0, 1], "tone": "violet"}, {"code": "ctx.session.state['k'] = v", "state": ["direct assignment", "DOES NOT PERSIST"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-2_4-01-1"},
+
+
     { t: "p", text: "`BaseAgent` asks for one method. Everything the framework needs — events, state changes, delegation — happens through what you yield." },
 
     { t: "code", lang: "python", title: "Route in Python, then delegate",
@@ -150,6 +153,8 @@ runner = InMemoryRunner(node=wf, app_name="wfapp")      # note: node=, not agent
     { t: "h2", n: "03", text: "Three ways to express control flow", id: "choosing" },
 
     {"kind": "compare", "title": "Three ways to express control flow", "caption": "Pick the least powerful one that works. A model deciding the order is flexible and unpredictable; a graph is predictable and rigid; Python is both, and yours to maintain.", "columns": [{"title": "Workflow agents", "tone": "good", "items": ["Sequential, parallel, loop", "Declarative", "Deprecated for Workflow", "Most pipelines"]}, {"title": "Workflow graph", "tone": "accent", "items": ["Nodes, edges, routes", "Conditional branching", "Cannot yet be a sub-agent", "Real branching logic"]}, {"title": "A custom agent", "tone": "violet", "items": ["_run_async_impl", "Arbitrary Python", "You own every edge case", "When the other two cannot"]}], "t": "diagram", "id": "dg-2_4-03-0"},
+
+
 
 
 

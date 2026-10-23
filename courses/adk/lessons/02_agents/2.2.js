@@ -46,6 +46,9 @@ You are an agent. Your internal name is "greeter".` },
 
     { t: "h2", n: "02", text: "Three instruction fields", id: "three" },
 
+    {"kind": "layers", "title": "Three instruction fields, in the order they reach the model", "caption": "**Read the order, because it is the whole design.** The global instruction comes first and is prepended for every descendant too, so a refusal rule written once at the root cannot be forgotten in a specialist three levels down. **The static instruction is the cacheable half:** anything in `instruction` is re-rendered every call because state may have changed, so it can never be cached — moving two thousand tokens of style guide into `static_instruction` changes nothing about behaviour and a great deal about cost (lesson 5.6). ADK then appends its own transfer guidance when the agent has sub-agents.", "items": [{"label": "global_instruction", "sub": "this agent and every descendant; re-rendered", "tone": "crit", "side": "first"}, {"label": "static_instruction", "sub": "fixed content, never re-rendered - cacheable", "tone": "violet", "side": "cacheable"}, {"label": "instruction", "sub": "this agent; state interpolated fresh each call", "tone": "accent", "side": "per call"}, {"label": "ADK's own framing", "sub": "the agent's name, and transfer guidance if it has children", "tone": "good", "side": "appended"}], "t": "diagram", "id": "dg-2_2-02-0"},
+
+
     { t: "table", head: ["Field", "Scope", "Re-rendered per call?", "Use for"],
       rows: [
         ["`instruction`", "This agent", "Yes — state is interpolated fresh", "What this agent does, its rules, its tools"],
@@ -87,6 +90,9 @@ name is "root".   You have a list of other agents to transfer to:   Agen…` },
     ] },
 
     { t: "h2", n: "04", text: "Instructions that are functions", id: "dynamic" },
+
+    {"kind": "flow", "title": "A dynamic instruction is context, not enforcement", "caption": "**The temptation is to compute permissions here — *if the user is not an admin, tell the model not to use the delete tool* — and a model may simply ignore it.** An instruction is a request, and the whole lesson of this module is that a request is not a control. Access control belongs in a `before_tool_callback` that refuses the call, or in not giving that agent the tool at all. **Use the callable form for what templating cannot express:** a lookup, the time of day, a computed list — and note that `ReadonlyContext` is readonly by design, so nothing here can mutate state.", "cols": 3, "nodes": [{"id": "c", "label": "instruction accepts a callable", "sub": "given a ReadonlyContext", "tone": "accent"}, {"id": "g", "label": "Good: context templating cannot express", "sub": "a lookup, the hour, a computed list", "tone": "good"}, {"id": "b", "label": "Tempting: compute permissions in it", "sub": "'do not use the delete tool'", "tone": "crit"}, {"id": "i", "label": "The model may ignore it", "sub": "an instruction is a request", "tone": "crit"}, {"id": "f", "label": "Enforce in before_tool_callback", "sub": "refuse the call, or omit the tool", "tone": "violet"}], "edges": [["c", "g"], ["c", "b"], ["b", "i"], ["i", "f"]], "t": "diagram", "id": "dg-2_2-04-1"},
+
 
     { t: "p", text: "`instruction` also accepts a callable taking a `ReadonlyContext`. Use it when the instruction depends on something templating cannot express — a lookup, a time of day, a computed list of permitted actions." },
 

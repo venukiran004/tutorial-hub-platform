@@ -34,6 +34,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Coordinator", id: "coordinator" },
 
+    {"kind": "trace", "title": "The coordinator pattern, with its failure mode named", "caption": "**The pattern works when a user can only be in one domain at a time, and fails on the question that straddles two** — a refund for an outage belongs to billing and to tech, and whichever specialist receives it answers half of it. **The routing information is the `description` field, not the instruction**, so disjoint descriptions written in the user's vocabulary are the actual fix for mis-routing; and allowing transfer back to the parent is what lets a specialist return a question it cannot own. Evaluate the routing with a trajectory evalset rather than by trying prompts.", "left": "aspect", "codeW": 150, "vars": ["the coordinator pattern"], "steps": [{"code": "good at", "state": ["domains a user is in one of at a time"], "tone": "good"}, {"code": "routes on", "state": ["each sub-agent's description field"], "changed": [0], "tone": "accent"}, {"code": "fails when", "state": ["a question straddles two domains"], "changed": [0], "tone": "crit"}, {"code": "and when", "state": ["two descriptions overlap"], "changed": [0], "tone": "crit"}, {"code": "fix", "state": ["disjoint descriptions, in the user's words"], "changed": [0], "tone": "good"}, {"code": "plus", "state": ["allow transfer back; test with an evalset"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-2_6-02-0"},
+
+
     { t: "code", lang: "python", title: "A toolless router over specialists",
       code: `billing = LlmAgent(name="billing", model=M, description="Invoices, payments, refunds.",
                    instruction="…", tools=[lookup_invoice, issue_refund])
@@ -94,6 +97,9 @@ pipeline = SequentialAgent(name="plan_and_do", sub_agents=[planner, executor])`,
       ] },
 
     { t: "h2", n: "04", text: "Specialists behind a tool boundary", id: "encapsulation" },
+
+    {"kind": "trace", "title": "Eight tools become one declaration", "caption": "**Accuracy falls as the declaration list grows, and the fall is steep somewhere past about ten tools** — the exact number depends on the model and on how distinct the tools are. So a tool list that has grown past ten is a grouping signal rather than a prompt-tuning problem: wrap the related tools in an agent and expose it with `AgentTool`, and the caller sees one well-described capability. **The token saving is the same mechanism:** the sub-agent's eight declarations are only sent when the sub-agent actually runs, so the outer agent's every turn stops paying for them.", "left": "arrangement", "codeW": 190, "vars": ["declarations the outer model sees", "cost per outer turn"], "steps": [{"code": "eight tools on one agent", "state": ["8", "all eight, every turn"], "tone": "crit"}, {"code": "past ~10 declarations", "state": ["accuracy falls steeply", "and keeps rising"], "changed": [0, 1], "tone": "crit"}, {"code": "grouped behind an AgentTool", "state": ["1 - a described capability", "one declaration"], "changed": [0, 1], "tone": "good"}, {"code": "the inner eight", "state": ["sent only when it runs", "paid only when used"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-2_6-04-1"},
+
 
     { t: "p", text: "The most under-used pattern, and the one that scales furthest. A capability with many tools becomes **one** tool from the outside:" },
 

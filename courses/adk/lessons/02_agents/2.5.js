@@ -75,6 +75,9 @@ root = LlmAgent(name="coordinator", model=M,
 
     { t: "h2", n: "03", text: "Closing routes", id: "flags" },
 
+    {"kind": "flow", "title": "Two flags turn a specialist into a terminal node", "caption": "**Set both and the conversation stays where it arrived for the rest of the invocation**, which is usually what a checkout or an authentication flow wants — wandering off mid-transaction is the failure mode there. Leave both at their defaults on every agent and you get conversations that ping-pong, which is the argument for shaping the tree deliberately rather than making every agent a sibling of every other. **And the trap worth repeating: a coordinator with tools of its own is not a coordinator** — its model must choose between answering and delegating every turn, and models prefer answering.", "cols": 3, "nodes": [{"id": "d", "label": "Both flags default to False", "sub": "transfer up and sideways allowed", "tone": "accent"}, {"id": "p", "label": "disallow_transfer_to_parent", "sub": "it cannot hand the conversation back", "tone": "violet"}, {"id": "s", "label": "disallow_transfer_to_peers", "sub": "it cannot go sideways to a sibling", "tone": "violet"}, {"id": "t", "label": "Both: a terminal node", "sub": "right for checkout, auth, payment", "tone": "good"}, {"id": "n", "label": "Neither, everywhere: ping-pong", "sub": "shape the tree instead", "tone": "crit"}, {"id": "r", "label": "And keep the router toolless", "sub": "or it answers instead of delegating", "tone": "crit"}], "edges": [["d", "p"], ["d", "s"], ["p", "t"], ["s", "t"], ["d", "n"], ["n", "r"]], "t": "diagram", "id": "dg-2_5-03-0"},
+
+
     { t: "table", head: ["Flag", "Default", "What it stops"],
       rows: [
         ["`disallow_transfer_to_parent`", "False", "This agent handing the conversation back up. Set it on a specialist that should finish what it starts."],

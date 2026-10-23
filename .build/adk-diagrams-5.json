@@ -1,0 +1,125 @@
+{
+ "2.1": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "output_key is how one agent hands work to the next",
+         "caption": "**There is no pipe between agents — there is state, and `output_key` is the write.** When the agent produces its final text ADK attaches it to the final event as a state delta, exactly like any other state change (lesson 1.4), and the session service applies it on append. The next agent's instruction then reads it back by name through templating. **That pair is the entire data-flow mechanism of a sequential pipeline:** one agent writes `{draft}`, the next one's instruction interpolates it. With an `output_schema` the parsed dict is written instead of the raw string.",
+         "cols": 3,
+         "nodes": [
+          {"id": "a", "label": "Agent produces its final text", "sub": "'Bengaluru, Pune and Hyderabad.'", "tone": "accent"},
+          {"id": "d", "label": "ADK attaches a state_delta", "sub": "on the FINAL event", "tone": "good"},
+          {"id": "s", "label": "The session service applies it", "sub": "state['cities'] is now set", "tone": "good"},
+          {"id": "n", "label": "The next agent's instruction reads it", "sub": "'Critique this draft: {draft}'", "tone": "violet"},
+          {"id": "o", "label": "With output_schema, a dict is written", "sub": "not the model instance, not the JSON", "tone": "warn"}],
+         "edges": [["a", "d"], ["d", "s"], ["s", "n"], ["a", "o"]]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "What a schema costs, and what changed in 2.x",
+         "caption": "**The version matters here more than the feature does.** In ADK 1.x setting `output_schema` disabled tools and transfer, which is the advice still repeated in most writing about this; in 2.x the framework exposes tools during the thought loop and enforces structure only on the final output, so the two compose. **And note what lands in state: a plain dict** — not the Pydantic instance and not the JSON string — so a downstream agent reading `{summary}` gets data rather than an object with methods.",
+         "left": "aspect", "codeW": 170,
+         "vars": ["ADK 1.x", "ADK 2.x"],
+         "steps": [
+          {"code": "tools alongside output_schema", "state": ["disabled", "composes - tools in the loop"], "tone": "crit"},
+          {"code": "transfer alongside it", "state": ["disabled", "allowed"], "changed": [0, 1], "tone": "crit"},
+          {"code": "validation", "state": ["on the final reply", "on the final reply"], "tone": "good"},
+          {"code": "what reaches state", "state": ["a dict", "a dict, not the instance"], "changed": [1], "tone": "violet"},
+          {"code": "a reply that does not match", "state": ["raises", "raises"], "tone": "warn"}]}}
+ ],
+
+ "2.2": [
+  {"after": "02",
+   "d": {"kind": "layers",
+         "title": "Three instruction fields, in the order they reach the model",
+         "caption": "**Read the order, because it is the whole design.** The global instruction comes first and is prepended for every descendant too, so a refusal rule written once at the root cannot be forgotten in a specialist three levels down. **The static instruction is the cacheable half:** anything in `instruction` is re-rendered every call because state may have changed, so it can never be cached — moving two thousand tokens of style guide into `static_instruction` changes nothing about behaviour and a great deal about cost (lesson 5.6). ADK then appends its own transfer guidance when the agent has sub-agents.",
+         "items": [
+          {"label": "global_instruction", "sub": "this agent and every descendant; re-rendered", "tone": "crit", "side": "first"},
+          {"label": "static_instruction", "sub": "fixed content, never re-rendered - cacheable", "tone": "violet", "side": "cacheable"},
+          {"label": "instruction", "sub": "this agent; state interpolated fresh each call", "tone": "accent", "side": "per call"},
+          {"label": "ADK's own framing", "sub": "the agent's name, and transfer guidance if it has children", "tone": "good", "side": "appended"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "A dynamic instruction is context, not enforcement",
+         "caption": "**The temptation is to compute permissions here — *if the user is not an admin, tell the model not to use the delete tool* — and a model may simply ignore it.** An instruction is a request, and the whole lesson of this module is that a request is not a control. Access control belongs in a `before_tool_callback` that refuses the call, or in not giving that agent the tool at all. **Use the callable form for what templating cannot express:** a lookup, the time of day, a computed list — and note that `ReadonlyContext` is readonly by design, so nothing here can mutate state.",
+         "cols": 3,
+         "nodes": [
+          {"id": "c", "label": "instruction accepts a callable", "sub": "given a ReadonlyContext", "tone": "accent"},
+          {"id": "g", "label": "Good: context templating cannot express", "sub": "a lookup, the hour, a computed list", "tone": "good"},
+          {"id": "b", "label": "Tempting: compute permissions in it", "sub": "'do not use the delete tool'", "tone": "crit"},
+          {"id": "i", "label": "The model may ignore it", "sub": "an instruction is a request", "tone": "crit"},
+          {"id": "f", "label": "Enforce in before_tool_callback", "sub": "refuse the call, or omit the tool", "tone": "violet"}],
+         "edges": [["c", "g"], ["c", "b"], ["b", "i"], ["i", "f"]]}}
+ ],
+
+ "2.3": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Three agents, three events, three state keys",
+         "caption": "**The hand-off is confirmed by the last line: the critic's assembled instruction contained the writer's text**, which is `output_key` plus templating doing the work with no wiring of your own. The point of the measurement is the row above it: **every child reports `is_final_response()` as true**, so a front end that renders every final event shows all three drafts — the filtering problem from lesson 1.5, arriving as soon as you compose agents. **And a sequential pipeline costs zero routing calls**, where an LLM coordinator over the same three agents costs at least three and can mis-route.",
+         "left": "event", "codeW": 150,
+         "vars": ["author", "state key written", "is_final_response()"],
+         "steps": [
+          {"code": "'A draft about ADK.'", "state": ["writer", "draft", "TRUE"], "tone": "accent"},
+          {"code": "'Too vague; add an example.'", "state": ["critic", "critique", "TRUE"], "changed": [0, 1], "tone": "accent"},
+          {"code": "'A draft about ADK, with an example.'", "state": ["reviser", "final", "TRUE"], "changed": [0, 1], "tone": "accent"},
+          {"code": "so a UI rendering all finals", "state": ["shows three answers", "-", "filter by author"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "and the routing cost", "state": ["zero extra model calls", "-", "cannot mis-route"], "changed": [0, 2], "tone": "good"}]}}
+ ],
+
+ "2.4": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Four things a custom agent yields, and the one that does not work",
+         "caption": "**`BaseAgent` asks for one method, and everything the framework needs happens through what you yield.** An event needs only an invocation id and an author — content is optional, so an event can exist purely to carry a state delta or an escalation. **The last row is the mistake everyone makes once:** assigning to `ctx.session.state` looks like it works and does not persist, because the delta on the event is what the session service applies. And the dividing line for reaching for this at all: a custom agent is for control *flow*; work that calls an API belongs in a tool, where it is testable alone and visible to the model.",
+         "left": "what you do", "codeW": 190,
+         "vars": ["mechanism", "effect"],
+         "steps": [
+          {"code": "produce output", "state": ["yield an Event with content", "the user sees it"], "tone": "good"},
+          {"code": "change state", "state": ["EventActions(state_delta={...})", "the service applies it on append"], "changed": [0, 1], "tone": "good"},
+          {"code": "delegate to a sub-agent", "state": ["run it and re-yield its events", "its events carry its own author"], "changed": [0, 1], "tone": "accent"},
+          {"code": "stop an enclosing loop", "state": ["EventActions(escalate=True)", "no content needed"], "changed": [0, 1], "tone": "violet"},
+          {"code": "ctx.session.state['k'] = v", "state": ["direct assignment", "DOES NOT PERSIST"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "2.5": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Two flags turn a specialist into a terminal node",
+         "caption": "**Set both and the conversation stays where it arrived for the rest of the invocation**, which is usually what a checkout or an authentication flow wants — wandering off mid-transaction is the failure mode there. Leave both at their defaults on every agent and you get conversations that ping-pong, which is the argument for shaping the tree deliberately rather than making every agent a sibling of every other. **And the trap worth repeating: a coordinator with tools of its own is not a coordinator** — its model must choose between answering and delegating every turn, and models prefer answering.",
+         "cols": 3,
+         "nodes": [
+          {"id": "d", "label": "Both flags default to False", "sub": "transfer up and sideways allowed", "tone": "accent"},
+          {"id": "p", "label": "disallow_transfer_to_parent", "sub": "it cannot hand the conversation back", "tone": "violet"},
+          {"id": "s", "label": "disallow_transfer_to_peers", "sub": "it cannot go sideways to a sibling", "tone": "violet"},
+          {"id": "t", "label": "Both: a terminal node", "sub": "right for checkout, auth, payment", "tone": "good"},
+          {"id": "n", "label": "Neither, everywhere: ping-pong", "sub": "shape the tree instead", "tone": "crit"},
+          {"id": "r", "label": "And keep the router toolless", "sub": "or it answers instead of delegating", "tone": "crit"}],
+         "edges": [["d", "p"], ["d", "s"], ["p", "t"], ["s", "t"], ["d", "n"], ["n", "r"]]}}
+ ],
+
+ "2.6": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "The coordinator pattern, with its failure mode named",
+         "caption": "**The pattern works when a user can only be in one domain at a time, and fails on the question that straddles two** — a refund for an outage belongs to billing and to tech, and whichever specialist receives it answers half of it. **The routing information is the `description` field, not the instruction**, so disjoint descriptions written in the user's vocabulary are the actual fix for mis-routing; and allowing transfer back to the parent is what lets a specialist return a question it cannot own. Evaluate the routing with a trajectory evalset rather than by trying prompts.",
+         "left": "aspect", "codeW": 150,
+         "vars": ["the coordinator pattern"],
+         "steps": [
+          {"code": "good at", "state": ["domains a user is in one of at a time"], "tone": "good"},
+          {"code": "routes on", "state": ["each sub-agent's description field"], "changed": [0], "tone": "accent"},
+          {"code": "fails when", "state": ["a question straddles two domains"], "changed": [0], "tone": "crit"},
+          {"code": "and when", "state": ["two descriptions overlap"], "changed": [0], "tone": "crit"},
+          {"code": "fix", "state": ["disjoint descriptions, in the user's words"], "changed": [0], "tone": "good"},
+          {"code": "plus", "state": ["allow transfer back; test with an evalset"], "changed": [0], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Eight tools become one declaration",
+         "caption": "**Accuracy falls as the declaration list grows, and the fall is steep somewhere past about ten tools** — the exact number depends on the model and on how distinct the tools are. So a tool list that has grown past ten is a grouping signal rather than a prompt-tuning problem: wrap the related tools in an agent and expose it with `AgentTool`, and the caller sees one well-described capability. **The token saving is the same mechanism:** the sub-agent's eight declarations are only sent when the sub-agent actually runs, so the outer agent's every turn stops paying for them.",
+         "left": "arrangement", "codeW": 190,
+         "vars": ["declarations the outer model sees", "cost per outer turn"],
+         "steps": [
+          {"code": "eight tools on one agent", "state": ["8", "all eight, every turn"], "tone": "crit"},
+          {"code": "past ~10 declarations", "state": ["accuracy falls steeply", "and keeps rising"], "changed": [0, 1], "tone": "crit"},
+          {"code": "grouped behind an AgentTool", "state": ["1 - a described capability", "one declaration"], "changed": [0, 1], "tone": "good"},
+          {"code": "the inner eight", "state": ["sent only when it runs", "paid only when used"], "changed": [0, 1], "tone": "good"}]}}
+ ]
+}

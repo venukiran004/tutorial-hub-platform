@@ -1,0 +1,88 @@
+{
+ "3.1": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Four knobs, and the two that move cost are not among them",
+         "caption": "**`max_output_tokens` caps one reply, and the bill is dominated by input** — so tuning temperature and output caps while sending fifty turns of history and fourteen tool declarations is optimising the smaller half. The two settings that actually control spend live elsewhere: how much conversation you send (`include_contents`, compaction and caching) and how many declarations ride along on every call. **The temperature guidance is the one to internalise:** below about 0.3 for anything that calls tools, because tool-choice accuracy and instruction-following both degrade as it rises.",
+         "left": "setting", "codeW": 190,
+         "vars": ["what it controls", "effect on cost"],
+         "steps": [
+          {"code": "temperature", "state": ["0.2 for agents; tool accuracy falls as it rises", "none"], "tone": "good"},
+          {"code": "max_output_tokens", "state": ["one reply - and truncates JSON mid-object", "small"], "changed": [0, 1], "tone": "warn"},
+          {"code": "top_p / top_k", "state": ["the sampling pool", "none"], "changed": [0, 1], "tone": "accent"},
+          {"code": "safety_settings", "state": ["per-category thresholds", "none"], "changed": [0, 1], "tone": "accent"},
+          {"code": "how much history you send", "state": ["include_contents, compaction, caching", "LARGE"], "changed": [0, 1], "tone": "crit"},
+          {"code": "how many tool declarations", "state": ["every call carries all of them", "LARGE"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "Two layers of resilience, and the quality drop neither of them reports",
+         "caption": "**Retry first, fall back second** — per-request retry options handle the transient error inside one model, and `FallbackModel` handles the case where that model is simply unavailable. Both protect availability. **Neither protects the answer:** a fallback to a weaker model succeeds, returns something worse, and nothing in the invocation says so. That makes recording which model actually answered a requirement rather than a nicety, because otherwise a quota incident presents as a mysterious week of degraded quality.",
+         "cols": 3,
+         "nodes": [
+          {"id": "e", "label": "A 429 or a 503", "sub": "quota, or a transient fault", "tone": "crit"},
+          {"id": "r", "label": "First: retry within the model", "sub": "Gemini(retry_options=...)", "tone": "good"},
+          {"id": "f", "label": "Then: FallbackModel to the next", "sub": "on retriable_status_codes", "tone": "good"},
+          {"id": "s", "label": "The invocation succeeds", "sub": "availability preserved", "tone": "good"},
+          {"id": "q", "label": "On a weaker model, silently", "sub": "a worse answer, no error", "tone": "crit"},
+          {"id": "l", "label": "So record which model answered", "sub": "or the drop is invisible", "tone": "violet"}],
+         "edges": [["e", "r"], ["r", "f"], ["f", "s"], ["s", "q"], ["q", "l"]]}}
+ ],
+
+ "3.2": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four ways to reach a model, and one contract underneath all of them",
+         "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.",
+         "left": "how you reach it", "codeW": 190,
+         "vars": ["example", "when"],
+         "steps": [
+          {"code": "a model string", "state": ["'gemini-2.5-pro', 'claude-3-5-sonnet@...'", "first-party, on Vertex AI"], "tone": "good"},
+          {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"},
+          {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"},
+          {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "3.3": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "part.thought is the filter, and forgetting it shows the user the working-out",
+         "caption": "**A client that renders every text part shows the agent talking to itself** — including, sometimes, the parts where it considered and rejected something, which is a worse disclosure than it first sounds. The flag is right there on the part, and filtering on it is the same discipline as filtering on `event.partial` when streaming. **Showing reasoning can be a deliberate product decision; showing it by accident is not one**, and the two are indistinguishable from the outside.",
+         "cols": 3,
+         "nodes": [
+          {"id": "p", "label": "A planner is active", "sub": "BuiltInPlanner or PlanReActPlanner", "tone": "accent"},
+          {"id": "t", "label": "Reasoning returns as thought parts", "sub": "part.thought is True", "tone": "good"},
+          {"id": "a", "label": "The answer is a normal part", "sub": "in the same event", "tone": "good"},
+          {"id": "r", "label": "Render every text part", "sub": "and the user sees both", "tone": "crit"},
+          {"id": "f", "label": "Filter on part.thought", "sub": "as you filter event.partial", "tone": "violet"}],
+         "edges": [["p", "t"], ["p", "a"], ["t", "r"], ["r", "f"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Two methods, and what a planner actually is",
+         "caption": "**Strip the name away and `PlanReActPlanner` is a long instruction plus a function that splits the response on tags.** Seeing that clearly answers both halves of the decision: reach for a planner when you want the reasoning in a form your code can inspect and audit, and do not when you simply want better answers — a thinking-capable model with `BuiltInPlanner` gets you there without a parser to maintain. **A custom planner earns its place when your domain has a fixed procedure**: a triage sequence, a compliance checklist, an order of checks that must precede an action.",
+         "left": "the BasePlanner contract", "codeW": 220,
+         "vars": ["what it does", "what that makes a planner"],
+         "steps": [
+          {"code": "build_planning_instruction(...)", "state": ["text added to the system instruction", "structured prompting"], "tone": "accent"},
+          {"code": "process_planning_response(...)", "state": ["rewrites the model's parts", "plus a parser"], "changed": [0, 1], "tone": "accent"},
+          {"code": "so PlanReActPlanner is", "state": ["an instruction and a tag splitter", "nothing more"], "changed": [0, 1], "tone": "violet"},
+          {"code": "write one when", "state": ["the domain has a fixed procedure", "you want to parse and audit it"], "changed": [0, 1], "tone": "good"},
+          {"code": "do not when", "state": ["you only want better answers", "BuiltInPlanner, no parser"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "3.4": [
+  {"after": "03",
+   "d": {"kind": "tree",
+         "title": "Model class or callback, and the subclass trick in between",
+         "caption": "**Both can intercept a model call, and the question is what the interception depends on.** A callback sees the agent, the session and the state and applies per agent — right for anything that turns on *who is asking*, like a per-user cache or a guardrail. A model subclass sees only the request and applies everywhere that model is used — right for provider-level concerns: a shared cache, a gateway, instrumentation you want regardless of which agent made the call. **And the subclass trick is usually what people actually want:** extend the provider's own class, so you keep all of its behaviour and add yours in one method.",
+         "root": {"label": "Something must happen around a model call", "sub": "what does it depend on?", "tone": "accent",
+                  "children": [
+                   {"label": "Who is asking", "sub": "the user, the session, this agent's state", "tone": "violet",
+                    "children": [
+                     {"label": "A callback", "sub": "before_model_callback - per agent", "tone": "violet"}]},
+                   {"label": "Only the request", "sub": "and it should apply everywhere", "tone": "good",
+                    "children": [
+                     {"label": "Subclass the provider's class", "sub": "class CachedGemini(Gemini) - keep its behaviour", "tone": "good"},
+                     {"label": "A fresh BaseLlm", "sub": "only for a model ADK cannot reach at all", "tone": "warn"}]},
+                   {"label": "Nothing - you just need the provider", "sub": "LiteLlm(model=...) is one line", "tone": "teal"}]}}}
+ ]
+}

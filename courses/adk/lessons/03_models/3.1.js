@@ -55,6 +55,8 @@ Gemma` },
 
 
 
+
+
     { t: "table", head: ["Job", "Wants", "Typical choice"],
       rows: [
         ["Routing / classification", "Speed and cost; the decision is easy", "The smallest current Flash-class model; often the cheapest tier available"],
@@ -67,6 +69,8 @@ Gemma` },
     { t: "p", text: "Model names move quickly and any specific id in a course ages badly; what does not change is the shape of the decision. **Use the cheap model wherever the decision is easy and the strong model only where reasoning is the product** — which, as lesson 2.6 noted, is only possible if those are separate agents. A single agent doing routing and drafting pays the strong model's price for both." },
 
     { t: "h2", n: "03", text: "generate_content_config", id: "config" },
+
+    {"kind": "trace", "title": "Four knobs, and the two that move cost are not among them", "caption": "**`max_output_tokens` caps one reply, and the bill is dominated by input** — so tuning temperature and output caps while sending fifty turns of history and fourteen tool declarations is optimising the smaller half. The two settings that actually control spend live elsewhere: how much conversation you send (`include_contents`, compaction and caching) and how many declarations ride along on every call. **The temperature guidance is the one to internalise:** below about 0.3 for anything that calls tools, because tool-choice accuracy and instruction-following both degrade as it rises.", "left": "setting", "codeW": 190, "vars": ["what it controls", "effect on cost"], "steps": [{"code": "temperature", "state": ["0.2 for agents; tool accuracy falls as it rises", "none"], "tone": "good"}, {"code": "max_output_tokens", "state": ["one reply - and truncates JSON mid-object", "small"], "changed": [0, 1], "tone": "warn"}, {"code": "top_p / top_k", "state": ["the sampling pool", "none"], "changed": [0, 1], "tone": "accent"}, {"code": "safety_settings", "state": ["per-category thresholds", "none"], "changed": [0, 1], "tone": "accent"}, {"code": "how much history you send", "state": ["include_contents, compaction, caching", "LARGE"], "changed": [0, 1], "tone": "crit"}, {"code": "how many tool declarations", "state": ["every call carries all of them", "LARGE"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-3_1-03-1"},
 
     { t: "code", lang: "python", title: "Where the knobs go",
       code: `from google.genai import types
@@ -112,6 +116,8 @@ agent = LlmAgent(
     { t: "p", text: "ADK exposes this twice: `thinking_config` in the generation config, and `BuiltInPlanner`, which is the planner wrapper around the same setting (lesson 2.1). For models without native thinking, `PlanReActPlanner` prompts the plan-then-act loop instead, at the cost of ordinary output tokens." },
 
     { t: "h2", n: "05", text: "Fallbacks and retries", id: "fallback" },
+
+    {"kind": "flow", "title": "Two layers of resilience, and the quality drop neither of them reports", "caption": "**Retry first, fall back second** — per-request retry options handle the transient error inside one model, and `FallbackModel` handles the case where that model is simply unavailable. Both protect availability. **Neither protects the answer:** a fallback to a weaker model succeeds, returns something worse, and nothing in the invocation says so. That makes recording which model actually answered a requirement rather than a nicety, because otherwise a quota incident presents as a mysterious week of degraded quality.", "cols": 3, "nodes": [{"id": "e", "label": "A 429 or a 503", "sub": "quota, or a transient fault", "tone": "crit"}, {"id": "r", "label": "First: retry within the model", "sub": "Gemini(retry_options=...)", "tone": "good"}, {"id": "f", "label": "Then: FallbackModel to the next", "sub": "on retriable_status_codes", "tone": "good"}, {"id": "s", "label": "The invocation succeeds", "sub": "availability preserved", "tone": "good"}, {"id": "q", "label": "On a weaker model, silently", "sub": "a worse answer, no error", "tone": "crit"}, {"id": "l", "label": "So record which model answered", "sub": "or the drop is invisible", "tone": "violet"}], "edges": [["e", "r"], ["r", "f"], ["f", "s"], ["s", "q"], ["q", "l"]], "t": "diagram", "id": "dg-3_1-05-2"},
 
     { t: "code", lang: "python", title: "FallbackModel: a second model when the first fails",
       code: `from google.adk.models import FallbackModel, Gemini

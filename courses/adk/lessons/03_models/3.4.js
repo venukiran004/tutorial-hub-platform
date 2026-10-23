@@ -52,6 +52,8 @@ resolve('fake-model') -> ValueError: Model fake-model not found.` },
 
     {"kind": "steps", "title": "Write, register, resolve, run", "caption": "Executed end to end: the agent was constructed with model=\"echo-1\", the registry resolved it to EchoLlm, and the reply came back through the ordinary event machinery.", "items": [{"label": "Subclass BaseLlm", "sub": "generate_content_async + supported_models", "tone": "good"}, {"label": "LLMRegistry.register", "sub": "process-wide — keep the pattern narrow", "tone": "warn"}, {"label": "resolve('echo-1')", "sub": "-> EchoLlm", "tone": "accent"}, {"label": "The agent replies", "sub": "'echo: hello there'", "tone": "violet"}], "t": "diagram", "id": "dg-3_4-02-0"},
 
+
+
     { t: "code", lang: "python", title: "Registered, resolved and run",
       code: `class EchoLlm(BaseLlm):
     """A model in forty characters, registered by a regex."""
@@ -82,6 +84,8 @@ agent = LlmAgent(name="a", model="echo-1", instruction="x")` },
       body: [{ t: "p", text: "The `FakeLlm` behind every trace in this course is this same fifteen lines with a script instead of an echo. Because it is a real `BaseLlm`, ADK treats it as a model in every respect — so the events, state deltas, tool dispatch and callbacks around it are the genuine framework, and only the model's judgement is replaced. Lesson 11.3 makes that the basis of a test suite." }] },
 
     { t: "h2", n: "03", text: "When to write one", id: "when" },
+
+    {"kind": "tree", "title": "Model class or callback, and the subclass trick in between", "caption": "**Both can intercept a model call, and the question is what the interception depends on.** A callback sees the agent, the session and the state and applies per agent — right for anything that turns on *who is asking*, like a per-user cache or a guardrail. A model subclass sees only the request and applies everywhere that model is used — right for provider-level concerns: a shared cache, a gateway, instrumentation you want regardless of which agent made the call. **And the subclass trick is usually what people actually want:** extend the provider's own class, so you keep all of its behaviour and add yours in one method.", "root": {"label": "Something must happen around a model call", "sub": "what does it depend on?", "tone": "accent", "children": [{"label": "Who is asking", "sub": "the user, the session, this agent's state", "tone": "violet", "children": [{"label": "A callback", "sub": "before_model_callback - per agent", "tone": "violet"}]}, {"label": "Only the request", "sub": "and it should apply everywhere", "tone": "good", "children": [{"label": "Subclass the provider's class", "sub": "class CachedGemini(Gemini) - keep its behaviour", "tone": "good"}, {"label": "A fresh BaseLlm", "sub": "only for a model ADK cannot reach at all", "tone": "warn"}]}, {"label": "Nothing - you just need the provider", "sub": "LiteLlm(model=...) is one line", "tone": "teal"}]}, "t": "diagram", "id": "dg-3_4-03-1"},
 
     { t: "table", head: ["Situation", "Write a model?", "Why"],
       rows: [

@@ -51,6 +51,8 @@ BuiltInPlanner injects an instruction: None
 
     {"kind": "steps", "title": "One planned turn, as PlanReAct asks for it", "caption": "All five section names were found in the injected instruction. The last one is what people forget when they build this by hand — a plan that cannot be revised is worse than no plan.", "items": [{"label": "/*PLANNING*/", "sub": "the plan, in natural language", "tone": "accent"}, {"label": "/*ACTION*/", "sub": "a tool call", "tone": "good"}, {"label": "/*REASONING*/", "sub": "what the result means", "tone": "good"}, {"label": "/*REPLANNING*/", "sub": "revise when a tool surprises it", "tone": "crit"}, {"label": "/*FINAL_ANSWER*/", "sub": "the only part the user should see", "tone": "violet"}], "t": "diagram", "id": "dg-3_3-02-0"},
 
+
+
     { t: "code", lang: "python", title: "Tags found in the injected instruction",
       code: `for tag in ["/*PLANNING*/", "/*REASONING*/", "/*ACTION*/", "/*FINAL_ANSWER*/", "/*REPLANNING*/"]:
     print(tag, tag in instruction)` },
@@ -69,6 +71,8 @@ BuiltInPlanner injects an instruction: None
   Follow this format when answering the question: (1) The planning part should be under /*…` },
 
     { t: "h2", n: "03", text: "Thought parts", id: "thoughts" },
+
+    {"kind": "flow", "title": "part.thought is the filter, and forgetting it shows the user the working-out", "caption": "**A client that renders every text part shows the agent talking to itself** — including, sometimes, the parts where it considered and rejected something, which is a worse disclosure than it first sounds. The flag is right there on the part, and filtering on it is the same discipline as filtering on `event.partial` when streaming. **Showing reasoning can be a deliberate product decision; showing it by accident is not one**, and the two are indistinguishable from the outside.", "cols": 3, "nodes": [{"id": "p", "label": "A planner is active", "sub": "BuiltInPlanner or PlanReActPlanner", "tone": "accent"}, {"id": "t", "label": "Reasoning returns as thought parts", "sub": "part.thought is True", "tone": "good"}, {"id": "a", "label": "The answer is a normal part", "sub": "in the same event", "tone": "good"}, {"id": "r", "label": "Render every text part", "sub": "and the user sees both", "tone": "crit"}, {"id": "f", "label": "Filter on part.thought", "sub": "as you filter event.partial", "tone": "violet"}], "edges": [["p", "t"], ["p", "a"], ["t", "r"], ["r", "f"]], "t": "diagram", "id": "dg-3_3-03-1"},
 
     { t: "p", text: "When a planner is active, the model's reasoning comes back in parts flagged as thoughts, separate from the answer. The executed run confirms it." },
 
@@ -101,6 +105,8 @@ system instruction length: 3137 chars` },
       body: [{ t: "p", text: "A planner is exactly the kind of change that feels like an improvement and needs an evaluation set to confirm it (lesson 11.2). Run your trajectory metrics with and without: if `tool_trajectory_avg_score` rises, the planner is buying better tool choice and is probably worth the tokens. If it does not move, you have added three thousand characters to every request and latency to every turn for nothing." }] },
 
     { t: "h2", n: "05", text: "Writing your own", id: "custom" },
+
+    {"kind": "trace", "title": "Two methods, and what a planner actually is", "caption": "**Strip the name away and `PlanReActPlanner` is a long instruction plus a function that splits the response on tags.** Seeing that clearly answers both halves of the decision: reach for a planner when you want the reasoning in a form your code can inspect and audit, and do not when you simply want better answers — a thinking-capable model with `BuiltInPlanner` gets you there without a parser to maintain. **A custom planner earns its place when your domain has a fixed procedure**: a triage sequence, a compliance checklist, an order of checks that must precede an action.", "left": "the BasePlanner contract", "codeW": 220, "vars": ["what it does", "what that makes a planner"], "steps": [{"code": "build_planning_instruction(...)", "state": ["text added to the system instruction", "structured prompting"], "tone": "accent"}, {"code": "process_planning_response(...)", "state": ["rewrites the model's parts", "plus a parser"], "changed": [0, 1], "tone": "accent"}, {"code": "so PlanReActPlanner is", "state": ["an instruction and a tag splitter", "nothing more"], "changed": [0, 1], "tone": "violet"}, {"code": "write one when", "state": ["the domain has a fixed procedure", "you want to parse and audit it"], "changed": [0, 1], "tone": "good"}, {"code": "do not when", "state": ["you only want better answers", "BuiltInPlanner, no parser"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_3-05-2"},
 
     { t: "code", lang: "python", title: "The whole BasePlanner contract",
       code: `class BasePlanner:

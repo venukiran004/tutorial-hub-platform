@@ -26,6 +26,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "An agent with everything you usually need",
       code: `from google.adk.agents import LlmAgent
 
@@ -62,6 +64,9 @@ agent = LlmAgent(
 
     { t: "h2", n: "02", text: "output_key: an agent's answer as state", id: "outputkey" },
 
+    {"kind": "flow", "title": "output_key is how one agent hands work to the next", "caption": "**There is no pipe between agents — there is state, and `output_key` is the write.** When the agent produces its final text ADK attaches it to the final event as a state delta, exactly like any other state change (lesson 1.4), and the session service applies it on append. The next agent's instruction then reads it back by name through templating. **That pair is the entire data-flow mechanism of a sequential pipeline:** one agent writes `{draft}`, the next one's instruction interpolates it. With an `output_schema` the parsed dict is written instead of the raw string.", "cols": 3, "nodes": [{"id": "a", "label": "Agent produces its final text", "sub": "'Bengaluru, Pune and Hyderabad.'", "tone": "accent"}, {"id": "d", "label": "ADK attaches a state_delta", "sub": "on the FINAL event", "tone": "good"}, {"id": "s", "label": "The session service applies it", "sub": "state['cities'] is now set", "tone": "good"}, {"id": "n", "label": "The next agent's instruction reads it", "sub": "'Critique this draft: {draft}'", "tone": "violet"}, {"id": "o", "label": "With output_schema, a dict is written", "sub": "not the model instance, not the JSON", "tone": "warn"}], "edges": [["a", "d"], ["d", "s"], ["s", "n"], ["a", "o"]], "t": "diagram", "id": "dg-2_1-02-1"},
+
+
     { t: "p", text: "`output_key` is how agents pass work to each other. When the agent produces its final text, ADK writes it into session state under that key — as a delta on the final event, like any other state change." },
 
     { t: "code", lang: "python", title: "Run it and look at the delta",
@@ -91,6 +96,9 @@ delta was on the final event: {'cities': 'Bengaluru, Pune and Hyderabad.'}` },
       ] },
 
     { t: "h2", n: "04", text: "Schemas, and what they cost", id: "schemas" },
+
+    {"kind": "trace", "title": "What a schema costs, and what changed in 2.x", "caption": "**The version matters here more than the feature does.** In ADK 1.x setting `output_schema` disabled tools and transfer, which is the advice still repeated in most writing about this; in 2.x the framework exposes tools during the thought loop and enforces structure only on the final output, so the two compose. **And note what lands in state: a plain dict** — not the Pydantic instance and not the JSON string — so a downstream agent reading `{summary}` gets data rather than an object with methods.", "left": "aspect", "codeW": 170, "vars": ["ADK 1.x", "ADK 2.x"], "steps": [{"code": "tools alongside output_schema", "state": ["disabled", "composes - tools in the loop"], "tone": "crit"}, {"code": "transfer alongside it", "state": ["disabled", "allowed"], "changed": [0, 1], "tone": "crit"}, {"code": "validation", "state": ["on the final reply", "on the final reply"], "tone": "good"}, {"code": "what reaches state", "state": ["a dict", "a dict, not the instance"], "changed": [1], "tone": "violet"}, {"code": "a reply that does not match", "state": ["raises", "raises"], "tone": "warn"}], "t": "diagram", "id": "dg-2_1-04-2"},
+
 
     { t: "p", text: "`output_schema` takes a Pydantic model and makes the model's reply conform to it. In **ADK 2.x this composes with tools** — the framework's own docstring is explicit that it \"works by exposing tools during the thought loop and enforcing structure only on the final output\". That is a change from 1.x, where setting `output_schema` disabled tools and transfer, and it is worth checking your version before repeating the old advice." },
 
