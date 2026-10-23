@@ -22,6 +22,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "A three-node run",
       code: "final: ['double -> 10', 'add_ten -> 20', 'final n=20']\n\n5 checkpoints, newest first:\n  step=3   next=()               n=20   id=1f0a5d3c\n  step=2   next=('final',)       n=20   id=1f0a5d2b\n  step=1   next=('add_ten',)     n=10   id=1f0a5d1a\n  step=0   next=('double',)      n=5    id=1f0a5d09\n  step=-1  next=('__start__',)   n=5    id=1f0a5cf8",
       caption: "Each entry carries a `checkpoint_id` \u2014 an address." },
@@ -29,6 +30,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "fork", text: "Forking", sub: "Re-running from an earlier point" },
 
     {"kind": "tree", "title": "A checkpoint_id is an address you can go back to", "caption": "Pass an earlier checkpoint's config to `invoke` and the graph continues from there. The measured fork **preserved the history before the fork** — so time travel is a branch, not an edit, and the original path is still there.", "root": {"label": "checkpoint 1", "sub": "the input", "tone": "accent", "children": [{"label": "checkpoint 2", "sub": "after node a", "tone": "good", "children": [{"label": "checkpoint 3", "sub": "the original path", "tone": "teal", "edge": "ran once"}, {"label": "checkpoint 3′", "sub": "the fork — a new branch", "tone": "violet", "edge": "re-invoked here"}]}]}, "t": "diagram", "id": "dg-9_9-02-0"},
+
 
 
 
@@ -71,6 +73,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "update_state at an old checkpoint",
       code: "original at step 1: n=10\nupdate_state(n=100) returned a new checkpoint config\nre-run from there  : ['double -> 10', 'add_ten -> 110', 'final n=110']",
       caption: "`add_ten -> 110` against the original run's `20`." },
@@ -78,6 +81,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "uses", text: "What it is actually for", sub: "Three uses, increasingly valuable" },
 
     {"kind": "flow", "title": "Not an additional feature with an additional cost", "caption": "9.4's cost is **a checkpoint per superstep, each holding the whole internal state.** Time travel **is not an additional feature with an additional cost — it is the thing checkpointing already bought.** So **the question is whether you use it, not whether to enable it**; and the sharp version of that: **a team paying for per-superstep persistence and still debugging by adding log lines and re-running is paying twice.**", "cols": 3, "nodes": [{"id": "c", "label": "A checkpoint per superstep", "sub": "9.4's measured cost", "tone": "accent"}, {"id": "a", "label": "Already holds the whole state", "sub": "at every step", "tone": "violet"}, {"id": "t", "label": "So time travel costs nothing more", "sub": "it is the same data", "tone": "good"}, {"id": "q", "label": "The question is whether you use it", "sub": "not whether to enable it", "tone": "good"}, {"id": "p", "label": "Log lines plus a re-run is paying twice", "sub": "for what you already stored", "tone": "teal"}], "edges": [["c", "a"], ["a", "t"], ["t", "q"], ["q", "p"]], "t": "diagram", "id": "dg-9_9-04-3"},
+
 
 
 
@@ -106,6 +110,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Forking **re-executes nodes**. So everything 9.7 said about re-execution applies again, with a wider blast radius:" },
     { t: "ul", items: [
       "a node with side effects runs its side effects **again**",
@@ -121,6 +126,34 @@ EC.receiveLesson({
       code: 'graph.update_state(cfg, {"answer": "corrected"}, as_node="generate")\n\n# as_node decides what runs NEXT -- the graph continues from that node\u2019s edges\nsnap = graph.get_state(cfg)\nprint(snap.next, snap.values, snap.config["configurable"]["checkpoint_id"])\n\n# and the async forms, for an async graph:\nawait graph.aupdate_state(cfg, {"answer": "corrected"}, as_node="generate")\nsnap = await graph.aget_state(cfg)',
       caption: "`as_node` is not metadata — it decides which edges run next." },
     { t: "p", text: "That is the part worth being careful with. `update_state` without `as_node` writes the values and leaves the graph where it was; **with** it, the update is attributed to that node and the runtime follows that node’s outgoing edges — so naming the wrong node is how a corrected state resumes down the wrong branch. Which pairs with §05’s constraint: the edit is a new checkpoint either way, so a wrong `as_node` is recoverable by forking again rather than by undoing." },
+    { t: "code", lang: "bash", title: "LangGraph Studio: the same time travel, with the graph drawn",
+      code: `pip install "langgraph-cli[inmem]"
+langgraph dev                       # serves on :2024 and opens Studio
+
+# langgraph.json is the whole configuration:
+# {
+#   "dependencies": ["."],
+#   "graphs": { "agent": "./src/agent.py:graph" },
+#   "env": ".env"
+# }
+
+# WHAT STUDIO GIVES YOU THAT THE PYTHON API DOES NOT:
+#   the graph drawn, with the executed path highlighted per superstep
+#   every checkpoint in a thread as a clickable list -- which is get_state_history
+#   EDIT the state at a checkpoint and fork from it, in a form, rather than
+#     constructing a config and an update by hand
+#   interrupts surfaced as an approve/edit prompt instead of a paused call
+#
+# IT IS THE SAME MACHINERY. Studio is a client of the checkpointer, so
+# everything it does is available programmatically -- which is why this lesson
+# teaches the API first. Studio is faster for exploring; the API is what a test
+# asserts on, and only one of the two can run in CI.
+
+langgraph dev --tunnel              # a public URL, for Studio in a browser
+                                    # that cannot reach localhost`,
+      caption: "**Studio is a client of the checkpointer, not a separate feature** \u2014 every forked thread and edited checkpoint it offers is the `get_state_history` and `update_state` of this lesson with a form around it. Which is why the API comes first here: Studio is faster for exploring a failure, and only the API can be asserted on in a test." },
+    { t: "p", text: "**`langgraph dev` is the in-memory development server**, so threads live in the process and vanish on restart \u2014 fine for debugging, and a different thing from the deployment the same CLI builds. The one flag worth knowing is `--tunnel`, which exposes a public URL for the case where the browser running Studio cannot reach your localhost." },
+
     { t: "exercise", kind: "build", title: "Fork a run and change the past",
       difficulty: "advanced", minutes: 30,
       body: "Run a multi-node graph with a checkpointer and list the full history with checkpoint ids. Read an earlier state and say what that answers on its own. Then fork from that checkpoint by passing its config to invoke, and explain what happened to the history before the fork point. Create a counterfactual by calling update_state at an old checkpoint and replaying. Finally name the three uses, say which pays for persistence, and state the constraint on replay.",

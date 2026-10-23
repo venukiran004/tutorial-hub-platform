@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "paths", "loops?", "predictable?"], rows: [
       ["single call", "1", "1", "no", "**yes**"],
       ["call + tools", "1", "1", "no", "**yes**"],
@@ -58,12 +59,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Where the control sits",
       code: "does the model need to decide ANYTHING?\n  no  -> a chain. most RAG pipelines are here (8.1).\n  yes -> does the SEQUENCE vary, or only the CHOICE?\n         only the choice -> ROUTER\n         the sequence too -> can you plan it up front?\n                             yes -> PLAN-AND-EXECUTE\n                             no  -> REACT",
       caption: "Two questions, four answers." },
     { t: "h2", n: "03", id: "modifiers", text: "Three modifiers, not alternatives", sub: "Which is the part the table hides" },
 
     {"kind": "flow", "title": "Three modifiers, each answering a different question from the tree", "caption": "**This is the part the decision table hides: reflection, reflexion and agentic RAG are not rungs on the ladder, they are modifiers you add to whichever rung you landed on.** A router can have agentic RAG behind one branch; a plan-and-execute worker can reflect on its output. So the tree picks the control structure, and these three answer a separate question about **which part is unreliable.**", "cols": 3, "nodes": [{"id": "q", "label": "Is output QUALITY the problem?", "sub": "-> reflection (11.4)", "tone": "good"}, {"id": "r", "label": "Does it fail the SAME way repeatedly?", "sub": "-> reflexion (11.5)", "tone": "good"}, {"id": "g", "label": "Is RETRIEVAL the unreliable part?", "sub": "-> agentic RAG (11.7)", "tone": "good"}, {"id": "m", "label": "Modifiers, not alternatives", "sub": "added to whichever rung you chose", "tone": "violet"}, {"id": "e", "label": "e.g. agentic RAG behind one router branch", "sub": "the tree still picked the structure", "tone": "teal"}], "edges": [["q", "m"], ["r", "m"], ["g", "m"], ["m", "e"]], "t": "diagram", "id": "dg-11_8-03-2"},
+
 
 
 
@@ -81,6 +84,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "guards", text: "The guards every pattern needs", sub: "Identical across all of them" },
 
     {"kind": "layers", "title": "Six guards, and five of them live in two places", "caption": "Read the right-hand column: **four of the six are the router's job, because the router is the only place that can make a decision rather than raise.** The give-up node is the exception and the one most often missing — **it is what turns “the agent failed” into a response you can show a user.** And `recursion_limit` is last on purpose: a backstop for what the other five did not anticipate.", "items": [{"label": "An iteration budget", "sub": "10.5, 8.9", "tone": "good", "side": "the router"}, {"label": "A progress check", "sub": "10.5 - a loop achieving nothing", "tone": "good", "side": "the router"}, {"label": "A default branch", "sub": "11.2 - model output is not enumerable", "tone": "good", "side": "the router"}, {"label": "Record which exit fired", "sub": "10.5 - or a dead loop hides", "tone": "good", "side": "the router"}, {"label": "A give-up node", "sub": "11.3 - failure as a response", "tone": "violet", "side": "the graph"}, {"label": "recursion_limit", "sub": "8.9 - for what you did not predict", "tone": "accent", "side": "a backstop"}], "t": "diagram", "id": "dg-11_8-04-3"},
+
 
 
 
@@ -106,6 +110,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "got the answer?", "notes"], rows: [
       ["single call", "1", "from memory", "**ungrounded** (5.7)"],
       ["call + tools", "**1**", "yes", "the tool output **is** the answer"],
@@ -126,12 +131,45 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "Use the least agentic pattern that solves the problem, and read the table **upward** rather than downward." },
     { t: "callout", kind: "insight", title: "Because the two mistakes are not symmetric", body: [
       { t: "p", text: "A bounded pattern that nearly works is one branch or one tool away from working \u2014 the gap is visible and the fix is local. An agent that works unpredictably is a measurement problem, a cost problem and a debugging problem simultaneously, and none of those is one change from fixed." },
       { t: "p", text: "There is an effort asymmetry too: moving up the ladder is additive \u2014 a router plus a loop is an agent \u2014 while moving down means discovering which of the agent's freedoms were load-bearing, which requires measurements you did not take." }
     ] },
     { t: "p", text: "The practical corollary: when a stakeholder asks for an agent, ask for **twenty real examples** of what it must handle. Most of the time they resolve to a handful of intents with one operation each \u2014 which is a router \u2014 and saying so early is worth more than any individual pattern in this module." },
+    { t: "code", lang: "python", title: "The five-workflow catalogue, by its usual names",
+      code: `# The names below are the ones the literature and most interviews use, and
+# every one of them is a pattern this module has already built.
+#
+# 1. PROMPT CHAINING -- fixed sequence, each step's output feeds the next.
+#        extract | normalise | summarise                        (LCEL, module 2)
+#
+# 2. ROUTING -- classify, then dispatch to a specialist.
+#        add_conditional_edges on a classifier node              (11.2)
+#
+# 3. PARALLELIZATION -- independent calls at once, then join.
+#        sectioning:  split the task, run the parts, combine
+#        voting:      run the SAME task n times, take the consensus   (10.2, Send)
+#
+# 4. ORCHESTRATOR-WORKERS -- a central model decides the subtasks at
+#    runtime, so the number of workers is not known in advance.    (12.5)
+#
+# 5. EVALUATOR-OPTIMIZER -- generate, critique, refine, loop until the
+#    critic passes or a budget is spent. The critic is a separate call with
+#    its own prompt, which is what makes it more than a retry.      (11.4, 11.5)
+#
+# AND THE SIXTH THING, which is not a workflow:
+#    AGENT -- the control flow is decided by the model each turn, not by you.
+#    Every item above has an edge you drew. An agent does not.      (11.3)
+
+# THE DISTINCTION THAT MATTERS IN AN INTERVIEW AND IN PRODUCTION: a workflow
+# is debuggable because the path is fixed and testable. Reach for an agent only
+# when the task genuinely cannot be decomposed in advance -- which is rarer
+# than it sounds, and 11.1 is the question to ask first.`,
+      caption: "**Five workflows and one agent, and the line between them is whether *you* drew the edge or the model chose it** \u2014 everything in the numbered list has a fixed, testable path, and that is what makes it debuggable. The names matter because they are the vocabulary the literature and the interview use for patterns this module built under its own headings." },
+    { t: "p", text: "**Evaluator-optimizer is the one most often confused with a retry:** a retry sends the same request again, while this sends the output to a *separate* critic with its own prompt and feeds the critique back as input. That is the difference between hoping for a better sample and telling the model what was wrong \u2014 and it is why the pattern needs a stopping rule, because a critic will always find something." },
+
     { t: "exercise", kind: "analysis", title: "Compare the patterns on one task",
       difficulty: "core", minutes: 30,
       body: "Tabulate the patterns on model calls, number of paths, whether they can loop, and whether their cost is predictable. Give a decision tree based on where the control sits. Identify which patterns are modifiers rather than alternatives. Then list the guards every pattern needs, noting where each lives and how many the framework provides. Finally run the same task through several patterns, report the model calls, and state the rule with the reasoning behind it.",

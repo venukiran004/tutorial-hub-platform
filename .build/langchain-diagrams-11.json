@@ -1,411 +1,1778 @@
 {
  "8.1": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "RunnableBranch branches on the input of that step, not on where to go next",
-         "caption": "`RunnableBranch` exists, so \"a chain cannot branch\" needs stating precisely. **It branches on the input of that step and chooses what to compute.** What it cannot do is **send execution to a different *later* step and skip the ones in between** — because the pipe operator **fixes the sequence at construction time.** The branch picks a value; it cannot pick a destination.",
-         "cols": 3,
-         "nodes": [
-          {"id": "b", "label": "RunnableBranch", "sub": "branches on this step's input", "tone": "accent"},
-          {"id": "v", "label": "It chooses what to compute", "sub": "a value", "tone": "good"},
-          {"id": "s", "label": "The pipe fixes the sequence", "sub": "at construction time", "tone": "violet"},
-          {"id": "n", "label": "So it cannot skip later steps", "sub": "or jump back", "tone": "crit"},
-          {"id": "d", "label": "A value, never a destination", "sub": "which is the distinction", "tone": "teal"}],
-         "edges": [["b", "v"], ["s", "n"], ["v", "d"], ["n", "d"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Pausing a chain means five steps you write yourself",
-         "caption": "**A chain's `invoke()` returns when it is done** — there is no suspended state. So to pause for human approval you must **end the chain, serialise whatever state you need, store it keyed by something, start a *different* chain when approval arrives, and reconstruct the state.** Five pieces of machinery, all of them yours to get right, and the thing a checkpointer and an interrupt replace with a configuration flag.",
-         "cols": 3,
-         "nodes": [
-          {"id": "e", "label": "End the chain", "sub": "there is no pause", "tone": "crit"},
-          {"id": "s", "label": "Serialise the state you need", "sub": "deciding what that is", "tone": "crit"},
-          {"id": "k", "label": "Store it, keyed by something", "sub": "a correlation id you invent", "tone": "crit"},
-          {"id": "d", "label": "Start a DIFFERENT chain on approval", "sub": "a second code path", "tone": "crit"},
-          {"id": "r", "label": "And reconstruct the state", "sub": "correctly, from the store", "tone": "crit"},
-          {"id": "c", "label": "A checkpointer replaces all five", "sub": "with a flag (9.x)", "tone": "good"}],
-         "edges": [["e", "s"], ["s", "k"], ["k", "d"], ["d", "r"], ["r", "c"]]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Three requirements, and what each costs in each model",
-         "caption": "The table is the whole decision. A cycle is **a Python `while` loop** in a chain — which works, and puts the control flow outside the thing being traced. A state-dependent branch is **fixed at construction**. And a pause is **five pieces of machinery you write** against a checkpointer and an interrupt. **None of the chain column is impossible; all of it is yours to maintain.**",
-         "cols": ["Chain", "Graph"],
-         "rows": ["Cycle", "Branch on state", "Pause"],
-         "cells": [
-          [{"text": "a Python while loop", "tone": "warn"}, {"text": "an edge back to a node", "tone": "good"}],
-          [{"text": "fixed at construction", "tone": "crit"}, {"text": "a routing function", "tone": "good"}],
-          [{"text": "serialise it yourself", "tone": "crit"}, {"text": "a checkpointer and an interrupt", "tone": "good"}]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "Most RAG pipelines are chains, and a graph there is ceremony",
-         "caption": "Module 5's baseline is retrieve → format → prompt → model → parse: **no cycle, no state-dependent branch, no pause.** A graph there is **more code, a schema to maintain, and nothing bought** — which is the rule this module rests on: **pay for the graph only when you need at least one of §04's three rows.** And it is worth re-reading 8.6's closing comparison, where four `add_edge` calls replace one expression for a sequence that had no branches in it.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "retrieve -> format -> prompt -> model", "sub": "module 5's baseline", "tone": "accent"},
-          {"id": "n", "label": "No cycle, no branch, no pause", "sub": "none of the three", "tone": "good"},
-          {"id": "g", "label": "A graph adds a schema and edges", "sub": "and buys nothing", "tone": "crit"},
-          {"id": "p", "label": "Pay only for one of the three", "sub": "the rule for the module", "tone": "violet"}],
-         "edges": [["r", "n"], ["n", "g"], ["g", "p"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "RunnableBranch branches on the input of that step, not on where to go next",
+    "caption": "`RunnableBranch` exists, so \"a chain cannot branch\" needs stating precisely. **It branches on the input of that step and chooses what to compute.** What it cannot do is **send execution to a different *later* step and skip the ones in between** — because the pipe operator **fixes the sequence at construction time.** The branch picks a value; it cannot pick a destination.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "b",
+      "label": "RunnableBranch",
+      "sub": "branches on this step's input",
+      "tone": "accent"
+     },
+     {
+      "id": "v",
+      "label": "It chooses what to compute",
+      "sub": "a value",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "The pipe fixes the sequence",
+      "sub": "at construction time",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "So it cannot skip later steps",
+      "sub": "or jump back",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "A value, never a destination",
+      "sub": "which is the distinction",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "b",
+      "v"
+     ],
+     [
+      "s",
+      "n"
+     ],
+     [
+      "v",
+      "d"
+     ],
+     [
+      "n",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Pausing a chain means five steps you write yourself",
+    "caption": "**A chain's `invoke()` returns when it is done** — there is no suspended state. So to pause for human approval you must **end the chain, serialise whatever state you need, store it keyed by something, start a *different* chain when approval arrives, and reconstruct the state.** Five pieces of machinery, all of them yours to get right, and the thing a checkpointer and an interrupt replace with a configuration flag.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "End the chain",
+      "sub": "there is no pause",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Serialise the state you need",
+      "sub": "deciding what that is",
+      "tone": "crit"
+     },
+     {
+      "id": "k",
+      "label": "Store it, keyed by something",
+      "sub": "a correlation id you invent",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Start a DIFFERENT chain on approval",
+      "sub": "a second code path",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "And reconstruct the state",
+      "sub": "correctly, from the store",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "A checkpointer replaces all five",
+      "sub": "with a flag (9.x)",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "s"
+     ],
+     [
+      "s",
+      "k"
+     ],
+     [
+      "k",
+      "d"
+     ],
+     [
+      "d",
+      "r"
+     ],
+     [
+      "r",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Three requirements, and what each costs in each model",
+    "caption": "The table is the whole decision. A cycle is **a Python `while` loop** in a chain — which works, and puts the control flow outside the thing being traced. A state-dependent branch is **fixed at construction**. And a pause is **five pieces of machinery you write** against a checkpointer and an interrupt. **None of the chain column is impossible; all of it is yours to maintain.**",
+    "cols": [
+     "Chain",
+     "Graph"
+    ],
+    "rows": [
+     "Cycle",
+     "Branch on state",
+     "Pause"
+    ],
+    "cells": [
+     [
+      {
+       "text": "a Python while loop",
+       "tone": "warn"
+      },
+      {
+       "text": "an edge back to a node",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "fixed at construction",
+       "tone": "crit"
+      },
+      {
+       "text": "a routing function",
+       "tone": "good"
+      }
+     ],
+     [
+      {
+       "text": "serialise it yourself",
+       "tone": "crit"
+      },
+      {
+       "text": "a checkpointer and an interrupt",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Most RAG pipelines are chains, and a graph there is ceremony",
+    "caption": "Module 5's baseline is retrieve → format → prompt → model → parse: **no cycle, no state-dependent branch, no pause.** A graph there is **more code, a schema to maintain, and nothing bought** — which is the rule this module rests on: **pay for the graph only when you need at least one of §04's three rows.** And it is worth re-reading 8.6's closing comparison, where four `add_edge` calls replace one expression for a sequence that had no branches in it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "retrieve -> format -> prompt -> model",
+      "sub": "module 5's baseline",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "No cycle, no branch, no pause",
+      "sub": "none of the three",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "A graph adds a schema and edges",
+      "sub": "and buys nothing",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "Pay only for one of the three",
+      "sub": "the rule for the module",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "n"
+     ],
+     [
+      "n",
+      "g"
+     ],
+     [
+      "g",
+      "p"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.2": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "A node returns the keys it wants to change, not a state",
-         "caption": "**That distinction organises the rest of the module.** A node returns **a dict of the keys it wants to change**, and the runtime merges it into the state according to each key's reducer. **It does not return a state object** — and 8.5 shows what goes wrong when you treat it as though it does, which is three separate mistakes all stemming from the same misreading.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "A node receives the whole state", "sub": "every key", "tone": "accent"},
-          {"id": "r", "label": "And returns a partial dict", "sub": "only what it changes", "tone": "violet"},
-          {"id": "m", "label": "The runtime merges it", "sub": "per key, via its reducer", "tone": "violet"},
-          {"id": "s", "label": "Not a state object", "sub": "which is the misreading", "tone": "crit"},
-          {"id": "t", "label": "8.5's three mistakes come from it", "sub": "all from this one confusion", "tone": "teal"}],
-         "edges": [["n", "r"], ["r", "m"], ["m", "s"], ["s", "t"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "An undeclared key is accepted and dropped, silently",
-         "caption": "A node returning a key the schema does not declare **does not raise.** The update is accepted, the key is dropped, and the resulting state looks exactly as it would if the node had returned `{}`. Which makes a typo in a key name **invisible**: the node ran, no error appeared, and the value it computed is simply gone — a failure shape this course has met repeatedly, and one `TypedDict` cannot catch because it is not checked at runtime.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "Return an undeclared key", "sub": "a typo, usually", "tone": "crit"},
-          {"id": "a", "label": "Accepted", "sub": "no exception", "tone": "crit"},
-          {"id": "d", "label": "And dropped", "sub": "the value is gone", "tone": "crit"},
-          {"id": "i", "label": "Indistinguishable from returning {}", "sub": "in the resulting state", "tone": "crit"},
-          {"id": "t", "label": "TypedDict cannot catch it", "sub": "it is not checked at runtime", "tone": "warn"}],
-         "edges": [["r", "a"], ["a", "d"], ["d", "i"], ["i", "t"]]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "Pydantic raises where TypedDict accepts",
-         "caption": "A Pydantic state model validates on the way in: **a wrong type and a missing key both raise `ValidationError`.** The proportionate default is **`TypedDict` for a graph whose callers you control, and Pydantic when the state crosses a boundary you do not** — an API, a queue, a persisted checkpoint from an older schema version. **The same reasoning 4.7 applied to structured output: validate where the data stops being yours.**",
-         "left": "input", "codeW": 170,
-         "vars": ["with Pydantic"],
-         "steps": [
-          {"code": "valid", "state": ["{'value': 2}"], "tone": "good"},
-          {"code": "wrong type", "state": ["ValidationError: not an integer"], "changed": [0], "tone": "good", "note": "TypedDict accepts it"},
-          {"code": "missing key", "state": ["ValidationError: field required"], "tone": "good", "note": "TypedDict accepts it"}]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "The schema is the only contract between nodes",
-         "caption": "A node receives the whole state and returns a partial update, so **the schema is the only contract between nodes. There is no other channel: no arguments, no return value another node reads, no shared object.** Which is a strong property — every dependency is in one declaration — and 8.5 shows its cost: because a node receives *everything*, the schema says what is *available* rather than what each node actually uses.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "The state schema", "sub": "one declaration", "tone": "violet"},
-          {"id": "n", "label": "No arguments between nodes", "sub": "none at all", "tone": "accent"},
-          {"id": "r", "label": "No return value another node reads", "sub": "and no shared object", "tone": "accent"},
-          {"id": "o", "label": "So it is the only contract", "sub": "every dependency is in it", "tone": "good"},
-          {"id": "c", "label": "And it says available, not used", "sub": "which is 8.5's cost", "tone": "warn"}],
-         "edges": [["n", "o"], ["r", "o"], ["s", "o"], ["o", "c"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "A node returns the keys it wants to change, not a state",
+    "caption": "**That distinction organises the rest of the module.** A node returns **a dict of the keys it wants to change**, and the runtime merges it into the state according to each key's reducer. **It does not return a state object** — and 8.5 shows what goes wrong when you treat it as though it does, which is three separate mistakes all stemming from the same misreading.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "A node receives the whole state",
+      "sub": "every key",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "And returns a partial dict",
+      "sub": "only what it changes",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "The runtime merges it",
+      "sub": "per key, via its reducer",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Not a state object",
+      "sub": "which is the misreading",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "8.5's three mistakes come from it",
+      "sub": "all from this one confusion",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "r"
+     ],
+     [
+      "r",
+      "m"
+     ],
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "t"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "An undeclared key is accepted and dropped, silently",
+    "caption": "A node returning a key the schema does not declare **does not raise.** The update is accepted, the key is dropped, and the resulting state looks exactly as it would if the node had returned `{}`. Which makes a typo in a key name **invisible**: the node ran, no error appeared, and the value it computed is simply gone — a failure shape this course has met repeatedly, and one `TypedDict` cannot catch because it is not checked at runtime.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "Return an undeclared key",
+      "sub": "a typo, usually",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Accepted",
+      "sub": "no exception",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "And dropped",
+      "sub": "the value is gone",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "Indistinguishable from returning {}",
+      "sub": "in the resulting state",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "TypedDict cannot catch it",
+      "sub": "it is not checked at runtime",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "a"
+     ],
+     [
+      "a",
+      "d"
+     ],
+     [
+      "d",
+      "i"
+     ],
+     [
+      "i",
+      "t"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "Pydantic raises where TypedDict accepts",
+    "caption": "A Pydantic state model validates on the way in: **a wrong type and a missing key both raise `ValidationError`.** The proportionate default is **`TypedDict` for a graph whose callers you control, and Pydantic when the state crosses a boundary you do not** — an API, a queue, a persisted checkpoint from an older schema version. **The same reasoning 4.7 applied to structured output: validate where the data stops being yours.**",
+    "left": "input",
+    "codeW": 170,
+    "vars": [
+     "with Pydantic"
+    ],
+    "steps": [
+     {
+      "code": "valid",
+      "state": [
+       "{'value': 2}"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "wrong type",
+      "state": [
+       "ValidationError: not an integer"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "TypedDict accepts it"
+     },
+     {
+      "code": "missing key",
+      "state": [
+       "ValidationError: field required"
+      ],
+      "tone": "good",
+      "note": "TypedDict accepts it"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "The schema is the only contract between nodes",
+    "caption": "A node receives the whole state and returns a partial update, so **the schema is the only contract between nodes. There is no other channel: no arguments, no return value another node reads, no shared object.** Which is a strong property — every dependency is in one declaration — and 8.5 shows its cost: because a node receives *everything*, the schema says what is *available* rather than what each node actually uses.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "The state schema",
+      "sub": "one declaration",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "No arguments between nodes",
+      "sub": "none at all",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "No return value another node reads",
+      "sub": "and no shared object",
+      "tone": "accent"
+     },
+     {
+      "id": "o",
+      "label": "So it is the only contract",
+      "sub": "every dependency is in it",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "And it says available, not used",
+      "sub": "which is 8.5's cost",
+      "tone": "warn"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "o"
+     ],
+     [
+      "r",
+      "o"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "o",
+      "c"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.3": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Annotated's second argument is read by the runtime",
-         "caption": "The signature is **`reducer(current_value, node_update) -> new_value`**, and `operator.add` on two lists is concatenation. The point worth being precise about: **the annotation is not documentation here — it is the mechanism.** `Annotated[list, operator.add]` is read by the runtime to decide how to merge that key, so a type hint is doing load-bearing work, which is unusual enough to catch people.",
-         "cols": 3,
-         "nodes": [
-          {"id": "a", "label": "Annotated[list, operator.add]", "sub": "a type hint", "tone": "accent"},
-          {"id": "r", "label": "The second argument is read", "sub": "by the runtime", "tone": "violet"},
-          {"id": "s", "label": "reducer(current, update) -> new", "sub": "the signature", "tone": "violet"},
-          {"id": "c", "label": "So a hint is load-bearing", "sub": "not documentation", "tone": "good"},
-          {"id": "u", "label": "Which is unusual enough to catch people", "sub": "remove it and behaviour changes", "tone": "teal"}],
-         "edges": [["a", "r"], ["r", "s"], ["s", "c"], ["c", "u"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Without a reducer, a concurrent write is an error",
-         "caption": "Two nodes writing the same key in one superstep **raises `InvalidUpdateError: can receive only one value per step`** — it does not pick one, and it does not silently drop one. Which **reframes what a reducer is for: it is not an optimisation for accumulating history, it is what makes concurrent writes to a key possible at all.** A key that two nodes can **ever** write needs one, and the fan-in is what forces you to notice.",
-         "left": "configuration", "codeW": 170,
-         "vars": ["result of a fan-in"],
-         "steps": [
-          {"code": "no reducer", "state": ["InvalidUpdateError"], "tone": "crit", "note": "one value per step"},
-          {"code": "operator.add", "state": ["{'found': ['left', 'right']}"], "changed": [0], "tone": "good"},
-          {"code": "so a reducer", "state": ["makes the write possible at all"], "tone": "violet"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Updates within a superstep arrive in an order you do not control",
-         "caption": "So **a reducer whose result depends on order produces nondeterministic state.** The distinction that matters is not associativity: **`operator.add` on lists is associative and *not* commutative** — `[a] + [b]` is not `[b] + [a]` — so list concatenation at a fan-in records the **scheduling order**, not a meaningful one. Numbers, set union, max and min are all safe; \"last write wins\" is the worst case, because **which write is last is not a question with an answer.**",
-         "cols": ["Safe under reordering", "Not safe"],
-         "rows": ["Arithmetic", "Sets", "Extremes", "Lists", "Overwrite"],
-         "cells": [
-          [{"text": "operator.add on numbers", "tone": "good"}, "-"],
-          [{"text": "set union", "tone": "good"}, "-"],
-          [{"text": "max / min", "tone": "good"}, "-"],
-          ["-", {"text": "list concatenation - order is scheduling", "tone": "crit"}],
-          ["-", {"text": "'last write wins' - which write is last?", "tone": "crit"}]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "Deduplicating a fan-in is a state-merge concern, so it belongs in the reducer",
-         "caption": "Two parallel fetchers returning overlapping documents merge to a deduplicated list — **which is 7.2's multi-query union expressed as a reducer.** Putting it there means **no node has to know that a sibling might return the same document**, and that is exactly the coupling a reducer exists to remove. The alternative is a deduplication step after the fan-in, which works and puts knowledge of the fan-out's shape into a node that should not have it.",
-         "cols": 3,
-         "nodes": [
-          {"id": "a", "label": "Fetcher A returns doc1, doc2", "sub": "in parallel", "tone": "accent"},
-          {"id": "b", "label": "Fetcher B returns doc2, doc3", "sub": "overlapping", "tone": "accent"},
-          {"id": "r", "label": "A dedup reducer merges them", "sub": "doc1, doc2, doc3", "tone": "violet"},
-          {"id": "n", "label": "Neither node knows about the other", "sub": "the coupling is gone", "tone": "good"},
-          {"id": "l", "label": "Which is what a reducer is for", "sub": "7.2's union, as a merge", "tone": "teal"}],
-         "edges": [["a", "r"], ["b", "r"], ["r", "n"], ["n", "l"]]}},
-  {"after": "06",
-   "d": {"kind": "matrix",
-         "title": "Three things add_messages does that operator.add does not",
-         "caption": "It is not a convenience alias. **It coerces dicts and strings into `Message` objects**, so a node can return a plain string. **It assigns an id to messages that lack one.** And **it replaces a message whose id matches an existing one** — which is the behaviour that makes an edit-in-place possible at all, and the one that will surprise you if you assumed append-only semantics.",
-         "cols": ["What it does"],
-         "rows": ["Coercion", "Identity", "Replacement"],
-         "cells": [
-          ["turns dicts and strings into Message objects"],
-          ["assigns an id to messages that lack one"],
-          [{"text": "REPLACES a message whose id already exists - not append-only", "tone": "violet"}]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Annotated's second argument is read by the runtime",
+    "caption": "The signature is **`reducer(current_value, node_update) -> new_value`**, and `operator.add` on two lists is concatenation. The point worth being precise about: **the annotation is not documentation here — it is the mechanism.** `Annotated[list, operator.add]` is read by the runtime to decide how to merge that key, so a type hint is doing load-bearing work, which is unusual enough to catch people.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Annotated[list, operator.add]",
+      "sub": "a type hint",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "The second argument is read",
+      "sub": "by the runtime",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "reducer(current, update) -> new",
+      "sub": "the signature",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "So a hint is load-bearing",
+      "sub": "not documentation",
+      "tone": "good"
+     },
+     {
+      "id": "u",
+      "label": "Which is unusual enough to catch people",
+      "sub": "remove it and behaviour changes",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "c"
+     ],
+     [
+      "c",
+      "u"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Without a reducer, a concurrent write is an error",
+    "caption": "Two nodes writing the same key in one superstep **raises `InvalidUpdateError: can receive only one value per step`** — it does not pick one, and it does not silently drop one. Which **reframes what a reducer is for: it is not an optimisation for accumulating history, it is what makes concurrent writes to a key possible at all.** A key that two nodes can **ever** write needs one, and the fan-in is what forces you to notice.",
+    "left": "configuration",
+    "codeW": 170,
+    "vars": [
+     "result of a fan-in"
+    ],
+    "steps": [
+     {
+      "code": "no reducer",
+      "state": [
+       "InvalidUpdateError"
+      ],
+      "tone": "crit",
+      "note": "one value per step"
+     },
+     {
+      "code": "operator.add",
+      "state": [
+       "{'found': ['left', 'right']}"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "so a reducer",
+      "state": [
+       "makes the write possible at all"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Updates within a superstep arrive in an order you do not control",
+    "caption": "So **a reducer whose result depends on order produces nondeterministic state.** The distinction that matters is not associativity: **`operator.add` on lists is associative and *not* commutative** — `[a] + [b]` is not `[b] + [a]` — so list concatenation at a fan-in records the **scheduling order**, not a meaningful one. Numbers, set union, max and min are all safe; \"last write wins\" is the worst case, because **which write is last is not a question with an answer.**",
+    "cols": [
+     "Safe under reordering",
+     "Not safe"
+    ],
+    "rows": [
+     "Arithmetic",
+     "Sets",
+     "Extremes",
+     "Lists",
+     "Overwrite"
+    ],
+    "cells": [
+     [
+      {
+       "text": "operator.add on numbers",
+       "tone": "good"
+      },
+      "-"
+     ],
+     [
+      {
+       "text": "set union",
+       "tone": "good"
+      },
+      "-"
+     ],
+     [
+      {
+       "text": "max / min",
+       "tone": "good"
+      },
+      "-"
+     ],
+     [
+      "-",
+      {
+       "text": "list concatenation - order is scheduling",
+       "tone": "crit"
+      }
+     ],
+     [
+      "-",
+      {
+       "text": "'last write wins' - which write is last?",
+       "tone": "crit"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Deduplicating a fan-in is a state-merge concern, so it belongs in the reducer",
+    "caption": "Two parallel fetchers returning overlapping documents merge to a deduplicated list — **which is 7.2's multi-query union expressed as a reducer.** Putting it there means **no node has to know that a sibling might return the same document**, and that is exactly the coupling a reducer exists to remove. The alternative is a deduplication step after the fan-in, which works and puts knowledge of the fan-out's shape into a node that should not have it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Fetcher A returns doc1, doc2",
+      "sub": "in parallel",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Fetcher B returns doc2, doc3",
+      "sub": "overlapping",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "A dedup reducer merges them",
+      "sub": "doc1, doc2, doc3",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "Neither node knows about the other",
+      "sub": "the coupling is gone",
+      "tone": "good"
+     },
+     {
+      "id": "l",
+      "label": "Which is what a reducer is for",
+      "sub": "7.2's union, as a merge",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "r"
+     ],
+     [
+      "b",
+      "r"
+     ],
+     [
+      "r",
+      "n"
+     ],
+     [
+      "n",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "layers",
+    "title": "Three things add_messages does that operator.add does not",
+    "caption": "It is not a convenience alias. **It coerces dicts and strings into `Message` objects**, so a node can return a plain string. **It assigns an id to messages that lack one.** And **it replaces a message whose id matches an existing one** — which is the behaviour that makes an edit-in-place possible at all, and the one that will surprise you if you assumed append-only semantics.",
+    "items": [
+     {
+      "label": "Coercion",
+      "sub": "turns dicts and strings into Message objects"
+     },
+     {
+      "label": "Identity",
+      "sub": "assigns an id to messages that lack one"
+     },
+     {
+      "label": "Replacement",
+      "sub": "REPLACES a message whose id already exists - not append-only",
+      "tone": "violet"
+     }
+    ]
+   }
+  }
  ],
-
  "8.4": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "One graph, three schemas, and the internal one is the real state",
-         "caption": "`StateGraph(Internal, input_schema=In, output_schema=OutS)` — **the internal schema is what nodes see, and the other two are the boundary.** A caller passes `{question}` and receives `{answer}`, and never sees `raw` or `retries` at all. Which is the mechanism behind all three of §03's benefits: the narrowing is not documentation, it is what the runtime enforces at the edges of the graph.",
-         "cols": 4,
-         "nodes": [
-          {"id": "i", "label": "In: question", "sub": "what the caller passes", "tone": "accent"},
-          {"id": "n", "label": "Internal: question, answer, raw, retries", "sub": "what nodes see", "tone": "violet"},
-          {"id": "o", "label": "Out: answer", "sub": "what the caller receives", "tone": "accent"},
-          {"id": "e", "label": "Enforced at the edges", "sub": "not documented", "tone": "good"}],
-         "edges": [["i", "n"], ["n", "o"], ["o", "e"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Three things the split buys, and only one is about tidiness",
-         "caption": "**A contract**: the caller cannot depend on an internal key because they never see it, so renaming `raw` is not a breaking change — with one schema, **every internal field is part of your public API by accident.** **A smaller checkpoint**: 9.x persists the state on *every superstep*, so an 8 KB raw response is **8 KB written per step, forever** — and note the output schema does not help here, only keeping it out of `Internal` does. **A boundary**: the leaky version returns the raw upstream response to the caller, which is how internal error details reach a client.",
-         "cols": ["What it buys"],
-         "rows": ["A contract", "A smaller checkpoint", "A boundary"],
-         "cells": [
-          [{"text": "renaming an internal key stops being a breaking change", "tone": "good"}],
-          [{"text": "8 KB in the state is 8 KB per superstep, forever", "tone": "crit"}],
-          [{"text": "upstream error details stop reaching the client", "tone": "crit"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "The honest cost: three places to change, and nothing checks they agree",
-         "caption": "**Three schemas for one graph is more code, and the keys have to be kept consistent by hand.** Promoting an internal key to public is **a change in two places, and nothing checks that the three agree** — so the failure mode is an output schema that declares a key the internal one no longer has, which is a silent empty field rather than an error. Worth paying when the graph has callers you do not control, and ceremony when it does not.",
-         "cols": 3,
-         "nodes": [
-          {"id": "t", "label": "Three schemas", "sub": "for one graph", "tone": "accent"},
-          {"id": "p", "label": "Promoting a key: two edits", "sub": "and nothing links them", "tone": "warn"},
-          {"id": "m", "label": "A mismatch is not an error", "sub": "it is a silent empty field", "tone": "crit"},
-          {"id": "w", "label": "Worth it across a boundary", "sub": "callers you do not control", "tone": "good"},
-          {"id": "c", "label": "Ceremony inside one", "sub": "the same rule as 8.1", "tone": "teal"}],
-         "edges": [["t", "p"], ["p", "m"], ["m", "w"], ["w", "c"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "One graph, three schemas, and the internal one is the real state",
+    "caption": "`StateGraph(Internal, input_schema=In, output_schema=OutS)` — **the internal schema is what nodes see, and the other two are the boundary.** A caller passes `{question}` and receives `{answer}`, and never sees `raw` or `retries` at all. Which is the mechanism behind all three of §03's benefits: the narrowing is not documentation, it is what the runtime enforces at the edges of the graph.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "In: question",
+      "sub": "what the caller passes",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Internal: question, answer, raw, retries",
+      "sub": "what nodes see",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "Out: answer",
+      "sub": "what the caller receives",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Enforced at the edges",
+      "sub": "not documented",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "n"
+     ],
+     [
+      "n",
+      "o"
+     ],
+     [
+      "o",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Three things the split buys, and only one is about tidiness",
+    "caption": "**A contract**: the caller cannot depend on an internal key because they never see it, so renaming `raw` is not a breaking change — with one schema, **every internal field is part of your public API by accident.** **A smaller checkpoint**: 9.x persists the state on *every superstep*, so an 8 KB raw response is **8 KB written per step, forever** — and note the output schema does not help here, only keeping it out of `Internal` does. **A boundary**: the leaky version returns the raw upstream response to the caller, which is how internal error details reach a client.",
+    "items": [
+     {
+      "label": "A contract",
+      "sub": "renaming an internal key stops being a breaking change",
+      "tone": "good"
+     },
+     {
+      "label": "A smaller checkpoint",
+      "sub": "8 KB in the state is 8 KB per superstep, forever",
+      "tone": "crit"
+     },
+     {
+      "label": "A boundary",
+      "sub": "upstream error details stop reaching the client",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The honest cost: three places to change, and nothing checks they agree",
+    "caption": "**Three schemas for one graph is more code, and the keys have to be kept consistent by hand.** Promoting an internal key to public is **a change in two places, and nothing checks that the three agree** — so the failure mode is an output schema that declares a key the internal one no longer has, which is a silent empty field rather than an error. Worth paying when the graph has callers you do not control, and ceremony when it does not.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Three schemas",
+      "sub": "for one graph",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "Promoting a key: two edits",
+      "sub": "and nothing links them",
+      "tone": "warn"
+     },
+     {
+      "id": "m",
+      "label": "A mismatch is not an error",
+      "sub": "it is a silent empty field",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "Worth it across a boundary",
+      "sub": "callers you do not control",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Ceremony inside one",
+      "sub": "the same rule as 8.1",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "p"
+     ],
+     [
+      "p",
+      "m"
+     ],
+     [
+      "m",
+      "w"
+     ],
+     [
+      "w",
+      "c"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.5": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Returning the whole state doubles every reduced key",
-         "caption": "The node copied the state, set one key, and returned the lot. **Every key with a reducer is then merged with its own current value** — so `log: ['existing']` comes back as **`['existing', 'existing']`**. Nothing raised; the state is simply wrong in a way that compounds with each node that does it. Which is the direct consequence of 8.2's rule: **return the keys you changed, because everything you return is treated as a change.**",
-         "left": "what the node returned", "codeW": 200,
-         "vars": ["resulting state"],
-         "steps": [
-          {"code": "the whole state, one key edited", "state": ["log: ['existing', 'existing']"], "tone": "crit", "note": "doubled"},
-          {"code": "just the changed key", "state": ["log: ['existing']"], "changed": [0], "tone": "good"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Mutating in place works, until something depends on it not working",
-         "caption": "The node mutated the state dict directly and the result came out **as if it had returned the update** — so the mistake is invisible in a single-node test. It breaks against **checkpointing**, where the persisted value is the one the runtime merged rather than the one you mutated, and against **concurrency**, where two nodes mutating the same object in one superstep race. Which makes this the worst kind of bug: correct in development and wrong under exactly the conditions the graph exists to handle.",
-         "cols": 3,
-         "nodes": [
-          {"id": "m", "label": "Mutate state in place", "sub": "state['log'].append(...)", "tone": "crit"},
-          {"id": "w", "label": "It appears to work", "sub": "in a single-node test", "tone": "crit"},
-          {"id": "c", "label": "Breaks against checkpointing", "sub": "the merged value is persisted", "tone": "crit"},
-          {"id": "p", "label": "And against concurrency", "sub": "two nodes, one object, a race", "tone": "crit"},
-          {"id": "e", "label": "Correct in development", "sub": "wrong where it matters", "tone": "violet"}],
-         "edges": [["m", "w"], ["w", "c"], ["w", "p"], ["c", "e"], ["p", "e"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Returning None is accepted, which is the problem rather than a relief",
-         "caption": "A node that returns nothing produces no update and **does not raise.** Which sounds forgiving and is not: **a node that falls off the end of a branch without returning is indistinguishable from one that deliberately had nothing to say.** So return `{}` explicitly when you mean no update, and **treat a bare `return` as a smell** — it is what an unfinished branch looks like, and the runtime will not tell you which one you wrote.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "A node returns None", "sub": "or falls off the end", "tone": "crit"},
-          {"id": "a", "label": "Accepted, no update", "sub": "no exception", "tone": "crit"},
-          {"id": "i", "label": "Indistinguishable from intent", "sub": "unfinished, or deliberate", "tone": "crit"},
-          {"id": "e", "label": "Return {} when you mean it", "sub": "explicitly", "tone": "good"},
-          {"id": "s", "label": "And treat a bare return as a smell", "sub": "it is what a bug looks like", "tone": "good"}],
-         "edges": [["n", "a"], ["a", "i"], ["i", "e"], ["e", "s"]]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "Coupling is invisible, because there is no way to declare what a node reads",
-         "caption": "**There is no way to say that a node only reads two keys.** It receives everything — which means **a node can read a key it has no business reading and nothing in the signature says so**, and a node's real dependencies are discoverable **only by reading its body.** Which is the cost of 8.2's single-contract property: the schema tells you what is available to every node and nothing about which nodes actually depend on what.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "A node receives the whole state", "sub": "no way to narrow it", "tone": "accent"},
-          {"id": "r", "label": "It can read anything", "sub": "including what it should not", "tone": "crit"},
-          {"id": "s", "label": "The signature says nothing", "sub": "every node has the same one", "tone": "crit"},
-          {"id": "b", "label": "Dependencies live in the body", "sub": "discoverable by reading", "tone": "crit"},
-          {"id": "c", "label": "The cost of one shared contract", "sub": "available, not used", "tone": "teal"}],
-         "edges": [["n", "r"], ["r", "s"], ["s", "b"], ["b", "c"]]}},
-  {"after": "06",
-   "d": {"kind": "flow",
-         "title": "A node's name is part of the graph's public structure",
-         "caption": "**It is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x.** So **renaming a node changes the interrupt configuration and any persisted checkpoint's node references** — it is part of the graph's public structure rather than a local label. Which puts it alongside 8.4's internal keys as the second thing in this module that looks private and is not.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "A node's name", "sub": "looks like a local label", "tone": "accent"},
-          {"id": "e", "label": "Edges refer to it", "sub": "by string", "tone": "violet"},
-          {"id": "t", "label": "Traces show it", "sub": "and are filtered on it", "tone": "violet"},
-          {"id": "i", "label": "interrupt_before takes it", "sub": "9.x's configuration", "tone": "violet"},
-          {"id": "c", "label": "And checkpoints reference it", "sub": "persisted ones", "tone": "crit"},
-          {"id": "p", "label": "So it is public structure", "sub": "like 8.4's keys", "tone": "teal"}],
-         "edges": [["n", "e"], ["n", "t"], ["n", "i"], ["n", "c"], ["c", "p"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Returning the whole state doubles every reduced key",
+    "caption": "The node copied the state, set one key, and returned the lot. **Every key with a reducer is then merged with its own current value** — so `log: ['existing']` comes back as **`['existing', 'existing']`**. Nothing raised; the state is simply wrong in a way that compounds with each node that does it. Which is the direct consequence of 8.2's rule: **return the keys you changed, because everything you return is treated as a change.**",
+    "left": "what the node returned",
+    "codeW": 200,
+    "vars": [
+     "resulting state"
+    ],
+    "steps": [
+     {
+      "code": "the whole state, one key edited",
+      "state": [
+       "log: ['existing', 'existing']"
+      ],
+      "tone": "crit",
+      "note": "doubled"
+     },
+     {
+      "code": "just the changed key",
+      "state": [
+       "log: ['existing']"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Mutating in place works, until something depends on it not working",
+    "caption": "The node mutated the state dict directly and the result came out **as if it had returned the update** — so the mistake is invisible in a single-node test. It breaks against **checkpointing**, where the persisted value is the one the runtime merged rather than the one you mutated, and against **concurrency**, where two nodes mutating the same object in one superstep race. Which makes this the worst kind of bug: correct in development and wrong under exactly the conditions the graph exists to handle.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "Mutate state in place",
+      "sub": "state['log'].append(...)",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "It appears to work",
+      "sub": "in a single-node test",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "Breaks against checkpointing",
+      "sub": "the merged value is persisted",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "And against concurrency",
+      "sub": "two nodes, one object, a race",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Correct in development",
+      "sub": "wrong where it matters",
+      "tone": "violet"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "w"
+     ],
+     [
+      "w",
+      "c"
+     ],
+     [
+      "w",
+      "p"
+     ],
+     [
+      "c",
+      "e"
+     ],
+     [
+      "p",
+      "e"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Returning None is accepted, which is the problem rather than a relief",
+    "caption": "A node that returns nothing produces no update and **does not raise.** Which sounds forgiving and is not: **a node that falls off the end of a branch without returning is indistinguishable from one that deliberately had nothing to say.** So return `{}` explicitly when you mean no update, and **treat a bare `return` as a smell** — it is what an unfinished branch looks like, and the runtime will not tell you which one you wrote.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "A node returns None",
+      "sub": "or falls off the end",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Accepted, no update",
+      "sub": "no exception",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "Indistinguishable from intent",
+      "sub": "unfinished, or deliberate",
+      "tone": "crit"
+     },
+     {
+      "id": "e",
+      "label": "Return {} when you mean it",
+      "sub": "explicitly",
+      "tone": "good"
+     },
+     {
+      "id": "s",
+      "label": "And treat a bare return as a smell",
+      "sub": "it is what a bug looks like",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "a"
+     ],
+     [
+      "a",
+      "i"
+     ],
+     [
+      "i",
+      "e"
+     ],
+     [
+      "e",
+      "s"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "Coupling is invisible, because there is no way to declare what a node reads",
+    "caption": "**There is no way to say that a node only reads two keys.** It receives everything — which means **a node can read a key it has no business reading and nothing in the signature says so**, and a node's real dependencies are discoverable **only by reading its body.** Which is the cost of 8.2's single-contract property: the schema tells you what is available to every node and nothing about which nodes actually depend on what.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "A node receives the whole state",
+      "sub": "no way to narrow it",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "It can read anything",
+      "sub": "including what it should not",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "The signature says nothing",
+      "sub": "every node has the same one",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Dependencies live in the body",
+      "sub": "discoverable by reading",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "The cost of one shared contract",
+      "sub": "available, not used",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "r"
+     ],
+     [
+      "r",
+      "s"
+     ],
+     [
+      "s",
+      "b"
+     ],
+     [
+      "b",
+      "c"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "06",
+   "d": {
+    "kind": "flow",
+    "title": "A node's name is part of the graph's public structure",
+    "caption": "**It is what edges refer to, what a trace shows, and what `interrupt_before` takes in 9.x.** So **renaming a node changes the interrupt configuration and any persisted checkpoint's node references** — it is part of the graph's public structure rather than a local label. Which puts it alongside 8.4's internal keys as the second thing in this module that looks private and is not.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "A node's name",
+      "sub": "looks like a local label",
+      "tone": "accent"
+     },
+     {
+      "id": "e",
+      "label": "Edges refer to it",
+      "sub": "by string",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Traces show it",
+      "sub": "and are filtered on it",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "interrupt_before takes it",
+      "sub": "9.x's configuration",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "And checkpoints reference it",
+      "sub": "persisted ones",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "So it is public structure",
+      "sub": "like 8.4's keys",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "e"
+     ],
+     [
+      "n",
+      "t"
+     ],
+     [
+      "n",
+      "i"
+     ],
+     [
+      "n",
+      "c"
+     ],
+     [
+      "c",
+      "p"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.6": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "START and END are sentinels, and only one of them is required",
-         "caption": "**Nothing executes for either** — they mark where the runtime begins and where a path terminates. And the asymmetry is worth knowing: 8.9 shows that **a graph without an edge from `START` fails to compile**, because the runtime needs to know where to begin, **and a node without a path to `END` compiles fine.** So an unreachable dead end is a construction you can build and run, and the only thing that will tell you is the drawing.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "START", "sub": "a sentinel, not a node", "tone": "violet"},
-          {"id": "e", "label": "END", "sub": "also a sentinel", "tone": "violet"},
-          {"id": "r", "label": "No edge from START: will not compile", "sub": "the runtime needs a beginning", "tone": "good"},
-          {"id": "n", "label": "No path to END: compiles fine", "sub": "a dead end you can run", "tone": "crit"},
-          {"id": "d", "label": "Only the drawing will tell you", "sub": "8.9's renderer", "tone": "teal"}],
-         "edges": [["s", "r"], ["e", "n"], ["n", "d"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Two incoming edges, and the node runs once",
-         "caption": "**The runtime waits for all of a node's incoming paths before running it, then runs it a single time against the merged state.** Which is the behaviour that makes 8.3's reducers necessary rather than optional — the merge happens before the node sees anything, so two branches writing the same key have already had to agree on how. And it is also why a fan-in is the construct that **forces** you to notice a missing reducer: the error arrives at the join, not at either branch.",
-         "cols": 3,
-         "nodes": [
-          {"id": "a", "label": "Branch a completes", "sub": "writes its keys", "tone": "accent"},
-          {"id": "b", "label": "Branch b completes", "sub": "writes its keys", "tone": "accent"},
-          {"id": "w", "label": "The runtime waits for both", "sub": "then merges", "tone": "violet"},
-          {"id": "o", "label": "The join runs ONCE", "sub": "not twice", "tone": "good"},
-          {"id": "r", "label": "So the reducer ran first", "sub": "which is why 8.3 is mandatory", "tone": "teal"}],
-         "edges": [["a", "w"], ["b", "w"], ["w", "o"], ["o", "r"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Four add_edge calls against one expression, for a sequence with no branches",
-         "caption": "**The honest cost is visible in that comparison**: the graph version of a linear sequence is four `add_edge` calls plus a schema, against one `|` expression. **Which is why 8.1's rule stands** — the sequence being data rather than shape buys you the ability to inspect and modify it, and on a chain with no cycle, no branch and no pause there is nothing to inspect that you did not just write.",
-         "cols": 3,
-         "nodes": [
-          {"id": "c", "label": "a | b | c", "sub": "one expression", "tone": "good"},
-          {"id": "g", "label": "Four add_edge calls plus a schema", "sub": "the same sequence", "tone": "warn"},
-          {"id": "d", "label": "The sequence becomes data", "sub": "inspectable, modifiable", "tone": "violet"},
-          {"id": "n", "label": "With nothing to inspect", "sub": "on a linear chain", "tone": "crit"},
-          {"id": "r", "label": "So 8.1's rule stands", "sub": "pay for one of the three", "tone": "teal"}],
-         "edges": [["c", "g"], ["g", "d"], ["d", "n"], ["n", "r"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "START and END are sentinels, and only one of them is required",
+    "caption": "**Nothing executes for either** — they mark where the runtime begins and where a path terminates. And the asymmetry is worth knowing: 8.9 shows that **a graph without an edge from `START` fails to compile**, because the runtime needs to know where to begin, **and a node without a path to `END` compiles fine.** So an unreachable dead end is a construction you can build and run, and the only thing that will tell you is the drawing.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "START",
+      "sub": "a sentinel, not a node",
+      "tone": "violet"
+     },
+     {
+      "id": "e",
+      "label": "END",
+      "sub": "also a sentinel",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "No edge from START: will not compile",
+      "sub": "the runtime needs a beginning",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "No path to END: compiles fine",
+      "sub": "a dead end you can run",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Only the drawing will tell you",
+      "sub": "8.9's renderer",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "r"
+     ],
+     [
+      "e",
+      "n"
+     ],
+     [
+      "n",
+      "d"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Two incoming edges, and the node runs once",
+    "caption": "**The runtime waits for all of a node's incoming paths before running it, then runs it a single time against the merged state.** Which is the behaviour that makes 8.3's reducers necessary rather than optional — the merge happens before the node sees anything, so two branches writing the same key have already had to agree on how. And it is also why a fan-in is the construct that **forces** you to notice a missing reducer: the error arrives at the join, not at either branch.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "a",
+      "label": "Branch a completes",
+      "sub": "writes its keys",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Branch b completes",
+      "sub": "writes its keys",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "The runtime waits for both",
+      "sub": "then merges",
+      "tone": "violet"
+     },
+     {
+      "id": "o",
+      "label": "The join runs ONCE",
+      "sub": "not twice",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "So the reducer ran first",
+      "sub": "which is why 8.3 is mandatory",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "a",
+      "w"
+     ],
+     [
+      "b",
+      "w"
+     ],
+     [
+      "w",
+      "o"
+     ],
+     [
+      "o",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Four add_edge calls against one expression, for a sequence with no branches",
+    "caption": "**The honest cost is visible in that comparison**: the graph version of a linear sequence is four `add_edge` calls plus a schema, against one `|` expression. **Which is why 8.1's rule stands** — the sequence being data rather than shape buys you the ability to inspect and modify it, and on a chain with no cycle, no branch and no pause there is nothing to inspect that you did not just write.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "a | b | c",
+      "sub": "one expression",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "Four add_edge calls plus a schema",
+      "sub": "the same sequence",
+      "tone": "warn"
+     },
+     {
+      "id": "d",
+      "label": "The sequence becomes data",
+      "sub": "inspectable, modifiable",
+      "tone": "violet"
+     },
+     {
+      "id": "n",
+      "label": "With nothing to inspect",
+      "sub": "on a linear chain",
+      "tone": "crit"
+     },
+     {
+      "id": "r",
+      "label": "So 8.1's rule stands",
+      "sub": "pay for one of the three",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "g"
+     ],
+     [
+      "g",
+      "d"
+     ],
+     [
+      "d",
+      "n"
+     ],
+     [
+      "n",
+      "r"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.7": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The indirection buys a domain word instead of a node name",
-         "caption": "A routing function returns a **key**, and the path map turns that key into a node. **The indirection looks redundant when the key and the node name are the same string**, and what it buys is that the router can return a **domain word** — `needs_review`, `escalate`, `retry` — rather than a node name. **That keeps the routing decision independent of the graph's topology**, so the function is testable on its own and a rename does not reach into it.",
-         "cols": 3,
-         "nodes": [
-          {"id": "f", "label": "The router returns a key", "sub": "'needs_review'", "tone": "violet"},
-          {"id": "m", "label": "The path map resolves it", "sub": "key -> node name", "tone": "violet"},
-          {"id": "d", "label": "A domain word, not a node name", "sub": "escalate, retry", "tone": "good"},
-          {"id": "i", "label": "So the decision is topology-independent", "sub": "testable on its own", "tone": "good"},
-          {"id": "r", "label": "And a rename does not reach it", "sub": "which 8.5 said names do", "tone": "teal"}],
-         "edges": [["f", "m"], ["m", "d"], ["d", "i"], ["i", "r"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "compile() cannot check the map, because the return values are not knowable statically",
-         "caption": "**`compile()` succeeds.** The map is not checked against the function, **because the function's return values are not knowable statically** — it is arbitrary Python. So a missing map entry is **a runtime error on the branch that returns the unmapped key**, which means **a rarely-taken branch can be wrong for months.** Which is the argument for testing the routing function directly: it is a pure function of state, and testing it needs no graph at all.",
-         "left": "stage", "codeW": 150,
-         "vars": ["result"],
-         "steps": [
-          {"code": "compile()", "state": ["succeeded"], "tone": "crit", "note": "the map is unchecked"},
-          {"code": "invoke, mapped branch", "state": ["works"], "tone": "good"},
-          {"code": "invoke, unmapped branch", "state": ["InvalidUpdateError / ValueError"], "changed": [0], "tone": "crit", "note": "months later"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Omitting the map works, and moves a rename into the router",
-         "caption": "Return node names directly and the map can be left out — it works, and **renaming a node now means editing the router.** The map is **the seam between a routing decision and the graph's topology**, and it earns its verbosity **as soon as more than one edge routes on the same decision**, or as soon as the routing logic is worth testing independently of the graph. Below that, omitting it is a reasonable call rather than a shortcut.",
-         "cols": 3,
-         "nodes": [
-          {"id": "o", "label": "Omit the map", "sub": "return node names", "tone": "accent"},
-          {"id": "w", "label": "It works", "sub": "and is shorter", "tone": "good"},
-          {"id": "r", "label": "A rename now edits the router", "sub": "the seam is gone", "tone": "warn"},
-          {"id": "t", "label": "Worth it at two edges on one decision", "sub": "or when the logic needs testing", "tone": "good"},
-          {"id": "b", "label": "Below that, a reasonable call", "sub": "not a shortcut", "tone": "teal"}],
-         "edges": [["o", "w"], ["w", "r"], ["r", "t"], ["t", "b"]]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "A router can return END, or a list",
-         "caption": "Two capabilities that are easy to miss. **Returning `END` terminates from a conditional edge**, so a router can decide the run is finished rather than routing to a node that does nothing. And **returning a list fans out to several nodes** — `['small', 'large']` runs both — which makes a conditional edge a dynamic fan-out rather than only a choice, with 8.3's reducers then required on anything they both write.",
-         "left": "the router returns", "codeW": 190,
-         "vars": ["what runs"],
-         "steps": [
-          {"code": "'small'", "state": ["classified, then small"], "tone": "accent"},
-          {"code": "END", "state": ["classified, then nothing"], "changed": [0], "tone": "good", "note": "terminates"},
-          {"code": "['small', 'large']", "state": ["classified, then BOTH"], "changed": [0], "tone": "violet", "note": "a dynamic fan-out"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The indirection buys a domain word instead of a node name",
+    "caption": "A routing function returns a **key**, and the path map turns that key into a node. **The indirection looks redundant when the key and the node name are the same string**, and what it buys is that the router can return a **domain word** — `needs_review`, `escalate`, `retry` — rather than a node name. **That keeps the routing decision independent of the graph's topology**, so the function is testable on its own and a rename does not reach into it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "f",
+      "label": "The router returns a key",
+      "sub": "'needs_review'",
+      "tone": "violet"
+     },
+     {
+      "id": "m",
+      "label": "The path map resolves it",
+      "sub": "key -> node name",
+      "tone": "violet"
+     },
+     {
+      "id": "d",
+      "label": "A domain word, not a node name",
+      "sub": "escalate, retry",
+      "tone": "good"
+     },
+     {
+      "id": "i",
+      "label": "So the decision is topology-independent",
+      "sub": "testable on its own",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "And a rename does not reach it",
+      "sub": "which 8.5 said names do",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "f",
+      "m"
+     ],
+     [
+      "m",
+      "d"
+     ],
+     [
+      "d",
+      "i"
+     ],
+     [
+      "i",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "compile() cannot check the map, because the return values are not knowable statically",
+    "caption": "**`compile()` succeeds.** The map is not checked against the function, **because the function's return values are not knowable statically** — it is arbitrary Python. So a missing map entry is **a runtime error on the branch that returns the unmapped key**, which means **a rarely-taken branch can be wrong for months.** Which is the argument for testing the routing function directly: it is a pure function of state, and testing it needs no graph at all.",
+    "left": "stage",
+    "codeW": 150,
+    "vars": [
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "compile()",
+      "state": [
+       "succeeded"
+      ],
+      "tone": "crit",
+      "note": "the map is unchecked"
+     },
+     {
+      "code": "invoke, mapped branch",
+      "state": [
+       "works"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "invoke, unmapped branch",
+      "state": [
+       "InvalidUpdateError / ValueError"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "months later"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Omitting the map works, and moves a rename into the router",
+    "caption": "Return node names directly and the map can be left out — it works, and **renaming a node now means editing the router.** The map is **the seam between a routing decision and the graph's topology**, and it earns its verbosity **as soon as more than one edge routes on the same decision**, or as soon as the routing logic is worth testing independently of the graph. Below that, omitting it is a reasonable call rather than a shortcut.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "Omit the map",
+      "sub": "return node names",
+      "tone": "accent"
+     },
+     {
+      "id": "w",
+      "label": "It works",
+      "sub": "and is shorter",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "A rename now edits the router",
+      "sub": "the seam is gone",
+      "tone": "warn"
+     },
+     {
+      "id": "t",
+      "label": "Worth it at two edges on one decision",
+      "sub": "or when the logic needs testing",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "Below that, a reasonable call",
+      "sub": "not a shortcut",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "w"
+     ],
+     [
+      "w",
+      "r"
+     ],
+     [
+      "r",
+      "t"
+     ],
+     [
+      "t",
+      "b"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "A router can return END, or a list",
+    "caption": "Two capabilities that are easy to miss. **Returning `END` terminates from a conditional edge**, so a router can decide the run is finished rather than routing to a node that does nothing. And **returning a list fans out to several nodes** — `['small', 'large']` runs both — which makes a conditional edge a dynamic fan-out rather than only a choice, with 8.3's reducers then required on anything they both write.",
+    "left": "the router returns",
+    "codeW": 190,
+    "vars": [
+     "what runs"
+    ],
+    "steps": [
+     {
+      "code": "'small'",
+      "state": [
+       "classified, then small"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "END",
+      "state": [
+       "classified, then nothing"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "terminates"
+     },
+     {
+      "code": "['small', 'large']",
+      "state": [
+       "classified, then BOTH"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet",
+      "note": "a dynamic fan-out"
+     }
+    ]
+   }
+  }
  ],
-
  "8.8": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "Command returns the update and the destination together",
-         "caption": "A node returning a `Command` carries **both the state update and where to go next in one return statement** — where the conditional-edge version needs a state write plus a router that reads it. Which is a real simplification for the handoff case in §03, and §04 is the price: **the destination now lives inside a node body, so the drawn graph cannot show it.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "c", "label": "return Command(update=..., goto=...)", "sub": "one statement", "tone": "violet"},
-          {"id": "u", "label": "The state update", "sub": "as usual", "tone": "accent"},
-          {"id": "g", "label": "And the destination", "sub": "chosen in the node", "tone": "accent"},
-          {"id": "a", "label": "The alternative: a write plus a router", "sub": "two places", "tone": "warn"},
-          {"id": "p", "label": "And the drawing can no longer see it", "sub": "section 04's price", "tone": "crit"}],
-         "edges": [["c", "u"], ["c", "g"], ["u", "a"], ["g", "p"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "The handoff is one return statement, which is what makes the trace readable",
-         "caption": "A triage node decides it is the wrong agent and **transfers control, carrying a reason**. This is what module 12's multi-agent work is built on — and **the handoff being one return statement, rather than a state write plus a router that reads it, is what makes a trace of a multi-agent run readable**, because the transfer and its justification appear together in one place rather than split across two nodes and a key.",
-         "left": "topic", "codeW": 160,
-         "vars": ["trace"],
-         "steps": [
-          {"code": "'refund'", "state": ["triage -> billing, billing handled it"], "tone": "good"},
-          {"code": "'api error'", "state": ["triage -> tech, tech handled it"], "changed": [0], "tone": "good", "note": "transfer and reason, together"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "The drawn graph becomes incomplete, and the annotation is not enforced",
-         "caption": "**With conditional edges you can draw the graph and see every path. With `Command` the destinations live inside node bodies, so the drawn graph is incomplete** — the renderer has no way to know where a node might send execution. The `Command[Literal[...]]` annotation restores it, **it is optional, and skipping it costs you the only diagram anyone looks at.** Which makes it one of those annotations worth treating as **mandatory by convention**: not enforced, cheap, and what it protects is legibility for someone who is not you.",
-         "cols": 3,
-         "nodes": [
-          {"id": "e", "label": "Conditional edges", "sub": "every path is drawable", "tone": "good"},
-          {"id": "c", "label": "Command: destinations in node bodies", "sub": "invisible to the renderer", "tone": "crit"},
-          {"id": "i", "label": "So the drawing is incomplete", "sub": "and silently so", "tone": "crit"},
-          {"id": "a", "label": "Command[Literal[...]] restores it", "sub": "optional", "tone": "good"},
-          {"id": "m", "label": "Mandatory by convention", "sub": "cheap, and it protects legibility", "tone": "teal"}],
-         "edges": [["e", "c"], ["c", "i"], ["i", "a"], ["a", "m"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Command returns the update and the destination together",
+    "caption": "A node returning a `Command` carries **both the state update and where to go next in one return statement** — where the conditional-edge version needs a state write plus a router that reads it. Which is a real simplification for the handoff case in §03, and §04 is the price: **the destination now lives inside a node body, so the drawn graph cannot show it.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "c",
+      "label": "return Command(update=..., goto=...)",
+      "sub": "one statement",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "The state update",
+      "sub": "as usual",
+      "tone": "accent"
+     },
+     {
+      "id": "g",
+      "label": "And the destination",
+      "sub": "chosen in the node",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "The alternative: a write plus a router",
+      "sub": "two places",
+      "tone": "warn"
+     },
+     {
+      "id": "p",
+      "label": "And the drawing can no longer see it",
+      "sub": "section 04's price",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "c",
+      "u"
+     ],
+     [
+      "c",
+      "g"
+     ],
+     [
+      "u",
+      "a"
+     ],
+     [
+      "g",
+      "p"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "The handoff is one return statement, which is what makes the trace readable",
+    "caption": "A triage node decides it is the wrong agent and **transfers control, carrying a reason**. This is what module 12's multi-agent work is built on — and **the handoff being one return statement, rather than a state write plus a router that reads it, is what makes a trace of a multi-agent run readable**, because the transfer and its justification appear together in one place rather than split across two nodes and a key.",
+    "left": "topic",
+    "codeW": 160,
+    "vars": [
+     "trace"
+    ],
+    "steps": [
+     {
+      "code": "'refund'",
+      "state": [
+       "triage -> billing, billing handled it"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "'api error'",
+      "state": [
+       "triage -> tech, tech handled it"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "transfer and reason, together"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The drawn graph becomes incomplete, and the annotation is not enforced",
+    "caption": "**With conditional edges you can draw the graph and see every path. With `Command` the destinations live inside node bodies, so the drawn graph is incomplete** — the renderer has no way to know where a node might send execution. The `Command[Literal[...]]` annotation restores it, **it is optional, and skipping it costs you the only diagram anyone looks at.** Which makes it one of those annotations worth treating as **mandatory by convention**: not enforced, cheap, and what it protects is legibility for someone who is not you.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "Conditional edges",
+      "sub": "every path is drawable",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Command: destinations in node bodies",
+      "sub": "invisible to the renderer",
+      "tone": "crit"
+     },
+     {
+      "id": "i",
+      "label": "So the drawing is incomplete",
+      "sub": "and silently so",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Command[Literal[...]] restores it",
+      "sub": "optional",
+      "tone": "good"
+     },
+     {
+      "id": "m",
+      "label": "Mandatory by convention",
+      "sub": "cheap, and it protects legibility",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "c"
+     ],
+     [
+      "c",
+      "i"
+     ],
+     [
+      "i",
+      "a"
+     ],
+     [
+      "a",
+      "m"
+     ]
+    ]
+   }
+  }
  ],
-
  "8.9": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "The default limit is tuned for not interrupting legitimate work",
-         "caption": "An unbounded cycle ran **10,007 supersteps** before `GraphRecursionError` — and the limit this version reports is the same 10,007, so the default is **high enough that a bug burns ten thousand steps before anything stops it.** Setting it explicitly is one line of config, and **for any graph with a cycle, setting it deliberately and low is the cheap protection** — because the default is tuned for not interrupting legitimate work rather than for catching your bug quickly.",
-         "left": "measurement", "codeW": 200,
-         "vars": ["value"],
-         "steps": [
-          {"code": "supersteps executed", "state": ["10,007"], "tone": "crit"},
-          {"code": "the limit reported", "state": ["10,007"], "tone": "crit"},
-          {"code": "recursion_limit=5", "state": ["one line of config"], "changed": [0], "tone": "good", "note": "for any cyclic graph"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Two stream modes for two different questions",
-         "caption": "**`updates` is the debugging view**: it shows exactly what each node contributed, **keyed by node name** — which is what you want when a key has the wrong value and you need to know which node put it there. **`values` is the progress view**, useful for showing a user how far along a run is — and note the off-by-one: **it emits the input state before any node has run**, so the first event is not a result.",
-         "cols": ["Shows", "Use for"],
-         "rows": ["updates", "values"],
-         "cells": [
-          [{"text": "each node's contribution, keyed by name", "tone": "good"}, "debugging: which node wrote this?"],
-          [{"text": "the whole state after each step", "tone": "accent"}, {"text": "progress - and it emits the input first", "tone": "warn"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "The graph can draw itself, which is the cheapest review artefact available",
-         "caption": "`get_graph().draw_ascii()` prints the topology with no dependencies and nothing to configure — `__start__`, then each node, then the edges. **Worth running on every graph you write**, because it is the only artefact that catches 8.6's dead end (a node with no path to `END` compiles fine) and it is the thing 8.8 warned `Command` makes incomplete. **One line, and it is the only diagram anyone looks at.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "d", "label": "get_graph().draw_ascii()", "sub": "no dependencies", "tone": "violet"},
-          {"id": "t", "label": "The topology, printed", "sub": "start, nodes, edges", "tone": "good"},
-          {"id": "e", "label": "Catches 8.6's dead end", "sub": "which compiles fine", "tone": "good"},
-          {"id": "c", "label": "And shows what Command hides", "sub": "by its absence", "tone": "warn"},
-          {"id": "o", "label": "Run it on every graph", "sub": "it is the only diagram anyone reads", "tone": "teal"}],
-         "edges": [["d", "t"], ["t", "e"], ["t", "c"], ["e", "o"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "The default limit is tuned for not interrupting legitimate work",
+    "caption": "An unbounded cycle ran **10,007 supersteps** before `GraphRecursionError` — and the limit this version reports is the same 10,007, so the default is **high enough that a bug burns ten thousand steps before anything stops it.** Setting it explicitly is one line of config, and **for any graph with a cycle, setting it deliberately and low is the cheap protection** — because the default is tuned for not interrupting legitimate work rather than for catching your bug quickly.",
+    "left": "measurement",
+    "codeW": 200,
+    "vars": [
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "supersteps executed",
+      "state": [
+       "10,007"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "the limit reported",
+      "state": [
+       "10,007"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "recursion_limit=5",
+      "state": [
+       "one line of config"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "for any cyclic graph"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Two stream modes for two different questions",
+    "caption": "**`updates` is the debugging view**: it shows exactly what each node contributed, **keyed by node name** — which is what you want when a key has the wrong value and you need to know which node put it there. **`values` is the progress view**, useful for showing a user how far along a run is — and note the off-by-one: **it emits the input state before any node has run**, so the first event is not a result.",
+    "cols": [
+     "Shows",
+     "Use for"
+    ],
+    "rows": [
+     "updates",
+     "values"
+    ],
+    "cells": [
+     [
+      {
+       "text": "each node's contribution, keyed by name",
+       "tone": "good"
+      },
+      "debugging: which node wrote this?"
+     ],
+     [
+      {
+       "text": "the whole state after each step",
+       "tone": "accent"
+      },
+      {
+       "text": "progress - and it emits the input first",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "The graph can draw itself, which is the cheapest review artefact available",
+    "caption": "`get_graph().draw_ascii()` prints the topology with no dependencies and nothing to configure — `__start__`, then each node, then the edges. **Worth running on every graph you write**, because it is the only artefact that catches 8.6's dead end (a node with no path to `END` compiles fine) and it is the thing 8.8 warned `Command` makes incomplete. **One line, and it is the only diagram anyone looks at.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "get_graph().draw_ascii()",
+      "sub": "no dependencies",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "The topology, printed",
+      "sub": "start, nodes, edges",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "Catches 8.6's dead end",
+      "sub": "which compiles fine",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "And shows what Command hides",
+      "sub": "by its absence",
+      "tone": "warn"
+     },
+     {
+      "id": "o",
+      "label": "Run it on every graph",
+      "sub": "it is the only diagram anyone reads",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "t"
+     ],
+     [
+      "t",
+      "e"
+     ],
+     [
+      "t",
+      "c"
+     ],
+     [
+      "e",
+      "o"
+     ]
+    ]
+   }
+  }
  ]
 }

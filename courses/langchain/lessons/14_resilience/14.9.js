@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Representative figures \u2014 the shape is the finding",
       code: "stage               ms      share\nthe model call      1200.0   79.2%\na tool call          180.0   11.9%\nreranking             90.0    5.9%\nretrieval             45.0    3.0%\ngraph overhead         3.0    0.2%\nTOTAL               1518.0",
       caption: "Graph overhead is **0.2%** of the turn." },
@@ -49,6 +50,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "calls", text: "So the architecture is the scaling decision", sub: "Calls per unit of work" },
 
     {"kind": "trace", "title": "Calls per unit of work, which is the budget difference at volume", "caption": "**A choice made for clarity — split this into a supervisor and two workers — is also a decision to spend 67% more model calls per unit of work. That is a defensible trade and it should be made knowingly.** And **plan-and-execute is the outlier worth remembering: its workers have a constant prompt (13.6), so 13.1's quadratic growth never reaches them** — the one pattern that scales to an arbitrarily long task with none of module 13's machinery.", "left": "architecture", "codeW": 200, "vars": ["model calls", "prompt growth"], "steps": [{"code": "one agent, one turn", "state": ["1", "grows"], "tone": "good"}, {"code": "ReAct, 2 tool calls", "state": ["3", "grows every turn"], "changed": [0, 1], "tone": "warn"}, {"code": "supervisor + 2 workers", "state": ["5 (against 3)", "grows"], "changed": [0], "tone": "crit", "note": "+67%"}, {"code": "plan-and-execute, 3 steps", "state": ["4", "CONSTANT per worker"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-14_9-02-1"},
+
     { t: "code", lang: "text", title: "Measured across the course",
       code: "one agent, one turn            1 model call\nReAct with 2 tool calls        3 calls (11.3)\nsupervisor + 2 workers         5 calls vs 3 for one agent (12.x)\nplan-and-execute, 3 steps      1 planner + 3 workers = 4, and the\n                               workers have a CONSTANT prompt (11.6)",
       caption: "The supervisor's extra two calls are the coordination overhead." },
@@ -59,6 +61,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "cache", text: "What to cache", sub: "Measured on realistic traffic" },
 
     {"kind": "trace", "title": "Sixty-five percent on a cache that can never be wrong", "caption": "Real traffic is **Zipfian** — a few questions dominate, so 100 queries held only 37 distinct ones. **And an embedding is a pure function of its input, so this cache can never serve a wrong answer: cache it forever, keyed on (text, model, model version).** The version in the key is the only subtlety, **and omitting it means a model upgrade silently mixes two vector spaces** — which makes this the best cache in the stack: cheap to verify and impossible to serve incorrectly.", "left": "measurement", "codeW": 180, "vars": ["value"], "steps": [{"code": "queries", "state": ["100, of which 37 distinct"], "tone": "accent"}, {"code": "embedding cache", "state": ["65 hits, 35 misses"], "changed": [0], "tone": "good", "note": "65%"}, {"code": "can it be wrong?", "state": ["no - a pure function"], "changed": [0], "tone": "good"}, {"code": "the key", "state": ["(text, model, MODEL VERSION)"], "changed": [0], "tone": "violet", "note": "or two vector spaces mix"}], "t": "diagram", "id": "dg-14_9-03-2"},
+
     { t: "code", lang: "text", title: "100 queries, Zipfian",
       code: "100 queries, 37 distinct\nembedding cache : 65 hits, 35 misses, hit rate 65%",
       caption: "Real traffic is **Zipfian** \u2014 a few questions dominate." },
@@ -69,6 +72,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "never", text: "And what must never be cached", sub: "One of them is a breach" },
 
     {"kind": "trace", "title": "Four things you might cache, and one of them is a breach", "caption": "**A model response is cacheable only for identical prompts — and 13.1 means the prompt contains the whole history, so two users never share one: the hit rate is near zero outside tests.** The last row is not a performance question: **7.5's finding is that a cache keyed on the question alone will serve one user's filtered results to another**, which is a data breach produced by a performance optimisation, and it passes every single-user test.", "left": "what you cache", "codeW": 170, "vars": ["verdict", "the key"], "steps": [{"code": "a query embedding", "state": ["cache forever", "text + model version"], "tone": "good"}, {"code": "a retrieval result", "state": ["TTL only", "+ a corpus version"], "changed": [0, 1], "tone": "warn"}, {"code": "a model response", "state": ["hit rate ~0", "the whole history"], "changed": [0, 1], "tone": "warn"}, {"code": "anything permissioned", "state": ["NEVER", "7.5 - a breach"], "changed": [0, 1], "tone": "crit", "note": "passes single-user tests"}], "t": "diagram", "id": "dg-14_9-04-3"},
+
     { t: "dl", items: [
       ["a **query embedding**", "Pure. Cache forever, keyed on text and model version."],
       ["a **retrieval result**", "Cacheable, but invalidated by any change to the corpus \u2014 so give it a TTL, and key it on a corpus version if you have one."],
@@ -83,6 +87,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "saturates", text: "The component that saturates first", sub: "Not the framework, and not your service" },
 
     {"kind": "flow", "title": "The limit has to be where the scarce resource is", "caption": "The provider rate limit saturates first, **because the model call is ~80% of the turn and the only part you do not control** — so **the concurrency limit that matters is on model calls and belongs in front of them, not at your HTTP layer. An HTTP limit of 200 against a provider limit of 20 means 180 requests racing to discover a 429, each after paying for retrieval and reranking.** What to watch, in order: queue depth, 429 rate, cost per run, p99 turn count, **and the retrieval index's memory — the only non-model component that genuinely saturates, and it does so suddenly.**", "cols": 3, "nodes": [{"id": "s", "label": "A semaphore around the model call", "sub": "sized to the rate limit", "tone": "good"}, {"id": "q", "label": "A queue in front of it", "sub": "a burst waits instead of failing", "tone": "good"}, {"id": "b", "label": "Backpressure when the queue is long", "sub": "shed load deliberately", "tone": "good"}, {"id": "h", "label": "HTTP limit 200, provider limit 20", "sub": "180 racing to find a 429", "tone": "crit"}, {"id": "i", "label": "Watch the index's memory too", "sub": "it saturates suddenly", "tone": "warn"}], "edges": [["s", "q"], ["q", "b"], ["h", "s"], ["b", "i"]], "t": "diagram", "id": "dg-14_9-05-4"},
+
     { t: "p", text: "It is the **provider rate limit**, because the model call is ~80% of the turn and the only part you do not control. So the concurrency limit that matters is the one on model calls, and it belongs **in front of them** rather than at your HTTP layer." },
     { t: "ul", items: [
       "A **semaphore** around the model call, sized to your rate limit.",
@@ -131,6 +136,41 @@ await client.runs.create(thread["thread_id"], "agent", input=payload,
 # Locally that case cannot occur, because there is one process and one call.`,
       caption: "**The interrupt case is the one that changes architecture rather than deployment:** with the graph as a service, a run that pauses for approval leaves its state on the server, so the approval can arrive days later as an ordinary HTTP request. Locally the same pattern needs a process alive for the whole wait." },
     { t: "p", text: "**`multitask_strategy` has no local equivalent, because locally the situation cannot arise** \u2014 one process, one call. As a service, a second message can land on a thread whose run is still going, and the four answers are genuinely different products: enqueue it, interrupt the current run, roll the current run back, or reject the new message. Choosing is a product decision about what a user sees when they send twice." },
+
+    { t: "code", lang: "python", title: "The four Platform objects, and the one with no local equivalent",
+      code: `# ASSISTANT -- a graph plus a configuration, versioned. The same graph served
+# with two prompts or two models is two assistants, so a prompt change is a
+# deployment of config rather than of code.
+assistant = await client.assistants.create(
+    graph_id="agent", config={"configurable": {"model": "gpt-4o-mini"}},
+    name="cheap-tier")
+await client.assistants.set_latest(assistant["assistant_id"], version=3)
+
+# THREAD -- the conversation, and the checkpoint key. Server-side, so it
+# outlives every process.
+# RUN -- one execution of an assistant on a thread. Background by default, with
+# an id, so the client can disconnect and reattach.
+
+# CRON -- a schedule. A run with no user waiting for it.
+await client.crons.create_for_thread(
+    thread["thread_id"], assistant_id="agent",
+    schedule="0 9 * * 1",                       # 09:00 every Monday
+    input={"messages": [{"role": "user", "content": "weekly digest"}]})
+
+# WEBHOOK -- the server calls YOU when a run finishes, which is what makes a
+# long run or an interrupted one workable without polling.
+await client.runs.create(thread["thread_id"], "agent", input=payload,
+                         webhook="https://my.app/hooks/run-done")
+
+# DOUBLE-TEXTING is the name for the case with no local equivalent: a second
+# message arrives on a thread whose run is still going. Four answers, and the
+# choice is a product decision rather than a technical one:
+#   reject     refuse the new message
+#   enqueue    finish, then run again
+#   interrupt  stop the current run, keep its partial state, start the new one
+#   rollback   discard the current run entirely and start again`,
+      caption: "**An assistant is a graph plus a versioned configuration, which turns a prompt change into a config deployment rather than a code deployment** \u2014 and makes two tiers of the same agent two assistants over one graph. Crons and webhooks are the two objects that exist because a run no longer has a user waiting for it." },
+    { t: "p", text: "**Double-texting is the term to know, because it names a case that cannot occur locally** \u2014 one process, one call, no second message. As a service it happens constantly, and the four strategies are visibly different products: rejecting is honest, enqueueing feels slow, interrupting loses work the user may have wanted, and rolling back loses it deliberately. There is no safe default, which is why the argument is required reading rather than a tuning knob." },
 
     { t: "exercise", kind: "analysis", title: "Find where an agent breaks under load",
       difficulty: "advanced", minutes: 32,

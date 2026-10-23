@@ -1,246 +1,1065 @@
 {
  "5.1": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Recall is complete at k=5, and k=20 still buys something",
-         "caption": "At k=1 **there is nothing to rerank**, so stage one's ordering *is* the final answer and any mistake it makes is the system's mistake. Recall reaches 1.000 by k=5, so **k=10 and k=20 add no recall at all** — and they are not pointless: they add **room for stage two to work**, which is a different and equally real benefit. Which is why `fetch_k` and `k` are separate parameters rather than one.",
-         "left": "fetch k", "codeW": 130,
-         "vars": ["recall@k", "can rerank to"],
-         "steps": [
-          {"code": "1", "state": ["0.571", "top-1 of 1"], "tone": "crit", "note": "no room at all"},
-          {"code": "3", "state": ["0.929", "top-3 of 3"], "tone": "warn"},
-          {"code": "5", "state": ["1.000", "top-5 of 5"], "changed": [0], "tone": "good"},
-          {"code": "10", "state": ["1.000", "top-5 of 10"], "changed": [1], "tone": "good", "note": "no recall, more room"},
-          {"code": "20", "state": ["1.000", "top-5 of 20"], "tone": "good"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "The ratio is the whole argument for two stages",
-         "caption": "Dense retrieval over the whole corpus is a few milliseconds a query, because documents are embedded **once**. A cross-encoder scores **a query-document pair**, so it costs roughly **a hundred times more per document scored** — 6.1 measures it. Which settles the architecture without any further argument: **you cannot afford the expensive model over everything, and you cannot trust the cheap model's ordering.** So: cheap over everything to build a candidate set, expensive over the candidates to order them.",
-         "cols": 3,
-         "nodes": [
-          {"id": "d", "label": "Dense: documents embedded once", "sub": "a few ms per query", "tone": "good"},
-          {"id": "c", "label": "Cross-encoder: scores a pair", "sub": "about 100x per document", "tone": "crit"},
-          {"id": "a", "label": "Cannot afford it over everything", "sub": "so not one stage", "tone": "crit"},
-          {"id": "t", "label": "Cannot trust the cheap ordering", "sub": "so not one stage either", "tone": "crit"},
-          {"id": "s", "label": "Cheap for the candidates, dear for the order", "sub": "which is the only option left", "tone": "good"}],
-         "edges": [["d", "a"], ["c", "a"], ["c", "t"], ["a", "s"], ["t", "s"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Recall is complete at k=5, and k=20 still buys something",
+    "caption": "At k=1 **there is nothing to rerank**, so stage one's ordering *is* the final answer and any mistake it makes is the system's mistake. Recall reaches 1.000 by k=5, so **k=10 and k=20 add no recall at all** — and they are not pointless: they add **room for stage two to work**, which is a different and equally real benefit. Which is why `fetch_k` and `k` are separate parameters rather than one.",
+    "left": "fetch k",
+    "codeW": 130,
+    "vars": [
+     "recall@k",
+     "can rerank to"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "0.571",
+       "top-1 of 1"
+      ],
+      "tone": "crit",
+      "note": "no room at all"
+     },
+     {
+      "code": "3",
+      "state": [
+       "0.929",
+       "top-3 of 3"
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "5",
+      "state": [
+       "1.000",
+       "top-5 of 5"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "10",
+      "state": [
+       "1.000",
+       "top-5 of 10"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "no recall, more room"
+     },
+     {
+      "code": "20",
+      "state": [
+       "1.000",
+       "top-5 of 20"
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The ratio is the whole argument for two stages",
+    "caption": "Dense retrieval over the whole corpus is a few milliseconds a query, because documents are embedded **once**. A cross-encoder scores **a query-document pair**, so it costs roughly **a hundred times more per document scored** — 6.1 measures it. Which settles the architecture without any further argument: **you cannot afford the expensive model over everything, and you cannot trust the cheap model's ordering.** So: cheap over everything to build a candidate set, expensive over the candidates to order them.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "Dense: documents embedded once",
+      "sub": "a few ms per query",
+      "tone": "good"
+     },
+     {
+      "id": "c",
+      "label": "Cross-encoder: scores a pair",
+      "sub": "about 100x per document",
+      "tone": "crit"
+     },
+     {
+      "id": "a",
+      "label": "Cannot afford it over everything",
+      "sub": "so not one stage",
+      "tone": "crit"
+     },
+     {
+      "id": "t",
+      "label": "Cannot trust the cheap ordering",
+      "sub": "so not one stage either",
+      "tone": "crit"
+     },
+     {
+      "id": "s",
+      "label": "Cheap for the candidates, dear for the order",
+      "sub": "which is the only option left",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "a"
+     ],
+     [
+      "c",
+      "a"
+     ],
+     [
+      "c",
+      "t"
+     ],
+     [
+      "a",
+      "s"
+     ],
+     [
+      "t",
+      "s"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.2": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "Two fields, and the metadata is the one that has to survive",
-         "caption": "A loader produces `Document(page_content, metadata)` — and 1.6 established that **the metadata survives every later stage untouched**, which is what makes retrieval-time filtering possible at all. So what the loader chooses to record is a decision about what you will be able to filter on later: **a `team` and a `public` flag set here are what 4.7's metadata-filter defence is built on**, and a field the loader did not capture cannot be recovered downstream.",
-         "cols": 3,
-         "nodes": [
-          {"id": "l", "label": "The loader", "sub": "one per format", "tone": "accent"},
-          {"id": "p", "label": "page_content", "sub": "the text, to be split and embedded", "tone": "accent"},
-          {"id": "m", "label": "metadata", "sub": "{'team': 'billing', 'public': True}", "tone": "violet"},
-          {"id": "s", "label": "Survives every stage untouched", "sub": "1.6", "tone": "good"},
-          {"id": "f", "label": "So it is what you can filter on", "sub": "4.7's structural defence", "tone": "good"},
-          {"id": "n", "label": "And what it skipped is unrecoverable", "sub": "not re-derivable later", "tone": "crit"}],
-         "edges": [["l", "p"], ["l", "m"], ["m", "s"], ["s", "f"], ["f", "n"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Five formats, and what each one loses before chunking even starts",
-         "caption": "Every row is a loss that **no chunk size, embedding model or reranker can repair**, because the information was gone before the text existed. The spreadsheet row is the sharpest: **a row means nothing without its header row**, so each extracted row is a tuple of values with no names attached. And PDF headers repeating on every page means **the most-repeated text in your corpus is boilerplate**, which is exactly what a term-frequency method will downweight and a dense model will quietly average in.",
-         "cols": ["What is lost"],
-         "rows": ["PDF", "HTML", "Spreadsheets", "Slides", "Code"],
-         "cells": [
-          [{"text": "column order; tables interleave; headers repeat on every page", "tone": "crit"}],
-          ["navigation and footer text mixed in unless stripped"],
-          [{"text": "a row means nothing without its header row", "tone": "crit"}],
-          ["speaker notes and slide text concatenated, no separator"],
-          [{"text": "indentation carries meaning and is often normalised away", "tone": "crit"}]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A corpus built to be difficult, because an easy one teaches nothing",
-         "caption": "Three deliberate properties, each of which breaks a different stage. **Near-duplicate documents that differ only in the detail that decides the answer** defeat a ranker that is nearly right. **Queries phrased the way a user would phrase them rather than the way the document does** defeat lexical overlap. And **rare exact terms appearing in exactly one place** defeat dense similarity. 5.8 shows what that costs, and module 6 is six repairs to those three failures.",
-         "cols": 3,
-         "nodes": [
-          {"id": "n", "label": "Near-duplicates", "sub": "differing in the deciding detail", "tone": "violet"},
-          {"id": "q", "label": "User phrasing, not document phrasing", "sub": "no shared vocabulary", "tone": "violet"},
-          {"id": "r", "label": "Rare exact terms, in one place only", "sub": "mTLS, Retry-After", "tone": "violet"},
-          {"id": "a", "label": "Defeats a nearly-right ranker", "sub": "MMR, 6.6", "tone": "accent"},
-          {"id": "b", "label": "Defeats lexical overlap", "sub": "and dense helps here", "tone": "accent"},
-          {"id": "c", "label": "Defeats dense similarity", "sub": "BM25, 6.3", "tone": "accent"}],
-         "edges": [["n", "a"], ["q", "b"], ["r", "c"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "Two fields, and the metadata is the one that has to survive",
+    "caption": "A loader produces `Document(page_content, metadata)` — and 1.6 established that **the metadata survives every later stage untouched**, which is what makes retrieval-time filtering possible at all. So what the loader chooses to record is a decision about what you will be able to filter on later: **a `team` and a `public` flag set here are what 4.7's metadata-filter defence is built on**, and a field the loader did not capture cannot be recovered downstream.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "l",
+      "label": "The loader",
+      "sub": "one per format",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "page_content",
+      "sub": "the text, to be split and embedded",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "metadata",
+      "sub": "{'team': 'billing', 'public': True}",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "Survives every stage untouched",
+      "sub": "1.6",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "So it is what you can filter on",
+      "sub": "4.7's structural defence",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "And what it skipped is unrecoverable",
+      "sub": "not re-derivable later",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "l",
+      "p"
+     ],
+     [
+      "l",
+      "m"
+     ],
+     [
+      "m",
+      "s"
+     ],
+     [
+      "s",
+      "f"
+     ],
+     [
+      "f",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Five formats, and what each one loses before chunking even starts",
+    "caption": "Every row is a loss that **no chunk size, embedding model or reranker can repair**, because the information was gone before the text existed. The spreadsheet row is the sharpest: **a row means nothing without its header row**, so each extracted row is a tuple of values with no names attached. And PDF headers repeating on every page means **the most-repeated text in your corpus is boilerplate**, which is exactly what a term-frequency method will downweight and a dense model will quietly average in.",
+    "items": [
+     {
+      "label": "PDF",
+      "sub": "column order; tables interleave; headers repeat on every page",
+      "tone": "crit"
+     },
+     {
+      "label": "HTML",
+      "sub": "navigation and footer text mixed in unless stripped"
+     },
+     {
+      "label": "Spreadsheets",
+      "sub": "a row means nothing without its header row",
+      "tone": "crit"
+     },
+     {
+      "label": "Slides",
+      "sub": "speaker notes and slide text concatenated, no separator"
+     },
+     {
+      "label": "Code",
+      "sub": "indentation carries meaning and is often normalised away",
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A corpus built to be difficult, because an easy one teaches nothing",
+    "caption": "Three deliberate properties, each of which breaks a different stage. **Near-duplicate documents that differ only in the detail that decides the answer** defeat a ranker that is nearly right. **Queries phrased the way a user would phrase them rather than the way the document does** defeat lexical overlap. And **rare exact terms appearing in exactly one place** defeat dense similarity. 5.8 shows what that costs, and module 6 is six repairs to those three failures.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "n",
+      "label": "Near-duplicates",
+      "sub": "differing in the deciding detail",
+      "tone": "violet"
+     },
+     {
+      "id": "q",
+      "label": "User phrasing, not document phrasing",
+      "sub": "no shared vocabulary",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Rare exact terms, in one place only",
+      "sub": "mTLS, Retry-After",
+      "tone": "violet"
+     },
+     {
+      "id": "a",
+      "label": "Defeats a nearly-right ranker",
+      "sub": "MMR, 6.6",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "Defeats lexical overlap",
+      "sub": "and dense helps here",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "Defeats dense similarity",
+      "sub": "BM25, 6.3",
+      "tone": "accent"
+     }
+    ],
+    "edges": [
+     [
+      "n",
+      "a"
+     ],
+     [
+      "q",
+      "b"
+     ],
+     [
+      "r",
+      "c"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.3": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Overlap doubled the corpus and bought nothing measurable",
-         "caption": "Recall is 1.000 at every overlap setting and MRR moves only at 50, by one query. Meanwhile **the chunk count goes from 64 to 129** — the corpus doubled, and so did storage and embedding time. At 100 characters of overlap on a 150-character chunk **consecutive chunks are mostly the same text**, so they compete with each other for the same slot. Overlap is insurance against a split landing mid-sentence, and insurance is worth buying at a rate, not at any price.",
-         "left": "overlap", "codeW": 130,
-         "vars": ["chunks", "recall@5", "MRR"],
-         "steps": [
-          {"code": "0", "state": ["64", "1.000", "0.893"], "tone": "good"},
-          {"code": "20", "state": ["71", "1.000", "0.893"], "tone": "good"},
-          {"code": "50", "state": ["85", "1.000", "0.929"], "changed": [2], "tone": "accent", "note": "one query, once"},
-          {"code": "100", "state": ["129", "1.000", "0.893"], "changed": [0], "tone": "crit", "note": "2x the corpus, no gain"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "A fragment that no longer carries its own subject",
-         "caption": "The failure no metric here captures: a chunk that reads perfectly and **has lost what it is about** — *\"the limit is 600 per minute\"* with the sentence naming the product two chunks earlier. Retrieval scores it as relevant to the wrong question and the answer is confidently about the wrong thing. **Both mitigations cost tokens and both are cheaper than an answer about the wrong subject**: split on structural boundaries rather than character counts, and prepend a title or heading so each fragment carries its subject with it.",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "A split at a character count", "sub": "mid-topic, not mid-sentence", "tone": "warn"},
-          {"id": "f", "label": "The fragment reads fine", "sub": "and has lost its subject", "tone": "crit"},
-          {"id": "w", "label": "Retrieved for the wrong question", "sub": "scored as relevant", "tone": "crit"},
-          {"id": "b", "label": "Split on structural boundaries", "sub": "headings, sections", "tone": "good"},
-          {"id": "p", "label": "And prepend the title", "sub": "so it carries its own subject", "tone": "good"}],
-         "edges": [["s", "f"], ["f", "w"], ["w", "b"], ["b", "p"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Overlap doubled the corpus and bought nothing measurable",
+    "caption": "Recall is 1.000 at every overlap setting and MRR moves only at 50, by one query. Meanwhile **the chunk count goes from 64 to 129** — the corpus doubled, and so did storage and embedding time. At 100 characters of overlap on a 150-character chunk **consecutive chunks are mostly the same text**, so they compete with each other for the same slot. Overlap is insurance against a split landing mid-sentence, and insurance is worth buying at a rate, not at any price.",
+    "left": "overlap",
+    "codeW": 130,
+    "vars": [
+     "chunks",
+     "recall@5",
+     "MRR"
+    ],
+    "steps": [
+     {
+      "code": "0",
+      "state": [
+       "64",
+       "1.000",
+       "0.893"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "20",
+      "state": [
+       "71",
+       "1.000",
+       "0.893"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "50",
+      "state": [
+       "85",
+       "1.000",
+       "0.929"
+      ],
+      "changed": [
+       2
+      ],
+      "tone": "accent",
+      "note": "one query, once"
+     },
+     {
+      "code": "100",
+      "state": [
+       "129",
+       "1.000",
+       "0.893"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "2x the corpus, no gain"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "A fragment that no longer carries its own subject",
+    "caption": "The failure no metric here captures: a chunk that reads perfectly and **has lost what it is about** — *\"the limit is 600 per minute\"* with the sentence naming the product two chunks earlier. Retrieval scores it as relevant to the wrong question and the answer is confidently about the wrong thing. **Both mitigations cost tokens and both are cheaper than an answer about the wrong subject**: split on structural boundaries rather than character counts, and prepend a title or heading so each fragment carries its subject with it.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "A split at a character count",
+      "sub": "mid-topic, not mid-sentence",
+      "tone": "warn"
+     },
+     {
+      "id": "f",
+      "label": "The fragment reads fine",
+      "sub": "and has lost its subject",
+      "tone": "crit"
+     },
+     {
+      "id": "w",
+      "label": "Retrieved for the wrong question",
+      "sub": "scored as relevant",
+      "tone": "crit"
+     },
+     {
+      "id": "b",
+      "label": "Split on structural boundaries",
+      "sub": "headings, sections",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "And prepend the title",
+      "sub": "so it carries its own subject",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "f"
+     ],
+     [
+      "f",
+      "w"
+     ],
+     [
+      "w",
+      "b"
+     ],
+     [
+      "b",
+      "p"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.4": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "384 numbers, normalised to length 1",
-         "caption": "The two facts that matter operationally. **384 dimensions** sets your storage and search cost — one vector per chunk, four bytes each. And **`|v| = 1.000000`**: the model normalises, which is what makes §02's result possible and what makes 5.5's index choice safe. **An inner-product index over un-normalised vectors ranks by magnitude as well as direction and never complains**, so this one line is worth printing once per model you adopt.",
-         "left": "property", "codeW": 160,
-         "vars": ["value"],
-         "steps": [
-          {"code": "model", "state": ["all-MiniLM-L6-v2"], "tone": "accent"},
-          {"code": "dimensions", "state": ["384"], "tone": "accent", "note": "storage and search cost"},
-          {"code": "normalised", "state": ["|v| = 1.000000"], "changed": [0], "tone": "violet", "note": "print this per model"}]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Cosine by hand, and why the dot product is the same number",
-         "caption": "*subscription cancel* against *stop plan renewing* — **no shared words** — scores **0.7139**, and against *API rate limit* scores **0.0699**. That gap is the thing dense retrieval buys and lexical matching cannot. And the third row is the arithmetic that makes 5.5's index safe: **because the vectors are normalised, the dot product equals the cosine exactly**, so an inner-product index ranks by cosine without computing one.",
-         "left": "pair", "codeW": 220,
-         "vars": ["score"],
-         "steps": [
-          {"code": "subscription cancel / stop plan renewing", "state": ["0.7139"], "tone": "good", "note": "no shared words"},
-          {"code": "subscription cancel / API rate limit", "state": ["0.0699"], "changed": [0], "tone": "accent"},
-          {"code": "dot product of the first pair", "state": ["0.7139"], "tone": "violet", "note": "identical, because normalised"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Some models prepend 'query:' and 'passage:', which is why there are two methods",
-         "caption": "1.6 noted that `Embeddings` has `embed_documents` and `embed_query` as separate methods and that the split looks redundant. Here is why it is not: **some widely used models are asymmetric**, prepending something like `query:` to a search string and `passage:` to a stored document — **because a question and the text that answers it are different kinds of object.** Use one method for both and the model is comparing two things it was trained to represent differently.",
-         "cols": 3,
-         "nodes": [
-          {"id": "q", "label": "A question", "sub": "short, interrogative", "tone": "accent"},
-          {"id": "p", "label": "The passage that answers it", "sub": "declarative, longer", "tone": "accent"},
-          {"id": "a", "label": "Asymmetric models prefix them", "sub": "'query:' and 'passage:'", "tone": "violet"},
-          {"id": "t", "label": "So there are two methods", "sub": "not one, redundantly", "tone": "good"},
-          {"id": "w", "label": "Use one for both", "sub": "and you compare mismatched encodings", "tone": "crit"}],
-         "edges": [["q", "a"], ["p", "a"], ["a", "t"], ["t", "w"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "384 numbers, normalised to length 1",
+    "caption": "The two facts that matter operationally. **384 dimensions** sets your storage and search cost — one vector per chunk, four bytes each. And **`|v| = 1.000000`**: the model normalises, which is what makes §02's result possible and what makes 5.5's index choice safe. **An inner-product index over un-normalised vectors ranks by magnitude as well as direction and never complains**, so this one line is worth printing once per model you adopt.",
+    "left": "property",
+    "codeW": 160,
+    "vars": [
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "model",
+      "state": [
+       "all-MiniLM-L6-v2"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "dimensions",
+      "state": [
+       "384"
+      ],
+      "tone": "accent",
+      "note": "storage and search cost"
+     },
+     {
+      "code": "normalised",
+      "state": [
+       "|v| = 1.000000"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "violet",
+      "note": "print this per model"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Cosine by hand, and why the dot product is the same number",
+    "caption": "*subscription cancel* against *stop plan renewing* — **no shared words** — scores **0.7139**, and against *API rate limit* scores **0.0699**. That gap is the thing dense retrieval buys and lexical matching cannot. And the third row is the arithmetic that makes 5.5's index safe: **because the vectors are normalised, the dot product equals the cosine exactly**, so an inner-product index ranks by cosine without computing one.",
+    "left": "pair",
+    "codeW": 220,
+    "vars": [
+     "score"
+    ],
+    "steps": [
+     {
+      "code": "subscription cancel / stop plan renewing",
+      "state": [
+       "0.7139"
+      ],
+      "tone": "good",
+      "note": "no shared words"
+     },
+     {
+      "code": "subscription cancel / API rate limit",
+      "state": [
+       "0.0699"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "dot product of the first pair",
+      "state": [
+       "0.7139"
+      ],
+      "tone": "violet",
+      "note": "identical, because normalised"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Some models prepend 'query:' and 'passage:', which is why there are two methods",
+    "caption": "1.6 noted that `Embeddings` has `embed_documents` and `embed_query` as separate methods and that the split looks redundant. Here is why it is not: **some widely used models are asymmetric**, prepending something like `query:` to a search string and `passage:` to a stored document — **because a question and the text that answers it are different kinds of object.** Use one method for both and the model is comparing two things it was trained to represent differently.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "A question",
+      "sub": "short, interrogative",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "The passage that answers it",
+      "sub": "declarative, longer",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "Asymmetric models prefix them",
+      "sub": "'query:' and 'passage:'",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "So there are two methods",
+      "sub": "not one, redundantly",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "Use one for both",
+      "sub": "and you compare mismatched encodings",
+      "tone": "crit"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "a"
+     ],
+     [
+      "p",
+      "a"
+     ],
+     [
+      "a",
+      "t"
+     ],
+     [
+      "t",
+      "w"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.5": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Exact search first, and the pairing that fails silently",
-         "caption": "41 vectors, exhaustive, and the top five are ordered by inner product — which **equals cosine here because 5.4 normalised the vectors.** Getting that pairing wrong is the silent failure from the previous lesson: **an inner-product index over un-normalised vectors ranks by magnitude as well as direction and never complains.** A longer document gets a bigger vector gets a better score, and the retrieval is subtly wrong with no error anywhere.",
-         "left": "rank", "codeW": 150,
-         "vars": ["document", "score"],
-         "steps": [
-          {"code": "1", "state": ["data-retention", "0.4429"], "tone": "good"},
-          {"code": "2", "state": ["data-deletion", "0.4111"], "tone": "accent"},
-          {"code": "3", "state": ["auth-session", "0.3701"], "tone": "accent"},
-          {"code": "5", "state": ["data-audit", "0.3571"], "tone": "accent"},
-          {"code": "the pairing", "state": ["IndexFlatIP + normalised", "= cosine"], "tone": "violet", "note": "un-normalised: silently wrong"}]}},
-  {"after": "02",
-   "d": {"kind": "matrix",
-         "title": "Three indexes, and only one has a recall you do not have to measure",
-         "caption": "**`IndexFlatIP` is 1.000 by definition** — it compares everything, so there is no recall question to ask and no parameter to tune wrongly. The other two trade that away for query time, and the trade is the thing to be explicit about: **IVF's recall depends on `nprobe`, which is a number somebody chose**, and HNSW's typical 0.95–0.99 means **one query in twenty to one in a hundred silently misses a document it should have found.** At 41 vectors, or 41,000, exact search is the right answer.",
-         "cols": ["Build", "Query", "Recall against exact"],
-         "rows": ["IndexFlatIP", "IVF", "HNSW"],
-         "cells": [
-          [{"text": "instant", "tone": "good"}, "O(n)", {"text": "1.000 by definition", "tone": "good"}],
-          ["a clustering pass", "O(n/nlist)", {"text": "depends on nprobe", "tone": "warn"}],
-          [{"text": "graph build, slow", "tone": "warn"}, {"text": "O(log n)", "tone": "good"}, {"text": "typically 0.95-0.99", "tone": "warn"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Exact search first, and the pairing that fails silently",
+    "caption": "41 vectors, exhaustive, and the top five are ordered by inner product — which **equals cosine here because 5.4 normalised the vectors.** Getting that pairing wrong is the silent failure from the previous lesson: **an inner-product index over un-normalised vectors ranks by magnitude as well as direction and never complains.** A longer document gets a bigger vector gets a better score, and the retrieval is subtly wrong with no error anywhere.",
+    "left": "rank",
+    "codeW": 150,
+    "vars": [
+     "document",
+     "score"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "data-retention",
+       "0.4429"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "2",
+      "state": [
+       "data-deletion",
+       "0.4111"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "3",
+      "state": [
+       "auth-session",
+       "0.3701"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "5",
+      "state": [
+       "data-audit",
+       "0.3571"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "the pairing",
+      "state": [
+       "IndexFlatIP + normalised",
+       "= cosine"
+      ],
+      "tone": "violet",
+      "note": "un-normalised: silently wrong"
+     }
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "matrix",
+    "title": "Three indexes, and only one has a recall you do not have to measure",
+    "caption": "**`IndexFlatIP` is 1.000 by definition** — it compares everything, so there is no recall question to ask and no parameter to tune wrongly. The other two trade that away for query time, and the trade is the thing to be explicit about: **IVF's recall depends on `nprobe`, which is a number somebody chose**, and HNSW's typical 0.95–0.99 means **one query in twenty to one in a hundred silently misses a document it should have found.** At 41 vectors, or 41,000, exact search is the right answer.",
+    "cols": [
+     "Build",
+     "Query",
+     "Recall against exact"
+    ],
+    "rows": [
+     "IndexFlatIP",
+     "IVF",
+     "HNSW"
+    ],
+    "cells": [
+     [
+      {
+       "text": "instant",
+       "tone": "good"
+      },
+      "O(n)",
+      {
+       "text": "1.000 by definition",
+       "tone": "good"
+      }
+     ],
+     [
+      "a clustering pass",
+      "O(n/nlist)",
+      {
+       "text": "depends on nprobe",
+       "tone": "warn"
+      }
+     ],
+     [
+      {
+       "text": "graph build, slow",
+       "tone": "warn"
+      },
+      {
+       "text": "O(log n)",
+       "tone": "good"
+      },
+      {
+       "text": "typically 0.95-0.99",
+       "tone": "warn"
+      }
+     ]
+    ]
+   }
+  }
  ],
-
  "5.6": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "A retriever pipes, so RAG is an expression rather than a function",
-         "caption": "`has invoke/batch/stream: True`, so `r | format_docs` is a valid chain and the retrieved documents flow into a formatter the way any value flows into any step. **That single fact is what lets 5.7 write the whole pipeline as one LCEL expression** instead of as a function that calls a retriever, formats the result and then calls a model. The uniformity from 1.1 arriving where it pays most.",
-         "cols": 3,
-         "nodes": [
-          {"id": "r", "label": "The retriever has invoke", "sub": "and batch, and stream", "tone": "accent"},
-          {"id": "p", "label": "r | format_docs", "sub": "a valid chain", "tone": "good"},
-          {"id": "e", "label": "So RAG is an expression", "sub": "5.7, not a function", "tone": "violet"},
-          {"id": "u", "label": "1.1's uniformity, where it pays most", "sub": "nothing special was added for retrieval", "tone": "teal"}],
-         "edges": [["r", "p"], ["p", "e"], ["e", "u"]]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Store or retriever, decided by what varies per request",
-         "caption": "The dividing line is **what varies per call**. `k`, a metadata filter and a score threshold all vary by caller, so they belong to the retriever. The index type and the embedding model are **properties of the data at rest** — changing the embedding model means reindexing everything. And the practical consequence is sharp: **a store built per request to carry a tenant filter rebuilds or re-wraps the index on every call**, which is the structural mistake behind a surprising number of slow RAG systems.",
-         "cols": ["Belongs to", "Why"],
-         "rows": ["k", "a metadata filter", "a score threshold", "the index type", "the embedding model"],
-         "cells": [
-          [{"text": "retriever", "tone": "good"}, "a per-query decision"],
-          [{"text": "retriever", "tone": "good"}, {"text": "it varies by caller", "tone": "violet"}],
-          [{"text": "retriever", "tone": "good"}, "7.1 makes it a guard"],
-          [{"text": "store", "tone": "accent"}, "a property of the data at rest"],
-          [{"text": "store", "tone": "accent"}, "changing it means reindexing everything"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "A retriever pipes, so RAG is an expression rather than a function",
+    "caption": "`has invoke/batch/stream: True`, so `r | format_docs` is a valid chain and the retrieved documents flow into a formatter the way any value flows into any step. **That single fact is what lets 5.7 write the whole pipeline as one LCEL expression** instead of as a function that calls a retriever, formats the result and then calls a model. The uniformity from 1.1 arriving where it pays most.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "r",
+      "label": "The retriever has invoke",
+      "sub": "and batch, and stream",
+      "tone": "accent"
+     },
+     {
+      "id": "p",
+      "label": "r | format_docs",
+      "sub": "a valid chain",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "So RAG is an expression",
+      "sub": "5.7, not a function",
+      "tone": "violet"
+     },
+     {
+      "id": "u",
+      "label": "1.1's uniformity, where it pays most",
+      "sub": "nothing special was added for retrieval",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "r",
+      "p"
+     ],
+     [
+      "p",
+      "e"
+     ],
+     [
+      "e",
+      "u"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "matrix",
+    "title": "Store or retriever, decided by what varies per request",
+    "caption": "The dividing line is **what varies per call**. `k`, a metadata filter and a score threshold all vary by caller, so they belong to the retriever. The index type and the embedding model are **properties of the data at rest** — changing the embedding model means reindexing everything. And the practical consequence is sharp: **a store built per request to carry a tenant filter rebuilds or re-wraps the index on every call**, which is the structural mistake behind a surprising number of slow RAG systems.",
+    "cols": [
+     "Belongs to",
+     "Why"
+    ],
+    "rows": [
+     "k",
+     "a metadata filter",
+     "a score threshold",
+     "the index type",
+     "the embedding model"
+    ],
+    "cells": [
+     [
+      {
+       "text": "retriever",
+       "tone": "good"
+      },
+      "a per-query decision"
+     ],
+     [
+      {
+       "text": "retriever",
+       "tone": "good"
+      },
+      {
+       "text": "it varies by caller",
+       "tone": "violet"
+      }
+     ],
+     [
+      {
+       "text": "retriever",
+       "tone": "good"
+      },
+      "7.1 makes it a guard"
+     ],
+     [
+      {
+       "text": "store",
+       "tone": "accent"
+      },
+      "a property of the data at rest"
+     ],
+     [
+      {
+       "text": "store",
+       "tone": "accent"
+      },
+      "changing it means reindexing everything"
+     ]
+    ]
+   }
+  }
  ],
-
  "5.7": [
-  {"after": "01",
-   "d": {"kind": "flow",
-         "title": "The two-branch pattern from 2.4, with retrieval finally in it",
-         "caption": "**The retriever branch turns the question into formatted context; the passthrough carries the same question forward unchanged.** Both arrive at the prompt as named variables — which is **exactly the two-branch pattern 2.4 built before there was any retrieval to put in it.** Which is worth noticing as a design observation rather than a coincidence: the RAG chain needed no new construct, because the construct it needs was the general one for keeping an input alongside a derived value.",
-         "cols": 4,
-         "nodes": [
-          {"id": "q", "label": "The question", "sub": "one input", "tone": "accent"},
-          {"id": "r", "label": "retriever | format_docs", "sub": "-> context", "tone": "violet"},
-          {"id": "p", "label": "RunnablePassthrough", "sub": "-> the question, unchanged", "tone": "violet"},
-          {"id": "t", "label": "prompt | model | parser", "sub": "two named variables", "tone": "good"},
-          {"id": "n", "label": "And 2.4 built this before RAG existed", "sub": "no new construct needed", "tone": "teal"}],
-         "edges": [["q", "r"], ["q", "p"], ["r", "t"], ["p", "t"], ["t", "n"]]}},
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "Two messages, and the three clauses doing the work",
-         "caption": "The whole pipeline collapses to **two messages**, which is 1.2's point arriving in a real system. And the system message carries three clauses, each preventing a specific failure: **\"ONLY the context\"** stops the model answering from memory indistinguishably; **\"say you do not know\"** supplies the abstention path that 7.1 turns into a guard; and **\"cite the [id]\"** is what makes an answer checkable at all.",
-         "left": "message", "codeW": 130,
-         "vars": ["content", "what it prevents"],
-         "steps": [
-          {"code": "System", "state": ["'ONLY the context below'", "answering from memory"], "tone": "violet"},
-          {"code": "System", "state": ["'say you do not know'", "a confident non-answer"], "tone": "violet"},
-          {"code": "System", "state": ["'cite the [id]'", "an unverifiable answer"], "tone": "violet"},
-          {"code": "System", "state": ["+ the formatted context", ""], "tone": "accent"},
-          {"code": "Human", "state": ["the question", ""], "tone": "accent", "note": "two messages, total"}]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "flow",
+    "title": "The two-branch pattern from 2.4, with retrieval finally in it",
+    "caption": "**The retriever branch turns the question into formatted context; the passthrough carries the same question forward unchanged.** Both arrive at the prompt as named variables — which is **exactly the two-branch pattern 2.4 built before there was any retrieval to put in it.** Which is worth noticing as a design observation rather than a coincidence: the RAG chain needed no new construct, because the construct it needs was the general one for keeping an input alongside a derived value.",
+    "cols": 4,
+    "nodes": [
+     {
+      "id": "q",
+      "label": "The question",
+      "sub": "one input",
+      "tone": "accent"
+     },
+     {
+      "id": "r",
+      "label": "retriever | format_docs",
+      "sub": "-> context",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "RunnablePassthrough",
+      "sub": "-> the question, unchanged",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "prompt | model | parser",
+      "sub": "two named variables",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "And 2.4 built this before RAG existed",
+      "sub": "no new construct needed",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "q",
+      "r"
+     ],
+     [
+      "q",
+      "p"
+     ],
+     [
+      "r",
+      "t"
+     ],
+     [
+      "p",
+      "t"
+     ],
+     [
+      "t",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "Two messages, and the three clauses doing the work",
+    "caption": "The whole pipeline collapses to **two messages**, which is 1.2's point arriving in a real system. And the system message carries three clauses, each preventing a specific failure: **\"ONLY the context\"** stops the model answering from memory indistinguishably; **\"say you do not know\"** supplies the abstention path that 7.1 turns into a guard; and **\"cite the [id]\"** is what makes an answer checkable at all.",
+    "left": "message",
+    "codeW": 130,
+    "vars": [
+     "content",
+     "what it prevents"
+    ],
+    "steps": [
+     {
+      "code": "System",
+      "state": [
+       "'ONLY the context below'",
+       "answering from memory"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "System",
+      "state": [
+       "'say you do not know'",
+       "a confident non-answer"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "System",
+      "state": [
+       "'cite the [id]'",
+       "an unverifiable answer"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "System",
+      "state": [
+       "+ the formatted context",
+       ""
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "Human",
+      "state": [
+       "the question",
+       ""
+      ],
+      "tone": "accent",
+      "note": "two messages, total"
+     }
+    ]
+   }
+  }
  ],
-
  "5.8": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A dense embedding has no notion of an exact match",
-         "caption": "Recall@5 is 0.875 and MRR 0.781 — respectable, and the per-query column shows where it comes apart. `mTLS` and `SAML 2.0` land at reciprocal rank 1.00. **`WebAuthn` lands at 0.25**, with the top hit an unrelated webhook document. The reason is structural: **`Retry-After` is semantically close to a great deal of API documentation**, so the relevant document has no particular advantage — and the one signal that would settle it, *this document literally contains that string*, **is not available to a similarity score.**",
-         "left": "query", "codeW": 150,
-         "vars": ["reciprocal rank", "top hit"],
-         "steps": [
-          {"code": "mTLS", "state": ["1.00", "api-mtls"], "tone": "good"},
-          {"code": "SAML 2.0", "state": ["1.00", "auth-sso"], "tone": "good"},
-          {"code": "WebAuthn", "state": ["0.25", "intg-webhook-..."], "changed": [0, 1], "tone": "crit", "note": "no exact-match signal"},
-          {"code": "overall", "state": ["MRR 0.781", "recall@5 0.875"], "tone": "accent"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Four slots, three of them the same document with a different id",
-         "caption": "*\"I ordered the wrong thing and want to stop it\"* retrieves `bill-cancel-order`, `bill-cancel-sub`, `ops-cancel-report` and `bill-cancel-trial`. **The right answer is first — and three of the four slots are spent on documents about cancelling something else.** So the precision metric looks fine, the answer is probably fine, and **the context budget is three-quarters wasted on near-duplicates**, which is what 6.6's MMR exists to fix.",
-         "left": "query", "codeW": 190,
-         "vars": ["top 4"],
-         "steps": [
-          {"code": "'...want to stop it'", "state": ["cancel-order, cancel-sub, cancel-report, cancel-trial"], "tone": "crit"},
-          {"code": "'stop my plan renewing'", "state": ["cancel-sub, cancel-trial, overage, cancel-report"], "tone": "crit"},
-          {"code": "right answer first", "state": ["both times"], "tone": "good"},
-          {"code": "slots wasted on near-duplicates", "state": ["3 of 4"], "changed": [0], "tone": "crit", "note": "6.6 fixes this"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Six problems, each from a measurement rather than a syllabus",
-         "caption": "**Each row came from a measurement in this module rather than from a list of techniques to cover**, and that ordering matters: **module 6 is not a tour of retrieval methods, it is six specific repairs to a baseline whose failures you have now seen.** The last row is the one that shapes how you will read the next module — P@5 is already at ceiling, so a metric that cannot show improvement is itself one of the six problems.",
-         "cols": ["Why the baseline has it", "Fixed in"],
-         "rows": ["Rare exact terms missed", "Scales cannot be mixed", "Near-duplicates fill slots", "The cheap ranker is rough", "Nothing abstains", "P@5 is at ceiling"],
-         "cells": [
-          [{"text": "dense similarity has no exact match", "tone": "crit"}, "BM25 (6.3)"],
-          ["dense and sparse scores are incomparable", "RRF (6.5)"],
-          [{"text": "no diversity in the ranking", "tone": "crit"}, "MMR (6.6)"],
-          ["order within the candidates is unreliable", "reranking (6.7)"],
-          [{"text": "nothing abstains", "tone": "crit"}, "a score threshold (7.1)"],
-          [{"text": "the metric cannot show improvement", "tone": "violet"}, "metric choice (6.9)"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A dense embedding has no notion of an exact match",
+    "caption": "Recall@5 is 0.875 and MRR 0.781 — respectable, and the per-query column shows where it comes apart. `mTLS` and `SAML 2.0` land at reciprocal rank 1.00. **`WebAuthn` lands at 0.25**, with the top hit an unrelated webhook document. The reason is structural: **`Retry-After` is semantically close to a great deal of API documentation**, so the relevant document has no particular advantage — and the one signal that would settle it, *this document literally contains that string*, **is not available to a similarity score.**",
+    "left": "query",
+    "codeW": 150,
+    "vars": [
+     "reciprocal rank",
+     "top hit"
+    ],
+    "steps": [
+     {
+      "code": "mTLS",
+      "state": [
+       "1.00",
+       "api-mtls"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "SAML 2.0",
+      "state": [
+       "1.00",
+       "auth-sso"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "WebAuthn",
+      "state": [
+       "0.25",
+       "intg-webhook-..."
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit",
+      "note": "no exact-match signal"
+     },
+     {
+      "code": "overall",
+      "state": [
+       "MRR 0.781",
+       "recall@5 0.875"
+      ],
+      "tone": "accent"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Four slots, three of them the same document with a different id",
+    "caption": "*\"I ordered the wrong thing and want to stop it\"* retrieves `bill-cancel-order`, `bill-cancel-sub`, `ops-cancel-report` and `bill-cancel-trial`. **The right answer is first — and three of the four slots are spent on documents about cancelling something else.** So the precision metric looks fine, the answer is probably fine, and **the context budget is three-quarters wasted on near-duplicates**, which is what 6.6's MMR exists to fix.",
+    "left": "query",
+    "codeW": 190,
+    "vars": [
+     "top 4"
+    ],
+    "steps": [
+     {
+      "code": "'...want to stop it'",
+      "state": [
+       "cancel-order, cancel-sub, cancel-report, cancel-trial"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "'stop my plan renewing'",
+      "state": [
+       "cancel-sub, cancel-trial, overage, cancel-report"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "right answer first",
+      "state": [
+       "both times"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "slots wasted on near-duplicates",
+      "state": [
+       "3 of 4"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "6.6 fixes this"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Six problems, each from a measurement rather than a syllabus",
+    "caption": "**Each row came from a measurement in this module rather than from a list of techniques to cover**, and that ordering matters: **module 6 is not a tour of retrieval methods, it is six specific repairs to a baseline whose failures you have now seen.** The last row is the one that shapes how you will read the next module — P@5 is already at ceiling, so a metric that cannot show improvement is itself one of the six problems.",
+    "cols": [
+     "Why the baseline has it",
+     "Fixed in"
+    ],
+    "rows": [
+     "Rare exact terms missed",
+     "Scales cannot be mixed",
+     "Near-duplicates fill slots",
+     "The cheap ranker is rough",
+     "Nothing abstains",
+     "P@5 is at ceiling"
+    ],
+    "cells": [
+     [
+      {
+       "text": "dense similarity has no exact match",
+       "tone": "crit"
+      },
+      "BM25 (6.3)"
+     ],
+     [
+      "dense and sparse scores are incomparable",
+      "RRF (6.5)"
+     ],
+     [
+      {
+       "text": "no diversity in the ranking",
+       "tone": "crit"
+      },
+      "MMR (6.6)"
+     ],
+     [
+      "order within the candidates is unreliable",
+      "reranking (6.7)"
+     ],
+     [
+      {
+       "text": "nothing abstains",
+       "tone": "crit"
+      },
+      "a score threshold (7.1)"
+     ],
+     [
+      {
+       "text": "the metric cannot show improvement",
+       "tone": "violet"
+      },
+      "metric choice (6.9)"
+     ]
+    ]
+   }
+  }
  ]
 }

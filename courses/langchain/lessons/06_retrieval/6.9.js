@@ -25,6 +25,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "One query, worked through",
       code: "query    : 'how long do you keep my information'\nrelevant : ['data-deletion', 'data-retention']\nretrieved: ['data-retention', 'data-deletion', 'auth-session', 'ops-backup', 'data-audit']\nhit pattern: [1, 1, 0, 0, 0]\n\nRecall@5    = |relevant retrieved| / |relevant|  = 2/2 = 1.000\nPrecision@5 = |relevant retrieved| / k           = 2/5 = 0.400\nRR          = 1 / rank of first relevant         = 1/1 = 1.000\nDCG@5       = sum h_i / log2(i+2)                = 1.6309\nIDCG@5      = the same with a perfect ranking    = 1.6309\nNDCG@5      = DCG / IDCG                         = 1.000",
       caption: "NDCG is 1.000 because both relevant documents are already in the best possible positions." },
@@ -32,6 +33,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "blind", text: "What each metric is blind to", sub: "Which decides when to use it" },
 
     {"kind": "matrix", "title": "Can this metric move, and does it matter to the user?", "caption": "The question that matters more than any of the values. On this label set **P@5 is at its arithmetic ceiling** — with one relevant document per query the maximum is 0.200, so a “poor” score is a property of the labels, not the system.", "cols": ["measured", "can it move?", "matters to the user?"], "rows": ["Recall@5", "MRR", "NDCG@5", "P@5"], "cells": [[{"text": "1.000", "tone": "good"}, {"text": "at ceiling", "tone": "warn"}, {"text": "yes — the gate", "tone": "good"}], [{"text": "0.964", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "yes — position", "tone": "good"}], [{"text": "0.974", "tone": "good"}, {"text": "yes", "tone": "good"}, {"text": "partly", "tone": "warn"}], [{"text": "0.214", "tone": "crit"}, {"text": "NO — max is 0.200", "tone": "crit"}, {"text": "not here", "tone": "crit"}]], "t": "diagram", "id": "dg-6_9-02-0"},
+
 
 
 
@@ -86,6 +88,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Computing what is achievable",
       code: "relevant documents per query: {1: 13, 2: 1}\n\nfor a query with 1 relevant document and k=5, max P@5 = 1/5 = 0.200\n13 of 14 queries have exactly 1 relevant document\nso the maximum achievable mean P@5 on this set = 0.214\nmeasured P@5                                   = 0.214\nfraction of the achievable ceiling reached     = 100.0%",
       caption: "The measured value **is** the ceiling, to three decimal places." },
@@ -96,7 +99,8 @@ EC.receiveLesson({
     { t: "p", text: "The remedy, if precision genuinely matters, is to change the measurement rather than chase the number: evaluate at `k=1`, where the ceiling is 1.0, or build a label set with graded relevance so several documents per query can be partially correct. Both are label-side changes, which is the tell that the problem was never in the retriever." },
     { t: "h2", n: "04", id: "guide", text: "Symptom to fix", sub: "What each measurement implies" },
 
-    {"kind": "matrix", "title": "Symptom to fix, and the row where every number looks healthy", "caption": "**The third row is the one easiest to miss, because every number looks healthy.** 6.6's near-duplicate case is exactly that: perfect MRR with a context window full of four cancellation procedures for four different situations. **Ranking metrics score the ranking, not the context.** And the fourth row is this lesson's own warning — a low P@k with few relevant documents is probably at ceiling, so **check before acting.**", "cols": ["Likely fix"], "rows": ["R@k low", "R@k high, MRR low", "MRR high, answers poor", "P@k low, few relevant", "Good on your set, bad live"], "cells": [["retrieval is missing it - wider k, hybrid, query rewrite"], ["fetched and misranked - reranking (6.7)"], [{"text": "context quality, not ranking - every number looks fine", "tone": "crit"}], [{"text": "probably at ceiling - check before acting", "tone": "warn"}], ["unrepresentative queries - stratify by style (5.8)"]], "t": "diagram", "id": "dg-6_9-04-3"},
+    {"kind": "layers", "title": "Symptom to fix, and the row where every number looks healthy", "caption": "**The third row is the one easiest to miss, because every number looks healthy.** 6.6's near-duplicate case is exactly that: perfect MRR with a context window full of four cancellation procedures for four different situations. **Ranking metrics score the ranking, not the context.** And the fourth row is this lesson's own warning — a low P@k with few relevant documents is probably at ceiling, so **check before acting.**", "items": [{"label": "R@k low", "sub": "retrieval is missing it - wider k, hybrid, query rewrite"}, {"label": "R@k high, MRR low", "sub": "fetched and misranked - reranking (6.7)"}, {"label": "MRR high, answers poor", "sub": "context quality, not ranking - every number looks fine", "tone": "crit"}, {"label": "P@k low, few relevant", "sub": "probably at ceiling - check before acting", "tone": "warn"}, {"label": "Good on your set, bad live", "sub": "unrepresentative queries - stratify by style (5.8)"}], "t": "diagram", "id": "dg-6_9-04-3"},
+
 
 
 
@@ -120,6 +124,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "nodominance", text: "No retriever dominates", sub: "The module's result in one table" },
 
     {"kind": "matrix", "title": "No retriever dominates, which is the module's conclusion", "caption": "Read across: **dense wins every natural-language column and loses both exact-term columns; BM25 does the exact reverse, at 1.000 on both exact-term metrics and 0.286 MRR on natural language.** And RRF, which exists to resolve this, lands at **0.393 natural MRR — worse than dense alone.** So the module's conclusion is not a recommendation: **there is no configuration that is best, and the choice is a statement about which query class your users actually send.**", "cols": ["nat R@5", "nat MRR", "exact R@5", "exact MRR"], "rows": ["dense", "bm25", "RRF 1:1"], "cells": [[{"text": "1.000", "tone": "good"}, {"text": "0.964", "tone": "good"}, "0.875", {"text": "0.781", "tone": "crit"}], [{"text": "0.357", "tone": "crit"}, {"text": "0.286", "tone": "crit"}, {"text": "1.000", "tone": "good"}, {"text": "1.000", "tone": "good"}], ["0.429", {"text": "0.393", "tone": "crit"}, {"text": "1.000", "tone": "good"}, {"text": "1.000", "tone": "good"}]], "t": "diagram", "id": "dg-6_9-05-4"},
+
 
 
 

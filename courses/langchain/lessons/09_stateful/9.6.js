@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "put, get, search",
       code: 'store.put(("users", "alice"), "prefs", {"tone": "brief", "lang": "en"})\nstore.put(("users", "alice"), "facts", {"team": "platform"})\nstore.put(("users", "bob"),   "prefs", {"tone": "detailed"})\n\nstore.get(("users", "alice"), "prefs").value\nstore.search(("users", "alice"))',
       out: "  alice prefs : {'tone': 'brief', 'lang': 'en'}\n  bob   prefs : {'tone': 'detailed'}\n\n  everything under ('users','alice'):\n    prefs    {'tone': 'brief', 'lang': 'en'}\n    facts    {'team': 'platform'}",
@@ -46,6 +47,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "why", text: "Why not just use graph state?", sub: "Five properties differ" },
 
     {"kind": "matrix", "title": "Five properties, and the written row is the one with a cost", "caption": "The store is not a nicer state — **it is state with a different lifetime and a different write cost.** The row that matters operationally is the fourth: **graph state is written every superstep and a store is written when you call `put`**, so 9.4's 8 KB blob costs 8 KB per step in state and 8 KB once in a store. And the read row is the trade going the other way: state arrives automatically and a store has to be read **explicitly, by key**, which means you have to know what you are looking for.", "cols": ["Graph state", "Store"], "rows": ["Scope", "Lifetime", "Written", "Read", "Size cost"], "cells": [["one thread", {"text": "any namespace you choose", "tone": "good"}], ["the thread", {"text": "independent of threads", "tone": "good"}], [{"text": "EVERY superstep", "tone": "crit"}, {"text": "when you call put", "tone": "good"}], [{"text": "automatically", "tone": "good"}, {"text": "explicitly, by key", "tone": "warn"}], [{"text": "serialised per step", "tone": "crit"}, {"text": "paid once", "tone": "good"}]], "t": "diagram", "id": "dg-9_6-02-1"},
+
 
 
 
@@ -76,6 +78,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["semantic \u2014 facts", "`(\"users\",\"alice\"), \"facts\" \u2192 {\"team\": \"platform\"}`. Retrieved by key, or by embedding search over the values."],
       ["episodic \u2014 what happened", "`(\"users\",\"alice\",\"episodes\"), \"2024-03-11\" \u2192 {\u2026}`. Retrieved by recency, or by similarity to the current situation."],
@@ -96,6 +99,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The same data, two layouts",
       code: "A: ('memories',)              key='alice:pref:tone'\nB: ('users','alice','prefs')  key='tone'\n\nlayout A, everything in one namespace:\n  search(('memories',)) returns 3 items -- all users\n  getting just alice's means filtering keys by prefix in Python\n\nlayout B, hierarchical:\n  search(('users','alice','prefs')) returns 2 items -- just alice",
       caption: "A tuple namespace is a path, so B gets prefix search for free." },
@@ -105,7 +109,8 @@ EC.receiveLesson({
     ] },
     { t: "h2", n: "05", id: "writing", text: "The hard part is writing", sub: "And nothing in the API helps" },
 
-    {"kind": "matrix", "title": "The API is four methods; deciding what is worth remembering is the problem", "caption": "**No part of the interface addresses what to remember — it is a product and prompt-design problem that happens to have a storage layer.** And the three failures are not symmetrical. **Remember everything** fills the store with noise and **retrieval returns irrelevant memories — 6.6's near-duplicate problem, with no relevance labels to tune against.** Remember nothing is a feature nobody notices. And **remember wrong persists a mistaken fact across every future conversation**, which is the only one of the three that gets worse with time.", "cols": ["What happens"], "rows": ["Remember everything", "Remember nothing", "Remember wrong"], "cells": [[{"text": "noise, and 6.6's problem with no labels to tune against", "tone": "crit"}], ["a memory feature nobody notices"], [{"text": "a mistaken fact in every future conversation - and it compounds", "tone": "crit"}]], "t": "diagram", "id": "dg-9_6-05-4"},
+    {"kind": "layers", "title": "The API is four methods; deciding what is worth remembering is the problem", "caption": "**No part of the interface addresses what to remember — it is a product and prompt-design problem that happens to have a storage layer.** And the three failures are not symmetrical. **Remember everything** fills the store with noise and **retrieval returns irrelevant memories — 6.6's near-duplicate problem, with no relevance labels to tune against.** Remember nothing is a feature nobody notices. And **remember wrong persists a mistaken fact across every future conversation**, which is the only one of the three that gets worse with time.", "items": [{"label": "Remember everything", "sub": "noise, and 6.6's problem with no labels to tune against", "tone": "crit"}, {"label": "Remember nothing", "sub": "a memory feature nobody notices"}, {"label": "Remember wrong", "sub": "a mistaken fact in every future conversation - and it compounds", "tone": "crit"}], "t": "diagram", "id": "dg-9_6-05-4"},
+
 
 
 

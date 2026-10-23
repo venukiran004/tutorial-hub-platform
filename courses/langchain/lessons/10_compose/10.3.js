@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "values \u2014 the full state after each superstep",
       code: "1. {'n': 1, 'trace': []}\n2. {'n': 2, 'trace': ['a']}\n3. {'n': 20, 'trace': ['a', 'b']}",
       caption: "Three chunks for two nodes \u2014 the first is the **input** state." },
@@ -52,6 +53,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "whatfor", text: "What each one is for", sub: "Five modes" },
 
     {"kind": "matrix", "title": "Five stream modes, and the one to internalise", "caption": "**`updates` is the one worth internalising.** It shows what each node returned keyed by node name, so **when a key has the wrong value it names the node that wrote it in one step, and when a key is missing it shows the absence directly** — which between them cover the two commonest graph bugs in this course. `messages` is per **token** rather than per node, which is what makes a chat UI feel responsive. And `values` has 8.9's off-by-one: it emits the input before any node has run.", "cols": ["Shows", "The view"], "rows": ["values", "updates", "messages", "custom", "debug"], "cells": [["the full state after each superstep", {"text": "progress - and it emits the input first", "tone": "warn"}], [{"text": "what each node returned, by name", "tone": "good"}, {"text": "debugging - the only way to see a dropped key", "tone": "good"}], ["LLM tokens as generated", {"text": "user-facing: per token, not per node", "tone": "good"}], ["whatever a node writes", "progress from inside a long node"], ["checkpoints, tasks, results", {"text": "the runtime itself - rarely what you want", "tone": "accent"}]], "t": "diagram", "id": "dg-10_3-02-1"},
+
 
 
 
@@ -76,6 +78,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "stream_mode=[\u201cvalues\u201d, \u201cupdates\u201d]",
       code: "1. ('values', {'n': 1, 'trace': []})\n2. ('updates', {'a': {'n': 2, 'trace': ['a']}})\n3. ('values', {'n': 2, 'trace': ['a']})",
       caption: "Each chunk is tagged with the mode that produced it." },
@@ -83,6 +86,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "custom", text: "custom: reporting from inside a node", sub: "The only way" },
 
     {"kind": "trace", "title": "custom is the only way a long node reports anything", "caption": "Every other mode emits **at a node boundary**, so a node that takes thirty seconds is silent for thirty seconds — `updates` fires once, when it finishes. The stream writer emits from **inside**, so `step 1 of 3`, `step 2 of 3`, `step 3 of 3` arrive while the node is still running. Which is the gap in the other four modes rather than a convenience: **node granularity is the wrong granularity for a slow node.**", "left": "emitted from inside the node", "codeW": 230, "vars": ["payload"], "steps": [{"code": "writer({'progress': ...})", "state": ["step 1 of 3"], "tone": "good"}, {"code": "writer({'progress': ...})", "state": ["step 2 of 3"], "tone": "good"}, {"code": "writer({'progress': ...})", "state": ["step 3 of 3"], "tone": "good"}, {"code": "updates would have emitted", "state": ["once, at the end"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-10_3-04-3"},
+
 
 
 
@@ -100,7 +104,8 @@ EC.receiveLesson({
     ] },
     { t: "h2", n: "05", id: "choosing", text: "Choosing", sub: "Practical defaults" },
 
-    {"kind": "matrix", "title": "Five situations, and the mode each one wants", "caption": "Read as a lookup. The first row is two modes rather than one, which §03 showed costs nothing. The fourth carries its own warning — **`values` for a progress bar, remembering the off-by-one**, or the bar starts at one step of progress that has not happened. And the last row is honest about `debug`: it exists for understanding the runtime, **which is rarely what an application wants.**", "cols": ["Mode"], "rows": ["A chat UI", "A long workflow", "Debugging", "A progress bar", "Understanding the runtime"], "cells": [[{"text": "messages, plus updates for progress", "tone": "good"}], [{"text": "custom, from inside the slow nodes", "tone": "good"}], [{"text": "updates - what each node contributed", "tone": "violet"}], [{"text": "values - remembering the off-by-one", "tone": "warn"}], [{"text": "debug - rarely what an application wants", "tone": "accent"}]], "t": "diagram", "id": "dg-10_3-05-4"},
+    {"kind": "layers", "title": "Five situations, and the mode each one wants", "caption": "Read as a lookup. The first row is two modes rather than one, which §03 showed costs nothing. The fourth carries its own warning — **`values` for a progress bar, remembering the off-by-one**, or the bar starts at one step of progress that has not happened. And the last row is honest about `debug`: it exists for understanding the runtime, **which is rarely what an application wants.**", "items": [{"label": "A chat UI", "sub": "messages, plus updates for progress", "tone": "good"}, {"label": "A long workflow", "sub": "custom, from inside the slow nodes", "tone": "good"}, {"label": "Debugging", "sub": "updates - what each node contributed", "tone": "violet"}, {"label": "A progress bar", "sub": "values - remembering the off-by-one", "tone": "warn"}, {"label": "Understanding the runtime", "sub": "debug - rarely what an application wants", "tone": "accent"}], "t": "diagram", "id": "dg-10_3-05-4"},
+
 
 
 

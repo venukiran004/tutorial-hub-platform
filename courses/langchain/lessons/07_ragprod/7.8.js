@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "The source",
       code: "Plan        Seats   Rate limit   Price\nStarter     5       600/min      $49\nGrowth      25      2400/min     $199\nEnterprise  custom  custom       custom",
       caption: "Four columns, and the meaning is entirely in the alignment." },
@@ -52,6 +53,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three", text: "The three architectures", sub: "No vision model here, so this is the design comparison" },
 
     {"kind": "matrix", "title": "Three architectures for images and tables", "caption": "Three genuinely different answers to the same problem. **A shared embedding space** searches both modalities at once and needs a model trained for it. **Describe-then-embed** writes a text description with a vision model, embeds the **description**, stores the original and returns the original — so every stored vector comes from one text model and every comparison is text-to-text. And **page-as-image** stops extracting anything, which removes chunking and parsing along with the problem.", "cols": ["How it works", "What it needs"], "rows": ["A shared embedding space", "Describe, then embed", "Page as image"], "cells": [["one space, both modalities, searched together", {"text": "a model trained for it", "tone": "warn"}], [{"text": "embed the description, return the original", "tone": "good"}, "a vision call per asset, once"], ["treat each page as an image, many vectors", {"text": "a vision-language retriever", "tone": "warn"}]], "t": "diagram", "id": "dg-7_8-02-1"},
+
 
 
 
@@ -99,6 +101,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "insight", title: "It keeps the retrieval index textual", body: [
       { t: "p", text: "Everything measured in modules 5 to 7 still applies to a text index: BM25 over the summaries, rank fusion, MMR, cross-encoder reranking, metadata filters. A and C give all of that up for a different embedding space, which is a large sacrifice for a capability most corpora need on a minority of their content." },
       { t: "p", text: "And it is **debuggable**. When a table is not retrieved you can read its summary and see that it says *\u201ca pricing table\u201d* and never mentions rate limits \u2014 a fixable ingestion bug with a visible cause. With A you have a vector and a shrug." }
@@ -121,6 +124,34 @@ EC.receiveLesson({
       { t: "p", text: "The instinct when prompting for a summary is to ask what the thing *is*. What retrieval needs is what the thing *says* \u2014 the entities, the numbers, and the associations between them, written as prose that a query can match." },
       { t: "p", text: "And read a sample of the generated summaries before indexing them. That is 5.2's rule applied one layer up: a summariser that \u201cworks\u201d can produce fluent descriptions that are useless for retrieval, and nothing downstream will tell you, because the asset will simply never be returned." }
     ] },
+    { t: "code", lang: "python", title: "Images, audio and video as content blocks, and the part that is not portable",
+      code: `from langchain_core.messages import HumanMessage
+import base64
+
+# THE STANDARD CONTENT-BLOCK FORM, which langchain_core normalises per provider:
+msg = HumanMessage(content=[
+    {"type": "text", "text": "What is wrong in this diagram?"},
+    {"type": "image", "source_type": "base64", "mime_type": "image/png",
+     "data": base64.b64encode(png_bytes).decode()},
+])
+
+# A URL INSTEAD OF BYTES -- cheaper to send, and the provider must be able to
+# reach it, which rules it out for anything behind your own auth:
+{"type": "image", "source_type": "url", "url": "https://example.com/diagram.png"}
+
+# AUDIO AND VIDEO are the same shape and far less portable:
+{"type": "audio", "source_type": "base64", "mime_type": "audio/wav", "data": b64}
+{"type": "video", "source_type": "base64", "mime_type": "video/mp4", "data": b64}
+#   audio input: Gemini and the OpenAI audio models; not Claude
+#   video input: Gemini; and it is sampled into frames, so a 10-minute clip is
+#     a few hundred images in token terms, not a video
+
+# WHAT TO PUT IN THE INDEX: not the media. Embed a text description or use a
+# multimodal embedding, retrieve the ID, and attach the bytes only to the final
+# call -- otherwise every retrieval round trip ships megabytes.`,
+      caption: "**Video is sampled into frames before the model sees it, so a ten-minute clip costs a few hundred images in tokens rather than \u201cone video\u201d** \u2014 which is the number that decides whether video input is viable for your use case. Audio and video support is also per-provider in a way that text and images are not: Gemini takes both, Claude takes neither." },
+    { t: "p", text: "**The architectural rule is to keep media out of the retrieval loop:** index a text description or a multimodal embedding, retrieve an identifier, and attach the bytes only to the final model call. A pipeline that carries base64 through every reranking and compression step ships megabytes per query to move data the retriever never looks at." },
+
     { t: "exercise", kind: "analysis", title: "Compare the multimodal architectures",
       difficulty: "advanced", minutes: 32,
       body: "Take a table and show what naive row-major extraction does to it, identifying the specific association a question needs and explaining why the extracted text cannot carry it. Then compare the three multimodal RAG architectures on their trade-offs, and justify a production default on grounds other than accuracy. Finally show how the summarisation instruction changes retrievability, from a description of the asset to a statement of its values.",

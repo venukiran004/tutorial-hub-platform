@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Feature", "Note"], rows: [
       ["the loop itself", "identical in shape to 3.3"],
       ["an iteration cap", "a recursion limit, so it terminates"],
@@ -53,6 +54,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "run", text: "Running one", sub: "Two lines, four messages" },
 
     {"kind": "flow", "title": "A dict with a messages key is the first visible sign of the graph", "caption": "The prebuilt agent produces the same four messages the hand-written loop did, and takes its input as **a dict with a `messages` key rather than a bare list.** That is not cosmetic: **the key is a piece of graph state**, and module 8 explains why it is shaped that way — so the shape you have to type here is the first evidence that `create_agent` is a graph with a prebuilt topology rather than a function with a loop in it.", "cols": 3, "nodes": [{"id": "i", "label": "Input: {'messages': [...]}", "sub": "a dict, not a list", "tone": "violet"}, {"id": "f", "label": "Four messages out", "sub": "the same as the hand loop", "tone": "good"}, {"id": "k", "label": "'messages' is graph state", "sub": "not an argument name", "tone": "violet"}, {"id": "g", "label": "So this is a graph underneath", "sub": "with a prebuilt topology", "tone": "accent"}, {"id": "m", "label": "Module 8 explains the shape", "sub": "and why it is a reducer", "tone": "teal"}], "edges": [["i", "f"], ["i", "k"], ["k", "g"], ["g", "m"]], "t": "diagram", "id": "dg-3_4-02-1"},
+
 
 
 
@@ -95,6 +97,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "callout", kind: "warn", title: "The deprecation warning this emits", body: [
       { t: "p", text: "Running `create_react_agent` from `langgraph.prebuilt` produces: *\u201ccreate_react_agent has been moved to `langchain.agents`. Please update your import to `from langchain.agents import create_agent`. Deprecated in LangGraph V1.0 to be removed in V2.0.\u201d*" },
       { t: "p", text: "So you will encounter both names, and the overwhelming majority of material you find online uses the deprecated one \u2014 which is worth knowing when a tutorial does not match your imports, and when deciding what to write in new code." }
@@ -102,6 +105,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "middleware", text: "Middleware", sub: "Hooks around every model and tool call" },
 
     {"kind": "matrix", "title": "Five middleware, all of them cross-cutting concerns the loop body would otherwise carry", "caption": "Middleware runs **around each model call and each tool call inside the loop**, which is the only place several of these can work at all. Summarisation has to happen *before* each model call, not once at the start. Human-in-the-loop has to interrupt *between* a decision and its execution. And tool gating has to filter the tool list *per user* at the moment the model is asked, which no static construction can do.", "cols": ["What it does", "Why it must be there"], "rows": ["summarization", "human-in-the-loop", "PII redaction", "tool gating", "fallbacks"], "cells": [["trim or summarise before each model call", {"text": "before EACH call, not once", "tone": "violet"}], ["pause for approval before a tool runs", {"text": "between decision and execution", "tone": "violet"}], ["strip identifiers in and out", "on every boundary crossing"], ["hide tools this user may not call", {"text": "per user, at ask time", "tone": "violet"}], ["swap the model mid-loop on failure", "inside the loop, not around it"]], "t": "diagram", "id": "dg-3_4-04-3"},
+
 
 
 
@@ -139,6 +143,40 @@ EC.receiveLesson({
       code: 'from langchain.agents import create_agent\nfrom langchain.agents.middleware import (\n    AgentMiddleware, SummarizationMiddleware, HumanInTheLoopMiddleware)\n\nclass Budget(AgentMiddleware):\n    def before_model(self, state, runtime):\n        if state["steps"] >= 6:\n            return {"jump_to": "end"}\n\n    def wrap_model_call(self, request, handler):\n        return handler(request.override(model=cheap_model))\n\nagent = create_agent(model, tools,\n                     middleware=[Budget(), SummarizationMiddleware(model)])',
       caption: "A hook before the model call, and a hook **around** it." },
     { t: "p", text: "Worth reading as the answer to “what do I do when the prebuilt is almost right”, which this lesson’s last section raises. `before_model` is where a step budget or a permission check goes, and it can short-circuit the loop with `jump_to` rather than raising — which is 11.3’s give-up node without unrolling the graph. `wrap_model_call` sits around the call, so retries, model downgrades and fallbacks live there. The unrolled form in 9.2 is still worth knowing, because a middleware hook is a place to put code and the graph is what the code is doing." },
+    { t: "code", lang: "python", title: "The current create_react_agent options, and the argument that was renamed",
+      code: `from langgraph.prebuilt import create_react_agent
+from pydantic import BaseModel
+
+class Answer(BaseModel):
+    verdict: str
+    confidence: float
+
+agent = create_react_agent(
+    model=llm,
+    tools=[search, calculator],
+    prompt="You are terse. Use a tool or answer; never both.",   # <- see below
+    response_format=Answer,          # a structured final answer
+    pre_model_hook=trim_messages_node,    # runs before EVERY model call
+    post_model_hook=guardrail_node,       # runs after -- validation, redaction
+    checkpointer=InMemorySaver(),
+    store=store,                     # long-term memory, across threads
+    name="researcher",               # the handoff tool's name in a supervisor
+)
+
+# THE RENAME THAT BREAKS EVERY OLDER SNIPPET: this argument has been called
+# three things.
+#     messages_modifier=   the oldest
+#     state_modifier=      the one most tutorials use
+#     prompt=              current
+# Same job -- shape the messages before they reach the model -- and a string, a
+# SystemMessage, a callable or a Runnable are all accepted.
+
+# pre_model_hook IS THE RIGHT PLACE FOR CONTEXT MANAGEMENT (module 13):
+# trimming or summarising here applies to every turn of the loop, where doing
+# it once before invoke only fixes the first call.`,
+      caption: "**`prompt=` is the current name for what tutorials call `state_modifier` and older ones call `messages_modifier`** \u2014 same argument, same job, three names, which is the most common reason a prebuilt-agent snippet fails to run. A string, a `SystemMessage`, a callable or a Runnable are all valid values." },
+    { t: "p", text: "**`pre_model_hook` is where context management belongs in an agent loop**, because it runs before every model call rather than once at the start \u2014 trimming before `invoke` fixes the first turn and nothing after it, which is exactly the failure that looks like a context overflow appearing at random. `post_model_hook` is the symmetric place for validation and redaction, and both exist so that you do not have to abandon the prebuilt and rebuild the loop by hand." },
+
     { t: "exercise", kind: "analysis", title: "Compare the prebuilt against the hand-written loop",
       difficulty: "core", minutes: 24,
       body: "Tabulate what a prebuilt agent provides against what the 3.3 loop had. Build and run a prebuilt agent on the same question and compare the resulting messages. Record the deprecation warning it emits and what it points to. Then list what middleware is for and say what each item corresponds to in graph terms.",

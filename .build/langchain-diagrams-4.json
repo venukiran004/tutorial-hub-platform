@@ -1,336 +1,1430 @@
 {
  "2.1": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Seven helpers, defined once, working on anything",
-         "caption": "Each of these is defined **once on the base class** and works on a prompt, a model, a parser, a retriever or a whole chain. That is the closure property from 1.1 cashed out: 2.6 uses two of them on a chain, 2.9 uses the last two, and **none of those lessons needs a component-specific variant.** The grouping is worth seeing — three change behaviour on failure or configuration, two change what the call looks like, and `.map()` changes the shape of the input.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "r1 | r2", "sub": "builds a RunnableSequence", "tone": "violet"},
-          {"id": "c", "label": "with_config, with_retry, with_fallbacks", "sub": "behaviour on failure and in traces", "tone": "accent"},
-          {"id": "b", "label": "bind, configurable_fields", "sub": "what the call looks like", "tone": "accent"},
-          {"id": "m", "label": "map", "sub": "changes the input's shape to a list", "tone": "good"},
-          {"id": "o", "label": "All defined once, on the base class", "sub": "so all seven work on all of it", "tone": "teal"}],
-         "edges": [["p", "o"], ["c", "o"], ["b", "o"], ["m", "o"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "One method written, four available — and stream is honest about it",
-         "caption": "Define `invoke` and `batch`, `stream` and the pipe all work. **But `stream` yields a single chunk, because the base class cannot invent incrementality that `invoke` does not have** — which is the right behaviour rather than a shortcoming: the method **exists**, so the component composes into a streaming chain without special-casing, and it degrades to one chunk rather than raising. Implementing a real `stream` is how you get genuine chunks.",
-         "left": "method", "codeW": 130,
-         "vars": ["result", "written?"],
-         "steps": [
-          {"code": "invoke", "state": ["'HI!'", "yes - by you"], "tone": "violet"},
-          {"code": "batch", "state": ["['A!', 'B!']", "inherited"], "tone": "good"},
-          {"code": "stream", "state": ["['HI!']", "inherited"], "changed": [0], "tone": "warn", "note": "one chunk, honestly"},
-          {"code": "piped", "state": ["!IH", "inherited"], "tone": "good"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "map is a step you compose; batch is a method you call",
-         "caption": "The distinction is easy to blur and decides where each one can appear. **`.map()` returns a Runnable whose input is a list**, so it composes: `retriever | summarise.map() | join` is a valid pipeline. **`.batch()` is a method you call** — there is nowhere in a pipe expression to put it. So: **map when the list is flowing through the chain, batch when you have many separate inputs to run.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "m", "label": ".map()", "sub": "returns a Runnable", "tone": "violet"},
-          {"id": "c", "label": "So it composes", "sub": "retriever | summarise.map() | join", "tone": "good"},
-          {"id": "b", "label": ".batch()", "sub": "is a method you call", "tone": "accent"},
-          {"id": "n", "label": "Nowhere to put it in a pipe", "sub": "it is not a step", "tone": "warn"},
-          {"id": "r", "label": "map: the list is flowing through", "sub": "batch: you have many inputs", "tone": "teal"}],
-         "edges": [["m", "c"], ["b", "n"], ["c", "r"], ["n", "r"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Seven helpers, defined once, working on anything",
+    "caption": "Each of these is defined **once on the base class** and works on a prompt, a model, a parser, a retriever or a whole chain. That is the closure property from 1.1 cashed out: 2.6 uses two of them on a chain, 2.9 uses the last two, and **none of those lessons needs a component-specific variant.** The grouping is worth seeing — three change behaviour on failure or configuration, two change what the call looks like, and `.map()` changes the shape of the input.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "r1 | r2",
+      "sub": "builds a RunnableSequence",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "with_config, with_retry, with_fallbacks",
+      "sub": "behaviour on failure and in traces",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "bind, configurable_fields",
+      "sub": "what the call looks like",
+      "tone": "accent"
+     },
+     {
+      "id": "m",
+      "label": "map",
+      "sub": "changes the input's shape to a list",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "All defined once, on the base class",
+      "sub": "so all seven work on all of it",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "o"
+     ],
+     [
+      "c",
+      "o"
+     ],
+     [
+      "b",
+      "o"
+     ],
+     [
+      "m",
+      "o"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "One method written, four available — and stream is honest about it",
+    "caption": "Define `invoke` and `batch`, `stream` and the pipe all work. **But `stream` yields a single chunk, because the base class cannot invent incrementality that `invoke` does not have** — which is the right behaviour rather than a shortcoming: the method **exists**, so the component composes into a streaming chain without special-casing, and it degrades to one chunk rather than raising. Implementing a real `stream` is how you get genuine chunks.",
+    "left": "method",
+    "codeW": 130,
+    "vars": [
+     "result",
+     "written?"
+    ],
+    "steps": [
+     {
+      "code": "invoke",
+      "state": [
+       "'HI!'",
+       "yes - by you"
+      ],
+      "tone": "violet"
+     },
+     {
+      "code": "batch",
+      "state": [
+       "['A!', 'B!']",
+       "inherited"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "stream",
+      "state": [
+       "['HI!']",
+       "inherited"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "one chunk, honestly"
+     },
+     {
+      "code": "piped",
+      "state": [
+       "!IH",
+       "inherited"
+      ],
+      "tone": "good"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "map is a step you compose; batch is a method you call",
+    "caption": "The distinction is easy to blur and decides where each one can appear. **`.map()` returns a Runnable whose input is a list**, so it composes: `retriever | summarise.map() | join` is a valid pipeline. **`.batch()` is a method you call** — there is nowhere in a pipe expression to put it. So: **map when the list is flowing through the chain, batch when you have many separate inputs to run.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": ".map()",
+      "sub": "returns a Runnable",
+      "tone": "violet"
+     },
+     {
+      "id": "c",
+      "label": "So it composes",
+      "sub": "retriever | summarise.map() | join",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": ".batch()",
+      "sub": "is a method you call",
+      "tone": "accent"
+     },
+     {
+      "id": "n",
+      "label": "Nowhere to put it in a pipe",
+      "sub": "it is not a step",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "map: the list is flowing through",
+      "sub": "batch: you have many inputs",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "c"
+     ],
+     [
+      "b",
+      "n"
+     ],
+     [
+      "c",
+      "r"
+     ],
+     [
+      "n",
+      "r"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.2": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Two coercions account for most of what looks like magic",
-         "caption": "The pipe accepts things that are not Runnables and converts them, and **there are only two cases.** A `dict` literal becomes a `RunnableParallel` — that is the `{context, question}` RAG idiom. A bare function becomes a `RunnableLambda` — that is `| format_docs` after a retriever, and also `itemgetter('k')`, which is a callable. Knowing those two is enough to read almost any LCEL expression you will meet.",
-         "cols": 3,
-         "nodes": [
-          {"id": "d", "label": "A dict literal", "sub": "{'context': ..., 'question': ...}", "tone": "violet"},
-          {"id": "p", "label": "becomes RunnableParallel", "sub": "the RAG idiom (5.7)", "tone": "good"},
-          {"id": "f", "label": "A bare function", "sub": "| format_docs", "tone": "violet"},
-          {"id": "l", "label": "becomes RunnableLambda", "sub": "and so does itemgetter", "tone": "good"},
-          {"id": "t", "label": "Those two read most LCEL you will meet", "sub": "and the rest is composition", "tone": "teal"}],
-         "edges": [["d", "p"], ["f", "l"], ["p", "t"], ["l", "t"]]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "The expression builds a data structure, so the chain can be examined",
-         "caption": "Because the pipe builds a value rather than deferring a call, **a chain is something you can interrogate before you run it.** `input_schema` reports what it expects, **derived from the prompt's variables** rather than declared separately. `get_graph()` returns nodes and edges you can render. And `with_config(run_name=...)` gives it a name that appears in traces — which 2.9 argues is worth doing while you build, because the moment you need it is during an incident.",
-         "cols": 3,
-         "nodes": [
-          {"id": "e", "label": "The expression builds a value", "sub": "not a deferred call", "tone": "violet"},
-          {"id": "i", "label": "input_schema", "sub": "derived from the prompt's variables", "tone": "good"},
-          {"id": "g", "label": "get_graph()", "sub": "nodes and edges, renderable", "tone": "good"},
-          {"id": "n", "label": "run_name in traces", "sub": "2.9's argument for doing it early", "tone": "good"},
-          {"id": "b", "label": "All available before you run it", "sub": "which a deferred call is not", "tone": "teal"}],
-         "edges": [["e", "i"], ["e", "g"], ["e", "n"], ["i", "b"], ["g", "b"], ["n", "b"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Two coercions account for most of what looks like magic",
+    "caption": "The pipe accepts things that are not Runnables and converts them, and **there are only two cases.** A `dict` literal becomes a `RunnableParallel` — that is the `{context, question}` RAG idiom. A bare function becomes a `RunnableLambda` — that is `| format_docs` after a retriever, and also `itemgetter('k')`, which is a callable. Knowing those two is enough to read almost any LCEL expression you will meet.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "d",
+      "label": "A dict literal",
+      "sub": "{'context': ..., 'question': ...}",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "becomes RunnableParallel",
+      "sub": "the RAG idiom (5.7)",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "A bare function",
+      "sub": "| format_docs",
+      "tone": "violet"
+     },
+     {
+      "id": "l",
+      "label": "becomes RunnableLambda",
+      "sub": "and so does itemgetter",
+      "tone": "good"
+     },
+     {
+      "id": "t",
+      "label": "Those two read most LCEL you will meet",
+      "sub": "and the rest is composition",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "d",
+      "p"
+     ],
+     [
+      "f",
+      "l"
+     ],
+     [
+      "p",
+      "t"
+     ],
+     [
+      "l",
+      "t"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The expression builds a data structure, so the chain can be examined",
+    "caption": "Because the pipe builds a value rather than deferring a call, **a chain is something you can interrogate before you run it.** `input_schema` reports what it expects, **derived from the prompt's variables** rather than declared separately. `get_graph()` returns nodes and edges you can render. And `with_config(run_name=...)` gives it a name that appears in traces — which 2.9 argues is worth doing while you build, because the moment you need it is during an incident.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "e",
+      "label": "The expression builds a value",
+      "sub": "not a deferred call",
+      "tone": "violet"
+     },
+     {
+      "id": "i",
+      "label": "input_schema",
+      "sub": "derived from the prompt's variables",
+      "tone": "good"
+     },
+     {
+      "id": "g",
+      "label": "get_graph()",
+      "sub": "nodes and edges, renderable",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "run_name in traces",
+      "sub": "2.9's argument for doing it early",
+      "tone": "good"
+     },
+     {
+      "id": "b",
+      "label": "All available before you run it",
+      "sub": "which a deferred call is not",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "e",
+      "i"
+     ],
+     [
+      "e",
+      "g"
+     ],
+     [
+      "e",
+      "n"
+     ],
+     [
+      "i",
+      "b"
+     ],
+     [
+      "g",
+      "b"
+     ],
+     [
+      "n",
+      "b"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.3": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "2.7x on three calls, and the shape is the commonest fan-out there is",
-         "caption": "Three 100 ms calls sequentially is 0.310 s; the same three as a `RunnableParallel` is **0.115 s — 2.7×**, which is as close to the theoretical 3× as a thread pool and three identical latencies allow. Each branch receives **the same input** and produces one key of the output dict, and that shape — one input, several independent computations, a dict of results — is the single most common fan-out in LLM applications: summarise **and** classify **and** extract, all from one document.",
-         "left": "how the three ran", "codeW": 200,
-         "vars": ["time", "speedup"],
-         "steps": [
-          {"code": "one after another", "state": ["0.310 s", "1.0x"], "tone": "crit"},
-          {"code": "RunnableParallel", "state": ["0.115 s", "2.7x"], "changed": [0, 1], "tone": "good", "note": "three 100 ms calls"},
-          {"code": "the shape", "state": ["one input", "a dict of results"], "tone": "violet"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "Why you will almost never see RunnableParallel written out",
-         "caption": "2.2 established the coercion; this is where it pays. **Because a dict in a pipe becomes a `RunnableParallel`, the fan-out idiom reads as data rather than as a constructor call** — `{'a': chain_a, 'b': chain_b} | next_step` instead of `RunnableParallel(a=chain_a, b=chain_b) | next_step`. Which is why you will almost never see the class named in a codebase **despite it being everywhere**, and why knowing the coercion is necessary to read the code at all.",
-         "cols": 3,
-         "nodes": [
-          {"id": "w", "label": "What you write", "sub": "{'a': chain_a, 'b': chain_b}", "tone": "accent"},
-          {"id": "b", "label": "What it becomes", "sub": "RunnableParallel", "tone": "violet"},
-          {"id": "r", "label": "So the idiom reads as data", "sub": "not as a constructor", "tone": "good"},
-          {"id": "n", "label": "The class is almost never named", "sub": "despite being everywhere", "tone": "good"},
-          {"id": "k", "label": "So the coercion is required reading", "sub": "to read the code at all", "tone": "teal"}],
-         "edges": [["w", "b"], ["b", "r"], ["r", "n"], ["n", "k"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "Independent in execution, atomic in result",
-         "caption": "The all-or-nothing behaviour surprises people, because **a fan-out looks like independent work.** It is independent in execution and **atomic in result**: two branches succeeding and one raising gives you **an exception, not a partial dict.** The usual fix is per-branch `with_fallbacks` returning a sentinel — `None`, or an \"unavailable\" marker — so a degraded answer beats no answer. 14.5 generalises that as k-of-N degradation; here it is one method call per branch.",
-         "cols": 3,
-         "nodes": [
-          {"id": "t", "label": "Three branches run concurrently", "sub": "genuinely independent", "tone": "good"},
-          {"id": "o", "label": "Two succeed, one raises", "sub": "", "tone": "warn"},
-          {"id": "e", "label": "You get an exception", "sub": "not a partial dict", "tone": "crit"},
-          {"id": "f", "label": "Per-branch with_fallbacks", "sub": "returning a sentinel", "tone": "good"},
-          {"id": "d", "label": "A degraded answer beats none", "sub": "14.5's k-of-N, in one method call", "tone": "good"}],
-         "edges": [["t", "o"], ["o", "e"], ["e", "f"], ["f", "d"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "2.7x on three calls, and the shape is the commonest fan-out there is",
+    "caption": "Three 100 ms calls sequentially is 0.310 s; the same three as a `RunnableParallel` is **0.115 s — 2.7×**, which is as close to the theoretical 3× as a thread pool and three identical latencies allow. Each branch receives **the same input** and produces one key of the output dict, and that shape — one input, several independent computations, a dict of results — is the single most common fan-out in LLM applications: summarise **and** classify **and** extract, all from one document.",
+    "left": "how the three ran",
+    "codeW": 200,
+    "vars": [
+     "time",
+     "speedup"
+    ],
+    "steps": [
+     {
+      "code": "one after another",
+      "state": [
+       "0.310 s",
+       "1.0x"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "RunnableParallel",
+      "state": [
+       "0.115 s",
+       "2.7x"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "good",
+      "note": "three 100 ms calls"
+     },
+     {
+      "code": "the shape",
+      "state": [
+       "one input",
+       "a dict of results"
+      ],
+      "tone": "violet"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "Why you will almost never see RunnableParallel written out",
+    "caption": "2.2 established the coercion; this is where it pays. **Because a dict in a pipe becomes a `RunnableParallel`, the fan-out idiom reads as data rather than as a constructor call** — `{'a': chain_a, 'b': chain_b} | next_step` instead of `RunnableParallel(a=chain_a, b=chain_b) | next_step`. Which is why you will almost never see the class named in a codebase **despite it being everywhere**, and why knowing the coercion is necessary to read the code at all.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "w",
+      "label": "What you write",
+      "sub": "{'a': chain_a, 'b': chain_b}",
+      "tone": "accent"
+     },
+     {
+      "id": "b",
+      "label": "What it becomes",
+      "sub": "RunnableParallel",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "So the idiom reads as data",
+      "sub": "not as a constructor",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "The class is almost never named",
+      "sub": "despite being everywhere",
+      "tone": "good"
+     },
+     {
+      "id": "k",
+      "label": "So the coercion is required reading",
+      "sub": "to read the code at all",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "w",
+      "b"
+     ],
+     [
+      "b",
+      "r"
+     ],
+     [
+      "r",
+      "n"
+     ],
+     [
+      "n",
+      "k"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "Independent in execution, atomic in result",
+    "caption": "The all-or-nothing behaviour surprises people, because **a fan-out looks like independent work.** It is independent in execution and **atomic in result**: two branches succeeding and one raising gives you **an exception, not a partial dict.** The usual fix is per-branch `with_fallbacks` returning a sentinel — `None`, or an \"unavailable\" marker — so a degraded answer beats no answer. 14.5 generalises that as k-of-N degradation; here it is one method call per branch.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Three branches run concurrently",
+      "sub": "genuinely independent",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "Two succeed, one raises",
+      "sub": "",
+      "tone": "warn"
+     },
+     {
+      "id": "e",
+      "label": "You get an exception",
+      "sub": "not a partial dict",
+      "tone": "crit"
+     },
+     {
+      "id": "f",
+      "label": "Per-branch with_fallbacks",
+      "sub": "returning a sentinel",
+      "tone": "good"
+     },
+     {
+      "id": "d",
+      "label": "A degraded answer beats none",
+      "sub": "14.5's k-of-N, in one method call",
+      "tone": "good"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "o"
+     ],
+     [
+      "o",
+      "e"
+     ],
+     [
+      "e",
+      "f"
+     ],
+     [
+      "f",
+      "d"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.4": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Useless alone, load-bearing inside a fan-out",
-         "caption": "`RunnablePassthrough` is an identity Runnable — **on its own it is useless.** Inside a fan-out it is **how you make the input survive a branch that transforms it**: one branch produces a summary and the passthrough branch preserves the original, so the next step can see both. That is exactly the role it plays in the standard RAG chain, where the retriever branch produces context and the passthrough branch preserves the question.",
-         "cols": 3,
-         "nodes": [
-          {"id": "i", "label": "The input", "sub": "{'text': 'long doc'}", "tone": "accent"},
-          {"id": "s", "label": "Branch 1: summarise", "sub": "transforms it", "tone": "violet"},
-          {"id": "p", "label": "Branch 2: RunnablePassthrough", "sub": "identity - preserves it", "tone": "violet"},
-          {"id": "b", "label": "The next step sees both", "sub": "summary and original", "tone": "good"},
-          {"id": "r", "label": "Which is the RAG chain exactly", "sub": "context, and the question", "tone": "teal"}],
-         "edges": [["i", "s"], ["i", "p"], ["s", "b"], ["p", "b"], ["b", "r"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": ".assign reads like a sequence of let bindings",
-         "caption": "`RunnablePassthrough.assign(k=fn)` **adds a key and keeps everything else** — which is the difference between it and a plain fan-out, where you have to name every key you want to survive. That compositionality is what makes it the backbone of real chains: **each step adds one derived value and nothing has to be threaded through by hand**, so a chain of five assigns reads like five `let` bindings rather than five dict reconstructions.",
-         "left": "stage", "codeW": 150,
-         "vars": ["the dict"],
-         "steps": [
-          {"code": "before", "state": ["{'text': 'a b c'}"], "tone": "accent"},
-          {"code": "after .assign(word_count=fn)", "state": ["{'text': 'a b c', 'word_count': 3}"], "changed": [0], "tone": "good", "note": "nothing threaded by hand"}]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A branch of a fan-out can be a whole sub-chain",
-         "caption": "`itemgetter(\"k\")` pulls one key out of a dict input, and the second entry is the one worth noticing: **`itemgetter(\"doc\") | RunnableLambda(len)` is a two-step chain used as a branch value.** Branches of a fan-out can be **arbitrary Runnables**, not just single steps — which is why the RAG idiom can put an entire retrieval sub-chain behind one key, and why the fan-out construct scales to real pipelines rather than only to leaf computations.",
-         "cols": 3,
-         "nodes": [
-          {"id": "i", "label": "itemgetter('k')", "sub": "a callable, so coerced", "tone": "accent"},
-          {"id": "c", "label": "itemgetter('doc') | len", "sub": "a two-step chain", "tone": "violet"},
-          {"id": "b", "label": "Used as one branch value", "sub": "inside the fan-out", "tone": "violet"},
-          {"id": "a", "label": "So branches are arbitrary Runnables", "sub": "not single steps", "tone": "good"},
-          {"id": "r", "label": "Hence a retrieval sub-chain per key", "sub": "which is how RAG is written", "tone": "teal"}],
-         "edges": [["i", "b"], ["c", "b"], ["b", "a"], ["a", "r"]]}},
-  {"after": "05",
-   "d": {"kind": "matrix",
-         "title": "Five shapes, and the question each one answers",
-         "caption": "Read as a lookup from intent to syntax, which is how it gets used in practice. The third and fourth rows are the pair people confuse: **a fan-out with a passthrough keeps the input alongside a result and makes you name every surviving key; `.assign` adds a key and keeps the rest.** Reach for the first when you are building a new dict shape and the second when you are accumulating onto an existing one.",
-         "cols": ["What to write"],
-         "rows": ["Keep only the output", "Run steps side by side", "Keep the input alongside", "Add a key, keep the rest", "Take one key"],
-         "cells": [
-          ["a | b"],
-          ["{'x': a, 'y': b} - coerced to RunnableParallel"],
-          [{"text": "RunnableParallel(out=a, orig=RunnablePassthrough())", "tone": "accent"}],
-          [{"text": "RunnablePassthrough.assign(k=fn)", "tone": "good"}],
-          ["itemgetter('k')"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Useless alone, load-bearing inside a fan-out",
+    "caption": "`RunnablePassthrough` is an identity Runnable — **on its own it is useless.** Inside a fan-out it is **how you make the input survive a branch that transforms it**: one branch produces a summary and the passthrough branch preserves the original, so the next step can see both. That is exactly the role it plays in the standard RAG chain, where the retriever branch produces context and the passthrough branch preserves the question.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "The input",
+      "sub": "{'text': 'long doc'}",
+      "tone": "accent"
+     },
+     {
+      "id": "s",
+      "label": "Branch 1: summarise",
+      "sub": "transforms it",
+      "tone": "violet"
+     },
+     {
+      "id": "p",
+      "label": "Branch 2: RunnablePassthrough",
+      "sub": "identity - preserves it",
+      "tone": "violet"
+     },
+     {
+      "id": "b",
+      "label": "The next step sees both",
+      "sub": "summary and original",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Which is the RAG chain exactly",
+      "sub": "context, and the question",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "s"
+     ],
+     [
+      "i",
+      "p"
+     ],
+     [
+      "s",
+      "b"
+     ],
+     [
+      "p",
+      "b"
+     ],
+     [
+      "b",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": ".assign reads like a sequence of let bindings",
+    "caption": "`RunnablePassthrough.assign(k=fn)` **adds a key and keeps everything else** — which is the difference between it and a plain fan-out, where you have to name every key you want to survive. That compositionality is what makes it the backbone of real chains: **each step adds one derived value and nothing has to be threaded through by hand**, so a chain of five assigns reads like five `let` bindings rather than five dict reconstructions.",
+    "left": "stage",
+    "codeW": 150,
+    "vars": [
+     "the dict"
+    ],
+    "steps": [
+     {
+      "code": "before",
+      "state": [
+       "{'text': 'a b c'}"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "after .assign(word_count=fn)",
+      "state": [
+       "{'text': 'a b c', 'word_count': 3}"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "nothing threaded by hand"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A branch of a fan-out can be a whole sub-chain",
+    "caption": "`itemgetter(\"k\")` pulls one key out of a dict input, and the second entry is the one worth noticing: **`itemgetter(\"doc\") | RunnableLambda(len)` is a two-step chain used as a branch value.** Branches of a fan-out can be **arbitrary Runnables**, not just single steps — which is why the RAG idiom can put an entire retrieval sub-chain behind one key, and why the fan-out construct scales to real pipelines rather than only to leaf computations.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "i",
+      "label": "itemgetter('k')",
+      "sub": "a callable, so coerced",
+      "tone": "accent"
+     },
+     {
+      "id": "c",
+      "label": "itemgetter('doc') | len",
+      "sub": "a two-step chain",
+      "tone": "violet"
+     },
+     {
+      "id": "b",
+      "label": "Used as one branch value",
+      "sub": "inside the fan-out",
+      "tone": "violet"
+     },
+     {
+      "id": "a",
+      "label": "So branches are arbitrary Runnables",
+      "sub": "not single steps",
+      "tone": "good"
+     },
+     {
+      "id": "r",
+      "label": "Hence a retrieval sub-chain per key",
+      "sub": "which is how RAG is written",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "i",
+      "b"
+     ],
+     [
+      "c",
+      "b"
+     ],
+     [
+      "b",
+      "a"
+     ],
+     [
+      "a",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "layers",
+    "title": "Five shapes, and the question each one answers",
+    "caption": "Read as a lookup from intent to syntax, which is how it gets used in practice. The third and fourth rows are the pair people confuse: **a fan-out with a passthrough keeps the input alongside a result and makes you name every surviving key; `.assign` adds a key and keeps the rest.** Reach for the first when you are building a new dict shape and the second when you are accumulating onto an existing one.",
+    "items": [
+     {
+      "label": "Keep only the output",
+      "sub": "a | b"
+     },
+     {
+      "label": "Run steps side by side",
+      "sub": "{'x': a, 'y': b} - coerced to RunnableParallel"
+     },
+     {
+      "label": "Keep the input alongside",
+      "sub": "RunnableParallel(out=a, orig=RunnablePassthrough())",
+      "tone": "accent"
+     },
+     {
+      "label": "Add a key, keep the rest",
+      "sub": "RunnablePassthrough.assign(k=fn)",
+      "tone": "good"
+     },
+     {
+      "label": "Take one key",
+      "sub": "itemgetter('k')"
+     }
+    ]
+   }
+  }
  ],
-
  "2.5": [
-  {"after": "02",
-   "d": {"kind": "trace",
-         "title": "A function that returns a Runnable is the whole routing mechanism",
-         "caption": "There is no router class doing anything clever. **A function inspects the input, returns a Runnable, and the pipe invokes whatever came back** — so routing is composition rather than a feature, and the branches can be any Runnable including whole sub-chains. Which also means the routing logic is ordinary Python you can unit-test without the framework, separately from the chains it selects between.",
-         "left": "classified topic", "codeW": 170,
-         "vars": ["chain selected", "result"],
-         "steps": [
-          {"code": "Math", "state": ["the maths chain", "MATH: help"], "tone": "good"},
-          {"code": "Code review", "state": ["the code chain", "CODE: help"], "tone": "good"},
-          {"code": "Weather", "state": ["the default", "GENERAL: help"], "changed": [0], "tone": "accent", "note": "see section 04"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "What neither a chain nor a router can express",
-         "caption": "Every one of these is something an agent does routinely. **Call a tool, look at what came back, decide whether to call another. Retrieve, grade the documents, decide to retrieve again with a different query. Draft, critique, revise. Ask a human to approve.** None is expressible as a chain, and **the attempt to express them is what produces the recursive-chain code nobody can follow.** 8.1 shows the three failures directly, so the graph arrives as an answer to something rather than as a new API.",
-         "cols": 3,
-         "nodes": [
-          {"id": "t", "label": "Call a tool, then decide again", "sub": "an unknown number of times", "tone": "crit"},
-          {"id": "g", "label": "Retrieve, grade, maybe re-retrieve", "sub": "a loop with a condition", "tone": "crit"},
-          {"id": "d", "label": "Draft, critique, revise", "sub": "a cycle", "tone": "crit"},
-          {"id": "h", "label": "Ask a human to approve", "sub": "and suspend until they do", "tone": "crit"},
-          {"id": "n", "label": "A chain is a straight line", "sub": "and a router is one branch of it", "tone": "warn"},
-          {"id": "r", "label": "Forcing them produces recursive chains", "sub": "which is what 8.1 is for", "tone": "teal"}],
-         "edges": [["t", "n"], ["g", "n"], ["d", "n"], ["h", "n"], ["n", "r"]]}},
-  {"after": "04",
-   "d": {"kind": "flow",
-         "title": "A default that answers converts every routing failure into a wrong answer",
-         "caption": "A router that mis-classifies sends the question to a chain that **cannot** answer it, and the user gets a confident wrong answer rather than an error — **worse than a failure, because nothing signals it.** The temptation is to make the default a general-purpose chain so something always gets answered, and that **converts every routing failure into a plausible answer from the wrong specialist**: invisible in metrics, arriving as a complaint. A default that says it does not know is **a measurable signal**, and its rate is a number you can watch.",
-         "cols": 3,
-         "nodes": [
-          {"id": "m", "label": "The router mis-classifies", "sub": "it will, at some rate", "tone": "warn"},
-          {"id": "g", "label": "Default: a general-purpose chain", "sub": "so something always answers", "tone": "crit"},
-          {"id": "p", "label": "A plausible answer, wrong specialist", "sub": "invisible in metrics", "tone": "crit"},
-          {"id": "c", "label": "It arrives as a complaint", "sub": "weeks later", "tone": "crit"},
-          {"id": "d", "label": "Default: 'I am not sure who handles that'", "sub": "a measurable signal", "tone": "good"},
-          {"id": "w", "label": "And its rate is a number to watch", "sub": "which the other version has no version of", "tone": "teal"}],
-         "edges": [["m", "g"], ["g", "p"], ["p", "c"], ["m", "d"], ["d", "w"]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "trace",
+    "title": "A function that returns a Runnable is the whole routing mechanism",
+    "caption": "There is no router class doing anything clever. **A function inspects the input, returns a Runnable, and the pipe invokes whatever came back** — so routing is composition rather than a feature, and the branches can be any Runnable including whole sub-chains. Which also means the routing logic is ordinary Python you can unit-test without the framework, separately from the chains it selects between.",
+    "left": "classified topic",
+    "codeW": 170,
+    "vars": [
+     "chain selected",
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "Math",
+      "state": [
+       "the maths chain",
+       "MATH: help"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Code review",
+      "state": [
+       "the code chain",
+       "CODE: help"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "Weather",
+      "state": [
+       "the default",
+       "GENERAL: help"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "accent",
+      "note": "see section 04"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "What neither a chain nor a router can express",
+    "caption": "Every one of these is something an agent does routinely. **Call a tool, look at what came back, decide whether to call another. Retrieve, grade the documents, decide to retrieve again with a different query. Draft, critique, revise. Ask a human to approve.** None is expressible as a chain, and **the attempt to express them is what produces the recursive-chain code nobody can follow.** 8.1 shows the three failures directly, so the graph arrives as an answer to something rather than as a new API.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "t",
+      "label": "Call a tool, then decide again",
+      "sub": "an unknown number of times",
+      "tone": "crit"
+     },
+     {
+      "id": "g",
+      "label": "Retrieve, grade, maybe re-retrieve",
+      "sub": "a loop with a condition",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Draft, critique, revise",
+      "sub": "a cycle",
+      "tone": "crit"
+     },
+     {
+      "id": "h",
+      "label": "Ask a human to approve",
+      "sub": "and suspend until they do",
+      "tone": "crit"
+     },
+     {
+      "id": "n",
+      "label": "A chain is a straight line",
+      "sub": "and a router is one branch of it",
+      "tone": "warn"
+     },
+     {
+      "id": "r",
+      "label": "Forcing them produces recursive chains",
+      "sub": "which is what 8.1 is for",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "t",
+      "n"
+     ],
+     [
+      "g",
+      "n"
+     ],
+     [
+      "d",
+      "n"
+     ],
+     [
+      "h",
+      "n"
+     ],
+     [
+      "n",
+      "r"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "flow",
+    "title": "A default that answers converts every routing failure into a wrong answer",
+    "caption": "A router that mis-classifies sends the question to a chain that **cannot** answer it, and the user gets a confident wrong answer rather than an error — **worse than a failure, because nothing signals it.** The temptation is to make the default a general-purpose chain so something always gets answered, and that **converts every routing failure into a plausible answer from the wrong specialist**: invisible in metrics, arriving as a complaint. A default that says it does not know is **a measurable signal**, and its rate is a number you can watch.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "m",
+      "label": "The router mis-classifies",
+      "sub": "it will, at some rate",
+      "tone": "warn"
+     },
+     {
+      "id": "g",
+      "label": "Default: a general-purpose chain",
+      "sub": "so something always answers",
+      "tone": "crit"
+     },
+     {
+      "id": "p",
+      "label": "A plausible answer, wrong specialist",
+      "sub": "invisible in metrics",
+      "tone": "crit"
+     },
+     {
+      "id": "c",
+      "label": "It arrives as a complaint",
+      "sub": "weeks later",
+      "tone": "crit"
+     },
+     {
+      "id": "d",
+      "label": "Default: 'I am not sure who handles that'",
+      "sub": "a measurable signal",
+      "tone": "good"
+     },
+     {
+      "id": "w",
+      "label": "And its rate is a number to watch",
+      "sub": "which the other version has no version of",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "m",
+      "g"
+     ],
+     [
+      "g",
+      "p"
+     ],
+     [
+      "p",
+      "c"
+     ],
+     [
+      "m",
+      "d"
+     ],
+     [
+      "d",
+      "w"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.6": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Both are base-class methods, so you choose what each one wraps",
-         "caption": "`with_retry` re-invokes the same thing; `with_fallbacks` invokes a different thing. **Both are defined on `Runnable`**, so they apply to a model, a parser, a retriever, a lambda or a whole chain — 2.1's closure property doing concrete work. **That freedom is also what makes the ordering question real**: retry-inside-fallback retries the primary before giving up on it, and fallback-inside-retry gives the backup a second chance too, and those are different policies.",
-         "left": "construction", "codeW": 200,
-         "vars": ["result"],
-         "steps": [
-          {"code": "with_retry(stop_after_attempt=4)", "state": ["ok on attempt 3"], "tone": "good", "note": "3 attempts used"},
-          {"code": "with_fallbacks([secondary])", "state": ["answered by the backup"], "tone": "good"},
-          {"code": "and both apply to anything", "state": ["model, parser, chain"], "tone": "violet", "note": "so ordering is yours"}]}},
-  {"after": "03",
-   "d": {"kind": "matrix",
-         "title": "Five failures where a retry is three times the cost for the same answer",
-         "caption": "A blanket retry on any of these is **three times the latency for the same failure, three times the cost if the call was billed before it failed, and a confusing trace.** The last row is the one that catches people, because it does not look like a network problem and `with_retry` catches it anyway: a validation error on parsed output is **a schema issue from 1.5**, and re-sending an identical request produces an identical violation. `with_retry` takes `retry_if_exception_type` — scope it.",
-         "cols": ["Why retrying is wasted"],
-         "rows": ["401 / 403", "400 bad request", "context length exceeded", "content filter", "a validation error"],
-         "cells": [
-          [{"text": "credentials will not fix themselves", "tone": "crit"}],
-          [{"text": "malformed, and it will stay malformed", "tone": "crit"}],
-          [{"text": "deterministic - it recurs identically", "tone": "crit"}],
-          [{"text": "the input is the problem", "tone": "crit"}],
-          [{"text": "a schema issue (1.5), not a network one", "tone": "crit"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Both are base-class methods, so you choose what each one wraps",
+    "caption": "`with_retry` re-invokes the same thing; `with_fallbacks` invokes a different thing. **Both are defined on `Runnable`**, so they apply to a model, a parser, a retriever, a lambda or a whole chain — 2.1's closure property doing concrete work. **That freedom is also what makes the ordering question real**: retry-inside-fallback retries the primary before giving up on it, and fallback-inside-retry gives the backup a second chance too, and those are different policies.",
+    "left": "construction",
+    "codeW": 200,
+    "vars": [
+     "result"
+    ],
+    "steps": [
+     {
+      "code": "with_retry(stop_after_attempt=4)",
+      "state": [
+       "ok on attempt 3"
+      ],
+      "tone": "good",
+      "note": "3 attempts used"
+     },
+     {
+      "code": "with_fallbacks([secondary])",
+      "state": [
+       "answered by the backup"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "and both apply to anything",
+      "state": [
+       "model, parser, chain"
+      ],
+      "tone": "violet",
+      "note": "so ordering is yours"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "layers",
+    "title": "Five failures where a retry is three times the cost for the same answer",
+    "caption": "A blanket retry on any of these is **three times the latency for the same failure, three times the cost if the call was billed before it failed, and a confusing trace.** The last row is the one that catches people, because it does not look like a network problem and `with_retry` catches it anyway: a validation error on parsed output is **a schema issue from 1.5**, and re-sending an identical request produces an identical violation. `with_retry` takes `retry_if_exception_type` — scope it.",
+    "items": [
+     {
+      "label": "401 / 403",
+      "sub": "credentials will not fix themselves",
+      "tone": "crit"
+     },
+     {
+      "label": "400 bad request",
+      "sub": "malformed, and it will stay malformed",
+      "tone": "crit"
+     },
+     {
+      "label": "context length exceeded",
+      "sub": "deterministic - it recurs identically",
+      "tone": "crit"
+     },
+     {
+      "label": "content filter",
+      "sub": "the input is the problem",
+      "tone": "crit"
+     },
+     {
+      "label": "a validation error",
+      "sub": "a schema issue (1.5), not a network one",
+      "tone": "crit"
+     }
+    ]
+   }
+  }
  ],
-
  "2.7": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Six chunks for five words, and the sixth is the stream closing",
-         "caption": "The trailing empty chunk is langchain-core closing the stream, as 1.2 found. **Code that accumulates is unaffected; code that counts chunks or indexes the last one has to expect it** — and \"indexes the last one\" is the common case, because that is how people reach for the final token to check a stop condition. Joining gives the right string either way, which is why this is easy to not notice until something downstream counts.",
-         "left": "what you get", "codeW": 170,
-         "vars": ["value"],
-         "steps": [
-          {"code": "chunks", "state": ["'one ','two ','three ','four ','five',''"], "tone": "accent"},
-          {"code": "count", "state": ["6"], "changed": [0], "tone": "warn", "note": "for five words"},
-          {"code": "joined", "state": ["'one two three four five'"], "tone": "good", "note": "accumulating is fine"}]}},
-  {"after": "03",
-   "d": {"kind": "flow",
-         "title": "The partial parser, doing the job it was actually built for",
-         "caption": "This is the same parser from 1.4 — **the one that silently repairs truncated JSON** — and here it is correct rather than dangerous. **Streaming is the context where incomplete input is normal rather than an error**, so parsing progressively and emitting the object at each parseable state is exactly right. The lesson generalises: 1.4's failure was not a bad parser, it was **a streaming parser used on a non-streamed response**, where incompleteness means truncation instead of progress.",
-         "cols": 3,
-         "nodes": [
-          {"id": "p", "label": "A partial JSON parser", "sub": "the same one as 1.4", "tone": "violet"},
-          {"id": "s", "label": "In a stream: incompleteness is normal", "sub": "it means progress", "tone": "good"},
-          {"id": "o", "label": "So emit at each parseable state", "sub": "exactly right here", "tone": "good"},
-          {"id": "n", "label": "Non-streamed: incompleteness means truncation", "sub": "and it repairs it silently", "tone": "crit"},
-          {"id": "l", "label": "So 1.4's bug was the context, not the parser", "sub": "the same code, two meanings", "tone": "teal"}],
-         "edges": [["p", "s"], ["s", "o"], ["p", "n"], ["n", "l"]]}},
-  {"after": "04",
-   "d": {"kind": "trace",
-         "title": "The chunk count tells you which steps are streaming",
-         "caption": "Three chains over the same model, and **the chunk count is a direct readout of where incrementality survives.** A forwarding parser passes chunks through and adds one empty closer: 6. **A `RunnableLambda` collapses the stream to 1, because it waits for the whole input** — which is the thing to know, since one bare function anywhere in a chain silently ends streaming for everything after it. And a partial JSON parser emits one chunk per parseable state: 3.",
-         "left": "chain", "codeW": 220,
-         "vars": ["chunks", "why"],
-         "steps": [
-          {"code": "prompt | model | StrOutputParser", "state": ["6", "forwards, plus one closer"], "tone": "good"},
-          {"code": "... | RunnableLambda(upper)", "state": ["1", "it waits for all of it"], "changed": [0], "tone": "crit", "note": "streaming ends here"},
-          {"code": "prompt | model | JsonOutputParser", "state": ["3", "one per parseable state"], "changed": [0], "tone": "accent"}]}},
-  {"after": "05",
-   "d": {"kind": "flow",
-         "title": "stream renders an answer; astream_events renders progress",
-         "caption": "`stream` gives you the **final output** incrementally. `astream_events` gives you **every internal step** — model tokens, tool calls, retriever hits, each sub-chain starting and ending — as a structured event stream. Which settles when to use which: **use `stream` when rendering an answer, and `astream_events` when rendering progress.** Showing that a retrieval happened, that a tool is running, that the agent is on its third step is what a user staring at an eight-second run actually wants, and **`stream` cannot show them because they are not in the output.**",
-         "cols": 3,
-         "nodes": [
-          {"id": "s", "label": "stream", "sub": "the final output, incrementally", "tone": "accent"},
-          {"id": "a", "label": "astream_events", "sub": "every internal step, structured", "tone": "violet"},
-          {"id": "r", "label": "Rendering an answer", "sub": "use stream", "tone": "good"},
-          {"id": "p", "label": "Rendering progress", "sub": "use astream_events", "tone": "good"},
-          {"id": "e", "label": "'retrieving...', 'step 3 of n'", "sub": "not in the output at all", "tone": "teal"}],
-         "edges": [["s", "r"], ["a", "p"], ["p", "e"]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Six chunks for five words, and the sixth is the stream closing",
+    "caption": "The trailing empty chunk is langchain-core closing the stream, as 1.2 found. **Code that accumulates is unaffected; code that counts chunks or indexes the last one has to expect it** — and \"indexes the last one\" is the common case, because that is how people reach for the final token to check a stop condition. Joining gives the right string either way, which is why this is easy to not notice until something downstream counts.",
+    "left": "what you get",
+    "codeW": 170,
+    "vars": [
+     "value"
+    ],
+    "steps": [
+     {
+      "code": "chunks",
+      "state": [
+       "'one ','two ','three ','four ','five',''"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "count",
+      "state": [
+       "6"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn",
+      "note": "for five words"
+     },
+     {
+      "code": "joined",
+      "state": [
+       "'one two three four five'"
+      ],
+      "tone": "good",
+      "note": "accumulating is fine"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "flow",
+    "title": "The partial parser, doing the job it was actually built for",
+    "caption": "This is the same parser from 1.4 — **the one that silently repairs truncated JSON** — and here it is correct rather than dangerous. **Streaming is the context where incomplete input is normal rather than an error**, so parsing progressively and emitting the object at each parseable state is exactly right. The lesson generalises: 1.4's failure was not a bad parser, it was **a streaming parser used on a non-streamed response**, where incompleteness means truncation instead of progress.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "p",
+      "label": "A partial JSON parser",
+      "sub": "the same one as 1.4",
+      "tone": "violet"
+     },
+     {
+      "id": "s",
+      "label": "In a stream: incompleteness is normal",
+      "sub": "it means progress",
+      "tone": "good"
+     },
+     {
+      "id": "o",
+      "label": "So emit at each parseable state",
+      "sub": "exactly right here",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "Non-streamed: incompleteness means truncation",
+      "sub": "and it repairs it silently",
+      "tone": "crit"
+     },
+     {
+      "id": "l",
+      "label": "So 1.4's bug was the context, not the parser",
+      "sub": "the same code, two meanings",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "p",
+      "s"
+     ],
+     [
+      "s",
+      "o"
+     ],
+     [
+      "p",
+      "n"
+     ],
+     [
+      "n",
+      "l"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "trace",
+    "title": "The chunk count tells you which steps are streaming",
+    "caption": "Three chains over the same model, and **the chunk count is a direct readout of where incrementality survives.** A forwarding parser passes chunks through and adds one empty closer: 6. **A `RunnableLambda` collapses the stream to 1, because it waits for the whole input** — which is the thing to know, since one bare function anywhere in a chain silently ends streaming for everything after it. And a partial JSON parser emits one chunk per parseable state: 3.",
+    "left": "chain",
+    "codeW": 220,
+    "vars": [
+     "chunks",
+     "why"
+    ],
+    "steps": [
+     {
+      "code": "prompt | model | StrOutputParser",
+      "state": [
+       "6",
+       "forwards, plus one closer"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "... | RunnableLambda(upper)",
+      "state": [
+       "1",
+       "it waits for all of it"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "crit",
+      "note": "streaming ends here"
+     },
+     {
+      "code": "prompt | model | JsonOutputParser",
+      "state": [
+       "3",
+       "one per parseable state"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "accent"
+     }
+    ]
+   }
+  },
+  {
+   "after": "05",
+   "d": {
+    "kind": "flow",
+    "title": "stream renders an answer; astream_events renders progress",
+    "caption": "`stream` gives you the **final output** incrementally. `astream_events` gives you **every internal step** — model tokens, tool calls, retriever hits, each sub-chain starting and ending — as a structured event stream. Which settles when to use which: **use `stream` when rendering an answer, and `astream_events` when rendering progress.** Showing that a retrieval happened, that a tool is running, that the agent is on its third step is what a user staring at an eight-second run actually wants, and **`stream` cannot show them because they are not in the output.**",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "s",
+      "label": "stream",
+      "sub": "the final output, incrementally",
+      "tone": "accent"
+     },
+     {
+      "id": "a",
+      "label": "astream_events",
+      "sub": "every internal step, structured",
+      "tone": "violet"
+     },
+     {
+      "id": "r",
+      "label": "Rendering an answer",
+      "sub": "use stream",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "Rendering progress",
+      "sub": "use astream_events",
+      "tone": "good"
+     },
+     {
+      "id": "e",
+      "label": "'retrieving...', 'step 3 of n'",
+      "sub": "not in the output at all",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "s",
+      "r"
+     ],
+     [
+      "a",
+      "p"
+     ],
+     [
+      "p",
+      "e"
+     ]
+    ]
+   }
+  }
  ],
-
  "2.8": [
-  {"after": "01",
-   "d": {"kind": "trace",
-         "title": "Six inputs in the time of one, three ways, all identical",
-         "caption": "`abatch` over six inputs takes **0.107 s against 0.106 s for a single `ainvoke`** — and hand-rolled `asyncio.gather` matches it exactly. Which is the useful negative result: **`abatch` is not doing anything cleverer than `gather`, and it is not doing anything worse.** So the choice between them is about whose code you would rather read, and the reason to reach for async at all is not throughput, which §04 is about.",
-         "left": "call", "codeW": 190,
-         "vars": ["time", "results"],
-         "steps": [
-          {"code": "ainvoke, one input", "state": ["0.106 s", "1"], "tone": "accent"},
-          {"code": "abatch, six inputs", "state": ["0.107 s", "6"], "changed": [1], "tone": "good", "note": "the same wall clock"},
-          {"code": "asyncio.gather, six", "state": ["0.106 s", "6"], "tone": "good", "note": "no cleverer, no worse"}]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "ceil(n / limit) x latency, exactly — which makes it a sanity check",
-         "caption": "Six inputs at 100 ms, swept over the concurrency limit, land on the arithmetic to three decimal places. **That is what makes it useful as a sanity check: if your measured time does not match `ceil(n / limit) × latency`, something else is in the path** — a shared connection pool, a provider-side queue, or a semaphore you forgot you had. And note what benchmarking cannot tell you: **the fastest setting is always the highest one**, so the number you want comes from the provider's documented rate limit divided across your workers.",
-         "left": "max_concurrency", "codeW": 160,
-         "vars": ["time", "waves"],
-         "steps": [
-          {"code": "1", "state": ["0.607 s", "6 of 1"], "tone": "crit"},
-          {"code": "2", "state": ["0.306 s", "3 of 2"], "changed": [0], "tone": "warn"},
-          {"code": "3", "state": ["0.206 s", "2 of 3"], "tone": "accent"},
-          {"code": "6", "state": ["0.106 s", "1 of 6"], "changed": [0], "tone": "good", "note": "always fastest - so do not benchmark"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "The sync API is already concurrent where it matters",
-         "caption": "The honest summary: **`batch` uses a thread pool and `RunnableParallel` runs branches in parallel**, so three of these four rows need no async at all. Async matters most when **something else needs the thread** — a server handling other requests while this one waits on a model — which is a different reason from the one people usually give, and it is why adding async to a script buys nothing.",
-         "cols": ["Worth it?"],
-         "rows": ["Many independent inputs", "A web server under load", "A fan-out of several chains", "One call in a script"],
-         "cells": [
-          [{"text": "yes - but batch already does this without async", "tone": "accent"}],
-          [{"text": "yes - async frees the worker while the model thinks", "tone": "good"}],
-          [{"text": "no need - RunnableParallel is concurrent in the sync API", "tone": "warn"}],
-          [{"text": "no - invoke is simpler and identical in speed", "tone": "crit"}]]}}
+  {
+   "after": "01",
+   "d": {
+    "kind": "trace",
+    "title": "Six inputs in the time of one, three ways, all identical",
+    "caption": "`abatch` over six inputs takes **0.107 s against 0.106 s for a single `ainvoke`** — and hand-rolled `asyncio.gather` matches it exactly. Which is the useful negative result: **`abatch` is not doing anything cleverer than `gather`, and it is not doing anything worse.** So the choice between them is about whose code you would rather read, and the reason to reach for async at all is not throughput, which §04 is about.",
+    "left": "call",
+    "codeW": 190,
+    "vars": [
+     "time",
+     "results"
+    ],
+    "steps": [
+     {
+      "code": "ainvoke, one input",
+      "state": [
+       "0.106 s",
+       "1"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "abatch, six inputs",
+      "state": [
+       "0.107 s",
+       "6"
+      ],
+      "changed": [
+       1
+      ],
+      "tone": "good",
+      "note": "the same wall clock"
+     },
+     {
+      "code": "asyncio.gather, six",
+      "state": [
+       "0.106 s",
+       "6"
+      ],
+      "tone": "good",
+      "note": "no cleverer, no worse"
+     }
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "ceil(n / limit) x latency, exactly — which makes it a sanity check",
+    "caption": "Six inputs at 100 ms, swept over the concurrency limit, land on the arithmetic to three decimal places. **That is what makes it useful as a sanity check: if your measured time does not match `ceil(n / limit) × latency`, something else is in the path** — a shared connection pool, a provider-side queue, or a semaphore you forgot you had. And note what benchmarking cannot tell you: **the fastest setting is always the highest one**, so the number you want comes from the provider's documented rate limit divided across your workers.",
+    "left": "max_concurrency",
+    "codeW": 160,
+    "vars": [
+     "time",
+     "waves"
+    ],
+    "steps": [
+     {
+      "code": "1",
+      "state": [
+       "0.607 s",
+       "6 of 1"
+      ],
+      "tone": "crit"
+     },
+     {
+      "code": "2",
+      "state": [
+       "0.306 s",
+       "3 of 2"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "warn"
+     },
+     {
+      "code": "3",
+      "state": [
+       "0.206 s",
+       "2 of 3"
+      ],
+      "tone": "accent"
+     },
+     {
+      "code": "6",
+      "state": [
+       "0.106 s",
+       "1 of 6"
+      ],
+      "changed": [
+       0
+      ],
+      "tone": "good",
+      "note": "always fastest - so do not benchmark"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "layers",
+    "title": "The sync API is already concurrent where it matters",
+    "caption": "The honest summary: **`batch` uses a thread pool and `RunnableParallel` runs branches in parallel**, so three of these four rows need no async at all. Async matters most when **something else needs the thread** — a server handling other requests while this one waits on a model — which is a different reason from the one people usually give, and it is why adding async to a script buys nothing.",
+    "items": [
+     {
+      "label": "Many independent inputs",
+      "sub": "yes - but batch already does this without async",
+      "tone": "accent"
+     },
+     {
+      "label": "A web server under load",
+      "sub": "yes - async frees the worker while the model thinks",
+      "tone": "good"
+     },
+     {
+      "label": "A fan-out of several chains",
+      "sub": "no need - RunnableParallel is concurrent in the sync API",
+      "tone": "warn"
+     },
+     {
+      "label": "One call in a script",
+      "sub": "no - invoke is simpler and identical in speed",
+      "tone": "crit"
+     }
+    ]
+   }
+  }
  ],
-
  "2.9": [
-  {"after": "02",
-   "d": {"kind": "flow",
-         "title": "Four product features from one deployed object",
-         "caption": "Worth being explicit about what `configurable_alternatives` makes possible, because the mechanism is small and the consequences are not. **Per-tenant model choice, an A/B test between two prompts, a premium tier on a larger model, and a fallback to a cheaper model under load — all from one deployed object**, selected by a value that can arrive in a request header. None of those needs a second deployment, a feature flag in the chain's code, or a branch you have to maintain.",
-         "cols": 3,
-         "nodes": [
-          {"id": "o", "label": "One deployed object", "sub": "with declared alternatives", "tone": "violet"},
-          {"id": "t", "label": "Per-tenant model choice", "sub": "from a header", "tone": "good"},
-          {"id": "a", "label": "An A/B between two prompts", "sub": "no second deployment", "tone": "good"},
-          {"id": "p", "label": "A premium tier on a bigger model", "sub": "same object", "tone": "good"},
-          {"id": "f", "label": "A cheaper fallback under load", "sub": "selected at request time", "tone": "good"},
-          {"id": "n", "label": "And no branch to maintain", "sub": "which is the point", "tone": "teal"}],
-         "edges": [["o", "t"], ["o", "a"], ["o", "p"], ["o", "f"], ["t", "n"]]}},
-  {"after": "03",
-   "d": {"kind": "trace",
-         "title": "Name it while you build, because the moment you need it is an incident",
-         "caption": "2.2 noted that a chain is a value you can name; this is how. The argument for doing it **as you build rather than when you need it** is specific: **the moment you need it is during an incident, and at that point every span in the tree is called `RunnableSequence` and you are matching step indices by hand.** Tags and metadata do the same job for filtering — a `tenant` in metadata is what turns \"it is slow\" into \"it is slow for one customer\".",
-         "left": "what with_config sets", "codeW": 190,
-         "vars": ["value", "what it buys"],
-         "steps": [
-          {"code": "run_name", "state": ["summarise", "a name in the trace"], "tone": "good"},
-          {"code": "tags", "state": ["['prod','v2']", "filtering by deploy"], "tone": "good"},
-          {"code": "metadata", "state": ["{'tenant': 'acme'}", "slow for one customer"], "tone": "good"},
-          {"code": "without it", "state": ["RunnableSequence", "step indices, by hand"], "changed": [0, 1], "tone": "crit"}]}},
-  {"after": "04",
-   "d": {"kind": "matrix",
-         "title": "Config or input, decided by one question",
-         "caption": "The dividing line is whether **a later step reads it as data**. Anything the prompt interpolates, anything a step consumes — that is input. Anything that selects *how* the chain runs — which tier, which tenant, a request id, callbacks, a concurrency limit, a recursion cap — that is config. The test is practical rather than philosophical: **if removing it from the input would change what the prompt says, it is input.**",
-         "cols": ["Config", "Input"],
-         "rows": ["Selection", "Identity", "Tracing", "Limits", "The content"],
-         "cells": [
-          [{"text": "which model tier", "tone": "violet"}, "the question being asked"],
-          [{"text": "which tenant", "tone": "violet"}, "the user's name, if the answer uses it"],
-          [{"text": "a request id, callbacks, tags", "tone": "violet"}, "the conversation history"],
-          [{"text": "max_concurrency, recursion limit", "tone": "violet"}, "the documents to summarise"],
-          ["-", {"text": "anything the prompt interpolates", "tone": "good"}]]}}
+  {
+   "after": "02",
+   "d": {
+    "kind": "flow",
+    "title": "Four product features from one deployed object",
+    "caption": "Worth being explicit about what `configurable_alternatives` makes possible, because the mechanism is small and the consequences are not. **Per-tenant model choice, an A/B test between two prompts, a premium tier on a larger model, and a fallback to a cheaper model under load — all from one deployed object**, selected by a value that can arrive in a request header. None of those needs a second deployment, a feature flag in the chain's code, or a branch you have to maintain.",
+    "cols": 3,
+    "nodes": [
+     {
+      "id": "o",
+      "label": "One deployed object",
+      "sub": "with declared alternatives",
+      "tone": "violet"
+     },
+     {
+      "id": "t",
+      "label": "Per-tenant model choice",
+      "sub": "from a header",
+      "tone": "good"
+     },
+     {
+      "id": "a",
+      "label": "An A/B between two prompts",
+      "sub": "no second deployment",
+      "tone": "good"
+     },
+     {
+      "id": "p",
+      "label": "A premium tier on a bigger model",
+      "sub": "same object",
+      "tone": "good"
+     },
+     {
+      "id": "f",
+      "label": "A cheaper fallback under load",
+      "sub": "selected at request time",
+      "tone": "good"
+     },
+     {
+      "id": "n",
+      "label": "And no branch to maintain",
+      "sub": "which is the point",
+      "tone": "teal"
+     }
+    ],
+    "edges": [
+     [
+      "o",
+      "t"
+     ],
+     [
+      "o",
+      "a"
+     ],
+     [
+      "o",
+      "p"
+     ],
+     [
+      "o",
+      "f"
+     ],
+     [
+      "t",
+      "n"
+     ]
+    ]
+   }
+  },
+  {
+   "after": "03",
+   "d": {
+    "kind": "trace",
+    "title": "Name it while you build, because the moment you need it is an incident",
+    "caption": "2.2 noted that a chain is a value you can name; this is how. The argument for doing it **as you build rather than when you need it** is specific: **the moment you need it is during an incident, and at that point every span in the tree is called `RunnableSequence` and you are matching step indices by hand.** Tags and metadata do the same job for filtering — a `tenant` in metadata is what turns \"it is slow\" into \"it is slow for one customer\".",
+    "left": "what with_config sets",
+    "codeW": 190,
+    "vars": [
+     "value",
+     "what it buys"
+    ],
+    "steps": [
+     {
+      "code": "run_name",
+      "state": [
+       "summarise",
+       "a name in the trace"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "tags",
+      "state": [
+       "['prod','v2']",
+       "filtering by deploy"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "metadata",
+      "state": [
+       "{'tenant': 'acme'}",
+       "slow for one customer"
+      ],
+      "tone": "good"
+     },
+     {
+      "code": "without it",
+      "state": [
+       "RunnableSequence",
+       "step indices, by hand"
+      ],
+      "changed": [
+       0,
+       1
+      ],
+      "tone": "crit"
+     }
+    ]
+   }
+  },
+  {
+   "after": "04",
+   "d": {
+    "kind": "matrix",
+    "title": "Config or input, decided by one question",
+    "caption": "The dividing line is whether **a later step reads it as data**. Anything the prompt interpolates, anything a step consumes — that is input. Anything that selects *how* the chain runs — which tier, which tenant, a request id, callbacks, a concurrency limit, a recursion cap — that is config. The test is practical rather than philosophical: **if removing it from the input would change what the prompt says, it is input.**",
+    "cols": [
+     "Config",
+     "Input"
+    ],
+    "rows": [
+     "Selection",
+     "Identity",
+     "Tracing",
+     "Limits",
+     "The content"
+    ],
+    "cells": [
+     [
+      {
+       "text": "which model tier",
+       "tone": "violet"
+      },
+      "the question being asked"
+     ],
+     [
+      {
+       "text": "which tenant",
+       "tone": "violet"
+      },
+      "the user's name, if the answer uses it"
+     ],
+     [
+      {
+       "text": "a request id, callbacks, tags",
+       "tone": "violet"
+      },
+      "the conversation history"
+     ],
+     [
+      {
+       "text": "max_concurrency, recursion limit",
+       "tone": "violet"
+      },
+      "the documents to summarise"
+     ],
+     [
+      "-",
+      {
+       "text": "anything the prompt interpolates",
+       "tone": "good"
+      }
+     ]
+    ]
+   }
+  }
  ]
 }

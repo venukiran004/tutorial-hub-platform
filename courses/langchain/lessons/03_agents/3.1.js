@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "A function becomes a tool",
       code: '@tool\ndef calculate(expression: str) -> str:\n    """Evaluate a mathematical expression. Use for any arithmetic."""\n    return str(eval(expression, {"__builtins__": {}}, {}))\n\nprint(calculate.name)\nprint(calculate.description)\nprint(calculate.args)',
       out: "name        : calculate\ndescription : Evaluate a mathematical expression. Use for any arithmetic.\nargs        : {'expression': {'title': 'Expression', 'type': 'string'}}",
@@ -47,6 +48,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "description", text: "The description is prompt", sub: "Not documentation, and the difference is measurable in behaviour" },
 
     {"kind": "trace", "title": "Three descriptions of the same tool, and what the model can tell from each", "caption": "The description is the only part of a tool definition that answers **when to use this**, and the third row is the only one that does. An empty description leaves the model guessing from the function name; an accurate one-liner says what the tool *is* and nothing about *when*. The other half of the same problem is overlap: **if `search_docs` and `search_tickets` both say \"search for information\", the model is choosing at random**, and no amount of instruction in the system prompt fixes a specification problem.", "left": "description", "codeW": 230, "vars": ["what the model can tell"], "steps": [{"code": "(empty)", "state": ["only the name - it is guessing"], "tone": "crit"}, {"code": "'Looks up an order.'", "state": ["accurate, and silent on WHEN"], "tone": "warn"}, {"code": "'...by its id. Use for any question about a specific order...'", "state": ["which questions this answers"], "changed": [0], "tone": "good"}, {"code": "two tools, overlapping", "state": ["it chooses at random"], "tone": "crit", "note": "a specification problem"}], "t": "diagram", "id": "dg-3_1-02-1"},
+
 
 
 
@@ -94,6 +96,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "args_schema with Pydantic",
       code: 'class SearchArgs(BaseModel):\n    query: str = Field(description="search terms")\n    top_k:  int = Field(default=5, ge=1, le=20, description="how many hits")\n\nsearch_tool = StructuredTool.from_function(\n    _search, name="search",\n    description="Search the docs. Use when the answer is likely to be in "\n                "documentation rather than in an order record.",\n    args_schema=SearchArgs)',
       out: "args : {'query': {...}, 'top_k': {'default': 5, 'maximum': 20, 'minimum': 1, ...}}\nok   : ['hit 0 for \\'retry\\'', 'hit 1 for \\'retry\\'']\ntop_k=99 -> ValidationError (ge/le enforced, like 1.5)",
@@ -102,6 +105,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "errors", text: "Failing usefully", sub: "ToolException is a message, not a crash" },
 
     {"kind": "flow", "title": "A tool's error message is prompt, because the model reads it", "caption": "`ToolException: user_id must be numeric, got 'alice'` goes back into the transcript, **so the model reads it** — and either fixes its argument or explains the problem to the user. Which makes the wording of a tool's failure a prompt-engineering decision rather than a logging one: **\"invalid input\" tells the model nothing it can act on, and naming the constraint and the offending value tells it exactly what to change.**", "cols": 3, "nodes": [{"id": "r", "label": "The tool raises", "sub": "ToolException with a message", "tone": "accent"}, {"id": "t", "label": "The message enters the transcript", "sub": "as a ToolMessage", "tone": "violet"}, {"id": "m", "label": "So the model reads it", "sub": "and can act on it", "tone": "good"}, {"id": "g", "label": "'must be numeric, got alice'", "sub": "it fixes the argument", "tone": "good"}, {"id": "b", "label": "'invalid input'", "sub": "it has nothing to change", "tone": "crit"}], "edges": [["r", "t"], ["t", "m"], ["m", "g"], ["m", "b"]], "t": "diagram", "id": "dg-3_1-04-3"},
+
 
 
 
@@ -150,6 +154,41 @@ results.invoke("langgraph checkpointer")
 # usual replacement, and the tool interface is the same shape.`,
       caption: "**The `Run` variant returns prose with no links and the `Results` variant returns structured items with URLs** — which decides whether the agent can cite anything at all, so the choice is about groundedness rather than formatting. Reach for `Results` in anything that will be read by a user." },
     { t: "p", text: "**The failure mode in production is the one to know before it happens: the free endpoint rate-limits by returning nothing rather than an error**, which is indistinguishable from a search that found no results — so an agent reports \u201cI could not find anything\u201d and the logs show a successful tool call. A paid search API is the fix, and the tool interface is identical, so it is a one-line swap." },
+
+    { t: "code", lang: "python", title: "Returning two things from one tool, and hiding arguments from the model",
+      code: `from langchain_core.tools import tool, InjectedToolArg
+from langgraph.prebuilt import InjectedState
+from typing import Annotated
+
+# THE PROBLEM: the model needs a short summary to reason with, and your code
+# needs the 400-row dataframe. Return the dataframe and you burn the context;
+# return the summary and the rows are gone.
+@tool(response_format="content_and_artifact")
+def run_report(region: str) -> tuple[str, list[dict]]:
+    """Run the sales report for a region."""
+    rows = query(region)
+    content = f"{len(rows)} rows, total {sum(r['amount'] for r in rows):,.0f}"
+    return content, rows            # (what the MODEL sees, what your CODE gets
+
+# The ToolMessage then carries both: .content for the model, .artifact for you.
+msg = run_report.invoke({"name": "run_report", "args": {"region": "EU"},
+                         "id": "1", "type": "tool_call"})
+msg.content          # "412 rows, total 1,204,338"
+msg.artifact         # the 412 dicts -- never sent to the model
+
+# INJECTED ARGUMENTS are the mirror image: a parameter your code supplies that
+# the model must neither see nor choose.
+@tool
+def refund(order_id: str,
+           user_id: Annotated[str, InjectedToolArg],          # from your session
+           state: Annotated[dict, InjectedState]) -> str:     # from graph state
+    """Refund an order."""
+    ...
+# Neither appears in the schema sent to the model, so it cannot pass a
+# user_id it invented -- which is the difference between a tool that is
+# authorised and a tool that asks the model who it is acting as.`,
+      caption: "**`content_and_artifact` solves the conflict between what the model needs and what your code needs: a short string for reasoning, the full object for the caller** \u2014 and the artifact never enters the context, so a tool can return four hundred rows without costing four hundred rows of tokens." },
+    { t: "p", text: "**`InjectedToolArg` is an authorisation control, not a convenience.** A tool whose `user_id` is an ordinary parameter is a tool that asks the model who it is acting as, and a prompt-injected document can answer. Injected arguments are stripped from the schema the model sees and filled in by your code, which is the only way a refund tool can be safe to expose at all. `InjectedState` does the same for graph state." },
 
     { t: "exercise", kind: "build", title: "Write a tool the model will actually call",
       difficulty: "core", minutes: 24,
