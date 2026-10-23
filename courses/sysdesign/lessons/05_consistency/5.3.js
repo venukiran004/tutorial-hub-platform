@@ -121,10 +121,10 @@ W=1, R=3        yes           0.0%                           14.24%`,
       cols: ["W", "R", "Fresh reads", "Survives 1 down", "Use for"],
       rows: ["Fast and loose", "Quorum both", "Write-heavy", "Read-heavy"],
       cells: [
-        [{ text: "1" }, { text: "1" }, { text: "no", tone: "crit" }, { text: "yes", tone: "good" }, { text: "metrics, likes, logs" }],
+        [{ text: "1" }, { text: "1" }, { text: "no", tone: "crit" }, { text: "yes", tone: "good" }, { text: "metrics, logs" }],
         [{ text: "2" }, { text: "2" }, { text: "yes", tone: "good" }, { text: "yes", tone: "good" }, { text: "the default", tone: "accent" }],
-        [{ text: "1" }, { text: "3" }, { text: "yes", tone: "good" }, { text: "reads no", tone: "warn" }, { text: "ingest, rare reads" }],
-        [{ text: "3" }, { text: "1" }, { text: "yes", tone: "good" }, { text: "writes no", tone: "warn" }, { text: "config, rare writes" }]
+        [{ text: "1" }, { text: "3" }, { text: "yes", tone: "good" }, { text: "reads no", tone: "warn" }, { text: "ingest-heavy" }],
+        [{ text: "3" }, { text: "1" }, { text: "yes", tone: "good" }, { text: "writes no", tone: "warn" }, { text: "config data" }]
       ] },
 
     { t: "h2", n: "03", id: "repair", text: "How replicas converge",

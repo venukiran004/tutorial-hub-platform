@@ -399,7 +399,7 @@ print(f"3 tests in {(time.perf_counter() - start) * 1000:.2f} ms: no network, no
         [{ text: "a growing if/elif on type", tone: "crit" }, { text: "registry or strategy", tone: "good" }, { text: "plugins, webhooks, consumers" }],
         [{ text: "subclass weakens a promise", tone: "crit" }, { text: "contract tests", tone: "good" }, { text: "swapping in a weaker store" }],
         [{ text: "stubs that raise", tone: "crit" }, { text: "role interfaces", tone: "good" }, { text: "an API per consumer, CQRS" }],
-        [{ text: "vendor client built inside the logic", tone: "crit" }, { text: "inject a port", tone: "good" }, { text: "hexagonal architecture" }]
+        [{ text: "vendor client in the core", tone: "crit" }, { text: "inject a port", tone: "good" }, { text: "hexagonal architecture" }]
       ] },
 
     { t: "callout", kind: "tradeoff", title: "SOLID is a means, not a score",

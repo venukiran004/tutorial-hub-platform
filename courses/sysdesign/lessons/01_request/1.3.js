@@ -186,7 +186,7 @@ L7 routes to: api-pool-canary  (by path + cookie)`,
 
     { t: "diagram", kind: "matrix", title: "Three places TLS can end",
       caption: "Termination at the edge is the default. Re-encryption is what zero-trust networks (12.3) and most compliance regimes now expect. Passthrough is rare: it gives up every L7 feature to keep the proxy blind.",
-      cols: ["Client → proxy", "Proxy → server", "Proxy can route on path?", "Cost"],
+      cols: ["Client → proxy", "Proxy → server", "Routes on path?", "Cost"],
       rows: ["Terminate at edge", "Re-encrypt (TLS bridging)", "Passthrough (L4)"],
       cells: [
         [{ text: "TLS", tone: "good" }, { text: "plain HTTP", tone: "warn" }, { text: "yes", tone: "good" }, { text: "cheap; plain inside" }],

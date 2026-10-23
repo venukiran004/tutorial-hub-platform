@@ -412,7 +412,7 @@ for f in (1, 2, 3):
       ] },
 
     { t: "diagram", kind: "matrix", title: "Crash tolerance or Byzantine tolerance",
-      cols: ["Nodes for f faults", "Quorum", "Messages per decision", "Typical home"],
+      cols: ["Nodes for f faults", "Quorum", "Messages/decision", "Typical home"],
       rows: ["Crash (Raft, Paxos)", "Byzantine (PBFT, HotStuff)"],
       cells: [
         [{ text: "2f + 1", tone: "good" }, { text: "f + 1 (majority)", tone: "good" }, { text: "≈ n", tone: "good" }, { text: "etcd, databases" }],

@@ -29,7 +29,7 @@ EC.receiveLesson({
       lanes: [
         { label: "Naive", bars: [[0, 200, "~1,000 identical queries", "crit"], [200, 400, "cache warm again", "good"]] },
         { label: "Single-flight", bars: [[0, 200, "1 query; others wait", "warn"], [200, 400, "cache warm again", "good"]] },
-        { label: "Stale-while-reval.", bars: [[0, 200, "1 background query; stale served", "accent"], [200, 400, "fresh", "good"]] },
+        { label: "Stale-while-rev.", bars: [[0, 200, "1 background query; stale served", "accent"], [200, 400, "fresh", "good"]] },
         { label: "Early refresh", bars: [[0, 400, "refreshed before expiry: no miss at all", "good"]] }
       ] },
 

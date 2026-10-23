@@ -65,7 +65,7 @@ EC.receiveLesson({
         [{ text: "into one service", tone: "accent" }, { text: "spreading load, health checks" }, { text: "ALB, NGINX, HAProxy" }],
         [{ text: "north–south", tone: "accent" }, { text: "auth, limits, routing" }, { text: "Kong, AWS API Gateway, Envoy" }],
         [{ text: "in and out of one pod", tone: "warn" }, { text: "mTLS, retries, telemetry" }, { text: "Envoy, linkerd2-proxy" }],
-        [{ text: "east–west", tone: "warn" }, { text: "uniform policy for all sidecars" }, { text: "Istio, Linkerd, Consul" }],
+        [{ text: "east–west", tone: "warn" }, { text: "one policy, all sidecars" }, { text: "Istio, Linkerd, Consul" }],
         [{ text: "none", tone: "teal" }, { text: "which instances exist, healthy" }, { text: "Kubernetes, Consul, Eureka" }]
       ] },
 

@@ -73,7 +73,7 @@ memory to hold 1,000,000 connections at 30 KB: 30 GB across the fleet`,
       rows: ["Short polling", "Long polling", "Server-sent events", "WebSockets", "Webhooks"],
       cells: [
         [{ text: "client asks" }, { text: "yes", tone: "good" }, { text: "n/a" }, { text: "rarely changing data", tone: "warn" }],
-        [{ text: "client asks, server waits" }, { text: "yes", tone: "good" }, { text: "by hand" }, { text: "last-resort fallback" }],
+        [{ text: "client asks, waits" }, { text: "yes", tone: "good" }, { text: "by hand" }, { text: "last-resort fallback" }],
         [{ text: "server → client" }, { text: "yes", tone: "good" }, { text: "built in", tone: "good" }, { text: "feeds, LLM tokens", tone: "violet" }],
         [{ text: "both ways" }, { text: "upgrade, then not", tone: "warn" }, { text: "by hand" }, { text: "chat, games, editors", tone: "good" }],
         [{ text: "server → server" }, { text: "yes", tone: "good" }, { text: "sender retries" }, { text: "payments, integrations", tone: "accent" }]

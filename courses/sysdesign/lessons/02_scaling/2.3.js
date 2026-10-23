@@ -149,7 +149,7 @@ C  rename one product: records to rewrite          1 rows     328 docs`,
     { t: "diagram", kind: "matrix", title: "Which model fits which pattern",
       caption: "Green is the model's home ground, amber is possible with care, red is a fight. Note the bottom row: a model's weakness at ad hoc questions is usually solved by copying the data into a second system built for them, not by forcing the first one.",
       cols: ["Relational", "Document", "Key-value", "Wide-column", "Graph"],
-      rows: ["Fetch one object by id", "Money that must balance", "Schema varies per record", "500k writes/s, by key", "Friends of friends of friends", "Questions nobody planned"],
+      rows: ["Fetch one object by id", "Money that must balance", "Schema varies per record", "500k writes/s, by key", "Friends of friends, 3 hops", "Questions nobody planned"],
       cells: [
         [{ text: "join", tone: "warn" }, { text: "one read", tone: "good" }, { text: "one read", tone: "good" }, { text: "by partition", tone: "good" }, { text: "possible", tone: "warn" }],
         [{ text: "ACID", tone: "good" }, { text: "per document", tone: "warn" }, { text: "no", tone: "crit" }, { text: "no", tone: "crit" }, { text: "rarely", tone: "crit" }],
