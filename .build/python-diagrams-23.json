@@ -1,0 +1,66 @@
+{
+ "13.9": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three things that do not survive the crossing",
+         "caption": "**An ORM manages the mismatch; it does not abolish it** — and each row is a place where something was decided on your behalf. Inheritance has three mapping strategies with different costs and no right answer. Identity has to be reconstructed by an identity map, or two loads of one row give you two objects and stale reads. **The last row is the one that becomes a performance bug:** `order.customer.name` is a reference in Python and a join or a second query in SQL, and the Python cannot tell you which.",
+         "left": "in Python", "codeW": 150,
+         "vars": ["in the database", "what the ORM must do"],
+         "steps": [
+          {"code": "a class hierarchy", "state": ["no inheritance in tables", "pick one of three mappings"], "tone": "warn"},
+          {"code": "identity by reference", "state": ["identity by primary key", "keep an identity map"], "changed": [0, 1], "tone": "accent"},
+          {"code": "obj.other.field", "state": ["a join, or a second query", "load eagerly, lazily, or raise"], "changed": [0, 1], "tone": "crit"},
+          {"code": "mutating an attribute", "state": ["an UPDATE statement", "track the change until flush"], "changed": [0, 1], "tone": "good"},
+          {"code": "and the leak", "state": ["SQL you did not write", "so read the query log"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "02",
+   "d": {"kind": "compare",
+         "title": "Where the persistence logic lives decides the rest",
+         "caption": "**The absence of a save method is the pattern showing through, not a missing feature** — a session watching the object can derive the write from the mutation, and a model with nothing watching it cannot. **The testability row is the one with consequences:** a plain class can be constructed in a unit test and asserted on, while a model carrying a connection in its ancestry needs a database or its framework's harness. Neither pattern is better; the question is which description matches the system you are building.",
+         "columns": [
+          {"title": "Active Record", "tone": "accent",
+           "items": ["Persistence lives ON the model", "obj.save(), explicitly", "The model depends on the database", "A unit test needs a DB or a harness", "Less ceremony for plain CRUD", "Django ORM, Peewee, Tortoise"]},
+          {"title": "Data Mapper", "tone": "violet",
+           "items": ["Persistence lives in a session", "Mutate and commit - tracked", "The model is a plain class", "A unit test needs neither", "Keeps domain logic off storage", "SQLAlchemy ORM"]}]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Five options, and the column that eliminates fastest",
+         "caption": "**Decide the concurrency model first and let it narrow the list.** The Django ORM is synchronous at its core — its async methods wrap sync calls in a thread pool — and a synchronous driver inside an async handler blocks the whole event loop rather than one request. That is a correctness constraint, not a preference, and it cannot be satisfied after the choice. **Pattern preference can be satisfied within whatever survives.**",
+         "left": "library", "codeW": 130,
+         "vars": ["pattern", "async?", "reach for it when"],
+         "steps": [
+          {"code": "SQLAlchemy", "state": ["Data Mapper", "yes", "the default for a non-Django service"], "tone": "good"},
+          {"code": "SQLModel", "state": ["Data Mapper", "yes", "FastAPI schema duplication hurts"], "changed": [0, 2], "tone": "good"},
+          {"code": "Django ORM", "state": ["Active Record", "NO - sync core", "you are already in Django"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "Peewee", "state": ["Active Record", "no", "a script or a small tool"], "changed": [0, 1, 2], "tone": "warn"},
+          {"code": "Tortoise", "state": ["Active Record", "yes, natively", "async Active Record specifically"], "changed": [0, 1, 2], "tone": "accent"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Schema-first against code-first, and the row that settles it for Python",
+         "caption": "**The design is sound and the Python implementation is not current — two separate judgements.** A language-neutral schema generating clients for several languages is the strongest argument for the approach, and it is why the idea came out of a polyglot ecosystem. **But the last row is decisive for new work:** archived April 2025, last release 0.15.0 in August 2024, pinned to engine 5.19.0. Learn the idea; run Prisma from TypeScript if the polyglot schema is the real requirement, and read the database from Python with SQLAlchemy.",
+         "left": "concern", "codeW": 160,
+         "vars": ["schema-first", "code-first"],
+         "steps": [
+          {"code": "source of truth", "state": ["a declarative schema file", "Python classes"], "tone": "accent"},
+          {"code": "a second language", "state": ["generate another client", "duplicate the definitions"], "changed": [0, 1], "tone": "good"},
+          {"code": "static checking", "state": ["real symbols, no inference", "Mapped[...] gets close"], "changed": [0, 1], "tone": "good"},
+          {"code": "migrations", "state": ["diffed from the declaration", "diffed, or hand-written"], "changed": [0, 1], "tone": "accent"},
+          {"code": "complex queries", "state": ["falls back to raw SQL sooner", "a full expression language"], "changed": [0, 1], "tone": "warn"},
+          {"code": "build step", "state": ["yes - generate, in CI", "none"], "changed": [0, 1], "tone": "warn"},
+          {"code": "Python maturity", "state": ["ARCHIVED, unmaintained", "the actively developed mainstream"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "05",
+   "d": {"kind": "tree",
+         "title": "Per query, not per application",
+         "caption": "**The whole-application version of this question has no useful answer; the per-query version does.** And `session.execute(text(...))` is what makes the mixed approach practical rather than theoretical — hand-written SQL runs inside the same transaction as the ORM work around it, so a report query and an entity write are not two infrastructures. **Keep those queries in named functions in one module** rather than inline in handlers, so there is a single place to look when a plan changes.",
+         "root": {"label": "You are about to write a query", "sub": "what does it return, and what owns the schema?", "tone": "accent",
+                  "children": [
+                   {"label": "Entities, a few rows, through relationships", "sub": "CRUD, and transactional writes", "tone": "good",
+                    "children": [
+                     {"label": "The ORM", "sub": "most endpoints in a normal service", "tone": "good"}]},
+                   {"label": "Columns, aggregates, window functions", "sub": "or ten thousand rows to update", "tone": "violet",
+                    "children": [
+                     {"label": "SQL, in the same session", "sub": "session.execute(text(...))", "tone": "violet"}]},
+                   {"label": "Someone else's schema", "sub": "a warehouse, another team's tables", "tone": "teal",
+                    "children": [
+                     {"label": "No ORM at all", "sub": "mapping an evolving schema buys no safety", "tone": "teal"}]}]}}}
+ ]
+}
