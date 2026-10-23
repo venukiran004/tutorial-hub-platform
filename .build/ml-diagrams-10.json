@@ -1,0 +1,62 @@
+{
+ "6.4": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Wrapper or native, and the three rows that decide it",
+         "caption": "**The wrapper is a thin layer over the native API, not a different library** — so the question is never which is better but which of the last three rows you need. A custom objective and an exact tree range at prediction time exist only natively; everything else the wrapper does more conveniently. **And the two middle rows are what bite when a codebase mixes them:** `predict` returns probabilities through the wrapper and raw margins natively, and the wrapper's `fit` has no `obj` argument at all.",
+         "left": "what you want", "codeW": 190,
+         "vars": ["sklearn wrapper", "native API"],
+         "steps": [
+          {"code": "pipelines, GridSearchCV", "state": ["yes - this is the point", "no"], "tone": "good"},
+          {"code": "early stopping", "state": ["yes", "yes"], "changed": [0], "tone": "good"},
+          {"code": "what predict returns", "state": ["probabilities", "raw margins"], "changed": [0, 1], "tone": "crit"},
+          {"code": "a custom objective", "state": ["NO - fit takes no obj", "obj=your_function"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pin an exact tree range", "state": ["awkward", "iteration_range"], "changed": [0, 1], "tone": "violet"},
+          {"code": "xgb.cv for the round count", "state": ["no", "yes"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Early stopping chose 165; predict used 186",
+         "caption": "**The careful validation selected a tree count that prediction then ignores.** Early stopping keeps boosting for `early_stopping_rounds` beyond the best round to confirm the plateau, those trees stay in the model, and `Booster.predict` uses all of them unless you pass `iteration_range`. The measured cost here is 0.0012 in average precision — harmless, and always in the wrong direction. **Tie the two together in one place:** predict with the range, or slice the booster once and serve the slice.",
+         "left": "step", "codeW": 200,
+         "vars": ["value", "note"],
+         "steps": [
+          {"code": "num_boost_round=500", "state": ["an upper limit", "not a plan"], "tone": "accent"},
+          {"code": "eval_metric='aucpr'", "state": ["the metric that moves at 5% positives", "accuracy would stop at once"], "changed": [0, 1], "tone": "good"},
+          {"code": "best_iteration", "state": ["165", "what validation chose"], "changed": [0, 1], "tone": "good"},
+          {"code": "trees kept", "state": ["186", "165 + 20 confirmation + 1"], "changed": [0, 1], "tone": "warn"},
+          {"code": "AP, default predict", "state": ["0.7797", "all 186 trees"], "changed": [0, 1], "tone": "crit"},
+          {"code": "AP, iteration_range", "state": ["0.7809", "the prefix you validated"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "11.2": [
+  {"after": "07",
+   "d": {"kind": "trace",
+         "title": "The noise was 0.5 everywhere; the disagreement was not",
+         "caption": "**Nothing about the problem changed across these rows except whether training data covered that x** — the aleatoric noise is a fixed 0.5 throughout. Disagreement is 0.10 inside the data and 0.60 outside it, six times larger, which is epistemic uncertainty made visible with no Bayesian machinery at all. **Two details worth keeping:** it starts rising at x = −0.5, *before* the data runs out, because a point near the edge has fewer neighbours; and beyond the edge it is flat, because trees extrapolate by repeating their last leaf and each member repeats a different one.",
+         "left": "x", "codeW": 110,
+         "vars": ["member disagreement", "training data here?"],
+         "steps": [
+          {"code": "-2.5", "state": ["0.097", "yes"], "tone": "good"},
+          {"code": "-1.5", "state": ["0.100", "yes"], "tone": "good"},
+          {"code": "-0.5", "state": ["0.285 - already triple", "yes, but at the edge"], "changed": [0], "tone": "warn"},
+          {"code": "+0.5", "state": ["0.601", "NO"], "changed": [0, 1], "tone": "crit"},
+          {"code": "+1.5", "state": ["0.601 - flat, not growing", "NO"], "changed": [0], "tone": "crit"},
+          {"code": "+2.5", "state": ["0.601", "NO"], "tone": "crit"},
+          {"code": "residual sd inside", "state": ["0.472, against a true 0.50", "the aleatoric part"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "07",
+   "d": {"kind": "tree",
+         "title": "Which uncertainty you have decides what to do about it",
+         "caption": "**The two kinds call for opposite responses, which is the whole reason to separate them.** Epistemic uncertainty is ignorance and labels cure it — that is the premise of active learning. Aleatoric uncertainty is noise in the process, and collecting more labels there buys a more precise estimate of something that stays unpredictable; the move is to abstain, widen the interval, or find a feature that carries the missing signal. **And the operational question usually comes before either:** does this prediction come from a region the training data covered? That is answerable from the inputs alone, before the model runs.",
+         "root": {"label": "A prediction comes back uncertain", "sub": "which kind is it?", "tone": "accent",
+                  "children": [
+                   {"label": "Epistemic - the models disagree", "sub": "largest where there is no data", "tone": "violet",
+                    "children": [
+                     {"label": "Label that region", "sub": "active learning; it shrinks", "tone": "violet"},
+                     {"label": "Measure it with an ensemble or a GP", "sub": "MC dropout and deep ensembles too", "tone": "teal"}]},
+                   {"label": "Aleatoric - the outcome is noisy", "sub": "more data will not reduce it", "tone": "warn",
+                    "children": [
+                     {"label": "Abstain, or widen the interval", "sub": "conformal prediction, lesson 10.7", "tone": "good"},
+                     {"label": "Or find a feature with the signal", "sub": "the inputs do not determine y", "tone": "good"}]},
+                   {"label": "Or ask first: is this input in distribution?", "sub": "cheaper than any uncertainty estimate", "tone": "accent"}]}}}
+ ]
+}

@@ -20,7 +20,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Bayes against frequentist: MLE, MAP and the posterior", id: "map" },
 
-    {"kind": "matrix", "title": "Three answers to 'what is the parameter', on three heads out of three", "caption": "The MLE says the coin always lands heads, which is the honest maximum of the likelihood and a useless forecast. MAP adds a prior and returns a single number; the posterior returns the **distribution**, and everything else in this lesson is a consequence of carrying it instead of collapsing it.", "cols": ["Returns", "On 3 heads from 3"], "rows": ["MLE", "MAP", "The posterior", "Posterior mean", "Predictive distribution"], "cells": [[{"text": "the likelihood's maximum", "tone": "crit"}, "p = 1.0: it will never land tails"], [{"text": "a point, with a prior", "tone": "warn"}, "pulled back toward the prior"], [{"text": "a distribution", "tone": "good"}, "Beta(1+3, 1+0) under a flat prior"], [{"text": "a point, honestly derived", "tone": "good"}, "4/5 = 0.8 under that prior"], [{"text": "a forecast with uncertainty", "tone": "good"}, "integrates over every p"]], "t": "diagram", "id": "dg-11_2-01-0"},
+    {"kind": "matrix", "title": "Three answers to 'what is the parameter', on three heads out of three", "caption": "The MLE says the coin always lands heads, which is the honest maximum of the likelihood and a useless forecast. MAP adds a prior and returns a single number; the posterior returns the **distribution**, and everything else in this lesson is a consequence of carrying it instead of collapsing it.", "cols": ["Returns", "On 3 heads from 3"], "rows": ["MLE", "MAP", "The posterior", "Posterior mean", "Predictive distribution"], "cells": [[{"text": "the likelihood's maximum", "tone": "crit"}, "p = 1.0: it will never land tails"], [{"text": "a point, with a prior", "tone": "warn"}, "pulled back toward the prior"], [{"text": "a distribution", "tone": "good"}, "Beta(1+3, 1+0) under a flat prior"], [{"text": "a point, honestly derived", "tone": "good"}, "4/5 = 0.8 under that prior"], [{"text": "a forecast with uncertainty", "tone": "good"}, "integrates over every p"]], "t": "diagram", "id": "dg-11_2-01-2"},
+
 
 
 
@@ -55,7 +56,8 @@ a stronger prior, Beta(20, 20), on the same 3 of 4:  MAP 0.5238, mean 0.5227 -- 
 
     { t: "h2", n: "02", text: "Bayesian linear regression, worked", id: "blr" },
 
-    {"kind": "trace", "title": "The predictive variance grows with distance from the data", "caption": "Five points, σ² = 1, τ² = 4. Two things to read. First, the posterior mean [1.9619, 1.5317] **is** the ridge estimate with λ = σ²/τ² = 0.25, exactly — MAP is penalised fitting, as 1.4 claimed. Second, the two sources of uncertainty add in quadrature: the noise contributes 1.000 at every x, while the **parameter** contribution grows from 0.436 at x = 0 to 3.154 at x = 10, so the total sd goes 1.091 to 3.309. A point estimate cannot express that, and it is the whole reason to carry the posterior.", "left": "predict at", "codeW": 130, "vars": ["mean", "total sd", "noise sd", "parameter sd"], "steps": [{"code": "posterior mean m", "state": ["[1.9619, 1.5317]", "", "OLS [2.06, 1.57]", "= ridge λ 0.25"], "tone": "violet"}, {"code": "x = 0", "state": ["1.962", "1.091", "1.000", "0.436"], "tone": "good"}, {"code": "x = 2", "state": ["5.025", "1.257", "1.000", "0.762"], "tone": "good"}, {"code": "x = 5", "state": ["9.620", "1.905", "1.000", "1.622"], "changed": [1, 3], "tone": "warn"}, {"code": "x = 10", "state": ["17.279", "3.309", "1.000", "3.154"], "changed": [1, 3], "tone": "crit", "note": "far from the data"}], "t": "diagram", "id": "dg-11_2-02-1"},
+    {"kind": "trace", "title": "The predictive variance grows with distance from the data", "caption": "Five points, σ² = 1, τ² = 4. Two things to read. First, the posterior mean [1.9619, 1.5317] **is** the ridge estimate with λ = σ²/τ² = 0.25, exactly — MAP is penalised fitting, as 1.4 claimed. Second, the two sources of uncertainty add in quadrature: the noise contributes 1.000 at every x, while the **parameter** contribution grows from 0.436 at x = 0 to 3.154 at x = 10, so the total sd goes 1.091 to 3.309. A point estimate cannot express that, and it is the whole reason to carry the posterior.", "left": "predict at", "codeW": 130, "vars": ["mean", "total sd", "noise sd", "parameter sd"], "steps": [{"code": "posterior mean m", "state": ["[1.9619, 1.5317]", "", "OLS [2.06, 1.57]", "= ridge λ 0.25"], "tone": "violet"}, {"code": "x = 0", "state": ["1.962", "1.091", "1.000", "0.436"], "tone": "good"}, {"code": "x = 2", "state": ["5.025", "1.257", "1.000", "0.762"], "tone": "good"}, {"code": "x = 5", "state": ["9.620", "1.905", "1.000", "1.622"], "changed": [1, 3], "tone": "warn"}, {"code": "x = 10", "state": ["17.279", "3.309", "1.000", "3.154"], "changed": [1, 3], "tone": "crit", "note": "far from the data"}], "t": "diagram", "id": "dg-11_2-02-3"},
+
 
 
 
@@ -76,7 +78,8 @@ predictive at x = 10:   mean 17.279  sd 3.309   (parameter part 3.154)`,
 
     { t: "h2", n: "03", text: "Gaussian processes: a prior over functions", id: "gp" },
 
-    {"kind": "flow", "title": "A Gaussian process is a prior over functions", "caption": "Instead of putting a prior on a weight vector, put one directly on the function: any finite set of inputs has a joint Gaussian over their outputs, with the covariance given by a kernel. Conditioning on the observed points gives a posterior that passes near the data and **fans out between and beyond** it. The kernel is the modelling choice — it encodes smoothness, periodicity, length scale — and the cost is the O(n³) inversion that keeps GPs to thousands of points.", "cols": 3, "nodes": [{"id": "k", "label": "A kernel", "sub": "smoothness, periodicity, length scale", "tone": "violet"}, {"id": "p", "label": "A prior over functions", "sub": "any finite set is jointly Gaussian", "tone": "accent"}, {"id": "o", "label": "Condition on the data", "sub": "an exact Gaussian posterior", "tone": "good"}, {"id": "m", "label": "Mean passes near the points", "sub": "exactly, if noise-free", "tone": "good"}, {"id": "v", "label": "Variance fans out between them", "sub": "uncertainty where there is no data", "tone": "good"}, {"id": "c", "label": "Cost O(n³)", "sub": "thousands of points, not millions", "tone": "crit"}], "edges": [["k", "p"], ["p", "o"], ["o", "m"], ["o", "v"], ["v", "c"]], "t": "diagram", "id": "dg-11_2-03-2"},
+    {"kind": "flow", "title": "A Gaussian process is a prior over functions", "caption": "Instead of putting a prior on a weight vector, put one directly on the function: any finite set of inputs has a joint Gaussian over their outputs, with the covariance given by a kernel. Conditioning on the observed points gives a posterior that passes near the data and **fans out between and beyond** it. The kernel is the modelling choice — it encodes smoothness, periodicity, length scale — and the cost is the O(n³) inversion that keeps GPs to thousands of points.", "cols": 3, "nodes": [{"id": "k", "label": "A kernel", "sub": "smoothness, periodicity, length scale", "tone": "violet"}, {"id": "p", "label": "A prior over functions", "sub": "any finite set is jointly Gaussian", "tone": "accent"}, {"id": "o", "label": "Condition on the data", "sub": "an exact Gaussian posterior", "tone": "good"}, {"id": "m", "label": "Mean passes near the points", "sub": "exactly, if noise-free", "tone": "good"}, {"id": "v", "label": "Variance fans out between them", "sub": "uncertainty where there is no data", "tone": "good"}, {"id": "c", "label": "Cost O(n³)", "sub": "thousands of points, not millions", "tone": "crit"}], "edges": [["k", "p"], ["p", "o"], ["o", "m"], ["o", "v"], ["v", "c"]], "t": "diagram", "id": "dg-11_2-03-4"},
+
 
 
 
@@ -109,7 +112,8 @@ three posterior samples at x = 1.5: 1.686, 1.177, 1.393`,
 
     { t: "h2", n: "04", text: "When there is no closed form: MCMC, Laplace and variational inference", id: "inference" },
 
-    {"kind": "matrix", "title": "When there is no closed form: three ways to approximate a posterior", "caption": "They trade accuracy against cost in opposite directions. MCMC is asymptotically exact and slow, and its diagnostics tell you when to distrust it. Variational inference is fast and systematically **under-estimates** the variance, because minimising the reverse KL prefers a narrow mode. Laplace is a single Gaussian at the mode and is cheapest of all.", "cols": ["Gives", "Costs"], "rows": ["MCMC (NUTS)", "Variational inference", "Laplace approximation", "Conjugate (when available)"], "cells": [[{"text": "asymptotically exact samples", "tone": "good"}, {"text": "slow; check R-hat and ESS", "tone": "warn"}], [{"text": "a fitted simple distribution", "tone": "accent"}, {"text": "fast; under-estimates variance", "tone": "crit"}], [{"text": "one Gaussian at the mode", "tone": "accent"}, "cheapest; wrong for skew or multimodality"], [{"text": "the exact posterior", "tone": "good"}, {"text": "only for specific prior-likelihood pairs", "tone": "warn"}]], "t": "diagram", "id": "dg-11_2-04-3"},
+    {"kind": "matrix", "title": "When there is no closed form: three ways to approximate a posterior", "caption": "They trade accuracy against cost in opposite directions. MCMC is asymptotically exact and slow, and its diagnostics tell you when to distrust it. Variational inference is fast and systematically **under-estimates** the variance, because minimising the reverse KL prefers a narrow mode. Laplace is a single Gaussian at the mode and is cheapest of all.", "cols": ["Gives", "Costs"], "rows": ["MCMC (NUTS)", "Variational inference", "Laplace approximation", "Conjugate (when available)"], "cells": [[{"text": "asymptotically exact samples", "tone": "good"}, {"text": "slow; check R-hat and ESS", "tone": "warn"}], [{"text": "a fitted simple distribution", "tone": "accent"}, {"text": "fast; under-estimates variance", "tone": "crit"}], [{"text": "one Gaussian at the mode", "tone": "accent"}, "cheapest; wrong for skew or multimodality"], [{"text": "the exact posterior", "tone": "good"}, {"text": "only for specific prior-likelihood pairs", "tone": "warn"}]], "t": "diagram", "id": "dg-11_2-04-5"},
+
 
 
 
@@ -161,7 +165,8 @@ az.loo(idata)                             # out-of-sample comparison between mod
 
     { t: "h2", n: "05", text: "Bayesian optimisation: the acquisition function", id: "bo" },
 
-    {"kind": "flow", "title": "The acquisition function is where exploration is decided", "caption": "A surrogate model gives a mean and a variance at every untried point; the acquisition function turns those two numbers into one score to maximise. **Expected improvement** weighs how much better a point might be by how likely that is, so it naturally samples both near the best-so-far and where the model is simply ignorant — which is why it needs no explicit exploration parameter.", "cols": 3, "nodes": [{"id": "s", "label": "Surrogate over the space", "sub": "a GP: mean and variance everywhere", "tone": "violet"}, {"id": "m", "label": "High mean", "sub": "probably good: exploit", "tone": "accent"}, {"id": "v", "label": "High variance", "sub": "unknown: explore", "tone": "accent"}, {"id": "a", "label": "Expected improvement", "sub": "combines both into one score", "tone": "good"}, {"id": "e", "label": "Evaluate the argmax", "sub": "one expensive fit", "tone": "good"}, {"id": "u", "label": "Update and repeat", "sub": "the surrogate sharpens where it looked", "tone": "teal"}], "edges": [["s", "m"], ["s", "v"], ["m", "a"], ["v", "a"], ["a", "e"], ["e", "u"]], "t": "diagram", "id": "dg-11_2-05-4"},
+    {"kind": "flow", "title": "The acquisition function is where exploration is decided", "caption": "A surrogate model gives a mean and a variance at every untried point; the acquisition function turns those two numbers into one score to maximise. **Expected improvement** weighs how much better a point might be by how likely that is, so it naturally samples both near the best-so-far and where the model is simply ignorant — which is why it needs no explicit exploration parameter.", "cols": 3, "nodes": [{"id": "s", "label": "Surrogate over the space", "sub": "a GP: mean and variance everywhere", "tone": "violet"}, {"id": "m", "label": "High mean", "sub": "probably good: exploit", "tone": "accent"}, {"id": "v", "label": "High variance", "sub": "unknown: explore", "tone": "accent"}, {"id": "a", "label": "Expected improvement", "sub": "combines both into one score", "tone": "good"}, {"id": "e", "label": "Evaluate the argmax", "sub": "one expensive fit", "tone": "good"}, {"id": "u", "label": "Update and repeat", "sub": "the surrogate sharpens where it looked", "tone": "teal"}], "edges": [["s", "m"], ["s", "v"], ["m", "a"], ["v", "a"], ["a", "e"], ["e", "u"]], "t": "diagram", "id": "dg-11_2-05-6"},
+
 
 
 
@@ -178,7 +183,8 @@ after three points at −1.5, 0, 2:   EI proposes x = 2.65 (EI 0.511);   UCB wit
 
     { t: "h2", n: "06", text: "Thompson sampling: the posterior as the policy", id: "thompson" },
 
-    {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-5"},
+    {"kind": "matrix", "title": "Why the posterior makes a good policy", "caption": "Thompson sampling needs no exploration parameter at all: drawing one sample per arm from each posterior and playing the best explores exactly in proportion to how uncertain the arm is, and that proportion shrinks on its own as evidence arrives.", "cols": ["Explores by", "Tuning"], "rows": ["Epsilon-greedy", "UCB", "Thompson sampling", "Bayesian optimisation"], "cells": [[{"text": "acting randomly epsilon of the time", "tone": "warn"}, "epsilon, and a decay schedule"], [{"text": "an optimism bonus", "tone": "accent"}, "the confidence width"], [{"text": "sampling the posterior", "tone": "good"}, {"text": "none: it self-anneals", "tone": "good"}], [{"text": "an acquisition function", "tone": "accent"}, "the kernel, and the acquisition"]], "t": "diagram", "id": "dg-11_2-06-7"},
+
 
 
 
@@ -311,7 +317,73 @@ next_x = argmax EI(mu, sd)                                  # or: pull the arm w
           { t: "p", text: "(c) is the regime where exploration policy matters most — small gaps, finite horizon — and where Thompson's adaptivity shows as lower variance of outcome." }
         ]
       }
-    }
+    },
+
+    { t: "h2", n: "07", text: "Two kinds of uncertainty, and only one of them more data fixes", id: "epistemic" },
+
+    {"kind": "tree", "title": "Which uncertainty you have decides what to do about it", "caption": "**The two kinds call for opposite responses, which is the whole reason to separate them.** Epistemic uncertainty is ignorance and labels cure it — that is the premise of active learning. Aleatoric uncertainty is noise in the process, and collecting more labels there buys a more precise estimate of something that stays unpredictable; the move is to abstain, widen the interval, or find a feature that carries the missing signal. **And the operational question usually comes before either:** does this prediction come from a region the training data covered? That is answerable from the inputs alone, before the model runs.", "root": {"label": "A prediction comes back uncertain", "sub": "which kind is it?", "tone": "accent", "children": [{"label": "Epistemic - the models disagree", "sub": "largest where there is no data", "tone": "violet", "children": [{"label": "Label that region", "sub": "active learning; it shrinks", "tone": "violet"}, {"label": "Measure it with an ensemble or a GP", "sub": "MC dropout and deep ensembles too", "tone": "teal"}]}, {"label": "Aleatoric - the outcome is noisy", "sub": "more data will not reduce it", "tone": "warn", "children": [{"label": "Abstain, or widen the interval", "sub": "conformal prediction, lesson 10.7", "tone": "good"}, {"label": "Or find a feature with the signal", "sub": "the inputs do not determine y", "tone": "good"}]}, {"label": "Or ask first: is this input in distribution?", "sub": "cheaper than any uncertainty estimate", "tone": "accent"}]}, "t": "diagram", "id": "dg-11_2-07-1"},
+
+    {"kind": "trace", "title": "The noise was 0.5 everywhere; the disagreement was not", "caption": "**Nothing about the problem changed across these rows except whether training data covered that x** — the aleatoric noise is a fixed 0.5 throughout. Disagreement is 0.10 inside the data and 0.60 outside it, six times larger, which is epistemic uncertainty made visible with no Bayesian machinery at all. **Two details worth keeping:** it starts rising at x = −0.5, *before* the data runs out, because a point near the edge has fewer neighbours; and beyond the edge it is flat, because trees extrapolate by repeating their last leaf and each member repeats a different one.", "left": "x", "codeW": 110, "vars": ["member disagreement", "training data here?"], "steps": [{"code": "-2.5", "state": ["0.097", "yes"], "tone": "good"}, {"code": "-1.5", "state": ["0.100", "yes"], "tone": "good"}, {"code": "-0.5", "state": ["0.285 - already triple", "yes, but at the edge"], "changed": [0], "tone": "warn"}, {"code": "+0.5", "state": ["0.601", "NO"], "changed": [0, 1], "tone": "crit"}, {"code": "+1.5", "state": ["0.601 - flat, not growing", "NO"], "changed": [0], "tone": "crit"}, {"code": "+2.5", "state": ["0.601", "NO"], "tone": "crit"}, {"code": "residual sd inside", "state": ["0.472, against a true 0.50", "the aleatoric part"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-11_2-07-0"},
+
+    { t: "p", text: "Everything in this lesson has produced distributions rather than point estimates, and a distribution is only useful if you know what its width is made of. **It is made of two things, and they call for opposite responses.**" },
+
+    { t: "dl", items: [
+      ["Aleatoric — noise in the world", "Variation the inputs genuinely do not determine. Two customers with identical features churn differently; two identical sensor readings precede different outcomes. More data estimates this quantity more precisely and **does not reduce it**, because it is a property of the process rather than of your ignorance. The Latin is *alea*, a die."],
+      ["Epistemic — ignorance about the model", "Variation that comes from not knowing which model is right, because the data you have is consistent with several. It is largest where you have no data at all, and **it shrinks as data arrives**. This is the part a posterior is tracking."]
+    ] },
+
+    { t: "p", text: "The distinction is not academic. If an uncertain prediction is epistemically uncertain, collecting labels in that region fixes it — which is the entire premise of active learning. If it is aleatorically uncertain, collecting more labels there is money spent to confirm that the answer is genuinely unpredictable, and the right move is to abstain, widen the interval, or find a feature that actually carries the signal." },
+
+    { t: "code", lang: "python", title: "holding the noise fixed and moving the data instead",
+      code: `import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+
+rng = np.random.default_rng(0)
+NOISE = 0.5                                  # the aleatoric part, held FIXED everywhere
+
+# Training data covers x in [-3, 0] only.
+Xtr = rng.uniform(-3.0, 0.0, size=(2000, 1))
+ytr = np.sin(Xtr[:, 0]) + rng.normal(0, NOISE, size=2000)
+
+# An ensemble of single trees on different subsamples: disagreement between
+# members is a usable stand-in for epistemic uncertainty.
+ens = [RandomForestRegressor(n_estimators=1, max_depth=6, bootstrap=True,
+                             max_samples=0.5, random_state=s).fit(Xtr, ytr)
+       for s in range(60)]
+
+for x in (-2.5, -1.5, -0.5, 0.5, 1.5, 2.5):
+    spread = np.std([m.predict(np.array([[x]]))[0] for m in ens])
+    print("x=%5.1f  member disagreement %.3f   training data here: %s"
+          % (x, spread, "yes" if x <= 0 else "NO"))
+
+inside = Xtr[:, 0] <= 0
+pred = np.mean([m.predict(Xtr[inside]) for m in ens], axis=0)
+print()
+print("residual sd where data exists: %.3f  (true noise %.2f)"
+      % (np.std(ytr[inside] - pred), NOISE))`,
+      out: `x= -2.5  member disagreement 0.097   training data here: yes
+x= -1.5  member disagreement 0.100   training data here: yes
+x= -0.5  member disagreement 0.285   training data here: yes
+x=  0.5  member disagreement 0.601   training data here: NO
+x=  1.5  member disagreement 0.601   training data here: NO
+x=  2.5  member disagreement 0.601   training data here: NO
+
+residual sd where data exists: 0.472  (true noise 0.50)`,
+      caption: "The noise is 0.5 at every x. Disagreement is 0.10 where the data is, 0.60 where it is not — **six times larger, with nothing about the problem having changed except coverage.** That is epistemic uncertainty made visible, and the measurement needed no Bayesian machinery at all." },
+
+    { t: "p", text: "Three things in that output are worth naming. **The disagreement rises before the data runs out** — 0.285 at x = −0.5, already triple the interior value, because a tree near the edge of its training range has fewer neighbours to average. **Beyond x = 0 it is flat at exactly 0.601**, because trees are piecewise-constant and extrapolate by repeating their last leaf: each member repeats a different leaf, and the spread between them stops changing. And **the residual spread where data exists recovers the true noise** (0.472 against 0.50), which is the aleatoric part measured directly." },
+
+    { t: "callout", kind: "insight", title: "A confident extrapolation is the dangerous failure",
+      body: [
+        { t: "p", text: "A linear model asked about x = 2.5 here returns a number with a small standard error, because its uncertainty formula knows about sample size and residual variance and nothing whatsoever about coverage. The Gaussian process in section 03 is the honest counterexample: its posterior variance grows away from the data by construction, which is most of why GPs remain the reference answer for calibrated extrapolation. **Whatever model you use, the operational question is the same — does this prediction come from a region the training data covered?** That is a question about the inputs, answerable before the model runs, and often cheaper than any uncertainty estimate." }
+      ] },
+
+    { t: "p", text: "The deep-learning practice is worth knowing by name, because it is the same idea reached by two cheaper routes. **MC dropout** leaves dropout active at prediction time and runs the network several times: each pass is a different thinned network, and the spread across passes approximates a posterior. **Deep ensembles** train the same architecture from several random initialisations and take the spread across models — more expensive to train, and in practice the better-calibrated of the two. A genuine **Bayesian neural network** puts a distribution over every weight and does variational inference on it, which is the principled version and rarely the one that ships." },
+
+    { t: "callout", kind: "tradeoff", title: "What to actually reach for",
+      body: [
+        { t: "p", text: "For a **calibrated interval with a guarantee**, use conformal prediction (lesson 10.7): it is distribution-free, wraps any model, and gives finite-sample coverage — and it is the right default. For **deciding what to label next**, you need the epistemic part specifically, so use ensemble disagreement or a GP. For **a trustworthy probability on a classifier**, calibrate it (lesson 2.5) rather than reaching for Bayesian machinery. **Reach for a full posterior when the parameters themselves matter** — when someone will read the coefficient and act on it — which is where sections 01 to 04 earn their place and a bare conformal interval does not." }
+      ] },
   ],
 
   takeaways: [

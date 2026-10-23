@@ -19,7 +19,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The second-order objective and the split gain", id: "gain" },
 
-    {"kind": "flow", "title": "The second-order objective, and the split gain it implies", "caption": "Take a second-order Taylor expansion of the loss around the current prediction and the optimal leaf value falls out in closed form: −G/(H+λ), where G and H are the summed first and second derivatives in that leaf. The gain of a split is then an arithmetic comparison of three such terms — which is why XGBoost can evaluate thousands of candidate splits per node without ever refitting anything.", "cols": 3, "nodes": [{"id": "t", "label": "2nd-order Taylor of the loss", "sub": "gradients g, hessians h per row", "tone": "violet"}, {"id": "l", "label": "Optimal leaf value", "sub": "-G / (H + lambda)", "tone": "accent"}, {"id": "o", "label": "Objective per leaf", "sub": "-½ G² / (H + lambda)", "tone": "accent"}, {"id": "g", "label": "Split gain", "sub": "left + right - parent, minus gamma", "tone": "good"}, {"id": "s", "label": "Scan the candidates", "sub": "arithmetic only; nothing refitted", "tone": "good"}, {"id": "r", "label": "lambda and gamma are regularisers", "sub": "they appear in the gain itself", "tone": "teal"}], "edges": [["t", "l"], ["l", "o"], ["o", "g"], ["g", "s"], ["s", "r"]], "t": "diagram", "id": "dg-6_4-01-0"},
+    {"kind": "flow", "title": "The second-order objective, and the split gain it implies", "caption": "Take a second-order Taylor expansion of the loss around the current prediction and the optimal leaf value falls out in closed form: −G/(H+λ), where G and H are the summed first and second derivatives in that leaf. The gain of a split is then an arithmetic comparison of three such terms — which is why XGBoost can evaluate thousands of candidate splits per node without ever refitting anything.", "cols": 3, "nodes": [{"id": "t", "label": "2nd-order Taylor of the loss", "sub": "gradients g, hessians h per row", "tone": "violet"}, {"id": "l", "label": "Optimal leaf value", "sub": "-G / (H + lambda)", "tone": "accent"}, {"id": "o", "label": "Objective per leaf", "sub": "-½ G² / (H + lambda)", "tone": "accent"}, {"id": "g", "label": "Split gain", "sub": "left + right - parent, minus gamma", "tone": "good"}, {"id": "s", "label": "Scan the candidates", "sub": "arithmetic only; nothing refitted", "tone": "good"}, {"id": "r", "label": "lambda and gamma are regularisers", "sub": "they appear in the gain itself", "tone": "teal"}], "edges": [["t", "l"], ["l", "o"], ["o", "g"], ["g", "s"], ["s", "r"]], "t": "diagram", "id": "dg-6_4-01-2"},
+
 
 
 
@@ -82,7 +83,8 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
 
     { t: "h2", n: "02", text: "What each library adds", id: "libraries" },
 
-    {"kind": "matrix", "title": "Four libraries, measured on 200k x 30 for 300 rounds", "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.", "cols": ["Fit / predict", "Tree growth"], "rows": ["XGBoost", "LightGBM", "CatBoost", "HistGradientBoosting"], "cells": [[{"text": "4.2 s / 0.11 s", "tone": "good"}, "depth-wise by default"], [{"text": "3.4 s / 0.28 s", "tone": "good"}, {"text": "leaf-wise: num_leaves", "tone": "accent"}], [{"text": "8.4 s / 0.02 s", "tone": "accent"}, {"text": "symmetric (oblivious)", "tone": "good"}], [{"text": "4.3 s / 0.38 s", "tone": "good"}, "depth-wise; no dependency"]], "t": "diagram", "id": "dg-6_4-02-1"},
+    {"kind": "matrix", "title": "Four libraries, measured on 200k x 30 for 300 rounds", "caption": "They implement the same objective and differ in how a tree is grown and how categoricals are handled. CatBoost's symmetric trees fit slowest and **predict fastest by an order of magnitude** — 0.02 s against 0.38 s — which is the trade to know when latency is the constraint.", "cols": ["Fit / predict", "Tree growth"], "rows": ["XGBoost", "LightGBM", "CatBoost", "HistGradientBoosting"], "cells": [[{"text": "4.2 s / 0.11 s", "tone": "good"}, "depth-wise by default"], [{"text": "3.4 s / 0.28 s", "tone": "good"}, {"text": "leaf-wise: num_leaves", "tone": "accent"}], [{"text": "8.4 s / 0.02 s", "tone": "accent"}, {"text": "symmetric (oblivious)", "tone": "good"}], [{"text": "4.3 s / 0.38 s", "tone": "good"}, "depth-wise; no dependency"]], "t": "diagram", "id": "dg-6_4-02-3"},
+
 
 
 
@@ -193,7 +195,8 @@ XGBoost (max_depth 1, eta 1, lambda 1, gamma 0, base_score 0.5), tree dump:
 
     { t: "h2", n: "03", text: "Categoricals without leakage", id: "categoricals" },
 
-    {"kind": "matrix", "title": "Categoricals without leakage", "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.", "cols": ["Handles it by", "Leaks"], "rows": ["CatBoost ordered", "LightGBM native", "XGBoost categorical", "HistGB native", "Naive target encoding", "Cross-fitted encoding"], "cells": [[{"text": "ordered statistics", "tone": "good"}, {"text": "no, by construction", "tone": "good"}], ["partition-based splits", "no, but <= a few hundred levels"], ["partition-based splits", "no; needs pandas category dtype"], ["native, <= 255 levels", "no"], [{"text": "the group mean, all rows", "tone": "crit"}, {"text": "yes: severely", "tone": "crit"}], [{"text": "out-of-fold means", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-03-2"},
+    {"kind": "matrix", "title": "Categoricals without leakage", "caption": "A booster that handles categoricals natively is not thereby safe: naive target statistics computed over all rows leak the label exactly as a hand-rolled target encoder would. CatBoost's ordered boosting is the one that is safe by construction, because each row's statistic uses only rows before it in a permutation.", "cols": ["Handles it by", "Leaks"], "rows": ["CatBoost ordered", "LightGBM native", "XGBoost categorical", "HistGB native", "Naive target encoding", "Cross-fitted encoding"], "cells": [[{"text": "ordered statistics", "tone": "good"}, {"text": "no, by construction", "tone": "good"}], ["partition-based splits", "no, but <= a few hundred levels"], ["partition-based splits", "no; needs pandas category dtype"], ["native, <= 255 levels", "no"], [{"text": "the group mean, all rows", "tone": "crit"}, {"text": "yes: severely", "tone": "crit"}], [{"text": "out-of-fold means", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-6_4-03-4"},
+
 
 
 
@@ -284,7 +287,96 @@ model.get_feature_importance(train_pool, type="LossFunctionChange")  # slower, h
       caption: "**`cat_features` is why CatBoost exists**: the categorical columns are handed over raw and encoded internally with the ordered target statistics from section 03, so there is no encoder to fit, no leak to avoid and no unseen-category branch to write. The cost is that the model object now owns a preprocessing decision that a Pipeline would otherwise make explicit." },
     { t: "p", text: "`LossFunctionChange` importance refits without each feature and reports the actual loss difference, which is what you want and is slow; `PredictionValuesChange` is the cheap default and shares the biases of any split-based importance. The sklearn-compatible wrapper is the same object, so `CatBoostClassifier` drops into a `Pipeline` and a `GridSearchCV` unchanged." },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+        { t: "h2", n: "04", text: "The native API, and the two things it gives you", id: "native" },
+
+    {"kind": "trace", "title": "Early stopping chose 165; predict used 186", "caption": "**The careful validation selected a tree count that prediction then ignores.** Early stopping keeps boosting for `early_stopping_rounds` beyond the best round to confirm the plateau, those trees stay in the model, and `Booster.predict` uses all of them unless you pass `iteration_range`. The measured cost here is 0.0012 in average precision — harmless, and always in the wrong direction. **Tie the two together in one place:** predict with the range, or slice the booster once and serve the slice.", "left": "step", "codeW": 200, "vars": ["value", "note"], "steps": [{"code": "num_boost_round=500", "state": ["an upper limit", "not a plan"], "tone": "accent"}, {"code": "eval_metric='aucpr'", "state": ["the metric that moves at 5% positives", "accuracy would stop at once"], "changed": [0, 1], "tone": "good"}, {"code": "best_iteration", "state": ["165", "what validation chose"], "changed": [0, 1], "tone": "good"}, {"code": "trees kept", "state": ["186", "165 + 20 confirmation + 1"], "changed": [0, 1], "tone": "warn"}, {"code": "AP, default predict", "state": ["0.7797", "all 186 trees"], "changed": [0, 1], "tone": "crit"}, {"code": "AP, iteration_range", "state": ["0.7809", "the prefix you validated"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_4-04-1"},
+
+    {"kind": "trace", "title": "Wrapper or native, and the three rows that decide it", "caption": "**The wrapper is a thin layer over the native API, not a different library** — so the question is never which is better but which of the last three rows you need. A custom objective and an exact tree range at prediction time exist only natively; everything else the wrapper does more conveniently. **And the two middle rows are what bite when a codebase mixes them:** `predict` returns probabilities through the wrapper and raw margins natively, and the wrapper's `fit` has no `obj` argument at all.", "left": "what you want", "codeW": 190, "vars": ["sklearn wrapper", "native API"], "steps": [{"code": "pipelines, GridSearchCV", "state": ["yes - this is the point", "no"], "tone": "good"}, {"code": "early stopping", "state": ["yes", "yes"], "changed": [0], "tone": "good"}, {"code": "what predict returns", "state": ["probabilities", "raw margins"], "changed": [0, 1], "tone": "crit"}, {"code": "a custom objective", "state": ["NO - fit takes no obj", "obj=your_function"], "changed": [0, 1], "tone": "violet"}, {"code": "pin an exact tree range", "state": ["awkward", "iteration_range"], "changed": [0, 1], "tone": "violet"}, {"code": "xgb.cv for the round count", "state": ["no", "yes"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-6_4-04-0"},
+
+    { t: "p", text: "Everything so far has used the scikit-learn wrapper — `XGBClassifier`, `fit`, `predict` — because it drops into a `Pipeline` and a `GridSearchCV` without ceremony. **Underneath it is a different API that the wrapper is a thin layer over**, and two capabilities live only down there: a custom objective, and full control over which trees are used at prediction time. Production training code is usually written against the native API for exactly those reasons." },
+
+    { t: "p", text: "The entry point is `DMatrix`, XGBoost's own data structure. It is not a convenience: it pre-bins every feature once, stores the result column-wise in a compressed form, and keeps the label, weights and base margin alongside. **That pre-binning is why boosting on a DMatrix is fast** — the split search reads bin indices rather than re-sorting raw floats at every node." },
+
+    { t: "code", lang: "python", title: "train, with early stopping on a metric that moves",
+      code: `import numpy as np, xgboost as xgb
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+
+X, y = make_classification(n_samples=4000, n_features=12, n_informative=6,
+                           weights=[0.95, 0.05], random_state=0)
+Xtr, Xva, ytr, yva = train_test_split(X, y, test_size=0.25, random_state=0)
+
+dtrain = xgb.DMatrix(Xtr, label=ytr)
+dvalid = xgb.DMatrix(Xva, label=yva)
+print("DMatrix:", dtrain.num_row(), "rows x", dtrain.num_col(), "cols")
+
+params = {"objective": "binary:logistic", "eval_metric": "aucpr",
+          "max_depth": 4, "eta": 0.1, "scale_pos_weight": 19.0, "nthread": 2}
+
+bst = xgb.train(params, dtrain, num_boost_round=500,
+                evals=[(dvalid, "valid")],
+                early_stopping_rounds=20, verbose_eval=False)
+
+print("best_iteration :", bst.best_iteration)
+print("trees kept     :", len(bst.get_dump()))`,
+      out: `DMatrix: 3000 rows x 12 cols
+best_iteration : 165
+trees kept     : 186`,
+      caption: "`num_boost_round=500` is an upper limit rather than a plan: early stopping found the best round at 165 and ended the search at 186. Note `eval_metric` set to `aucpr` — at a 5% positive rate average precision is the metric that moves, and stopping on accuracy would have stopped almost immediately." },
+
+    { t: "p", text: "**186 trees kept, best iteration 165** — and that gap is the first thing to understand about this API. Early stopping keeps boosting for `early_stopping_rounds` more rounds to confirm the plateau, and those extra trees stay in the model. What happens next is the part that surprises people." },
+
+    { t: "code", lang: "python", title: "predict does NOT stop at the best iteration",
+      code: `from sklearn.metrics import average_precision_score
+
+full = bst.predict(dvalid)                                       # all 186 trees
+best = bst.predict(dvalid, iteration_range=(0, bst.best_iteration + 1))
+
+print("default predict == best-iteration predict ?", bool(np.allclose(full, best)))
+print("AP, default predict:", "%.4f" % average_precision_score(yva, full))
+print("AP, best iteration :", "%.4f" % average_precision_score(yva, best))`,
+      out: `default predict == best-iteration predict ? False
+AP, default predict: 0.7797
+AP, best iteration : 0.7809`,
+      caption: "A small difference here, and not always small: the model you serve is the one you asked for, and by default that is every tree rather than the best prefix." },
+
+    { t: "callout", kind: "trap", title: "The number early stopping chose is not the number predict uses",
+      body: [
+        { t: "p", text: "`early_stopping_rounds` selects `best_iteration`; `Booster.predict` uses the whole model unless you pass `iteration_range`. So the careful validation you just did selected a tree count that prediction then ignores. The measured gap above is 0.0012 in average precision, which is harmless — but on a noisier validation curve the overshoot is larger and it is always in the wrong direction. **Tie the two together in one place:** either always predict with `iteration_range=(0, bst.best_iteration + 1)`, or slice the booster once after training and serve the slice." }
+      ] },
+
+    { t: "p", text: "The second capability has no wrapper equivalent. **A custom objective is a function returning the gradient and the Hessian** of your loss with respect to the raw score, per row — which is exactly the pair section 01 showed the split gain being assembled from. Supply it and boosting optimises your loss rather than one of the built-in names." },
+
+    { t: "code", lang: "python", title: "a cost-sensitive objective, written out",
+      code: `def weighted_logistic(preds, dmat):
+    """Logistic loss with a five-times penalty on a missed positive."""
+    y = dmat.get_label()
+    p = 1.0 / (1.0 + np.exp(-preds))        # preds are raw scores, not probabilities
+    w = np.where(y == 1, 5.0, 1.0)
+    grad = w * (p - y)
+    hess = w * p * (1.0 - p)
+    return grad, hess
+
+bst2 = xgb.train({"max_depth": 4, "eta": 0.1, "nthread": 2}, dtrain,
+                 num_boost_round=60, obj=weighted_logistic)
+
+print("trees:", len(bst2.get_dump()))
+print("output is a MARGIN, not a probability:", "%.3f" % bst2.predict(dvalid)[0])`,
+      out: `trees: 60
+output is a MARGIN, not a probability: 3.932`,
+      caption: "With a custom objective XGBoost no longer knows what the output means, so no link function is applied and `predict` returns the raw score. Apply the sigmoid yourself — a margin of 3.932 is a probability of 0.98." },
+
+    { t: "callout", kind: "tradeoff", title: "Which API to write against",
+      body: [
+        { t: "p", text: "Use the **wrapper** while you are exploring: it composes with pipelines, cross-validation and every sklearn utility, and `scale_pos_weight` plus `sample_weight` cover most cost asymmetry with no custom objective at all. Move to the **native API** when you need a loss that is not on the list, when you want `xgb.cv` to choose the round count rather than a grid search, or when the serving path must pin an exact tree range. **Do not mix them in one codebase without noticing the two differences that bite:** `predict` returns probabilities through the wrapper and raw margins natively, and the wrapper's `fit` takes no `obj` argument." }
+      ] },
+
+    { t: "callout", kind: "note", title: "LightGBM and CatBoost have the same split",
+      body: [
+        { t: "p", text: "`lgb.Dataset` and `lgb.train` stand in the same relation to `LGBMClassifier` as `DMatrix` and `xgb.train` do to `XGBClassifier`, with `fobj` for the custom objective; CatBoost exposes `Pool` and its own `loss_function` objects. The lesson transfers unchanged: the wrapper is for the experiment, the native object is for the training job, and the pre-binned data structure is where the speed comes from in all three." }
+      ] },
+
+{ t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Compute",
