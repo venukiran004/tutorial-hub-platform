@@ -40,6 +40,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "paths", "loops?", "predictable?"], rows: [
       ["single call", "1", "1", "no", "**yes**"],
       ["call + tools", "1", "1", "no", "**yes**"],
@@ -60,12 +61,14 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "Where the control sits",
       code: "does the model need to decide ANYTHING?\n  no  -> a chain. most RAG pipelines are here (8.1).\n  yes -> does the SEQUENCE vary, or only the CHOICE?\n         only the choice -> ROUTER\n         the sequence too -> can you plan it up front?\n                             yes -> PLAN-AND-EXECUTE\n                             no  -> REACT",
       caption: "Two questions, four answers." },
     { t: "h2", n: "03", id: "modifiers", text: "Three modifiers, not alternatives", sub: "Which is the part the table hides" },
 
     {"kind": "flow", "title": "Three modifiers, each answering a different question from the tree", "caption": "**This is the part the decision table hides: reflection, reflexion and agentic RAG are not rungs on the ladder, they are modifiers you add to whichever rung you landed on.** A router can have agentic RAG behind one branch; a plan-and-execute worker can reflect on its output. So the tree picks the control structure, and these three answer a separate question about **which part is unreliable.**", "cols": 3, "nodes": [{"id": "q", "label": "Is output QUALITY the problem?", "sub": "-> reflection (11.4)", "tone": "good"}, {"id": "r", "label": "Does it fail the SAME way repeatedly?", "sub": "-> reflexion (11.5)", "tone": "good"}, {"id": "g", "label": "Is RETRIEVAL the unreliable part?", "sub": "-> agentic RAG (11.7)", "tone": "good"}, {"id": "m", "label": "Modifiers, not alternatives", "sub": "added to whichever rung you chose", "tone": "violet"}, {"id": "e", "label": "e.g. agentic RAG behind one router branch", "sub": "the tree still picked the structure", "tone": "teal"}], "edges": [["q", "m"], ["r", "m"], ["g", "m"], ["m", "e"]], "t": "diagram", "id": "dg-11_8-03-2"},
+
 
 
 
@@ -84,6 +87,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "guards", text: "The guards every pattern needs", sub: "Identical across all of them" },
 
     {"kind": "layers", "title": "Six guards, and five of them live in two places", "caption": "Read the right-hand column: **four of the six are the router's job, because the router is the only place that can make a decision rather than raise.** The give-up node is the exception and the one most often missing — **it is what turns “the agent failed” into a response you can show a user.** And `recursion_limit` is last on purpose: a backstop for what the other five did not anticipate.", "items": [{"label": "An iteration budget", "sub": "10.5, 8.9", "tone": "good", "side": "the router"}, {"label": "A progress check", "sub": "10.5 - a loop achieving nothing", "tone": "good", "side": "the router"}, {"label": "A default branch", "sub": "11.2 - model output is not enumerable", "tone": "good", "side": "the router"}, {"label": "Record which exit fired", "sub": "10.5 - or a dead loop hides", "tone": "good", "side": "the router"}, {"label": "A give-up node", "sub": "11.3 - failure as a response", "tone": "violet", "side": "the graph"}, {"label": "recursion_limit", "sub": "8.9 - for what you did not predict", "tone": "accent", "side": "a backstop"}], "t": "diagram", "id": "dg-11_8-04-3"},
+
 
 
 
@@ -111,6 +115,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["pattern", "model calls", "got the answer?", "notes"], rows: [
       ["single call", "1", "from memory", "**ungrounded** (5.7)"],
       ["call + tools", "**1**", "yes", "the tool output **is** the answer"],
@@ -126,6 +131,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "rule", text: "The rule, stated once", sub: "And the asymmetry behind it" },
 
     {"kind": "flow", "title": "Twenty real examples usually resolve to a router", "caption": "Read the table **upward** rather than downward — start at the cheapest row and stop at the first one that works. And the practical corollary is a conversation rather than a technique: **when a stakeholder asks for an agent, ask for twenty real examples of what it must handle. Most of the time they resolve to a handful of intents with one operation each, which is a router — and saying so early is worth more than any individual pattern in this module.**", "cols": 3, "nodes": [{"id": "a", "label": "'We need an agent'", "sub": "the usual starting point", "tone": "accent"}, {"id": "t", "label": "Ask for twenty real examples", "sub": "of what it must handle", "tone": "violet"}, {"id": "h", "label": "A handful of intents", "sub": "one operation each", "tone": "good"}, {"id": "r", "label": "Which is a router", "sub": "1 call, no loop", "tone": "good"}, {"id": "w", "label": "Saying so early is the value", "sub": "more than any pattern here", "tone": "teal"}], "edges": [["a", "t"], ["t", "h"], ["h", "r"], ["r", "w"]], "t": "diagram", "id": "dg-11_8-06-5"},
+
 
 
 
@@ -198,7 +204,35 @@ EC.receiveLesson({
       { t: "p", text: "A team proposes a multi-tool agent for an internal assistant. The reviewer asks for twenty real requests it must handle, drawn from the existing support queue rather than imagined. Eighteen of them resolve to one of four intents, each needing one lookup. Two are genuinely open-ended research questions." },
       { t: "p", text: "That distribution answers the design: a router for the eighteen, with one of its branches being a small ReAct agent for the open-ended pair. Cost is one classification plus a lookup for ninety percent of traffic, and the unpredictable pattern is confined to the ten percent that needs it." },
       { t: "p", text: "What makes this the useful move is that it requires no architectural insight \u2014 just the examples. The patterns in this module are not hard to understand; the hard part is knowing which one the actual traffic needs, and that is a question about the requests rather than about the patterns. Asking for twenty examples early is worth more than knowing any of them." }
-    ] }
+    ] },
+
+    { t: "h2", n: "07", id: "lats", text: "Above the table: searching over trajectories", sub: "LATS, and why it is almost never the answer" },
+
+    {"kind": "trace", "title": "Three conditions, and code generation is the only common task that meets them", "caption": "**Tree search multiplies where every pattern in the table adds.** A branching factor of three to depth four is up to 81 leaf trajectories, each a full agent run with its own tool calls, plus a value call at every node visited — the table's most expensive row is a rounding error against that. **So the three conditions are the decision**, and the third is the one that disqualifies most real systems: MCTS abandons a branch and resumes from an earlier state, which is impossible once an action has sent an email or charged a card.", "left": "condition", "codeW": 190, "vars": ["code against a test suite", "a support or RAG agent"], "steps": [{"code": "actions are reversible or read-only", "state": ["yes - run the tests again", "no - it sent the email"], "tone": "crit"}, {"code": "a real evaluator exists", "state": ["yes - tests pass or fail", "no - a model rates itself"], "changed": [0, 1], "tone": "crit"}, {"code": "worth tens of model calls", "state": ["often yes", "no"], "changed": [0, 1], "tone": "crit"}, {"code": "so tree search is", "state": ["where it is demonstrated", "the wrong tool"], "changed": [0, 1], "tone": "violet"}, {"code": "and the idea to steal", "state": ["one deliberate fork, ranked honestly", "two calls, not eighty-one"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-11_8-07-6"},
+
+    { t: "p", text: "Every pattern in the table commits to one trajectory. ReAct takes a step, sees the result, takes the next; reflection revises a draft; plan-and-execute fixes the plan and works through it. **None of them goes back to a decision and tries the other branch**, which is a real limitation and the thing the next rung up addresses." },
+
+    { t: "p", text: "**LATS — language agent tree search — treats the agent's trajectory as a tree and searches it.** It is Monte Carlo tree search with a language model in three of the four roles: the model proposes the candidate actions at a node, the model scores how promising a state looks, the environment supplies real feedback where it can, and reflection on a failed branch becomes context for the next selection. Selection, expansion, evaluation, backpropagation — the MCTS loop, with reflection layered on so a dead end teaches the search something rather than merely being abandoned." },
+
+    { t: "p", text: "It is the strongest pattern in this module on the benchmarks it was published against, and it belongs in a section at the end rather than a lesson of its own, because the cost is the whole story." },
+
+    { t: "dl", items: [
+      ["The cost is multiplicative, not additive", "Every pattern above adds calls in a line: six steps, six calls. A search multiplies — a branching factor of three explored to depth four is up to eighty-one leaf trajectories, each one a full agent run with its own tool calls, plus a value-model call at every node visited. The table's most expensive row is a rounding error against this."],
+      ["It needs a value signal to be better than guessing", "Search is only as good as the evaluation that ranks the branches. Where real feedback exists — tests that pass or fail, a compiler, a simulator, a query that returns rows — the ranking is grounded and the search works. Where the only evaluator is a model scoring its own prospects, you are paying for breadth and getting the same judgement that produced the branches."],
+      ["It needs the environment to be resettable", "MCTS explores a branch, abandons it, and continues from an earlier state. That is fine when the actions are reads. **When an action sends an email, charges a card or writes a row, there is no backtracking** — and a search that cannot undo its exploration is not a search, it is a sequence of mistakes."]
+    ] },
+
+    { t: "callout", kind: "tradeoff", title: "The honest decision rule",
+      body: [
+        { t: "p", text: "Reach for tree search when all three of these hold: **the actions are reversible or read-only**, **a real evaluator exists** that is cheaper than the work being evaluated, and **the answer is worth tens of model calls**. Code generation against a test suite satisfies all three, which is why that is where it is almost always demonstrated. A support agent, an internal assistant, a RAG pipeline satisfies none of them." },
+        { t: "p", text: "For everything else the rule from section 06 still holds and this section does not amend it: the pattern you can afford to run on every request beats the pattern that wins a benchmark. **If one trajectory with a reflection step is not good enough, the problem is usually the tools, the context or the evaluator — and all three are cheaper to fix than a search is to run.**" }
+      ] },
+
+    { t: "callout", kind: "note", title: "What to take from it even if you never build it",
+      body: [
+        { t: "p", text: "The idea worth stealing is **branching at the one decision that matters** rather than over the whole trajectory. A router that tries two retrieval strategies in parallel and keeps the better result is a one-level, two-branch search with a real evaluator, and it costs two calls instead of eighty-one. Most of the benefit people attribute to search in practice comes from that shape: a single fork, chosen deliberately, where you have something honest to rank the results with." }
+      ] },
+
   ],
   takeaways: [
     "**The column that decides a design is \u2018predictable?\u2019** \u2014 what you can say before shipping.",

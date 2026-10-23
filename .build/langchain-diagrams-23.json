@@ -1,0 +1,69 @@
+{
+ "11.7": [
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "Two graders, two positions in the graph, two different failures",
+         "caption": "**The failure corrective RAG cannot see is the one where retrieval succeeded and generation still went wrong** — the right passage came back, the grader passed it, and the answer then asserted something the passage does not say. A document grader has no view of that, because when it runs there is no answer yet. **The two are siblings rather than alternatives**, and the honest default is the document grader first: bad retrieval is the commoner failure and chunks are cheaper to judge than a draft plus its context.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "retrieve", "sub": "chunks come back", "tone": "accent"},
+          {"id": "g", "label": "grade the DOCUMENTS", "sub": "corrective RAG - rewrite, retry, fall back", "tone": "good"},
+          {"id": "n", "label": "generate", "sub": "a draft, from passing context", "tone": "accent"},
+          {"id": "s", "label": "grade the GENERATION", "sub": "Self-RAG - supported? useful?", "tone": "violet"},
+          {"id": "u", "label": "the unsupported claim", "sub": "good retrieval, overreaching answer", "tone": "crit"},
+          {"id": "c", "label": "cap the attempts, then decline", "sub": "or it loops with itself", "tone": "crit"}],
+         "edges": [["r", "g"], ["g", "n"], ["n", "s"], ["s", "u"], ["s", "c"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Four model calls for one answer, before any retry",
+         "caption": "**That is the arithmetic to put in front of the decision.** A document grader plus a support check plus the generation plus the retry the support check triggers is four calls where the baseline was one — and the right question is whether an offline groundedness measurement already says the unsupported-claim rate is low enough to live with. **Measure before adding the second grader, not after.** And note the last row: a grader from the same model family shares the generator's blind spot, so the subtle overreach is exactly the case where both agree.",
+         "left": "piece", "codeW": 180,
+         "vars": ["calls", "what it buys"],
+         "steps": [
+          {"code": "retrieve and generate", "state": ["1", "the baseline"], "tone": "good"},
+          {"code": "grade the documents", "state": ["+1 per doc, or free", "catches bad retrieval"], "changed": [0, 1], "tone": "good"},
+          {"code": "grade the generation", "state": ["+1, draft plus context", "catches the unsupported claim"], "changed": [0, 1], "tone": "accent"},
+          {"code": "the retry it triggers", "state": ["+1", "and the model may repeat itself"], "changed": [0, 1], "tone": "warn"},
+          {"code": "both graders, with a retry", "state": ["4", "for one answer"], "changed": [0, 1], "tone": "crit"},
+          {"code": "same model as the generator", "state": ["-", "shares its blind spot - use another"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "11.8": [
+  {"after": "07",
+   "d": {"kind": "trace",
+         "title": "Three conditions, and code generation is the only common task that meets them",
+         "caption": "**Tree search multiplies where every pattern in the table adds.** A branching factor of three to depth four is up to 81 leaf trajectories, each a full agent run with its own tool calls, plus a value call at every node visited — the table's most expensive row is a rounding error against that. **So the three conditions are the decision**, and the third is the one that disqualifies most real systems: MCTS abandons a branch and resumes from an earlier state, which is impossible once an action has sent an email or charged a card.",
+         "left": "condition", "codeW": 190,
+         "vars": ["code against a test suite", "a support or RAG agent"],
+         "steps": [
+          {"code": "actions are reversible or read-only", "state": ["yes - run the tests again", "no - it sent the email"], "tone": "crit"},
+          {"code": "a real evaluator exists", "state": ["yes - tests pass or fail", "no - a model rates itself"], "changed": [0, 1], "tone": "crit"},
+          {"code": "worth tens of model calls", "state": ["often yes", "no"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so tree search is", "state": ["where it is demonstrated", "the wrong tool"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and the idea to steal", "state": ["one deliberate fork, ranked honestly", "two calls, not eighty-one"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "12.7": [
+  {"after": "07",
+   "d": {"kind": "trace",
+         "title": "Four questions a shared state schema never had to answer",
+         "caption": "**Everything in section 05 assumed you own both ends.** Once the far agent belongs to another team, each row becomes a thing someone must invent and document — and A2A is one set of answers to exactly these four. **The task lifecycle is the choice that makes the rest fall out**, and `input-required` is the state most clients forget: a remote agent is allowed to stop and ask, which a function call has no way to express.",
+         "left": "question", "codeW": 180,
+         "vars": ["inside one graph", "across an organisation"],
+         "steps": [
+          {"code": "what can it do?", "state": ["read the node", "a versioned card, fetched"], "tone": "accent"},
+          {"code": "what is a long job?", "state": ["the edge returns", "a task with a lifecycle"], "changed": [0, 1], "tone": "violet"},
+          {"code": "how do you see progress?", "state": ["it yields", "SSE, or a push notification"], "changed": [0, 1], "tone": "violet"},
+          {"code": "who is asking?", "state": ["everything is yours", "HTTP auth carries the caller"], "changed": [0, 1], "tone": "accent"},
+          {"code": "and it may answer", "state": ["-", "input-required - it stopped to ask"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "07",
+   "d": {"kind": "compare",
+         "title": "A capability you invoke, or a correspondent you delegate to",
+         "caption": "**The two are described as competitors and are not.** A tool server has no goals: it offers functions, you call them, and it never comes back with a question. Another agent reasons, may refuse, may need something from you, and owns its own tools — which is why the unit of work has to be a task rather than a return value. **A system of any size uses both**, and the useful habit is asking which of these two things you are talking to before choosing the machinery.",
+         "columns": [
+          {"title": "MCP - agent to tools", "tone": "accent",
+           "items": ["A server offers functions", "No goals of its own", "Calls return, or they error", "You hold the reasoning", "It cannot ask you anything"]},
+          {"title": "A2A - agent to agent", "tone": "violet",
+           "items": ["A card advertises skills", "It reasons, and may refuse", "Tasks have a lifecycle", "The far side holds its own tools", "input-required: it stopped to ask"]}]}}
+ ]
+}

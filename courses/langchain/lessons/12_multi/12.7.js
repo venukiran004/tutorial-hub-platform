@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["**shared state**", "Every agent reads and writes one message list. Simplest, and every agent's output is in every later agent's prompt whether relevant or not."],
       ["**filtered state**", "Each agent receives a constructed view \u2014 10.2's `Send`, which gives a worker exactly what you passed and nothing else."],
@@ -47,6 +48,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "shared", text: "Shared state", sub: "Context for free, and paid for" },
 
     {"kind": "trace", "title": "B received the human's message and A's output, with nobody designing a payload", "caption": "Both halves of the trade are real. **The benefit is context for free — B knows what was asked and what A found, and no interface had to be written** — which is why shared state is the right default inside one graph. **The cost is that A's working notes are in B's prompt and B pays for them**, and 12.2 noted it compounds across a supervisor loop, since every worker's output reaches every later worker.", "left": "what B's prompt held", "codeW": 190, "vars": ["origin", "B asked for it?", "B pays for it?"], "steps": [{"code": "HumanMessage", "state": ["the user", "yes", "yes"], "tone": "good"}, {"code": "A's output", "state": ["agent A", "no", "yes"], "changed": [0, 1], "tone": "warn", "note": "context for free"}, {"code": "in a supervisor loop", "state": ["every earlier worker", "no", "every turn"], "changed": [0, 2], "tone": "crit"}], "t": "diagram", "id": "dg-12_7-02-1"},
+
 
 
 
@@ -63,6 +65,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "text", title: "What the worker received",
       code: "worker saw keys=['piece']",
       caption: "**Not** `secret`, which was in the parent state." },
@@ -70,6 +73,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "attribution", text: "The attribution problem", sub: "And its one-field fix" },
 
     {"kind": "trace", "title": "One field, and two separate things depend on it", "caption": "**An agent cannot weigh information it cannot attribute: a claim from the retrieval agent and a guess from the summarising agent should not carry equal authority, and without `name` they are both just assistant turns.** The second reason is 12.8's: when the output is wrong, *“which agent said that”* has to be answerable from the history. **Nothing in the runtime sets `name`**, so it is a deliberate choice every agent has to make.", "left": "message", "codeW": 170, "vars": ["name", "attributable?", "weighable?"], "steps": [{"code": "HumanMessage('task')", "state": ["None", "yes - it is human", "yes"], "tone": "good"}, {"code": "AIMessage('found 3 sources')", "state": ["'a'", "yes", "yes - retrieval"], "changed": [0, 2], "tone": "good"}, {"code": "AIMessage('summarised')", "state": ["'b'", "yes", "yes - a summary"], "changed": [2], "tone": "good"}, {"code": "the same two, unnamed", "state": ["None", "no", "equal authority"], "changed": [0, 1, 2], "tone": "crit", "note": "nothing sets it for you"}], "t": "diagram", "id": "dg-12_7-04-3"},
+
 
 
 
@@ -83,6 +87,7 @@ EC.receiveLesson({
     { t: "h2", n: "05", id: "services", text: "Once they are separate services", sub: "10.9's three concerns, unchanged" },
 
     {"kind": "flow", "title": "10.9's three concerns, and then one design question", "caption": "Across a service boundary the payload must be JSON-able — **a LangChain message object is; a graph's full state with reducers is not** — there is a hop per handoff, and the peer can crash, which 10.9 measured as **an empty line rather than an error.** Then the real question: **the whole conversation is simple and grows without bound and crosses the wire every hop; a task-specific payload is bounded and leaves the receiver without context it might need.**", "cols": 3, "nodes": [{"id": "s", "label": "A message object serialises", "sub": "state with reducers does not", "tone": "warn"}, {"id": "l", "label": "A hop per handoff", "sub": "on every handoff", "tone": "warn"}, {"id": "f", "label": "A crash returns an empty line", "sub": "10.9 measured it", "tone": "crit"}, {"id": "w", "label": "Payload: the whole conversation", "sub": "simple, unbounded, every hop", "tone": "accent"}, {"id": "t", "label": "Payload: task-specific", "sub": "bounded, and missing context", "tone": "accent"}], "edges": [["s", "l"], ["l", "f"], ["f", "w"], ["f", "t"]], "t": "diagram", "id": "dg-12_7-05-4"},
+
 
 
 
@@ -103,6 +108,7 @@ EC.receiveLesson({
     { t: "h2", n: "06", id: "recommend", text: "The practical recommendation", sub: "Two settings" },
 
     {"kind": "layers", "title": "Three choices inside a graph, two across services, and one that is not optional", "caption": "The last row is the one that applies either way: **record the handoff itself — who handed to whom and why.** That is the trace 12.8's blame problem needs, and the reason 8.8 argued for `Command` carrying the reason **with** the destination rather than leaving it to be reconstructed from state afterwards. Across services, the conversation **id** is what lets a bounded payload stay bounded without blinding the receiver.", "items": [{"label": "Shared state for the conversation", "sub": "context for free, inside one graph", "tone": "good", "side": "in-graph"}, {"label": "Send for anything a worker should not see", "sub": "the isolation boundary", "tone": "good", "side": "in-graph"}, {"label": "name on every message", "sub": "so attribution survives", "tone": "good", "side": "in-graph"}, {"label": "An explicit task payload with a schema", "sub": "bounded and declared", "tone": "accent", "side": "services"}, {"label": "Plus the conversation id", "sub": "so the receiver can fetch history", "tone": "accent", "side": "services"}, {"label": "Record the handoff itself", "sub": "who, to whom, and why", "tone": "violet", "side": "always"}], "t": "diagram", "id": "dg-12_7-06-5"},
+
 
 
 
@@ -137,7 +143,55 @@ EC.receiveLesson({
       { t: "p", text: "A research agent retrieves sources and a writing agent composes the answer, sharing one message list. The writer occasionally states something the retriever had explicitly flagged as uncertain, presenting it as established fact." },
       { t: "p", text: "The messages carry no `name`, so from the writer's perspective the history is a sequence of assistant turns \u2014 a retrieved quotation and a hedged speculation look identical in form. It cannot weigh what it cannot attribute, so it treats both as prior context of equal standing." },
       { t: "p", text: "Setting `name` on each agent's messages is the minimum fix and lets the writer's prompt distinguish sources from working notes. The stronger version is to stop using the shared list as the channel for findings: pass retrieved sources as a structured state key with their provenance, and keep the message list for the conversation. That makes the distinction structural rather than something the writer has to infer from text \u2014 which is 5.7's citation argument applied between agents instead of between a model and a corpus." }
-    ] }
+    ] },
+
+    { t: "h2", n: "07", id: "a2a", text: "When the other agent is not yours", sub: "What A2A standardises, and what it does not" },
+
+    {"kind": "compare", "title": "A capability you invoke, or a correspondent you delegate to", "caption": "**The two are described as competitors and are not.** A tool server has no goals: it offers functions, you call them, and it never comes back with a question. Another agent reasons, may refuse, may need something from you, and owns its own tools — which is why the unit of work has to be a task rather than a return value. **A system of any size uses both**, and the useful habit is asking which of these two things you are talking to before choosing the machinery.", "columns": [{"title": "MCP - agent to tools", "tone": "accent", "items": ["A server offers functions", "No goals of its own", "Calls return, or they error", "You hold the reasoning", "It cannot ask you anything"]}, {"title": "A2A - agent to agent", "tone": "violet", "items": ["A card advertises skills", "It reasons, and may refuse", "Tasks have a lifecycle", "The far side holds its own tools", "input-required: it stopped to ask"]}], "t": "diagram", "id": "dg-12_7-07-7"},
+
+    {"kind": "trace", "title": "Four questions a shared state schema never had to answer", "caption": "**Everything in section 05 assumed you own both ends.** Once the far agent belongs to another team, each row becomes a thing someone must invent and document — and A2A is one set of answers to exactly these four. **The task lifecycle is the choice that makes the rest fall out**, and `input-required` is the state most clients forget: a remote agent is allowed to stop and ask, which a function call has no way to express.", "left": "question", "codeW": 180, "vars": ["inside one graph", "across an organisation"], "steps": [{"code": "what can it do?", "state": ["read the node", "a versioned card, fetched"], "tone": "accent"}, {"code": "what is a long job?", "state": ["the edge returns", "a task with a lifecycle"], "changed": [0, 1], "tone": "violet"}, {"code": "how do you see progress?", "state": ["it yields", "SSE, or a push notification"], "changed": [0, 1], "tone": "violet"}, {"code": "who is asking?", "state": ["everything is yours", "HTTP auth carries the caller"], "changed": [0, 1], "tone": "accent"}, {"code": "and it may answer", "state": ["-", "input-required - it stopped to ask"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-12_7-07-6"},
+
+    { t: "p", text: "Section 05 took the agents apart into separate services and found 10.9's three concerns unchanged. It assumed one thing throughout, though: that you own both ends. **Once the agent you are calling belongs to another team — or another company — four questions arrive that a shared state schema never had to answer.**" },
+
+    { t: "dl", items: [
+      ["How do you know what it can do?", "With one codebase, you read the node. Across an organisation, a capability description has to be fetched rather than assumed, and it has to be versioned, because the thing you integrated against will change without telling you."],
+      ["What does a long job look like?", "A supervisor edge returns when the node returns. A request to someone else's agent may take four minutes, need a human in the middle, or fail halfway — so the unit of work has to be a task with states rather than a call with a return value."],
+      ["How do you see progress?", "An in-process agent streams by yielding. Across a boundary, progress has to be a transport concern: server-sent events while the caller waits, or a callback when it cannot."],
+      ["Who is asking?", "Shared state carries no identity because everything in it is already yours. A remote call has a caller, and the remote agent's answer should depend on who that is."]
+    ] },
+
+    { t: "p", text: "**A2A — the agent-to-agent protocol — is one set of answers to exactly those four.** An agent publishes a card at a well-known path describing its skills and its endpoint; work is submitted as a task that moves through a lifecycle rather than a function that returns; progress streams over SSE or arrives by push notification; and the call carries ordinary HTTP authentication, so identity is the transport's problem and not the message's." },
+
+    { t: "code", lang: "text", title: "the shape of it, without the library",
+      code: `GET https://billing.example.com/.well-known/agent-card.json
+  -> { name, description, url, version,
+       skills: [ { id, name, description, examples } ],
+       capabilities: { streaming: true, pushNotifications: true } }
+
+POST https://billing.example.com/   (JSON-RPC)
+  -> message/send        submit work, get a task id back
+     message/stream      the same, with SSE updates as it progresses
+     tasks/get           poll a task by id
+     tasks/cancel        ask it to stop
+
+task state:  submitted -> working -> completed
+                              |----> input-required  (it needs something from you)
+                              |----> failed / canceled`,
+      caption: "The card is discovery and the task is the unit of work — those two choices are what make the rest fall out. **Note `input-required`:** a remote agent is allowed to stop and ask, which a function call has no way to express, and which is the state most clients forget to handle." },
+
+    { t: "p", text: "The distinction worth being precise about is against MCP, because the two are described as competitors and are not. **MCP connects an agent to tools and data** — a server offers functions, your agent calls them, and the server has no goals of its own. **A2A connects an agent to another agent** — the far side reasons, may refuse, may come back with a question, and owns its own tools. One is a capability you invoke, the other is a correspondent you delegate to, and a system of any size ends up using both." },
+
+    { t: "callout", kind: "tradeoff", title: "Whether you need a protocol at all",
+      body: [
+        { t: "p", text: "For agents inside one graph, you do not: shared state and a supervisor edge are simpler and the whole of module 12 is about making that work. For agents in two services **you own**, section 05's answer still stands — an HTTP endpoint and a schema you both import is less machinery than a protocol, and you can change both ends on the same afternoon. **The protocol earns its place at the organisational boundary**, where discovery must be dynamic because you cannot redeploy the other side, and where the long-running task and the standard error shapes are things you would otherwise have to invent and document yourself." },
+        { t: "p", text: "The failure mode to avoid is adopting it inside a single team because it sounds like the future. Every failure mode in 12.8 gets harder across a process boundary, not easier, and none of them is solved by the wire format." }
+      ] },
+
+    { t: "callout", kind: "warn", title: "A remote agent is an untrusted input twice over",
+      body: [
+        { t: "p", text: "Its card is text that goes into your prompt, and its answers are text that goes into your state. Both come from a process you do not run, and a compromised or merely careless agent on the other end is placing content directly into your model's context. **Treat a fetched card the way you treat a fetched document** — as data, delimited, never as instructions — and keep the policy that decides what your side is allowed to do in your own code, where the far side cannot argue with it." }
+      ] },
+
   ],
   takeaways: [
     "**Three channels in increasing isolation**: shared state, `Send`-filtered state, message passing.",

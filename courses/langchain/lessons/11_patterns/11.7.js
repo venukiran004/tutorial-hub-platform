@@ -39,6 +39,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "dl", items: [
       ["the documents are good", "\u2192 generate"],
       ["the documents are off-topic", "\u2192 rewrite the query, retrieve again (7.2)"],
@@ -49,6 +50,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", id: "three", text: "Three queries, three paths", sub: "On the real corpus" },
 
     {"kind": "trace", "title": "Three queries, and the machinery cost nothing on the first", "caption": "The good path is the one worth noticing: **0.443 graded good and went straight to generate, so the extra structure cost nothing on a query the baseline already handled.** The rewrite path is 7.2's measured case — **0.139 to 0.709**, with `bill-cancel-sub` replacing the order-cancellation document. And 7.2's caveat holds: that rewrite was written knowing the corpus, and a blind rewriter landed **0 of 5** attempts on one query.", "left": "query", "codeW": 210, "vars": ["top score", "path"], "steps": [{"code": "'how long do you keep my information'", "state": ["0.443", "good -> generate"], "tone": "good"}, {"code": "'I want out'", "state": ["0.139", "weak -> rewrite"], "changed": [0, 1], "tone": "warn"}, {"code": "-> 'cancel my subscription auto-renewal'", "state": ["0.709", "good -> generate"], "changed": [0, 1], "tone": "good", "note": "7.2's case"}, {"code": "'...airspeed velocity of an unladen swallow'", "state": ["0.128", "rewrote to itself"], "changed": [0, 1], "tone": "crit"}, {"code": "-> second grade", "state": ["0.128", "gave up"], "tone": "crit", "note": "7.1's required outcome"}], "t": "diagram", "id": "dg-11_7-02-1"},
+
 
 
 
@@ -75,6 +77,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["grader", "cost", "what it inherits"], rows: [
       ["a score threshold", "free", "7.1's **AUC 0.943** \u2014 and the populations overlap, so it is a chosen trade, not a classifier"],
       ["a cross-encoder", "~68 ms per pair", "7.1 measured it **refusing** the vocabulary-mismatch queries dense answers correctly \u2014 a second opinion, not a better one"],
@@ -87,6 +90,7 @@ EC.receiveLesson({
     { t: "h2", n: "04", id: "cost", text: "The cost, and the gate that pays for it", sub: "7.2's conclusion as a graph" },
 
     {"kind": "flow", "title": "Grade cheaply first, and spend a model call only on failure", "caption": "Worst case per query is retrieve, grade, rewrite, retrieve, grade, generate — **with an LLM grader that is three model calls before generation, on every query, including the ones 7.2 measured the baseline answering at MRR 0.964.** The gate is 7.2's conclusion expressed as a graph: **the free threshold first, escalating only when it says the retrieval was weak.** A loop that grades expensively on every query has spent its budget on the queries that did not need it.", "cols": 3, "nodes": [{"id": "w", "label": "Worst case: 6 operations per query", "sub": "retrieve, grade, rewrite, again", "tone": "crit"}, {"id": "l", "label": "LLM grader: 3 calls before generating", "sub": "on every query", "tone": "crit"}, {"id": "b", "label": "Including the ones at MRR 0.964", "sub": "which needed none of it", "tone": "crit"}, {"id": "t", "label": "So: the free threshold first", "sub": "AUC 0.943, no call", "tone": "good"}, {"id": "e", "label": "Escalate only on weak", "sub": "7.2's conclusion as a graph", "tone": "good"}], "edges": [["w", "l"], ["l", "b"], ["b", "t"], ["t", "e"]], "t": "diagram", "id": "dg-11_7-04-3"},
+
 
 
 
@@ -125,7 +129,57 @@ EC.receiveLesson({
       { t: "p", text: "A team adds corrective RAG with an LLM grader that scores each retrieved document for relevance. Quality improves slightly on hard queries and the per-request cost roughly triples, because the grader runs five model calls on every request including the ones the baseline answered perfectly." },
       { t: "p", text: "The expensive grader is being spent uniformly on a query population where, by their own measurements, most retrievals were already good. The pattern's benefit is concentrated in the minority of queries that fail, and so is the pattern's cost \u2014 if you gate it." },
       { t: "p", text: "The fix is a two-stage grader: the retrieval score first, free and measured at AUC 0.943 at separating answerable from unanswerable, and the LLM grader only on the queries the cheap one flags. That is the same two-stage structure as retrieval itself \u2014 cast wide cheaply, narrow expensively \u2014 applied to grading, and it is the move that turns a pattern that improves quality into one that improves quality affordably." }
-    ] }
+    ] },
+
+    { t: "h2", n: "05", id: "self-rag", text: "Self-RAG: the critique is on the answer, not the documents", sub: "The sibling pattern, and the real difference" },
+
+    {"kind": "trace", "title": "Four model calls for one answer, before any retry", "caption": "**That is the arithmetic to put in front of the decision.** A document grader plus a support check plus the generation plus the retry the support check triggers is four calls where the baseline was one — and the right question is whether an offline groundedness measurement already says the unsupported-claim rate is low enough to live with. **Measure before adding the second grader, not after.** And note the last row: a grader from the same model family shares the generator's blind spot, so the subtle overreach is exactly the case where both agree.", "left": "piece", "codeW": 180, "vars": ["calls", "what it buys"], "steps": [{"code": "retrieve and generate", "state": ["1", "the baseline"], "tone": "good"}, {"code": "grade the documents", "state": ["+1 per doc, or free", "catches bad retrieval"], "changed": [0, 1], "tone": "good"}, {"code": "grade the generation", "state": ["+1, draft plus context", "catches the unsupported claim"], "changed": [0, 1], "tone": "accent"}, {"code": "the retry it triggers", "state": ["+1", "and the model may repeat itself"], "changed": [0, 1], "tone": "warn"}, {"code": "both graders, with a retry", "state": ["4", "for one answer"], "changed": [0, 1], "tone": "crit"}, {"code": "same model as the generator", "state": ["-", "shares its blind spot - use another"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-11_7-05-5"},
+
+    {"kind": "flow", "title": "Two graders, two positions in the graph, two different failures", "caption": "**The failure corrective RAG cannot see is the one where retrieval succeeded and generation still went wrong** — the right passage came back, the grader passed it, and the answer then asserted something the passage does not say. A document grader has no view of that, because when it runs there is no answer yet. **The two are siblings rather than alternatives**, and the honest default is the document grader first: bad retrieval is the commoner failure and chunks are cheaper to judge than a draft plus its context.", "cols": 3, "nodes": [{"id": "r", "label": "retrieve", "sub": "chunks come back", "tone": "accent"}, {"id": "g", "label": "grade the DOCUMENTS", "sub": "corrective RAG - rewrite, retry, fall back", "tone": "good"}, {"id": "n", "label": "generate", "sub": "a draft, from passing context", "tone": "accent"}, {"id": "s", "label": "grade the GENERATION", "sub": "Self-RAG - supported? useful?", "tone": "violet"}, {"id": "u", "label": "the unsupported claim", "sub": "good retrieval, overreaching answer", "tone": "crit"}, {"id": "c", "label": "cap the attempts, then decline", "sub": "or it loops with itself", "tone": "crit"}], "edges": [["r", "g"], ["g", "n"], ["n", "s"], ["s", "u"], ["s", "c"]], "t": "diagram", "id": "dg-11_7-05-4"},
+
+    { t: "p", text: "Corrective RAG grades **what came back from the retriever** and acts on that verdict. Self-RAG grades **what the model wrote** and checks it against the retrieved text. The two are routinely named in the same breath and they catch different failures, which is why the choice is not stylistic." },
+
+    { t: "p", text: "The failure corrective RAG cannot see is the one where retrieval succeeded and generation still went wrong: the right passage came back, the grader passed it, and the answer then asserted something the passage does not say. A document grader has no view of that, because by the time it runs there is no answer yet." },
+
+    { t: "dl", items: [
+      ["Corrective RAG — grade the documents", "A relevance judgement per chunk, before generation. Acts by rewriting the query, retrieving again, or falling back to a different source. **Catches:** bad retrieval. **Misses:** a fluent answer that overreaches good retrieval."],
+      ["Self-RAG — grade the generation", "Two judgements after generation: is each claim *supported* by the retrieved text, and is the answer *useful* for the question. Acts by regenerating, retrieving more, or declining. **Catches:** the unsupported claim. **Misses:** nothing about retrieval quality, unless you also grade the documents."]
+    ] },
+
+    { t: "p", text: "In the original paper Self-RAG is a *trained* behaviour: the model emits **reflection tokens** — whether to retrieve at all, whether a passage is relevant, whether the output is supported, whether it is useful — and those tokens are part of its vocabulary. That matters for reading the literature and almost never for building, because the deployable version of the idea is the same idea as a graph: a node that reads the draft and the evidence and returns a verdict your edges branch on." },
+
+    { t: "code", lang: "python", title: "the support check as a node, with the structured verdict",
+      code: `class Support(BaseModel):
+    """Whether the draft is supported by the retrieved text."""
+    supported: bool = Field(description="True only if every claim appears in the context")
+    unsupported_claim: str = Field(description="The first unsupported claim, else empty")
+
+def check_support(state: RagState) -> dict:
+    verdict = grader_llm.with_structured_output(Support).invoke(
+        SUPPORT_PROMPT.format(context=state["context"], draft=state["draft"]))
+    return {"supported": verdict.supported, "problem": verdict.unsupported_claim}
+
+def route_after_support(state: RagState) -> str:
+    if state["supported"]:
+        return "deliver"
+    return "regenerate" if state["attempts"] < 2 else "decline"
+
+graph.add_node("generate", generate)
+graph.add_node("check_support", check_support)
+graph.add_conditional_edges("check_support", route_after_support,
+                            {"deliver": END, "regenerate": "generate", "decline": "decline"})`,
+      caption: "The attempt counter in `route_after_support` is the part not to leave out: a support check with no cap is a loop between generation and criticism, and the model that wrote an unsupported claim is usually willing to write it again. **Two attempts, then decline**, is the shape that terminates." },
+
+    { t: "callout", kind: "trap", title: "The grader shares the generator's blind spot",
+      body: [
+        { t: "p", text: "Section 03's warning applies with more force here, because the grader is now judging text from the same model family that produced it — and a claim that model finds plausible, it also finds supported. A clear fabrication it will catch; the subtle overreach — a hedge dropped, a condition omitted, a number rounded the helpful way — is exactly the case where generator and grader agree for the same reason. **Use a different model for the check if the answer matters**, and either way measure the grader against labelled examples before trusting a number it produces." }
+      ] },
+
+    { t: "callout", kind: "tradeoff", title: "Which to build, and the honest default",
+      body: [
+        { t: "p", text: "**Corrective RAG first**, because bad retrieval is the more common failure and a document grader is cheaper — it runs on chunks, not on a draft plus its context. **Add the support check when an unsupported claim is expensive**: regulated advice, anything a user will act on without verifying. **Both together is four model calls for one answer** before any retry, and the right question is whether an offline groundedness evaluation already tells you the rate is low enough to live with. Most teams should measure before adding the second grader, not after." }
+      ] },
+
   ],
   takeaways: [
     "**Agentic RAG makes retrieval a decision**: generate, rewrite and retry, give up, or skip the lookup.",
