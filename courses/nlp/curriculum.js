@@ -18,7 +18,7 @@
       interview: "One hundred questions across NLP, transformers, applications and HuggingFace, answers hidden until you ask."
     },
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "p1.1", "p1.2"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "6.7", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "p1.1", "p1.2"],
 
     modules: [
 
@@ -96,7 +96,10 @@
             keywords: ["machine translation", "smt", "nmt", "alignment", "bleu", "seq2seq", "parallel corpus"] },
           { id: "2.8", title: "Question Answering", difficulty: "core", minutes: 30, tier: "should",
             summary: "Extractive QA as span prediction, open-domain QA as retrieve-then-read, generative QA, and the exact-match and F1 metrics that judge them.",
-            keywords: ["question answering", "squad", "span", "extractive", "open domain", "retriever", "reader", "exact match"] }
+            keywords: ["question answering", "squad", "span", "extractive", "open domain", "retriever", "reader", "exact match"] },
+          { id: "2.9", title: "Distance and Similarity: The Whole Family", difficulty: "core", minutes: 34, tier: "should",
+            summary: "The Lp family at three values of p and the shape of each unit ball; why cosine, dot product and Euclidean rank identically on normalised vectors and why no index offers cosine; Mahalanobis and whitening on correlated features; KL against Jensen-Shannon against Wasserstein for drift; Canberra, Bray-Curtis, Haversine and Gower for counts, compositions, coordinates and mixed records; and distance concentration measured from 2 to 1,000 dimensions.",
+            keywords: ["distance", "metric", "minkowski", "manhattan", "chebyshev", "cosine", "mips", "mahalanobis", "whitening", "kl divergence", "jensen-shannon", "wasserstein", "canberra", "bray-curtis", "haversine", "gower", "curse of dimensionality"] }
         ]
       },
 
@@ -336,7 +339,10 @@
             keywords: ["tf-idf", "character ngram", "sparse", "matrix product", "candidate generation", "scale"] },
           { id: "8.5", title: "RapidFuzz and Entity Resolution", difficulty: "advanced", minutes: 32, tier: "should",
             summary: "The library's scorers and when each applies, then the full resolution pipeline — normalisation, blocking, scoring, clustering — and the threshold that decides precision against recall.",
-            keywords: ["rapidfuzz", "fuzzywuzzy", "entity resolution", "blocking", "deduplication", "clustering", "threshold"] }
+            keywords: ["rapidfuzz", "fuzzywuzzy", "entity resolution", "blocking", "deduplication", "clustering", "threshold"] },
+          { id: "8.6", title: "Record Linkage: Fellegi-Sunter, Blocking and Survivorship", difficulty: "advanced", minutes: 36, tier: "should",
+            summary: "The probabilistic model behind production linkage: m and u probabilities, match weights in bits, and why a low-cardinality field is weak evidence for a match and strong evidence against one. Then blocking and its recall ceiling, multi-pass keys, sorted neighbourhood, the two thresholds with a human in the middle, and survivorship rules with per-field lineage.",
+            keywords: ["record linkage", "fellegi-sunter", "match weight", "m probability", "u probability", "blocking", "sorted neighbourhood", "threshold", "clerical review", "survivorship", "golden record", "lineage"] }
         ]
       },
 

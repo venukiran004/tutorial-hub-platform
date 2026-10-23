@@ -1,0 +1,51 @@
+{
+ "2.9": [
+  {"after": "08",
+   "d": {"kind": "tree",
+         "title": "What counts as a difference in this data?",
+         "caption": "**Answer that question first, then find the row \u2014 the table is an index, not a decision procedure.** Each metric is a different answer to it: cosine says magnitude is not a difference, Mahalanobis says a difference along a correlated direction is smaller than it looks, Canberra says a difference from zero is total, Gower says a difference must first be put on a per-column scale. **And since the metric is a modelling decision, it is a thing to measure** \u2014 evaluate two candidates on a labelled set rather than reasoning about which should win.",
+         "root": {"label": "What kind of object are you comparing?", "sub": "the question behind every row", "tone": "accent",
+                  "children": [
+                   {"label": "Vectors", "sub": "embeddings, TF-IDF, features", "tone": "good",
+                    "children": [
+                     {"label": "Normalised: cosine or inner product", "sub": "direction is the signal", "tone": "good"},
+                     {"label": "Magnitude matters: Euclidean", "sub": "size is information", "tone": "good"},
+                     {"label": "Correlated features: Mahalanobis", "sub": "or whiten, then Euclidean", "tone": "teal"}]},
+                   {"label": "Distributions", "sub": "the drift question", "tone": "violet",
+                    "children": [
+                     {"label": "Categorical: Jensen-Shannon", "sub": "symmetric and finite where KL is not", "tone": "violet"},
+                     {"label": "Numeric: Wasserstein", "sub": "the only one that sees how far", "tone": "violet"}]},
+                   {"label": "Sets and counts", "sub": "tokens, shingles, abundances", "tone": "accent",
+                    "children": [
+                     {"label": "Sets: Jaccard or Dice", "sub": "they rank identically", "tone": "accent"},
+                     {"label": "Zero matters: Canberra", "sub": "otherwise Bray-Curtis", "tone": "accent"}]},
+                   {"label": "Something else entirely", "sub": "coordinates, mixed records, tolerances", "tone": "warn",
+                    "children": [
+                     {"label": "Haversine, Gower, Chebyshev", "sub": "degrees are not a unit of distance", "tone": "warn"}]}]}}}
+ ],
+
+ "8.6": [
+  {"after": "01",
+   "d": {"kind": "compare",
+         "title": "A tuned weighted average, or two probabilities you can explain",
+         "caption": "**The weighted average works tolerably and cannot answer the question that matters: how much evidence is this?** A score of 0.8 means nothing outside the particular weights you chose, so a threshold on it is not defensible to anyone. Fellegi-Sunter replaces the tuning with two quantities per field that are each estimable from data and explainable to a reviewer \u2014 and because the weights are logarithms, evidence from different fields adds.",
+         "columns": [
+          {"title": "Hand-tuned weights", "tone": "warn",
+           "items": ["One weight per field, chosen by feel", "Agreement and disagreement are mirror images", "The score has no units", "A threshold is a guess", "Retuning is undocumented judgement"]},
+          {"title": "m and u probabilities", "tone": "violet",
+           "items": ["m: P(agree | match) - data quality", "u: P(agree | non-match) - discriminativeness", "The score is in bits of evidence", "Thresholds follow from error rates", "Estimable unsupervised, with EM"]}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Equality replaced by adjacency - and the one thing it still cannot survive",
+         "caption": "**Sorted neighbourhood is linear rather than quadratic** \u2014 n times (w\u22121), which was 900,000 comparisons against five billion \u2014 and the window size is a single dial trading recall for cost rather than a key-design problem. **But sorting is lexicographic**, so a difference in the first character of the key moves a record arbitrarily far away in the order, and a first-letter typo defeats the method exactly as it defeats exact blocking. Several passes with different field orderings is the answer, and it composes with standard blocking rather than replacing it.",
+         "cols": 3,
+         "nodes": [
+          {"id": "k", "label": "Build a composite key", "sub": "most reliable field first", "tone": "accent"},
+          {"id": "s", "label": "Sort the whole file by it", "sub": "similar records land adjacent", "tone": "good"},
+          {"id": "w", "label": "Slide a window of w", "sub": "compare only within it", "tone": "good"},
+          {"id": "c", "label": "Cost is linear: n x (w-1)", "sub": "900,000, not 5 billion", "tone": "violet"},
+          {"id": "t", "label": "A first-letter typo still vanishes", "sub": "lexicographic order is unforgiving", "tone": "crit"},
+          {"id": "p", "label": "So run several key orderings", "sub": "and union the candidates", "tone": "violet"}],
+         "edges": [["k", "s"], ["s", "w"], ["w", "c"], ["w", "t"], ["t", "p"]]}}
+ ]
+}
