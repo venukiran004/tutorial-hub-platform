@@ -1,0 +1,45 @@
+{
+ "3.9": [
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Five bounds, five levels of information - and the price of each",
+         "caption": "**The bound tightens exactly as fast as you are willing to assume**, which is the whole shape of this lesson. Markov needs almost nothing and tells you almost nothing; Chernoff needs your variables to be indicators and pays fourteen orders of magnitude for it. **McDiarmid is the one that changes the kind of question you can ask**, because it drops the requirement that the quantity be an average at all \u2014 the empirical risk of a classifier concentrates by the same argument, with every constant equal to one over n.",
+         "left": "bound", "codeW": 150,
+         "vars": ["what you must know", "what it bounds"],
+         "steps": [
+          {"code": "Markov", "state": ["the mean; X non-negative", "a tail, very loosely"], "tone": "warn"},
+          {"code": "Chebyshev", "state": ["the variance as well", "a two-sided tail"], "changed": [0, 1], "tone": "warn"},
+          {"code": "Hoeffding", "state": ["each variable lies in a range", "an average of them"], "changed": [0, 1], "tone": "good"},
+          {"code": "Chernoff", "state": ["they are indicators", "the same, 1e14 tighter"], "changed": [0, 1], "tone": "accent"},
+          {"code": "McDiarmid", "state": ["one input moves f by c_i at most", "ANY function of them"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "The denominator is a sum of squares, and that is the lesson",
+         "caption": "**The same total sensitivity concentrated in one argument is far worse than spread across many**, because the sum of squares grows linearly while a single large constant is squared on its own. Ten inputs each able to move the output by 0.1 give a near-useless 0.449; one input able to move it by 0.1 with the rest unable to move it at all gives essentially zero. **A statistic with one influential input does not concentrate**, however much data you have \u2014 a statement about leverage rather than sample size, and the reason clipping buys a guarantee rather than merely tidier numbers.",
+         "left": "the constants", "codeW": 190,
+         "vars": ["sum of squares", "P(deviation of 0.2)"],
+         "steps": [
+          {"code": "ten c_i of 0.1 each", "state": ["0.1", "0.449 - nearly useless"], "tone": "crit"},
+          {"code": "one c_i of 0.1, nine of 0", "state": ["0.01", "0.000"], "changed": [0, 1], "tone": "good"},
+          {"code": "empirical risk, n=100", "state": ["1/100", "0.607 at t=0.05"], "changed": [0, 1], "tone": "crit"},
+          {"code": "empirical risk, n=10,000", "state": ["1/10,000", "1.93e-22 at t=0.05"], "changed": [0, 1], "tone": "good"},
+          {"code": "an unclipped mean", "state": ["no finite c_i", "NO BOUND AT ALL"], "changed": [0, 1], "tone": "violet"}]}}
+ ],
+
+ "5.7": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Six principles, and the door each one closes",
+         "caption": "**Only the first makes a positive claim**; the other five are statements about what a p-value is not. Read them as a list of the inferences people draw anyway \u2014 and note that principle one's qualifier does real work: the data are incompatible with the null *and every other modelling assumption*, so a violated independence assumption produces small p-values on its own. **The ASA wrote this in 2016 because misuse had become widespread enough to distort published science**, which is a stronger statement than any textbook caveat.",
+         "left": "principle", "codeW": 230,
+         "vars": ["the door it closes"],
+         "steps": [
+          {"code": "1. incompatibility with a MODEL", "state": ["the only positive claim - and the model is your assumptions too"], "tone": "good"},
+          {"code": "2. not P(hypothesis is true)", "state": ["P(data | H0) read as P(H0 | data)"], "changed": [0], "tone": "crit"},
+          {"code": "3. not a threshold to decide on", "state": ["0.049 treated as different from 0.051"], "changed": [0], "tone": "crit"},
+          {"code": "4. full reporting is required", "state": ["a p-value from a search, quoted as a test"], "changed": [0], "tone": "crit"},
+          {"code": "5. not an effect size", "state": ["significance read as magnitude"], "changed": [0], "tone": "crit"},
+          {"code": "6. alone, weak evidence", "state": ["p = 0.03 read as strong evidence"], "changed": [0], "tone": "crit"},
+          {"code": "so report instead", "state": ["estimate, interval, n - and the p-value fourth"], "changed": [0], "tone": "violet"}]}}
+ ]
+}

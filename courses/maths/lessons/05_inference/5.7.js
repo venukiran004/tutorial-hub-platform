@@ -30,6 +30,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "**A p-value is the probability of data at least this extreme, assuming the null hypothesis is true.** Read the conditioning bar carefully: it assumes the null and speaks about the data. Everyone wants the reverse, and the two are different quantities related by Bayes." },
 
     { t: "dl", items: [
@@ -102,6 +103,7 @@ stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
     { t: "h2", n: "02", text: "Five misreadings, each with a number", id: "misreadings" },
 
     {"kind": "matrix", "title": "Five misreadings, each with a number", "caption": "The middle column is what people infer; the right column is what is actually true. The last row is the one that costs most in practice — two studies either side of 0.05 are usually telling you the same thing.", "cols": ["the inference drawn", "what is actually the case"], "rows": ["p = 0.03", "p = 0.20", "p = 0.049 vs 0.051", "p = 0.001", "p = 0.04 and p = 0.06"], "cells": [[{"text": "97% chance the effect is real", "tone": "crit"}, "data this extreme is uncommon IF H₀ holds"], [{"text": "there is no effect", "tone": "crit"}, {"text": "absence of evidence; check the power", "tone": "warn"}], [{"text": "one works, one does not", "tone": "crit"}, {"text": "indistinguishable — α is a convention", "tone": "warn"}], [{"text": "a large, important effect", "tone": "crit"}, "a tiny effect in a huge sample does this"], [{"text": "they disagree", "tone": "crit"}, {"text": "they broadly agree", "tone": "good"}]], "t": "diagram", "id": "dg-5_7-02-1"},
+
 
 
 
@@ -264,6 +266,7 @@ np.percentile(null_ps, [5, 25, 50, 75, 95])
 
 
 
+
     { t: "p", text: "**P-hacking rarely involves anyone being dishonest.** It is the accumulation of ordinary analytic choices made *after* seeing the data — and six defensible decisions take the false-positive rate from 5% to 23% on data with no effect at all." },
 
     { t: "dl", items: [
@@ -364,7 +367,32 @@ np.mean([peeking(s) for s in range(4000)])          # 0.279
       caption: "**Six defensible choices take the false-positive rate from 5% to 23%.** The problem is not any single decision — it is that each was made conditional on the result."
     },
 
-    { t: "h2", n: "04", text: "Practice", id: "practice" },
+        { t: "h2", n: "04", text: "The six principles the profession wrote down", id: "asa" },
+
+    {"kind": "trace", "title": "Six principles, and the door each one closes", "caption": "**Only the first makes a positive claim**; the other five are statements about what a p-value is not. Read them as a list of the inferences people draw anyway — and note that principle one's qualifier does real work: the data are incompatible with the null *and every other modelling assumption*, so a violated independence assumption produces small p-values on its own. **The ASA wrote this in 2016 because misuse had become widespread enough to distort published science**, which is a stronger statement than any textbook caveat.", "left": "principle", "codeW": 230, "vars": ["the door it closes"], "steps": [{"code": "1. incompatibility with a MODEL", "state": ["the only positive claim - and the model is your assumptions too"], "tone": "good"}, {"code": "2. not P(hypothesis is true)", "state": ["P(data | H0) read as P(H0 | data)"], "changed": [0], "tone": "crit"}, {"code": "3. not a threshold to decide on", "state": ["0.049 treated as different from 0.051"], "changed": [0], "tone": "crit"}, {"code": "4. full reporting is required", "state": ["a p-value from a search, quoted as a test"], "changed": [0], "tone": "crit"}, {"code": "5. not an effect size", "state": ["significance read as magnitude"], "changed": [0], "tone": "crit"}, {"code": "6. alone, weak evidence", "state": ["p = 0.03 read as strong evidence"], "changed": [0], "tone": "crit"}, {"code": "so report instead", "state": ["estimate, interval, n - and the p-value fourth"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-5_7-04-3"},
+
+    { t: "p", text: "The misreadings in section 02 are common enough that in 2016 the American Statistical Association did something it had never done before: it issued a formal statement on a single statistical method. **Six principles, written because p-values were being misused widely enough to distort published science.** They are worth knowing verbatim, because each one closes a specific door — and because quoting them is the fastest way to end an argument about whether `p = 0.049` means something that `p = 0.051` does not." },
+
+    { t: "dl", items: [
+      ["P-values can indicate how incompatible the data are with a specified model", "This is the only positive claim in the list. A small p-value says the data would be surprising if the null and all the other modelling assumptions were true — and the phrase *and all the other assumptions* is doing real work, because a violated independence assumption produces small p-values on its own."],
+      ["P-values do not measure the probability that the hypothesis is true", "`P(data | H₀)` is not `P(H₀ | data)`, which is misreading one from section 02. Getting the second number requires a prior, which is what a Bayesian analysis supplies and a p-value does not."],
+      ["Scientific conclusions should not be based only on whether a p-value passes a threshold", "The statement is explicit that `p < 0.05` is a convention and not a law of nature. A decision rests on the effect size, the design, the data quality, prior evidence and the cost of being wrong — the p-value is one input."],
+      ["Proper inference requires full reporting and transparency", "Which is the anti-p-hacking principle from section 03, stated as an obligation: report how many hypotheses were examined, every decision about data collection, every analysis performed. A p-value from a search is not a p-value from a test."],
+      ["A p-value does not measure the size of an effect or the importance of a result", "Large n makes trivial effects significant; small n leaves large effects undetected. Significance and magnitude are different questions, and only one of them matters to a decision."],
+      ["By itself, a p-value does not provide a good measure of evidence", "Even taken at face value, `p = 0.03` is weak evidence against the null — far weaker than most readers assume. The statement recommends reporting confidence intervals, effect sizes and likelihood ratios alongside it."]
+    ] },
+
+    { t: "callout", kind: "insight", title: "What to do instead, in one line",
+      body: [
+        { t: "p", text: "Report the **estimate**, its **confidence interval**, and the **sample size** — and let the p-value be the fourth number rather than the only one. *\"Conversion rose by 0.4 percentage points, 95% CI [0.05, 0.75], n = 40,000\"* answers every question a decision-maker has: the direction, the plausible range, whether the range contains anything worth acting on, and how much data stands behind it. *\"The result was significant (p = 0.03)\"* answers none of them." }
+      ] },
+
+    { t: "callout", kind: "tradeoff", title: "The statement did not say to abandon p-values",
+      body: [
+        { t: "p", text: "That is a common overcorrection, and the ASA was careful about it: the complaint was about `p < 0.05` as a decision procedure, not about the quantity. A p-value remains a useful summary of one specific thing — how surprising the data would be under a stated model — and it is cheap to compute and widely understood. **The successor proposals, including abandoning thresholds entirely and reporting continuous evidence, are not settled either.** What is settled is that a single threshold on a single number is not enough to support a scientific claim, which is the part to carry into any analysis you do." }
+      ] },
+
+{ t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",

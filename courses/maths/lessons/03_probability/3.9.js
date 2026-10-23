@@ -32,6 +32,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "**A concentration inequality bounds how far a random quantity can stray from its expectation, without assuming a distribution.** The three standard ones trade assumptions for tightness: assume less and the bound is looser, but it cannot be wrong." },
 
     { t: "dl", items: [
@@ -314,13 +315,70 @@ cantelli_quantile_bound(94.2, 142.8) / observed_p99      # 2.47
     { t: "h2", n: "04", text: "Chernoff: tightening Hoeffding for sums of Bernoullis", id: "chernoff" },
 
     {"kind": "trace", "title": "The same question, two bounds, fourteen orders of magnitude apart", "caption": "**Ten thousand requests at a 1% error rate: can the error count double to 200?** Hoeffding knows only that each indicator lies between 0 and 1, so it must allow for a distribution piled at the ends, and returns a useless 0.27. Chernoff knows the mean is 100 and that doubling it takes a conspiracy, and returns 3e-15. **When your variables are indicators — a click, a failure, a cache hit — using Hoeffding leaves nearly all of the information on the table.** The multiplicative form is why: the bound scales with the mean rather than with the range.", "left": "bound on P(errors reach 200)", "codeW": 220, "vars": ["value", "what it uses"], "steps": [{"code": "expected errors", "state": ["100 of 10,000", "n times p"], "tone": "accent"}, {"code": "Hoeffding", "state": ["2.707e-01 - useless", "only the range, 0 to 1"], "changed": [0, 1], "tone": "crit"}, {"code": "Chernoff", "state": ["3.338e-15", "the mean as well"], "changed": [0, 1], "tone": "good"}, {"code": "the gap", "state": ["14 orders of magnitude", "the same event, both times"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_9-04-1"},
+
     {"t": "p", "text": "Hoeffding treats every bounded variable alike. When the variables are **Bernoulli** — a click, a failure, a cache hit — more is known, and the **Chernoff bound** uses it. It works by bounding the moment generating function and then optimising the free parameter, which is why the result is multiplicative in the mean rather than additive in the range."},
     {"t": "math", "tex": "P\\!\\left(X \\ge (1+\\delta)\\mu\\right) \\;\\le\\; \\exp\\!\\left(-\\frac{\\delta^{2}\\mu}{2+\\delta}\\right)"},
     {"t": "p", "text": "The practical difference is that the bound scales with μ. For a rare event the deviation you can rule out is **much** smaller than Hoeffding would allow, because a sum that is usually near zero cannot drift far without something unlikely happening."},
     {"t": "code", "lang": "python", "code": "import math\n\ndef hoeffding_tail(n, eps):\n    \"\"\"P(mean deviates by eps) for variables in [0, 1].\"\"\"\n    return 2 * math.exp(-2 * n * eps ** 2)\n\ndef chernoff_upper(mu, delta):\n    \"\"\"P(X >= (1+delta)*mu) for a sum of Bernoullis with mean mu.\"\"\"\n    return math.exp(-(delta ** 2) * mu / (2 + delta))\n\n# 10,000 requests, a 1% error rate: can the count double?\nn, pr = 10_000, 0.01\nmu = n * pr                       # 100 expected errors\nprint(\"expected errors        :\", mu)\nprint(\"Chernoff, P(>= 200)    : %.3e\" % chernoff_upper(mu, 1.0))\n# the same question put to Hoeffding, as a deviation in the MEAN\nprint(\"Hoeffding, same event  : %.3e\" % hoeffding_tail(n, pr))", "title": "the same event, two bounds", "out": "expected errors        : 100.0\nChernoff, P(>= 200)    : 3.338e-15\nHoeffding, same event  : 2.707e-01"},
     {"t": "p", "text": "**Fourteen orders of magnitude apart on the same question.** Hoeffding's view of a variable in `[0, 1]` has to allow for a distribution concentrated at the ends; Chernoff knows the mean is 0.01 and that doubling it requires a conspiracy. When your variables are indicators, using Hoeffding is leaving almost all of the information on the table."},
     {"t": "callout", "kind": "insight", "title": "And this is what makes PAC learning work", "body": [{"t": "p", "text": "**PAC learning** — probably approximately correct — asks how many samples are needed before a hypothesis that fits the training data is guaranteed, with probability at least 1 − δ, to have true error below ε. The answer comes straight from a concentration bound plus the union bound over the hypothesis class:"}, {"t": "math", "tex": "m \\;\\ge\\; \\frac{1}{\\varepsilon}\\left(\\ln|H| + \\ln\\frac{1}{\\delta}\\right)"}, {"t": "p", "text": "The shape is the lesson. Sample complexity grows **linearly** in the log of the hypothesis-class size and only **logarithmically** in the confidence δ — so buying another nine of confidence is cheap, and a richer model class is what actually costs you data. That is the formal version of the intuition that capacity has to be paid for in examples."}]},
-{ t: "h2", n: "05", text: "Practice", id: "practice" },
+    { t: "h2", n: "05", text: "McDiarmid: when the quantity is not a mean", id: "mcdiarmid" },
+
+    {"kind": "trace", "title": "The denominator is a sum of squares, and that is the lesson", "caption": "**The same total sensitivity concentrated in one argument is far worse than spread across many**, because the sum of squares grows linearly while a single large constant is squared on its own. Ten inputs each able to move the output by 0.1 give a near-useless 0.449; one input able to move it by 0.1 with the rest unable to move it at all gives essentially zero. **A statistic with one influential input does not concentrate**, however much data you have — a statement about leverage rather than sample size, and the reason clipping buys a guarantee rather than merely tidier numbers.", "left": "the constants", "codeW": 190, "vars": ["sum of squares", "P(deviation of 0.2)"], "steps": [{"code": "ten c_i of 0.1 each", "state": ["0.1", "0.449 - nearly useless"], "tone": "crit"}, {"code": "one c_i of 0.1, nine of 0", "state": ["0.01", "0.000"], "changed": [0, 1], "tone": "good"}, {"code": "empirical risk, n=100", "state": ["1/100", "0.607 at t=0.05"], "changed": [0, 1], "tone": "crit"}, {"code": "empirical risk, n=10,000", "state": ["1/10,000", "1.93e-22 at t=0.05"], "changed": [0, 1], "tone": "good"}, {"code": "an unclipped mean", "state": ["no finite c_i", "NO BOUND AT ALL"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_9-05-3"},
+
+    {"kind": "trace", "title": "Five bounds, five levels of information - and the price of each", "caption": "**The bound tightens exactly as fast as you are willing to assume**, which is the whole shape of this lesson. Markov needs almost nothing and tells you almost nothing; Chernoff needs your variables to be indicators and pays fourteen orders of magnitude for it. **McDiarmid is the one that changes the kind of question you can ask**, because it drops the requirement that the quantity be an average at all — the empirical risk of a classifier concentrates by the same argument, with every constant equal to one over n.", "left": "bound", "codeW": 150, "vars": ["what you must know", "what it bounds"], "steps": [{"code": "Markov", "state": ["the mean; X non-negative", "a tail, very loosely"], "tone": "warn"}, {"code": "Chebyshev", "state": ["the variance as well", "a two-sided tail"], "changed": [0, 1], "tone": "warn"}, {"code": "Hoeffding", "state": ["each variable lies in a range", "an average of them"], "changed": [0, 1], "tone": "good"}, {"code": "Chernoff", "state": ["they are indicators", "the same, 1e14 tighter"], "changed": [0, 1], "tone": "accent"}, {"code": "McDiarmid", "state": ["one input moves f by c_i at most", "ANY function of them"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_9-05-2"},
+
+    { t: "p", text: "Hoeffding and Chernoff both bound a **sum or an average**. A great many quantities you actually care about are neither: the empirical risk of a classifier, the width of a bootstrap interval, the number of distinct values a hash function produces. **McDiarmid's inequality** covers all of them, and the condition it asks for is one you can usually check by inspection." },
+
+    { t: "p", text: "The condition is **bounded differences**. A function of independent variables satisfies it with constants cᵢ when changing the i-th argument alone, with everything else held fixed, cannot move the output by more than cᵢ:" },
+
+    { t: "math", tex: "\bigl|f(x_1,\dots,x_i,\dots,x_n) - f(x_1,\dots,x_i',\dots,x_n)\bigr| \;\le\; c_i" },
+
+    { t: "p", text: "Given that, the function concentrates around its own expectation:" },
+
+    { t: "math", tex: "P\bigl(f - \mathbb{E}[f] \ge t\bigr) \;\le\; \exp\!\left(-\frac{2t^{2}}{\sum_i c_i^{2}}\right)" },
+
+    { t: "p", text: "**Hoeffding is the special case.** Put f equal to the mean of n variables in `[0, 1]`: changing one of them moves the mean by at most `1/n`, so every cᵢ is `1/n`, the sum of squares is `1/n`, and the exponent collapses to `-2nt²` — which is the Hoeffding bound from section 02. Nothing new has been assumed; the statement has simply stopped insisting the quantity be an average." },
+
+    { t: "code", lang: "python", title: "the empirical risk of a classifier, bounded without knowing the classifier",
+      code: `import math
+
+def mcdiarmid_tail(cs, t):
+    """P(f - E[f] >= t) given bounded-difference constants cs."""
+    return math.exp(-2 * t ** 2 / sum(c ** 2 for c in cs))
+
+# Empirical risk on n samples: swapping one sample changes the average loss
+# by at most 1/n, whatever the classifier is. So every c_i = 1/n.
+for n in (100, 1_000, 10_000):
+    cs = [1.0 / n] * n
+    print("n=%-6d P(risk understated by 0.05) <= %.2e" % (n, mcdiarmid_tail(cs, 0.05)))
+
+# And the shape of the bound when ONE argument dominates:
+print()
+print("ten equal c_i of 0.1   :", "%.3f" % mcdiarmid_tail([0.1] * 10, 0.2))
+print("one c_i of 0.1, nine 0 :", "%.3f" % mcdiarmid_tail([0.1] + [0.0] * 9, 0.2))`,
+      out: `n=100    P(risk understated by 0.05) <= 6.07e-01
+n=1000   P(risk understated by 0.05) <= 6.74e-03
+n=10000  P(risk understated by 0.05) <= 1.93e-22
+
+ten equal c_i of 0.1   : 0.449
+one c_i of 0.1, nine 0 : 0.000` },
+
+    { t: "p", text: "The first block is the formal reason a held-out estimate is trustworthy: **the bound does not mention the classifier at all.** Whatever model produced the predictions, swapping one test sample moves the average loss by at most `1/n`, so the estimate concentrates — which is why a test set of ten thousand gives a number you can quote and a test set of a hundred does not." },
+
+    { t: "p", text: "The second block is the part worth remembering about the `∑cᵢ²` denominator. **Sensitivity concentrated in one argument is far worse than the same total spread across many.** Ten arguments each able to move the output by 0.1 give a nearly useless bound; one argument able to move it by 0.1 with the rest unable to move it at all gives a bound of essentially zero. A statistic with one influential input does not concentrate, and that is a statement about leverage rather than about sample size." },
+
+    { t: "callout", kind: "insight", title: "The condition is a design question, not just an analysis one",
+      body: [
+        { t: "p", text: "Writing down the cᵢ for your own statistic is often the useful part, because a quantity with no finite bounded difference has no McDiarmid bound — and that is usually telling you something true. An unclipped mean has no bound, because one outlier can move it arbitrarily far; clip the loss at 1 and every cᵢ becomes `1/n`. **Trimming, clipping and winsorising are not only robustness tricks: they are what buys you a concentration guarantee in the first place.**" }
+      ] },
+
+    { t: "callout", kind: "tradeoff", title: "Which of the five to reach for",
+      body: [
+        { t: "p", text: "**Markov** when you know only the mean and the variable is non-negative. **Chebyshev** when you also know the variance. **Hoeffding** for an average of bounded variables, which is most monitoring questions. **Chernoff** when those variables are indicators, where it is worth fourteen orders of magnitude. **McDiarmid** when the quantity is not an average at all. They are the same idea at five levels of information, and the bound tightens exactly as fast as you are willing to assume." }
+      ] },
+
+{ t: "h2", n: "06", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Build",
