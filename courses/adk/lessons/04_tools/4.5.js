@@ -129,7 +129,7 @@ def delete_records(query: str, tool_context: ToolContext) -> dict:
 
     { t: "diagram", kind: "matrix", title: "Which wrapper solves which problem",
       caption: "They compose: a long-running tool can also require confirmation, and an AgentTool can wrap an agent whose own tools require confirmation.",
-      rows: ["A capability with many tools of its own", "Work that takes minutes or days", "An action that needs approval", "A specialist that should talk to the user"],
+      rows: ["A capability with own tools", "Work taking minutes or days", "An action needing approval", "A user-facing specialist"],
       cols: ["wrapper"],
       cells: [
         [{ text: "AgentTool", tone: "accent" }],

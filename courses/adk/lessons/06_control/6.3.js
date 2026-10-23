@@ -40,7 +40,9 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
     { t: "h2", n: "02", text: "Saving from a tool", id: "saving" },
 
-    {"kind": "cells", "title": "One filename, versions assigned by the service", "caption": "Executed: the same tool run twice returned 0 and then 1, and list_versions reported both. load_artifact with no version gives the newest; passing a version gives that one.", "items": ["report.md v0", "report.md v1", "report.md v2"], "highlight": [2], "tone": "accent", "negative": false, "t": "diagram", "id": "dg-6_3-02-0"},
+    {"kind": "cells", "title": "One filename, versions assigned by the service", "caption": "Executed: the same tool run twice returned 0 and then 1, and list_versions reported both. load_artifact with no version gives the newest; passing a version gives that one.", "items": ["v0", "v1", "v2"], "highlight": [2], "tone": "accent", "negative": false, "t": "diagram", "id": "dg-6_3-02-0"},
+
+
 
 
 
@@ -90,6 +92,8 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
     { t: "h2", n: "04", text: "artifact_delta", id: "delta" },
 
     {"kind": "flow", "title": "A save leaves a trail", "caption": "The same mechanism as state_delta, applied to files. This is what makes 'which turn produced the report the user is complaining about' answerable from the transcript alone.", "cols": 4, "nodes": [{"id": "t", "label": "save_artifact(...)", "sub": "await, inside the tool", "tone": "accent"}, {"id": "s", "label": "Artifact store", "sub": "bytes, versioned", "tone": "violet"}, {"id": "d", "label": "artifact_delta", "sub": "{'report.md': 1}", "tone": "good"}, {"id": "e", "label": "On the event", "sub": "in the session, auditable", "tone": "warn"}], "edges": [["t", "s"], ["s", "d"], ["d", "e"]], "t": "diagram", "id": "dg-6_3-04-1"},
+
+
 
 
 

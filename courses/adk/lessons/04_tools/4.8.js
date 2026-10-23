@@ -122,12 +122,12 @@ runner = Runner(agent=root, app_name="app",
 
     { t: "diagram", kind: "matrix", title: "How tool credentials actually escape",
       caption: "None of these is exotic. All three have happened to people who thought about auth carefully and then logged a request body.",
-      rows: ["A credential as a tool parameter", "A token in a tool's return value", "Logging args or responses wholesale"],
+      rows: ["A credential as a parameter", "A token in a return value", "Logging args or responses"],
       cols: ["Where it ends up", "Fix"],
       cells: [
-        [{ text: "the declaration, the conversation, the session, the trace", tone: "crit" }, { text: "credentials come from env, the credential service or tool_context", tone: "good" }],
-        [{ text: "the model's context, and every later model call", tone: "crit" }, { text: "return a status, never the credential", tone: "good" }],
-        [{ text: "your log aggregator, indefinitely", tone: "crit" }, { text: "log named fields, never **args or the whole response", tone: "good" }]
+        [{ text: "the declaration and the conversation", tone: "crit" }, { text: "env, the credential service or tool_context", tone: "good" }],
+        [{ text: "the context, and every later call", tone: "crit" }, { text: "return a status, never the credential", tone: "good" }],
+        [{ text: "your log aggregator, indefinitely", tone: "crit" }, { text: "log named fields, never the whole payload", tone: "good" }]
       ] },
 
     { t: "exercise", kind: "design", title: "Three tools, three auth designs", difficulty: "advanced", minutes: 20,

@@ -36,7 +36,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Concurrency, measured", id: "measured" },
 
-    {"kind": "timeline", "title": "The same two tools, two shapes of turn", "caption": "Measured: 0.41s against 0.83s. The model decides which shape you get by emitting one function call or two in a single response — which is an argument for tools the model can ask for all at once.", "span": 1, "tick": 0.2, "lanes": [{"label": "One response", "bars": [[0, 0.4, "slow_a", "good"], [0, 0.4, "slow_b", "good"], [0.4, 0.41, "", "accent"]]}, {"label": "Sequential", "bars": [[0, 0.4, "slow_a", "warn"], [0.4, 0.42, "model", "accent"], [0.42, 0.82, "slow_b", "warn"]]}], "t": "diagram", "id": "dg-10_1-02-0"},
+    {"kind": "timeline", "title": "The same two tools, two shapes of turn", "caption": "Measured: 0.41s against 0.83s. The model decides which shape you get by emitting one function call or two in a single response — which is an argument for tools the model can ask for all at once.", "span": 1, "tick": 0.2, "lanes": [{"label": "One response", "bars": [[0, 0.4, "slow_a", "good"], [0, 0.4, "slow_b", "good"], [0.4, 0.41, "", "accent"]]}, {"label": "Sequential", "bars": [[0, 0.4, "slow_a", "warn"], [0.4, 0.42, "", "accent"], [0.42, 0.82, "slow_b", "warn"]]}], "t": "diagram", "id": "dg-10_1-02-0"},
+
+
 
 
 

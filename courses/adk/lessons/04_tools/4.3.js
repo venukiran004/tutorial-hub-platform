@@ -104,7 +104,7 @@ async def slow_b(x: int) -> dict:
     { t: "diagram", kind: "steps", title: "Four ways to remove a round trip",
       caption: "In order of how often they apply. The first two are free; the third is a design change; the fourth is a trade.",
       items: [
-        { label: "Make independent tools independent", desc: "if tool B does not need tool A's output, do not make its parameters come from A — the model can then ask for both at once", tone: "accent" },
+        { label: "Make independent tools independent", desc: "if tool B does not need A's output, do not make its parameters come from A — the model can then ask for both at once", tone: "accent" },
         { label: "Fix the sequence when it is fixed", desc: "a SequentialAgent runs three steps with no routing calls at all (lesson 2.3)", tone: "good" },
         { label: "Return the answer from the tool", desc: "skip_summarization removes the final summarising call", tone: "warn" },
         { label: "Do more in one tool", desc: "one tool that fetches and filters beats two chained calls — at the cost of a less composable toolbox", tone: "violet" }

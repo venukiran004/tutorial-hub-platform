@@ -153,15 +153,17 @@ runner = InMemoryRunner(node=wf, app_name="wfapp")      # note: node=, not agent
 
 
 
+
+
     { t: "diagram", kind: "matrix", title: "Which mechanism for which property",
       caption: "Read down the column you care about. Most systems use workflow agents for the spine, LLM transfer for the one genuinely content-dependent branch, and a custom agent or graph for the awkward part that remains.",
       rows: ["Workflow agents", "Custom BaseAgent", "Workflow graph", "LLM transfer"],
       cols: ["deterministic", "arbitrary branching", "model calls", "testability"],
       cells: [
-        [{ text: "yes", tone: "good" }, { text: "sequence, fan-out, loop only", tone: "warn" }, { text: "none of its own", tone: "good" }, { text: "easy", tone: "good" }],
-        [{ text: "yes", tone: "good" }, { text: "anything Python can express", tone: "good" }, { text: "none of its own", tone: "good" }, { text: "easy — it is a function", tone: "good" }],
-        [{ text: "yes", tone: "good" }, { text: "conditional edges, joins, sub-graphs", tone: "good" }, { text: "none of its own", tone: "good" }, { text: "easy", tone: "good" }],
-        [{ text: "no", tone: "crit" }, { text: "whatever the model decides", tone: "warn" }, { text: "one per decision", tone: "crit" }, { text: "needs an evalset", tone: "warn" }]
+        [{ text: "yes", tone: "good" }, { text: "sequence, fan-out", tone: "warn" }, { text: "none of its own", tone: "good" }, { text: "easy", tone: "good" }],
+        [{ text: "yes", tone: "good" }, { text: "anything Python can", tone: "good" }, { text: "none of its own", tone: "good" }, { text: "easy: a function", tone: "good" }],
+        [{ text: "yes", tone: "good" }, { text: "edges, joins, nesting", tone: "good" }, { text: "none of its own", tone: "good" }, { text: "easy", tone: "good" }],
+        [{ text: "no", tone: "crit" }, { text: "the model decides", tone: "warn" }, { text: "one per decision", tone: "crit" }, { text: "needs an evalset", tone: "warn" }]
       ] },
 
     { t: "exercise", kind: "practice", title: "Replace a coordinator with code", difficulty: "advanced", minutes: 20,

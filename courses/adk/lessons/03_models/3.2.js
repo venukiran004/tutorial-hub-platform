@@ -84,7 +84,7 @@ LLMRegistry.register(MyLlm)`,
 
     { t: "diagram", kind: "matrix", title: "Where provider portability actually breaks",
       caption: "The framework ports; the behaviour does not. An agent tuned on one model will need its instruction, and sometimes its tool design, revisited on another.",
-      rows: ["Agent, runner, sessions, events", "Tool calling", "Structured output", "Thinking / reasoning", "Multimodal input", "Built-in server-side tools"],
+      rows: ["Agent, runner, sessions", "Tool calling", "Structured output", "Thinking / reasoning", "Multimodal input", "Built-in server-side tools"],
       cols: ["Ports cleanly?"],
       cells: [
         [{ text: "yes — framework code is provider-agnostic", tone: "good" }],
