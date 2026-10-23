@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "15.10", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.2", "i8.3", "i8.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.2", "i8.3", "i8.4"],
 
     modules: [
 
@@ -621,10 +621,33 @@
             keywords: ["llm", "genai", "streaming", "structured output", "tokens", "retry", "cost", "rag"] },
           { id: "15.9", title: "Async and Batching for LLM Workloads", difficulty: "expert", minutes: 36, tier: "adv",
             summary: "Concurrency limits, request batching, backpressure, caching and timeouts for provider-bound workloads.",
-            keywords: ["async", "batching", "rate limit", "backpressure", "semaphore", "cache", "timeout"] },
-          { id: "15.10", title: "Disaster Recovery for ML, Agentic and RAG Systems", difficulty: "expert", minutes: 42, tier: "adv",
-            summary: "Per-asset RTO and RPO, rebuild against restore for derived assets, a provider outage you cannot fail over, resuming an agent without repeating its side effects, and a restore verified by evaluation.",
-            keywords: ["disaster recovery", "rto", "rpo", "backup", "vector index", "idempotency", "checkpointer", "degraded mode", "game day"] }
+            keywords: ["async", "batching", "rate limit", "backpressure", "semaphore", "cache", "timeout"] }
+        ]
+      },
+
+      {
+        id: "recovery",
+        short: "L16",
+        phase: "Phase 5 \u00b7 Applied Python",
+        title: "Disaster Recovery for AI Systems",
+        blurb: "Five stages at which a failure can be mitigated, applied to the four pipelines you actually run.",
+        outcome: "You can write a recovery plan with per-asset numbers, name the mitigation available at each stage of an ML, RAG, agentic or Python pipeline, and verify a restore with evaluation rather than a health check.",
+        lessons: [
+          { id: "16.1", title: "The Recovery Framework: Stages, Assets and Rehearsal", difficulty: "expert", minutes: 42, tier: "adv",
+            summary: "The five mitigation stages, per-asset RTO and RPO, rebuild against restore for derived assets, the provider you cannot fail over, and the rehearsal that makes an RTO real.",
+            keywords: ["disaster recovery", "rto", "rpo", "prevent", "detect", "contain", "recover", "verify", "game day"] },
+          { id: "16.2", title: "Recovery for ML Systems, Stage by Stage", difficulty: "expert", minutes: 38, tier: "adv",
+            summary: "Ingestion to monitoring: freshness assertions, training-serving skew, provenance with git_dirty, golden predictions, and output drift as the signal that needs no labels.",
+            keywords: ["ml pipeline", "freshness", "skew", "feature store", "provenance", "golden predictions", "drift", "registry"] },
+          { id: "16.3", title: "Recovery for RAG Systems, Stage by Stage", difficulty: "expert", minutes: 38, tier: "adv",
+            summary: "Source to answer: the one irreplaceable stage, build fingerprints, the deprecated embedding model that freezes an index, canary recall, blue-green index builds, and retrieval-only degradation.",
+            keywords: ["rag", "vector index", "embedding", "canary recall", "blue-green", "snapshot", "corpus manifest", "degraded mode"] },
+          { id: "16.4", title: "Recovery for Agentic Systems, Stage by Stage", difficulty: "expert", minutes: 40, tier: "adv",
+            summary: "The one stage that changes the world: run-scoped idempotency keys, a ledger restored with the checkpointer, in-flight policy by kind, and the limits that catch an agent that fails by continuing.",
+            keywords: ["agent", "checkpointer", "idempotency", "ledger", "dead letter", "approval", "loop guard", "handoff"] },
+          { id: "16.5", title: "Recovery for Python Applications, Stage by Stage", difficulty: "advanced", minutes: 36, tier: "adv",
+            summary: "Dependencies to migrations: hashed lock files, deploying by digest, configuration validated at import, bounded pools, and expand-and-contract so a code rollback is always available.",
+            keywords: ["rollback", "digest", "lock file", "configuration", "connection pool", "migration", "expand contract", "deploy"] }
         ]
       },
 
