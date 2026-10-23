@@ -29,6 +29,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "From a resource name to something you can call",
       code: `import vertexai
 from vertexai import agent_engines
@@ -43,6 +45,8 @@ print(remote.display_name, remote.update_time)`,
     { t: "p", text: "The object that comes back exposes the operations the deployment registered, which lesson 12.2 printed: session create, get, list and delete, memory add and search, and the streaming query in its several modes. Everything below uses exactly those names, and everything below was executed — against a local `AdkApp`, which is the same wrapper the remote engine runs, so the call signatures and the shapes of what comes back are real rather than recalled." },
 
     { t: "h2", n: "02", text: "Sessions are remote too", id: "sessions" },
+
+    {"kind": "trace", "title": "The same six fields, as a dictionary", "caption": "**Everything crossing the deployment boundary is JSON, which is the running theme of this lesson** — the session comes back as a dict rather than a `Session` object, though the keys are the same six fields the local store has, because it is the same session model living in a managed store. **And the trap is the one that reads as a model problem:** `stream_query` accepts a call with no `session_id` and works, as a single isolated turn, every time. An application that forgets to keep the id produces an agent that cannot remember the previous sentence.", "left": "what you get back", "codeW": 200, "vars": ["note"], "steps": [{"code": "a dict, not a Session", "state": ["everything over the boundary is JSON"], "tone": "violet"}, {"code": "id, app_name, user_id", "state": ["the same address as the local store"], "changed": [0], "tone": "good"}, {"code": "state, events, last_update_time", "state": ["the same six fields from lesson 5.1"], "changed": [0], "tone": "good"}, {"code": "async_create_session(state=...)", "state": ["starting state works remotely too"], "changed": [0], "tone": "accent"}, {"code": "and the sync create_session", "state": ["now warns it is deprecated"], "changed": [0], "tone": "warn"}, {"code": "stream_query with no session_id", "state": ["WORKS - as one isolated turn, every time"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-12_3-02-1"},
 
     { t: "code", lang: "python", title: "Creating a conversation on the deployed agent",
       code: `s = await remote.async_create_session(user_id="u1", state={"units": "metric"})
@@ -59,6 +63,8 @@ print(s["id"][:8], s["state"])`,
       body: [{ t: "p", text: "`stream_query` will accept a call without `session_id` and it will work — as a single isolated turn, every time. Applications that forget to keep the id produce an agent that cannot remember the previous sentence, and the bug looks like a model problem rather than a client problem. Create a session when a conversation starts, store its id next to your own conversation record, and pass it on every call." }] },
 
     { t: "h2", n: "03", text: "Streaming a turn", id: "stream" },
+
+    {"kind": "flow", "title": "The full event stream crosses the boundary, as snake_case dicts", "caption": "**The tool call and the tool result come across, not only the answer**, which is what makes a real interface possible: you can show “checking the weather…” while the tool runs and you have the audit trail client-side. **The cost is that locally you write `event.content.parts[0].function_call.name` and remotely `ev[\"content\"][\"parts\"][0][\"function_call\"][\"name\"]`.** Write one small adapter and keep it in one file — the alternative is dictionary indexing spread through the application, breaking silently on a part kind you did not expect.", "cols": 3, "nodes": [{"id": "c", "label": "function_call arrives", "sub": "show 'checking the weather...'", "tone": "violet"}, {"id": "r", "label": "function_response arrives", "sub": "the audit trail, client-side", "tone": "good"}, {"id": "t", "label": "text arrives", "sub": "the answer to render", "tone": "good"}, {"id": "d", "label": "All of it as plain dicts", "sub": "snake_case keys, no Event objects", "tone": "accent"}, {"id": "a", "label": "One adapter, in one file", "sub": "or indexing spreads everywhere", "tone": "crit"}], "edges": [["c", "d"], ["r", "d"], ["t", "d"], ["d", "a"]], "t": "diagram", "id": "dg-12_3-03-2"},
 
     { t: "code", lang: "python", title: "The call your application actually makes",
       code: `async for ev in remote.async_stream_query(
@@ -92,6 +98,8 @@ print(s["id"][:8], s["state"])`,
 
     { t: "h2", n: "04", text: "Reading back a conversation", id: "readback" },
 
+    {"kind": "trace", "title": "Four events for one turn - and whose side the transcript is on", "caption": "**Exactly the shape traced locally in lesson 5.1**, which is the point: nothing about the event model changes when the agent is deployed. **The consequence is in the last row and it is an architectural one.** “Which conversations preceded a refund” is a join you can write in SQL when you own the session database, and an export when you do not — so the managed store is convenient right up to the moment you want to analyse the transcripts, which is worth knowing before you choose.", "left": "call", "codeW": 190, "vars": ["result"], "steps": [{"code": "async_list_sessions(user_id)", "state": ["['046f83b8'] - the ids for that user"], "tone": "good"}, {"code": "async_get_session(...)", "state": ["events: 4, state: {'units': 'metric'}"], "changed": [0], "tone": "good"}, {"code": "the four events", "state": ["user message, call, response, answer"], "changed": [0], "tone": "accent"}, {"code": "the same shape as local", "state": ["nothing about the event model changed"], "changed": [0], "tone": "accent"}, {"code": "but the transcript lives there", "state": ["a SQL join if you own the DB; an export if not"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-12_3-04-3"},
+
     { t: "code", lang: "python", title: "Listing and fetching, executed",
       code: `listed = await remote.async_list_sessions(user_id="u1")
 back = await remote.async_get_session(user_id="u1", session_id=sid)
@@ -103,6 +111,8 @@ async_get_session -> events: 4 | state: {'units': 'metric'}` },
     { t: "p", text: "Four events for one tool-using turn — the user message, the call, the response, the answer — exactly the shape lesson 5.1 traced locally. The transcript is on the deployment's side, which is convenient until you want to analyse it: 'which conversations preceded a refund' is a join you can write in SQL when you own the session database, and an export when you do not." },
 
     { t: "h2", n: "05", text: "The same thing over REST", id: "rest" },
+
+    {"kind": "flow", "title": "Any language, over HTTPS, by naming the method", "caption": "**The engine is a Vertex AI resource, so every registered operation is reachable by naming it in `class_method` and passing that method's keyword arguments as `input`.** The path says `reasoningEngines`, which is Agent Engine's original name and the detail that makes a hand-written URL work. **Session operations use `:query` the same way** — `class_method: \"async_create_session\"` — and the `class_method` values come from `register_operations()`, which is the part people usually guess at.", "cols": 3, "nodes": [{"id": "e", "label": "The engine is a Vertex AI resource", "sub": "path type: reasoningEngines", "tone": "accent"}, {"id": "s", "label": ":streamQuery?alt=sse for a turn", "sub": "SSE straight to a non-Python caller", "tone": "good"}, {"id": "q", "label": ":query for the rest", "sub": "sessions, memory", "tone": "good"}, {"id": "m", "label": "class_method names the operation", "sub": "from register_operations()", "tone": "violet"}, {"id": "i", "label": "input carries its keyword arguments", "sub": "user_id, session_id, message", "tone": "violet"}], "edges": [["e", "s"], ["e", "q"], ["s", "m"], ["q", "m"], ["m", "i"]], "t": "diagram", "id": "dg-12_3-05-4"},
 
     { t: "p", text: "Not every caller is Python. The engine is a Vertex AI resource, so every registered operation is reachable over HTTPS by naming the method and passing its arguments — the resource type in the path is `reasoningEngines`, Agent Engine's original name." },
 
@@ -147,6 +157,8 @@ curl -X POST \\
       edges: [["b", "a", "HTTPS"], ["a", "e", "IAM token"], ["e", "t"]] },
 
     { t: "h2", n: "07", text: "When not to call it this way", id: "alternatives" },
+
+    {"kind": "trace", "title": "Five callers, and only two of them should use a query call", "caption": "**Another agent gets A2A rather than a query call**, because agent-to-agent has its own protocol, agent card and task model — richer than passing a message. **And tests should not depend on a deploy**, which is the row that most changes how a team works day to day. **The discipline that makes all of this cheap is one client module:** the resource name, session creation, the event adapter and two or three functions your application calls. It gives you a seam for tests and makes a later move to Cloud Run touch one file instead of every handler.", "left": "caller", "codeW": 170, "vars": ["route", "why"], "steps": [{"code": "your own backend", "state": ["the Python SDK", "typed, streaming, sessions included"], "tone": "good"}, {"code": "a non-Python service", "state": ["REST with class_method", "same operations, no SDK"], "changed": [0, 1], "tone": "good"}, {"code": "another agent", "state": ["A2A", "its own card and task model"], "changed": [0, 1], "tone": "violet"}, {"code": "a test suite", "state": ["a LOCAL runner", "tests must not need a deploy"], "changed": [0, 1], "tone": "crit"}, {"code": "a batch job", "state": ["a local runner, or a queue", "a turn at a time is the wrong shape"], "changed": [0, 1], "tone": "warn"}, {"code": "and all of them through", "state": ["one client module", "a seam for tests, one file to move"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_3-07-5"},
 
     { t: "table", head: ["Caller", "Best route", "Why"],
       rows: [

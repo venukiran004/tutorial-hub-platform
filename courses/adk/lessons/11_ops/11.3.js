@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The fake model", id: "fake" },
 
+    {"kind": "flow", "title": "Sixty lines, and the half of the value people skip", "caption": "**Recording the requests lets you assert on what the framework *sent*, which is where most interesting behaviour lives:** did the instruction interpolate state correctly, was the tool declared, did history grow as expected, did `include_contents=\"none\"` really send nothing. **Several measurements in this course came from reading `seen` rather than the output** — including the one showing that a long conversation resends everything. And because it subclasses `BaseLlm`, ADK treats it as a model in every respect: nothing else is stubbed.", "cols": 3, "nodes": [{"id": "s", "label": "class FakeLlm(BaseLlm)", "sub": "ADK cannot tell the difference", "tone": "accent"}, {"id": "r", "label": "script: the responses to replay", "sub": "text(...) and call(...)", "tone": "good"}, {"id": "e", "label": "seen: the requests it received", "sub": "half the value, and usually skipped", "tone": "violet"}, {"id": "a", "label": "Assert on what was SENT", "sub": "the instruction, the declarations, the history", "tone": "violet"}, {"id": "n", "label": "Nothing else is stubbed", "sub": "real runner, real sessions, real callbacks", "tone": "good"}], "edges": [["s", "r"], ["s", "e"], ["e", "a"], ["s", "n"]], "t": "diagram", "id": "dg-11_3-01-0"},
+
+
     { t: "code", lang: "python", title: "fake.py — sixty lines that make agents testable",
       code: `from google.adk.models import BaseLlm
 from google.adk.models.llm_response import LlmResponse
@@ -69,7 +72,9 @@ class FakeLlm(BaseLlm):
 
     { t: "h2", n: "03", text: "A test that is worth having", id: "test" },
 
-    {"kind": "matrix", "title": "Assert on the things with consequences", "caption": "The text is a string you scripted yourself, so asserting on it tests nothing and breaks on rewording. Everything else here stays true when someone improves the phrasing.", "cols": ["Worth asserting", "Why"], "rows": ["Tool called + args", "state delta", "is_final_response()", "The assembled instruction", "The answer's wording"], "cells": [[true, {"text": "what actually happened", "tone": "good"}], [true, {"text": "what persisted", "tone": "good"}], [true, {"text": "what a client renders", "tone": "good"}], [true, {"text": "catches a renamed state key", "tone": "accent"}], [false, {"text": "you wrote the script", "tone": "crit"}]], "t": "diagram", "id": "dg-11_3-03-0"},
+    {"kind": "matrix", "title": "Assert on the things with consequences", "caption": "The text is a string you scripted yourself, so asserting on it tests nothing and breaks on rewording. Everything else here stays true when someone improves the phrasing.", "cols": ["Worth asserting", "Why"], "rows": ["Tool called + args", "state delta", "is_final_response()", "The assembled instruction", "The answer's wording"], "cells": [[true, {"text": "what actually happened", "tone": "good"}], [true, {"text": "what persisted", "tone": "good"}], [true, {"text": "what a client renders", "tone": "good"}], [true, {"text": "catches a renamed state key", "tone": "accent"}], [false, {"text": "you wrote the script", "tone": "crit"}]], "t": "diagram", "id": "dg-11_3-03-3"},
+
+
 
 
 
@@ -106,6 +111,9 @@ async def test_refund_tool_writes_state_and_is_blocked_over_limit():
 
     { t: "h2", n: "04", text: "What to test", id: "what" },
 
+    {"kind": "trace", "title": "Seven behaviours worth a test, and the index that catches everyone", "caption": "**The script index advances per model call, not per turn:** a turn with one tool call consumes two entries — the response requesting the tool and the response answering it. Give a script too few and later calls fall off the end, which shows up as an agent saying something nonsensical rather than as a clean failure. **When a test behaves strangely, count the model calls first.**", "left": "test", "codeW": 170, "vars": ["how"], "steps": [{"code": "a tool's own logic", "state": ["call the function directly - no agent needed"], "tone": "good"}, {"code": "a guardrail blocks", "state": ["script the forbidden call; assert the body did not run"], "changed": [0], "tone": "good"}, {"code": "state scopes behave", "state": ["two sessions, one user; assert what persisted"], "changed": [0], "tone": "accent"}, {"code": "a pipeline passes data", "state": ["assert the later agent's request contains it"], "changed": [0], "tone": "accent"}, {"code": "routing, and error handling", "state": ["assert the final event's author; the converted result"], "changed": [0], "tone": "accent"}, {"code": "approvals", "state": ["assert the request, send approval, assert it ran"], "changed": [0], "tone": "violet"}, {"code": "and the script index", "state": ["PER MODEL CALL - one tool call needs two entries"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-11_3-04-1"},
+
+
     { t: "table", head: ["Test", "How"],
       rows: [
         ["A tool's own logic", "Call the function directly — it is a plain function, no agent needed"],
@@ -134,6 +142,9 @@ async def test_refund_tool_writes_state_and_is_blocked_over_limit():
       body: [{ t: "p", text: "One or two tests against a real model catch the things a fake cannot: a model that rejects your schema, a provider change, a tool declaration that generates but does not work. Keep them few, keep them out of the fast suite, and accept that they will occasionally fail for reasons you did not cause. What you must not do is write your whole suite that way — a test that is flaky and slow gets skipped, and a skipped test protects nothing." }] },
 
     { t: "h2", n: "06", text: "Fixtures worth writing once", id: "fixtures" },
+
+    {"kind": "flow", "title": "Fresh lists per fake, and why the suite's speed is the point", "caption": "**`script` and `seen` are class attributes, so a shared mutable default leaks state between tests in a way that is genuinely confusing to debug** — passing fresh lists in the fixture is the whole fix. **And the timing matters as much as the assertions:** a suite finishing in under a second gets run on every save, while one taking two minutes because it calls a real model gets run before a release, which is to say after the mistake has been built on. Speed is what makes a test suite a design tool rather than a gate.", "cols": 3, "nodes": [{"id": "f", "label": "make_runner builds the whole stack", "sub": "fake, agent, service, session", "tone": "good"}, {"id": "l", "label": "Fresh script=[] and seen=[] each time", "sub": "they are CLASS attributes", "tone": "crit"}, {"id": "t", "label": "turn() returns the events of one turn", "sub": "a list, not a generator to drain", "tone": "good"}, {"id": "u", "label": "Under a second for the suite", "sub": "so it runs on every save", "tone": "violet"}, {"id": "r", "label": "Two minutes, and it runs before a release", "sub": "after the mistake was built on", "tone": "crit"}], "edges": [["f", "l"], ["f", "t"], ["t", "u"], ["u", "r"]], "t": "diagram", "id": "dg-11_3-06-2"},
+
 
     { t: "code", lang: "python", title: "conftest.py",
       code: `@pytest.fixture

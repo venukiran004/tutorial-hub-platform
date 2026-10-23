@@ -53,6 +53,8 @@ registered operations: {"": ["get_session", "list_sessions", "create_session", "
 
     { t: "h2", n: "02", text: "Deploying from Python", id: "create" },
 
+    {"kind": "flow", "title": "requirements is not inferred, and both mistakes cost you", "caption": "**Whatever you do not list is not installed, and the failure appears at runtime in the deployed container rather than at deploy time** — so walk every import in your agent module, your tools, and anything they import, and pin at least the majors. **The reverse mistake is worse for rebuilds:** pasting a `pip freeze` of your laptop ships two hundred packages the agent never imports and turns a two-minute build into a slow one you will do many times. `extra_packages` is the separate mechanism for local code that is not on PyPI.", "cols": 3, "nodes": [{"id": "c", "label": "agent_engines.create(...)", "sub": "it wraps a bare agent in AdkApp", "tone": "accent"}, {"id": "m", "label": "A missing requirement", "sub": "fails at RUNTIME, in the container", "tone": "crit"}, {"id": "f", "label": "A pasted pip freeze", "sub": "200 packages, slow rebuilds forever", "tone": "crit"}, {"id": "w", "label": "Walk every import, pin the majors", "sub": "tools included, and their imports", "tone": "good"}, {"id": "e", "label": "extra_packages for local code", "sub": "what is not on PyPI", "tone": "violet"}], "edges": [["c", "m"], ["c", "f"], ["m", "w"], ["f", "w"], ["c", "e"]], "t": "diagram", "id": "dg-12_2-02-0"},
+
     { t: "code", lang: "python", title: "The deploy call",
       code: `import vertexai
 from vertexai import agent_engines
@@ -83,6 +85,8 @@ print(remote.resource_name)
 
     { t: "h2", n: "03", text: "Deploying from the CLI", id: "cli" },
 
+    {"kind": "trace", "title": "Six CLI flags, and the one that decides deploy against second deployment", "caption": "**`--agent_engine_id` is the difference between updating an engine in place and creating another one beside it** — and the second is easy to do by accident, because the command without it succeeds and prints a new resource name. **The CLI takes the same agent directory `adk web` and `adk run` take**, packages it, generates the `AdkApp` and calls create for you, which is why most teams never write the Python form at all. `--worker_pool` is the flag to remember exists before someone asks about VPC Service Controls.", "left": "flag", "codeW": 190, "vars": ["what it does"], "steps": [{"code": "--agent_engine_id", "state": ["UPDATE in place - without it you create a second"], "tone": "crit"}, {"code": "--trace_to_cloud", "state": ["how you debug a turn you cannot attach to"], "changed": [0], "tone": "accent"}, {"code": "--session_service_uri", "state": ["your own stores rather than the managed ones"], "changed": [0], "tone": "good"}, {"code": "--extra_packages", "state": ["local package directories, shipped alongside"], "changed": [0], "tone": "good"}, {"code": "--worker_pool", "state": ["a private Cloud Build pool - the VPC-SC path"], "changed": [0], "tone": "violet"}, {"code": "--api_key", "state": ["Express Mode, without a full project setup"], "changed": [0], "tone": "warn"}], "t": "diagram", "id": "dg-12_2-03-1"},
+
     { t: "code", lang: "bash", title: "The same thing, without writing a deploy script",
       code: `adk deploy agent_engine \\
   --project=my-project \\
@@ -108,6 +112,8 @@ print(remote.resource_name)
 
     { t: "h2", n: "04", text: "The knobs that matter in production", id: "config" },
 
+    {"kind": "trace", "title": "Six knobs, and what each one is really a decision about", "caption": "**`service_account` is the one to get right first:** everything the deployed agent's tools touch is authorised as that principal, so it wants the narrowest set of roles that works and never the default compute account. **The `env_vars` row carries the mechanism that matters** — a `SecretRef` is resolved at runtime, where a plain string is stored in the engine's spec for anyone with console access to read. And `min_instances=0` is cheap and right for an internal tool; a user-facing agent taking eight seconds to answer its first question of the morning is not.", "left": "field", "codeW": 190, "vars": ["the decision behind it"], "steps": [{"code": "service_account", "state": ["what the tools may touch - narrowest roles, never default"], "tone": "crit"}, {"code": "env_vars", "state": ["plain for config; a SecretRef for anything secret"], "changed": [0], "tone": "crit"}, {"code": "min_instances", "state": ["cold starts: 0 for internal, 1+ for user-facing"], "changed": [0], "tone": "accent"}, {"code": "max_instances, concurrency", "state": ["the envelope - agents are IO-bound, so go high"], "changed": [0], "tone": "good"}, {"code": "resource_limits", "state": ["memory for what the TOOLS load, not the model calls"], "changed": [0], "tone": "good"}, {"code": "identity_type, psc, encryption_spec", "state": ["workload identity, private networking, CMEK"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-12_2-04-2"},
+
     { t: "dl", items: [
       ["service_account", "The identity the deployed agent runs as. Everything its tools touch — BigQuery, Secret Manager, another API — is authorised as this principal, so give it the narrowest set of roles that works and never the default compute account (lesson 9.1)."],
       ["env_vars", "Accepts plain strings or a `SecretRef` pointing at Secret Manager. Configuration goes in plain values; anything secret goes in a `SecretRef`, so the value is resolved at runtime rather than stored in the engine's spec."],
@@ -131,7 +137,9 @@ print(remote.resource_name)
 
     { t: "h2", n: "06", text: "The lifecycle of a deployed engine", id: "lifecycle" },
 
-    {"kind": "cycle", "title": "The lifecycle of a deployed engine", "caption": "Calling create twice makes a second engine with its own sessions and its own bill while your application keeps talking to the first. Deploys update one resource whose name lives in configuration.", "centre": "one resource", "nodes": [{"label": "create", "sub": "once — returns a resource name", "tone": "good"}, {"label": "Name in config", "sub": "not in deploy output", "tone": "accent"}, {"label": "get / query", "sub": "your application calls it", "tone": "violet"}, {"label": "update", "sub": "every subsequent deploy", "tone": "warn"}, {"label": "delete(force)", "sub": "also removes its sessions", "tone": "crit"}], "t": "diagram", "id": "dg-12_2-06-0"},
+    {"kind": "cycle", "title": "The lifecycle of a deployed engine", "caption": "Calling create twice makes a second engine with its own sessions and its own bill while your application keeps talking to the first. Deploys update one resource whose name lives in configuration.", "centre": "one resource", "nodes": [{"label": "create", "sub": "once — returns a resource name", "tone": "good"}, {"label": "Name in config", "sub": "not in deploy output", "tone": "accent"}, {"label": "get / query", "sub": "your application calls it", "tone": "violet"}, {"label": "update", "sub": "every subsequent deploy", "tone": "warn"}, {"label": "delete(force)", "sub": "also removes its sessions", "tone": "crit"}], "t": "diagram", "id": "dg-12_2-06-3"},
+
+
 
 
 

@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "json", title: "evaldemo/weather.test.json",
       code: `[
   {
@@ -44,6 +46,9 @@ EC.receiveLesson({
       body: [{ t: "p", text: "An agent that produces the right answer without calling the tool got lucky, and will be wrong as soon as the data changes. An agent that calls the right tool and then summarises it badly has a prompting problem, not a routing one. Scoring both separately tells you which of those you are looking at — which is why the results table has a column for each." }] },
 
     { t: "h2", n: "02", text: "Running it", id: "running" },
+
+    {"kind": "trace", "title": "Two metrics, two thresholds, and the asymmetry is deliberate", "caption": "**There is one right sequence of tool calls and many acceptable ways to phrase an answer**, which is exactly what the two thresholds encode: trajectory must match at 1.0, response only has to reach 0.8. **Note what `agent_module` wants** — an importable package exposing `root_agent`, the same layout `adk web` expects, so the thing you evaluate is the thing you run. A directory path runs every case file in it.", "left": "metric", "codeW": 210, "vars": ["threshold", "why"], "steps": [{"code": "tool_trajectory_avg_score", "state": ["1.0 - exact", "one right sequence of calls"], "tone": "violet"}, {"code": "response_match_score", "state": ["0.8 - close enough", "many acceptable phrasings"], "changed": [0, 1], "tone": "accent"}, {"code": "agent_module", "state": ["a package with root_agent", "the same layout adk web runs"], "changed": [0, 1], "tone": "good"}, {"code": "a directory instead of a file", "state": ["every case file in it", "-"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-11_2-02-2"},
+
 
     { t: "code", lang: "python", title: "e1.py",
       code: `import asyncio
@@ -72,6 +77,9 @@ Summary: \`EvalStatus.PASSED\` for Metric: \`response_match_score\`. Expected th
 
     { t: "h2", n: "03", text: "The failing run", id: "failing" },
 
+    {"kind": "trace", "title": "Two contradictory answers scored 0.46", "caption": "**That number is the most important thing in the lesson.** The agent said *“It is 14C and raining in London”* where the reference said *“London is sunny and 25 degrees”*: contradictory answers, nearly half marks, because the metric is ROUGE — it compares n-grams and two sentences sharing “London”, “is” and “and” score well regardless of agreement. **So a high score does not mean the answer is right and a low one does not mean it is wrong.** Use it to catch large regressions; reach for a model-graded metric when correctness is the question.", "left": "what happened", "codeW": 200, "vars": ["score", "what it means"], "steps": [{"code": "the expected tool was never called", "state": ["0.0", "no partial credit for calling something else"], "tone": "crit"}, {"code": "the answer contradicted the reference", "state": ["0.46", "nearly half marks for saying the opposite"], "changed": [0, 1], "tone": "crit"}, {"code": "because the metric is ROUGE", "state": ["n-gram overlap", "'London', 'is', 'and' all count"], "changed": [0, 1], "tone": "violet"}, {"code": "a correct answer, phrased differently", "state": ["also low", "a low score is not a wrong answer"], "changed": [0, 1], "tone": "warn"}, {"code": "so use it for", "state": ["large regressions", "and model-graded metrics for correctness"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-11_2-03-3"},
+
+
     { t: "p", text: "Now the same agent against a case that expects a different tool and a different answer." },
 
     { t: "out", text: `Summary: \`EvalStatus.FAILED\` for Metric: \`tool_trajectory_avg_score\`. Expected threshold: \`1.0\`, actual value: \`0.0\`.
@@ -89,6 +97,8 @@ response_match_score for evaldemo Failed. Expected 0.8, but got 0.46153846153846
     { t: "h2", n: "04", text: "The metrics that ship", id: "metrics" },
 
     {"kind": "matrix", "title": "Which metric to reach for", "caption": "Start at the top row: it is deterministic, needs no extra model calls, and catches the changes that break agents most often. The executed failing run scored two contradictory answers at 0.46 on response_match.", "cols": ["Needs a model", "Catches"], "rows": ["tool_trajectory_avg_score", "response_match_score", "final_response_match_v2", "hallucinations_v1", "rubric_based_*"], "cells": [[false, {"text": "wrong tool, wrong args", "tone": "good"}], [false, {"text": "large rewrites only", "tone": "warn"}], [true, {"text": "actually-wrong answers", "tone": "good"}], [true, {"text": "unsupported claims", "tone": "good"}], [true, {"text": "tone, house style", "tone": "accent"}]], "t": "diagram", "id": "dg-11_2-04-1"},
+
+
 
 
 
@@ -119,12 +129,18 @@ print([m.value for m in PrebuiltMetrics])` },
 
     { t: "h2", n: "05", text: "Why num_runs defaults to 2", id: "runs" },
 
+    {"kind": "flow", "title": "num_runs=2 because a model is stochastic - and a flaky case is information", "caption": "**A single run tells you about one sample, so running each case twice distinguishes a regression from sampling noise** — at a cost that multiplies directly, which is the argument for a small set run often rather than a large one run rarely. **The instinct when a case flaps is to loosen the threshold, and sometimes that is right:** a reference phrased too specifically will flap for no reason. But a case that genuinely passes half the time is telling you the agent is unreliable on that input, and the user experience is exactly that coin flip.", "cols": 3, "nodes": [{"id": "s", "label": "Models are stochastic", "sub": "a pass once is one sample", "tone": "accent"}, {"id": "n", "label": "num_runs=2 by default", "sub": "regression, or noise?", "tone": "good"}, {"id": "c", "label": "The cost multiplies directly", "sub": "so keep the set small, run it often", "tone": "violet"}, {"id": "f", "label": "A case that flaps: loosen it?", "sub": "sometimes - an over-specific reference", "tone": "warn"}, {"id": "r", "label": "Or the agent IS unreliable there", "sub": "and the user gets that coin flip", "tone": "crit"}], "edges": [["s", "n"], ["n", "c"], ["n", "f"], ["f", "r"]], "t": "diagram", "id": "dg-11_2-05-4"},
+
+
     { t: "p", text: "`AgentEvaluator.evaluate` takes `num_runs=2` by default, because models are stochastic. A case that passes once may fail the next time, and a single run tells you about one sample. Running each case more than once distinguishes a genuine regression from sampling noise — at a cost that multiplies directly, which is why you keep the set small and run more often rather than large and rarely." },
 
     { t: "callout", kind: "tradeoff", title: "A flaky case is information",
       body: [{ t: "p", text: "The instinct is to loosen the threshold until it passes consistently. Sometimes right — a reference phrased too specifically will flap for no reason. But a case that genuinely passes half the time is telling you the agent is unreliable on that input, and the user experience is exactly that coin flip. Before relaxing the test, check whether you are hiding a real problem." }] },
 
     { t: "h2", n: "06", text: "What belongs in the set", id: "what" },
+
+    {"kind": "trace", "title": "Five things that belong in the set, and one that does not", "caption": "**Fixed bugs are the highest-value cases by a distance:** a user reported it, you fixed it, and now it cannot come back silently. Refusals are the ones most often left out, and a guardrail with no test is a guardrail that stops working when somebody rewrites the instruction. **And the framing to keep:** 85% on your set means the agent handles your twenty cases as well as it did last week. It says nothing about the questions you did not think of, and it is not a number to report as “the agent is 85% accurate”.", "left": "include", "codeW": 170, "vars": ["why"], "steps": [{"code": "every bug you have fixed", "state": ["it cannot come back silently - the best cases"], "tone": "good"}, {"code": "the routing decisions", "state": ["descriptions drift and routing breaks quietly"], "changed": [0], "tone": "good"}, {"code": "the refusals", "state": ["a guardrail with no test stops working"], "changed": [0], "tone": "violet"}, {"code": "the boring path", "state": ["the commonest question - changes break it"], "changed": [0], "tone": "good"}, {"code": "NOT everything", "state": ["1000 cases nobody runs lose to 20 run always"], "changed": [0], "tone": "crit"}, {"code": "and what the score means", "state": ["comparative only - better, worse or the same"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-11_2-06-5"},
+
 
     { t: "dl", items: [
       ["Every bug you have fixed", "The highest-value cases by a distance. A user reported it, you fixed it, and now it cannot come back silently."],

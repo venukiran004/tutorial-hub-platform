@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "What you already have", id: "free" },
 
+    {"kind": "trace", "title": "Six fields you already have, and what each one answers", "caption": "**The event log is an audit trail you did not have to build** — every user message, model response, tool call and state change, ordered and persisted, which is more than most production systems can say about their own decision-making. **And the highest-value observability decision is not a tracing vendor:** it is retaining sessions long enough to investigate complaints. A bad answer reported from last week is answerable in thirty seconds if you still have the events and impossible if you do not. Decide the number, balance it against section 06, and write it down.", "left": "field", "codeW": 190, "vars": ["what it answers"], "steps": [{"code": "usage_metadata", "state": ["cost, per model call - already there"], "tone": "good"}, {"code": "error_code, error_message", "state": ["the numbers behind a failure-rate alert"], "changed": [0], "tone": "accent"}, {"code": "invocation_id, branch", "state": ["which turn, and which path through the tree"], "changed": [0], "tone": "accent"}, {"code": "model_version", "state": ["'it got worse on Tuesday' - often this"], "changed": [0], "tone": "violet"}, {"code": "grounding_metadata", "state": ["what a grounded answer was based on"], "changed": [0], "tone": "good"}, {"code": "custom_metadata", "state": ["yours - put correlation ids here, not elsewhere"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-11_1-01-2"},
+
+
     { t: "p", text: "The event log is an audit trail you did not have to build. Every user message, every model response, every tool call and result, every state change is an ordered, persisted record of what the agent did — which is more than most production systems can say about their own decision-making." },
 
     { t: "code", lang: "python", title: "What an Event carries",
@@ -66,6 +69,8 @@ print(list(Event.model_fields))` },
 
 
 
+
+
     { t: "p", text: "A flat list of model calls is nearly useless in a multi-agent system, because the question is always *which agent* did the expensive or wrong thing. Spans that nest the way the agents do make that visible at a glance, and a plugin (lesson 6.2) is the right place to build them because it covers every agent including ones added later." },
 
     { t: "code", lang: "python", title: "A tracing plugin, in outline",
@@ -101,6 +106,9 @@ print(list(Event.model_fields))` },
 
     { t: "h2", n: "04", text: "Cost", id: "cost" },
 
+    {"kind": "trace", "title": "Five cost questions, answerable from two fields", "caption": "**`usage_metadata` on the response event plus `callback_context.agent_name` answers the question every finance conversation about agents eventually reaches:** which part of this system is expensive, and why. One dictionary keyed by agent name, incremented in `after_model`, and the attribution exists. **The third row is usually the surprise** — expensive users are rarely many users, they are a handful of very long conversations, which points straight back at conversation length rather than at traffic.", "left": "question", "codeW": 200, "vars": ["where it comes from"], "steps": [{"code": "which agent costs the most?", "state": ["sum usage_metadata in after_model, by agent name"], "tone": "good"}, {"code": "why did cost jump on Tuesday?", "state": ["tokens per turn: length, or a model version change"], "changed": [0], "tone": "accent"}, {"code": "which users are expensive?", "state": ["the same metric by user - a few very long chats"], "changed": [0], "tone": "violet"}, {"code": "is the retry loop costing us?", "state": ["model calls per turn; a rising tail means loops"], "changed": [0], "tone": "warn"}, {"code": "did caching help?", "state": ["cache_metadata, against cost per turn before and after"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-11_1-04-3"},
+
+
     { t: "p", text: "`usage_metadata` on the response event gives tokens per model call, and `callback_context.agent_name` says which agent spent them. Those two facts together answer the question every finance conversation about agents eventually reaches: which part of this system is expensive, and why." },
 
     { t: "table", head: ["Question", "Where it comes from"],
@@ -119,6 +127,8 @@ print(list(Event.model_fields))` },
 
 
 
+
+
     { t: "dl", items: [
       ["Model calls per turn, at the tail", "The 95th percentile rising means loops or retries, and it rises before the bill does."],
       ["Tool error rate, by tool", "One upstream degrading is invisible in an overall success rate and obvious per tool."],
@@ -131,6 +141,9 @@ print(list(Event.model_fields))` },
       body: [{ t: "p", text: "None of these say whether the agent is *right*. Operational metrics tell you the system is running; only evaluation tells you it is working, and the two are routinely confused in a status meeting. An agent can be fast, cheap, error-free and confidently wrong — which is the next lesson." }] },
 
     { t: "h2", n: "06", text: "What not to capture", id: "privacy" },
+
+    {"kind": "flow", "title": "Content capture is a decision about personal data, not a debugging preference", "caption": "**Prompts and responses contain whatever your users typed** — for a support agent that means names, addresses, order details and occasionally a card number somebody pasted in. Capturing full content into a tracing backend copies all of it somewhere with different retention and different access control from your session store, **which may be exactly what your privacy review has not been told about.** `NO_CONTENT` with metadata still tells you which agent, which tool, how many tokens and whether it failed — which answers most operational questions.", "cols": 3, "nodes": [{"id": "f", "label": "SPAN_AND_EVENT: full content", "sub": "the right default in development", "tone": "warn"}, {"id": "c", "label": "It copies user text to another system", "sub": "different retention, different access", "tone": "crit"}, {"id": "n", "label": "NO_CONTENT: metadata only", "sub": "which agent, which tool, tokens, failures", "tone": "good"}, {"id": "o", "label": "Which answers most operational questions", "sub": "without the obligation", "tone": "good"}, {"id": "r", "label": "Decide it with whoever owns the obligation", "sub": "per environment, per retention window", "tone": "violet"}], "edges": [["f", "c"], ["c", "n"], ["n", "o"], ["o", "r"]], "t": "diagram", "id": "dg-11_1-06-4"},
+
 
     { t: "code", lang: "python", title: "Content capture is a setting, and it has four values",
       code: `from google.adk.telemetry import TelemetryConfig, ContentCapturingMode

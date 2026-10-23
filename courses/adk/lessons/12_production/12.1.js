@@ -40,6 +40,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "What gets generated", id: "generated" },
 
+    {"kind": "trace", "title": "Seven flags, and the two whose absence breaks production silently", "caption": "**Deploy without `--session_service_uri` and the command succeeds, the service starts, and a single user testing it sees nothing wrong.** The failure appears when traffic arrives on two replicas and conversations start losing their history at random — no error anywhere, just an agent that seems forgetful. **That is the most common way an agent reaches production broken.** `--with_ui` is the other one to think about twice: excellent for an internal tool, alarming on the public internet.", "left": "flag", "codeW": 190, "vars": ["what it gives you", "leave it out and"], "steps": [{"code": "--session_service_uri", "state": ["a real database", "in-memory: breaks at two replicas"], "tone": "crit"}, {"code": "--artifact_service_uri", "state": ["a GCS bucket", "a process dictionary"], "changed": [0, 1], "tone": "crit"}, {"code": "--trace_to_cloud", "state": ["traces for the first incident", "you debug blind"], "changed": [0, 1], "tone": "accent"}, {"code": "--allow_origins", "state": ["CORS for a browser caller", "and ask if a browser should"], "changed": [0, 1], "tone": "warn"}, {"code": "--with_ui", "state": ["the dev UI alongside", "fine - add it deliberately"], "changed": [0, 1], "tone": "warn"}, {"code": "--a2a", "state": ["an endpoint other agents can call", "-"], "changed": [0, 1], "tone": "good"}, {"code": "--env, repeated per pair", "state": ["configuration", "secrets belong in a manager"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_1-02-0"},
+
     { t: "p", text: "For the container targets, ADK writes a Dockerfile and a FastAPI application around the same server `adk api_server` runs locally. That is worth knowing because it tells you what your production surface actually is: HTTP endpoints for running an agent, managing sessions, and — if you ask for them — the dev UI and an A2A endpoint." },
 
     { t: "code", lang: "bash", title: "A Cloud Run deploy with the options that matter",
@@ -71,7 +73,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The local ladder", id: "local" },
 
-    {"kind": "steps", "title": "The local ladder, in the order you climb it", "caption": "Each rung catches a different class of problem, and the last one catches packaging bugs in seconds rather than in a cloud build.", "items": [{"label": "adk run", "sub": "a terminal conversation — instructions and tools", "tone": "good"}, {"label": "adk web", "sub": "events, state, traces, the eval tab", "tone": "accent"}, {"label": "adk api_server", "sub": "the HTTP surface your client should develop against", "tone": "violet"}, {"label": "adk deploy docker", "sub": "the real image, locally", "tone": "warn"}], "t": "diagram", "id": "dg-12_1-03-0"},
+    {"kind": "steps", "title": "The local ladder, in the order you climb it", "caption": "Each rung catches a different class of problem, and the last one catches packaging bugs in seconds rather than in a cloud build.", "items": [{"label": "adk run", "sub": "a terminal conversation — instructions and tools", "tone": "good"}, {"label": "adk web", "sub": "events, state, traces, the eval tab", "tone": "accent"}, {"label": "adk api_server", "sub": "the HTTP surface your client should develop against", "tone": "violet"}, {"label": "adk deploy docker", "sub": "the real image, locally", "tone": "warn"}], "t": "diagram", "id": "dg-12_1-03-2"},
+
+
 
 
 
@@ -104,6 +108,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Do you need to join conversations against your own business data? If someone will ask \"which conversations preceded a refund\", a session database you own makes that a SQL join and Agent Engine makes it an export pipeline. If nobody will ask, the managed runtime removes a database, a scaling configuration and a patching obligation, which is a great deal of work for a small team." }] },
 
     { t: "h2", n: "05", text: "Per environment", id: "environments" },
+
+    {"kind": "trace", "title": "Six things that differ per environment - and the one that must not", "caption": "**In-memory stores in staging hide exactly the bugs staging exists to find**, which is why the first row says a real database in both. **The model row carries a consequence people miss:** a cheaper model in development is sensible, but evaluation results do not transfer between models, so a suite that passes in development says nothing about production. And the identity row is non-negotiable in either place — a dedicated service account per environment, scoped to what the tools need, never the default compute account.", "left": "concern", "codeW": 170, "vars": ["development", "production"], "steps": [{"code": "session and artifact stores", "state": ["a real DB - not in-memory", "a real DB"], "tone": "crit"}, {"code": "model", "state": ["often cheaper", "and re-run evaluation: it does not transfer"], "changed": [0, 1], "tone": "violet"}, {"code": "secrets", "state": ["a manager, referenced", "a manager, referenced"], "changed": [0, 1], "tone": "crit"}, {"code": "identity", "state": ["its own service account", "its own, narrowly scoped"], "changed": [0, 1], "tone": "crit"}, {"code": "log level", "state": ["debug - it contains prompts", "never debug"], "changed": [0, 1], "tone": "warn"}, {"code": "CORS and the dev UI", "state": ["convenient defaults", "decide deliberately"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-12_1-05-1"},
 
     { t: "dl", items: [
       ["Session and artifact stores", "A real database in staging as well as production — in-memory in staging hides exactly the bugs staging exists to find."],
