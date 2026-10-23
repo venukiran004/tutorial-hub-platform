@@ -25,6 +25,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three modes", id: "modes" },
 
+    {"kind": "trace", "title": "Three modes, and what the default already gives you", "caption": "**Events already stream in every mode**, because `run_async` is an async generator: a tool call appears the moment the model asks for it and the result appears the moment the tool returns. That alone is enough to show “checking stock…” while work happens. **So `StreamingMode.SSE` adds exactly one thing — the model's text arriving in pieces** — and BIDI is not more of the same but a different protocol with a different model requirement.", "left": "mode", "codeW": 140, "vars": ["the model's text", "events", "shape"], "steps": [{"code": "NONE (the default)", "state": ["arrives whole", "stream as produced", "-"], "tone": "good"}, {"code": "SSE", "state": ["arrives in fragments", "stream as produced", "one direction, text"], "changed": [0, 2], "tone": "accent"}, {"code": "BIDI", "state": ["live", "stream as produced", "audio and video, both ways"], "changed": [0, 2], "tone": "violet"}, {"code": "so SSE adds", "state": ["partial TEXT - nothing else", "already streamed", "-"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_2-01-1"},
+
     { t: "code", lang: "python", title: "From the enum",
       code: `from google.adk.agents.run_config import RunConfig, StreamingMode
 print([m.value for m in StreamingMode])
@@ -45,6 +47,8 @@ StreamingMode.NONE` },
     { t: "h2", n: "02", text: "Partial events, traced", id: "partials" },
 
     {"kind": "trace", "title": "Four text events, two of them stored", "caption": "Executed with StreamingMode.SSE. A client that appends every text event renders the answer twice — append on partials, replace on the final one.", "left": "event", "codeW": 300, "vars": ["partial", "final", "persisted"], "steps": [{"code": "text 'The weather '", "state": ["True", "False", "no"]}, {"code": "text 'in London '", "state": ["True", "False", "no"]}, {"code": "text 'is mild.'", "state": ["True", "False", "no"]}, {"code": "text 'The weather in London is mild.'", "state": ["None", "True", "yes"], "changed": [2], "tone": "good", "note": "the record"}], "t": "diagram", "id": "dg-10_2-02-0"},
+
+
 
 
 
@@ -76,6 +80,8 @@ StreamingMode.NONE` },
 
     { t: "h2", n: "03", text: "Rendering it correctly", id: "rendering" },
 
+    {"kind": "flow", "title": "Append the deltas, replace on the final - or the answer appears twice", "caption": "**The final event carries the whole answer, not the last fragment**, so a client that treats it as another delta renders the reply twice — and that is exactly what the naive loop produces. Branch on `event.partial` and the bug cannot happen. **And do the first branch before anything clever with text:** the biggest perceived-latency win in an agent is usually not token streaming but telling the user that something is happening, and “searching the policy documents…” comes from an event you already receive.", "cols": 3, "nodes": [{"id": "f", "label": "part.function_call", "sub": "emit a status line", "tone": "violet"}, {"id": "w", "label": "'Searching the policy documents...'", "sub": "the biggest win, and nearly free", "tone": "violet"}, {"id": "p", "label": "part.text and event.partial", "sub": "APPEND in the UI", "tone": "good"}, {"id": "d", "label": "part.text and is_final_response()", "sub": "REPLACE the buffer", "tone": "good"}, {"id": "b", "label": "Append it instead", "sub": "and the answer shows twice", "tone": "crit"}], "edges": [["f", "w"], ["p", "d"], ["d", "b"]], "t": "diagram", "id": "dg-10_2-03-2"},
+
     { t: "code", lang: "python", title: "The client logic that does not double-render",
       code: `buffer = ""
 async for event in runner.run_async(..., run_config=RunConfig(streaming_mode=StreamingMode.SSE)):
@@ -96,6 +102,8 @@ async for event in runner.run_async(..., run_config=RunConfig(streaming_mode=Str
       body: [{ t: "p", text: "The biggest perceived-latency win in an agent is usually not token streaming — it is telling the user that something is happening. \"Searching the policy documents…\" during a two-second retrieval turns dead air into visible progress, and it comes from an event you are already receiving. Do this before you do anything clever with partial text." }] },
 
     { t: "h2", n: "04", text: "Over the wire", id: "wire" },
+
+    {"kind": "flow", "title": "The thing between you and the browser that buffers the whole stream", "caption": "**A reverse proxy with response buffering on, a compression layer, or a serverless platform that waits for the complete body will collect your stream and deliver it in one piece** — and the agent looks exactly as slow as it did before you implemented streaming, with no error anywhere to explain it. **So test through the real deployment path rather than against the local server**, and check for `X-Accel-Buffering` or the equivalent in whatever sits in front. Note also that streaming changes nothing about identity: the user id is still derived server-side.", "cols": 3, "nodes": [{"id": "r", "label": "run_async yields events", "sub": "an async generator", "tone": "good"}, {"id": "s", "label": "StreamingResponse, text/event-stream", "sub": "no buffering in between", "tone": "good"}, {"id": "p", "label": "A proxy buffers the response", "sub": "or compression, or serverless", "tone": "crit"}, {"id": "o", "label": "The browser gets it all at once", "sub": "as slow as before, and no error", "tone": "crit"}, {"id": "t", "label": "Test the real deployment path", "sub": "check X-Accel-Buffering", "tone": "violet"}, {"id": "u", "label": "And user_id is still server-side", "sub": "streaming changes no identity rule", "tone": "accent"}], "edges": [["r", "s"], ["s", "p"], ["p", "o"], ["o", "t"], ["s", "u"]], "t": "diagram", "id": "dg-10_2-04-3"},
 
     { t: "code", lang: "python", title: "A FastAPI endpoint",
       code: `from fastapi.responses import StreamingResponse

@@ -43,6 +43,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "p", text: "Two tools that each sleep for 0.4 seconds. In the first run, the model asks for both in a single response; in the second, it asks for one, gets the answer, and asks for the other." },
 
     { t: "code", lang: "python", title: "n1.py — the two shapes",
@@ -66,6 +68,8 @@ both = LlmResponse(content=types.Content(role="model", parts=[
       body: [{ t: "p", text: "These are different mechanisms for the same idea at different levels. `ParallelAgent` (lesson 2.3) runs whole agents concurrently because you wired it that way. Parallel tool calls happen inside one agent because the model emitted several at once. You control the first and influence the second — through the instruction and through how you shape the tools." }] },
 
     { t: "h2", n: "03", text: "Writing tools that do not block", id: "tools" },
+
+    {"kind": "trace", "title": "Five blocking habits, and the await that replaces each", "caption": "**One synchronous `requests.get` taking two seconds does not delay your conversation by two seconds — it freezes the whole event loop, so every other conversation in the process stops too**, including ones nowhere near that tool. The symptom is latency that worsens with traffic in a way no single trace explains, and the cause is invisible in the trace of the request that suffered. **Audit tools for synchronous IO the way you audit them for credentials.**", "left": "doing", "codeW": 130, "vars": ["wrong", "right"], "steps": [{"code": "HTTP", "state": ["requests.get(url)", "await client.get(url), httpx.AsyncClient"], "tone": "crit"}, {"code": "sleeping", "state": ["time.sleep(1)", "await asyncio.sleep(1)"], "changed": [0, 1], "tone": "crit"}, {"code": "database", "state": ["a synchronous driver", "asyncpg, aiomysql, aiosqlite"], "changed": [0, 1], "tone": "crit"}, {"code": "CPU work", "state": ["inline in the tool", "await asyncio.to_thread(fn, ...)"], "changed": [0, 1], "tone": "warn"}, {"code": "a sync-only library", "state": ["calling it directly", "await asyncio.to_thread(legacy, ...)"], "changed": [0, 1], "tone": "warn"}, {"code": "the cost of getting it wrong", "state": ["the whole loop freezes", "every conversation, not just yours"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_1-03-1"},
 
     { t: "table", head: ["Doing", "Wrong", "Right"],
       rows: [
@@ -93,9 +97,13 @@ async def render_chart(rows: list[dict], tool_context) -> dict:
 
     { t: "h2", n: "04", text: "Sync tools are allowed — and then wrapped", id: "sync" },
 
+    {"kind": "tree", "title": "The rule is not 'always async' - it is 'anything that waits must await'", "caption": "**ADK accepts an ordinary `def` tool, and for anything that does not wait that is the better code:** arithmetic, formatting, a dictionary lookup, a quick validation. A synchronous function that never does IO is simpler to read and costs nothing. **A synchronous function that opens a socket is a production incident waiting for enough traffic** — and the two look identical at the call site, which is why the question has to be asked of the body rather than the signature.", "root": {"label": "You are writing a tool", "sub": "does the body ever wait?", "tone": "accent", "children": [{"label": "No - it computes and returns", "sub": "arithmetic, formatting, a lookup", "tone": "good", "children": [{"label": "A plain def is fine", "sub": "and simpler to read", "tone": "good"}]}, {"label": "Yes - network, disk or a database", "sub": "it opens a socket", "tone": "violet", "children": [{"label": "async def, and await the IO", "sub": "an async client, an async driver", "tone": "violet"}]}, {"label": "Yes - but the library is sync only", "sub": "or the work is CPU-bound", "tone": "teal", "children": [{"label": "async def plus asyncio.to_thread", "sub": "heavy CPU belongs in another service", "tone": "teal"}]}]}, "t": "diagram", "id": "dg-10_1-04-2"},
+
     { t: "p", text: "ADK accepts an ordinary `def` tool, which is right for anything that does not wait: arithmetic, formatting, a dictionary lookup, a quick validation. The rule is not \"always write `async def`\" — it is **anything that waits must await**. A synchronous function that never does IO is fine and simpler to read; a synchronous function that opens a socket is a production incident waiting for enough traffic." },
 
     { t: "h2", n: "05", text: "The three entry points", id: "entry" },
+
+    {"kind": "trace", "title": "Three entry points, and only one belongs in a server", "caption": "**`run` manages its own event loop, so calling it from inside a coroutine either raises or deadlocks depending on how your framework set things up.** In a FastAPI handler, an ADK plugin or any async context, `run_async` is the only correct choice — `run` exists so a notebook cell does not need `asyncio.run`, and that is the whole of its purpose. **`run_live` is a different protocol with a different model requirement**, not a streaming flag on the same path.", "left": "method", "codeW": 150, "vars": ["shape", "use"], "steps": [{"code": "run_async", "state": ["async for event in ...", "THE real one - every server"], "tone": "good"}, {"code": "run", "state": ["a synchronous generator", "scripts and notebooks only"], "changed": [0, 1], "tone": "warn"}, {"code": "run from async code", "state": ["it drives its own loop", "raises, or deadlocks"], "changed": [0, 1], "tone": "crit"}, {"code": "run_live", "state": ["takes a LiveRequestQueue", "bidirectional audio and video"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-10_1-05-3"},
 
     { t: "table", head: ["Method", "Shape", "Use"],
       rows: [
@@ -108,6 +116,8 @@ async def render_chart(rows: list[dict], tool_context) -> dict:
       body: [{ t: "p", text: "It manages its own event loop, so calling it from inside a coroutine either raises or deadlocks depending on how your framework set things up. In a FastAPI handler, an ADK plugin or any async context, `run_async` is the only correct choice. `run` exists so a notebook cell does not need `asyncio.run`, and that is the whole of its purpose." }] },
 
     { t: "h2", n: "06", text: "Concurrency inside one conversation", id: "one" },
+
+    {"kind": "flow", "title": "One in-flight turn per session id - and ADK does not enforce it", "caption": "**Two turns of the same session read the same state and append to the same event list, so interleaving them produces a transcript where the deltas were applied in an order nobody intended.** Nothing stops two HTTP handlers calling `run_async` with the same session id at once. **Most interfaces get the rule for free** because a user cannot send a second message mid-stream — but an API client, a retry, an impatient double-click or a reconnecting websocket each break it. A lock keyed by session id is a small amount of code against a confusing class of corruption.", "cols": 3, "nodes": [{"id": "t", "label": "Two turns, one session id", "sub": "nothing in ADK prevents it", "tone": "crit"}, {"id": "s", "label": "Same state, same event list", "sub": "deltas applied out of order", "tone": "crit"}, {"id": "c", "label": "A double-click, a retry, a reconnect", "sub": "the UI's natural guard is gone", "tone": "warn"}, {"id": "l", "label": "A lock or a queue per session id", "sub": "serialise within a conversation", "tone": "good"}, {"id": "a", "label": "And run sessions concurrently", "sub": "that is the point of the async design", "tone": "violet"}], "edges": [["t", "s"], ["c", "t"], ["s", "l"], ["l", "a"]], "t": "diagram", "id": "dg-10_1-06-4"},
 
     { t: "p", text: "Two turns of the same session must not run at once. They read the same state and append to the same event list, and interleaving them produces a transcript where the deltas are applied in an order nobody intended. ADK does not prevent it — nothing stops two HTTP handlers calling `run_async` with the same session id simultaneously." },
 

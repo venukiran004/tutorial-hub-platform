@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Declaring that a tool needs approval", id: "declaring" },
 
+    {"kind": "flow", "title": "One flag, and the callable form that makes it a rule", "caption": "**`require_confirmation=True` sits at the agent definition where a reviewer can see it, and cannot be forgotten inside a branch** — which is exactly what you want for the rule itself. **The callable form is the one to reach for in practice:** approval that depends on the arguments, so a refund of four pounds goes straight through and one of four hundred stops. A flag that stops everything produces approval fatigue, which section 04 names as worse than no approval at all.", "cols": 3, "nodes": [{"id": "f", "label": "FunctionTool(refund, require_confirmation=True)", "sub": "declarative, at the definition", "tone": "accent"}, {"id": "v", "label": "Visible to a reviewer", "sub": "and not buried in a branch", "tone": "good"}, {"id": "c", "label": "It also accepts a callable", "sub": "over a threshold, out of hours, by tier", "tone": "violet"}, {"id": "r", "label": "So routine cases pass through", "sub": "and only the real ones stop", "tone": "good"}, {"id": "a", "label": "Stop everything and you get a rubber stamp", "sub": "see section 04", "tone": "crit"}], "edges": [["f", "v"], ["f", "c"], ["c", "r"], ["r", "a"]], "t": "diagram", "id": "dg-9_3-01-0"},
+
+
     { t: "code", lang: "python", title: "h1.py — one flag",
       code: `from google.adk.tools import FunctionTool
 
@@ -40,6 +43,9 @@ agent = LlmAgent(name="support", model=MODEL,
       caption: "`require_confirmation` also accepts a callable, so approval can depend on the arguments — over a threshold, outside business hours, for a particular customer tier." },
 
     { t: "h2", n: "02", text: "What the pause looks like", id: "pause" },
+
+    {"kind": "trace", "title": "Five things happened, and the first is that the body never ran", "caption": "**The pause is durable because it is an event, not a coroutine waiting in memory** — so it survives a deploy, a crash, and a load balancer sending the next request to a different replica. That is the difference between an approval mechanism you can run in production and one that works on a laptop. **Note the error returned for the real tool:** the model is told the action did not happen, so it says approval was requested rather than claiming the refund went through.", "left": "what ADK did", "codeW": 210, "vars": ["the evidence", "why it matters"], "steps": [{"code": "intercepted the call", "state": ["the body never printed", "nothing happened yet"], "tone": "violet"}, {"code": "emitted a synthetic call", "state": ["adk_request_confirmation", "carries the original id, name and args"], "changed": [0, 1], "tone": "accent"}, {"code": "marked it long-running", "state": ["long_running_tool_ids on the event", "waiting on something external"], "changed": [0, 1], "tone": "accent"}, {"code": "returned an error for the tool", "state": ["'requires confirmation'", "so the model does not claim success"], "changed": [0, 1], "tone": "good"}, {"code": "recorded it in actions", "state": ["requested_tool_confirmations", "this is what your UI reads"], "changed": [0, 1], "tone": "good"}, {"code": "ended the turn", "state": ["4 events, nothing held open", "durable: it survives a deploy"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-9_3-02-1"},
+
 
     { t: "out", text: `--- turn 1: the agent asks for approval ---
   call refund({'order_id': 'A-77', 'amount': 250.0})
@@ -70,7 +76,9 @@ events after turn 1: 4
 
     { t: "h2", n: "03", text: "The approval", id: "approval" },
 
-    {"kind": "cycle", "title": "The pause and the resume", "caption": "Executed both halves. The pending request is an event in the session rather than a coroutine in memory, which is what lets an approval arrive after a deploy and still work.", "centre": "durable", "nodes": [{"label": "Model calls the tool", "sub": "ordinary function call", "tone": "accent"}, {"label": "ADK intercepts", "sub": "the body does not run", "tone": "crit"}, {"label": "Turn ends", "sub": "pending confirmation recorded", "tone": "warn"}, {"label": "A human decides", "sub": "your queue, your authorisation", "tone": "violet"}, {"label": "Function response", "sub": "confirmed: true | false"}, {"label": "Tool runs", "sub": "the reviewed arguments", "tone": "good"}], "t": "diagram", "id": "dg-9_3-03-0"},
+    {"kind": "cycle", "title": "The pause and the resume", "caption": "Executed both halves. The pending request is an event in the session rather than a coroutine in memory, which is what lets an approval arrive after a deploy and still work.", "centre": "durable", "nodes": [{"label": "Model calls the tool", "sub": "ordinary function call", "tone": "accent"}, {"label": "ADK intercepts", "sub": "the body does not run", "tone": "crit"}, {"label": "Turn ends", "sub": "pending confirmation recorded", "tone": "warn"}, {"label": "A human decides", "sub": "your queue, your authorisation", "tone": "violet"}, {"label": "Function response", "sub": "confirmed: true | false"}, {"label": "Tool runs", "sub": "the reviewed arguments", "tone": "good"}], "t": "diagram", "id": "dg-9_3-03-4"},
+
+
 
 
 
@@ -106,6 +114,9 @@ async for event in runner.run_async(user_id="u1", session_id=sid, new_message=ap
 
     { t: "h2", n: "04", text: "The workflow you still have to build", id: "workflow" },
 
+    {"kind": "trace", "title": "Six things ADK does not do for you", "caption": "**ADK gives you a durable pause and a record of what was proposed; everything in this table is yours.** The first row is the one with teeth: nothing checks who approves, so your interface authorises the reviewer — and the reviewer must not be the person who asked. **And the last line of the lesson is the one to act on:** if approvals are frequent the threshold is wrong. A person clicking through forty near-identical requests is a rubber stamp with a name attached, and an approval step that is always approved is worse than none because it manufactures the appearance of oversight.", "left": "concern", "codeW": 160, "vars": ["what you must decide"], "steps": [{"code": "who may approve", "state": ["your interface authorises - and not the requester"], "tone": "crit"}, {"code": "how they find out", "state": ["a queue, a channel, a rota - something must notify"], "changed": [0], "tone": "crit"}, {"code": "what they see", "state": ["the call and args, plus the conversation behind it"], "changed": [0], "tone": "accent"}, {"code": "expiry", "state": ["a timeout - or the conversation is stuck forever"], "changed": [0], "tone": "warn"}, {"code": "audit", "state": ["who approved what, when, on what evidence"], "changed": [0], "tone": "accent"}, {"code": "the waiting user", "state": ["the reply must say requested, not done"], "changed": [0], "tone": "good"}, {"code": "and if it fires often", "state": ["the threshold is wrong - tighten the tool"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-9_3-04-2"},
+
+
     { t: "table", head: ["Concern", "What to decide"],
       rows: [
         ["Who may approve", "ADK does not check. Your interface authorises the reviewer — and the reviewer must not be the person who asked"],
@@ -120,6 +131,9 @@ async for event in runner.run_async(user_id="u1", session_id=sid, new_message=ap
       body: [{ t: "p", text: "Approval fatigue is real: a person clicking through forty near-identical requests is not a control, they are a rubber stamp with a name attached. If approvals are frequent, the threshold is wrong — tighten the tool so that routine cases do not need a human, and reserve the interruption for cases that genuinely warrant one. An approval step that is always approved is worse than none, because it creates the appearance of oversight." }] },
 
     { t: "h2", n: "05", text: "The manual form", id: "manual" },
+
+    {"kind": "tree", "title": "The flag for the rule, the manual call for the message", "caption": "**Many production tools use both, and for different reasons.** The flag is enforcement: declarative, visible, impossible to forget inside a branch. The manual `request_confirmation` earns its place when the human needs context the arguments do not carry — the customer's history, the three previous refunds this month, why the agent thinks this one is justified. **And note the state machine in the manual form:** no confirmation yet means ask and return; a confirmation that is not confirmed means declined, with `retryable: False` so the model stops asking.", "root": {"label": "A tool action needs a human", "sub": "what do you need from the mechanism?", "tone": "accent", "children": [{"label": "The rule itself", "sub": "it must never be bypassable", "tone": "violet", "children": [{"label": "require_confirmation=True, or a callable", "sub": "declarative, at the definition", "tone": "violet"}]}, {"label": "The message a human reads", "sub": "context the arguments do not carry", "tone": "good", "children": [{"label": "await request_confirmation(hint=, payload=)", "sub": "your words, your renderable payload", "tone": "good"}, {"label": "then branch on tool_context.tool_confirmation", "sub": "None: ask. Not confirmed: declined.", "tone": "teal"}]}]}, "t": "diagram", "id": "dg-9_3-05-3"},
+
 
     { t: "code", lang: "python", title: "When the tool decides for itself",
       code: `async def refund(order_id: str, amount: float, tool_context) -> dict:

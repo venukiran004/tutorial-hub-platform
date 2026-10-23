@@ -23,6 +23,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "An exception escapes by default", id: "default" },
 
+    {"kind": "flow", "title": "By default the exception comes out of run_async, and the turn ends", "caption": "**Your HTTP handler sees it, the user sees whatever your error page says, and the conversation is left with an incomplete event log.** For a genuine bug that is exactly right — you want it in the error tracker rather than swallowed. **For an upstream that is briefly unavailable it is a poor outcome**, because the agent could simply have said so and carried on. The whole of this lesson is deciding which failures are which.", "cols": 3, "nodes": [{"id": "t", "label": "The tool raises ConnectionError", "sub": "no error callback registered", "tone": "crit"}, {"id": "r", "label": "It escapes run_async", "sub": "the turn ends there", "tone": "crit"}, {"id": "l", "label": "An incomplete event log", "sub": "and your error page", "tone": "crit"}, {"id": "b", "label": "For a real bug: correct", "sub": "you want it in the tracker", "tone": "good"}, {"id": "u", "label": "For a flaky upstream: poor", "sub": "the agent could have said so", "tone": "warn"}], "edges": [["t", "r"], ["r", "l"], ["l", "b"], ["l", "u"]], "t": "diagram", "id": "dg-10_3-01-2"},
+
     { t: "code", lang: "python", title: "n1.py — a tool that raises, with no error callback",
       code: `def flaky(city: str) -> dict:
     """Always fails."""
@@ -35,6 +37,8 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky])` },
     { t: "p", text: "The exception came straight out of `run_async` and the turn ended. Your HTTP handler sees it, the user sees whatever your error page says, and the conversation has an incomplete event log. For a genuine bug that is exactly right — you want it in your error tracker, not swallowed. For an upstream that is briefly unavailable it is a poor experience, because the agent could have said so." },
 
     { t: "h2", n: "02", text: "Converting a failure into a result", id: "converting" },
+
+    {"kind": "trace", "title": "Three details to copy, and the one line never to write", "caption": "**`return {\"error\": str(error)}` is the reflex, and it hands the model — and therefore the user, and therefore anyone who asks — your hostnames, table names, file paths and occasionally a connection string.** Log the real exception with the invocation id so you can find it, and give the model a description in terms the user could hear. **The `retryable` key is the third detail:** it tells the model whether trying again is sensible, which an unadorned message does not.", "left": "what the callback does", "codeW": 200, "vars": ["effect"], "steps": [{"code": "log.warning with the REAL error", "state": ["plus tool name and invocation id - findable later"], "tone": "good"}, {"code": "returns a generic message", "state": ["'the weather service is unavailable'"], "changed": [0], "tone": "good"}, {"code": "returns retryable: True", "state": ["the model knows trying again is sensible"], "changed": [0], "tone": "good"}, {"code": "so the user sees", "state": ["'Sorry, that service is down.' - not a trace"], "changed": [0], "tone": "violet"}, {"code": "but return str(error)", "state": ["hostnames, table names, paths, connection strings"], "changed": [0], "tone": "crit"}, {"code": "and return None", "state": ["the failure continues - right for your own bugs"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-10_3-02-3"},
 
     { t: "code", lang: "python", title: "on_tool_error_callback",
       code: `def on_tool_error(tool, args, tool_context, error):
@@ -62,6 +66,8 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
 
 
 
+
+
     { t: "diagram", kind: "compare", title: "Information, or fault?",
       caption: "The test: could the agent sensibly do something about it? If yes, it is information. If the only sensible response is a human fixing code, it is a fault.",
       columns: [
@@ -75,6 +81,8 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
     { t: "h2", n: "04", text: "Retrying", id: "retrying" },
 
     {"kind": "steps", "title": "Retry where the failure is", "caption": "Three attempts inside one tool call cost zero extra model calls and keep the transcript clean. Returning retryable: True three times costs three model round trips and fills the log with failures the user never needed to see.", "items": [{"label": "Attempt 1", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.2s", "sub": "backoff"}, {"label": "Attempt 2", "sub": "timeout", "tone": "crit"}, {"label": "sleep 0.4s", "sub": "backoff"}, {"label": "Attempt 3", "sub": "succeeds — the model never saw the failures", "tone": "good"}], "t": "diagram", "id": "dg-10_3-04-1"},
+
+
 
 
 
@@ -98,6 +106,8 @@ agent = LlmAgent(name="a", model=llm, tools=[flaky],
 
     { t: "h2", n: "05", text: "Bounding a runaway turn", id: "bounding" },
 
+    {"kind": "trace", "title": "Five runaways, and the bound for each - starting with the one you already have", "caption": "**`max_llm_calls` defaults to 500, which is a backstop rather than a budget:** it exists so a pathological loop terminates eventually, and by the time you reach it you have spent a great deal of money on one question. Set it to a plausible turn for your agent — a support agent that has made thirty model calls is not working, it is stuck. **And note the last row:** the framework's bounds do not cover a slow upstream holding the turn open. That needs a timeout in the tool's own HTTP client.", "left": "runaway", "codeW": 190, "vars": ["bound it with"], "steps": [{"code": "the same tool called repeatedly", "state": ["a lower max_llm_calls, plus retryable: False"], "tone": "crit"}, {"code": "a refine-and-check loop", "state": ["max_iterations on the LoopAgent"], "changed": [0], "tone": "warn"}, {"code": "transfer ping-pong", "state": ["disjoint descriptions, a transfer counter"], "changed": [0], "tone": "warn"}, {"code": "retrying a failing tool forever", "state": ["retryable: False, a per-invocation counter"], "changed": [0], "tone": "warn"}, {"code": "a slow upstream", "state": ["a timeout in the tool's HTTP client - not the framework"], "changed": [0], "tone": "crit"}, {"code": "and the default backstop", "state": ["500 calls - set it to a plausible turn instead"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-10_3-05-4"},
+
     { t: "code", lang: "python", title: "The guard you already have",
       code: `from google.adk.agents.run_config import RunConfig
 print(RunConfig().max_llm_calls)`,
@@ -117,6 +127,8 @@ print(RunConfig().max_llm_calls)`,
       ] },
 
     { t: "h2", n: "06", text: "What the user sees", id: "user" },
+
+    {"kind": "trace", "title": "Four things a good failure message does", "caption": "**The second row is why converting errors into results is a correctness issue and not only a UX one:** if a refund tool failed, the answer must not say the refund was issued. **And the fourth is the cheapest support investment in the whole course** — the invocation id in the message turns “it didn't work yesterday” from an unreproducible complaint into a log lookup. Keeping the conversation alive matters too: a failure that ends the session throws away context the user then has to re-establish.", "left": "do this", "codeW": 190, "vars": ["instead of"], "steps": [{"code": "say what failed and offer a next step", "state": ["'An error occurred.'"], "tone": "good"}, {"code": "never claim success you did not have", "state": ["'Your refund has been issued.'"], "changed": [0], "tone": "crit"}, {"code": "keep the conversation alive", "state": ["ending the session and losing the context"], "changed": [0], "tone": "good"}, {"code": "show the invocation id", "state": ["an unreproducible complaint"], "changed": [0], "tone": "violet"}, {"code": "and for work that outlives the turn", "state": ["a coroutine waiting - use resumability_config"], "changed": [0], "tone": "accent"}], "t": "diagram", "id": "dg-10_3-06-5"},
 
     { t: "dl", items: [
       ["Say what failed and what to do", "\"I couldn't reach the shipping system just now — shall I try again, or would you like the order details instead?\" beats \"An error occurred.\""],
