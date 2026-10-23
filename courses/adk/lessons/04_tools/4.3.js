@@ -49,6 +49,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Independent calls: one round, run together", id: "parallel" },
 
+    {"kind": "trace", "title": "Two 200 ms tools in 0.22 s, and one fewer model call", "caption": "**Both savings come from the same thing: the model asked for both tools in one response.** Two function-call parts in one message means ADK executes them concurrently — 0.22 seconds rather than 0.4 — and it means the whole answer cost two model calls instead of three, because one round handled both tools. **The concurrency is conditional on your tools being async:** two `def` tools that block run one after the other and also stall every other user's turn in the process for their duration.", "left": "measurement", "codeW": 190, "vars": ["two async tools", "two blocking tools"], "steps": [{"code": "wall clock for 2 x 200 ms", "state": ["0.22 s - concurrent", "0.4 s - serial"], "tone": "good"}, {"code": "model calls for the answer", "state": ["2 - one round asked for both", "2"], "tone": "good"}, {"code": "...against one tool per round", "state": ["3", "3"], "changed": [0, 1], "tone": "warn"}, {"code": "effect on other users", "state": ["none", "the event loop is held"], "changed": [0, 1], "tone": "crit"}, {"code": "events produced", "state": ["both calls in one, both results in one", "the framework groups them"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_3-03-0"},
+
+
     { t: "p", text: "When the tools do not depend on each other, a capable model asks for both in one response — two `function_call` parts in the same message. ADK then executes them **concurrently**. Measured with two tools that each sleep 200 ms:" },
 
     { t: "code", lang: "python", title: "Two async tools, one model turn",
@@ -85,6 +88,9 @@ async def slow_b(x: int) -> dict:
       body: [{ t: "p", text: "Two `async def` tools awaiting network calls overlap. Two `def` tools that block — `requests.get`, a synchronous database driver, `time.sleep` — do not: they hold the event loop one after the other, and they also stall every other user's turn in the same process for their duration. If a tool does I/O, it should be `async def` with an async client (lesson 10.1)." }] },
 
     { t: "h2", n: "04", text: "What ends the loop", id: "end" },
+
+    {"kind": "trace", "title": "Five ways the loop ends, and only one is the normal one", "caption": "**Knowing all five is what stops a client hanging or cutting a turn short**, because four of them end an invocation without the model having written a closing sentence. The second row is the one to recognise: a tool that sets `skip_summarization` makes its own function-response event final, so the tool's output *is* the answer and there is no model pass after it. **And the long-running and confirmation rows do not end the conversation at all** — they end the invocation, with completion arriving later through a separate resumption.", "left": "ending", "codeW": 180, "vars": ["trigger", "which event is final"], "steps": [{"code": "the normal one", "state": ["text with no function calls", "the model's text event"], "tone": "good"}, {"code": "the tool answers directly", "state": ["actions.skip_summarization", "the function-response event"], "changed": [0, 1], "tone": "violet"}, {"code": "long-running tool", "state": ["LongRunningFunctionTool pending", "invocation returns; finishes later"], "changed": [0, 1], "tone": "accent"}, {"code": "a human is needed", "state": ["request_confirmation", "paused, awaiting your client"], "changed": [0, 1], "tone": "accent"}, {"code": "an exception", "state": ["a tool raised and nothing caught it", "NO final event at all"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_3-04-1"},
+
 
     { t: "table", head: ["Ending", "Trigger", "Where"],
       rows: [

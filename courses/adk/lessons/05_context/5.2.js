@@ -22,6 +22,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Four scopes, one dictionary", id: "scopes" },
 
+    {"kind": "trace", "title": "One dictionary, four scopes, selected by a prefix", "caption": "**Nothing distinguishes the scopes but the prefix on the key** — no separate API, no separate object, and the fourth scope is the absence of a prefix. The constants are on the `State` class and there are exactly three of them. **The two rows to hold on to are the last two:** `app:` is visible to every user of the application, which makes it configuration rather than data; and `temp:` does not survive the turn at all, which is correct for a scratch value and a silent loss if you expected otherwise.", "left": "written as", "codeW": 170, "vars": ["scope", "survives the turn", "survives a new session", "other users see it"], "steps": [{"code": "state['draft']", "state": ["this session", "yes", "no", "no"], "tone": "good"}, {"code": "state['user:tier']", "state": ["this user", "yes", "yes", "no"], "changed": [0, 2], "tone": "good"}, {"code": "state['app:hits']", "state": ["the whole app", "yes", "yes", "YES"], "changed": [0, 3], "tone": "crit"}, {"code": "state['temp:scratch']", "state": ["this invocation", "NO", "no", "no"], "changed": [0, 1, 2, 3], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-01-1"},
+
     { t: "p", text: "There is a single `state` dictionary and the prefix on each key selects the store it is committed to. Nothing else distinguishes them — no separate API, no separate object. The constants are on the `State` class, and they are exactly three, because the fourth scope is the absence of a prefix." },
 
     { t: "code", lang: "python", title: "The prefixes, from the source",
@@ -42,6 +44,8 @@ print(State.APP_PREFIX, State.USER_PREFIX, State.TEMP_PREFIX)`,
     { t: "h2", n: "02", text: "All four, measured", id: "measured" },
 
     {"kind": "matrix", "title": "The measured result, as a table", "caption": "Executed across two sessions and two users. temp: never appeared anywhere — not in the session, not even in the delta on the event.", "cols": ["Same session", "New session", "Other user"], "rows": ["turn (no prefix)", "user:name", "app:hits", "temp:scratch"], "cells": [[true, false, false], [true, true, false], [true, true, true], [{"text": "within the turn", "tone": "warn"}, false, false]], "t": "diagram", "id": "dg-5_2-02-0"},
+
+
 
 
 
@@ -100,6 +104,8 @@ state_delta on the tool-response event: {'app:hits': 3, 'user:name': 'Ada', 'tur
 
     { t: "h2", n: "04", text: "Three ways to write state", id: "writes" },
 
+    {"kind": "trace", "title": "Three writers, and the template that raises rather than guesses", "caption": "**Which writer you use is a statement about where the value came from**, which is why the three exist rather than one: a booking id is the result of doing something, a turn counter is bookkeeping around the turn, and the agent's own answer is `output_key`. **The behaviour worth knowing is in the last row:** `{summary}` with no `summary` in state raises instead of rendering an empty string, so ADK refuses to send the model a sentence with a hole in it. For a genuinely optional key, build the string yourself in an instruction provider.", "left": "how you write", "codeW": 190, "vars": ["the value is", "use when"], "steps": [{"code": "tool_context.state['k'] = v", "state": ["a result of doing something", "a booking id, a fetched record"], "tone": "good"}, {"code": "callback_context.state['k'] = v", "state": ["bookkeeping around the turn", "a counter, a flag, a classification"], "changed": [0, 1], "tone": "good"}, {"code": "LlmAgent(output_key='summary')", "state": ["the agent's own final text", "handing work to the next agent"], "changed": [0, 1], "tone": "accent"}, {"code": "reading it back: '{summary}'", "state": ["interpolated fresh each call", "-"], "changed": [0, 1], "tone": "violet"}, {"code": "...with no summary in state", "state": ["RAISES, not an empty string", "use an instruction provider"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_2-04-2"},
+
     { t: "table", head: ["Way", "Code", "Use it when"],
       rows: [
         ["From a tool", "`tool_context.state[\"k\"] = v`", "The value is a result of doing something — a booking id, a fetched record"],
@@ -122,6 +128,8 @@ pipeline = SequentialAgent(name="review", sub_agents=[summariser, critic])`,
       body: [{ t: "p", text: "`{summary}` with no `summary` in state does not silently render as an empty string — ADK raises rather than sending the model a sentence with a hole in it. If a key is genuinely optional, use an instruction provider function (lesson 5.5) and build the string yourself with `state.get(...)`." }] },
 
     { t: "h2", n: "05", text: "What state is not for", id: "not-for" },
+
+    {"kind": "trace", "title": "Four things state is not for, and where each belongs", "caption": "**State is loaded and written on every turn of every conversation, which is the whole argument** — a megabyte in state taxes every request, not just the one that put it there. The second row is the security one: state is routinely interpolated into instructions and is visible to callbacks and tools, so an access token in state is a token in the prompt. **And the state-against-memory boundary is worth stating precisely:** `user:` state is a small set of keys you chose, read on every turn, cheap and exact; memory is everything the user ever said, searched on demand, approximate, and paid for per query.", "left": "what you were going to put there", "codeW": 230, "vars": ["why not", "where instead"], "steps": [{"code": "a PDF, an image, a 200-row result", "state": ["read and written every turn", "an artifact"], "tone": "crit"}, {"code": "an access token", "state": ["state reaches instructions and tools", "the credential service"], "changed": [0, 1], "tone": "crit"}, {"code": "everything the user ever said", "state": ["it is not a transcript store", "memory, searched on demand"], "changed": [0, 1], "tone": "warn"}, {"code": "your application's own records", "state": ["it is not your database", "your database"], "changed": [0, 1], "tone": "warn"}, {"code": "a dietary requirement", "state": ["must be true every turn, exactly", "user: state - correct here"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-5_2-05-3"},
 
     { t: "dl", items: [
       ["Large blobs", "A PDF, an image, a 200-row result set. State is loaded and written on every turn of every conversation; putting a megabyte in it taxes every request. Use artifacts (lesson 6.3)."],

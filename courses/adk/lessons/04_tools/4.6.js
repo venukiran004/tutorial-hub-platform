@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "What every toolset implements",
       code: `from google.adk.tools.base_toolset import BaseToolset
 print([n for n in dir(BaseToolset) if not n.startswith("_")])
@@ -68,6 +70,9 @@ agent = LlmAgent(name="store", model=M, instruction="Help with the pet store.",
 
     { t: "h2", n: "03", text: "Filtering", id: "filtering" },
 
+    {"kind": "trace", "title": "Two filter forms, and why the predicate exists", "caption": "**The list form is the one to default to, because it admits nothing you have not read** — and the predicate form exists for the case the list cannot express: an allowed set that depends on who is asking. `get_tools` is called per request with the context available, so an operator can be given the write tools and nobody else. **The pattern to avoid is a predicate that excludes by prefix:** it reads as safety and is a deny-list in disguise, so a tool named `purge_all` added next month passes straight through.", "left": "filter", "codeW": 190, "vars": ["admits", "when to use it"], "steps": [{"code": "tool_filter=['read_file', 'list_dir']", "state": ["exactly those two, for ever", "the default - an allow-list"], "tone": "good"}, {"code": "tool_filter=predicate(tool, ctx)", "state": ["whatever it returns True for", "when the set depends on the user"], "changed": [0, 1], "tone": "violet"}, {"code": "...not name.startswith('delete_')", "state": ["everything not matching today", "a deny-list in disguise"], "changed": [0, 1], "tone": "crit"}, {"code": "so a new tool next month", "state": ["admitted silently by the predicate", "refused by the list"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_6-03-1"},
+
+
     { t: "code", lang: "python", title: "Two ways to narrow a toolset",
       code: `# by name
 McpToolset(connection_params=params, tool_filter=["read_file", "list_directory"])
@@ -80,6 +85,9 @@ McpToolset(connection_params=params, tool_filter=only_safe)`,
       caption: "`tool_filter` accepts a list of names or a predicate; `tool_name_prefix` namespaces them so two servers with a `search` tool do not collide. The same filtering idea applies to any toolset — and a filter is a security control as much as a usability one (lesson 9.2)." },
 
     { t: "h2", n: "04", text: "Other ecosystems", id: "adapters" },
+
+    {"kind": "trace", "title": "The wrapper fixes the interface and not the description", "caption": "**A LangChain tool written for a different agent loop often has a terse or oddly worded description, and that description becomes your model's routing information.** The wrapper adapts it to `BaseTool` so ADK can declare and call it; it cannot improve the prose, which is why both wrappers take an optional `name` and `description` override — and why using them is usually the right move rather than an edge case. **The second row carries the other cost:** the wrapped tool runs synchronously unless the underlying one is async, so lesson 4.3's blocking warning applies unchanged.", "left": "concern", "codeW": 190, "vars": ["does the wrapper fix it?", "what to do"], "steps": [{"code": "the interface", "state": ["YES - adapted to BaseTool", "nothing"], "tone": "good"}, {"code": "the description", "state": ["no", "override it; it is routing data"], "changed": [0, 1], "tone": "crit"}, {"code": "blocking I/O", "state": ["no - sync unless the tool is async", "lesson 4.3 applies"], "changed": [0, 1], "tone": "crit"}, {"code": "Google's own toolsets", "state": ["bigquery, spanner and the rest", "first-party, already shaped"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_6-04-2"},
+
 
     { t: "code", lang: "python", title: "LangChain and CrewAI tools",
       code: `from google.adk.tools.langchain_tool import LangchainTool

@@ -97,6 +97,9 @@ agent = LlmAgent(name="exporter", model=M, instruction="Export on request.",
 
     { t: "h2", n: "03", text: "Confirmation", id: "confirmation" },
 
+    {"kind": "flow", "title": "The framework pauses; your client asks the human", "caption": "**ADK's part ends at surfacing the request — the rest is yours**, and that division is the thing to internalise before building anything with approvals. The framework pauses the invocation and emits a confirmation request; your client has to find a human, get an answer, and resume the invocation with it, which may be minutes or days later (lesson 9.3). **What makes this workable is that it is a per-tool decision:** the same agent can hold three safe tools and one that always stops, declared on the tool rather than configured on the agent.", "cols": 3, "nodes": [{"id": "r", "label": "require_confirmation=True", "sub": "or a predicate on the arguments", "tone": "accent"}, {"id": "p", "label": "ADK pauses and surfaces the request", "sub": "the invocation returns", "tone": "good"}, {"id": "c", "label": "YOUR client asks a human", "sub": "and the state waits in the session", "tone": "violet"}, {"id": "a", "label": "It resumes with the answer", "sub": "minutes or days later", "tone": "violet"}, {"id": "t", "label": "Declared per TOOL, not per agent", "sub": "three safe tools and one that stops", "tone": "good"}], "edges": [["r", "p"], ["p", "c"], ["c", "a"], ["r", "t"]], "t": "diagram", "id": "dg-4_5-03-0"},
+
+
     { t: "code", lang: "python", title: "Two ways to require a human",
       code: `from google.adk.tools import FunctionTool
 

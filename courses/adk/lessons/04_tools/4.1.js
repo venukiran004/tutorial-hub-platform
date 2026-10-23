@@ -74,6 +74,8 @@ agent = LlmAgent(name="concierge", model=M, instruction="…", tools=[book_table
 
 
 
+
+
     { t: "code", lang: "python", title: "Containers, optionals and defaults",
       code: `def typed(items: list[str], count: Optional[int] = None, flag: bool = False) -> dict:
     """Does a thing.
@@ -108,6 +110,9 @@ agent = LlmAgent(name="concierge", model=M, instruction="…", tools=[book_table
       ] },
 
     { t: "h2", n: "03", text: "tool_context is injected, not declared", id: "toolcontext" },
+
+    {"kind": "flow", "title": "tool_context is stripped from the declaration the model sees", "caption": "**That stripping is the whole mechanism, and it is what makes `tool_context` safe.** The model is asked for `fact` and nothing else, so it cannot supply a context, cannot forge one, and cannot be persuaded to. Verified on 2.9.2: the generated schema lists one property and requires one. **The same reasoning is why a credential must never be a parameter** — anything in the declaration is something the model is asked to produce, and a key the model produces is a key in the conversation.", "cols": 3, "nodes": [{"id": "s", "label": "def remember(fact, tool_context)", "sub": "two parameters in Python", "tone": "accent"}, {"id": "d", "label": "The declaration has one property", "sub": "properties: ['fact']", "tone": "good"}, {"id": "m", "label": "So the model supplies only fact", "sub": "it never sees the context", "tone": "good"}, {"id": "f", "label": "ADK injects the context at call time", "sub": "state, artifacts, actions, auth", "tone": "violet"}, {"id": "c", "label": "Which is why a credential is never a parameter", "sub": "anything declared is asked for", "tone": "crit"}], "edges": [["s", "d"], ["d", "m"], ["m", "f"], ["f", "c"]], "t": "diagram", "id": "dg-4_1-03-1"},
+
 
     { t: "code", lang: "python", title: "A tool that takes context",
       code: `def remember(fact: str, tool_context: ToolContext) -> dict:
@@ -158,6 +163,9 @@ def get_order(order_id: str) -> dict:
       caption: "The second version also happens to be cheaper: four fields instead of forty, on every subsequent model call for the rest of the conversation, because the response stays in the history (lesson 1.5)." },
 
     { t: "h2", n: "05", text: "FunctionTool, and when you need it explicitly", id: "functiontool" },
+
+    {"kind": "trace", "title": "When a bare function is not enough", "caption": "**Passing a bare function wraps it in a `FunctionTool` for you, so you only construct one when you need its arguments** — and there are three worth knowing. `require_confirmation` takes a bool or a predicate over the arguments, which makes approval a per-tool decision rather than a per-agent one: the same agent can hold three safe tools and one that always stops. **The last row is the one that costs other users:** a `def` tool blocking on `requests.get` holds the event loop for its duration, stalling every other turn in the process.", "left": "what you need", "codeW": 200, "vars": ["how", "note"], "steps": [{"code": "nothing special", "state": ["pass the bare function", "wrapped for you"], "tone": "good"}, {"code": "always pause for a human", "state": ["FunctionTool(f, require_confirmation=True)", "a per-TOOL decision"], "changed": [0, 1], "tone": "violet"}, {"code": "pause above a threshold", "state": ["require_confirmation=lambda args, ctx: ...", "decided on the arguments"], "changed": [0, 1], "tone": "violet"}, {"code": "returns now, finishes later", "state": ["LongRunningFunctionTool(func=...)", "the invocation does not wait"], "changed": [0, 1], "tone": "accent"}, {"code": "a tool that does I/O", "state": ["async def, with an async client", "a blocking def stalls everyone"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_1-05-2"},
+
 
     { t: "p", text: "Passing a bare function wraps it in a `FunctionTool` for you. Construct one yourself when you need its arguments:" },
 

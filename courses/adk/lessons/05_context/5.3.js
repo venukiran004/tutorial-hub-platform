@@ -22,6 +22,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One interface, five methods", id: "interface" },
 
+    {"kind": "trace", "title": "Five methods, which is why the swap is free", "caption": "**The runner calls `get_session` at the start of a turn and `append_event` for each event it produces, and never asks what is underneath** — so the entire difference between in-memory, Postgres and a managed service is which object you hand the runner. That is the whole reason the dev loop and production can run identical agent code. **And it is the extension point too:** a store ADK does not ship — DynamoDB, Firestore, your own service — is a subclass implementing these five.", "left": "method", "codeW": 170, "vars": ["called by", "when"], "steps": [{"code": "create_session", "state": ["you", "a conversation starts"], "tone": "good"}, {"code": "get_session", "state": ["the runner", "the start of every turn"], "changed": [0, 1], "tone": "accent"}, {"code": "append_event", "state": ["the runner", "per event produced"], "changed": [0, 1], "tone": "accent"}, {"code": "list_sessions", "state": ["you", "rendering a conversation list"], "changed": [0, 1], "tone": "good"}, {"code": "delete_session", "state": ["you", "erasure or cleanup"], "changed": [0, 1], "tone": "good"}, {"code": "...and that is the whole surface", "state": ["subclass it for any other store", "the swap costs one constructor"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-01-1"},
+
     { t: "code", lang: "python", title: "The whole contract, introspected",
       code: `import inspect
 from google.adk.sessions import BaseSessionService
@@ -52,6 +54,8 @@ delete_session(self, *, app_name: str, user_id: str, session_id: str) -> None` }
     { t: "h2", n: "03", text: "A database service, end to end", id: "database" },
 
     {"kind": "steps", "title": "The restart test, executed", "caption": "A second service object reading the same file stands in for a process that has restarted. All four events and the state the tool wrote came back, so a restart mid-conversation is invisible to the user.", "items": [{"label": "create_session", "sub": "a row in sessions", "tone": "accent"}, {"label": "One turn", "sub": "4 events; a tool writes state", "tone": "good"}, {"label": "New service object", "sub": "as if the process died", "tone": "crit"}, {"label": "get_session", "sub": "events = 4, state intact", "tone": "violet"}], "t": "diagram", "id": "dg-5_3-03-0"},
+
+
 
 
 
@@ -105,6 +109,8 @@ user_states ['app_name', 'user_id', 'state', 'update_time']` },
       ] },
 
     { t: "h2", n: "05", text: "Operating it", id: "operating" },
+
+    {"kind": "trace", "title": "Four operational concerns a session store brings with it", "caption": "**Events accumulate forever, so the retention decision is one you make before the table is large rather than after.** The pool row is the arithmetic from lesson 16.5 arriving here: the service takes SQLAlchemy engine arguments, and the limit that matters is pool size times replica count rather than the per-process number. **And the one people reach last: conversations are user data.** If deleting a session has to mean deleting it, that is a requirement on the backup policy too, not just on the delete call.", "left": "concern", "codeW": 170, "vars": ["what to decide", "when"], "steps": [{"code": "growth", "state": ["a retention policy - delete or archive", "before the table is large"], "tone": "crit"}, {"code": "connection pooling", "state": ["pool size x replicas, not per process", "before the first autoscale"], "changed": [0, 1], "tone": "crit"}, {"code": "backups", "state": ["erasure must reach the backups too", "before the first deletion request"], "changed": [0, 1], "tone": "warn"}, {"code": "inspecting production shapes", "state": ["adk web --session_service_uri at a COPY", "never at production"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_3-05-2"},
 
     { t: "table", head: ["Concern", "What to do"],
       rows: [

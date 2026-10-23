@@ -46,6 +46,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Search and grounding", id: "search" },
 
+    {"kind": "flow", "title": "The valuable part of a search tool is the metadata, not the answer", "caption": "**`event.grounding_metadata` carries the sources the model used, with the spans of the answer each one supports** — which is what lets a UI show citations and what a groundedness evaluation checks against. Without it an answer is a claim; with it, a claim with evidence. **And the combination limit is worth knowing before you hit it:** server-side tools have historically restricted being combined with each other or with function tools, and the rules move by model version. The robust response is the same as for a long tool list — put the built-in tool on its own small agent and expose it with `AgentTool`.", "cols": 3, "nodes": [{"id": "t", "label": "tools=[google_search]", "sub": "no key, no client, no rate limiting", "tone": "good"}, {"id": "a", "label": "The model performs the search", "sub": "server-side", "tone": "accent"}, {"id": "g", "label": "grounding_metadata comes back", "sub": "sources, and the spans they support", "tone": "violet"}, {"id": "c", "label": "Which is the citation UI and the eval", "sub": "a claim with evidence", "tone": "violet"}, {"id": "l", "label": "But built-ins have combination limits", "sub": "and they vary by model version", "tone": "crit"}, {"id": "w", "label": "So isolate it behind an AgentTool", "sub": "one capability, one declaration", "tone": "good"}], "edges": [["t", "a"], ["a", "g"], ["g", "c"], ["a", "l"], ["l", "w"]], "t": "diagram", "id": "dg-4_4-02-1"},
+
+
     { t: "code", lang: "python", title: "An agent that can look things up",
       code: `from google.adk.agents import LlmAgent
 from google.adk.tools import google_search
@@ -106,6 +109,8 @@ analyst = LlmAgent(name="analyst", model="gemini-2.5-pro",
     { t: "h2", n: "04", text: "What you lose with server-side tools", id: "tradeoffs" },
 
     {"kind": "flow", "title": "Keeping a built-in from constraining the whole agent", "caption": "The restriction applies inside the child agent where the built-in lives. The parent sees one ordinary function tool and keeps its own toolbox — the same encapsulation that keeps tool lists short in lesson 2.6.", "cols": 3, "nodes": [{"id": "p", "label": "Parent agent", "sub": "its own tools, unrestricted", "tone": "accent"}, {"id": "a", "label": "AgentTool", "sub": "looks like one function", "tone": "good"}, {"id": "c", "label": "Child agent", "sub": "holds google_search alone", "tone": "violet"}, {"id": "g", "label": "Grounded result", "sub": "with grounding metadata", "tone": "warn"}], "edges": [["p", "a"], ["a", "c"], ["c", "g"]], "t": "diagram", "id": "dg-4_4-04-0"},
+
+
 
 
 

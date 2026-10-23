@@ -55,6 +55,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "State from a tool", id: "state" },
 
+    {"kind": "trace", "title": "Four prefixes, and the one that is thrown away", "caption": "**The prefix is the scope, and `temp:` is the one people are surprised by** — it is discarded rather than persisted, which is exactly what you want for a scratch value and a silent data loss if you expected it to survive the turn. The mechanism underneath is the same everywhere in ADK: the assignment is collected into the event's `state_delta` and applied on append. **So a tool cannot lose a write by raising after the assignment — and cannot read another agent's write that has not been appended yet.**", "left": "what you write", "codeW": 180, "vars": ["scope", "survives"], "steps": [{"code": "state['draft'] = ...", "state": ["this session", "the whole conversation"], "tone": "good"}, {"code": "state['user:tier'] = ...", "state": ["this user, across sessions", "every future conversation"], "changed": [0, 1], "tone": "good"}, {"code": "state['app:banner'] = ...", "state": ["every user of the app", "application-wide"], "changed": [0, 1], "tone": "accent"}, {"code": "state['temp:x'] = ...", "state": ["this invocation", "DISCARDED - never written"], "changed": [0, 1], "tone": "crit"}, {"code": "and the rule of thumb", "state": ["return what the model needs now", "write what later turns need"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
+
     { t: "table", head: ["Write", "Scope", "Survives"],
       rows: [
         ["`state[\"draft\"] = …`", "This session", "The whole conversation; persisted by the session service"],
@@ -71,6 +74,8 @@ EC.receiveLesson({
     { t: "h2", n: "03", text: "Actions: changing what happens next", id: "actions" },
 
     {"kind": "flow", "title": "actions change what the framework does next", "caption": "A tool that only returns a value is a function. Setting an action is how a tool participates in the control flow — and skip_summarization was measured at one model call instead of two.", "cols": 4, "nodes": [{"id": "t", "label": "Tool returns", "sub": "plus actions set on the context", "tone": "accent"}, {"id": "s", "label": "skip_summarization", "sub": "the result IS the answer", "tone": "good"}, {"id": "e", "label": "escalate", "sub": "ends the enclosing loop", "tone": "warn"}, {"id": "x", "label": "transfer_to_agent", "sub": "hands the turn to another agent", "tone": "violet"}], "edges": [["t", "s"], ["t", "e"], ["t", "x"]], "t": "diagram", "id": "dg-4_2-03-0"},
+
+
 
 
 
@@ -99,6 +104,9 @@ EC.receiveLesson({
     ] },
 
     { t: "h2", n: "04", text: "Artifacts and memory from a tool", id: "artifacts" },
+
+    {"kind": "flow", "title": "A tool that produces a file, and one that recalls a fact", "caption": "**`save_artifact` returns a version rather than a path, which is the detail that matters:** the artifact service assigns versions, so the same filename written twice is two versions and neither overwrites the other. The tool then returns the filename and version to the model, not the bytes — a PDF in a return value is a PDF in the context window. **Memory is the mirror image:** `search_memory` reaches across past sessions, which is the only way a tool can answer something the current conversation never contained.", "cols": 3, "nodes": [{"id": "t", "label": "The tool renders a PDF", "sub": "bytes, in the process", "tone": "accent"}, {"id": "s", "label": "await tool_context.save_artifact(...)", "sub": "returns a VERSION", "tone": "good"}, {"id": "v", "label": "The service assigns versions", "sub": "the same name twice is two versions", "tone": "good"}, {"id": "r", "label": "Return the filename and version", "sub": "never the bytes", "tone": "violet"}, {"id": "m", "label": "search_memory reaches past sessions", "sub": "what this conversation never held", "tone": "accent"}], "edges": [["t", "s"], ["s", "v"], ["v", "r"], ["t", "m"]], "t": "diagram", "id": "dg-4_2-04-2"},
+
 
     { t: "code", lang: "python", title: "Producing a file and recalling a fact",
       code: `async def build_report(month: str, tool_context: ToolContext) -> dict:

@@ -41,6 +41,9 @@ print(list(AuthConfig.model_fields))
 
     { t: "h2", n: "02", text: "Application credentials", id: "app" },
 
+    {"kind": "trace", "title": "Four places a credential can come from, and the one that is always wrong", "caption": "**A credential as a tool parameter puts the key in the declaration, which means the model is asked to supply it** — so it appears in the conversation, in the session, in your logs and in the trace, four copies you did not intend. That is the whole argument, and it is why `tool_context` is injected rather than declared (lesson 4.1). **For a tool you write yourself the simplest correct answer is often no ADK auth at all:** read the secret from the environment inside the tool. The auth types earn their place when a generated *toolset* needs configuring, or when the flow is interactive.", "left": "where the credential comes from", "codeW": 220, "vars": ["visible to the model?", "use when"], "steps": [{"code": "os.environ, inside the tool", "state": ["no", "a tool you wrote - the usual answer"], "tone": "good"}, {"code": "AuthCredential on a toolset", "state": ["no", "a generated OpenAPI toolset"], "changed": [0, 1], "tone": "good"}, {"code": "the credential service", "state": ["no", "per-user, interactive flows"], "changed": [0, 1], "tone": "good"}, {"code": "a tool parameter", "state": ["YES - and in the session, logs, trace", "never"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_8-02-0"},
+
+
     { t: "code", lang: "python", title: "An API key on a generated toolset",
       code: `from fastapi.openapi.models import APIKey, APIKeyIn
 from google.adk.auth import AuthCredential, AuthCredentialTypes
@@ -102,6 +105,9 @@ print(list(OAuth2Auth.model_fields))
       caption: "Both halves of the flow live in one object: what you send (client id, auth uri, redirect uri, PKCE fields) and what comes back (auth code, access token, refresh token, expiry). `code_verifier` and `code_challenge_method` are there because PKCE is expected for public clients (lesson 12.10 of the Python course)." },
 
     { t: "h2", n: "04", text: "Where credentials live", id: "service" },
+
+    {"kind": "flow", "title": "Tokens in session state are tokens in your database", "caption": "**The two services compose into something nobody chose:** `session_state_credential_service` writes access and refresh tokens into session state, and `DatabaseSessionService` writes session state into your database — in plain text unless you encrypted it yourself. Each is reasonable alone and the pair is a credential store you did not design. **For anything past a prototype, keep the tokens in a secret manager or an encrypted store with a short-lived cache**, and let session state hold a reference rather than the secret.", "cols": 3, "nodes": [{"id": "c", "label": "session_state_credential_service", "sub": "tokens into session state", "tone": "accent"}, {"id": "d", "label": "DatabaseSessionService", "sub": "session state into your database", "tone": "accent"}, {"id": "p", "label": "Tokens in your database, in plain text", "sub": "unless you encrypted it", "tone": "crit"}, {"id": "b", "label": "in_memory_credential_service", "sub": "dev only - lost on restart", "tone": "warn"}, {"id": "s", "label": "Secret manager, or an encrypted store", "sub": "with a short-lived cache", "tone": "good"}, {"id": "r", "label": "State holds a reference, not the secret", "sub": "which is the shape to aim for", "tone": "good"}], "edges": [["c", "d"], ["d", "p"], ["p", "s"], ["s", "r"], ["c", "b"]], "t": "diagram", "id": "dg-4_8-04-1"},
+
 
     { t: "code", lang: "python", title: "The credential services ADK ships",
       code: `# from google.adk.auth.credential_service:

@@ -1,0 +1,193 @@
+{
+ "4.1": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "tool_context is stripped from the declaration the model sees",
+         "caption": "**That stripping is the whole mechanism, and it is what makes `tool_context` safe.** The model is asked for `fact` and nothing else, so it cannot supply a context, cannot forge one, and cannot be persuaded to. Verified on 2.9.2: the generated schema lists one property and requires one. **The same reasoning is why a credential must never be a parameter** — anything in the declaration is something the model is asked to produce, and a key the model produces is a key in the conversation.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "def remember(fact, tool_context)", "sub": "two parameters in Python", "tone": "accent"},
+          {"id": "d", "label": "The declaration has one property", "sub": "properties: ['fact']", "tone": "good"},
+          {"id": "m", "label": "So the model supplies only fact", "sub": "it never sees the context", "tone": "good"},
+          {"id": "f", "label": "ADK injects the context at call time", "sub": "state, artifacts, actions, auth", "tone": "violet"},
+          {"id": "c", "label": "Which is why a credential is never a parameter", "sub": "anything declared is asked for", "tone": "crit"}],
+         "edges": [["s", "d"], ["d", "m"], ["m", "f"], ["f", "c"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "When a bare function is not enough",
+         "caption": "**Passing a bare function wraps it in a `FunctionTool` for you, so you only construct one when you need its arguments** — and there are three worth knowing. `require_confirmation` takes a bool or a predicate over the arguments, which makes approval a per-tool decision rather than a per-agent one: the same agent can hold three safe tools and one that always stops. **The last row is the one that costs other users:** a `def` tool blocking on `requests.get` holds the event loop for its duration, stalling every other turn in the process.",
+         "left": "what you need", "codeW": 200,
+         "vars": ["how", "note"],
+         "steps": [
+          {"code": "nothing special", "state": ["pass the bare function", "wrapped for you"], "tone": "good"},
+          {"code": "always pause for a human", "state": ["FunctionTool(f, require_confirmation=True)", "a per-TOOL decision"], "changed": [0, 1], "tone": "violet"},
+          {"code": "pause above a threshold", "state": ["require_confirmation=lambda args, ctx: ...", "decided on the arguments"], "changed": [0, 1], "tone": "violet"},
+          {"code": "returns now, finishes later", "state": ["LongRunningFunctionTool(func=...)", "the invocation does not wait"], "changed": [0, 1], "tone": "accent"},
+          {"code": "a tool that does I/O", "state": ["async def, with an async client", "a blocking def stalls everyone"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "4.2": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four prefixes, and the one that is thrown away",
+         "caption": "**The prefix is the scope, and `temp:` is the one people are surprised by** — it is discarded rather than persisted, which is exactly what you want for a scratch value and a silent data loss if you expected it to survive the turn. The mechanism underneath is the same everywhere in ADK: the assignment is collected into the event's `state_delta` and applied on append. **So a tool cannot lose a write by raising after the assignment — and cannot read another agent's write that has not been appended yet.**",
+         "left": "what you write", "codeW": 180,
+         "vars": ["scope", "survives"],
+         "steps": [
+          {"code": "state['draft'] = ...", "state": ["this session", "the whole conversation"], "tone": "good"},
+          {"code": "state['user:tier'] = ...", "state": ["this user, across sessions", "every future conversation"], "changed": [0, 1], "tone": "good"},
+          {"code": "state['app:banner'] = ...", "state": ["every user of the app", "application-wide"], "changed": [0, 1], "tone": "accent"},
+          {"code": "state['temp:x'] = ...", "state": ["this invocation", "DISCARDED - never written"], "changed": [0, 1], "tone": "crit"},
+          {"code": "and the rule of thumb", "state": ["return what the model needs now", "write what later turns need"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "A tool that produces a file, and one that recalls a fact",
+         "caption": "**`save_artifact` returns a version rather than a path, which is the detail that matters:** the artifact service assigns versions, so the same filename written twice is two versions and neither overwrites the other. The tool then returns the filename and version to the model, not the bytes — a PDF in a return value is a PDF in the context window. **Memory is the mirror image:** `search_memory` reaches across past sessions, which is the only way a tool can answer something the current conversation never contained.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "The tool renders a PDF", "sub": "bytes, in the process", "tone": "accent"},
+          {"id": "s", "label": "await tool_context.save_artifact(...)", "sub": "returns a VERSION", "tone": "good"},
+          {"id": "v", "label": "The service assigns versions", "sub": "the same name twice is two versions", "tone": "good"},
+          {"id": "r", "label": "Return the filename and version", "sub": "never the bytes", "tone": "violet"},
+          {"id": "m", "label": "search_memory reaches past sessions", "sub": "what this conversation never held", "tone": "accent"}],
+         "edges": [["t", "s"], ["s", "v"], ["v", "r"], ["t", "m"]]}}
+ ],
+
+ "4.3": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Two 200 ms tools in 0.22 s, and one fewer model call",
+         "caption": "**Both savings come from the same thing: the model asked for both tools in one response.** Two function-call parts in one message means ADK executes them concurrently — 0.22 seconds rather than 0.4 — and it means the whole answer cost two model calls instead of three, because one round handled both tools. **The concurrency is conditional on your tools being async:** two `def` tools that block run one after the other and also stall every other user's turn in the process for their duration.",
+         "left": "measurement", "codeW": 190,
+         "vars": ["two async tools", "two blocking tools"],
+         "steps": [
+          {"code": "wall clock for 2 x 200 ms", "state": ["0.22 s - concurrent", "0.4 s - serial"], "tone": "good"},
+          {"code": "model calls for the answer", "state": ["2 - one round asked for both", "2"], "tone": "good"},
+          {"code": "...against one tool per round", "state": ["3", "3"], "changed": [0, 1], "tone": "warn"},
+          {"code": "effect on other users", "state": ["none", "the event loop is held"], "changed": [0, 1], "tone": "crit"},
+          {"code": "events produced", "state": ["both calls in one, both results in one", "the framework groups them"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Five ways the loop ends, and only one is the normal one",
+         "caption": "**Knowing all five is what stops a client hanging or cutting a turn short**, because four of them end an invocation without the model having written a closing sentence. The second row is the one to recognise: a tool that sets `skip_summarization` makes its own function-response event final, so the tool's output *is* the answer and there is no model pass after it. **And the long-running and confirmation rows do not end the conversation at all** — they end the invocation, with completion arriving later through a separate resumption.",
+         "left": "ending", "codeW": 180,
+         "vars": ["trigger", "which event is final"],
+         "steps": [
+          {"code": "the normal one", "state": ["text with no function calls", "the model's text event"], "tone": "good"},
+          {"code": "the tool answers directly", "state": ["actions.skip_summarization", "the function-response event"], "changed": [0, 1], "tone": "violet"},
+          {"code": "long-running tool", "state": ["LongRunningFunctionTool pending", "invocation returns; finishes later"], "changed": [0, 1], "tone": "accent"},
+          {"code": "a human is needed", "state": ["request_confirmation", "paused, awaiting your client"], "changed": [0, 1], "tone": "accent"},
+          {"code": "an exception", "state": ["a tool raised and nothing caught it", "NO final event at all"], "changed": [0, 1], "tone": "crit"}]}}
+ ],
+
+ "4.4": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "The valuable part of a search tool is the metadata, not the answer",
+         "caption": "**`event.grounding_metadata` carries the sources the model used, with the spans of the answer each one supports** — which is what lets a UI show citations and what a groundedness evaluation checks against. Without it an answer is a claim; with it, a claim with evidence. **And the combination limit is worth knowing before you hit it:** server-side tools have historically restricted being combined with each other or with function tools, and the rules move by model version. The robust response is the same as for a long tool list — put the built-in tool on its own small agent and expose it with `AgentTool`.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "tools=[google_search]", "sub": "no key, no client, no rate limiting", "tone": "good"},
+          {"id": "a", "label": "The model performs the search", "sub": "server-side", "tone": "accent"},
+          {"id": "g", "label": "grounding_metadata comes back", "sub": "sources, and the spans they support", "tone": "violet"},
+          {"id": "c", "label": "Which is the citation UI and the eval", "sub": "a claim with evidence", "tone": "violet"},
+          {"id": "l", "label": "But built-ins have combination limits", "sub": "and they vary by model version", "tone": "crit"},
+          {"id": "w", "label": "So isolate it behind an AgentTool", "sub": "one capability, one declaration", "tone": "good"}],
+         "edges": [["t", "a"], ["a", "g"], ["g", "c"], ["a", "l"], ["l", "w"]]}}
+ ],
+
+ "4.5": [
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "The framework pauses; your client asks the human",
+         "caption": "**ADK's part ends at surfacing the request — the rest is yours**, and that division is the thing to internalise before building anything with approvals. The framework pauses the invocation and emits a confirmation request; your client has to find a human, get an answer, and resume the invocation with it, which may be minutes or days later (lesson 9.3). **What makes this workable is that it is a per-tool decision:** the same agent can hold three safe tools and one that always stops, declared on the tool rather than configured on the agent.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "require_confirmation=True", "sub": "or a predicate on the arguments", "tone": "accent"},
+          {"id": "p", "label": "ADK pauses and surfaces the request", "sub": "the invocation returns", "tone": "good"},
+          {"id": "c", "label": "YOUR client asks a human", "sub": "and the state waits in the session", "tone": "violet"},
+          {"id": "a", "label": "It resumes with the answer", "sub": "minutes or days later", "tone": "violet"},
+          {"id": "t", "label": "Declared per TOOL, not per agent", "sub": "three safe tools and one that stops", "tone": "good"}],
+         "edges": [["r", "p"], ["p", "c"], ["c", "a"], ["r", "t"]]}}
+ ],
+
+ "4.6": [
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Two filter forms, and why the predicate exists",
+         "caption": "**The list form is the one to default to, because it admits nothing you have not read** — and the predicate form exists for the case the list cannot express: an allowed set that depends on who is asking. `get_tools` is called per request with the context available, so an operator can be given the write tools and nobody else. **The pattern to avoid is a predicate that excludes by prefix:** it reads as safety and is a deny-list in disguise, so a tool named `purge_all` added next month passes straight through.",
+         "left": "filter", "codeW": 190,
+         "vars": ["admits", "when to use it"],
+         "steps": [
+          {"code": "tool_filter=['read_file', 'list_dir']", "state": ["exactly those two, for ever", "the default - an allow-list"], "tone": "good"},
+          {"code": "tool_filter=predicate(tool, ctx)", "state": ["whatever it returns True for", "when the set depends on the user"], "changed": [0, 1], "tone": "violet"},
+          {"code": "...not name.startswith('delete_')", "state": ["everything not matching today", "a deny-list in disguise"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so a new tool next month", "state": ["admitted silently by the predicate", "refused by the list"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The wrapper fixes the interface and not the description",
+         "caption": "**A LangChain tool written for a different agent loop often has a terse or oddly worded description, and that description becomes your model's routing information.** The wrapper adapts it to `BaseTool` so ADK can declare and call it; it cannot improve the prose, which is why both wrappers take an optional `name` and `description` override — and why using them is usually the right move rather than an edge case. **The second row carries the other cost:** the wrapped tool runs synchronously unless the underlying one is async, so lesson 4.3's blocking warning applies unchanged.",
+         "left": "concern", "codeW": 190,
+         "vars": ["does the wrapper fix it?", "what to do"],
+         "steps": [
+          {"code": "the interface", "state": ["YES - adapted to BaseTool", "nothing"], "tone": "good"},
+          {"code": "the description", "state": ["no", "override it; it is routing data"], "changed": [0, 1], "tone": "crit"},
+          {"code": "blocking I/O", "state": ["no - sync unless the tool is async", "lesson 4.3 applies"], "changed": [0, 1], "tone": "crit"},
+          {"code": "Google's own toolsets", "state": ["bigquery, spanner and the rest", "first-party, already shaped"], "changed": [0, 1], "tone": "accent"}]}}
+ ],
+
+ "4.7": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "What an uncaught tool exception actually destroys",
+         "caption": "**The exception comes out of the async generator, so whatever is iterating `run_async` has to deal with it** — your FastAPI handler, the dev UI, a worker. The turn produced nothing: no final response, no events after the call. **The recoverable part is the conversation rather than the turn:** events appended before the failure are in the session, so the history is intact and the user's question is simply unanswered. Which is why returning the error as a result (next section) is almost always the better shape.",
+         "left": "what happens", "codeW": 190,
+         "vars": ["after an uncaught raise"],
+         "steps": [
+          {"code": "events after the tool call", "state": ["none"], "tone": "crit"},
+          {"code": "final response", "state": ["none - the turn produced nothing"], "changed": [0], "tone": "crit"},
+          {"code": "where the exception surfaces", "state": ["out of run_async, into your handler"], "changed": [0], "tone": "crit"},
+          {"code": "the session", "state": ["intact - earlier events were appended"], "changed": [0], "tone": "good"},
+          {"code": "so the conversation", "state": ["recoverable; the turn is not"], "changed": [0], "tone": "violet"}]}},
+  {"after": "03",
+   "d": {"kind": "flow",
+         "title": "Two hooks for failure, and what returning a dict does",
+         "caption": "**Returning a dict from `on_tool_error` replaces the tool's result, which converts an exception into something the model can read and act on** — the same shape as a retrieval miss in lesson 7.1, and for the same reason: the model should be able to respond to a failure rather than have the turn end in a stack trace. **The callback is also the right place for the log line**, because it is the one spot that has the tool name, the arguments and the invocation id together, which is exactly what a traceback from inside the tool lacks.",
+         "cols": 3,
+         "nodes": [
+          {"id": "t", "label": "The tool raises", "sub": "an upstream 500", "tone": "crit"},
+          {"id": "h", "label": "on_tool_error fires", "sub": "tool, args, ctx, error", "tone": "accent"},
+          {"id": "l", "label": "Log with the invocation id", "sub": "the one place that has all three", "tone": "good"},
+          {"id": "d", "label": "Return a dict", "sub": "status error, retryable True", "tone": "violet"},
+          {"id": "m", "label": "It becomes the tool's result", "sub": "so the model can respond to it", "tone": "good"},
+          {"id": "n", "label": "Return nothing and it still raises", "sub": "the hook is not a catch", "tone": "crit"}],
+         "edges": [["t", "h"], ["h", "l"], ["h", "d"], ["d", "m"], ["h", "n"]]}}
+ ],
+
+ "4.8": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Four places a credential can come from, and the one that is always wrong",
+         "caption": "**A credential as a tool parameter puts the key in the declaration, which means the model is asked to supply it** — so it appears in the conversation, in the session, in your logs and in the trace, four copies you did not intend. That is the whole argument, and it is why `tool_context` is injected rather than declared (lesson 4.1). **For a tool you write yourself the simplest correct answer is often no ADK auth at all:** read the secret from the environment inside the tool. The auth types earn their place when a generated *toolset* needs configuring, or when the flow is interactive.",
+         "left": "where the credential comes from", "codeW": 220,
+         "vars": ["visible to the model?", "use when"],
+         "steps": [
+          {"code": "os.environ, inside the tool", "state": ["no", "a tool you wrote - the usual answer"], "tone": "good"},
+          {"code": "AuthCredential on a toolset", "state": ["no", "a generated OpenAPI toolset"], "changed": [0, 1], "tone": "good"},
+          {"code": "the credential service", "state": ["no", "per-user, interactive flows"], "changed": [0, 1], "tone": "good"},
+          {"code": "a tool parameter", "state": ["YES - and in the session, logs, trace", "never"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Tokens in session state are tokens in your database",
+         "caption": "**The two services compose into something nobody chose:** `session_state_credential_service` writes access and refresh tokens into session state, and `DatabaseSessionService` writes session state into your database — in plain text unless you encrypted it yourself. Each is reasonable alone and the pair is a credential store you did not design. **For anything past a prototype, keep the tokens in a secret manager or an encrypted store with a short-lived cache**, and let session state hold a reference rather than the secret.",
+         "cols": 3,
+         "nodes": [
+          {"id": "c", "label": "session_state_credential_service", "sub": "tokens into session state", "tone": "accent"},
+          {"id": "d", "label": "DatabaseSessionService", "sub": "session state into your database", "tone": "accent"},
+          {"id": "p", "label": "Tokens in your database, in plain text", "sub": "unless you encrypted it", "tone": "crit"},
+          {"id": "b", "label": "in_memory_credential_service", "sub": "dev only - lost on restart", "tone": "warn"},
+          {"id": "s", "label": "Secret manager, or an encrypted store", "sub": "with a short-lived cache", "tone": "good"},
+          {"id": "r", "label": "State holds a reference, not the secret", "sub": "which is the shape to aim for", "tone": "good"}],
+         "edges": [["c", "d"], ["d", "p"], ["p", "s"], ["s", "r"], ["c", "b"]]}}
+ ]
+}

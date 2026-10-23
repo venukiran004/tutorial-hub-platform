@@ -22,6 +22,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "One class, several names", id: "identity" },
 
+    {"kind": "flow", "title": "Three names, one class - and most writing about ADK predates it", "caption": "**`ToolContext is CallbackContext is Context` returns True on 2.9.2**, and that single check makes the whole area make sense. In 1.x they were distinct classes with distinct capabilities, which is how most existing writing still describes them — so advice about what a callback context “cannot” do is advice about a version you are not running. **Type hints against any of the three names still work and still read well**, so a tool taking `tool_context: ToolContext` is good documentation even though the type is an alias.", "cols": 3, "nodes": [{"id": "c", "label": "ToolContext is CallbackContext is Context", "sub": "True, on 2.9.2", "tone": "violet"}, {"id": "o", "label": "In 1.x they were distinct classes", "sub": "with distinct capabilities", "tone": "warn"}, {"id": "w", "label": "Which is what most writing describes", "sub": "including the 'cannot' advice", "tone": "crit"}, {"id": "h", "label": "Hints on any name still work", "sub": "and still document intent", "tone": "good"}, {"id": "i", "label": "InvocationContext is the real exception", "sub": "a different object - see section 06", "tone": "accent"}], "edges": [["c", "o"], ["o", "w"], ["c", "h"], ["c", "i"]], "t": "diagram", "id": "dg-5_5-01-2"},
+
     { t: "code", lang: "python", title: "The check that makes 2.x make sense",
       code: `from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools import ToolContext
@@ -67,6 +69,8 @@ Context adds 34 more: ['actions', 'add_memory', 'add_session_to_memory', 'attemp
 
 
 
+
+
     { t: "code", lang: "python", title: "s5.py — an agent that narrates its own contexts",
       code: `def instruction(ctx: ReadonlyContext) -> str:
     print(f"  [instruction provider] agent={ctx.agent_name} invocation={ctx.invocation_id[:8]} "
@@ -103,6 +107,8 @@ system instruction the model received:
 
     { t: "h2", n: "04", text: "What you actually do with a context", id: "uses" },
 
+    {"kind": "trace", "title": "Six things a context is for, and what each one needs wired up", "caption": "**The last column is the one that turns a confusing failure into an obvious one.** `search_memory` on a runner with no memory service, or `save_artifact` with no artifact service, fails at the point of use rather than at construction — so the error arrives inside a tool, mid-conversation, and reads as a tool bug. **Checking which services the runner was given is the first diagnostic for any of these**, and it is the reason `InMemoryRunner` exists: it wires all four so the dev loop never meets this.", "left": "what you need", "codeW": 170, "vars": ["call", "requires on the runner"], "steps": [{"code": "read or write state", "state": ["ctx.state['k']", "nothing - always available"], "tone": "good"}, {"code": "save or load a file", "state": ["ctx.save_artifact / load_artifact", "an artifact service"], "changed": [0, 1], "tone": "accent"}, {"code": "search long-term memory", "state": ["await ctx.search_memory(query)", "a memory service"], "changed": [0, 1], "tone": "accent"}, {"code": "get a credential", "state": ["the auth helpers", "a credential service"], "changed": [0, 1], "tone": "accent"}, {"code": "change what happens next", "state": ["ctx.actions - escalate, transfer, skip", "nothing"], "changed": [0, 1], "tone": "good"}, {"code": "and if the service is missing", "state": ["it fails INSIDE the tool", "reads as a tool bug"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_5-04-3"},
+
     { t: "table", head: ["Need", "Call", "Notes"],
       rows: [
         ["Read or write state", "`ctx.state[\"k\"]`", "Writes become a delta on the emitted event (5.2)"],
@@ -115,6 +121,8 @@ system instruction the model received:
       ] },
 
     { t: "h2", n: "05", text: "Instruction providers", id: "providers" },
+
+    {"kind": "flow", "title": "A template interpolates values; a provider changes the shape", "caption": "**The dividing line is whether state changes the prompt's values or its structure.** A tier name substituted into a sentence is a template; a whole extra paragraph that exists only for gold customers, or a pending-booking reminder that should not appear when there is no booking, is a provider. **And the broader point is the callout worth repeating:** a fact in the system instruction is restated at the front of every request, where the model attends to it — the same fact mentioned forty messages ago is one line in a long transcript. When an agent keeps forgetting something, the fix is usually the instruction rather than a bigger context window.", "cols": 3, "nodes": [{"id": "s", "label": "A string with {key}", "sub": "values from state, interpolated", "tone": "good"}, {"id": "r", "label": "Right for most agents", "sub": "and it raises on a missing key", "tone": "good"}, {"id": "c", "label": "A callable taking ReadonlyContext", "sub": "you build the string", "tone": "violet"}, {"id": "p", "label": "Right when the SHAPE depends on state", "sub": "a paragraph that may not exist", "tone": "violet"}, {"id": "f", "label": "And state in the instruction beats state in the history", "sub": "restated at the front, every call", "tone": "accent"}], "edges": [["s", "r"], ["s", "c"], ["c", "p"], ["p", "f"]], "t": "diagram", "id": "dg-5_5-05-4"},
 
     { t: "p", text: "`instruction` accepts a string or a callable. The string form supports `{key}` templating from state and is right for most agents. The callable form earns its keep when the prompt's **shape** depends on state, not just its values." },
 
@@ -134,6 +142,8 @@ system instruction the model received:
     { t: "h2", n: "06", text: "InvocationContext, the one that is different", id: "invocation" },
 
     {"kind": "flow", "title": "Getting from one context to the other", "caption": "A writable context can reach the InvocationContext, which carries the services themselves. Needing that from inside a tool is usually a sign the work belongs in a custom agent.", "cols": 3, "nodes": [{"id": "t", "label": "ToolContext", "sub": "= CallbackContext = Context", "tone": "good"}, {"id": "i", "label": "InvocationContext", "sub": "get_invocation_context()", "tone": "violet"}, {"id": "s", "label": "The services", "sub": "session, artifact, memory, credential", "tone": "accent"}, {"id": "e", "label": "end_invocation", "sub": "stop the whole turn", "tone": "crit"}], "edges": [["t", "i"], ["i", "s"], ["i", "e"]], "t": "diagram", "id": "dg-5_5-06-1"},
+
+
 
 
 

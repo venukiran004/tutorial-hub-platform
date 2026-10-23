@@ -22,6 +22,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Raising", id: "raising" },
 
+    {"kind": "trace", "title": "What an uncaught tool exception actually destroys", "caption": "**The exception comes out of the async generator, so whatever is iterating `run_async` has to deal with it** — your FastAPI handler, the dev UI, a worker. The turn produced nothing: no final response, no events after the call. **The recoverable part is the conversation rather than the turn:** events appended before the failure are in the session, so the history is intact and the user's question is simply unanswered. Which is why returning the error as a result (next section) is almost always the better shape.", "left": "what happens", "codeW": 190, "vars": ["after an uncaught raise"], "steps": [{"code": "events after the tool call", "state": ["none"], "tone": "crit"}, {"code": "final response", "state": ["none - the turn produced nothing"], "changed": [0], "tone": "crit"}, {"code": "where the exception surfaces", "state": ["out of run_async, into your handler"], "changed": [0], "tone": "crit"}, {"code": "the session", "state": ["intact - earlier events were appended"], "changed": [0], "tone": "good"}, {"code": "so the conversation", "state": ["recoverable; the turn is not"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-4_7-01-1"},
+
+
     { t: "code", lang: "python", title: "A tool that raises",
       code: `def breaks(x: int) -> dict:
     """Always fails.
@@ -82,6 +85,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "The error callbacks", id: "callbacks" },
 
+    {"kind": "flow", "title": "Two hooks for failure, and what returning a dict does", "caption": "**Returning a dict from `on_tool_error` replaces the tool's result, which converts an exception into something the model can read and act on** — the same shape as a retrieval miss in lesson 7.1, and for the same reason: the model should be able to respond to a failure rather than have the turn end in a stack trace. **The callback is also the right place for the log line**, because it is the one spot that has the tool name, the arguments and the invocation id together, which is exactly what a traceback from inside the tool lacks.", "cols": 3, "nodes": [{"id": "t", "label": "The tool raises", "sub": "an upstream 500", "tone": "crit"}, {"id": "h", "label": "on_tool_error fires", "sub": "tool, args, ctx, error", "tone": "accent"}, {"id": "l", "label": "Log with the invocation id", "sub": "the one place that has all three", "tone": "good"}, {"id": "d", "label": "Return a dict", "sub": "status error, retryable True", "tone": "violet"}, {"id": "m", "label": "It becomes the tool's result", "sub": "so the model can respond to it", "tone": "good"}, {"id": "n", "label": "Return nothing and it still raises", "sub": "the hook is not a catch", "tone": "crit"}], "edges": [["t", "h"], ["h", "l"], ["h", "d"], ["d", "m"], ["h", "n"]], "t": "diagram", "id": "dg-4_7-03-2"},
+
+
     { t: "code", lang: "python", title: "Two hooks specifically for failure",
       code: `def on_tool_error(tool, args, ctx, error: Exception):
     """Runs when a tool raises. Returning a dict replaces the tool's result."""
@@ -118,6 +124,8 @@ app = App(name="support", root_agent=root,
     { t: "h2", n: "05", text: "Restricting tools", id: "restrictions" },
 
     {"kind": "layers", "title": "Four ways to stop a tool being used, strongest first", "caption": "Only the top three are controls. An instruction is a preference, and a sufficiently persuasive message can talk a model out of a preference.", "items": [{"label": "Do not give the agent the tool", "sub": "nothing can call what is not there", "tone": "good"}, {"label": "Filter the toolset", "sub": "resolved per request, so it can depend on the user", "tone": "accent"}, {"label": "before_tool_callback", "sub": "refuse with a reason and retryable: false", "tone": "warn"}, {"label": "Say so in the instruction", "sub": "not a control", "tone": "crit"}], "t": "diagram", "id": "dg-4_7-05-0"},
+
+
 
 
 
