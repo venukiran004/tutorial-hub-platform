@@ -29,6 +29,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
       code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp import StdioServerParameters
@@ -67,7 +68,8 @@ running a turn that calls an MCP tool:
 
     { t: "h2", n: "02", text: "Filtering", id: "filtering" },
 
-    {"kind": "flow", "title": "An allow-list admits nothing you have not read", "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.", "cols": 3, "nodes": [{"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"}, {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"}, {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"}, {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"}, {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"}, {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}], "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]], "t": "diagram", "id": "dg-8_2-02-3"},
+    {"kind": "flow", "title": "An allow-list admits nothing you have not read", "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.", "cols": 3, "nodes": [{"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"}, {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"}, {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"}, {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"}, {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"}, {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}], "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]], "t": "diagram", "id": "dg-8_2-02-5"},
+
 
     { t: "code", lang: "python", title: "An allow-list, executed",
       code: `filtered = McpToolset(
@@ -98,6 +100,7 @@ github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
 
 
 
+
     { t: "p", text: "A toolset holds a connection: a spawned process for stdio, an HTTP session otherwise. `BaseToolset` therefore has a `close`, and it is not decorative — a long-running service that constructs toolsets per request and never closes them accumulates child processes until something gives out." },
 
     { t: "code", lang: "python", title: "Where the toolset should live",
@@ -116,6 +119,7 @@ await FINANCE.close()`,
     { t: "h2", n: "04", text: "The other direction: publishing a server", id: "publishing" },
 
     {"kind": "flow", "title": "Both directions, one implementation", "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.", "cols": 3, "nodes": [{"id": "f", "label": "Your function", "sub": "check_fraud(order_id)", "tone": "good"}, {"id": "a", "label": "Function tool", "sub": "in your own agent", "tone": "accent"}, {"id": "m", "label": "MCP server", "sub": "@mcp.tool()", "tone": "violet"}, {"id": "o", "label": "Other teams", "sub": "any framework, any language", "tone": "warn"}], "edges": [["f", "a"], ["f", "m"], ["m", "o"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
 
 
 
@@ -157,7 +161,8 @@ if __name__ == "__main__":
 
     { t: "h2", n: "05", text: "Security, briefly", id: "security" },
 
-    {"kind": "trace", "title": "Four security facts, and none of them is about the transport", "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.", "left": "fact", "codeW": 190, "vars": ["what follows", "the control"], "steps": [{"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"}, {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"}, {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"}, {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-05-4"},
+    {"kind": "trace", "title": "Four security facts, and none of them is about the transport", "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.", "left": "fact", "codeW": 190, "vars": ["what follows", "the control"], "steps": [{"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"}, {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"}, {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"}, {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-05-6"},
+
 
     { t: "dl", items: [
       ["The server acts with its own credentials", "Whatever token it holds is what every call uses, regardless of which user is talking to your agent. If answers should differ per user, the server needs the user's identity — and most do not accept one."],
@@ -208,7 +213,110 @@ read_only = [t for t in tools if getattr(t, "annotations", None)
           { t: "p", text: "Asking the agent to delete something after filtering is the part worth doing properly. The model has no declaration for the tool, so it cannot emit a call for it — it will say it lacks that capability. That is a categorically stronger guarantee than an instruction saying not to, and it is the same argument as lesson 4.7: not giving the agent a tool beats telling it not to use one." },
           { t: "p", text: "Watching the processes exit on `close` makes the lifecycle concrete. A service that constructs toolsets per request without closing them leaks a process per request, which presents as memory exhaustion hours later with nothing in the agent logs to explain it." }
         ]
-      } }
+      } },
+
+    { t: "h2", n: "06", text: "Running a server for real", id: "operating" },
+
+    {"kind": "flow", "title": "stdio is protected by being a subprocess; HTTP is not protected by anything", "caption": "**A stdio server is reachable only by the process that spawned it, and that is the entire access control.** Move the same code to an SSE or streamable-HTTP endpoint and every tool on it — including the destructive ones, backed by the server's own credentials — is available to whoever can send a POST. **It is an ASGI application, so it inherits every concern from lesson 12.1**, authentication in front of it most of all, plus the buffering problem from 10.2: an SSE stream behind a buffering proxy is not a stream.", "cols": 3, "nodes": [{"id": "s", "label": "stdio: a subprocess you spawned", "sub": "nobody else can reach it", "tone": "good"}, {"id": "n", "label": "But it cannot cross a network", "sub": "which is why HTTP exists", "tone": "warn"}, {"id": "h", "label": "SSE: two endpoints, stream and POST", "sub": "streamable HTTP folds them into one", "tone": "accent"}, {"id": "o", "label": "Now it is an open API", "sub": "every tool, the server's credentials", "tone": "crit"}, {"id": "a", "label": "Authenticate it like any internal API", "sub": "and watch for a buffering proxy", "tone": "violet"}], "edges": [["s", "n"], ["n", "h"], ["h", "o"], ["o", "a"]], "t": "diagram", "id": "dg-8_2-06-4"},
+
+    {"kind": "trace", "title": "What FastMCP hides, and the three cases where you need it back", "caption": "**Almost every server should be a dozen lines of `@mcp.tool()`**, because the decorator generates the schemas, handles the handshake and picks the transport from one argument. **The three rows in the middle are what the convenience layer is deciding for you** — the name and version a client sees, which transport is served, and whether the server may push notifications at all. A server that has not declared `tools_changed` during initialisation cannot usefully send the notification later.", "left": "concern", "codeW": 170, "vars": ["with FastMCP", "with the low-level Server"], "steps": [{"code": "tool schemas", "state": ["from type hints and the docstring", "you build the Tool list"], "tone": "good"}, {"code": "the handshake", "state": ["filled in for you", "InitializationOptions: name, version"], "changed": [0, 1], "tone": "accent"}, {"code": "capabilities", "state": ["defaults", "NotificationOptions(tools_changed=True)"], "changed": [0, 1], "tone": "violet"}, {"code": "transport", "state": ["mcp.run(transport='stdio')", "stdio_server(), or SseServerTransport"], "changed": [0, 1], "tone": "violet"}, {"code": "notifications", "state": ["not exposed", "send_notification on the session"], "changed": [0, 1], "tone": "violet"}, {"code": "so reach for it when", "state": ["-", "capabilities, a 2nd transport, notifications"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-06-3"},
+
+    { t: "p", text: "`FastMCP` is the right starting point and it hides two things you eventually need: the lifecycle and the transport. Underneath it is `mcp.server.Server`, the low-level API, and reaching for it is not a sign you did something wrong — it is what you use when the server has to announce its own capabilities, serve more than one transport, or push notifications to connected clients." },
+
+    { t: "code", lang: "python", title: "The same server, without the convenience layer",
+      code: `from mcp.server import Server, NotificationOptions
+from mcp.server.models import InitializationOptions
+from mcp.server.stdio import stdio_server
+
+server = Server("finance")
+
+@server.list_tools()
+async def list_tools():
+    return [...]            # you build the Tool list yourself
+
+@server.call_tool()
+async def call_tool(name, arguments):
+    return [...]            # and the content list yourself
+
+async def main():
+    async with stdio_server() as (read, write):
+        await server.run(read, write, InitializationOptions(
+            server_name="finance",
+            server_version="1.0.0",
+            capabilities=server.get_capabilities(
+                notification_options=NotificationOptions(tools_changed=True),
+                experimental_capabilities={},
+            ),
+        ))`,
+      caption: "**`InitializationOptions` is what FastMCP fills in for you** — the name and version a client sees, and the capabilities the server claims during the handshake. `NotificationOptions(tools_changed=True)` is the declaration that makes the next section possible: a server that has not advertised the capability cannot usefully send the notification." },
+
+    { t: "p", text: "`stdio_server()` is the transport, and it is the reason a local server is a subprocess: it reads MCP frames from standard input and writes them to standard output. That works beautifully on one machine and not at all across a network, which is the whole motivation for the HTTP transports." },
+
+    { t: "code", lang: "python", title: "The same tools, reachable over the network",
+      code: `from mcp.server.sse import SseServerTransport
+from starlette.applications import Starlette
+from starlette.routing import Route, Mount
+
+sse = SseServerTransport("/messages/")
+
+async def handle_sse(request):
+    async with sse.connect_sse(request.scope, request.receive,
+                               request._send) as (read, write):
+        await server.run(read, write, init_options)
+
+app = Starlette(routes=[
+    Route("/sse", endpoint=handle_sse),
+    Mount("/messages/", app=sse.handle_post_message),
+])
+
+# TWO endpoints, not one: the client opens the SSE stream to receive, and
+# POSTs to /messages/ to send. Streamable HTTP, the newer transport, folds
+# both onto one endpoint -- prefer it for anything new.`,
+      caption: "An ASGI application, so it deploys like any other web service — which also means it inherits every concern from lesson 12.1: authentication in front of it, a real identity rather than one shared token, and the buffering problem from lesson 10.2, because an SSE stream behind a buffering proxy is not a stream." },
+
+    { t: "callout", kind: "trap", title: "An HTTP MCP server is an unauthenticated API until you make it one",
+      body: [
+        { t: "p", text: "A stdio server is protected by being a subprocess nobody else can reach. Move the same code to an HTTP endpoint and every tool on it is available to whoever can send a POST — including the destructive ones, with the server's own credentials behind them. Put it behind the same authentication and the same network boundary as any internal API, and resist the urge to expose it publicly because a vendor's documentation shows a public URL." }
+      ] },
+
+    { t: "p", text: "The notification capability declared during initialisation is what lets a server tell its clients that something changed, rather than waiting to be asked." },
+
+    { t: "code", lang: "python", title: "Telling clients the tool list moved",
+      code: `from mcp.types import ServerNotification, ToolListChangedNotification
+
+await server.request_context.session.send_notification(
+    ServerNotification(ToolListChangedNotification(
+        method="notifications/tools/list_changed")))
+
+# WHAT THIS MEANS FOR YOU AS A CONSUMER: the tool list is not a constant.
+# A server can legitimately add a tool mid-connection, which is exactly why
+# tool_filter in section 02 has to be an allow-list rather than a deny-list.`,
+      caption: "**This is the mechanism behind the advice in section 02**, and seeing it from the server side makes the reason concrete rather than cautious: tools arriving mid-connection is a feature of the protocol, not a hypothetical. A deny-list protects you against the tools that existed when you wrote it." },
+
+    { t: "code", lang: "python", title: "Testing it without a subprocess",
+      code: `from fastmcp.testing import MCPTestClient
+
+async def test_convert_rejects_unknown_currency():
+    async with MCPTestClient(mcp) as client:
+        tools = await client.list_tools()
+        assert "convert" in [t.name for t in tools]
+
+        result = await client.call_tool("convert",
+                                       {"amount": 10, "frm": "GBP", "to": "XXX"})
+        assert result.isError`,
+      caption: "In-process, so there is no subprocess to spawn and no port to bind — the same property that makes the scripted model in lesson 11.3 worth having. A server's tests should run in the same second as the rest of your suite." },
+
+    { t: "dl", items: [
+      ["Test the schema, not just the function", "The function is ordinary Python you can call directly. What needs a client is the part MCP generates: that the tool appears, that its schema is what you meant, and that a bad argument returns an error result rather than raising."],
+      ["Version the interface, not the implementation", "Consumers depend on tool names, argument names and result shapes. Renaming an argument is a breaking change to someone else's agent, and they will find out at runtime."],
+      ["Configuration from the environment", "`load_dotenv()` for local development and real secret references in production — the server holds credentials, so lesson 9.1 applies to it exactly as it applies to an agent."],
+      ["Log every call with its arguments", "A server is somebody else's dependency. When their agent behaves oddly, the question is what it actually called, and only your logs can answer it."]
+    ] },
+
+    { t: "callout", kind: "good", title: "Start with FastMCP, and know what it is doing",
+      body: [
+        { t: "p", text: "Almost every server should be a dozen lines of `@mcp.tool()`, because the decorator form generates the schemas, handles the handshake and picks the transport from one argument. Knowing the layer underneath matters for the three cases it does not cover — announcing capabilities, serving a second transport, and sending notifications — and for reading the protocol traces, where what you see is the low-level shape regardless of which API wrote it." }
+      ] }
 
   ],
 
@@ -218,7 +326,10 @@ read_only = [t for t in tools if getattr(t, "annotations", None)
     "`tool_filter` should be an allow-list, because the server can add tools without telling you.",
     "`tool_name_prefix` prevents collisions between servers and makes traces legible.",
     "Toolsets hold connections: construct once, close on shutdown, and expect failures during `get_tools`.",
-    "Publishing your own MCP server turns a capability other teams keep rebuilding into one they consume."
+    "Publishing your own MCP server turns a capability other teams keep rebuilding into one they consume.",
+    "FastMCP is the right default; the low-level `Server` is what you need for capabilities, a second transport and notifications.",
+    "A stdio server is protected by being a subprocess — the same code on an HTTP endpoint is an open API until you authenticate it.",
+    "`tools_changed` notifications are real, which is why a consumer’s `tool_filter` has to be an allow-list."
   ],
 
   quiz: { title: "Check your understanding", questions: [
