@@ -1,0 +1,77 @@
+{
+ "15.10": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "One pair of numbers, applied to six assets that disagree",
+         "caption": "**A single system-wide RTO is an average of things that have nothing in common** — and the moment it is written down, the plan is wrong for every asset at once. Here a stated four-hour RTO is comfortable for four rows and arithmetically impossible for one: **the index cannot be rebuilt in four hours, so the plan commits to something nobody has checked.** Per-asset numbers make that visible on the page rather than during the incident, which is the entire argument for writing the table.",
+         "left": "asset", "codeW": 170,
+         "vars": ["realistic RTO", "against a stated 4h"],
+         "steps": [
+          {"code": "application code", "state": ["10 minutes", "comfortable"], "tone": "good"},
+          {"code": "model artifact", "state": ["15 minutes, from object storage", "comfortable"], "changed": [0, 1], "tone": "good"},
+          {"code": "prompts", "state": ["10 minutes, they are in git", "comfortable"], "changed": [0, 1], "tone": "good"},
+          {"code": "checkpointer database", "state": ["30 minutes, point-in-time", "comfortable"], "changed": [0, 1], "tone": "accent"},
+          {"code": "vector index, rebuilt", "state": ["6.1 hours, measured", "IMPOSSIBLE"], "changed": [0, 1], "tone": "crit"},
+          {"code": "source documents", "state": ["not recoverable at all", "the real risk"], "changed": [0, 1], "tone": "crit"}]}},
+
+  {"after": "02",
+   "d": {"kind": "tree",
+         "title": "What is derived, what is source, and the one that only looks derived",
+         "caption": "**Read it as two piles.** Everything on the right can be recomputed, so its recovery is a question of time and money. Everything on the left cannot, so it needs real backups and a named owner. **The trap is the middle: a vector index is derived from the documents, which makes it recoverable only while the documents exist somewhere else** — and in a RAG system that somewhere is frequently another team's system with its own retention policy. If the corpus lived only in the index, the index was never derived from anything you still have.",
+         "root": {"label": "Everything to recover", "sub": "two piles, and one of them is dangerous", "tone": "accent",
+                  "children": [
+                   {"label": "SOURCE - must be backed up", "sub": "nothing recomputes these", "tone": "crit",
+                    "children": [
+                     {"label": "source documents", "sub": "the only true single point of failure", "tone": "crit"},
+                     {"label": "agent and approval state", "sub": "the conversation IS the request", "tone": "crit"},
+                     {"label": "code, prompts, eval goldens", "sub": "in git, so already solved", "tone": "good"}]},
+                   {"label": "DERIVED - recomputable", "sub": "the question is how long", "tone": "violet",
+                    "children": [
+                     {"label": "vector index", "sub": "from documents plus an embedding model", "tone": "warn"},
+                     {"label": "model artifact", "sub": "from data plus code plus a seed", "tone": "warn"},
+                     {"label": "online feature store", "sub": "from the offline store", "tone": "good"},
+                     {"label": "response and semantic cache", "sub": "cold start, not a disaster", "tone": "good"}]}]}}},
+
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Six hours against eleven minutes, for the same asset",
+         "caption": "**The plan called the index “derived, so we can rebuild it”, and that sentence is a six-hour commitment.** Measuring it takes one batch of embeddings and some arithmetic, and it reverses the decision: snapshot the derived asset, because otherwise rebuild time *is* your recovery time. **Keep the rebuild path working anyway** — it is the only answer to a corrupt snapshot, to a bad write that the snapshot also contains, and to documents that have changed since the snapshot was taken.",
+         "left": "step", "codeW": 190,
+         "vars": ["measured", "running total"],
+         "steps": [
+          {"code": "embed one chunk", "state": ["12.4 ms", "-"], "tone": "accent"},
+          {"code": "at 8 concurrent workers", "state": ["645 chunks/s", "-"], "changed": [0], "tone": "accent"},
+          {"code": "re-embed 10,000,000 chunks", "state": ["4.3 h", "4.3 h"], "changed": [0, 1], "tone": "warn"},
+          {"code": "build the HNSW index", "state": ["1.8 h", "6.1 h - the rebuild RTO"], "changed": [0, 1], "tone": "crit"},
+          {"code": "restore a snapshot instead", "state": ["11 minutes", "33x faster"], "changed": [0, 1], "tone": "good"},
+          {"code": "so keep both paths", "state": ["snapshot is primary", "rebuild answers a corrupt snapshot"], "changed": [0, 1], "tone": "violet"}]}},
+
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Degrade first, then fail over - and never ship a fallback that takes no traffic",
+         "caption": "**There is no standby to promote, so the first question is not “which second provider” but “what does this system do with no model at all”.** For RAG the answer is unusually good: return the retrieved passages without a generated summary, and say so — a RAG system degrades to search, which is still useful and needs no provider. **A second provider is worth having and is not a hot standby:** the prompts were tuned against the primary, so the secondary returns different answers and may reject your output schema outright. One per cent of traffic, continuously, is what turns it from a plan into something already working.",
+         "cols": 3,
+         "nodes": [
+          {"id": "o", "label": "The provider is down", "sub": "no replica, no failover, their status page", "tone": "crit"},
+          {"id": "d", "label": "Degrade: passages, no generated answer", "sub": "RAG falls back to search", "tone": "good"},
+          {"id": "q", "label": "Queue the asynchronous work", "sub": "an outage is a delay, not an incident", "tone": "good"},
+          {"id": "s", "label": "Or fail over to a second provider", "sub": "the code is the easy part", "tone": "accent"},
+          {"id": "e", "label": "But the answers differ", "sub": "prompts and formats are model-specific", "tone": "warn"},
+          {"id": "t", "label": "So run the evals against it first", "sub": "and send it 1% of traffic always", "tone": "violet"}],
+         "edges": [["o", "d"], ["o", "q"], ["o", "s"], ["s", "e"], ["e", "t"]]}},
+
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "The checkpointer restores the graph; it does not un-send the email",
+         "caption": "**The run died between the side effect and the checkpoint, which is the one ordering that makes resumption dangerous.** The graph is restored correctly to a node that has already acted, so the resume charges the card a second time — no error, no warning, and the state machine behaving exactly as designed. **The fix is a key derived from the run id, not from the attempt:** a fresh key per retry is indistinguishable from a new request and defeats the whole mechanism. For anything the provider cannot deduplicate, a ledger write around the action is what lets recovery ask whether it already happened.",
+         "left": "step", "codeW": 180,
+         "vars": ["world", "checkpoint", "on resume"],
+         "steps": [
+          {"code": "node: charge_card", "state": ["money moved", "not yet written", "-"], "tone": "warn"},
+          {"code": "process dies here", "state": ["money moved", "LAST checkpoint is older", "-"], "changed": [1], "tone": "crit"},
+          {"code": "resume from the checkpoint", "state": ["charged TWICE", "correct", "the node runs again"], "changed": [0, 2], "tone": "crit"},
+          {"code": "with a run-scoped key", "state": ["charged once", "correct", "provider dedupes it"], "changed": [0, 2], "tone": "good"},
+          {"code": "with a fresh key per attempt", "state": ["charged twice", "correct", "a new key is a new request"], "changed": [0, 2], "tone": "crit"},
+          {"code": "no provider dedupe available", "state": ["charged once", "correct", "ledger write, checked first"], "changed": [0, 2], "tone": "violet"}]}}
+ ]
+}
