@@ -97,10 +97,15 @@ on_tool_error_callback` },
 
 
 
+
+
     { t: "callout", kind: "mental", title: "The one rule that makes callbacks make sense",
       body: [{ t: "p", text: "**Return `None` and the framework carries on. Return a value and the framework uses yours instead of doing the work.** A `before_tool_callback` returning a dict means the tool never runs and your dict is the result. A `before_model_callback` returning an `LlmResponse` means no request is sent and your response is the answer. An after hook returning a value replaces what actually happened. There is no third mechanism — no `raise Skip`, no boolean flag — and once you have this, every hook reads the same way." }] },
 
     { t: "h2", n: "04", text: "Blocking a tool", id: "blocking" },
+
+    {"kind": "flow", "title": "A refusal the model can relay, not a stack trace", "caption": "**The tool body never printed, which is the only proof that a block really blocked.** What the model received was the callback's dict presented as an ordinary function response, so it relayed the reason in its own words and the refusal reached the user as a sentence. **Raising instead produces the two bad agents:** one that apologises vaguely, and one that retries the same call. The `retryable: False` key is the convention worth adopting — it tells the model to stop asking.", "cols": 3, "nodes": [{"id": "m", "label": "The model asks for weather in Pyongyang", "sub": "an ordinary tool call", "tone": "accent"}, {"id": "c", "label": "before_tool_callback inspects the args", "sub": "and returns a dict", "tone": "violet"}, {"id": "b", "label": "The tool body never runs", "sub": "it did not print - that is the proof", "tone": "good"}, {"id": "r", "label": "The dict arrives as a function response", "sub": "error plus retryable: False", "tone": "good"}, {"id": "s", "label": "The model explains and moves on", "sub": "'Sorry, not supported.'", "tone": "good"}, {"id": "x", "label": "Raise instead, and you get a vague apology", "sub": "or the same call again", "tone": "crit"}], "edges": [["m", "c"], ["c", "b"], ["b", "r"], ["r", "s"], ["c", "x"]], "t": "diagram", "id": "dg-6_1-04-1"},
+
 
     { t: "code", lang: "python", title: "A before_tool_callback that refuses",
       code: `def block(tool, args, tool_context):
@@ -121,6 +126,9 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
 
     { t: "h2", n: "05", text: "Answering without the model", id: "short-circuit" },
 
+    {"kind": "trace", "title": "Zero model calls, and what the saving actually was", "caption": "**The counter is the measurement: a subclass incrementing on every `generate_content_async` reported zero.** Returning an `LlmResponse` from `before_model_callback` short-circuits the call, which is the shape of both an input guardrail and a cache — check, and if you already know the answer, return it. **The saving is larger than it looks**, because the request never sent was the whole assembled conversation, not one message. **And the trap is in the last row:** a keyword check stops one phrasing and refuses innocent mentions; the mechanism is right, the policy is not.", "left": "step", "codeW": 200, "vars": ["result", "what it tells you"], "steps": [{"code": "the hook reads llm_request.contents", "state": ["the last user part", "the whole request is visible here"], "tone": "accent"}, {"code": "it returns an LlmResponse", "state": ["'I cannot help with that.'", "the call is skipped entirely"], "changed": [0, 1], "tone": "violet"}, {"code": "model calls counted", "state": ["0", "and the request was the whole history"], "changed": [0, 1], "tone": "good"}, {"code": "the same shape as", "state": ["a cache, an input guardrail", "check first, answer if you know"], "changed": [0, 1], "tone": "good"}, {"code": "but 'password' in text", "state": ["one phrasing blocked", "'admin credentials' walks through"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-6_1-05-2"},
+
+
     { t: "code", lang: "python", title: "before_model_callback returning an LlmResponse",
       code: `def guard(callback_context, llm_request):
     last = llm_request.contents[-1].parts[0].text if llm_request.contents else ""
@@ -138,6 +146,9 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
       body: [{ t: "p", text: "The example blocks the word 'password', which stops exactly one phrasing and nothing else — any user who writes 'admin credentials' walks straight through, and any user who mentions passwords innocently is refused. It demonstrates the mechanism, not the policy. Real input guardrails classify with a model or a trained classifier and are evaluated like any other component; lesson 9.2 builds one properly. What this example does show correctly is *where* such a check belongs and what it costs: nothing, because it runs before the expensive call." }] },
 
     { t: "h2", n: "06", text: "Which hook for which job", id: "which" },
+
+    {"kind": "tree", "title": "Callback, plugin, tool or instruction", "caption": "**Two questions settle it.** Must this happen whether the model wants it to or not? If yes it is a control, and the only remaining question is scope — one agent's policy is a callback, every agent's is a plugin. If the model should be able to *choose* it, it is a capability, and capabilities are tools. **The branch to avoid is the fourth one:** policy written into the instruction and hoped for. An instruction is a request; a callback is a control, and the difference only shows up on the day it matters.", "root": {"label": "Something must happen around a turn", "sub": "is it a control, or a capability?", "tone": "accent", "children": [{"label": "A control - it happens regardless", "sub": "the model gets no say", "tone": "violet", "children": [{"label": "This agent only", "sub": "a callback - before_tool, before_model", "tone": "violet"}, {"label": "Every agent in the app", "sub": "a plugin - one implementation", "tone": "good"}]}, {"label": "A capability - the model may choose it", "sub": "a tool, with a good description", "tone": "teal"}, {"label": "Written in the instruction and hoped for", "sub": "a request, not a control", "tone": "crit"}]}, "t": "diagram", "id": "dg-6_1-06-3"},
+
 
     { t: "table", head: ["Requirement", "Hook", "Why there"],
       rows: [

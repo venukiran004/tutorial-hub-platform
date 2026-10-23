@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "The whole surface",
       code: `from google.adk.plugins import BasePlugin
 print([n for n in dir(BasePlugin) if not n.startswith("_")])` },
@@ -96,6 +98,8 @@ runner = Runner(app=app, session_service=svc)`,
 
 
 
+
+
     { t: "p", text: "Both mechanisms can short-circuit by returning a value, so ordering decides who gets the chance. Plugins run around the agent-level callbacks: a plugin's `before_*` sees the call first, and if it returns a value the agent's own callback never runs. On the way out, the agent callback runs first and the plugin sees the result afterwards." },
 
     { t: "callout", kind: "mental", title: "Outer ring, inner ring",
@@ -105,6 +109,9 @@ runner = Runner(app=app, session_service=svc)`,
       body: [{ t: "p", text: "Plugins run in the order you list them, and the first one to return a value wins — the rest are not consulted. That is fine for a guardrail and surprising for a logger: if an early plugin short-circuits, a later logging plugin's `before_model` never fires and your logs quietly lose those calls. Put observability plugins first in the list, and let the ones that can refuse come after." }] },
 
     { t: "h2", n: "04", text: "What to build with them", id: "build" },
+
+    {"kind": "trace", "title": "Six plugins worth having, and which hook each one needs", "caption": "**Note where the global guardrail sits:** `on_user_message` runs before any agent does, so it cannot be bypassed by a transfer to a specialist whose own callbacks you forgot to wire. That is the property a per-agent callback cannot give you. **And `google.adk.plugins` exports `BasePlugin` and `PluginManager` and nothing else** — every row here is yours to write, which is a small amount of work for your fields, your log line and your sink.", "left": "plugin", "codeW": 170, "vars": ["hooks", "why there"], "steps": [{"code": "request log", "state": ["before_run, after_run, on_run_error", "one line per turn - the log you will grep"], "tone": "good"}, {"code": "token and cost accounting", "state": ["after_model", "usage metadata is on the response"], "changed": [0, 1], "tone": "good"}, {"code": "tracing", "state": ["the run, agent and tool pairs", "spans that nest as the agents do"], "changed": [0, 1], "tone": "accent"}, {"code": "PII redaction", "state": ["before_model", "sees the history, where the leak would be"], "changed": [0, 1], "tone": "accent"}, {"code": "global input guardrail", "state": ["on_user_message", "before any agent - transfer cannot bypass it"], "changed": [0, 1], "tone": "violet"}, {"code": "live audit stream", "state": ["on_event", "every event, deltas included"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-6_2-04-2"},
+
 
     { t: "table", head: ["Plugin", "Hooks", "Notes"],
       rows: [
@@ -120,6 +127,9 @@ runner = Runner(app=app, session_service=svc)`,
       body: [{ t: "p", text: "`google.adk.plugins` exports `BasePlugin` and `PluginManager` and no ready-made plugins — the introspected listing is exactly those two. So the logging plugin is yours to write, which is a small amount of work and a large amount of freedom: your log line, your fields, your sink. Write it once, early, and register it on every app; the version you write on day one is the one you will be grateful for during the first incident." }] },
 
     { t: "h2", n: "05", text: "A plugin worth writing on day one", id: "day-one" },
+
+    {"kind": "flow", "title": "Why the start time is popped on both paths", "caption": "**A dictionary that only ever grows is a memory leak in a long-running service**, and the error path is exactly where it grows: a turn that raises never reaches `after_run`, so its entry stays forever. Popping in `on_run_error` too is the whole fix. **The bigger argument is the third agent:** add one to the pipeline and it appears in the log with no edit, where the callback equivalent is a line of registration per agent that a reviewer will not notice is missing — because nothing fails when a logging callback is absent. **Silence is the worst failure mode for observability.**", "cols": 3, "nodes": [{"id": "b", "label": "before_run records the start time", "sub": "keyed by invocation id", "tone": "accent"}, {"id": "a", "label": "after_run pops it and logs the duration", "sub": "user, invocation, agent, duration", "tone": "good"}, {"id": "e", "label": "on_run_error pops it too", "sub": "or the dict grows forever", "tone": "crit"}, {"id": "t", "label": "Add a third agent to the pipeline", "sub": "no edit to the plugin", "tone": "violet"}, {"id": "s", "label": "With callbacks, a missing one is silent", "sub": "nothing fails - you just have no logs", "tone": "crit"}], "edges": [["b", "a"], ["b", "e"], ["a", "t"], ["t", "s"]], "t": "diagram", "id": "dg-6_2-05-3"},
+
 
     { t: "code", lang: "python", title: "The log line that pays for itself",
       code: `class RequestLog(BasePlugin):

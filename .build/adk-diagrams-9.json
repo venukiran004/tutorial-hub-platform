@@ -1,0 +1,128 @@
+{
+ "6.1": [
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "A refusal the model can relay, not a stack trace",
+         "caption": "**The tool body never printed, which is the only proof that a block really blocked.** What the model received was the callback's dict presented as an ordinary function response, so it relayed the reason in its own words and the refusal reached the user as a sentence. **Raising instead produces the two bad agents:** one that apologises vaguely, and one that retries the same call. The `retryable: False` key is the convention worth adopting — it tells the model to stop asking.",
+         "cols": 3,
+         "nodes": [
+          {"id": "m", "label": "The model asks for weather in Pyongyang", "sub": "an ordinary tool call", "tone": "accent"},
+          {"id": "c", "label": "before_tool_callback inspects the args", "sub": "and returns a dict", "tone": "violet"},
+          {"id": "b", "label": "The tool body never runs", "sub": "it did not print - that is the proof", "tone": "good"},
+          {"id": "r", "label": "The dict arrives as a function response", "sub": "error plus retryable: False", "tone": "good"},
+          {"id": "s", "label": "The model explains and moves on", "sub": "'Sorry, not supported.'", "tone": "good"},
+          {"id": "x", "label": "Raise instead, and you get a vague apology", "sub": "or the same call again", "tone": "crit"}],
+         "edges": [["m", "c"], ["c", "b"], ["b", "r"], ["r", "s"], ["c", "x"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Zero model calls, and what the saving actually was",
+         "caption": "**The counter is the measurement: a subclass incrementing on every `generate_content_async` reported zero.** Returning an `LlmResponse` from `before_model_callback` short-circuits the call, which is the shape of both an input guardrail and a cache — check, and if you already know the answer, return it. **The saving is larger than it looks**, because the request never sent was the whole assembled conversation, not one message. **And the trap is in the last row:** a keyword check stops one phrasing and refuses innocent mentions; the mechanism is right, the policy is not.",
+         "left": "step", "codeW": 200,
+         "vars": ["result", "what it tells you"],
+         "steps": [
+          {"code": "the hook reads llm_request.contents", "state": ["the last user part", "the whole request is visible here"], "tone": "accent"},
+          {"code": "it returns an LlmResponse", "state": ["'I cannot help with that.'", "the call is skipped entirely"], "changed": [0, 1], "tone": "violet"},
+          {"code": "model calls counted", "state": ["0", "and the request was the whole history"], "changed": [0, 1], "tone": "good"},
+          {"code": "the same shape as", "state": ["a cache, an input guardrail", "check first, answer if you know"], "changed": [0, 1], "tone": "good"},
+          {"code": "but 'password' in text", "state": ["one phrasing blocked", "'admin credentials' walks through"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "06",
+   "d": {"kind": "tree",
+         "title": "Callback, plugin, tool or instruction",
+         "caption": "**Two questions settle it.** Must this happen whether the model wants it to or not? If yes it is a control, and the only remaining question is scope — one agent's policy is a callback, every agent's is a plugin. If the model should be able to *choose* it, it is a capability, and capabilities are tools. **The branch to avoid is the fourth one:** policy written into the instruction and hoped for. An instruction is a request; a callback is a control, and the difference only shows up on the day it matters.",
+         "root": {"label": "Something must happen around a turn", "sub": "is it a control, or a capability?", "tone": "accent",
+                  "children": [
+                   {"label": "A control - it happens regardless", "sub": "the model gets no say", "tone": "violet",
+                    "children": [
+                     {"label": "This agent only", "sub": "a callback - before_tool, before_model", "tone": "violet"},
+                     {"label": "Every agent in the app", "sub": "a plugin - one implementation", "tone": "good"}]},
+                   {"label": "A capability - the model may choose it", "sub": "a tool, with a good description", "tone": "teal"},
+                   {"label": "Written in the instruction and hoped for", "sub": "a request, not a control", "tone": "crit"}]}}}
+ ],
+
+ "6.2": [
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "Six plugins worth having, and which hook each one needs",
+         "caption": "**Note where the global guardrail sits:** `on_user_message` runs before any agent does, so it cannot be bypassed by a transfer to a specialist whose own callbacks you forgot to wire. That is the property a per-agent callback cannot give you. **And `google.adk.plugins` exports `BasePlugin` and `PluginManager` and nothing else** — every row here is yours to write, which is a small amount of work for your fields, your log line and your sink.",
+         "left": "plugin", "codeW": 170,
+         "vars": ["hooks", "why there"],
+         "steps": [
+          {"code": "request log", "state": ["before_run, after_run, on_run_error", "one line per turn - the log you will grep"], "tone": "good"},
+          {"code": "token and cost accounting", "state": ["after_model", "usage metadata is on the response"], "changed": [0, 1], "tone": "good"},
+          {"code": "tracing", "state": ["the run, agent and tool pairs", "spans that nest as the agents do"], "changed": [0, 1], "tone": "accent"},
+          {"code": "PII redaction", "state": ["before_model", "sees the history, where the leak would be"], "changed": [0, 1], "tone": "accent"},
+          {"code": "global input guardrail", "state": ["on_user_message", "before any agent - transfer cannot bypass it"], "changed": [0, 1], "tone": "violet"},
+          {"code": "live audit stream", "state": ["on_event", "every event, deltas included"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "flow",
+         "title": "Why the start time is popped on both paths",
+         "caption": "**A dictionary that only ever grows is a memory leak in a long-running service**, and the error path is exactly where it grows: a turn that raises never reaches `after_run`, so its entry stays forever. Popping in `on_run_error` too is the whole fix. **The bigger argument is the third agent:** add one to the pipeline and it appears in the log with no edit, where the callback equivalent is a line of registration per agent that a reviewer will not notice is missing — because nothing fails when a logging callback is absent. **Silence is the worst failure mode for observability.**",
+         "cols": 3,
+         "nodes": [
+          {"id": "b", "label": "before_run records the start time", "sub": "keyed by invocation id", "tone": "accent"},
+          {"id": "a", "label": "after_run pops it and logs the duration", "sub": "user, invocation, agent, duration", "tone": "good"},
+          {"id": "e", "label": "on_run_error pops it too", "sub": "or the dict grows forever", "tone": "crit"},
+          {"id": "t", "label": "Add a third agent to the pipeline", "sub": "no edit to the plugin", "tone": "violet"},
+          {"id": "s", "label": "With callbacks, a missing one is silent", "sub": "nothing fails - you just have no logs", "tone": "crit"}],
+         "edges": [["b", "a"], ["b", "e"], ["a", "t"], ["t", "s"]]}}
+ ],
+
+ "6.3": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three design decisions, readable straight off the signatures",
+         "caption": "**An artifact is a `types.Part` — the same object a model message is made of** — so a saved chart or document can be handed back to the model without conversion. `save_artifact` returning an `int` means versions are assigned by the service rather than by your filenames, so saving the same name three times gives you three versions rather than one overwrite. **And `session_id` being optional everywhere is the whole namespace design:** pass it and the file belongs to this conversation, omit it and it belongs to the user.",
+         "left": "what the signature says", "codeW": 220,
+         "vars": ["and therefore"],
+         "steps": [
+          {"code": "artifact: types.Part | dict", "state": ["hand it straight to the model - no conversion"], "tone": "violet"},
+          {"code": "save_artifact(...) -> int", "state": ["the SERVICE assigns the version, not your filename"], "changed": [0], "tone": "violet"},
+          {"code": "session_id=None, everywhere", "state": ["omit it: the file is the user's, not the conversation's"], "changed": [0], "tone": "accent"},
+          {"code": "load_artifact(...) -> Part | None", "state": ["a missing version returns None - it does not raise"], "changed": [0], "tone": "crit"},
+          {"code": "five methods in all", "state": ["the same shape as a session service: subclassable"], "changed": [0], "tone": "good"}]}},
+  {"after": "05",
+   "d": {"kind": "tree",
+         "title": "Artifacts, your own storage, or neither",
+         "caption": "**The question to ask is who else needs this file, and for how long.** A chart the agent just rendered is the conversation's, and artifacts give it versioning and a tie to the event log for free. An invoice your finance system owns has a lifecycle of its own — write it to your storage and keep the URL in state. **And the omission to avoid is at the bottom:** the runner takes `artifact_service` exactly as it takes `session_service`, and without one `save_artifact` has nowhere to go. Wire it in alongside the session service, not when the first tool needs it.",
+         "root": {"label": "A tool has produced a file", "sub": "who else needs it, and for how long?", "tone": "accent",
+                  "children": [
+                   {"label": "Only this conversation, for now", "sub": "a chart, an intermediate document", "tone": "good",
+                    "children": [
+                     {"label": "An artifact, with session_id", "sub": "versioned, in the event log", "tone": "good"}]},
+                   {"label": "This user, across conversations", "sub": "an uploaded profile document", "tone": "violet",
+                    "children": [
+                     {"label": "An artifact, session_id omitted", "sub": "the user namespace", "tone": "violet"}]},
+                   {"label": "Another service, or under retention", "sub": "an invoice, a regulated record", "tone": "teal",
+                    "children": [
+                     {"label": "Your own storage; the URL in state", "sub": "it has a lifecycle of its own", "tone": "teal"}]},
+                   {"label": "And with no artifact_service on the runner", "sub": "save_artifact has nowhere to go", "tone": "crit"}]}}}
+ ],
+
+ "6.4": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "Every field description is sent to the provider as prompt",
+         "caption": "**That is what makes the schema the natural home for the rules that used to clutter the instruction.** `Field(description=\"ISO 4217 code, uppercase\")` beats a sentence in the prompt saying the same thing, because it sits next to the field it governs and cannot drift from it. **So write schemas the way you would write a good API contract:** the class docstring says what the object is, each description says what the field means and what form it takes — and what remains in the instruction is the task rather than the format.",
+         "cols": 3,
+         "nodes": [
+          {"id": "d", "label": "The class docstring", "sub": "becomes the schema's description", "tone": "accent"},
+          {"id": "f", "label": "Each Field description", "sub": "becomes the property's description", "tone": "accent"},
+          {"id": "s", "label": "All of it is sent to the provider", "sub": "the schema IS prompt", "tone": "violet"},
+          {"id": "r", "label": "So per-field rules belong here", "sub": "not in a sentence in the instruction", "tone": "good"},
+          {"id": "i", "label": "And the instruction says the task", "sub": "no longer the format", "tone": "good"}],
+         "edges": [["d", "s"], ["f", "s"], ["s", "r"], ["r", "i"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "A classifier the pipeline can branch on without a model call",
+         "caption": "**The payoff is in the last row: a typed object in state means the next step routes in Python rather than by asking a model.** A classifier that returns a paragraph forces the next step to re-read it; one that returns a category, an urgency and a boolean lets your own code decide. **`Literal` is the field to insist on** — it becomes an enum the provider enforces, where a plain string with an instruction saying “one of three” eventually produces `Billing`, `tech` and something you have never seen, each breaking a dictionary lookup differently.",
+         "left": "piece", "codeW": 180,
+         "vars": ["what it buys"],
+         "steps": [
+          {"code": "category: Literal[...]", "state": ["an enum in the schema - no fourth category"], "tone": "good"},
+          {"code": "urgency: Literal[...]", "state": ["and the rule lives in its Field description"], "changed": [0], "tone": "good"},
+          {"code": "needs_human: bool", "state": ["a value your code can branch on directly"], "changed": [0], "tone": "good"},
+          {"code": "include_contents='none'", "state": ["it classifies the sentence, not the argument"], "changed": [0], "tone": "accent"},
+          {"code": "output_key='triage'", "state": ["a dict in state the next instruction reads"], "changed": [0], "tone": "violet"},
+          {"code": "so the routing costs", "state": ["zero model calls - Python reads the dict"], "changed": [0], "tone": "violet"}]}}
+ ]
+}

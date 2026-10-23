@@ -23,6 +23,9 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The service", id: "service" },
 
+    {"kind": "trace", "title": "Three design decisions, readable straight off the signatures", "caption": "**An artifact is a `types.Part` — the same object a model message is made of** — so a saved chart or document can be handed back to the model without conversion. `save_artifact` returning an `int` means versions are assigned by the service rather than by your filenames, so saving the same name three times gives you three versions rather than one overwrite. **And `session_id` being optional everywhere is the whole namespace design:** pass it and the file belongs to this conversation, omit it and it belongs to the user.", "left": "what the signature says", "codeW": 220, "vars": ["and therefore"], "steps": [{"code": "artifact: types.Part | dict", "state": ["hand it straight to the model - no conversion"], "tone": "violet"}, {"code": "save_artifact(...) -> int", "state": ["the SERVICE assigns the version, not your filename"], "changed": [0], "tone": "violet"}, {"code": "session_id=None, everywhere", "state": ["omit it: the file is the user's, not the conversation's"], "changed": [0], "tone": "accent"}, {"code": "load_artifact(...) -> Part | None", "state": ["a missing version returns None - it does not raise"], "changed": [0], "tone": "crit"}, {"code": "five methods in all", "state": ["the same shape as a session service: subclassable"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-6_3-01-2"},
+
+
     { t: "code", lang: "python", title: "The contract, introspected",
       code: `import inspect
 from google.adk.artifacts import BaseArtifactService
@@ -41,6 +44,8 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
     { t: "h2", n: "02", text: "Saving from a tool", id: "saving" },
 
     {"kind": "cells", "title": "One filename, versions assigned by the service", "caption": "Executed: the same tool run twice returned 0 and then 1, and list_versions reported both. load_artifact with no version gives the newest; passing a version gives that one.", "items": ["v0", "v1", "v2"], "highlight": [2], "tone": "accent", "negative": false, "t": "diagram", "id": "dg-6_3-02-0"},
+
+
 
 
 
@@ -98,12 +103,17 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
 
 
+
+
     { t: "p", text: "Each save put `{'report.md': 0}` and then `{'report.md': 1}` on the event the tool produced — the same mechanism as `state_delta` in lesson 5.2, applied to files. The event log therefore records not just that a tool ran but which file version it produced, so 'which turn generated the report the user is complaining about' is answerable from the transcript alone." },
 
     { t: "callout", kind: "good", title: "This is your provenance trail",
       body: [{ t: "p", text: "A user says the figures in their report are wrong. With `artifact_delta` you can find the event that produced version 3, the tool call that preceded it, the arguments it was given, and the state at that moment — the whole causal chain, from the log. Without it you have a file and a shrug. It costs nothing and it is on by default; the only thing you have to do is not throw the events away." }] },
 
     { t: "h2", n: "05", text: "Choosing a service", id: "choosing" },
+
+    {"kind": "tree", "title": "Artifacts, your own storage, or neither", "caption": "**The question to ask is who else needs this file, and for how long.** A chart the agent just rendered is the conversation's, and artifacts give it versioning and a tie to the event log for free. An invoice your finance system owns has a lifecycle of its own — write it to your storage and keep the URL in state. **And the omission to avoid is at the bottom:** the runner takes `artifact_service` exactly as it takes `session_service`, and without one `save_artifact` has nowhere to go. Wire it in alongside the session service, not when the first tool needs it.", "root": {"label": "A tool has produced a file", "sub": "who else needs it, and for how long?", "tone": "accent", "children": [{"label": "Only this conversation, for now", "sub": "a chart, an intermediate document", "tone": "good", "children": [{"label": "An artifact, with session_id", "sub": "versioned, in the event log", "tone": "good"}]}, {"label": "This user, across conversations", "sub": "an uploaded profile document", "tone": "violet", "children": [{"label": "An artifact, session_id omitted", "sub": "the user namespace", "tone": "violet"}]}, {"label": "Another service, or under retention", "sub": "an invoice, a regulated record", "tone": "teal", "children": [{"label": "Your own storage; the URL in state", "sub": "it has a lifecycle of its own", "tone": "teal"}]}, {"label": "And with no artifact_service on the runner", "sub": "save_artifact has nowhere to go", "tone": "crit"}]}, "t": "diagram", "id": "dg-6_3-05-3"},
+
 
     { t: "table", head: ["Service", "Stores", "Use"],
       rows: [

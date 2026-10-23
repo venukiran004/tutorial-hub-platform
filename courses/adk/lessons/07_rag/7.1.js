@@ -28,6 +28,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "table", head: ["Classic RAG stage", "In ADK", "Who owns it"],
       rows: [
         ["Ingest and chunk documents", "Offline, before the agent exists", "You — a batch job, not an agent concern"],
@@ -42,6 +44,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "A pipeline retrieves on every request by construction. An agent retrieves when it decides to, which is better when the question does not need documents — no wasted search, no irrelevant chunks diluting the prompt — and worse when the model believes it already knows. Everything that follows is about making that decision go the right way: a tool whose description says exactly what is in the corpus, and an instruction that says answers must come from it." }] },
 
     { t: "h2", n: "02", text: "A retrieval tool", id: "tool" },
+
+    {"kind": "trace", "title": "One parameter, a string, always - and why that is the point", "caption": "**The declaration the model sees has exactly one field, and that constraint is the most useful thing the base class does for you.** The model's job shrinks to writing a good query rather than guessing at filters, page sizes and result counts it has no basis for choosing — and every retrieval tool in the system then presents the same interface. **Which leaves the description doing the routing:** with three corpora, the descriptions are the only thing telling them apart, so write each one as an index rather than a label.", "left": "what the base class fixes", "codeW": 210, "vars": ["so the model"], "steps": [{"code": "params: {query: string}", "state": ["writes a query - and nothing else"], "tone": "violet"}, {"code": "no filters, no page size, no top_k", "state": ["cannot guess at values it has no basis for"], "changed": [0], "tone": "violet"}, {"code": "every retrieval tool, the same shape", "state": ["chooses between corpora, not between options"], "changed": [0], "tone": "good"}, {"code": "which leaves the description", "state": ["as the only routing information there is"], "changed": [0], "tone": "accent"}, {"code": "'searches documents'", "state": ["is called for everything, right by luck"], "changed": [0], "tone": "crit"}, {"code": "'policies; not product manuals; to 2025'", "state": ["is called when it can actually answer"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_1-02-2"},
 
     { t: "code", lang: "python", title: "r1.py — retrieval over three documents",
       code: `from google.adk.tools.retrieval import BaseRetrievalTool
@@ -90,6 +94,8 @@ class TinyCorpus(BaseRetrievalTool):
 
     { t: "h2", n: "04", text: "A miss is a result, not an error", id: "miss" },
 
+    {"kind": "flow", "title": "A miss returns a sentence - and the sentence is where hallucination starts", "caption": "**Returning “no matching document found” rather than raising is what lets the turn continue**, so the agent can apologise, ask a clarifying question or search again. But a model handed that sentence and *no instruction about what to do with it* will frequently answer from its own weights, fluently and without hedging. **That is the most common RAG failure in production and it is invisible in testing**, because the answer looks exactly like a good one — which is why the rule has to be in the instruction and then actually evaluated.", "cols": 3, "nodes": [{"id": "m", "label": "Nothing matches the query", "sub": "a normal outcome, by design", "tone": "accent"}, {"id": "s", "label": "run_async returns a sentence", "sub": "'No matching document found.'", "tone": "good"}, {"id": "c", "label": "So the turn continues", "sub": "apologise, clarify, or search again", "tone": "good"}, {"id": "h", "label": "But with no rule in the instruction", "sub": "the model answers from its weights", "tone": "crit"}, {"id": "i", "label": "Invisible in testing", "sub": "it reads exactly like a good answer", "tone": "crit"}, {"id": "e", "label": "So state the rule AND evaluate it", "sub": "groundedness, measured", "tone": "violet"}], "edges": [["m", "s"], ["s", "c"], ["s", "h"], ["h", "i"], ["i", "e"]], "t": "diagram", "id": "dg-7_1-04-3"},
+
     { t: "code", lang: "python", title: "From the installed source of BaseRetrievalTool",
       code: `"""The base class for tools that retrieve data for a query.
 
@@ -111,6 +117,8 @@ on it and continue the turn.
 
 
 
+
+
     { t: "table", head: ["Option", "What it is", "When"],
       rows: [
         ["`FilesRetrieval`", "Retrieval over local files, via LlamaIndex", "Prototypes, small fixed corpora, getting the wiring right"],
@@ -124,6 +132,8 @@ on it and continue the turn.
       body: [{ t: "p", text: "Chunk size, overlap, embedding model, hybrid search, reranking — none of that is in ADK, and none of it changes when you move a retriever behind a tool. That is good news and a warning. Good, because your existing search investment transfers intact. A warning, because no amount of agent design rescues a corpus that does not contain the answer, and 'the agent is wrong' is far more often a retrieval problem than a prompting one. Measure recall on your corpus before you tune instructions." }] },
 
     { t: "h2", n: "06", text: "Citations", id: "citations" },
+
+    {"kind": "flow", "title": "A document id in the text is the cheapest citation there is", "caption": "**The `[refund-policy]` prefix is not decoration.** Return the id with each chunk, instruct the model to name what it used, and the answer arrives attributable — which is what makes a wrong answer diagnosable rather than merely wrong. **For the provider's own grounded tools you get structured grounding metadata instead**, which is richer and arrives without asking; for your own corpus, an id in the retrieved string is enough to start and costs nothing.", "cols": 3, "nodes": [{"id": "r", "label": "The chunk carries its id", "sub": "'[refund-policy] Refunds are...'", "tone": "accent"}, {"id": "i", "label": "The instruction asks for sources", "sub": "'name the documents you used'", "tone": "accent"}, {"id": "a", "label": "The answer is attributable", "sub": "so a wrong one is diagnosable", "tone": "good"}, {"id": "g", "label": "Built-in grounded tools give metadata", "sub": "richer, and you get it for free", "tone": "violet"}, {"id": "o", "label": "Your own corpus: an id in the text", "sub": "enough to start, costs nothing", "tone": "good"}], "edges": [["r", "a"], ["i", "a"], ["a", "g"], ["a", "o"]], "t": "diagram", "id": "dg-7_1-06-4"},
 
     { t: "p", text: "The prefix `[refund-policy]` in the retrieved text is not decoration — it is the cheapest citation mechanism there is. Return the document id with each chunk, instruct the model to name the documents it used, and the answer arrives attributable. For the built-in grounded tools the provider gives you structured grounding metadata instead (lesson 4.4), which is richer; for your own corpus, an id in the text is enough to start, and it is what makes a wrong answer diagnosable." },
 

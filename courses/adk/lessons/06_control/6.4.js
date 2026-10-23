@@ -27,6 +27,8 @@ EC.receiveLesson({
 
 
 
+
+
     { t: "code", lang: "python", title: "c3.py — a parsing agent",
       code: `from pydantic import BaseModel, Field
 
@@ -48,6 +50,9 @@ agent = LlmAgent(name="parser", model=MODEL,
     { t: "p", text: "Three separate facts in that output, and each one matters. **`response_schema` and `response_mime_type` were set on the request** — the constraint travelled to the provider rather than sitting in the prompt as a wish. **`total` came back as `42.5`, a float**, not the string `\"42.50\"`. And **what landed in state is a `dict`**, not an `Invoice` instance — so downstream code indexes it with `value[\"total\"]`, and if you want the model back you validate it yourself with `Invoice(**value)`." },
 
     { t: "h2", n: "02", text: "What the model is actually given", id: "sent" },
+
+    {"kind": "flow", "title": "Every field description is sent to the provider as prompt", "caption": "**That is what makes the schema the natural home for the rules that used to clutter the instruction.** `Field(description=\"ISO 4217 code, uppercase\")` beats a sentence in the prompt saying the same thing, because it sits next to the field it governs and cannot drift from it. **So write schemas the way you would write a good API contract:** the class docstring says what the object is, each description says what the field means and what form it takes — and what remains in the instruction is the task rather than the format.", "cols": 3, "nodes": [{"id": "d", "label": "The class docstring", "sub": "becomes the schema's description", "tone": "accent"}, {"id": "f", "label": "Each Field description", "sub": "becomes the property's description", "tone": "accent"}, {"id": "s", "label": "All of it is sent to the provider", "sub": "the schema IS prompt", "tone": "violet"}, {"id": "r", "label": "So per-field rules belong here", "sub": "not in a sentence in the instruction", "tone": "good"}, {"id": "i", "label": "And the instruction says the task", "sub": "no longer the format", "tone": "good"}], "edges": [["d", "s"], ["f", "s"], ["s", "r"], ["r", "i"]], "t": "diagram", "id": "dg-6_4-02-1"},
+
 
     { t: "code", lang: "python", title: "The schema Pydantic generates",
       code: `print(json.dumps(Invoice.model_json_schema()))` },
@@ -95,6 +100,9 @@ agent = LlmAgent(name="parser", model=MODEL,
       body: [{ t: "p", text: "A schema guarantees that `total` is a number. It guarantees nothing about whether it is the right number, and a constrained model that cannot find the total will produce a plausible one rather than fail — because the schema says the field is required. Keep fields optional where absence is a real possibility, and prefer an explicit `found: bool` or a `confidence` field over forcing a value out of nothing. Validating shape is free; validating truth is evaluation (lesson 11.2)." }] },
 
     { t: "h2", n: "05", text: "Schemas in a pipeline", id: "pipeline" },
+
+    {"kind": "trace", "title": "A classifier the pipeline can branch on without a model call", "caption": "**The payoff is in the last row: a typed object in state means the next step routes in Python rather than by asking a model.** A classifier that returns a paragraph forces the next step to re-read it; one that returns a category, an urgency and a boolean lets your own code decide. **`Literal` is the field to insist on** — it becomes an enum the provider enforces, where a plain string with an instruction saying “one of three” eventually produces `Billing`, `tech` and something you have never seen, each breaking a dictionary lookup differently.", "left": "piece", "codeW": 180, "vars": ["what it buys"], "steps": [{"code": "category: Literal[...]", "state": ["an enum in the schema - no fourth category"], "tone": "good"}, {"code": "urgency: Literal[...]", "state": ["and the rule lives in its Field description"], "changed": [0], "tone": "good"}, {"code": "needs_human: bool", "state": ["a value your code can branch on directly"], "changed": [0], "tone": "good"}, {"code": "include_contents='none'", "state": ["it classifies the sentence, not the argument"], "changed": [0], "tone": "accent"}, {"code": "output_key='triage'", "state": ["a dict in state the next instruction reads"], "changed": [0], "tone": "violet"}, {"code": "so the routing costs", "state": ["zero model calls - Python reads the dict"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_4-05-2"},
+
 
     { t: "code", lang: "python", title: "Where structured output earns its keep",
       code: `class Triage(BaseModel):
