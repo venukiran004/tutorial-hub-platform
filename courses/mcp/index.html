@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Context Protocol — Tutorial Hub</title>
+<meta name="description" content="The Model Context Protocol end to end: hosts, clients and servers; tools, resources and prompts; the handshake and capability negotiation; building a server with FastMCP and with the low-level API; stdio, SSE and streamable HTTP; the injection surface, auth, testing and operating a server other teams depend on. Every trace executed against the installed SDK.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">Model Context Protocol</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>One protocol, <span class="dim">so every tool does not need every framework.</span></h1>
+    <p class="hero-lede">
+      Before MCP, wiring M tools into N agent frameworks was M times N integrations, each
+      one someone’s afternoon and nobody’s responsibility. The Model Context Protocol makes
+      it M plus N: a server offers tools, resources and prompts once, and any host can
+      consume them. This course reads the protocol off the wire — the handshake and what
+      capability negotiation settles, the three primitives and when each applies, a server
+      built both with FastMCP and with the low-level API, the three transports and what
+      changes when a server stops being a subprocess, then the injection surface it hands
+      its callers, authentication, testing, and operating an interface other teams depend
+      on. <b>Every API here was introspected from the installed SDK</b> and <b>every trace
+      was produced by running a real client against a real server</b>, so what you read is
+      what the protocol does rather than what the documentation says it does.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with what MCP is</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module moves you from one of these states to the next. Most teams stop at the
+      second, which is the one where a server works on a laptop and is not yet safe to
+      publish.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can read the protocol</div>
+        <div class="ls-d">Host, client and server as three distinct roles; the initialize handshake and what capability negotiation settles; tools, resources and prompts as three different answers.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can write a server</div>
+        <div class="ls-d">A server with all three primitives, tool schemas that actually carry their constraints, typed results, and errors that reach the caller as data rather than as your exception text.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can choose a transport</div>
+        <div class="ls-d">stdio for a subprocess, SSE and streamable HTTP for a service — and what changes about access, identity and buffering the moment the server stops being a child process.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can publish one safely</div>
+        <div class="ls-d">The injection surface a server hands its callers, per-user identity rather than one shared token, a test suite that runs in-process, and a versioning policy for an interface other teams depend on.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can consume anyone's</div>
+        <div class="ls-d">A client of your own, several servers at once, and the same server wired into a desktop host, an agent framework and your own code — with an allow-list you can justify.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Five parts: the protocol itself, building a server, the three transports,
+      security and operation, and consuming servers you did not write. Every trace
+      was produced by running the code against the installed SDK.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — Model Context Protocol</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.link,
+    badge: "Course 13 · Model Context Protocol",
+    startLabel: "Start with what MCP is",
+    statTail: "Executed",
+    statTailLabel: "Every trace and API",
+    fitYes: [
+      "You want to publish a capability your team owns so other teams can use it from whatever framework they are on.",
+      "You are wiring someone else’s MCP server into an agent and need to know what you are trusting and how to bound it.",
+      "Your server works over stdio on a laptop and now has to be a service, with identity, authentication and a version policy.",
+      "You keep seeing MCP described as a plugin standard and want the protocol read off the wire instead."
+    ],
+    fitNo: [
+      "You want to build an agent. MCP is how an agent reaches tools it does not own — the agent itself is the ADK and LangGraph courses.",
+      "You want the A2A protocol. That is agent-to-agent rather than agent-to-tools, and it lives in the ADK course.",
+      "You have not written async Python. Every client and server here is async; the Python course's concurrency module comes first.",
+      "You are looking for a list of available servers. This is how the protocol works and how to write and operate one."
+    ]
+  });
+})();
+</script>
+</body>
+</html>

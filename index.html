@@ -184,9 +184,10 @@
       tags: ["LCEL", "StateGraph", "Agentic RAG", "Reranking", "Multi-agent"],
       meta: "14 modules · 118 lessons" },
 
-    { t: "Model Context Protocol", ic: I.layers,
-      d: "The protocol itself: transport, capability negotiation, and building servers that other people's clients can trust.",
-      tags: ["JSON-RPC", "Elicitation", "OAuth", "Servers"] },
+    { t: "Model Context Protocol", ic: I.layers, live: true, href: "courses/mcp/index.html",
+      d: "The protocol itself: the handshake and what capability negotiation settles, tools against resources against prompts, a server written with the decorators and again against the low-level API, the three transports, and the injection surface a published server hands its callers.",
+      tags: ["JSON-RPC", "Servers", "Transports", "Security", "OAuth", "Clients"],
+      meta: "5 modules · 15 lessons" },
 
     { t: "MLOps & Deployment", ic: I.server,
       d: "Versioning, deployment, monitoring and rollback for systems whose behaviour changes with their data.",
@@ -198,9 +199,9 @@
       meta: "15 modules · 78 lessons · in progress" },
 
     { t: "Google ADK", ic: I.link, live: true, href: "courses/adk/index.html",
-      d: "The Agent Development Kit as a runtime: agents, tools, sessions, memory and context; callbacks and artifacts; RAG; MCP and A2A; guardrails, approval, streaming, evaluation and deployment.",
-      tags: ["Agents", "Tools", "Sessions", "MCP", "A2A", "Agent Engine"],
-      meta: "12 modules · 53 lessons" }
+      d: "The Agent Development Kit as a runtime: agents, tools, sessions, memory and context; callbacks and artifacts; RAG; A2A and MCP clients; guardrails, approval, streaming, evaluation and deployment.",
+      tags: ["Agents", "Tools", "Sessions", "A2A", "Approval", "Agent Engine"],
+      meta: "12 modules · 52 lessons" }
   ];
 
   // One hue per topic, carried by --tc through the card's icon, rule, tags
