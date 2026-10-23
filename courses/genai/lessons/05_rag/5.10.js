@@ -140,6 +140,76 @@ for idx in CRANK[i]:
         ["**Adaptive RAG**", "Whether to retrieve", "1 classification call", "A large share of traffic needs no retrieval at all"]
       ] },
 
+    { t: "code", lang: "text", title: "RAPTOR and auto-merging: the patterns that change what you index",
+      code: `Everything above this point changes CONTROL FLOW -- when to retrieve, whether
+to retry. These two change WHAT IS IN THE INDEX, which is where several of the
+larger quality wins actually come from.
+
+RAPTOR  (Recursive Abstractive Processing for Tree-Organized Retrieval)
+  Cluster the chunks, summarise each cluster, cluster the summaries, repeat --
+  then index EVERY level, not just the leaves.
+
+        level 2            [ summary of the whole document ]
+                                  /            \
+        level 1     [ summary of cluster A ]  [ summary of cluster B ]
+                        /     |     \             /      \
+        level 0     chunk   chunk   chunk      chunk    chunk
+
+  Retrieval searches all levels at once. "What was the main argument?" matches
+  a summary node; "what was the penalty clause in section 4" matches a leaf.
+  A flat index can only ever answer the second kind, because the first answer
+  does not exist in any single chunk.
+
+AUTO-MERGING
+  Index small leaf chunks for precision, and keep the parent-child structure.
+  At retrieval, if several leaves of the SAME parent come back, return the
+  parent instead of the fragments.
+
+        retrieved: leaf 3, leaf 4, leaf 5   (all children of section 2.1)
+        returned:  section 2.1              (one coherent passage)
+
+  It fixes the specific failure where the model receives eight fragments of
+  one section, in ranked order rather than reading order, and has to
+  reconstruct the argument from pieces.`,
+      caption: "**A flat index can only return passages that exist; RAPTOR indexes passages that do not.** A thematic or multi-hop question has no single chunk containing its answer, so retrieval over leaves alone cannot succeed at any top-k \u2014 the summary nodes are the answer, written at index time rather than at query time." },
+    { t: "p", text: "**The costs are on opposite sides.** RAPTOR is paid at indexing: a clustering pass and a summarisation call per cluster per level, repeated on every rebuild, plus an index several times larger. Auto-merging is nearly free to build and is paid at retrieval, in the decision of how many sibling leaves justify promoting to the parent \u2014 set it too low and you hand the model whole sections it did not need, too high and nothing ever merges. Both of them pair with the sentence-window idea from lesson 5.4: embed something small and precise, return something larger and readable." },
+    { t: "code", lang: "python", title: "Query routing: choosing the index before retrieving from it",
+      code: `# THE OBSERVATION: not every question should go to the vector store, and some
+# should not go to retrieval at all.
+#
+#   "what was 2024 revenue?"        -> the SQL warehouse; the vector store has
+#                                      prose about revenue, not the number
+#   "explain the refund policy"     -> the policy index
+#   "what happened this week?"      -> a web search tool
+#   "hello"                         -> answer directly, retrieve nothing
+
+# A SEMANTIC ROUTER does this with embeddings and no model call: embed one or
+# more example queries per route, embed the incoming query, take the nearest.
+import numpy as np
+
+ROUTES = {
+    "metrics":  ["what was revenue last quarter", "how many users signed up"],
+    "policy":   ["what is the refund window", "explain the cancellation terms"],
+    "news":     ["what happened this week", "latest announcement"],
+    "chitchat": ["hello", "thanks", "who are you"],
+}
+prototypes = {r: np.mean(embed(qs), axis=0) for r, qs in ROUTES.items()}
+
+def route(q):
+    v = embed([q])[0]
+    scored = {r: float(v @ p / (np.linalg.norm(v) * np.linalg.norm(p)))
+              for r, p in prototypes.items()}
+    best = max(scored, key=scored.get)
+    return best if scored[best] > 0.70 else "fallback"      # a threshold, always
+
+# WHY A PROTOTYPE ROUTER RATHER THAN AN LLM CLASSIFIER: one embedding call,
+# single-digit milliseconds, no tokens, and it is deterministic -- so the same
+# question routes the same way every time, which a prompted classifier does not
+# guarantee. The cost is that it only knows the routes you gave examples for,
+# which is why the threshold and the fallback are not optional.`,
+      caption: "**The router runs before retrieval, which is what makes it different from reranking or query rewriting** \u2014 those improve an answer from the index you already chose, and a router decides whether that index is the right one at all. A question whose answer is a number in a database cannot be rescued by better retrieval over prose." },
+    { t: "p", text: "**The threshold is the part that makes a router safe.** Nearest-prototype always returns a nearest route, including for a question unlike anything you enumerated \u2014 so without a similarity floor and a fallback, an unfamiliar question is confidently sent to whichever route it resembles least badly. This dispatch layer is also what sits underneath adaptive RAG and the agentic retrieval of lesson 5.11: the agent's choice of tool is this decision, made by a model instead of by a threshold." },
+
     { t: "exercise", kind: "lab", title: "Measure small-to-big against its own components", difficulty: "advanced", minutes: 35,
       body: "Build a parent-child index over your corpus: large parents, small children, with a mapping from each child back to its parent. Measure recall three ways \u2014 flat chunks at a middling size, the children alone, and small-to-big with parent lookup \u2014 and report the context tokens each configuration costs at the same k. Then decide which of the two effects the pattern bundles is doing the work.",
       requirements: [
