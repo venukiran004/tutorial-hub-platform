@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
       code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp import StdioServerParameters
@@ -66,6 +67,8 @@ running a turn that calls an MCP tool:
 
     { t: "h2", n: "02", text: "Filtering", id: "filtering" },
 
+    {"kind": "flow", "title": "An allow-list admits nothing you have not read", "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.", "cols": 3, "nodes": [{"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"}, {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"}, {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"}, {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"}, {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"}, {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}], "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]], "t": "diagram", "id": "dg-8_2-02-3"},
+
     { t: "code", lang: "python", title: "An allow-list, executed",
       code: `filtered = McpToolset(
     connection_params=StdioConnectionParams(
@@ -89,7 +92,8 @@ github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
 
     { t: "h2", n: "03", text: "Lifecycle", id: "lifecycle" },
 
-    {"kind": "timeline", "title": "Where the toolset should live", "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.", "span": 10, "tick": 2, "lanes": [{"label": "Connection", "bars": [[0, 10, "one spawned process for the process lifetime", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.6, "req 1", "accent"], [3.4, 4, "req 2", "accent"], [6, 6.6, "req 3", "accent"], [8.4, 9, "req 4", "accent"]]}, {"label": "close()", "bars": [[9.6, 10, "shutdown", "good"]]}], "t": "diagram", "id": "dg-8_2-03-1"},
+    {"kind": "timeline", "title": "Where the toolset should live", "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.", "span": 10, "tick": 2, "lanes": [{"label": "Connection", "bars": [[0, 10, "one spawned process for the process lifetime", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.6, "req 1", "accent"], [3.4, 4, "req 2", "accent"], [6, 6.6, "req 3", "accent"], [8.4, 9, "req 4", "accent"]]}, {"label": "close()", "bars": [[9.6, 10, "", "good"]]}], "t": "diagram", "id": "dg-8_2-03-1"},
+
 
 
 
@@ -112,6 +116,7 @@ await FINANCE.close()`,
     { t: "h2", n: "04", text: "The other direction: publishing a server", id: "publishing" },
 
     {"kind": "flow", "title": "Both directions, one implementation", "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.", "cols": 3, "nodes": [{"id": "f", "label": "Your function", "sub": "check_fraud(order_id)", "tone": "good"}, {"id": "a", "label": "Function tool", "sub": "in your own agent", "tone": "accent"}, {"id": "m", "label": "MCP server", "sub": "@mcp.tool()", "tone": "violet"}, {"id": "o", "label": "Other teams", "sub": "any framework, any language", "tone": "warn"}], "edges": [["f", "a"], ["f", "m"], ["m", "o"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
 
 
 
@@ -152,12 +157,44 @@ if __name__ == "__main__":
 
     { t: "h2", n: "05", text: "Security, briefly", id: "security" },
 
+    {"kind": "trace", "title": "Four security facts, and none of them is about the transport", "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.", "left": "fact", "codeW": 190, "vars": ["what follows", "the control"], "steps": [{"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"}, {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"}, {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"}, {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-05-4"},
+
     { t: "dl", items: [
       ["The server acts with its own credentials", "Whatever token it holds is what every call uses, regardless of which user is talking to your agent. If answers should differ per user, the server needs the user's identity — and most do not accept one."],
       ["Descriptions are untrusted text", "Tool names and descriptions from someone else's process are placed in your prompt. A compromised server can put instructions there. Lesson 9.2 covers the defence."],
       ["A stdio server is executed code", "Same trust decision as a dependency. Pin it, read it, and never let user input influence the command."],
       ["Filter first, review after", "An allow-list you can justify in a pull request is the control that actually holds when the server changes."]
     ] },
+
+    { t: "code", lang: "python", title: "Tool annotations: hints from the server, which is exactly what they are",
+      code: `from mcp.types import ToolAnnotations
+
+# A server can declare what a tool DOES, beyond its description:
+ToolAnnotations(
+    title="Delete a record",
+    readOnlyHint=False,        # it modifies something
+    destructiveHint=True,      # and the modification is not reversible
+    idempotentHint=False,      # calling it twice is not the same as once
+    openWorldHint=True,        # it touches systems outside this server
+)
+
+# WHAT THIS IS GOOD FOR: building the allow-list, and building a UI.
+tools = await toolset.get_tools()
+read_only = [t for t in tools if getattr(t, "annotations", None)
+             and t.annotations.readOnlyHint]
+
+# AND THE WORD IN EVERY FIELD NAME IS THE WARNING: Hint.
+#
+# These are claims made by the server about itself, in the same payload as
+# the descriptions -- so a server that lies, or is compromised, or is simply
+# wrong, reports readOnlyHint=True on a tool that deletes.
+#
+# SO: use annotations to GENERATE a candidate allow-list and to decide what
+# needs a confirmation prompt. Do not use them as the control. The control
+# is the explicit list of names you read and justified (above), because that
+# one does not change when the server changes.`,
+      caption: "**Every field is named `...Hint`, and that is not stylistic** \u2014 annotations are claims a server makes about itself, arriving in the same untrusted payload as the descriptions. A compromised or careless server reports `readOnlyHint=True` on a tool that deletes, so they are useful for *generating* an allow-list and worthless as an enforcement mechanism." },
+    { t: "p", text: "**Where they genuinely earn their place is the human-facing half:** `destructiveHint` is the natural trigger for a confirmation step (lesson 4.5), and `title` gives a UI something readable to show instead of a snake-case function name. Treat the hints as the server's documentation \u2014 helpful, and not a boundary." },
 
     { t: "exercise", kind: "practice", title: "Both directions, in one afternoon", difficulty: "advanced", minutes: 32,
       prompt: "Write a FastMCP server with three tools, one of which is destructive-sounding (delete_record). Connect an ADK agent to it over stdio, list the discovered tools, and run a turn that calls a safe one. Then add a tool_filter that excludes the destructive tool and confirm the model can no longer call it even when the user asks directly. Finally, add a second toolset pointing at the same server with a prefix, and confirm the names do not collide.",

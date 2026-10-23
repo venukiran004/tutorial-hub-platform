@@ -75,6 +75,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "table", head: ["Command", "What it is for"],
       rows: [
         ["`adk run my_agent`", "A terminal conversation. Fastest loop for instruction and tool work"],
@@ -137,6 +138,38 @@ python -m evals.run      # AgentEvaluator suite    (11.2)`,
         lang: "bash",
         note: "Plus a retention policy for events; deletion that reaches sessions, artifacts **and** memory; alerts on tail model calls, tool errors and stale approvals; a rollback that is a config change; and a written note of what the agent is permitted to do." }
     ] },
+
+    { t: "code", lang: "python", title: "The fifth shape: mounting the agent inside your own FastAPI app",
+      code: `from google.adk.cli.fast_api import get_fast_api_app
+
+# This is what "adk api_server" runs. Calling it yourself gives you the same
+# endpoints inside an application you own -- which is the deployment shape
+# for an agent that is one feature of an existing service rather than a
+# service of its own.
+app = get_fast_api_app(
+    agents_dir="./agents",          # the same layout the CLI scans (1.3)
+    session_service_uri=DB_URL,     # not in-memory, because this is real
+    artifact_service_uri=GCS_URI,
+    allow_origins=["https://app.example.com"],
+    web=False,                      # no dev UI in production
+    trace_to_cloud=True,
+)
+
+# AND NOW IT IS YOUR APP, so your middleware applies:
+@app.middleware("http")
+async def authenticate(request, call_next):
+    request.state.user = await verify_token(request.headers.get("authorization"))
+    return await call_next(request)
+
+app.include_router(my_existing_routes)      # the rest of the service
+
+# WHY THIS MATTERS: the ADK endpoints have no authentication of their own.
+# Run "adk api_server" on a public port and anyone can create a session and
+# talk to your agent with your credentials. Mounting it in your own app is
+# how the auth you already have gets applied -- and "allow_origins" is not
+# authentication, it is a browser convenience.`,
+      caption: "**The ADK endpoints carry no authentication of their own**, so `adk api_server` on a reachable port is an open door to an agent holding your credentials. Mounting the app yourself is how the authentication the rest of your service already has comes to apply \u2014 and `allow_origins` is a browser policy, not an access control." },
+    { t: "p", text: "**The two service URIs are the other half of making this real.** `get_fast_api_app` defaults to in-memory services, which is correct for the dev loop and wrong the moment there are two replicas \u2014 half the turns arrive at a process that has never heard of the session (lesson 1.4). Passing a database URI and an artifact URI is the difference between the CLI's convenience and a deployment." },
 
     { t: "exercise", kind: "practice", title: "Deploy the same agent three ways", difficulty: "advanced", minutes: 30,
       prompt: "Take an agent with one tool. Run it with adk api_server and drive it from curl. Build the image with adk deploy docker and run the same curl against the container. Then write out — without running it — the full cloud_run command you would use for production, naming every flag and why. Finally, list what breaks if you omit --session_service_uri and how you would notice.",

@@ -38,6 +38,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Three things a server offers", id: "offers" },
 
+    {"kind": "trace", "title": "Three things the specification offers, and the one you will actually wire up", "caption": "**`McpToolset` is named for the reality in the first row: most servers expose tools and nothing else.** That is convenient, because a server's tools become tools on your agent and everything you already know about declarations, filtering and error handling applies unchanged. **Resources are closer to a GET than to a function call** — the client fetches them by URI and attaches them to context, rather than the model invoking them — and prompts are the part of the spec most servers omit entirely. Worth recognising when you read a server's documentation; not what you will be connecting on Monday.", "left": "what a server can offer", "codeW": 130, "vars": ["shape", "who invokes it", "how often you meet it"], "steps": [{"code": "Tools", "state": ["a function with a JSON schema", "the model", "ninety per cent of the time"], "tone": "good"}, {"code": "Resources", "state": ["readable content at a URI", "the client, then context", "occasionally"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "Prompts", "state": ["a parameterised template", "the client offers it", "rarely - most servers omit it"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-8_1-02-0"},
+
     { t: "dl", items: [
       ["Tools", "Functions the model can call, with JSON-Schema parameters. This is what you will use ninety per cent of the time, and it maps exactly onto ADK's tool concept."],
       ["Resources", "Readable content the client can fetch by URI — a file, a record, a document. Closer to a GET than to a function call, and typically attached to context rather than invoked by the model."],
@@ -79,6 +81,8 @@ INFO  Processing request of type CallToolRequest` },
 
     { t: "h2", n: "04", text: "The result envelope", id: "envelope" },
 
+    {"kind": "flow", "title": "What a dictionary becomes after it crosses MCP", "caption": "**Your agent sees the envelope, not the object the server function returned.** The payload is wrapped in a content list — the same shape as a message, so a tool can return text, images or several parts — and the server's dictionary has been serialised to a JSON string inside a text part. So the model is reading a string inside a list to find a field, which it does well enough and not for free. **And the quiet one: Python numbers go through JSON and come back as floats**, so a 127 becomes 127.0, exactly as A2A turns 42 into 42.0 in lesson 8.4.", "cols": 3, "nodes": [{"id": "s", "label": "The server returns a dict", "sub": "amount 127, currency USD", "tone": "good"}, {"id": "j", "label": "Serialised to a JSON string", "sub": "and 127 becomes 127.0", "tone": "warn"}, {"id": "c", "label": "Wrapped in a content list", "sub": "a text part, like a message", "tone": "accent"}, {"id": "m", "label": "The model reads a string inside a list", "sub": "to find one field", "tone": "accent"}, {"id": "e", "label": "isError instead of an exception", "sub": "so the model can read the failure", "tone": "violet"}, {"id": "x", "label": "So coerce deliberately at the boundary", "sub": "an int comparison breaks silently", "tone": "crit"}], "edges": [["s", "j"], ["j", "c"], ["c", "m"], ["s", "e"], ["j", "x"]], "t": "diagram", "id": "dg-8_1-04-1"},
+
     { t: "out", text: `result: {'content': [{'type': 'text', 'text': '{\\n  "amount": 127.0,\\n  "currency": "USD",\\n  "rate": 1.27\\n}'}], 'isError': False}` },
 
     { t: "p", text: "This is what a tool result looks like after it has crossed MCP, and it is not the dictionary the server function returned. The payload is wrapped in a **content list** — the same shape as a message, so a tool can return text, images or several parts — and the server's dictionary has been serialised to a JSON string inside a text part. Your agent sees the envelope, not the original object." },
@@ -102,12 +106,50 @@ INFO  Processing request of type CallToolRequest` },
 
     { t: "h2", n: "06", text: "What MCP does not solve", id: "limits" },
 
+    {"kind": "trace", "title": "Four things the protocol does not do for you", "caption": "**MCP standardises transport and discovery, which is genuinely valuable and is not a security model.** The protocol carries your call; it does not decide whether you should be allowed to make it, and a server holding your Jira token can do anything that token can do on behalf of whoever happens to be talking to your agent. **Row three is the one that changes how you review a pull request:** a tool description is text from someone else's process, placed in your model's prompt — so adding an MCP server is a trust decision, not a configuration change.", "left": "what it does not solve", "codeW": 170, "vars": ["consequence", "where it is handled"], "steps": [{"code": "authorisation", "state": ["the server acts with its own credentials", "your own identity plumbing"], "tone": "crit"}, {"code": "tool quality", "state": ["their descriptions are your routing data", "a tool_filter, or a fork"], "changed": [0, 1], "tone": "warn"}, {"code": "trust", "state": ["descriptions enter your prompt as text", "treat a new server as a dependency"], "changed": [0, 1], "tone": "crit"}, {"code": "versioning of behaviour", "state": ["a tool can change under you", "an allow-list you re-read"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-8_1-06-2"},
+
     { t: "dl", items: [
       ["Authorisation", "The protocol carries your call; it does not decide whether you should be allowed to make it. A server with your Jira token can do whatever that token can do, on behalf of whoever is talking to the agent (lesson 9.1)."],
       ["Tool quality", "A server's tool descriptions become your model's routing information. A badly described tool is as bad over MCP as it is locally, and you cannot fix it without forking the server — which is why `tool_filter` matters."],
       ["Trust", "Tool descriptions are text from someone else's process, injected into your prompt. A malicious or compromised server can put instructions there. Lesson 9.2 treats this properly; for now, note that adding an MCP server is a trust decision, not a configuration change."],
       ["Latency", "Every call is a process boundary at minimum and a network hop at worst. A tool the model calls in a tight loop is a tool you might want locally."]
     ] },
+
+    { t: "code", lang: "python", title: "The types on the wire, when you are the one holding them",
+      code: `# ADK hides all of this behind McpToolset. You meet it the moment you write
+# a server, write a test, or read a traceback -- so it is worth recognising.
+
+# THE CONTENT TYPES. A result's content list holds parts, not a value:
+from mcp.types import TextContent, ImageContent, EmbeddedResource
+
+TextContent(type="text", text=json.dumps(payload))      # what you return 95% of
+ImageContent(type="image", data=b64, mimeType="image/png")
+EmbeddedResource(type="resource", resource=...)          # a resource, inline
+
+# THE RESULT ENVELOPE, named:
+from mcp.types import CallToolResult
+CallToolResult(content=[TextContent(type="text", text="...")], isError=False)
+
+# THE ERRORS, and the distinction that matters:
+from mcp.types import McpError, ErrorCode
+from mcp.server.fastmcp.exceptions import ToolError
+
+#   ToolError  -- the TOOL failed. FastMCP turns it into a result with
+#                 isError=True, so the model reads it and can respond.
+raise ToolError("sku not found: ABC-123")
+
+#   McpError   -- the PROTOCOL failed: a malformed request, an unknown
+#                 method, a transport fault. This is not the model's problem
+#                 and the model never sees it.
+raise McpError(ErrorCode.INVALID_PARAMS, "sku must be a string")
+
+# THE CLIENT TRANSPORTS, if you ever bypass ADK -- in a test, or a script:
+from mcp.client.stdio import stdio_client            # spawn a subprocess
+from mcp.client.sse import sse_client                # the OLDER HTTP transport
+from mcp.client.streamable_http import streamablehttp_client   # the current one
+# Plenty of deployed servers still speak SSE only, so both exist in the wild.`,
+      caption: "**The distinction worth carrying is `ToolError` against `McpError`: one is a result the model reads and can recover from, the other is a transport or protocol fault the model never sees.** Raising the wrong one either hides a real failure from the model or puts a stack trace where an explanation belonged." },
+    { t: "p", text: "**And the two HTTP transports are both live.** Streamable HTTP is the current one and SSE is its predecessor, but a large number of deployed servers still speak SSE only — so a client library that supports just one of them will fail against roughly half the servers you meet, and the error reads like a connection problem rather than a version mismatch." },
 
     { t: "exercise", kind: "practice", title: "Read a server before you trust it", difficulty: "core", minutes: 20,
       prompt: "Pick an MCP server you would plausibly use — a filesystem, git or database one. Without connecting it to an agent, answer: which tools does it expose, what are their exact parameters, what can each one modify, what credentials does it need, and what would the worst outcome be if a user could choose the arguments freely? Then decide which subset you would allow through a tool_filter and write the one-sentence justification you would put in the pull request.",

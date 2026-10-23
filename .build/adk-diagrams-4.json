@@ -1,0 +1,131 @@
+{
+ "8.1": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "Three things the specification offers, and the one you will actually wire up",
+         "caption": "**`McpToolset` is named for the reality in the first row: most servers expose tools and nothing else.** That is convenient, because a server's tools become tools on your agent and everything you already know about declarations, filtering and error handling applies unchanged. **Resources are closer to a GET than to a function call** — the client fetches them by URI and attaches them to context, rather than the model invoking them — and prompts are the part of the spec most servers omit entirely. Worth recognising when you read a server's documentation; not what you will be connecting on Monday.",
+         "left": "what a server can offer", "codeW": 130,
+         "vars": ["shape", "who invokes it", "how often you meet it"],
+         "steps": [
+          {"code": "Tools", "state": ["a function with a JSON schema", "the model", "ninety per cent of the time"], "tone": "good"},
+          {"code": "Resources", "state": ["readable content at a URI", "the client, then context", "occasionally"], "changed": [0, 1, 2], "tone": "accent"},
+          {"code": "Prompts", "state": ["a parameterised template", "the client offers it", "rarely - most servers omit it"], "changed": [0, 1, 2], "tone": "warn"}]}},
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "What a dictionary becomes after it crosses MCP",
+         "caption": "**Your agent sees the envelope, not the object the server function returned.** The payload is wrapped in a content list — the same shape as a message, so a tool can return text, images or several parts — and the server's dictionary has been serialised to a JSON string inside a text part. So the model is reading a string inside a list to find a field, which it does well enough and not for free. **And the quiet one: Python numbers go through JSON and come back as floats**, so a 127 becomes 127.0, exactly as A2A turns 42 into 42.0 in lesson 8.4.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "The server returns a dict", "sub": "amount 127, currency USD", "tone": "good"},
+          {"id": "j", "label": "Serialised to a JSON string", "sub": "and 127 becomes 127.0", "tone": "warn"},
+          {"id": "c", "label": "Wrapped in a content list", "sub": "a text part, like a message", "tone": "accent"},
+          {"id": "m", "label": "The model reads a string inside a list", "sub": "to find one field", "tone": "accent"},
+          {"id": "e", "label": "isError instead of an exception", "sub": "so the model can read the failure", "tone": "violet"},
+          {"id": "x", "label": "So coerce deliberately at the boundary", "sub": "an int comparison breaks silently", "tone": "crit"}],
+         "edges": [["s", "j"], ["j", "c"], ["c", "m"], ["s", "e"], ["j", "x"]]}},
+  {"after": "06",
+   "d": {"kind": "trace",
+         "title": "Four things the protocol does not do for you",
+         "caption": "**MCP standardises transport and discovery, which is genuinely valuable and is not a security model.** The protocol carries your call; it does not decide whether you should be allowed to make it, and a server holding your Jira token can do anything that token can do on behalf of whoever happens to be talking to your agent. **Row three is the one that changes how you review a pull request:** a tool description is text from someone else's process, placed in your model's prompt — so adding an MCP server is a trust decision, not a configuration change.",
+         "left": "what it does not solve", "codeW": 170,
+         "vars": ["consequence", "where it is handled"],
+         "steps": [
+          {"code": "authorisation", "state": ["the server acts with its own credentials", "your own identity plumbing"], "tone": "crit"},
+          {"code": "tool quality", "state": ["their descriptions are your routing data", "a tool_filter, or a fork"], "changed": [0, 1], "tone": "warn"},
+          {"code": "trust", "state": ["descriptions enter your prompt as text", "treat a new server as a dependency"], "changed": [0, 1], "tone": "crit"},
+          {"code": "versioning of behaviour", "state": ["a tool can change under you", "an allow-list you re-read"], "changed": [0, 1], "tone": "warn"}]}}
+ ],
+
+ "8.2": [
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "An allow-list admits nothing you have not read",
+         "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"},
+          {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"},
+          {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"},
+          {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"},
+          {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"},
+          {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}],
+         "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Four security facts, and none of them is about the transport",
+         "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.",
+         "left": "fact", "codeW": 190,
+         "vars": ["what follows", "the control"],
+         "steps": [
+          {"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"},
+          {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"},
+          {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"},
+          {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}]}}
+ ],
+
+ "8.3": [
+  {"after": "04",
+   "d": {"kind": "flow",
+         "title": "Why a card may not advertise an origin it was not served from",
+         "caption": "**A card is a document telling you where to send your requests, so whoever can serve you a card can redirect your agent's traffic — and its credentials — somewhere else.** The same-origin rule is that redirection defence, which is why the client refuses rather than warns. The example reads as fussiness and is not: `127.0.0.1` and `localhost` are the same machine and different origins. **The fix is always on the serving side** — make the advertised URL describe where the agent is genuinely reachable, which is a deployment concern worth settling before a load balancer finds it for you.",
+         "cols": 3,
+         "nodes": [
+          {"id": "f", "label": "Card fetched from 127.0.0.1:8801", "sub": "/.well-known/agent-card.json", "tone": "accent"},
+          {"id": "a", "label": "Card advertises localhost:8801", "sub": "same machine, different origin", "tone": "warn"},
+          {"id": "r", "label": "The client refuses to resolve it", "sub": "not a warning - a refusal", "tone": "crit"},
+          {"id": "w", "label": "Because a card redirects traffic", "sub": "and your credentials with it", "tone": "crit"},
+          {"id": "s", "label": "Fix on the serving side", "sub": "advertise where it is really reachable", "tone": "good"},
+          {"id": "p", "label": "Behind a proxy, set host and protocol", "sub": "0.0.0.0 is not a public origin", "tone": "violet"}],
+         "edges": [["f", "a"], ["a", "r"], ["r", "w"], ["w", "s"], ["s", "p"]]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "Three questions a remote boundary raises that a function call does not",
+         "caption": "**The difference between MCP and A2A is the difference between running someone's code and accepting someone's judgement.** You delegate a goal rather than a call, so the remote agent decides the steps — and “find out why this order is late” may mean it reads records you did not intend to expose. **The third row is the one that is easiest to forget:** what comes back is text produced by somebody else's model, entering your model's context, so it is untrusted input in exactly the sense lesson 9.2 means.",
+         "left": "question", "codeW": 170,
+         "vars": ["the uncomfortable answer", "what to require"],
+         "steps": [
+          {"code": "who is the caller?", "state": ["your service, not your user", "carry identity deliberately"], "tone": "crit"},
+          {"code": "what may it do?", "state": ["it chooses the steps, not you", "their boundary, your verification"], "changed": [0, 1], "tone": "crit"},
+          {"code": "what comes back?", "state": ["another model's words, into your context", "treat it as untrusted input"], "changed": [0, 1], "tone": "crit"},
+          {"code": "so the review question is", "state": ["not 'does it work'", "'what if it is wrong or compromised'"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "06",
+   "d": {"kind": "tree",
+         "title": "Five situations, and the one place A2A is the wrong answer",
+         "caption": "**Read the bottom branch first, because it is the mistake worth avoiding:** two agents in the same repository that deploy together want a sub-agent, not A2A — one process, one trace, no card, no origin rules, no serialisation. **A2A earns its complexity at an organisational boundary**, where the other side has a different release cadence, different credentials and possibly a different cloud. The distinction in the last two leaves is the useful summary: agent-shaped work is A2A, function-shaped work is MCP.",
+         "root": {"label": "What shape is the work?", "sub": "and who owns the other side", "tone": "accent",
+                  "children": [
+                   {"label": "You know what to execute", "sub": "a function tool - no reasoning needed", "tone": "good"},
+                   {"label": "Someone else's integration", "sub": "an MCP toolset: their code, your process", "tone": "good"},
+                   {"label": "A specialist, and you own both sides", "sub": "a sub-agent", "tone": "violet",
+                    "children": [
+                     {"label": "Deployed together?", "sub": "then A2A buys a network hop for nothing", "tone": "crit"}]},
+                   {"label": "A specialist another team deploys", "sub": "a remote A2A agent - a real boundary", "tone": "accent"},
+                   {"label": "A capability for others to use", "sub": "serve A2A if agent-shaped, MCP if function-shaped", "tone": "teal"}]}}}
+ ],
+
+ "8.4": [
+  {"after": "02",
+   "d": {"kind": "trace",
+         "title": "What the generated card publishes, from code you already wrote",
+         "caption": "**`to_a2a` derives the card from the agent, which is convenient and publishes more than you may intend.** There is one skill for the agent and one per tool, and each tool's skill carries its full docstring — including the Args section. That is genuinely useful to a caller and it is also your internal parameter documentation, on an endpoint anyone can fetch. **Use `AgentCardBuilder` to build the card deliberately whenever the agent is reachable by someone you have not met**, and read the generated version as an attacker would first.",
+         "left": "card field", "codeW": 180,
+         "vars": ["derived from", "worth reviewing?"],
+         "steps": [
+          {"code": "name, description", "state": ["the agent's own fields", "yes - it is public prose"], "tone": "accent"},
+          {"code": "supportedInterfaces url", "state": ["host, port, protocol", "YES - see the origin rule"], "changed": [0, 1], "tone": "crit"},
+          {"code": "one skill for the agent", "state": ["its description", "yes"], "changed": [0, 1], "tone": "accent"},
+          {"code": "one skill PER TOOL", "state": ["the full docstring, Args included", "YES - this is the surprise"], "changed": [0, 1], "tone": "crit"},
+          {"code": "no authentication field", "state": ["nothing, by default", "YES - anonymous unless you add it"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "The same origin error, from three deployment shapes",
+         "caption": "**The listening address is almost never the public origin, which is why letting the runtime guess fails in exactly the environments that matter.** In a container the agent listens on 0.0.0.0 and is reached through a hostname and TLS it knows nothing about, so a card generated from the socket advertises something no caller can use — and every client refuses rather than retrying. **Set host, port and protocol explicitly, and include `rpc_path` when the agent is mounted under one**, so the card describes where it is genuinely reachable.",
+         "left": "where it runs", "codeW": 170,
+         "vars": ["listens on", "callers reach it at", "card must say"],
+         "steps": [
+          {"code": "local development", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "the same, consistently"], "tone": "good"},
+          {"code": "...card says localhost", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "REFUSED - different origin"], "changed": [2], "tone": "crit"},
+          {"code": "a container behind a proxy", "state": ["0.0.0.0:8080", "https://agents.example.com", "the public host and https"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "mounted under a path", "state": ["0.0.0.0:8080", "https://host/inventory", "include the rpc_path too"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ]
+}

@@ -28,6 +28,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "a2a_server.py — an ordinary agent, exposed",
       code: `from google.adk.agents import LlmAgent
 from google.adk.a2a.utils.agent_to_a2a import to_a2a
@@ -73,6 +74,8 @@ if __name__ == "__main__":
 
     { t: "h2", n: "02", text: "The card it generates", id: "card" },
 
+    {"kind": "trace", "title": "What the generated card publishes, from code you already wrote", "caption": "**`to_a2a` derives the card from the agent, which is convenient and publishes more than you may intend.** There is one skill for the agent and one per tool, and each tool's skill carries its full docstring — including the Args section. That is genuinely useful to a caller and it is also your internal parameter documentation, on an endpoint anyone can fetch. **Use `AgentCardBuilder` to build the card deliberately whenever the agent is reachable by someone you have not met**, and read the generated version as an attacker would first.", "left": "card field", "codeW": 180, "vars": ["derived from", "worth reviewing?"], "steps": [{"code": "name, description", "state": ["the agent's own fields", "yes - it is public prose"], "tone": "accent"}, {"code": "supportedInterfaces url", "state": ["host, port, protocol", "YES - see the origin rule"], "changed": [0, 1], "tone": "crit"}, {"code": "one skill for the agent", "state": ["its description", "yes"], "changed": [0, 1], "tone": "accent"}, {"code": "one skill PER TOOL", "state": ["the full docstring, Args included", "YES - this is the surprise"], "changed": [0, 1], "tone": "crit"}, {"code": "no authentication field", "state": ["nothing, by default", "YES - anonymous unless you add it"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_4-02-3"},
+
     { t: "out", text: `{
   "name": "inventory",
   "description": "Answers questions about warehouse stock levels for a SKU.",
@@ -92,6 +95,7 @@ if __name__ == "__main__":
     { t: "h2", n: "03", text: "Consuming", id: "consuming" },
 
     {"kind": "flow", "title": "One question, across two processes", "caption": "Executed. The remote agent's own tool call and its result arrive as events in YOUR session — which is what makes a delegation debuggable. What does not cross is its state, your state, or your user's identity.", "cols": 3, "nodes": [{"id": "u", "label": "Your runner", "sub": "RemoteA2aAgent as root", "tone": "accent"}, {"id": "c", "label": "Card fetch", "sub": "origin must match", "tone": "crit"}, {"id": "r", "label": "Remote agent", "sub": "another process entirely", "tone": "violet"}, {"id": "t", "label": "Its tool runs", "sub": "check_stock(sku='X1')", "tone": "good"}, {"id": "e", "label": "Events, locally", "sub": "call + result + answer, in your session", "tone": "warn"}], "edges": [["u", "c"], ["c", "r", "JSON-RPC"], ["r", "t"], ["t", "e"]], "t": "diagram", "id": "dg-8_4-03-1"},
+
 
 
 
@@ -134,6 +138,8 @@ events recorded locally: 6
 
     { t: "h2", n: "04", text: "Getting the origin right", id: "origin" },
 
+    {"kind": "trace", "title": "The same origin error, from three deployment shapes", "caption": "**The listening address is almost never the public origin, which is why letting the runtime guess fails in exactly the environments that matter.** In a container the agent listens on 0.0.0.0 and is reached through a hostname and TLS it knows nothing about, so a card generated from the socket advertises something no caller can use — and every client refuses rather than retrying. **Set host, port and protocol explicitly, and include `rpc_path` when the agent is mounted under one**, so the card describes where it is genuinely reachable.", "left": "where it runs", "codeW": 170, "vars": ["listens on", "callers reach it at", "card must say"], "steps": [{"code": "local development", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "the same, consistently"], "tone": "good"}, {"code": "...card says localhost", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "REFUSED - different origin"], "changed": [2], "tone": "crit"}, {"code": "a container behind a proxy", "state": ["0.0.0.0:8080", "https://agents.example.com", "the public host and https"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "mounted under a path", "state": ["0.0.0.0:8080", "https://host/inventory", "include the rpc_path too"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-8_4-04-4"},
+
     { t: "out", text: `Failed to resolve remote A2A agent inventory: Agent card RPC URL must have the
 same origin as the location the card was fetched from
 (http://127.0.0.1:8801/.well-known/agent-card.json): http://localhost:8801` },
@@ -158,6 +164,7 @@ same origin as the location the card was fetched from
     { t: "h2", n: "06", text: "Operational settings", id: "operational" },
 
     {"kind": "matrix", "title": "The settings whose defaults will hurt you", "caption": "Two of these are the same lesson as InMemorySessionService one layer up: a default that works perfectly on one machine and fails quietly the moment there are two.", "cols": ["Default", "What it costs", "Set it to"], "rows": ["timeout", "task_store", "auth_credential", "card host/port"], "cells": [[{"text": "600s", "tone": "crit"}, "10 min of a spinner", {"text": "what the UI tolerates", "tone": "good"}], [{"text": "in-process", "tone": "crit"}, "replicas do not share", {"text": "a shared store", "tone": "good"}], [{"text": "none", "tone": "crit"}, "unauthenticated calls", {"text": "service credentials", "tone": "good"}], [{"text": "localhost", "tone": "warn"}, "clients refuse the card", {"text": "the public origin", "tone": "good"}]], "t": "diagram", "id": "dg-8_4-06-2"},
+
 
 
 

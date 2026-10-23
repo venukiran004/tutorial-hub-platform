@@ -41,6 +41,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "An A2A agent publishes a card at a well-known URL describing what it is and how to talk to it. This one is served by a real ADK agent — the `to_a2a` call in the next lesson generated it from the agent object." },
 
     { t: "code", lang: "bash", title: "Fetching it",
@@ -90,6 +91,7 @@ EC.receiveLesson({
 
 
 
+
     { t: "p", text: "A2A models work as a **task** with a lifecycle rather than a request with a response. That is what makes it suitable for work that takes real time: the task is created, it progresses, it may need input, and eventually it completes or fails. A caller can subscribe to updates rather than blocking." },
 
     { t: "diagram", kind: "steps", title: "The states a task moves through",
@@ -107,6 +109,8 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "The origin check, and why it exists", id: "origin" },
 
+    {"kind": "flow", "title": "Why a card may not advertise an origin it was not served from", "caption": "**A card is a document telling you where to send your requests, so whoever can serve you a card can redirect your agent's traffic — and its credentials — somewhere else.** The same-origin rule is that redirection defence, which is why the client refuses rather than warns. The example reads as fussiness and is not: `127.0.0.1` and `localhost` are the same machine and different origins. **The fix is always on the serving side** — make the advertised URL describe where the agent is genuinely reachable, which is a deployment concern worth settling before a load balancer finds it for you.", "cols": 3, "nodes": [{"id": "f", "label": "Card fetched from 127.0.0.1:8801", "sub": "/.well-known/agent-card.json", "tone": "accent"}, {"id": "a", "label": "Card advertises localhost:8801", "sub": "same machine, different origin", "tone": "warn"}, {"id": "r", "label": "The client refuses to resolve it", "sub": "not a warning - a refusal", "tone": "crit"}, {"id": "w", "label": "Because a card redirects traffic", "sub": "and your credentials with it", "tone": "crit"}, {"id": "s", "label": "Fix on the serving side", "sub": "advertise where it is really reachable", "tone": "good"}, {"id": "p", "label": "Behind a proxy, set host and protocol", "sub": "0.0.0.0 is not a public origin", "tone": "violet"}], "edges": [["f", "a"], ["a", "r"], ["r", "w"], ["w", "s"], ["s", "p"]], "t": "diagram", "id": "dg-8_3-04-2"},
+
     { t: "p", text: "The first time I pointed a client at that card I got this, and it is worth reading rather than working around." },
 
     { t: "out", text: `Failed to resolve remote A2A agent inventory: Agent card RPC URL must have the
@@ -116,6 +120,8 @@ same origin as the location the card was fetched from
     { t: "p", text: "The card had been fetched from `127.0.0.1` and advertised its RPC endpoint as `localhost` — different origins by the rule, even though they are the same machine. The client refused. That is not fussiness: **a card is a document telling you where to send your requests**, so without an origin check, anyone who can serve you a card can redirect your agent's traffic — and its credentials — somewhere else entirely. The fix is to make the card's advertised URL match where it is actually served, which is a deployment concern worth getting right before it bites you behind a load balancer." },
 
     { t: "h2", n: "05", text: "The questions a boundary raises", id: "boundary" },
+
+    {"kind": "trace", "title": "Three questions a remote boundary raises that a function call does not", "caption": "**The difference between MCP and A2A is the difference between running someone's code and accepting someone's judgement.** You delegate a goal rather than a call, so the remote agent decides the steps — and “find out why this order is late” may mean it reads records you did not intend to expose. **The third row is the one that is easiest to forget:** what comes back is text produced by somebody else's model, entering your model's context, so it is untrusted input in exactly the sense lesson 9.2 means.", "left": "question", "codeW": 170, "vars": ["the uncomfortable answer", "what to require"], "steps": [{"code": "who is the caller?", "state": ["your service, not your user", "carry identity deliberately"], "tone": "crit"}, {"code": "what may it do?", "state": ["it chooses the steps, not you", "their boundary, your verification"], "changed": [0, 1], "tone": "crit"}, {"code": "what comes back?", "state": ["another model's words, into your context", "treat it as untrusted input"], "changed": [0, 1], "tone": "crit"}, {"code": "so the review question is", "state": ["not 'does it work'", "'what if it is wrong or compromised'"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-05-3"},
 
     { t: "dl", items: [
       ["Who is the caller?", "The remote agent sees a request from your service, not from your user. If its answers should differ per person — and for anything touching customer data they must — the identity has to be carried deliberately and the remote side has to enforce it."],
@@ -128,6 +134,8 @@ same origin as the location the card was fetched from
       body: [{ t: "p", text: "Adding an MCP server means running someone's code with your permissions. Adding an A2A agent means letting someone else's judgement into your workflow, and letting their model's words into your model's context. Neither is a configuration change. The question to answer in review is not \"does it work\" but \"what is the worst thing that happens if this agent is wrong, or compromised, or simply changes next month\"." }] },
 
     { t: "h2", n: "06", text: "Tool, sub-agent, or remote agent?", id: "choosing" },
+
+    {"kind": "tree", "title": "Five situations, and the one place A2A is the wrong answer", "caption": "**Read the bottom branch first, because it is the mistake worth avoiding:** two agents in the same repository that deploy together want a sub-agent, not A2A — one process, one trace, no card, no origin rules, no serialisation. **A2A earns its complexity at an organisational boundary**, where the other side has a different release cadence, different credentials and possibly a different cloud. The distinction in the last two leaves is the useful summary: agent-shaped work is A2A, function-shaped work is MCP.", "root": {"label": "What shape is the work?", "sub": "and who owns the other side", "tone": "accent", "children": [{"label": "You know what to execute", "sub": "a function tool - no reasoning needed", "tone": "good"}, {"label": "Someone else's integration", "sub": "an MCP toolset: their code, your process", "tone": "good"}, {"label": "A specialist, and you own both sides", "sub": "a sub-agent", "tone": "violet", "children": [{"label": "Deployed together?", "sub": "then A2A buys a network hop for nothing", "tone": "crit"}]}, {"label": "A specialist another team deploys", "sub": "a remote A2A agent - a real boundary", "tone": "accent"}, {"label": "A capability for others to use", "sub": "serve A2A if agent-shaped, MCP if function-shaped", "tone": "teal"}]}, "t": "diagram", "id": "dg-8_3-06-4"},
 
     { t: "table", head: ["Situation", "Use", "Why"],
       rows: [
