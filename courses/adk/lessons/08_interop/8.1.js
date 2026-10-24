@@ -1,209 +1,224 @@
 /* ============================================================================
-   LESSON 8.1 — MCP: The Protocol and Its Architecture
-   The discovery trace, the request types and the result envelope are executed
-   output from scratchpad/adk/m1.py against a real FastMCP server over stdio,
-   on google-adk 2.9.2 + mcp.
+   LESSON 8.1 — Using MCP From ADK
+   The discovered tools, the executed call and the filtered toolset are output
+   from scratchpad/adk/m1.py talking to a real FastMCP server over stdio
+   (google-adk 2.9.2 + mcp).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.1",
 
-  lede: "**MCP exists because every team was writing the same integration twice.** Your company has a Jira wrapper for one agent framework and another for the next; the vendor whose API you want has none. The Model Context Protocol makes the integration a *server* instead — a process that advertises tools, resources and prompts over a standard wire format, which any client can consume without knowing what framework it was written for. This lesson is the protocol itself: what a server offers, how discovery works, what a call and its result look like, and which of the two transports you should pick.",
+  lede: "**Consuming an MCP server in ADK is one object.** `McpToolset` is a toolset like any other (lesson 4.6), so a server's tools become your agent's tools — discovered at runtime, declared to the model, called, filtered and closed through machinery you already know. The direction people forget is the other one: your own agent's tools can be published as an MCP server, so the fraud-check function three teams keep asking you for becomes something they consume rather than reimplement. This lesson runs both directions against a real server.",
 
   objectives: [
-    "Describe the client–server architecture and who plays each role",
-    "Name the three things a server can offer and say which one you will actually use",
-    "Trace a discovery and a call through the protocol's request types",
-    "Read an MCP result envelope and explain `isError`",
-    "Choose between stdio and HTTP transports for a given server"
+    "Connect an agent to an MCP server over stdio and over HTTP",
+    "Filter and prefix a server's tools, and say why the allow-list matters",
+    "Read the result an MCP tool returns and handle its shape",
+    "Manage a toolset's connection lifecycle correctly",
+    "Publish your own tools as an MCP server, and decide when that is the right move"
   ],
 
-  prerequisites: ["4.6", "4.1"],
+  prerequisites: ["8.1", "4.6"],
 
   blocks: [
 
-    { t: "h2", n: "01", text: "Client, server, host", id: "architecture" },
+    { t: "h2", n: "01", text: "Connecting", id: "connecting" },
 
-    { t: "diagram", kind: "flow", title: "Who is who",
-      caption: "Your agent is never the MCP server in this picture — it is the client. Being a server is a separate thing you can also do, and it is the second half of the next lesson.",
-      cols: 3,
-      nodes: [
-        { id: "h", label: "Host", sub: "the application — your ADK process", tone: "accent" },
-        { id: "c", label: "Client", sub: "one connection per server", tone: "good" },
-        { id: "s", label: "Server", sub: "a process exposing tools", tone: "violet" },
-        { id: "b", label: "The actual system", sub: "Jira, Postgres, the filesystem", tone: "warn" }
-      ],
-      edges: [["h", "c"], ["c", "s", "JSON-RPC"], ["s", "b"]] },
+    {"kind": "steps", "title": "What one McpToolset entry actually does", "caption": "Executed against a FastMCP server over stdio. Steps 2 and 5 are the protocol; everything else is the agent behaving exactly as it would with a local function.", "items": [{"label": "Connect", "sub": "spawn the process, or open the HTTP session", "tone": "violet"}, {"label": "ListTools", "sub": "names, descriptions and JSON Schemas", "tone": "accent"}, {"label": "Filter", "sub": "tool_filter allow-list, resolved per request", "tone": "crit"}, {"label": "Declare", "sub": "each becomes a function declaration for the model"}, {"label": "CallTool", "sub": "name and arguments cross the wire", "tone": "accent"}, {"label": "Envelope back", "sub": "content list + isError", "tone": "good"}], "t": "diagram", "id": "dg-8_1-01-0"},
 
-    { t: "p", text: "The server is a separate process doing the integration work. It might be maintained by the vendor, by another team, or by you; what matters is that it is not part of your agent, and that swapping your agent framework does not touch it. That separation is the entire value proposition, and it is why MCP spread quickly — a server written once is consumable by every client that speaks the protocol." },
 
-    { t: "h2", n: "02", text: "Three things a server offers", id: "offers" },
 
-    {"kind": "trace", "title": "Three things the specification offers, and the one you will actually wire up", "caption": "**`McpToolset` is named for the reality in the first row: most servers expose tools and nothing else.** That is convenient, because a server's tools become tools on your agent and everything you already know about declarations, filtering and error handling applies unchanged. **Resources are closer to a GET than to a function call** — the client fetches them by URI and attaches them to context, rather than the model invoking them — and prompts are the part of the spec most servers omit entirely. Worth recognising when you read a server's documentation; not what you will be connecting on Monday.", "left": "what a server can offer", "codeW": 130, "vars": ["shape", "who invokes it", "how often you meet it"], "steps": [{"code": "Tools", "state": ["a function with a JSON schema", "the model", "ninety per cent of the time"], "tone": "good"}, {"code": "Resources", "state": ["readable content at a URI", "the client, then context", "occasionally"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "Prompts", "state": ["a parameterised template", "the client offers it", "rarely - most servers omit it"], "changed": [0, 1, 2], "tone": "warn"}], "t": "diagram", "id": "dg-8_1-02-0"},
 
-    { t: "dl", items: [
-      ["Tools", "Functions the model can call, with JSON-Schema parameters. This is what you will use ninety per cent of the time, and it maps exactly onto ADK's tool concept."],
-      ["Resources", "Readable content the client can fetch by URI — a file, a record, a document. Closer to a GET than to a function call, and typically attached to context rather than invoked by the model."],
-      ["Prompts", "Reusable prompt templates the server suggests, parameterised. The least-used of the three, and the one most servers omit entirely."]
-    ] },
 
-    { t: "callout", kind: "note", title: "In practice, MCP means tools",
-      body: [{ t: "p", text: "Most servers expose tools and nothing else, and ADK's `McpToolset` is named for that reality — it is a toolset (lesson 4.6), so a server's tools become tools on your agent and everything you know about declarations, filtering and error handling applies unchanged. Resources and prompts exist in the specification and are worth knowing about when you read a server's documentation, but they are not what you will be wiring up on Monday." }] },
 
-    { t: "h2", n: "03", text: "Discovery, traced", id: "discovery" },
 
-    { t: "p", text: "A client does not know what a server offers until it asks. The trace below is from a real FastMCP server connected over stdio — the log lines are the *server* reporting the requests it received." },
+    { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
+      code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
+from mcp import StdioServerParameters
 
-    { t: "out", text: `INFO  Processing request of type ListToolsRequest
-tools discovered from the MCP server:
+toolset = McpToolset(
+    connection_params=StdioConnectionParams(
+        server_params=StdioServerParameters(
+            command=sys.executable, args=["mcp_server.py"]),
+        timeout=30,
+    )
+)
+
+agent = LlmAgent(name="finance", model=MODEL, tools=[toolset],
+                 instruction="Use the finance tools.")`,
+      caption: "`tools=[toolset]` — one entry for a whole server. The agent never names an individual MCP tool." },
+
+    { t: "out", text: `tools discovered from the MCP server:
   convert: Converts an amount between two currencies.
-     params: {'properties': {'amount': {'title': 'Amount', 'type': 'number'},
-                             'frm': {'title': 'Frm', 'type': 'string'},
-                             'to': {'title': 'To', 'type': 'string'}}, 'required': [...]}
+     params: {'properties': {'amount': {'type': 'number'}, 'frm': {'type': 'string'}, 'to': {'type': 'string'}}, 'required': [...]}
   vat: Returns VAT for an amount in a country.
-     params: {'properties': {'amount': {'title': 'Amount', 'type': 'number'},
-                             'country': {'title': 'Country', 'type': 'string'}}, 'required': ['amount', 'country']}
+     params: {'properties': {'amount': {'type': 'number'}, 'country': {'type': 'string'}}, 'required': ['amount', 'country']}
 
-INFO  Processing request of type ListToolsRequest
-INFO  Processing request of type CallToolRequest` },
+running a turn that calls an MCP tool:
+  call: convert {'amount': 100, 'frm': 'GBP', 'to': 'USD'}
+  result: {'content': [{'type': 'text', 'text': '{\\n  "amount": 127.0, "currency": "USD", "rate": 1.27\\n}'}], 'isError': False}
+  answer: 100 pounds is 127 US dollars.` },
 
-    { t: "p", text: "Two request types do all the work: **`ListToolsRequest`** returns the catalogue with a JSON Schema per tool, and **`CallToolRequest`** invokes one. Notice `ListToolsRequest` appearing more than once — the client re-lists when it assembles a request, which is how a server that gains a tool at lunchtime is usable by an agent that started at nine. Discovery is a runtime activity, not a build-time one." },
+    { t: "p", text: "The model's function call is indistinguishable from a local one — same name, same arguments, same event in the log. The only thing that betrays the boundary is the result envelope, and the `127.0` where the server computed a number. Everything else you learned in module 4 applies without modification, which is the point of implementing MCP as a toolset rather than as a special case." },
 
-    { t: "diagram", kind: "steps", title: "The life of one MCP tool call",
-      caption: "Steps 2 and 5 are the protocol. Everything else is your agent behaving exactly as it would with a local function.",
-      items: [
-        { label: "Connect", sub: "spawn the process or open the HTTP session" },
-        { label: "ListTools", sub: "server returns names, descriptions and JSON Schemas" },
-        { label: "Declare", sub: "the client turns each into a function declaration for the model" },
-        { label: "Model chooses", sub: "an ordinary function call, indistinguishable from a local tool" },
-        { label: "CallTool", sub: "name and arguments cross the wire" },
-        { label: "Result", sub: "a content list plus isError, back to the model" }
+    { t: "table", head: ["Transport", "Connection params", "When"],
+      rows: [
+        ["stdio", "`StdioConnectionParams(server_params=StdioServerParameters(command=…, args=[…]))`", "Local servers you spawn — filesystem, git, a CLI wrapper"],
+        ["SSE", "`SseConnectionParams(url=…)`", "An HTTP server using server-sent events"],
+        ["Streamable HTTP", "`StreamableHTTPConnectionParams(url=…)`", "The newer HTTP transport; prefer it for a hosted server"]
       ] },
 
-    { t: "h2", n: "04", text: "The result envelope", id: "envelope" },
+    { t: "h2", n: "02", text: "Filtering", id: "filtering" },
 
-    {"kind": "flow", "title": "What a dictionary becomes after it crosses MCP", "caption": "**Your agent sees the envelope, not the object the server function returned.** The payload is wrapped in a content list — the same shape as a message, so a tool can return text, images or several parts — and the server's dictionary has been serialised to a JSON string inside a text part. So the model is reading a string inside a list to find a field, which it does well enough and not for free. **And the quiet one: Python numbers go through JSON and come back as floats**, so a 127 becomes 127.0, exactly as A2A turns 42 into 42.0 in lesson 8.4.", "cols": 3, "nodes": [{"id": "s", "label": "The server returns a dict", "sub": "amount 127, currency USD", "tone": "good"}, {"id": "j", "label": "Serialised to a JSON string", "sub": "and 127 becomes 127.0", "tone": "warn"}, {"id": "c", "label": "Wrapped in a content list", "sub": "a text part, like a message", "tone": "accent"}, {"id": "m", "label": "The model reads a string inside a list", "sub": "to find one field", "tone": "accent"}, {"id": "e", "label": "isError instead of an exception", "sub": "so the model can read the failure", "tone": "violet"}, {"id": "x", "label": "So coerce deliberately at the boundary", "sub": "an int comparison breaks silently", "tone": "crit"}], "edges": [["s", "j"], ["j", "c"], ["c", "m"], ["s", "e"], ["j", "x"]], "t": "diagram", "id": "dg-8_1-04-1"},
+    {"kind": "flow", "title": "An allow-list admits nothing you have not read", "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.", "cols": 3, "nodes": [{"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"}, {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"}, {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"}, {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"}, {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"}, {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}], "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]], "t": "diagram", "id": "dg-8_1-02-2"},
 
-    { t: "out", text: `result: {'content': [{'type': 'text', 'text': '{\\n  "amount": 127.0,\\n  "currency": "USD",\\n  "rate": 1.27\\n}'}], 'isError': False}` },
 
-    { t: "p", text: "This is what a tool result looks like after it has crossed MCP, and it is not the dictionary the server function returned. The payload is wrapped in a **content list** — the same shape as a message, so a tool can return text, images or several parts — and the server's dictionary has been serialised to a JSON string inside a text part. Your agent sees the envelope, not the original object." },
 
-    { t: "callout", kind: "trap", title: "Two layers of JSON, and a float where you had an int",
-      body: [{ t: "p", text: "A model reading that result has to look inside a string inside a list to find `amount`, which it does well enough but not for free. More subtly, the currency example returned `127.0` — the server's Python numbers went through JSON and came back as floats, exactly as the A2A example in lesson 8.4 turns `42` into `42.0`. If your downstream code does an integer comparison or formats a count, that is a bug that only appears once the tool moves behind a protocol. Assume everything crossing a boundary is JSON-shaped, and coerce deliberately." }] },
+    { t: "code", lang: "python", title: "An allow-list, executed",
+      code: `filtered = McpToolset(
+    connection_params=StdioConnectionParams(
+        server_params=StdioServerParameters(command=sys.executable, args=["mcp_server.py"]),
+        timeout=30),
+    tool_filter=["vat"])
+print([t.name for t in await filtered.get_tools()])` },
 
-    { t: "p", text: "`isError` is the other half. A failing MCP tool does not raise an exception into your process — it returns a result with `isError: true` and an explanatory content list. That is the same design as the retrieval tools in lesson 7.1 and for the same reason: the model should be able to read the failure and respond to it, not have the turn end in a stack trace." },
+    { t: "out", text: "   ['vat']" },
 
-    { t: "h2", n: "05", text: "Two transports", id: "transports" },
+    { t: "p", text: "The server still offers both tools; the agent sees one. `tool_filter` takes a list of names or a predicate, and the predicate form is what you want when the allowed set depends on the user — an operator gets the write tools, everybody else does not, decided per request because `get_tools` is called per request." },
 
-    { t: "diagram", kind: "compare", title: "stdio or HTTP",
-      caption: "The protocol is identical; only the pipe differs. ADK expresses the choice as which connection-params class you construct.",
-      columns: [
-        { title: "stdio", tone: "accent", items: ["Your process spawns the server", "Pipes over stdin/stdout", "One server process per client", "No network, no auth to configure", "Local tools: filesystem, git, a database on the same box"] },
-        { title: "HTTP (SSE / streamable)", tone: "violet", items: ["The server runs somewhere already", "One server serves many clients", "You configure the URL and credentials", "Network policy and TLS apply", "Shared, hosted or vendor-run servers"] }
-      ] },
+    { t: "callout", kind: "good", title: "Allow-list, never deny-list",
+      body: [{ t: "p", text: "A deny-list says which of today's tools you refuse. The server can add a tool tomorrow, and a deny-list silently admits it — into your agent, described by someone else, callable by a model. An allow-list of names admits nothing you have not read. This is the single most valuable line of configuration in an MCP integration, and it costs you a list." }] },
 
-    { t: "callout", kind: "warn", title: "A stdio server is a process you are executing",
-      body: [{ t: "p", text: "`StdioConnectionParams` takes a command and arguments, and ADK runs them. That is arbitrary code execution on your machine or in your container, with your permissions, defined by a config file. It is fine for a server you wrote or one from a source you trust as much as a dependency — and it is the same trust decision as adding a package, which people make far more carefully. Pin the version, read what it does, and never take the command from anything a user can influence." }] },
+    { t: "code", lang: "python", title: "Prefixing, when two servers collide",
+      code: `jira = McpToolset(connection_params=jira_params, tool_name_prefix="jira")
+github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
+# search -> jira_search and gh_search`,
+      caption: "Two servers both offering `search` is common, and the model cannot choose between two identical names. Prefixing also makes traces readable — `jira_search` in a log tells you where the call went." },
 
-    { t: "h2", n: "06", text: "What MCP does not solve", id: "limits" },
+    { t: "h2", n: "03", text: "Lifecycle", id: "lifecycle" },
 
-    {"kind": "trace", "title": "Four things the protocol does not do for you", "caption": "**MCP standardises transport and discovery, which is genuinely valuable and is not a security model.** The protocol carries your call; it does not decide whether you should be allowed to make it, and a server holding your Jira token can do anything that token can do on behalf of whoever happens to be talking to your agent. **Row three is the one that changes how you review a pull request:** a tool description is text from someone else's process, placed in your model's prompt — so adding an MCP server is a trust decision, not a configuration change.", "left": "what it does not solve", "codeW": 170, "vars": ["consequence", "where it is handled"], "steps": [{"code": "authorisation", "state": ["the server acts with its own credentials", "your own identity plumbing"], "tone": "crit"}, {"code": "tool quality", "state": ["their descriptions are your routing data", "a tool_filter, or a fork"], "changed": [0, 1], "tone": "warn"}, {"code": "trust", "state": ["descriptions enter your prompt as text", "treat a new server as a dependency"], "changed": [0, 1], "tone": "crit"}, {"code": "versioning of behaviour", "state": ["a tool can change under you", "an allow-list you re-read"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-8_1-06-2"},
+    {"kind": "timeline", "title": "Where the toolset should live", "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.", "span": 10, "tick": 2, "lanes": [{"label": "Connection", "bars": [[0, 10, "one spawned process for the process lifetime", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.6, "req 1", "accent"], [3.4, 4, "req 2", "accent"], [6, 6.6, "req 3", "accent"], [8.4, 9, "req 4", "accent"]]}, {"label": "close()", "bars": [[9.6, 10, "", "good"]]}], "t": "diagram", "id": "dg-8_1-03-1"},
+
+
+
+
+
+
+
+    { t: "p", text: "A toolset holds a connection: a spawned process for stdio, an HTTP session otherwise. `BaseToolset` therefore has a `close`, and it is not decorative — a long-running service that constructs toolsets per request and never closes them accumulates child processes until something gives out." },
+
+    { t: "code", lang: "python", title: "Where the toolset should live",
+      code: `# Module scope: one connection for the process lifetime.
+FINANCE = McpToolset(connection_params=finance_params, tool_filter=["convert", "vat"])
+
+agent = LlmAgent(name="finance", model=MODEL, tools=[FINANCE])
+
+# On shutdown — a plugin's close hook is a good home (lesson 6.2).
+await FINANCE.close()`,
+      caption: "Constructing the toolset once and closing it on shutdown is right for almost every deployment. Per-request construction is for the rare case where the connection itself must carry the user's credentials." },
+
+    { t: "callout", kind: "trap", title: "The server is a dependency with an uptime",
+      body: [{ t: "p", text: "Your agent now fails when someone else's process fails, and the failure surfaces during `get_tools` — while the model request is being assembled, before the model has said anything. Decide what should happen: a missing toolset means the agent quietly loses a capability, which is often better than a failed turn, but only if the instruction does not promise that capability. Test it by killing the server mid-conversation, because you will find out eventually and it is cheaper to find out now." }] },
+
+    { t: "h2", n: "04", text: "Security, briefly", id: "security" },
+
+    {"kind": "trace", "title": "Four security facts, and none of them is about the transport", "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.", "left": "fact", "codeW": 190, "vars": ["what follows", "the control"], "steps": [{"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"}, {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"}, {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"}, {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_1-04-3"},
+
+
 
     { t: "dl", items: [
-      ["Authorisation", "The protocol carries your call; it does not decide whether you should be allowed to make it. A server with your Jira token can do whatever that token can do, on behalf of whoever is talking to the agent (lesson 9.1)."],
-      ["Tool quality", "A server's tool descriptions become your model's routing information. A badly described tool is as bad over MCP as it is locally, and you cannot fix it without forking the server — which is why `tool_filter` matters."],
-      ["Trust", "Tool descriptions are text from someone else's process, injected into your prompt. A malicious or compromised server can put instructions there. Lesson 9.2 treats this properly; for now, note that adding an MCP server is a trust decision, not a configuration change."],
-      ["Latency", "Every call is a process boundary at minimum and a network hop at worst. A tool the model calls in a tight loop is a tool you might want locally."]
+      ["The server acts with its own credentials", "Whatever token it holds is what every call uses, regardless of which user is talking to your agent. If answers should differ per user, the server needs the user's identity — and most do not accept one."],
+      ["Descriptions are untrusted text", "Tool names and descriptions from someone else's process are placed in your prompt. A compromised server can put instructions there. Lesson 9.2 covers the defence."],
+      ["A stdio server is executed code", "Same trust decision as a dependency. Pin it, read it, and never let user input influence the command."],
+      ["Filter first, review after", "An allow-list you can justify in a pull request is the control that actually holds when the server changes."]
     ] },
 
-    { t: "code", lang: "python", title: "The types on the wire, when you are the one holding them",
-      code: `# ADK hides all of this behind McpToolset. You meet it the moment you write
-# a server, write a test, or read a traceback -- so it is worth recognising.
+    { t: "code", lang: "python", title: "Tool annotations: hints from the server, which is exactly what they are",
+      code: `from mcp.types import ToolAnnotations
 
-# THE CONTENT TYPES. A result's content list holds parts, not a value:
-from mcp.types import TextContent, ImageContent, EmbeddedResource
+# A server can declare what a tool DOES, beyond its description:
+ToolAnnotations(
+    title="Delete a record",
+    readOnlyHint=False,        # it modifies something
+    destructiveHint=True,      # and the modification is not reversible
+    idempotentHint=False,      # calling it twice is not the same as once
+    openWorldHint=True,        # it touches systems outside this server
+)
 
-TextContent(type="text", text=json.dumps(payload))      # what you return 95% of
-ImageContent(type="image", data=b64, mimeType="image/png")
-EmbeddedResource(type="resource", resource=...)          # a resource, inline
+# WHAT THIS IS GOOD FOR: building the allow-list, and building a UI.
+tools = await toolset.get_tools()
+read_only = [t for t in tools if getattr(t, "annotations", None)
+             and t.annotations.readOnlyHint]
 
-# THE RESULT ENVELOPE, named:
-from mcp.types import CallToolResult
-CallToolResult(content=[TextContent(type="text", text="...")], isError=False)
+# AND THE WORD IN EVERY FIELD NAME IS THE WARNING: Hint.
+#
+# These are claims made by the server about itself, in the same payload as
+# the descriptions -- so a server that lies, or is compromised, or is simply
+# wrong, reports readOnlyHint=True on a tool that deletes.
+#
+# SO: use annotations to GENERATE a candidate allow-list and to decide what
+# needs a confirmation prompt. Do not use them as the control. The control
+# is the explicit list of names you read and justified (above), because that
+# one does not change when the server changes.`,
+      caption: "**Every field is named `...Hint`, and that is not stylistic** \u2014 annotations are claims a server makes about itself, arriving in the same untrusted payload as the descriptions. A compromised or careless server reports `readOnlyHint=True` on a tool that deletes, so they are useful for *generating* an allow-list and worthless as an enforcement mechanism." },
+    { t: "p", text: "**Where they genuinely earn their place is the human-facing half:** `destructiveHint` is the natural trigger for a confirmation step (lesson 4.5), and `title` gives a UI something readable to show instead of a snake-case function name. Treat the hints as the server's documentation \u2014 helpful, and not a boundary." },
 
-# THE ERRORS, and the distinction that matters:
-from mcp.types import McpError, ErrorCode
-from mcp.server.fastmcp.exceptions import ToolError
-
-#   ToolError  -- the TOOL failed. FastMCP turns it into a result with
-#                 isError=True, so the model reads it and can respond.
-raise ToolError("sku not found: ABC-123")
-
-#   McpError   -- the PROTOCOL failed: a malformed request, an unknown
-#                 method, a transport fault. This is not the model's problem
-#                 and the model never sees it.
-raise McpError(ErrorCode.INVALID_PARAMS, "sku must be a string")
-
-# THE CLIENT TRANSPORTS, if you ever bypass ADK -- in a test, or a script:
-from mcp.client.stdio import stdio_client            # spawn a subprocess
-from mcp.client.sse import sse_client                # the OLDER HTTP transport
-from mcp.client.streamable_http import streamablehttp_client   # the current one
-# Plenty of deployed servers still speak SSE only, so both exist in the wild.`,
-      caption: "**The distinction worth carrying is `ToolError` against `McpError`: one is a result the model reads and can recover from, the other is a transport or protocol fault the model never sees.** Raising the wrong one either hides a real failure from the model or puts a stack trace where an explanation belonged." },
-    { t: "p", text: "**And the two HTTP transports are both live.** Streamable HTTP is the current one and SSE is its predecessor, but a large number of deployed servers still speak SSE only — so a client library that supports just one of them will fail against roughly half the servers you meet, and the error reads like a connection problem rather than a version mismatch." },
-
-    { t: "exercise", kind: "practice", title: "Read a server before you trust it", difficulty: "core", minutes: 20,
-      prompt: "Pick an MCP server you would plausibly use — a filesystem, git or database one. Without connecting it to an agent, answer: which tools does it expose, what are their exact parameters, what can each one modify, what credentials does it need, and what would the worst outcome be if a user could choose the arguments freely? Then decide which subset you would allow through a tool_filter and write the one-sentence justification you would put in the pull request.",
+    { t: "exercise", kind: "practice", title: "Both directions, in one afternoon", difficulty: "advanced", minutes: 32,
+      prompt: "Write a FastMCP server with three tools, one of which is destructive-sounding (delete_record). Connect an ADK agent to it over stdio, list the discovered tools, and run a turn that calls a safe one. Then add a tool_filter that excludes the destructive tool and confirm the model can no longer call it even when the user asks directly. Finally, add a second toolset pointing at the same server with a prefix, and confirm the names do not collide.",
       hints: [
-        "The tool list is the security surface — a read-only subset is usually most of the value.",
-        "Look specifically for tools that write, delete or execute.",
-        "If you can run it, list its tools directly rather than trusting the README."
+        "Docstrings become descriptions — write them as the model will read them.",
+        "Ask the agent directly to delete something and confirm it cannot, rather than assuming.",
+        "Close both toolsets at the end and watch the child processes exit."
       ],
       solution: {
         notes: [
-          { t: "p", text: "The recurring finding is that a server offers far more than you need: a filesystem server with read, write, move and delete when you wanted to read one directory, or a database server with an arbitrary-SQL tool when you wanted three queries. The tool list is your security surface, and `tool_filter` is how you shrink it — an allow-list of names, not a deny-list, because the server can add tools whenever it likes." },
-          { t: "p", text: "The pull-request sentence is the real exercise. 'We are adding an MCP server that can delete files as the application user, filtered to read_file and list_directory' is a sentence a reviewer can act on. 'Adding MCP support for filesystem access' is how a delete tool reaches production without anyone deciding to allow it." }
+          { t: "p", text: "Asking the agent to delete something after filtering is the part worth doing properly. The model has no declaration for the tool, so it cannot emit a call for it — it will say it lacks that capability. That is a categorically stronger guarantee than an instruction saying not to, and it is the same argument as lesson 4.7: not giving the agent a tool beats telling it not to use one." },
+          { t: "p", text: "Watching the processes exit on `close` makes the lifecycle concrete. A service that constructs toolsets per request without closing them leaks a process per request, which presents as memory exhaustion hours later with nothing in the agent logs to explain it." }
         ]
-      } }
+      } },
 
+    
   ],
 
   takeaways: [
-    "MCP separates the integration from the agent: a server is a process any client can consume.",
-    "Servers offer tools, resources and prompts — in practice, almost always tools.",
-    "`ListToolsRequest` and `CallToolRequest` do the work, and listing happens at runtime, repeatedly.",
-    "Results come back as a content list with `isError`, not as the server's own return value.",
-    "Values crossing the protocol are JSON-shaped — integers can arrive as floats.",
-    "stdio means your process executes the server; HTTP means a shared server with real auth. Both are trust decisions."
+    "`McpToolset` is an ordinary toolset: `tools=[toolset]` brings a whole server's tools to the agent.",
+    "Three transports — stdio for local servers you spawn, SSE and streamable HTTP for hosted ones.",
+    "`tool_filter` should be an allow-list, because the server can add tools without telling you.",
+    "`tool_name_prefix` prevents collisions between servers and makes traces legible.",
+    "Toolsets hold connections: construct once, close on shutdown, and expect failures during `get_tools`.",
+    "Publishing your own MCP server turns a capability other teams keep rebuilding into one they consume.",
+    "FastMCP is the right default; the low-level `Server` is what you need for capabilities, a second transport and notifications.",
+    "A stdio server is protected by being a subprocess — the same code on an HTTP endpoint is an open API until you authenticate it.",
+    "`tools_changed` notifications are real, which is why a consumer’s `tool_filter` has to be an allow-list."
   ],
 
   quiz: { title: "Check your understanding", questions: [
-    { stem: "In an ADK application consuming a Jira MCP server, what is your agent?",
-      options: ["The server", "The client", "Both", "Neither — the model is the client"],
+    { stem: "How many entries does a five-tool MCP server add to an agent's tools list?",
+      options: ["Five", "One — the toolset", "One per transport", "None; they are injected at runtime"],
       answer: 1,
-      why: "The host application holds a client connection per server, and the server is the separate process doing the Jira integration. Exposing your own agent's tools as a server is a different exercise, covered in the next lesson, and it is not what consuming a server makes you." },
-    { stem: "Why does the client send ListToolsRequest more than once?",
-      options: ["The first request always fails", "Tool lists are resolved per request, so a server can change what it offers", "To check the connection is alive", "Once per tool"],
+      why: "A toolset is a single entry that expands into many tools when `get_tools` is called during request assembly. That is what lets the set vary per user and lets a remote server change what it offers without a redeploy of your agent." },
+    { stem: "Why is a tool_filter allow-list better than a deny-list?",
+      options: ["It is faster", "A server can add tools later, which a deny-list silently admits", "Deny-lists are not supported", "It reduces token usage"],
       answer: 1,
-      why: "Toolsets resolve their tools when a model request is assembled rather than at construction, which is what lets a remote server gain or lose a tool without restarting your agent. The executed trace shows the server logging the same request type repeatedly for one turn." },
-    { stem: "An MCP tool fails. What does your agent receive?",
-      options: ["A Python exception", "A result with isError true and explanatory content", "None", "The turn ends"],
+      why: "A deny-list enumerates what you refuse today. Tomorrow's new tool is not on it, so it arrives in your agent — described by someone else and callable by the model — without anyone deciding to allow it. An allow-list admits only what you have read." },
+    { stem: "Your agent's MCP server process dies mid-conversation. Where does the failure appear?",
+      options: ["When the model calls a tool", "During get_tools, while the model request is being assembled", "At agent construction", "It does not — the toolset reconnects silently"],
       answer: 1,
-      why: "Failures come back inside the result envelope rather than as exceptions, so the model can read what went wrong and respond — apologise, try different arguments, or tell the user. This is the same design principle as retrieval misses returning a message instead of raising." },
-    { stem: "What is the main risk specific to a stdio MCP server?",
-      options: ["Higher latency than HTTP", "Your process executes a command from configuration, with your permissions", "It cannot be filtered", "It only supports one tool"],
+      why: "Tools are resolved per request, so the connection is exercised before the model is called at all. Deciding what should happen there is a design choice: losing a capability quietly is often better than failing the turn, provided the instruction does not promise the capability." },
+    { stem: "When is publishing your own MCP server the right move?",
+      options: ["Whenever you have tools", "When several teams on different stacks want the same capability", "Instead of writing function tools", "To improve latency"],
       answer: 1,
-      why: "`StdioConnectionParams` takes a command that ADK runs, so adding a server is running someone else's code in your container as your user. That is the same trust decision as adding a dependency, and it deserves the same scrutiny — pinned versions, a read of what it does, and never a command influenced by user input." }
+      why: "A server is a product with versioning, documentation and a support burden. With one consumer on your own stack, a shared package is less work and easier to change. Publish when the consumers are on different stacks or teams and the interface has settled enough to be worth freezing." }
   ] },
 
-  interview: { title: "Interview", sub: "MCP questions", questions: [
-    { level: "Core", q: "What problem does MCP solve?",
-      strong: "Integrations written once as a server, consumable by any client, instead of once per framework.",
-      answer: [{ t: "p", text: "Before it, every tool integration was written against a specific framework, so the same Jira or Postgres wrapper got rebuilt for each one and vendors had to pick which ecosystems to support. MCP makes the integration a separate process that advertises its tools over a standard wire format, so one server serves every client that speaks the protocol and swapping frameworks does not touch it. In ADK it arrives as a toolset, which is the neat part — a server's tools become ordinary tools on the agent, and everything about declarations, filtering and errors works the way it already did." }] },
-    { level: "Core", q: "What does an MCP tool result look like?",
-      strong: "A content list plus an isError flag — not the server function's return value.",
-      answer: [{ t: "p", text: "The payload is wrapped: `{'content': [{'type': 'text', 'text': '…'}], 'isError': False}`, where the server's own dictionary has usually been serialised into a JSON string inside a text part. So the model is reading JSON inside a content list, which works but is two layers deep. Two practical consequences I watch for. Failures arrive as `isError: true` with explanatory content rather than as exceptions, which is deliberate — the model can respond to it. And everything has been through JSON, so integers come back as floats; I saw `127.0` where the server returned a computed number, and that is the sort of thing that breaks a format string long after the integration looked fine." }] },
-    { level: "Senior", q: "Your team wants to add three MCP servers to a production agent. What do you ask for in review?",
-      strong: "The tool list, an allow-list filter, the credentials each server holds, the transport, and who maintains it.",
-      answer: [{ t: "p", text: "I would start from the tool list rather than the README, because that is the security surface and it is routinely larger than the use case — a filesystem server that can delete when we wanted to read, a database server with an arbitrary-SQL tool. So: an explicit `tool_filter` allow-list, named in the pull request, with a sentence saying what the agent can now do that it could not do yesterday. Then credentials: what token does each server hold, whose authority is it, and does the agent's user get to influence the arguments that reach it. Then transport — a stdio server means we execute a command in our container, which is a dependency decision and should be pinned and reviewed as one; an HTTP server means network policy, TLS and auth. Finally maintenance: a vendor server and a server written by a team that has since been reorganised are different risks. The thing I would push back on hardest is treating this as configuration. Tool descriptions from someone else's process end up in our prompt, so adding a server is closer to adding a dependency that can also talk to the model." }] }
+  interview: { title: "Interview", sub: "MCP in ADK questions", questions: [
+    { level: "Core", q: "How do you use an MCP server from an ADK agent?",
+      strong: "Construct an McpToolset with the right connection params and pass it in `tools` — it is one entry for the whole server.",
+      answer: [{ t: "p", text: "Pick the transport — `StdioConnectionParams` for a server you spawn, SSE or streamable HTTP for a hosted one — and pass the toolset in the agent's tools list. ADK lists the server's tools when it assembles each model request and turns each one into a function declaration, so from the model's point of view they are ordinary tools with ordinary names and arguments. In practice I always add a `tool_filter` allow-list and, where more than one server is involved, a `tool_name_prefix`, because two servers offering `search` is common and a prefixed name is also what makes a trace readable." }] },
+    { level: "Core", q: "What has to be managed that a local function tool does not?",
+      strong: "A connection with a lifecycle, and a dependency whose uptime is not yours.",
+      answer: [{ t: "p", text: "The toolset holds a spawned process or an HTTP session, so it should be constructed once for the process and closed on shutdown; constructing one per request without closing leaks a process per request, which shows up as memory exhaustion with nothing in the agent logs. The other half is availability — the server can be down, and the failure surfaces during tool resolution, before the model has said anything. I decide deliberately whether that means the agent loses a capability quietly or the turn fails, and I test it by killing the server mid-conversation rather than waiting to discover it." }] },
+    { level: "Senior", q: "When would you build an MCP server rather than a function tool?",
+      strong: "When the capability has consumers beyond this agent — other teams, other stacks — and the interface has settled.",
+      answer: [{ t: "p", text: "A function tool lives inside one agent. The moment the same logic is wanted by a second agent in another team, or by something that is not ADK at all, the choice is between a shared library and a server. A library is cheaper and easier to change, so I would reach for it first and only move to a server when the consumers are on different stacks or when I want a network boundary — different credentials, different deployment cadence, an audit point. What I would not underestimate is that publishing makes it a product: versioning, deprecation, documentation, and somebody answering when a consumer's agent starts calling it in an odd way. The nice part is that the function does not have to choose — the same implementation can be a function tool here and an MCP tool in the server, with one set of tests." }] }
   ] }
 });

@@ -23,11 +23,12 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One package, two extras, and two backends chosen by environment", "caption": "**The base install is deliberately lean, and the optional pieces fail loudly rather than obscurely** — an import error that names the extra to install. The last two rows are the configuration most people get wrong on the first attempt: **the same agent code runs against both backends, and only the environment changes.** A missing variable there does not fail at import; it fails at the first model call.", "left": "what you install or set", "codeW": 200, "vars": ["what it gives you"], "steps": [{"code": "pip install google-adk", "state": ["the framework - agents, runner, services"], "tone": "good"}, {"code": "google-adk[extensions]", "state": ["LiteLLM and other provider adapters"], "changed": [0], "tone": "accent"}, {"code": "pip install mcp", "state": ["McpToolset - the client and server paths"], "changed": [0], "tone": "accent"}, {"code": "USE_VERTEXAI=FALSE + API key", "state": ["the Gemini API directly - fastest to start"], "changed": [0], "tone": "violet"}, {"code": "USE_VERTEXAI=TRUE + project", "state": ["Vertex AI, IAM and the managed services"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-1_3-01-0"},
 
+
     { t: "code", lang: "bash", title: "The package and its extras",
       code: `python -m venv .venv && source .venv/bin/activate     # Windows: .venv\\Scripts\\activate
 pip install google-adk                                # the framework
 pip install "google-adk[extensions]"                  # LiteLLM, CrewAI tools, and other optional adapters
-pip install mcp                                       # needed for McpToolset (lesson 8.2)
+pip install mcp                                       # needed for McpToolset (lesson 8.1)
 
 python -c "import importlib.metadata as m; print(m.version('google-adk'))"`,
       caption: "The base package is deliberately lean. Optional integrations raise a clear ImportError naming the extra to install rather than failing obscurely — `LiteLlm` requires `google-adk[extensions]`, `McpToolset` requires `mcp`." },
@@ -113,7 +114,7 @@ root_agent = Agent(
       code: `adk web .                       # serve every agent package under the current directory
 adk web . --port 8080           # somewhere else
 adk web . --reload_agents       # re-import the agent on file change: the real dev loop
-adk web . --a2a                 # also expose each agent over the A2A protocol (lesson 8.4)
+adk web . --a2a                 # also expose each agent over the A2A protocol (lesson 8.3)
 adk web . --trace_to_cloud      # send traces to Cloud Trace instead of only the UI
 adk web . --eval_storage_uri …  # keep evalsets somewhere other than the local files`,
       caption: "Captured from `adk web --help`. `--reload_agents` is the one worth remembering: without it, every edit needs a restart." },
@@ -138,6 +139,7 @@ adk web . --eval_storage_uri …  # keep evalsets somewhere other than the local
     { t: "h2", n: "05", text: "The programmatic equivalent", id: "programmatic" },
 
     {"kind": "compare", "title": "What the CLI requires, and what the API requires", "caption": "**The left column is a set of conventions, not an interface** — which is the practical point of this section: a package named anything, exporting any symbol, works perfectly well in your own service. The CLI's requirements exist so that it can discover an agent without being told where it is. **And the silent one is the one that costs an afternoon: a directory with no `__init__.py` is not a package, so it is skipped without an error.**", "columns": [{"title": "adk web needs", "tone": "accent", "items": ["a sub-directory per agent", "an __init__.py, or it is skipped silently", "a module-level symbol named root_agent", "a .env beside the agent, loaded per directory"]}, {"title": "Your own code needs", "tone": "good", "items": ["any module, any symbol name", "an agent object and a runner", "a session created before the first turn", "which is also what lets a test swap the model"]}], "t": "diagram", "id": "dg-1_3-05-1"},
+
 
     { t: "p", text: "The CLI is a convenience over the API. Nothing in it is required: an agent is an object, and a runner executes it. The course uses the programmatic form throughout because it is what a test or a service uses." },
 

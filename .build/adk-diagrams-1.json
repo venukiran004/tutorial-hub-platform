@@ -342,7 +342,7 @@
    }
   }
  ],
- "8.2": [
+ "8.1": [
   {
    "after": "01",
    "d": {
@@ -444,58 +444,9 @@
      }
     ]
    }
-  },
-  {
-   "after": "04",
-   "d": {
-    "kind": "flow",
-    "title": "Both directions, one implementation",
-    "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.",
-    "cols": 3,
-    "nodes": [
-     {
-      "id": "f",
-      "label": "Your function",
-      "sub": "check_fraud(order_id)",
-      "tone": "good"
-     },
-     {
-      "id": "a",
-      "label": "Function tool",
-      "sub": "in your own agent",
-      "tone": "accent"
-     },
-     {
-      "id": "m",
-      "label": "MCP server",
-      "sub": "@mcp.tool()",
-      "tone": "violet"
-     },
-     {
-      "id": "o",
-      "label": "Other teams",
-      "sub": "any framework, any language",
-      "tone": "warn"
-     }
-    ],
-    "edges": [
-     [
-      "f",
-      "a"
-     ],
-     [
-      "f",
-      "m"
-     ],
-     [
-      "m",
-      "o"
-     ]
-    ]
-   }
   }
  ],
- "8.3": [
+ "8.2": [
   {
    "after": "02",
    "d": {
@@ -603,7 +554,7 @@
    }
   }
  ],
- "8.4": [
+ "8.3": [
   {
    "after": "01",
    "d": {

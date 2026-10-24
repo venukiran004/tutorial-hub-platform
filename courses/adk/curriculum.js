@@ -5,7 +5,7 @@
    an engineer needs them: the four objects the framework is built from, the
    agents and the models behind them, tools (the largest surface by far),
    the state/memory/context triangle, the control hooks, retrieval, the two
-   interoperability protocols — MCP and A2A — then safety, the runtime,
+   interoperability lessons — MCP clients and A2A — then safety, the runtime,
    operations and production.
 
    Every API in this course was introspected from the installed package and
@@ -32,7 +32,7 @@
      12 Artifacts ....................... M6.3
      13 Structured output ............... M6.4
      14 Prompting and instructions ....... M2.2
-     15 MCP ............................. M8.1–8.2
+     15 MCP clients ..................... M8.1  (the protocol: see the MCP course)
      16 RAG with ADK .................... M7.1
      17 Agentic RAG ..................... M7.2
      18 Authentication and security ...... M4.8, M9.1
@@ -48,7 +48,7 @@
      28 Agent Engine .................... M12.2 (deploy), M12.3 (invoke)
      29 Gemini + ADK .................... M12.4
      30 Production architecture .......... M12.5
-        A2A protocol .................... M8.3–8.4
+        A2A protocol .................... M8.2–8.3
    ========================================================================= */
 (function () {
   "use strict";
@@ -60,9 +60,9 @@
     short: "ADK",
     tagline: "The Agent Development Kit from the four objects it is built on to a production architecture — every API introspected, every event trace executed.",
 
-    blurb: "Google's Agent Development Kit, taken apart: agents, models and tools; the state, memory and context triangle; callbacks, artifacts and structured output; RAG and agentic RAG; MCP and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.",
+    blurb: "Google's Agent Development Kit, taken apart: agents, models and tools; the state, memory and context triangle; callbacks, artifacts and structured output; RAG and agentic RAG; MCP clients and A2A; guardrails, human approval, streaming, observability, evaluation and deployment to Agent Engine.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "8.1", "8.2", "8.3", "8.4", "9.1", "9.2", "9.3", "10.1", "10.2", "10.3", "11.1", "11.2", "11.3", "12.1", "12.2", "12.3", "12.4", "12.5"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "3.1", "3.2", "3.3", "3.4", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "8.1", "8.2", "8.3", "9.1", "9.2", "9.3", "10.1", "10.2", "10.3", "11.1", "11.2", "11.3", "12.1", "12.2", "12.3", "12.4", "12.5"],
 
     modules: [
 
@@ -276,20 +276,17 @@
         short: "A8",
         dir: "08_interop",
         phase: "Phase 6 · Retrieval and interoperability",
-        title: "MCP and A2A",
-        blurb: "The two protocols an agent speaks to the outside world: the Model Context Protocol for tools, resources and prompts from any server, and the Agent2Agent protocol for talking to agents you did not write and did not deploy.",
-        outcome: "You can consume an MCP server's tools from an agent, expose your own agent over A2A, and say which protocol a given integration needs.",
+        title: "MCP Clients and A2A",
+        blurb: "Reaching things ADK did not build: an MCP server's tools brought in as a toolset, filtered and namespaced, with the lifecycle that decides whether you leak a subprocess — then A2A in full, which is the protocol for talking to agents rather than tools, with its card, its task lifecycle and the origin check.",
+        outcome: "You can consume an MCP server from an agent with a filter you can justify, publish an ADK agent over A2A, use someone else's as a sub-agent, and say which protocol a given integration needs.",
         lessons: [
-          { id: "8.1", title: "MCP: The Protocol and Its Architecture", difficulty: "advanced", minutes: 34, tier: "must",
-            summary: "Hosts, clients and servers; tools, resources and prompts; stdio and HTTP transports; the JSON-RPC messages underneath, and the security model.",
-            keywords: ["mcp", "model context protocol", "server", "client", "stdio", "resources", "prompts", "json-rpc"] },
-          { id: "8.2", title: "ADK as MCP Client; ADK as MCP Server", difficulty: "advanced", minutes: 34, tier: "must",
-            summary: "McpToolset pointed at a server, tool filtering and auth, then the other direction — exposing ADK tools to Claude or any MCP host.",
-            keywords: ["mcptoolset", "stdio", "streamable http", "tool filter", "mcp server", "expose tools"] },
-          { id: "8.3", title: "A2A: The Agent-to-Agent Protocol", difficulty: "advanced", minutes: 36, tier: "must",
-            summary: "Agent cards, tasks and their lifecycle, messages, parts and artifacts, streaming and push notifications — the protocol read off the a2a-sdk types.",
+          { id: "8.1", title: "Using MCP From ADK", difficulty: "advanced", minutes: 28, tier: "must",
+            summary: "McpToolset pointed at a server, the tool filter as an allow-list, the name prefix, and the connection lifecycle — construct once, close on shutdown. The protocol itself, and writing servers, is the Model Context Protocol course.",
+            keywords: ["mcptoolset", "stdio", "streamable http", "tool filter", "prefix", "lifecycle", "allow-list"] },
+          { id: "8.2", title: "A2A: The Agent-to-Agent Protocol", difficulty: "advanced", minutes: 36, tier: "must",
+            summary: "Agent cards, tasks and their lifecycle, messages, parts and artifacts, streaming and push notifications — the protocol read off the a2a-sdk, and the distinction from MCP stated precisely.",
             keywords: ["a2a", "agent card", "task", "artifact", "jsonrpc", "agent2agent", "discovery", "streaming"] },
-          { id: "8.4", title: "A2A in ADK: Serving and Consuming Remote Agents", difficulty: "advanced", minutes: 34, tier: "must",
+          { id: "8.3", title: "A2A in ADK: Serving and Consuming Remote Agents", difficulty: "advanced", minutes: 34, tier: "must",
             summary: "to_a2a() to publish an agent with a generated card, RemoteA2aAgent to use someone else's as a sub-agent, and what crosses the wire between them.",
             keywords: ["to_a2a", "remotea2aagent", "agent card", "a2a server", "remote agent", "interop", "uvicorn"] }
         ]

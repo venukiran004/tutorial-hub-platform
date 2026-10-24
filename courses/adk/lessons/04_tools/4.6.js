@@ -29,12 +29,13 @@ EC.receiveLesson({
 
 
 
+
     { t: "code", lang: "python", title: "What every toolset implements",
       code: `from google.adk.tools.base_toolset import BaseToolset
 print([n for n in dir(BaseToolset) if not n.startswith("_")])
 # ['close', 'from_config', 'get_auth_config', 'get_tools',
 #  'get_tools_with_prefix', 'process_llm_request']`,
-      caption: "`get_tools` is resolved when the request is built, not at construction — so a toolset can return different tools per user or per state, and a remote one can refresh its list. `close` matters: an MCP toolset holds a connection (lesson 8.2)." },
+      caption: "`get_tools` is resolved when the request is built, not at construction — so a toolset can return different tools per user or per state, and a remote one can refresh its list. `close` matters: an MCP toolset holds a connection (lesson 8.1)." },
 
     { t: "p", text: "`tools=[…]` accepts three kinds of thing: a plain function, a `BaseTool`, or a `BaseToolset` that expands into several. From the model's point of view there is no difference — it sees a flat list of declarations." },
 
@@ -73,6 +74,7 @@ agent = LlmAgent(name="store", model=M, instruction="Help with the pet store.",
     {"kind": "trace", "title": "Two filter forms, and why the predicate exists", "caption": "**The list form is the one to default to, because it admits nothing you have not read** — and the predicate form exists for the case the list cannot express: an allowed set that depends on who is asking. `get_tools` is called per request with the context available, so an operator can be given the write tools and nobody else. **The pattern to avoid is a predicate that excludes by prefix:** it reads as safety and is a deny-list in disguise, so a tool named `purge_all` added next month passes straight through.", "left": "filter", "codeW": 190, "vars": ["admits", "when to use it"], "steps": [{"code": "tool_filter=['read_file', 'list_dir']", "state": ["exactly those two, for ever", "the default - an allow-list"], "tone": "good"}, {"code": "tool_filter=predicate(tool, ctx)", "state": ["whatever it returns True for", "when the set depends on the user"], "changed": [0, 1], "tone": "violet"}, {"code": "...not name.startswith('delete_')", "state": ["everything not matching today", "a deny-list in disguise"], "changed": [0, 1], "tone": "crit"}, {"code": "so a new tool next month", "state": ["admitted silently by the predicate", "refused by the list"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-4_6-03-1"},
 
 
+
     { t: "code", lang: "python", title: "Two ways to narrow a toolset",
       code: `# by name
 McpToolset(connection_params=params, tool_filter=["read_file", "list_directory"])
@@ -87,6 +89,7 @@ McpToolset(connection_params=params, tool_filter=only_safe)`,
     { t: "h2", n: "04", text: "Other ecosystems", id: "adapters" },
 
     {"kind": "trace", "title": "The wrapper fixes the interface and not the description", "caption": "**A LangChain tool written for a different agent loop often has a terse or oddly worded description, and that description becomes your model's routing information.** The wrapper adapts it to `BaseTool` so ADK can declare and call it; it cannot improve the prose, which is why both wrappers take an optional `name` and `description` override — and why using them is usually the right move rather than an edge case. **The second row carries the other cost:** the wrapped tool runs synchronously unless the underlying one is async, so lesson 4.3's blocking warning applies unchanged.", "left": "concern", "codeW": 190, "vars": ["does the wrapper fix it?", "what to do"], "steps": [{"code": "the interface", "state": ["YES - adapted to BaseTool", "nothing"], "tone": "good"}, {"code": "the description", "state": ["no", "override it; it is routing data"], "changed": [0, 1], "tone": "crit"}, {"code": "blocking I/O", "state": ["no - sync unless the tool is async", "lesson 4.3 applies"], "changed": [0, 1], "tone": "crit"}, {"code": "Google's own toolsets", "state": ["bigquery, spanner and the rest", "first-party, already shaped"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-4_6-04-2"},
+
 
 
     { t: "code", lang: "python", title: "LangChain and CrewAI tools",

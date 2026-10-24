@@ -1,207 +1,241 @@
 /* ============================================================================
-   LESSON 8.3 — A2A: The Agent-to-Agent Protocol
-   The agent card is the real one served by scratchpad/adk/a2a_server.py, and
-   the origin error is the actual message RemoteA2aAgent raised when the card's
-   RPC origin did not match where it was fetched from (google-adk 2.9.2,
-   a2a-sdk 1.1.5).
+   LESSON 8.3 — A2A in ADK: Serving and Consuming Remote Agents
+   Everything below was executed across two processes: a2a_server.py serving an
+   agent with to_a2a under uvicorn, and a2a_client.py driving a RemoteA2aAgent
+   against it (google-adk 2.9.2, a2a-sdk 1.1.5).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.3",
 
-  lede: "**MCP gives an agent tools. A2A gives an agent colleagues.** The distinction is not marketing: a tool is a function you call and get a value back from, while an agent is something you give a task to, that may ask you a question, work for four minutes, stream partial results and return an artifact. Those need different protocols, and A2A is the one built for the second. This lesson is the protocol itself — the agent card that advertises what an agent can do, the task lifecycle that models work taking time, and the boundary questions you have to answer before you let another team's agent into your system.",
+  lede: "**Serving an ADK agent over A2A is one function call, and consuming one is one constructor.** `to_a2a(agent)` returns an ASGI application that speaks the protocol and publishes a card built from the agent itself; `RemoteA2aAgent(name, agent_card=url)` gives you a `BaseAgent` that happens to run in someone else's process. That second fact is the one that matters architecturally: a remote agent composes exactly like a local one, so it can be a sub-agent, a member of a pipeline, or the root of your system — and everything you know about events, sessions and transfer still applies.",
 
   objectives: [
-    "Say what A2A is for and how it differs from MCP",
-    "Read an agent card and explain each part",
-    "Describe the task lifecycle and why a task is not a function call",
-    "Identify the trust and identity questions an agent boundary raises",
-    "Decide whether an integration should be a tool or an agent"
+    "Serve any ADK agent over A2A with `to_a2a` and run it",
+    "Consume a remote agent with `RemoteA2aAgent` and compose it like any other",
+    "Read what arrives locally when a remote agent does work",
+    "Configure the card, the timeout and the origin correctly",
+    "Recognise what crosses the boundary and what does not"
   ],
 
-  prerequisites: ["8.1", "2.6"],
+  prerequisites: ["8.3", "2.5"],
 
   blocks: [
 
-    { t: "h2", n: "01", text: "Two protocols, two shapes of work", id: "two" },
+    { t: "h2", n: "01", text: "Serving", id: "serving" },
 
-    { t: "diagram", kind: "compare", title: "A tool call and a task are not the same thing",
-      caption: "You will use both, often in the same system. The question is what shape the work has, not which protocol is newer.",
-      columns: [
-        { title: "MCP — a tool", tone: "accent", items: ["Call a function, get a value", "Arguments you specify exactly", "Fast, deterministic, stateless", "You own the reasoning", "\"convert 100 GBP to USD\""] },
-        { title: "A2A — an agent", tone: "violet", items: ["Give a task, get a result", "A message in natural language", "May take minutes; may ask a question", "They own the reasoning", "\"find out why this order is late\""] }
+    {"kind": "layers", "title": "What to_a2a wraps around your agent", "caption": "The agent is unchanged. Everything above it is generated — which is why serving an agent over A2A is one function call and why the settings that matter are the ones describing where it is reachable.", "items": [{"label": "Starlette ASGI app", "sub": "what you hand to uvicorn", "tone": "violet"}, {"label": "Agent card at /.well-known/", "sub": "generated from the agent — name, skills, interfaces", "tone": "warn"}, {"label": "A2A executor + task store", "sub": "the task lifecycle; in-process by default", "tone": "crit"}, {"label": "Runner", "sub": "your session, artifact and memory services", "tone": "accent"}, {"label": "Your LlmAgent", "sub": "unchanged", "tone": "good"}], "t": "diagram", "id": "dg-8_3-01-0"},
+
+
+
+
+
+
+    { t: "code", lang: "python", title: "a2a_server.py — an ordinary agent, exposed",
+      code: `from google.adk.agents import LlmAgent
+from google.adk.a2a.utils.agent_to_a2a import to_a2a
+
+def check_stock(sku: str) -> dict:
+    """Checks warehouse stock for a SKU.
+
+    Args:
+        sku: the product code.
+    """
+    return {"sku": sku, "in_stock": 42, "warehouse": "Leeds"}
+
+inventory = LlmAgent(
+    name="inventory",
+    model=MODEL,
+    description="Answers questions about warehouse stock levels for a SKU.",
+    instruction="Use check_stock to answer stock questions.",
+    tools=[check_stock],
+)
+
+# One call turns the agent into a Starlette ASGI app speaking A2A.
+app = to_a2a(inventory, port=8801)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8801)`,
+      caption: "Nothing about the agent changed. `to_a2a` wraps it in an executor, a task store and the HTTP routes, and serves the card at `/.well-known/agent-card.json`." },
+
+    { t: "callout", kind: "insight", title: "description is no longer documentation",
+      body: [{ t: "p", text: "For a local agent, `description` is what a parent's model reads when deciding whether to transfer (lesson 2.5). For a served agent it becomes the card's description — what *other organisations'* models read when deciding whether to delegate to you. Same field, much wider audience. Write it as a capability statement: what it can answer, for what, and what it cannot." }] },
+
+    { t: "table", head: ["`to_a2a` parameter", "Why you would set it"],
+      rows: [
+        ["`host`, `port`, `protocol`", "What goes into the card's advertised URL — these must match where it is actually reachable"],
+        ["`rpc_path`", "Mount the RPC endpoint under a path, for deployments behind a shared router"],
+        ["`agent_card`", "Supply your own card instead of the generated one — the lever for controlling disclosure"],
+        ["`task_store`", "Where tasks live. The default is in-process, so a restart loses in-flight work and two replicas do not share"],
+        ["`runner`", "Bring your own runner, with your session, artifact and memory services wired in"],
+        ["`push_config_store`", "Push notifications, for long tasks where the caller should not hold a connection"]
       ] },
 
-    { t: "callout", kind: "mental", title: "The test: who does the thinking?",
-      body: [{ t: "p", text: "If you know exactly what you want done and just need it executed, that is a tool — you have already done the reasoning and you are calling a function. If you want to hand over a goal and let someone else work out the steps, that is an agent. A currency conversion is a tool forever. \"Work out whether this customer is entitled to a refund under our policy\" is a task, and wrapping it as a tool means pretending a judgement is a lookup." }] },
+    { t: "callout", kind: "trap", title: "The default task store is in-process",
+      body: [{ t: "p", text: "The same lesson as `InMemorySessionService` in 5.3, one layer up: two replicas behind a load balancer do not share tasks, so a caller polling for a task that was created on the other pod finds nothing. For an agent serving real traffic, supply a `task_store` backed by something shared before you scale past one instance — not after." }] },
 
-    { t: "h2", n: "02", text: "The agent card", id: "card" },
+    { t: "h2", n: "02", text: "The card it generates", id: "card" },
 
-    {"kind": "tree", "title": "The agent card, as served", "caption": "Fetched from a running ADK agent. Note that ADK generated a skill per tool from its docstring — including the argument documentation — and serves all of it at a well-known path with no authentication.", "root": {"label": "agent-card.json", "sub": "/.well-known/", "tone": "violet", "children": [{"label": "identity", "sub": "name, description, version", "tone": "accent"}, {"label": "transport", "sub": "interfaces, capabilities, modes", "tone": "good"}, {"label": "skills", "sub": "what it can be asked for", "tone": "warn", "children": [{"label": "inventory", "sub": "the agent itself"}, {"label": "check_stock", "sub": "from the docstring", "tone": "crit"}]}]}, "t": "diagram", "id": "dg-8_3-02-0"},
+    {"kind": "trace", "title": "What the generated card publishes, from code you already wrote", "caption": "**`to_a2a` derives the card from the agent, which is convenient and publishes more than you may intend.** There is one skill for the agent and one per tool, and each tool's skill carries its full docstring — including the Args section. That is genuinely useful to a caller and it is also your internal parameter documentation, on an endpoint anyone can fetch. **Use `AgentCardBuilder` to build the card deliberately whenever the agent is reachable by someone you have not met**, and read the generated version as an attacker would first.", "left": "card field", "codeW": 180, "vars": ["derived from", "worth reviewing?"], "steps": [{"code": "name, description", "state": ["the agent's own fields", "yes - it is public prose"], "tone": "accent"}, {"code": "supportedInterfaces url", "state": ["host, port, protocol", "YES - see the origin rule"], "changed": [0, 1], "tone": "crit"}, {"code": "one skill for the agent", "state": ["its description", "yes"], "changed": [0, 1], "tone": "accent"}, {"code": "one skill PER TOOL", "state": ["the full docstring, Args included", "YES - this is the surprise"], "changed": [0, 1], "tone": "crit"}, {"code": "no authentication field", "state": ["nothing, by default", "YES - anonymous unless you add it"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-8_3-02-3"},
 
-
-
-
-
-    { t: "p", text: "An A2A agent publishes a card at a well-known URL describing what it is and how to talk to it. This one is served by a real ADK agent — the `to_a2a` call in the next lesson generated it from the agent object." },
-
-    { t: "code", lang: "bash", title: "Fetching it",
-      code: `curl -s http://localhost:8801/.well-known/agent-card.json | python -m json.tool` },
 
     { t: "out", text: `{
-    "name": "inventory",
-    "description": "Answers questions about warehouse stock levels for a SKU.",
-    "supportedInterfaces": [
-        { "url": "http://localhost:8801", "protocolBinding": "JSONRPC", "protocolVersion": "1.0" }
-    ],
-    "version": "0.0.1",
-    "capabilities": { "streaming": true },
-    "defaultInputModes": ["text/plain"],
-    "defaultOutputModes": ["text/plain"],
-    "skills": [
-        {
-            "id": "inventory",
-            "name": "model",
-            "description": "Answers questions about warehouse stock levels for a SKU.",
-            "tags": ["llm"]
-        },
-        {
-            "id": "inventory-check_stock",
-            "name": "check_stock",
-            "description": "Checks warehouse stock for a SKU.\\n\\nArgs:\\n    sku: the product code.",
-            "tags": ["llm", "tools"]
-        }
-    ]
+  "name": "inventory",
+  "description": "Answers questions about warehouse stock levels for a SKU.",
+  "supportedInterfaces": [{ "url": "http://localhost:8801", "protocolBinding": "JSONRPC", "protocolVersion": "1.0" }],
+  "capabilities": { "streaming": true },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    { "id": "inventory", "name": "model", "description": "Answers questions about warehouse stock levels for a SKU.", "tags": ["llm"] },
+    { "id": "inventory-check_stock", "name": "check_stock",
+      "description": "Checks warehouse stock for a SKU.\\n\\nArgs:\\n    sku: the product code.", "tags": ["llm", "tools"] }
+  ]
 }` },
 
+    { t: "p", text: "One skill for the agent, one per tool, with the tool's full docstring including its argument documentation. That is useful to a caller and more than you may want published — use `AgentCardBuilder` to build the card deliberately when the agent is reachable by anyone you have not met." },
+
+    { t: "h2", n: "03", text: "Consuming", id: "consuming" },
+
+    {"kind": "flow", "title": "One question, across two processes", "caption": "Executed. The remote agent's own tool call and its result arrive as events in YOUR session — which is what makes a delegation debuggable. What does not cross is its state, your state, or your user's identity.", "cols": 3, "nodes": [{"id": "u", "label": "Your runner", "sub": "RemoteA2aAgent as root", "tone": "accent"}, {"id": "c", "label": "Card fetch", "sub": "origin must match", "tone": "crit"}, {"id": "r", "label": "Remote agent", "sub": "another process entirely", "tone": "violet"}, {"id": "t", "label": "Its tool runs", "sub": "check_stock(sku='X1')", "tone": "good"}, {"id": "e", "label": "Events, locally", "sub": "call + result + answer, in your session", "tone": "warn"}], "edges": [["u", "c"], ["c", "r", "JSON-RPC"], ["r", "t"], ["t", "e"]], "t": "diagram", "id": "dg-8_3-03-1"},
+
+
+
+
+
+
+    { t: "code", lang: "python", title: "a2a_client.py — a remote agent is a BaseAgent",
+      code: `from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
+
+remote = RemoteA2aAgent(
+    name="inventory",
+    agent_card="http://localhost:8801/.well-known/agent-card.json",
+    description="The warehouse team's agent. Knows stock levels.",
+)
+
+runner = Runner(app_name="ops", agent=remote, session_service=svc)`,
+      caption: "`agent_card` takes a URL or an `AgentCard` object. The `description` here is local: it is what *your* parent agent's model reads when deciding to transfer." },
+
+    { t: "out", text: `RemoteA2aAgent is a BaseAgent: True
+
+asking the remote agent over A2A:
+  inventory: call check_stock({'sku': 'X1'})
+  inventory: result {'sku': 'X1', 'warehouse': 'Leeds', 'in_stock': 42.0}
+  inventory: 'There are 42 units of X1 in the Leeds warehouse.'
+  inventory: 'There are 42 units of X1 in the Leeds warehouse.'
+
+events recorded locally: 6
+  author: user
+  author: inventory  (×5)` },
+
+    { t: "p", text: "Four things in that output are worth stopping on." },
+
     { t: "dl", items: [
-      ["name / description", "What the agent is. The description is what a calling agent's model reads when deciding whether to delegate here, so it is routing information exactly as a tool description is."],
-      ["supportedInterfaces", "Where and how to talk to it — the URL, the binding (JSON-RPC here) and the protocol version. More than one entry means more than one way in."],
-      ["capabilities", "What the transport supports. `streaming: true` means partial results arrive as they are produced rather than in one lump at the end."],
-      ["defaultInputModes / defaultOutputModes", "The media types it accepts and returns. Text here; an agent that takes images or returns PDFs says so, which is how a caller knows before trying."],
-      ["skills", "The advertised capabilities. ADK generated one for the agent itself and one per tool — note `check_stock` appearing with its full docstring, including the argument documentation."]
+      ["The remote agent's tool call is a local event", "`check_stock` ran in another process, and the call and its result are in *your* session. The boundary is visible in the trace, which is exactly what you want when debugging a delegation."],
+      ["`in_stock` came back as 42.0", "The server returned the integer 42. It crossed JSON and arrived as a float, the same coercion an MCP tool result goes through. Anything crossing a protocol boundary is JSON-shaped."],
+      ["The answer appears twice", "A streaming interim result and the final one. A client rendering every text part shows the answer twice — filter on finality (lesson 1.5) rather than printing everything."],
+      ["Six events for one question", "The remote work is fully represented locally, so your session grows with the remote agent's activity, and your context window pays for it."]
     ] },
 
-    { t: "callout", kind: "trap", title: "The card tells the world what your agent can do",
-      body: [{ t: "p", text: "That skills list was generated from tool docstrings, and it is served publicly at a well-known path. Everything in it — internal tool names, parameter documentation, the shape of your system — is now readable by anyone who can reach the endpoint. That is fine for an agent inside a private network and a disclosure decision for one on the internet. Build the card deliberately with `AgentCardBuilder` when the default one says more than you meant it to." }] },
+    { t: "callout", kind: "good", title: "Compose it like anything else",
+      body: [{ t: "p", text: "Because `RemoteA2aAgent` is a `BaseAgent`, it can be a sub-agent of a coordinator, a step in a sequential pipeline, or wrapped in an `AgentTool` so a parent calls it without transferring control. The architecture patterns from lesson 2.6 apply unchanged — a coordinator with three local specialists and one remote one is an ordinary design, and only the failure modes differ." }] },
 
-    { t: "h2", n: "03", text: "Tasks, not calls", id: "tasks" },
+    { t: "h2", n: "04", text: "Getting the origin right", id: "origin" },
 
-    {"kind": "flow", "title": "The task state machine", "caption": "A function call has two states: pending and returned. The branch that makes A2A different is 'input required' — a remote agent can stop and ask you a question, then carry on.", "cols": 3, "nodes": [{"id": "s", "label": "Submitted", "sub": "the caller holds a task id", "tone": "accent"}, {"id": "w", "label": "Working", "sub": "progress, streamed if supported", "tone": "good"}, {"id": "i", "label": "Input required", "sub": "it asks; you answer", "tone": "warn"}, {"id": "c", "label": "Completed", "sub": "result + artifacts", "tone": "violet"}, {"id": "f", "label": "Failed / cancelled", "sub": "an outcome you must handle", "tone": "crit"}], "edges": [["s", "w"], ["w", "i", "needs more"], ["i", "w", "answered"], ["w", "c"], ["w", "f"]], "t": "diagram", "id": "dg-8_3-03-1"},
+    {"kind": "trace", "title": "The same origin error, from three deployment shapes", "caption": "**The listening address is almost never the public origin, which is why letting the runtime guess fails in exactly the environments that matter.** In a container the agent listens on 0.0.0.0 and is reached through a hostname and TLS it knows nothing about, so a card generated from the socket advertises something no caller can use — and every client refuses rather than retrying. **Set host, port and protocol explicitly, and include `rpc_path` when the agent is mounted under one**, so the card describes where it is genuinely reachable.", "left": "where it runs", "codeW": 170, "vars": ["listens on", "callers reach it at", "card must say"], "steps": [{"code": "local development", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "the same, consistently"], "tone": "good"}, {"code": "...card says localhost", "state": ["127.0.0.1:8801", "127.0.0.1:8801", "REFUSED - different origin"], "changed": [2], "tone": "crit"}, {"code": "a container behind a proxy", "state": ["0.0.0.0:8080", "https://agents.example.com", "the public host and https"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "mounted under a path", "state": ["0.0.0.0:8080", "https://host/inventory", "include the rpc_path too"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-04-4"},
 
-
-
-
-
-    { t: "p", text: "A2A models work as a **task** with a lifecycle rather than a request with a response. That is what makes it suitable for work that takes real time: the task is created, it progresses, it may need input, and eventually it completes or fails. A caller can subscribe to updates rather than blocking." },
-
-    { t: "diagram", kind: "steps", title: "The states a task moves through",
-      caption: "Compare with a function call, which has exactly two states: pending and returned. The interesting one is 'input required' — a tool cannot ask you a question, and an agent can.",
-      items: [
-        { label: "Submitted", sub: "the task exists; the caller has an id" },
-        { label: "Working", sub: "progress updates, streamed if the card says streaming" },
-        { label: "Input required", sub: "the remote agent needs something before it can continue" },
-        { label: "Completed", sub: "with a result, and possibly artifacts" },
-        { label: "Failed / cancelled", sub: "an outcome the caller has to handle" }
-      ] },
-
-    { t: "callout", kind: "insight", title: "The artifact is why this is not just HTTP",
-      body: [{ t: "p", text: "A task can return files as well as text — a rendered report, a chart, a spreadsheet — the same idea as artifacts in lesson 6.3, crossing an organisational boundary. That is what makes \"have the analytics team's agent produce the quarterly breakdown\" a sensible thing to say to a protocol, rather than something you would build as a REST endpoint returning a signed URL." }] },
-
-    { t: "h2", n: "04", text: "The origin check, and why it exists", id: "origin" },
-
-    {"kind": "flow", "title": "Why a card may not advertise an origin it was not served from", "caption": "**A card is a document telling you where to send your requests, so whoever can serve you a card can redirect your agent's traffic — and its credentials — somewhere else.** The same-origin rule is that redirection defence, which is why the client refuses rather than warns. The example reads as fussiness and is not: `127.0.0.1` and `localhost` are the same machine and different origins. **The fix is always on the serving side** — make the advertised URL describe where the agent is genuinely reachable, which is a deployment concern worth settling before a load balancer finds it for you.", "cols": 3, "nodes": [{"id": "f", "label": "Card fetched from 127.0.0.1:8801", "sub": "/.well-known/agent-card.json", "tone": "accent"}, {"id": "a", "label": "Card advertises localhost:8801", "sub": "same machine, different origin", "tone": "warn"}, {"id": "r", "label": "The client refuses to resolve it", "sub": "not a warning - a refusal", "tone": "crit"}, {"id": "w", "label": "Because a card redirects traffic", "sub": "and your credentials with it", "tone": "crit"}, {"id": "s", "label": "Fix on the serving side", "sub": "advertise where it is really reachable", "tone": "good"}, {"id": "p", "label": "Behind a proxy, set host and protocol", "sub": "0.0.0.0 is not a public origin", "tone": "violet"}], "edges": [["f", "a"], ["a", "r"], ["r", "w"], ["w", "s"], ["s", "p"]], "t": "diagram", "id": "dg-8_3-04-2"},
-
-    { t: "p", text: "The first time I pointed a client at that card I got this, and it is worth reading rather than working around." },
 
     { t: "out", text: `Failed to resolve remote A2A agent inventory: Agent card RPC URL must have the
 same origin as the location the card was fetched from
 (http://127.0.0.1:8801/.well-known/agent-card.json): http://localhost:8801` },
 
-    { t: "p", text: "The card had been fetched from `127.0.0.1` and advertised its RPC endpoint as `localhost` — different origins by the rule, even though they are the same machine. The client refused. That is not fussiness: **a card is a document telling you where to send your requests**, so without an origin check, anyone who can serve you a card can redirect your agent's traffic — and its credentials — somewhere else entirely. The fix is to make the card's advertised URL match where it is actually served, which is a deployment concern worth getting right before it bites you behind a load balancer." },
+    { t: "p", text: "This is what happens when the card is fetched from one origin and advertises another — here, `127.0.0.1` versus `localhost`, which are the same machine and different origins. The check is a redirection defence (lesson 8.2), and the fix is always on the serving side: make `to_a2a`'s `host`, `port` and `protocol` describe where the agent is genuinely reachable." },
 
-    { t: "h2", n: "05", text: "The questions a boundary raises", id: "boundary" },
+    { t: "callout", kind: "warn", title: "This will bite you behind a proxy",
+      body: [{ t: "p", text: "In production the agent listens on `0.0.0.0:8080` in a container and is reached at `https://agents.example.com/inventory`. If the card is generated from the listening address it advertises something no caller can use, or something at the wrong origin, and every client refuses. Set the public host, port and protocol explicitly — and include the `rpc_path` if the agent is mounted under one — rather than letting the runtime guess." }] },
 
-    {"kind": "trace", "title": "Three questions a remote boundary raises that a function call does not", "caption": "**The difference between MCP and A2A is the difference between running someone's code and accepting someone's judgement.** You delegate a goal rather than a call, so the remote agent decides the steps — and “find out why this order is late” may mean it reads records you did not intend to expose. **The third row is the one that is easiest to forget:** what comes back is text produced by somebody else's model, entering your model's context, so it is untrusted input in exactly the sense lesson 9.2 means.", "left": "question", "codeW": 170, "vars": ["the uncomfortable answer", "what to require"], "steps": [{"code": "who is the caller?", "state": ["your service, not your user", "carry identity deliberately"], "tone": "crit"}, {"code": "what may it do?", "state": ["it chooses the steps, not you", "their boundary, your verification"], "changed": [0, 1], "tone": "crit"}, {"code": "what comes back?", "state": ["another model's words, into your context", "treat it as untrusted input"], "changed": [0, 1], "tone": "crit"}, {"code": "so the review question is", "state": ["not 'does it work'", "'what if it is wrong or compromised'"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_3-05-3"},
+    { t: "h2", n: "05", text: "What crosses and what does not", id: "crossing" },
 
-    { t: "dl", items: [
-      ["Who is the caller?", "The remote agent sees a request from your service, not from your user. If its answers should differ per person — and for anything touching customer data they must — the identity has to be carried deliberately and the remote side has to enforce it."],
-      ["What is it allowed to do?", "You are delegating a goal, not a function call, so the remote agent decides what steps to take. \"Find out why this order is late\" may mean it reads records you did not intend to expose. The boundary is theirs to enforce and yours to verify."],
-      ["What comes back?", "Text produced by someone else's model, entering your agent's context. Treat it as untrusted input — it can contain instructions, and your model will read them (lesson 9.2)."],
-      ["What if it is slow or down?", "A remote agent is a dependency with a latency distribution and an uptime, both outside your control. Timeouts and a defined fallback are not optional; `RemoteA2aAgent` defaults to a 600-second timeout, which is ten minutes of a user waiting unless you change it."]
-    ] },
-
-    { t: "callout", kind: "warn", title: "Delegation is a trust relationship, not an integration",
-      body: [{ t: "p", text: "Adding an MCP server means running someone's code with your permissions. Adding an A2A agent means letting someone else's judgement into your workflow, and letting their model's words into your model's context. Neither is a configuration change. The question to answer in review is not \"does it work\" but \"what is the worst thing that happens if this agent is wrong, or compromised, or simply changes next month\"." }] },
-
-    { t: "h2", n: "06", text: "Tool, sub-agent, or remote agent?", id: "choosing" },
-
-    {"kind": "tree", "title": "Five situations, and the one place A2A is the wrong answer", "caption": "**Read the bottom branch first, because it is the mistake worth avoiding:** two agents in the same repository that deploy together want a sub-agent, not A2A — one process, one trace, no card, no origin rules, no serialisation. **A2A earns its complexity at an organisational boundary**, where the other side has a different release cadence, different credentials and possibly a different cloud. The distinction in the last two leaves is the useful summary: agent-shaped work is A2A, function-shaped work is MCP.", "root": {"label": "What shape is the work?", "sub": "and who owns the other side", "tone": "accent", "children": [{"label": "You know what to execute", "sub": "a function tool - no reasoning needed", "tone": "good"}, {"label": "Someone else's integration", "sub": "an MCP toolset: their code, your process", "tone": "good"}, {"label": "A specialist, and you own both sides", "sub": "a sub-agent", "tone": "violet", "children": [{"label": "Deployed together?", "sub": "then A2A buys a network hop for nothing", "tone": "crit"}]}, {"label": "A specialist another team deploys", "sub": "a remote A2A agent - a real boundary", "tone": "accent"}, {"label": "A capability for others to use", "sub": "serve A2A if agent-shaped, MCP if function-shaped", "tone": "teal"}]}, "t": "diagram", "id": "dg-8_3-06-4"},
-
-    { t: "table", head: ["Situation", "Use", "Why"],
-      rows: [
-        ["You know exactly what to execute", "A function tool", "No reasoning needed; a call is the honest shape"],
-        ["Someone else's integration, same process", "An MCP toolset", "Their code, your process, tool-shaped work"],
-        ["A specialist you own, same deployment", "A sub-agent", "Transfer is cheaper than a network hop, and you control both sides"],
-        ["A specialist another team owns and deploys", "A remote A2A agent", "Separate release cadence, separate credentials, a real boundary"],
-        ["A capability you want others to use", "Serve A2A, or publish an MCP server", "Agent-shaped work is A2A; function-shaped work is MCP"]
+    { t: "diagram", kind: "compare", title: "Two systems, one conversation",
+      caption: "The remote agent keeps its own session. Your state is not its state, and it will not remember your conversation unless the message carries what it needs.",
+      columns: [
+        { title: "Crosses the boundary", tone: "good", items: ["The message you send", "Its reply and any artifacts", "Task status updates", "Whatever you put in request metadata"] },
+        { title: "Does not cross", tone: "crit", items: ["Your session state", "Your event history", "Your user's identity, unless you send it", "Your tools and callbacks"] }
       ] },
 
-    { t: "callout", kind: "tradeoff", title: "Do not reach for A2A inside one codebase",
-      body: [{ t: "p", text: "If both agents are yours and deploy together, a sub-agent is simpler, faster and easier to debug — one process, one trace, no card, no origin rules, no serialisation. A2A earns its complexity at an organisational boundary: different teams, different release schedules, different clouds, or an agent you did not write. Using it between two agents in the same repository buys you a network hop and a whole class of new failure modes for nothing." }] },
+    { t: "callout", kind: "trap", title: "The remote agent does not know who is asking",
+      body: [{ t: "p", text: "It receives a message from your service. Not your `user_id`, not your session, not your authenticated principal — nothing but what you put in the message or in request metadata. For an inventory lookup that is fine. For anything where the answer depends on who is asking, you have to carry identity deliberately and the remote side has to verify it, which means an agreement between two teams rather than a constructor argument. `RemoteA2aAgent` accepts `auth_scheme` and `auth_credential` for the service-to-service half of that." }] },
 
-    { t: "exercise", kind: "practice", title: "Read a card as a reviewer", difficulty: "core", minutes: 20,
-      prompt: "Take the agent card above and write the review you would give if a team proposed exposing it on the public internet. Cover: what it discloses, what an anonymous caller could do with it, what you would change in the card itself, and what you would require before approving. Then write the three questions you would ask the team whose agent you were about to call.",
+    { t: "h2", n: "06", text: "Operational settings", id: "operational" },
+
+    {"kind": "matrix", "title": "The settings whose defaults will hurt you", "caption": "Two of these are the same lesson as InMemorySessionService one layer up: a default that works perfectly on one machine and fails quietly the moment there are two.", "cols": ["Default", "What it costs", "Set it to"], "rows": ["timeout", "task_store", "auth_credential", "card host/port"], "cells": [[{"text": "600s", "tone": "crit"}, "10 min of a spinner", {"text": "what the UI tolerates", "tone": "good"}], [{"text": "in-process", "tone": "crit"}, "replicas do not share", {"text": "a shared store", "tone": "good"}], [{"text": "none", "tone": "crit"}, "unauthenticated calls", {"text": "service credentials", "tone": "good"}], [{"text": "localhost", "tone": "warn"}, "clients refuse the card", {"text": "the public origin", "tone": "good"}]], "t": "diagram", "id": "dg-8_3-06-2"},
+
+
+
+
+
+
+    { t: "table", head: ["Setting", "Default", "What to do"],
+      rows: [
+        ["`timeout`", "600 seconds", "Ten minutes of a user waiting. Set it to what your interface can actually tolerate"],
+        ["`httpx_client`", "One is created for you", "Pass your own to control pooling, retries and TLS"],
+        ["`auth_scheme` / `auth_credential`", "None", "How your service authenticates to theirs — required for anything that is not a public demo"],
+        ["`retry_config`", "None", "Remember the remote side may be non-idempotent; retrying a task that books something is not free"],
+        ["`before_agent_callback`", "None", "It is still a `BaseAgent` — log the delegation, and treat what returns as untrusted"]
+      ] },
+
+    { t: "exercise", kind: "practice", title: "Two processes, one conversation", difficulty: "advanced", minutes: 34,
+      prompt: "Serve an agent with a tool using to_a2a on one port and run it. Fetch its card and read the skills. Write a client with a coordinator agent that has one local specialist and the remote agent as a second sub-agent, and ask it a question only the remote one can answer. Confirm the remote tool call appears in your local session. Then kill the server mid-conversation and observe what the caller experiences; finally, set a five-second timeout and compare.",
       hints: [
-        "The skills list was generated from docstrings — read it as an attacker would.",
-        "There is no authentication anywhere in that card.",
-        "Ask what identity reaches the remote agent, and what it can do with it."
+        "Use localhost consistently on both sides or the origin check will stop you.",
+        "The coordinator routes on the remote agent's local `description`, so write it as a capability.",
+        "The default 600-second timeout is what makes the kill test feel so bad."
       ],
       solution: {
         notes: [
-          { t: "p", text: "The disclosure is the first finding: internal tool names and their parameter documentation, served at a well-known path with no authentication. For an internal agent that is unremarkable; on the internet it is a map of your system. The card should be built deliberately rather than generated, with skills described in terms of what a caller can ask for rather than what the implementation has." },
-          { t: "p", text: "The three questions to ask the other team are the ones that decide whether this is safe: what identity do you expect from us and what do you do with it; what does your agent have access to when it acts on our behalf; and what is your latency and availability, because a ten-minute default timeout means our user waits ten minutes when you are down. None of those are answered by the protocol, and all of them are answered by a conversation people skip because the integration was easy." }
+          { t: "p", text: "The delegation appearing in your own event log is the thing to take away: the remote agent's tool call and result are local events, so a trace of the whole turn crosses the boundary and you can debug a delegation the way you debug a transfer. What is not local is the other agent's state — it kept its own session, and nothing you stored is visible to it." },
+          { t: "p", text: "The kill test is the reason this exercise exists. With the default timeout the caller hangs for ten minutes, which no interface should ever do; with five seconds it fails quickly and you can decide what the coordinator says next. A remote agent is an availability dependency, and the right time to choose a timeout and a fallback is while writing it, not during the first outage." }
         ]
       } }
 
   ],
 
   takeaways: [
-    "A2A is for delegating tasks to agents; MCP is for calling tools. The test is who does the reasoning.",
-    "An agent card at a well-known URL advertises name, description, interfaces, capabilities, modes and skills.",
-    "ADK generates a skill per tool from its docstring — the card discloses more than people expect.",
-    "A task has a lifecycle including 'input required', so a remote agent can ask a question; a function cannot.",
-    "The card's RPC origin must match where the card was fetched from, or the client refuses — it is a redirection defence.",
-    "Between agents you own and deploy together, use a sub-agent; A2A is for organisational boundaries."
+    "`to_a2a(agent, host=…, port=…)` turns any ADK agent into an ASGI app serving A2A and a generated card.",
+    "The card includes a skill per tool built from its docstring — build it deliberately when disclosure matters.",
+    "`RemoteA2aAgent` is a `BaseAgent`, so it composes as a sub-agent, a pipeline step or an `AgentTool`.",
+    "A remote agent's tool calls and results arrive as events in your own session — the delegation is traceable.",
+    "The card's advertised origin must match where it is served, which needs explicit host and protocol behind a proxy.",
+    "Nothing crosses but the message: not your state, not your history, not your user's identity unless you send it."
   ],
 
   quiz: { title: "Check your understanding", questions: [
-    { stem: "What best distinguishes A2A from MCP?",
-      options: ["A2A is newer", "A2A delegates tasks to agents that do their own reasoning; MCP calls tools", "A2A uses HTTP and MCP does not", "A2A supports streaming"],
+    { stem: "What does to_a2a return?",
+      options: ["A RemoteA2aAgent", "A Starlette ASGI application", "An agent card", "A Runner"],
       answer: 1,
-      why: "The shape of the work differs. A tool call is something you have already reasoned about and now want executed. A task is a goal handed to someone whose job is to work out the steps — which is why the lifecycle includes an 'input required' state that a function call has no way to express." },
-    { stem: "A client refuses a card whose RPC URL is at a different origin from where the card was served. Why?",
-      options: ["A bug in the a2a SDK", "Because a card is a document telling you where to send requests, so a mismatched origin could redirect your traffic", "To enforce TLS", "Because localhost is never allowed"],
+      why: "It wraps the agent in an executor, a task store and HTTP routes and hands back an ASGI app you serve with uvicorn or any ASGI server. The card is generated and served by that app at the well-known path rather than being the return value." },
+    { stem: "A remote agent calls its own tool. What do you see locally?",
+      options: ["Only the final text answer", "The tool call and its result as events in your session", "Nothing until the task completes", "A single opaque event"],
       answer: 1,
-      why: "Without the check, anyone who can serve you a card can point your agent's requests — and whatever credentials they carry — somewhere else. The executed error message states the rule directly, and the fix is to make the advertised URL match where the card is actually served." },
-    { stem: "Two agents in the same repository, deployed together. Should they talk over A2A?",
-      options: ["Yes, for consistency", "No — a sub-agent is simpler, faster and easier to trace", "Yes, if either uses tools", "Only if they use different models"],
+      why: "The executed run shows `check_stock` and its result as local events authored by the remote agent, even though the function ran in another process. That is what makes a delegation debuggable — and it also means your session grows with the remote agent's activity." },
+    { stem: "Your served agent listens on 0.0.0.0:8080 and is reached at https://agents.example.com. What must you set?",
+      options: ["Nothing — the card adapts", "host, port and protocol on to_a2a, to the public values", "The task store", "defaultInputModes"],
       answer: 1,
-      why: "A2A buys you a network hop, serialisation, a card, origin rules and a new set of failure modes. Those are worth paying for across an organisational boundary — separate teams, separate releases, an agent you did not write — and are pure cost between two agents you control in one process." },
-    { stem: "Text returned by a remote A2A agent enters your agent's context. How should you treat it?",
-      options: ["As trusted, since the team is internal", "As untrusted input that may contain instructions", "As a tool result, which models ignore", "As system instruction"],
-      answer: 1,
-      why: "It is text produced by a model you do not control, arriving in a prompt your model reads. Whether the other team is friendly is beside the point — their agent could be relaying content from its own users. Any text crossing a boundary is data, never instructions." }
+      why: "The card advertises where to send RPC requests, and clients enforce that this origin matches where the card was fetched from. A card generated from the listening address advertises an unreachable or mismatched origin, and every client refuses — which is the error you would otherwise spend an afternoon on." },
+    { stem: "Which of these does NOT cross to the remote agent?",
+      options: ["The message text", "Request metadata you set", "Your session state", "Artifacts it returns"],
+      answer: 2,
+      why: "The remote agent has its own session and sees only what you send. Your state, your history and your user's identity stay on your side, so anything the remote agent needs — including who is asking, where that matters — has to be carried deliberately in the message or the metadata and verified on their side." }
   ] },
 
-  interview: { title: "Interview", sub: "A2A protocol questions", questions: [
-    { level: "Core", q: "What is A2A and when would you use it instead of MCP?",
-      strong: "A protocol for delegating tasks to other agents — use it when the other side does the reasoning and the work may take time.",
-      answer: [{ t: "p", text: "MCP is for tools: you call a function with exact arguments and get a value. A2A is for agents: you hand over a goal in natural language and the other side decides how to accomplish it. The protocol reflects that — work is a task with a lifecycle rather than a request with a response, so it can report progress, return artifacts, and move into an 'input required' state where it asks you a question. A function call has no way to express any of that. The test I use is who has already done the thinking: if I know the steps, it is a tool; if I am delegating the steps, it is an agent." }] },
-    { level: "Core", q: "What is in an agent card?",
-      strong: "Name, description, where and how to reach it, capabilities, input and output media types, and a list of skills.",
-      answer: [{ t: "p", text: "It is a JSON document at a well-known URL that tells a caller what the agent is and how to talk to it: the supported interfaces with their URL and binding, whether streaming is available, which media types it accepts and returns, and a skills list describing what it can do. The description and skills are routing information — they are what a calling agent's model reads when deciding whether to delegate. One thing worth flagging in review is how much the generated card discloses: ADK builds a skill per tool from the docstring, so internal tool names and their parameter documentation end up served publicly unless you build the card deliberately." }] },
-    { level: "Senior", q: "Another team offers you their agent over A2A. What do you need to agree before wiring it up?",
-      strong: "Identity, authority, latency and availability, what comes back, and what happens when it changes.",
-      answer: [{ t: "p", text: "Identity first: their agent sees a call from my service, not from my user, so we have to agree how the end user's identity travels and what they do with it — because for anything touching customer data, their answers must differ per person and the protocol will not arrange that for me. Then authority: I am delegating a goal, not a call, so their agent decides what steps to take, and I need to know what it can reach when acting on my behalf. Then the operational contract — latency distribution, availability, and a timeout I set deliberately, because the default is ten minutes and that is ten minutes of a user watching a spinner. Then what comes back: their model's text lands in my model's context, so it is untrusted input regardless of how friendly the team is, and it never goes anywhere it could be read as instructions. And finally change: their agent is a model behind a prompt they can edit on a Tuesday, which is a looser contract than an API, so I want to know how I will find out and I want evaluations of my own that would catch it." }] }
+  interview: { title: "Interview", sub: "A2A in ADK questions", questions: [
+    { level: "Core", q: "How do you expose an ADK agent over A2A?",
+      strong: "`to_a2a(agent, host=…, port=…)` returns an ASGI app; serve it and the card is published automatically.",
+      answer: [{ t: "p", text: "One call. `to_a2a` wraps the agent in an A2A executor with a task store and HTTP routes and returns a Starlette app, which you run under uvicorn like any other service. It also generates the agent card from the agent — name, description, capabilities and a skill per tool built from the docstrings — and serves it at the well-known path. The two things I would not leave at their defaults are the advertised host and protocol, because the card has to describe where the agent is genuinely reachable rather than what it binds to, and the task store, which is in-process by default and therefore not shared between replicas." }] },
+    { level: "Core", q: "What is RemoteA2aAgent?",
+      strong: "A BaseAgent that runs somewhere else — so it composes like any local agent.",
+      answer: [{ t: "p", text: "You construct it with a name and the URL of an agent card, and you get an object that is a `BaseAgent` as far as the rest of ADK is concerned. That means it can be a sub-agent of a coordinator, a step in a pipeline, wrapped in an `AgentTool`, or the root agent of a runner — all the patterns from the multi-agent module apply unchanged. What differs is the failure surface: it has a timeout, defaulting to ten minutes, an availability you do not control, and everything it returns is text from someone else's model entering your context. I have run it across two processes and the remote agent's own tool calls arrive as events in my local session, which makes the delegation traceable." }] },
+    { level: "Senior", q: "You are putting a remote A2A agent into a production coordinator. What do you set up around it?",
+      strong: "A real timeout, service auth, a fallback path, identity carried deliberately, and the response treated as untrusted.",
+      answer: [{ t: "p", text: "The timeout first, because the default is 600 seconds and no interface should hang for ten minutes — I set it to what the product can tolerate and decide what the coordinator says when it expires. Then authentication between the services, with `auth_scheme` and `auth_credential`, and a clear agreement about end-user identity, because the remote agent sees a call from my service and nothing else; if its answers should differ per user, that identity has to travel in the message or metadata and be verified on their side. Then a fallback: a coordinator whose specialist is unavailable should degrade to something honest rather than failing the turn, and I would test that by killing the server mid-conversation rather than assuming. On the way back, whatever the remote agent returns is untrusted text entering my model's context, so it is delimited as data and never placed where it could be read as instructions. And I would keep my own evaluations, because their agent is a prompt somebody can change on a Tuesday — a looser contract than an API, and the only thing that will tell me it moved is a test of my own." }] }
   ] }
 });

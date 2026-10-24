@@ -1,365 +1,212 @@
 /* ============================================================================
-   LESSON 8.2 — ADK as MCP Client; ADK as MCP Server
-   The discovered tools, the executed call and the filtered toolset are output
-   from scratchpad/adk/m1.py talking to a real FastMCP server over stdio
-   (google-adk 2.9.2 + mcp).
+   LESSON 8.2 — A2A: The Agent-to-Agent Protocol
+   The agent card is the real one served by scratchpad/adk/a2a_server.py, and
+   the origin error is the actual message RemoteA2aAgent raised when the card's
+   RPC origin did not match where it was fetched from (google-adk 2.9.2,
+   a2a-sdk 1.1.5).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.2",
 
-  lede: "**Consuming an MCP server in ADK is one object.** `McpToolset` is a toolset like any other (lesson 4.6), so a server's tools become your agent's tools — discovered at runtime, declared to the model, called, filtered and closed through machinery you already know. The direction people forget is the other one: your own agent's tools can be published as an MCP server, so the fraud-check function three teams keep asking you for becomes something they consume rather than reimplement. This lesson runs both directions against a real server.",
+  lede: "**MCP gives an agent tools. A2A gives an agent colleagues.** The distinction is not marketing: a tool is a function you call and get a value back from, while an agent is something you give a task to, that may ask you a question, work for four minutes, stream partial results and return an artifact. Those need different protocols, and A2A is the one built for the second. This lesson is the protocol itself — the agent card that advertises what an agent can do, the task lifecycle that models work taking time, and the boundary questions you have to answer before you let another team's agent into your system.",
 
   objectives: [
-    "Connect an agent to an MCP server over stdio and over HTTP",
-    "Filter and prefix a server's tools, and say why the allow-list matters",
-    "Read the result an MCP tool returns and handle its shape",
-    "Manage a toolset's connection lifecycle correctly",
-    "Publish your own tools as an MCP server, and decide when that is the right move"
+    "Say what A2A is for and how it differs from MCP",
+    "Read an agent card and explain each part",
+    "Describe the task lifecycle and why a task is not a function call",
+    "Identify the trust and identity questions an agent boundary raises",
+    "Decide whether an integration should be a tool or an agent"
   ],
 
-  prerequisites: ["8.1", "4.6"],
+  prerequisites: ["8.1", "2.6"],
 
   blocks: [
 
-    { t: "h2", n: "01", text: "Connecting", id: "connecting" },
+    { t: "h2", n: "01", text: "Two protocols, two shapes of work", id: "two" },
 
-    {"kind": "steps", "title": "What one McpToolset entry actually does", "caption": "Executed against a FastMCP server over stdio. Steps 2 and 5 are the protocol; everything else is the agent behaving exactly as it would with a local function.", "items": [{"label": "Connect", "sub": "spawn the process, or open the HTTP session", "tone": "violet"}, {"label": "ListTools", "sub": "names, descriptions and JSON Schemas", "tone": "accent"}, {"label": "Filter", "sub": "tool_filter allow-list, resolved per request", "tone": "crit"}, {"label": "Declare", "sub": "each becomes a function declaration for the model"}, {"label": "CallTool", "sub": "name and arguments cross the wire", "tone": "accent"}, {"label": "Envelope back", "sub": "content list + isError", "tone": "good"}], "t": "diagram", "id": "dg-8_2-01-0"},
-
-
-
-
-
-
-    { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
-      code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
-from mcp import StdioServerParameters
-
-toolset = McpToolset(
-    connection_params=StdioConnectionParams(
-        server_params=StdioServerParameters(
-            command=sys.executable, args=["mcp_server.py"]),
-        timeout=30,
-    )
-)
-
-agent = LlmAgent(name="finance", model=MODEL, tools=[toolset],
-                 instruction="Use the finance tools.")`,
-      caption: "`tools=[toolset]` — one entry for a whole server. The agent never names an individual MCP tool." },
-
-    { t: "out", text: `tools discovered from the MCP server:
-  convert: Converts an amount between two currencies.
-     params: {'properties': {'amount': {'type': 'number'}, 'frm': {'type': 'string'}, 'to': {'type': 'string'}}, 'required': [...]}
-  vat: Returns VAT for an amount in a country.
-     params: {'properties': {'amount': {'type': 'number'}, 'country': {'type': 'string'}}, 'required': ['amount', 'country']}
-
-running a turn that calls an MCP tool:
-  call: convert {'amount': 100, 'frm': 'GBP', 'to': 'USD'}
-  result: {'content': [{'type': 'text', 'text': '{\\n  "amount": 127.0, "currency": "USD", "rate": 1.27\\n}'}], 'isError': False}
-  answer: 100 pounds is 127 US dollars.` },
-
-    { t: "p", text: "The model's function call is indistinguishable from a local one — same name, same arguments, same event in the log. The only thing that betrays the boundary is the result envelope, and the `127.0` where the server computed a number. Everything else you learned in module 4 applies without modification, which is the point of implementing MCP as a toolset rather than as a special case." },
-
-    { t: "table", head: ["Transport", "Connection params", "When"],
-      rows: [
-        ["stdio", "`StdioConnectionParams(server_params=StdioServerParameters(command=…, args=[…]))`", "Local servers you spawn — filesystem, git, a CLI wrapper"],
-        ["SSE", "`SseConnectionParams(url=…)`", "An HTTP server using server-sent events"],
-        ["Streamable HTTP", "`StreamableHTTPConnectionParams(url=…)`", "The newer HTTP transport; prefer it for a hosted server"]
-      ] },
-
-    { t: "h2", n: "02", text: "Filtering", id: "filtering" },
-
-    {"kind": "flow", "title": "An allow-list admits nothing you have not read", "caption": "**A deny-list says which of today's tools you refuse, and the server can add a tool tomorrow.** That new tool arrives in your agent, described by somebody else, callable by a model — and the deny-list admits it silently, because it was written against a list that has changed. An allow-list of names cannot do that. **It is the single most valuable line of configuration in an MCP integration and it costs you a list.** The predicate form is what you want when the allowed set depends on the user, since `get_tools` is called per request.", "cols": 3, "nodes": [{"id": "s", "label": "The server offers vat and convert", "sub": "today", "tone": "accent"}, {"id": "d", "label": "Deny-list: block 'convert'", "sub": "written against today's list", "tone": "warn"}, {"id": "n", "label": "Tomorrow the server adds delete_record", "sub": "not on your deny-list", "tone": "crit"}, {"id": "a", "label": "It is admitted, silently", "sub": "into your prompt, callable", "tone": "crit"}, {"id": "f", "label": "tool_filter=['vat'] instead", "sub": "an allow-list", "tone": "good"}, {"id": "p", "label": "Or a predicate, decided per request", "sub": "operators get the write tools", "tone": "violet"}], "edges": [["s", "d"], ["d", "n"], ["n", "a"], ["a", "f"], ["f", "p"]], "t": "diagram", "id": "dg-8_2-02-5"},
-
-
-    { t: "code", lang: "python", title: "An allow-list, executed",
-      code: `filtered = McpToolset(
-    connection_params=StdioConnectionParams(
-        server_params=StdioServerParameters(command=sys.executable, args=["mcp_server.py"]),
-        timeout=30),
-    tool_filter=["vat"])
-print([t.name for t in await filtered.get_tools()])` },
-
-    { t: "out", text: "   ['vat']" },
-
-    { t: "p", text: "The server still offers both tools; the agent sees one. `tool_filter` takes a list of names or a predicate, and the predicate form is what you want when the allowed set depends on the user — an operator gets the write tools, everybody else does not, decided per request because `get_tools` is called per request." },
-
-    { t: "callout", kind: "good", title: "Allow-list, never deny-list",
-      body: [{ t: "p", text: "A deny-list says which of today's tools you refuse. The server can add a tool tomorrow, and a deny-list silently admits it — into your agent, described by someone else, callable by a model. An allow-list of names admits nothing you have not read. This is the single most valuable line of configuration in an MCP integration, and it costs you a list." }] },
-
-    { t: "code", lang: "python", title: "Prefixing, when two servers collide",
-      code: `jira = McpToolset(connection_params=jira_params, tool_name_prefix="jira")
-github = McpToolset(connection_params=gh_params, tool_name_prefix="gh")
-# search -> jira_search and gh_search`,
-      caption: "Two servers both offering `search` is common, and the model cannot choose between two identical names. Prefixing also makes traces readable — `jira_search` in a log tells you where the call went." },
-
-    { t: "h2", n: "03", text: "Lifecycle", id: "lifecycle" },
-
-    {"kind": "timeline", "title": "Where the toolset should live", "caption": "Construct once for the process and close on shutdown. A service that builds a toolset per request without closing it leaks a child process per request — which presents as memory exhaustion hours later with nothing in the agent logs.", "span": 10, "tick": 2, "lanes": [{"label": "Connection", "bars": [[0, 10, "one spawned process for the process lifetime", "violet"]]}, {"label": "get_tools", "bars": [[1, 1.6, "req 1", "accent"], [3.4, 4, "req 2", "accent"], [6, 6.6, "req 3", "accent"], [8.4, 9, "req 4", "accent"]]}, {"label": "close()", "bars": [[9.6, 10, "", "good"]]}], "t": "diagram", "id": "dg-8_2-03-1"},
-
-
-
-
-
-
-    { t: "p", text: "A toolset holds a connection: a spawned process for stdio, an HTTP session otherwise. `BaseToolset` therefore has a `close`, and it is not decorative — a long-running service that constructs toolsets per request and never closes them accumulates child processes until something gives out." },
-
-    { t: "code", lang: "python", title: "Where the toolset should live",
-      code: `# Module scope: one connection for the process lifetime.
-FINANCE = McpToolset(connection_params=finance_params, tool_filter=["convert", "vat"])
-
-agent = LlmAgent(name="finance", model=MODEL, tools=[FINANCE])
-
-# On shutdown — a plugin's close hook is a good home (lesson 6.2).
-await FINANCE.close()`,
-      caption: "Constructing the toolset once and closing it on shutdown is right for almost every deployment. Per-request construction is for the rare case where the connection itself must carry the user's credentials." },
-
-    { t: "callout", kind: "trap", title: "The server is a dependency with an uptime",
-      body: [{ t: "p", text: "Your agent now fails when someone else's process fails, and the failure surfaces during `get_tools` — while the model request is being assembled, before the model has said anything. Decide what should happen: a missing toolset means the agent quietly loses a capability, which is often better than a failed turn, but only if the instruction does not promise that capability. Test it by killing the server mid-conversation, because you will find out eventually and it is cheaper to find out now." }] },
-
-    { t: "h2", n: "04", text: "The other direction: publishing a server", id: "publishing" },
-
-    {"kind": "flow", "title": "Both directions, one implementation", "caption": "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers.", "cols": 3, "nodes": [{"id": "f", "label": "Your function", "sub": "check_fraud(order_id)", "tone": "good"}, {"id": "a", "label": "Function tool", "sub": "in your own agent", "tone": "accent"}, {"id": "m", "label": "MCP server", "sub": "@mcp.tool()", "tone": "violet"}, {"id": "o", "label": "Other teams", "sub": "any framework, any language", "tone": "warn"}], "edges": [["f", "a"], ["f", "m"], ["m", "o"]], "t": "diagram", "id": "dg-8_2-04-2"},
-
-
-
-
-
-
-    { t: "p", text: "Everything so far treats MCP as a way to get tools in. It is equally a way to send tools out. If your team owns a capability that other teams keep asking for — a fraud check, a pricing calculation, a customer lookup with the right joins — wrapping it in an MCP server means they consume it instead of reimplementing it, whatever framework they use." },
-
-    { t: "code", lang: "python", title: "A server in a dozen lines",
-      code: `from mcp.server.fastmcp import FastMCP
-
-mcp = FastMCP("finance")
-
-@mcp.tool()
-def convert(amount: float, frm: str, to: str) -> dict:
-    """Converts an amount between two currencies."""
-    ...
-
-@mcp.tool()
-def vat(amount: float, country: str) -> dict:
-    """Returns VAT for an amount in a country."""
-    ...
-
-if __name__ == "__main__":
-    mcp.run(transport="stdio")`,
-      caption: "This is the exact server the traces above talk to. The docstring becomes the tool description and the type hints become the JSON Schema — the same contract ADK generates for a function tool in lesson 4.1." },
-
-    { t: "callout", kind: "insight", title: "Write the function once, expose it twice",
-      body: [{ t: "p", text: "Nothing stops the same function being an ADK function tool in your agent and an MCP tool in your server — one implementation, one set of tests, two consumers. That is the version of this idea worth adopting: not \"should we do MCP\" but \"this logic has more than one caller, so it should not live inside one agent\"." }] },
-
-    { t: "diagram", kind: "compare", title: "Which direction do you need?",
-      caption: "Most teams do the first for a long time before they need the second. Do the second when the third team asks for the same capability.",
+    { t: "diagram", kind: "compare", title: "A tool call and a task are not the same thing",
+      caption: "You will use both, often in the same system. The question is what shape the work has, not which protocol is newer.",
       columns: [
-        { title: "Consume — McpToolset", tone: "accent", items: ["Someone else has the integration", "Vendor or community servers", "One object, filtered", "You inherit their tool quality"] },
-        { title: "Publish — an MCP server", tone: "violet", items: ["You own a capability others want", "Cross-framework, cross-team", "Your tests, your versioning", "You inherit their support burden"] }
+        { title: "MCP — a tool", tone: "accent", items: ["Call a function, get a value", "Arguments you specify exactly", "Fast, deterministic, stateless", "You own the reasoning", "\"convert 100 GBP to USD\""] },
+        { title: "A2A — an agent", tone: "violet", items: ["Give a task, get a result", "A message in natural language", "May take minutes; may ask a question", "They own the reasoning", "\"find out why this order is late\""] }
       ] },
 
-    { t: "callout", kind: "tradeoff", title: "When not to publish",
-      body: [{ t: "p", text: "A server is a product: it needs versioning, a deprecation policy, documentation, and someone to answer when a consumer's agent starts calling it oddly. If the capability has one consumer, a shared Python package is less work and easier to change. Publish when the consumers are on different stacks or in different teams, and when the interface has settled enough that you would not be embarrassed to freeze it." }] },
+    { t: "callout", kind: "mental", title: "The test: who does the thinking?",
+      body: [{ t: "p", text: "If you know exactly what you want done and just need it executed, that is a tool — you have already done the reasoning and you are calling a function. If you want to hand over a goal and let someone else work out the steps, that is an agent. A currency conversion is a tool forever. \"Work out whether this customer is entitled to a refund under our policy\" is a task, and wrapping it as a tool means pretending a judgement is a lookup." }] },
 
-    { t: "h2", n: "05", text: "Security, briefly", id: "security" },
+    { t: "h2", n: "02", text: "The agent card", id: "card" },
 
-    {"kind": "trace", "title": "Four security facts, and none of them is about the transport", "caption": "**The first row is the one that surprises people and decides whether a server is usable at all:** it acts with its own credentials, so every call uses the same token regardless of which user is talking to your agent. If answers should differ per person — and for anything touching customer data they must — the server needs the user's identity, and most servers do not accept one. **A stdio server is executed code**, which makes it the same trust decision as a dependency: pin it, read it, and never let user input near the command.", "left": "fact", "codeW": 190, "vars": ["what follows", "the control"], "steps": [{"code": "the server has its own credentials", "state": ["one identity for every user", "do not use it for per-user data"], "tone": "crit"}, {"code": "descriptions are untrusted text", "state": ["they enter your prompt", "read them; treat a change as a change"], "changed": [0, 1], "tone": "crit"}, {"code": "a stdio server is executed code", "state": ["same risk as a dependency", "pin it, and never interpolate user input"], "changed": [0, 1], "tone": "crit"}, {"code": "filter first, review after", "state": ["the surface is the tool list", "an allow-list you can justify in a PR"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-05-6"},
+    {"kind": "tree", "title": "The agent card, as served", "caption": "Fetched from a running ADK agent. Note that ADK generated a skill per tool from its docstring — including the argument documentation — and serves all of it at a well-known path with no authentication.", "root": {"label": "agent-card.json", "sub": "/.well-known/", "tone": "violet", "children": [{"label": "identity", "sub": "name, description, version", "tone": "accent"}, {"label": "transport", "sub": "interfaces, capabilities, modes", "tone": "good"}, {"label": "skills", "sub": "what it can be asked for", "tone": "warn", "children": [{"label": "inventory", "sub": "the agent itself"}, {"label": "check_stock", "sub": "from the docstring", "tone": "crit"}]}]}, "t": "diagram", "id": "dg-8_2-02-0"},
+
+
+
+
+
+
+    { t: "p", text: "An A2A agent publishes a card at a well-known URL describing what it is and how to talk to it. This one is served by a real ADK agent — the `to_a2a` call in the next lesson generated it from the agent object." },
+
+    { t: "code", lang: "bash", title: "Fetching it",
+      code: `curl -s http://localhost:8801/.well-known/agent-card.json | python -m json.tool` },
+
+    { t: "out", text: `{
+    "name": "inventory",
+    "description": "Answers questions about warehouse stock levels for a SKU.",
+    "supportedInterfaces": [
+        { "url": "http://localhost:8801", "protocolBinding": "JSONRPC", "protocolVersion": "1.0" }
+    ],
+    "version": "0.0.1",
+    "capabilities": { "streaming": true },
+    "defaultInputModes": ["text/plain"],
+    "defaultOutputModes": ["text/plain"],
+    "skills": [
+        {
+            "id": "inventory",
+            "name": "model",
+            "description": "Answers questions about warehouse stock levels for a SKU.",
+            "tags": ["llm"]
+        },
+        {
+            "id": "inventory-check_stock",
+            "name": "check_stock",
+            "description": "Checks warehouse stock for a SKU.\\n\\nArgs:\\n    sku: the product code.",
+            "tags": ["llm", "tools"]
+        }
+    ]
+}` },
+
+    { t: "dl", items: [
+      ["name / description", "What the agent is. The description is what a calling agent's model reads when deciding whether to delegate here, so it is routing information exactly as a tool description is."],
+      ["supportedInterfaces", "Where and how to talk to it — the URL, the binding (JSON-RPC here) and the protocol version. More than one entry means more than one way in."],
+      ["capabilities", "What the transport supports. `streaming: true` means partial results arrive as they are produced rather than in one lump at the end."],
+      ["defaultInputModes / defaultOutputModes", "The media types it accepts and returns. Text here; an agent that takes images or returns PDFs says so, which is how a caller knows before trying."],
+      ["skills", "The advertised capabilities. ADK generated one for the agent itself and one per tool — note `check_stock` appearing with its full docstring, including the argument documentation."]
+    ] },
+
+    { t: "callout", kind: "trap", title: "The card tells the world what your agent can do",
+      body: [{ t: "p", text: "That skills list was generated from tool docstrings, and it is served publicly at a well-known path. Everything in it — internal tool names, parameter documentation, the shape of your system — is now readable by anyone who can reach the endpoint. That is fine for an agent inside a private network and a disclosure decision for one on the internet. Build the card deliberately with `AgentCardBuilder` when the default one says more than you meant it to." }] },
+
+    { t: "h2", n: "03", text: "Tasks, not calls", id: "tasks" },
+
+    {"kind": "flow", "title": "The task state machine", "caption": "A function call has two states: pending and returned. The branch that makes A2A different is 'input required' — a remote agent can stop and ask you a question, then carry on.", "cols": 3, "nodes": [{"id": "s", "label": "Submitted", "sub": "the caller holds a task id", "tone": "accent"}, {"id": "w", "label": "Working", "sub": "progress, streamed if supported", "tone": "good"}, {"id": "i", "label": "Input required", "sub": "it asks; you answer", "tone": "warn"}, {"id": "c", "label": "Completed", "sub": "result + artifacts", "tone": "violet"}, {"id": "f", "label": "Failed / cancelled", "sub": "an outcome you must handle", "tone": "crit"}], "edges": [["s", "w"], ["w", "i", "needs more"], ["i", "w", "answered"], ["w", "c"], ["w", "f"]], "t": "diagram", "id": "dg-8_2-03-1"},
+
+
+
+
+
+
+    { t: "p", text: "A2A models work as a **task** with a lifecycle rather than a request with a response. That is what makes it suitable for work that takes real time: the task is created, it progresses, it may need input, and eventually it completes or fails. A caller can subscribe to updates rather than blocking." },
+
+    { t: "diagram", kind: "steps", title: "The states a task moves through",
+      caption: "Compare with a function call, which has exactly two states: pending and returned. The interesting one is 'input required' — a tool cannot ask you a question, and an agent can.",
+      items: [
+        { label: "Submitted", sub: "the task exists; the caller has an id" },
+        { label: "Working", sub: "progress updates, streamed if the card says streaming" },
+        { label: "Input required", sub: "the remote agent needs something before it can continue" },
+        { label: "Completed", sub: "with a result, and possibly artifacts" },
+        { label: "Failed / cancelled", sub: "an outcome the caller has to handle" }
+      ] },
+
+    { t: "callout", kind: "insight", title: "The artifact is why this is not just HTTP",
+      body: [{ t: "p", text: "A task can return files as well as text — a rendered report, a chart, a spreadsheet — the same idea as artifacts in lesson 6.3, crossing an organisational boundary. That is what makes \"have the analytics team's agent produce the quarterly breakdown\" a sensible thing to say to a protocol, rather than something you would build as a REST endpoint returning a signed URL." }] },
+
+    { t: "h2", n: "04", text: "The origin check, and why it exists", id: "origin" },
+
+    {"kind": "flow", "title": "Why a card may not advertise an origin it was not served from", "caption": "**A card is a document telling you where to send your requests, so whoever can serve you a card can redirect your agent's traffic — and its credentials — somewhere else.** The same-origin rule is that redirection defence, which is why the client refuses rather than warns. The example reads as fussiness and is not: `127.0.0.1` and `localhost` are the same machine and different origins. **The fix is always on the serving side** — make the advertised URL describe where the agent is genuinely reachable, which is a deployment concern worth settling before a load balancer finds it for you.", "cols": 3, "nodes": [{"id": "f", "label": "Card fetched from 127.0.0.1:8801", "sub": "/.well-known/agent-card.json", "tone": "accent"}, {"id": "a", "label": "Card advertises localhost:8801", "sub": "same machine, different origin", "tone": "warn"}, {"id": "r", "label": "The client refuses to resolve it", "sub": "not a warning - a refusal", "tone": "crit"}, {"id": "w", "label": "Because a card redirects traffic", "sub": "and your credentials with it", "tone": "crit"}, {"id": "s", "label": "Fix on the serving side", "sub": "advertise where it is really reachable", "tone": "good"}, {"id": "p", "label": "Behind a proxy, set host and protocol", "sub": "0.0.0.0 is not a public origin", "tone": "violet"}], "edges": [["f", "a"], ["a", "r"], ["r", "w"], ["w", "s"], ["s", "p"]], "t": "diagram", "id": "dg-8_2-04-2"},
+
+
+    { t: "p", text: "The first time I pointed a client at that card I got this, and it is worth reading rather than working around." },
+
+    { t: "out", text: `Failed to resolve remote A2A agent inventory: Agent card RPC URL must have the
+same origin as the location the card was fetched from
+(http://127.0.0.1:8801/.well-known/agent-card.json): http://localhost:8801` },
+
+    { t: "p", text: "The card had been fetched from `127.0.0.1` and advertised its RPC endpoint as `localhost` — different origins by the rule, even though they are the same machine. The client refused. That is not fussiness: **a card is a document telling you where to send your requests**, so without an origin check, anyone who can serve you a card can redirect your agent's traffic — and its credentials — somewhere else entirely. The fix is to make the card's advertised URL match where it is actually served, which is a deployment concern worth getting right before it bites you behind a load balancer." },
+
+    { t: "h2", n: "05", text: "The questions a boundary raises", id: "boundary" },
+
+    {"kind": "trace", "title": "Three questions a remote boundary raises that a function call does not", "caption": "**The difference between MCP and A2A is the difference between running someone's code and accepting someone's judgement.** You delegate a goal rather than a call, so the remote agent decides the steps — and “find out why this order is late” may mean it reads records you did not intend to expose. **The third row is the one that is easiest to forget:** what comes back is text produced by somebody else's model, entering your model's context, so it is untrusted input in exactly the sense lesson 9.2 means.", "left": "question", "codeW": 170, "vars": ["the uncomfortable answer", "what to require"], "steps": [{"code": "who is the caller?", "state": ["your service, not your user", "carry identity deliberately"], "tone": "crit"}, {"code": "what may it do?", "state": ["it chooses the steps, not you", "their boundary, your verification"], "changed": [0, 1], "tone": "crit"}, {"code": "what comes back?", "state": ["another model's words, into your context", "treat it as untrusted input"], "changed": [0, 1], "tone": "crit"}, {"code": "so the review question is", "state": ["not 'does it work'", "'what if it is wrong or compromised'"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-8_2-05-3"},
 
 
     { t: "dl", items: [
-      ["The server acts with its own credentials", "Whatever token it holds is what every call uses, regardless of which user is talking to your agent. If answers should differ per user, the server needs the user's identity — and most do not accept one."],
-      ["Descriptions are untrusted text", "Tool names and descriptions from someone else's process are placed in your prompt. A compromised server can put instructions there. Lesson 9.2 covers the defence."],
-      ["A stdio server is executed code", "Same trust decision as a dependency. Pin it, read it, and never let user input influence the command."],
-      ["Filter first, review after", "An allow-list you can justify in a pull request is the control that actually holds when the server changes."]
+      ["Who is the caller?", "The remote agent sees a request from your service, not from your user. If its answers should differ per person — and for anything touching customer data they must — the identity has to be carried deliberately and the remote side has to enforce it."],
+      ["What is it allowed to do?", "You are delegating a goal, not a function call, so the remote agent decides what steps to take. \"Find out why this order is late\" may mean it reads records you did not intend to expose. The boundary is theirs to enforce and yours to verify."],
+      ["What comes back?", "Text produced by someone else's model, entering your agent's context. Treat it as untrusted input — it can contain instructions, and your model will read them (lesson 9.2)."],
+      ["What if it is slow or down?", "A remote agent is a dependency with a latency distribution and an uptime, both outside your control. Timeouts and a defined fallback are not optional; `RemoteA2aAgent` defaults to a 600-second timeout, which is ten minutes of a user waiting unless you change it."]
     ] },
 
-    { t: "code", lang: "python", title: "Tool annotations: hints from the server, which is exactly what they are",
-      code: `from mcp.types import ToolAnnotations
+    { t: "callout", kind: "warn", title: "Delegation is a trust relationship, not an integration",
+      body: [{ t: "p", text: "Adding an MCP server means running someone's code with your permissions. Adding an A2A agent means letting someone else's judgement into your workflow, and letting their model's words into your model's context. Neither is a configuration change. The question to answer in review is not \"does it work\" but \"what is the worst thing that happens if this agent is wrong, or compromised, or simply changes next month\"." }] },
 
-# A server can declare what a tool DOES, beyond its description:
-ToolAnnotations(
-    title="Delete a record",
-    readOnlyHint=False,        # it modifies something
-    destructiveHint=True,      # and the modification is not reversible
-    idempotentHint=False,      # calling it twice is not the same as once
-    openWorldHint=True,        # it touches systems outside this server
-)
+    { t: "h2", n: "06", text: "Tool, sub-agent, or remote agent?", id: "choosing" },
 
-# WHAT THIS IS GOOD FOR: building the allow-list, and building a UI.
-tools = await toolset.get_tools()
-read_only = [t for t in tools if getattr(t, "annotations", None)
-             and t.annotations.readOnlyHint]
+    {"kind": "tree", "title": "Five situations, and the one place A2A is the wrong answer", "caption": "**Read the bottom branch first, because it is the mistake worth avoiding:** two agents in the same repository that deploy together want a sub-agent, not A2A — one process, one trace, no card, no origin rules, no serialisation. **A2A earns its complexity at an organisational boundary**, where the other side has a different release cadence, different credentials and possibly a different cloud. The distinction in the last two leaves is the useful summary: agent-shaped work is A2A, function-shaped work is MCP.", "root": {"label": "What shape is the work?", "sub": "and who owns the other side", "tone": "accent", "children": [{"label": "You know what to execute", "sub": "a function tool - no reasoning needed", "tone": "good"}, {"label": "Someone else's integration", "sub": "an MCP toolset: their code, your process", "tone": "good"}, {"label": "A specialist, and you own both sides", "sub": "a sub-agent", "tone": "violet", "children": [{"label": "Deployed together?", "sub": "then A2A buys a network hop for nothing", "tone": "crit"}]}, {"label": "A specialist another team deploys", "sub": "a remote A2A agent - a real boundary", "tone": "accent"}, {"label": "A capability for others to use", "sub": "serve A2A if agent-shaped, MCP if function-shaped", "tone": "teal"}]}, "t": "diagram", "id": "dg-8_2-06-4"},
 
-# AND THE WORD IN EVERY FIELD NAME IS THE WARNING: Hint.
-#
-# These are claims made by the server about itself, in the same payload as
-# the descriptions -- so a server that lies, or is compromised, or is simply
-# wrong, reports readOnlyHint=True on a tool that deletes.
-#
-# SO: use annotations to GENERATE a candidate allow-list and to decide what
-# needs a confirmation prompt. Do not use them as the control. The control
-# is the explicit list of names you read and justified (above), because that
-# one does not change when the server changes.`,
-      caption: "**Every field is named `...Hint`, and that is not stylistic** \u2014 annotations are claims a server makes about itself, arriving in the same untrusted payload as the descriptions. A compromised or careless server reports `readOnlyHint=True` on a tool that deletes, so they are useful for *generating* an allow-list and worthless as an enforcement mechanism." },
-    { t: "p", text: "**Where they genuinely earn their place is the human-facing half:** `destructiveHint` is the natural trigger for a confirmation step (lesson 4.5), and `title` gives a UI something readable to show instead of a snake-case function name. Treat the hints as the server's documentation \u2014 helpful, and not a boundary." },
 
-    { t: "exercise", kind: "practice", title: "Both directions, in one afternoon", difficulty: "advanced", minutes: 32,
-      prompt: "Write a FastMCP server with three tools, one of which is destructive-sounding (delete_record). Connect an ADK agent to it over stdio, list the discovered tools, and run a turn that calls a safe one. Then add a tool_filter that excludes the destructive tool and confirm the model can no longer call it even when the user asks directly. Finally, add a second toolset pointing at the same server with a prefix, and confirm the names do not collide.",
+    { t: "table", head: ["Situation", "Use", "Why"],
+      rows: [
+        ["You know exactly what to execute", "A function tool", "No reasoning needed; a call is the honest shape"],
+        ["Someone else's integration, same process", "An MCP toolset", "Their code, your process, tool-shaped work"],
+        ["A specialist you own, same deployment", "A sub-agent", "Transfer is cheaper than a network hop, and you control both sides"],
+        ["A specialist another team owns and deploys", "A remote A2A agent", "Separate release cadence, separate credentials, a real boundary"],
+        ["A capability you want others to use", "Serve A2A, or publish an MCP server", "Agent-shaped work is A2A; function-shaped work is MCP"]
+      ] },
+
+    { t: "callout", kind: "tradeoff", title: "Do not reach for A2A inside one codebase",
+      body: [{ t: "p", text: "If both agents are yours and deploy together, a sub-agent is simpler, faster and easier to debug — one process, one trace, no card, no origin rules, no serialisation. A2A earns its complexity at an organisational boundary: different teams, different release schedules, different clouds, or an agent you did not write. Using it between two agents in the same repository buys you a network hop and a whole class of new failure modes for nothing." }] },
+
+    { t: "exercise", kind: "practice", title: "Read a card as a reviewer", difficulty: "core", minutes: 20,
+      prompt: "Take the agent card above and write the review you would give if a team proposed exposing it on the public internet. Cover: what it discloses, what an anonymous caller could do with it, what you would change in the card itself, and what you would require before approving. Then write the three questions you would ask the team whose agent you were about to call.",
       hints: [
-        "Docstrings become descriptions — write them as the model will read them.",
-        "Ask the agent directly to delete something and confirm it cannot, rather than assuming.",
-        "Close both toolsets at the end and watch the child processes exit."
+        "The skills list was generated from docstrings — read it as an attacker would.",
+        "There is no authentication anywhere in that card.",
+        "Ask what identity reaches the remote agent, and what it can do with it."
       ],
       solution: {
         notes: [
-          { t: "p", text: "Asking the agent to delete something after filtering is the part worth doing properly. The model has no declaration for the tool, so it cannot emit a call for it — it will say it lacks that capability. That is a categorically stronger guarantee than an instruction saying not to, and it is the same argument as lesson 4.7: not giving the agent a tool beats telling it not to use one." },
-          { t: "p", text: "Watching the processes exit on `close` makes the lifecycle concrete. A service that constructs toolsets per request without closing them leaks a process per request, which presents as memory exhaustion hours later with nothing in the agent logs to explain it." }
+          { t: "p", text: "The disclosure is the first finding: internal tool names and their parameter documentation, served at a well-known path with no authentication. For an internal agent that is unremarkable; on the internet it is a map of your system. The card should be built deliberately rather than generated, with skills described in terms of what a caller can ask for rather than what the implementation has." },
+          { t: "p", text: "The three questions to ask the other team are the ones that decide whether this is safe: what identity do you expect from us and what do you do with it; what does your agent have access to when it acts on our behalf; and what is your latency and availability, because a ten-minute default timeout means our user waits ten minutes when you are down. None of those are answered by the protocol, and all of them are answered by a conversation people skip because the integration was easy." }
         ]
-      } },
-
-    { t: "h2", n: "06", text: "Running a server for real", id: "operating" },
-
-    {"kind": "flow", "title": "stdio is protected by being a subprocess; HTTP is not protected by anything", "caption": "**A stdio server is reachable only by the process that spawned it, and that is the entire access control.** Move the same code to an SSE or streamable-HTTP endpoint and every tool on it — including the destructive ones, backed by the server's own credentials — is available to whoever can send a POST. **It is an ASGI application, so it inherits every concern from lesson 12.1**, authentication in front of it most of all, plus the buffering problem from 10.2: an SSE stream behind a buffering proxy is not a stream.", "cols": 3, "nodes": [{"id": "s", "label": "stdio: a subprocess you spawned", "sub": "nobody else can reach it", "tone": "good"}, {"id": "n", "label": "But it cannot cross a network", "sub": "which is why HTTP exists", "tone": "warn"}, {"id": "h", "label": "SSE: two endpoints, stream and POST", "sub": "streamable HTTP folds them into one", "tone": "accent"}, {"id": "o", "label": "Now it is an open API", "sub": "every tool, the server's credentials", "tone": "crit"}, {"id": "a", "label": "Authenticate it like any internal API", "sub": "and watch for a buffering proxy", "tone": "violet"}], "edges": [["s", "n"], ["n", "h"], ["h", "o"], ["o", "a"]], "t": "diagram", "id": "dg-8_2-06-4"},
-
-    {"kind": "trace", "title": "What FastMCP hides, and the three cases where you need it back", "caption": "**Almost every server should be a dozen lines of `@mcp.tool()`**, because the decorator generates the schemas, handles the handshake and picks the transport from one argument. **The three rows in the middle are what the convenience layer is deciding for you** — the name and version a client sees, which transport is served, and whether the server may push notifications at all. A server that has not declared `tools_changed` during initialisation cannot usefully send the notification later.", "left": "concern", "codeW": 170, "vars": ["with FastMCP", "with the low-level Server"], "steps": [{"code": "tool schemas", "state": ["from type hints and the docstring", "you build the Tool list"], "tone": "good"}, {"code": "the handshake", "state": ["filled in for you", "InitializationOptions: name, version"], "changed": [0, 1], "tone": "accent"}, {"code": "capabilities", "state": ["defaults", "NotificationOptions(tools_changed=True)"], "changed": [0, 1], "tone": "violet"}, {"code": "transport", "state": ["mcp.run(transport='stdio')", "stdio_server(), or SseServerTransport"], "changed": [0, 1], "tone": "violet"}, {"code": "notifications", "state": ["not exposed", "send_notification on the session"], "changed": [0, 1], "tone": "violet"}, {"code": "so reach for it when", "state": ["-", "capabilities, a 2nd transport, notifications"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-8_2-06-3"},
-
-    { t: "p", text: "`FastMCP` is the right starting point and it hides two things you eventually need: the lifecycle and the transport. Underneath it is `mcp.server.Server`, the low-level API, and reaching for it is not a sign you did something wrong — it is what you use when the server has to announce its own capabilities, serve more than one transport, or push notifications to connected clients." },
-
-    { t: "code", lang: "python", title: "The same server, without the convenience layer",
-      code: `from mcp.server import Server, NotificationOptions
-from mcp.server.models import InitializationOptions
-from mcp.server.stdio import stdio_server
-
-server = Server("finance")
-
-@server.list_tools()
-async def list_tools():
-    return [...]            # you build the Tool list yourself
-
-@server.call_tool()
-async def call_tool(name, arguments):
-    return [...]            # and the content list yourself
-
-async def main():
-    async with stdio_server() as (read, write):
-        await server.run(read, write, InitializationOptions(
-            server_name="finance",
-            server_version="1.0.0",
-            capabilities=server.get_capabilities(
-                notification_options=NotificationOptions(tools_changed=True),
-                experimental_capabilities={},
-            ),
-        ))`,
-      caption: "**`InitializationOptions` is what FastMCP fills in for you** — the name and version a client sees, and the capabilities the server claims during the handshake. `NotificationOptions(tools_changed=True)` is the declaration that makes the next section possible: a server that has not advertised the capability cannot usefully send the notification." },
-
-    { t: "p", text: "`stdio_server()` is the transport, and it is the reason a local server is a subprocess: it reads MCP frames from standard input and writes them to standard output. That works beautifully on one machine and not at all across a network, which is the whole motivation for the HTTP transports." },
-
-    { t: "code", lang: "python", title: "The same tools, reachable over the network",
-      code: `from mcp.server.sse import SseServerTransport
-from starlette.applications import Starlette
-from starlette.routing import Route, Mount
-
-sse = SseServerTransport("/messages/")
-
-async def handle_sse(request):
-    async with sse.connect_sse(request.scope, request.receive,
-                               request._send) as (read, write):
-        await server.run(read, write, init_options)
-
-app = Starlette(routes=[
-    Route("/sse", endpoint=handle_sse),
-    Mount("/messages/", app=sse.handle_post_message),
-])
-
-# TWO endpoints, not one: the client opens the SSE stream to receive, and
-# POSTs to /messages/ to send. Streamable HTTP, the newer transport, folds
-# both onto one endpoint -- prefer it for anything new.`,
-      caption: "An ASGI application, so it deploys like any other web service — which also means it inherits every concern from lesson 12.1: authentication in front of it, a real identity rather than one shared token, and the buffering problem from lesson 10.2, because an SSE stream behind a buffering proxy is not a stream." },
-
-    { t: "callout", kind: "trap", title: "An HTTP MCP server is an unauthenticated API until you make it one",
-      body: [
-        { t: "p", text: "A stdio server is protected by being a subprocess nobody else can reach. Move the same code to an HTTP endpoint and every tool on it is available to whoever can send a POST — including the destructive ones, with the server's own credentials behind them. Put it behind the same authentication and the same network boundary as any internal API, and resist the urge to expose it publicly because a vendor's documentation shows a public URL." }
-      ] },
-
-    { t: "p", text: "The notification capability declared during initialisation is what lets a server tell its clients that something changed, rather than waiting to be asked." },
-
-    { t: "code", lang: "python", title: "Telling clients the tool list moved",
-      code: `from mcp.types import ServerNotification, ToolListChangedNotification
-
-await server.request_context.session.send_notification(
-    ServerNotification(ToolListChangedNotification(
-        method="notifications/tools/list_changed")))
-
-# WHAT THIS MEANS FOR YOU AS A CONSUMER: the tool list is not a constant.
-# A server can legitimately add a tool mid-connection, which is exactly why
-# tool_filter in section 02 has to be an allow-list rather than a deny-list.`,
-      caption: "**This is the mechanism behind the advice in section 02**, and seeing it from the server side makes the reason concrete rather than cautious: tools arriving mid-connection is a feature of the protocol, not a hypothetical. A deny-list protects you against the tools that existed when you wrote it." },
-
-    { t: "code", lang: "python", title: "Testing it without a subprocess",
-      code: `from fastmcp.testing import MCPTestClient
-
-async def test_convert_rejects_unknown_currency():
-    async with MCPTestClient(mcp) as client:
-        tools = await client.list_tools()
-        assert "convert" in [t.name for t in tools]
-
-        result = await client.call_tool("convert",
-                                       {"amount": 10, "frm": "GBP", "to": "XXX"})
-        assert result.isError`,
-      caption: "In-process, so there is no subprocess to spawn and no port to bind — the same property that makes the scripted model in lesson 11.3 worth having. A server's tests should run in the same second as the rest of your suite." },
-
-    { t: "dl", items: [
-      ["Test the schema, not just the function", "The function is ordinary Python you can call directly. What needs a client is the part MCP generates: that the tool appears, that its schema is what you meant, and that a bad argument returns an error result rather than raising."],
-      ["Version the interface, not the implementation", "Consumers depend on tool names, argument names and result shapes. Renaming an argument is a breaking change to someone else's agent, and they will find out at runtime."],
-      ["Configuration from the environment", "`load_dotenv()` for local development and real secret references in production — the server holds credentials, so lesson 9.1 applies to it exactly as it applies to an agent."],
-      ["Log every call with its arguments", "A server is somebody else's dependency. When their agent behaves oddly, the question is what it actually called, and only your logs can answer it."]
-    ] },
-
-    { t: "callout", kind: "good", title: "Start with FastMCP, and know what it is doing",
-      body: [
-        { t: "p", text: "Almost every server should be a dozen lines of `@mcp.tool()`, because the decorator form generates the schemas, handles the handshake and picks the transport from one argument. Knowing the layer underneath matters for the three cases it does not cover — announcing capabilities, serving a second transport, and sending notifications — and for reading the protocol traces, where what you see is the low-level shape regardless of which API wrote it." }
-      ] }
+      } }
 
   ],
 
   takeaways: [
-    "`McpToolset` is an ordinary toolset: `tools=[toolset]` brings a whole server's tools to the agent.",
-    "Three transports — stdio for local servers you spawn, SSE and streamable HTTP for hosted ones.",
-    "`tool_filter` should be an allow-list, because the server can add tools without telling you.",
-    "`tool_name_prefix` prevents collisions between servers and makes traces legible.",
-    "Toolsets hold connections: construct once, close on shutdown, and expect failures during `get_tools`.",
-    "Publishing your own MCP server turns a capability other teams keep rebuilding into one they consume.",
-    "FastMCP is the right default; the low-level `Server` is what you need for capabilities, a second transport and notifications.",
-    "A stdio server is protected by being a subprocess — the same code on an HTTP endpoint is an open API until you authenticate it.",
-    "`tools_changed` notifications are real, which is why a consumer’s `tool_filter` has to be an allow-list."
+    "A2A is for delegating tasks to agents; MCP is for calling tools. The test is who does the reasoning.",
+    "An agent card at a well-known URL advertises name, description, interfaces, capabilities, modes and skills.",
+    "ADK generates a skill per tool from its docstring — the card discloses more than people expect.",
+    "A task has a lifecycle including 'input required', so a remote agent can ask a question; a function cannot.",
+    "The card's RPC origin must match where the card was fetched from, or the client refuses — it is a redirection defence.",
+    "Between agents you own and deploy together, use a sub-agent; A2A is for organisational boundaries."
   ],
 
   quiz: { title: "Check your understanding", questions: [
-    { stem: "How many entries does a five-tool MCP server add to an agent's tools list?",
-      options: ["Five", "One — the toolset", "One per transport", "None; they are injected at runtime"],
+    { stem: "What best distinguishes A2A from MCP?",
+      options: ["A2A is newer", "A2A delegates tasks to agents that do their own reasoning; MCP calls tools", "A2A uses HTTP and MCP does not", "A2A supports streaming"],
       answer: 1,
-      why: "A toolset is a single entry that expands into many tools when `get_tools` is called during request assembly. That is what lets the set vary per user and lets a remote server change what it offers without a redeploy of your agent." },
-    { stem: "Why is a tool_filter allow-list better than a deny-list?",
-      options: ["It is faster", "A server can add tools later, which a deny-list silently admits", "Deny-lists are not supported", "It reduces token usage"],
+      why: "The shape of the work differs. A tool call is something you have already reasoned about and now want executed. A task is a goal handed to someone whose job is to work out the steps — which is why the lifecycle includes an 'input required' state that a function call has no way to express." },
+    { stem: "A client refuses a card whose RPC URL is at a different origin from where the card was served. Why?",
+      options: ["A bug in the a2a SDK", "Because a card is a document telling you where to send requests, so a mismatched origin could redirect your traffic", "To enforce TLS", "Because localhost is never allowed"],
       answer: 1,
-      why: "A deny-list enumerates what you refuse today. Tomorrow's new tool is not on it, so it arrives in your agent — described by someone else and callable by the model — without anyone deciding to allow it. An allow-list admits only what you have read." },
-    { stem: "Your agent's MCP server process dies mid-conversation. Where does the failure appear?",
-      options: ["When the model calls a tool", "During get_tools, while the model request is being assembled", "At agent construction", "It does not — the toolset reconnects silently"],
+      why: "Without the check, anyone who can serve you a card can point your agent's requests — and whatever credentials they carry — somewhere else. The executed error message states the rule directly, and the fix is to make the advertised URL match where the card is actually served." },
+    { stem: "Two agents in the same repository, deployed together. Should they talk over A2A?",
+      options: ["Yes, for consistency", "No — a sub-agent is simpler, faster and easier to trace", "Yes, if either uses tools", "Only if they use different models"],
       answer: 1,
-      why: "Tools are resolved per request, so the connection is exercised before the model is called at all. Deciding what should happen there is a design choice: losing a capability quietly is often better than failing the turn, provided the instruction does not promise the capability." },
-    { stem: "When is publishing your own MCP server the right move?",
-      options: ["Whenever you have tools", "When several teams on different stacks want the same capability", "Instead of writing function tools", "To improve latency"],
+      why: "A2A buys you a network hop, serialisation, a card, origin rules and a new set of failure modes. Those are worth paying for across an organisational boundary — separate teams, separate releases, an agent you did not write — and are pure cost between two agents you control in one process." },
+    { stem: "Text returned by a remote A2A agent enters your agent's context. How should you treat it?",
+      options: ["As trusted, since the team is internal", "As untrusted input that may contain instructions", "As a tool result, which models ignore", "As system instruction"],
       answer: 1,
-      why: "A server is a product with versioning, documentation and a support burden. With one consumer on your own stack, a shared package is less work and easier to change. Publish when the consumers are on different stacks or teams and the interface has settled enough to be worth freezing." }
+      why: "It is text produced by a model you do not control, arriving in a prompt your model reads. Whether the other team is friendly is beside the point — their agent could be relaying content from its own users. Any text crossing a boundary is data, never instructions." }
   ] },
 
-  interview: { title: "Interview", sub: "MCP in ADK questions", questions: [
-    { level: "Core", q: "How do you use an MCP server from an ADK agent?",
-      strong: "Construct an McpToolset with the right connection params and pass it in `tools` — it is one entry for the whole server.",
-      answer: [{ t: "p", text: "Pick the transport — `StdioConnectionParams` for a server you spawn, SSE or streamable HTTP for a hosted one — and pass the toolset in the agent's tools list. ADK lists the server's tools when it assembles each model request and turns each one into a function declaration, so from the model's point of view they are ordinary tools with ordinary names and arguments. In practice I always add a `tool_filter` allow-list and, where more than one server is involved, a `tool_name_prefix`, because two servers offering `search` is common and a prefixed name is also what makes a trace readable." }] },
-    { level: "Core", q: "What has to be managed that a local function tool does not?",
-      strong: "A connection with a lifecycle, and a dependency whose uptime is not yours.",
-      answer: [{ t: "p", text: "The toolset holds a spawned process or an HTTP session, so it should be constructed once for the process and closed on shutdown; constructing one per request without closing leaks a process per request, which shows up as memory exhaustion with nothing in the agent logs. The other half is availability — the server can be down, and the failure surfaces during tool resolution, before the model has said anything. I decide deliberately whether that means the agent loses a capability quietly or the turn fails, and I test it by killing the server mid-conversation rather than waiting to discover it." }] },
-    { level: "Senior", q: "When would you build an MCP server rather than a function tool?",
-      strong: "When the capability has consumers beyond this agent — other teams, other stacks — and the interface has settled.",
-      answer: [{ t: "p", text: "A function tool lives inside one agent. The moment the same logic is wanted by a second agent in another team, or by something that is not ADK at all, the choice is between a shared library and a server. A library is cheaper and easier to change, so I would reach for it first and only move to a server when the consumers are on different stacks or when I want a network boundary — different credentials, different deployment cadence, an audit point. What I would not underestimate is that publishing makes it a product: versioning, deprecation, documentation, and somebody answering when a consumer's agent starts calling it in an odd way. The nice part is that the function does not have to choose — the same implementation can be a function tool here and an MCP tool in the server, with one set of tests." }] }
+  interview: { title: "Interview", sub: "A2A protocol questions", questions: [
+    { level: "Core", q: "What is A2A and when would you use it instead of MCP?",
+      strong: "A protocol for delegating tasks to other agents — use it when the other side does the reasoning and the work may take time.",
+      answer: [{ t: "p", text: "MCP is for tools: you call a function with exact arguments and get a value. A2A is for agents: you hand over a goal in natural language and the other side decides how to accomplish it. The protocol reflects that — work is a task with a lifecycle rather than a request with a response, so it can report progress, return artifacts, and move into an 'input required' state where it asks you a question. A function call has no way to express any of that. The test I use is who has already done the thinking: if I know the steps, it is a tool; if I am delegating the steps, it is an agent." }] },
+    { level: "Core", q: "What is in an agent card?",
+      strong: "Name, description, where and how to reach it, capabilities, input and output media types, and a list of skills.",
+      answer: [{ t: "p", text: "It is a JSON document at a well-known URL that tells a caller what the agent is and how to talk to it: the supported interfaces with their URL and binding, whether streaming is available, which media types it accepts and returns, and a skills list describing what it can do. The description and skills are routing information — they are what a calling agent's model reads when deciding whether to delegate. One thing worth flagging in review is how much the generated card discloses: ADK builds a skill per tool from the docstring, so internal tool names and their parameter documentation end up served publicly unless you build the card deliberately." }] },
+    { level: "Senior", q: "Another team offers you their agent over A2A. What do you need to agree before wiring it up?",
+      strong: "Identity, authority, latency and availability, what comes back, and what happens when it changes.",
+      answer: [{ t: "p", text: "Identity first: their agent sees a call from my service, not from my user, so we have to agree how the end user's identity travels and what they do with it — because for anything touching customer data, their answers must differ per person and the protocol will not arrange that for me. Then authority: I am delegating a goal, not a call, so their agent decides what steps to take, and I need to know what it can reach when acting on my behalf. Then the operational contract — latency distribution, availability, and a timeout I set deliberately, because the default is ten minutes and that is ten minutes of a user watching a spinner. Then what comes back: their model's text lands in my model's context, so it is untrusted input regardless of how friendly the team is, and it never goes anywhere it could be read as instructions. And finally change: their agent is a model behind a prompt they can edit on a Tuesday, which is a looser contract than an API, so I want to know how I will find out and I want evaluations of my own that would catch it." }] }
   ] }
 });
