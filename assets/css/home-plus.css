@@ -1,0 +1,328 @@
+/* ============================================================================
+   TUTORIAL HUB — HOME, ENRICHED
+   ----------------------------------------------------------------------------
+   A presentation layer over home.css. It adds depth and motion to the landing
+   page without changing what any element means, and it is the last stylesheet
+   loaded so every rule here is an override by position rather than by weight.
+
+   Four rules it keeps to:
+     1. Colour still carries meaning. Each topic owns a hue (--tc) and this
+        file only spends that hue where the card already used it.
+     2. Nothing decorative may cost legibility. Patterns sit behind content at
+        low opacity and are masked away before the text begins.
+     3. Every animation is suppressed under prefers-reduced-motion, including
+        the scroll reveal, which falls back to simply being visible.
+     4. Both themes are first class: the dark values come first and the light
+        overrides sit beside them rather than in a separate file.
+   ========================================================================= */
+
+/* ===================================================== hero backdrop ==== */
+/* Three layers: a dot grid for texture, two drifting colour fields for depth,
+   and a mask that removes all of it before the headline starts. */
+
+.home-hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: -80px -40vw -40px;
+  z-index: -2;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink-4);
+  opacity: .22;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 30% 35%, #000 0%, transparent 72%);
+          mask-image: radial-gradient(ellipse 60% 70% at 30% 35%, #000 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.home-hero::after {
+  content: "";
+  position: absolute;
+  inset: -140px -30vw auto -20vw;
+  height: 460px;
+  z-index: -3;
+  background:
+    radial-gradient(38% 52% at 18% 32%, color-mix(in oklab, var(--t-violet) 42%, transparent) 0%, transparent 70%),
+    radial-gradient(34% 46% at 62% 18%, color-mix(in oklab, var(--t-cyan)   36%, transparent) 0%, transparent 72%),
+    radial-gradient(40% 50% at 84% 46%, color-mix(in oklab, var(--t-blue)   34%, transparent) 0%, transparent 70%);
+  filter: blur(60px) saturate(1.15);
+  opacity: .55;
+  pointer-events: none;
+  animation: hp-drift 26s var(--ease, ease-in-out) infinite alternate;
+}
+
+@keyframes hp-drift {
+  0%   { transform: translate3d(0, 0, 0)        scale(1);    }
+  50%  { transform: translate3d(2.5%, -1.5%, 0) scale(1.06); }
+  100% { transform: translate3d(-2%, 1.5%, 0)   scale(1.02); }
+}
+
+html[data-theme="light"] .home-hero::before { opacity: .3; }
+html[data-theme="light"] .home-hero::after  { opacity: .4; filter: blur(64px) saturate(1.05); }
+
+/* The headline's accent underline becomes a gradient, which is the one place
+   on the page where the product's own colours appear together. */
+.home-hero h1 em {
+  background: linear-gradient(90deg,
+              var(--accent) 0%,
+              color-mix(in oklab, var(--t-violet) 80%, var(--accent)) 55%,
+              color-mix(in oklab, var(--t-cyan) 70%, var(--accent)) 100%) bottom / 100% 3px no-repeat;
+  padding-bottom: 5px;
+}
+
+/* ========================================================= stat strip ==== */
+
+.hp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 1px;
+  margin: 34px 0 4px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.hp-stat {
+  background: var(--surface);
+  padding: 15px 18px 14px;
+  position: relative;
+}
+
+.hp-stat::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--sc, var(--accent)), transparent 80%);
+  opacity: .85;
+}
+
+.hp-stat-n {
+  font-family: var(--sans);
+  font-size: clamp(21px, 2.3vw, 27px);
+  font-weight: 760;
+  letter-spacing: -.028em;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.hp-stat-l {
+  margin-top: 3px;
+  font-size: 11.9px;
+  font-weight: 560;
+  letter-spacing: .012em;
+  color: var(--ink-3);
+}
+
+/* ====================================================== section marks ==== */
+/* The kicker gains a short gradient rule, so each section opens with a mark
+   rather than with text alone. */
+
+.sec-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.sec-kicker::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  flex: 0 0 auto;
+}
+
+/* ====================================================== learning path ==== */
+/* A connecting line behind the stages, and the stage number promoted to a
+   ghost numeral so the sequence reads before the words do. */
+
+.path { position: relative; }
+
+.path::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 34px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent,
+              var(--border-strong) 12%, var(--border-strong) 88%, transparent);
+  z-index: 0;
+}
+
+.path-i {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.path-i::after {
+  content: "";
+  position: absolute;
+  inset: auto -30% -60% auto;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in oklab, var(--accent) 22%, transparent), transparent 68%);
+  opacity: 0;
+  transition: opacity .25s var(--ease);
+  pointer-events: none;
+}
+
+.path-i:hover::after { opacity: 1; }
+
+.path-n {
+  position: relative;
+  font-variant-numeric: tabular-nums;
+}
+
+/* =========================================================== topics ===== */
+/* The hue each card already owns is spent three more ways: a hairline at the
+   top, a tinted tile behind the icon, and a glow that follows the cursor. */
+
+.topic {
+  position: relative;
+  overflow: hidden;
+  /* Declared first so a browser without color-mix() keeps a solid card
+     instead of dropping the background and the border together. */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--tc, var(--accent)) 26%, var(--border)),
+      var(--border) 45%) border-box;
+  border: 1px solid transparent;
+}
+
+/* The cursor spotlight. --mx/--my are set by the page script; without the
+   script the variables are simply absent and the layer stays invisible. */
+.topic::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity .22s var(--ease);
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%),
+              color-mix(in oklab, var(--tc, var(--accent)) 16%, transparent),
+              transparent 62%);
+  pointer-events: none;
+}
+
+a.topic:hover::before { opacity: 1; }
+
+/* A hairline in the topic's own hue, which is what makes the grid read as a
+   spectrum rather than as fourteen identical rectangles. */
+.topic::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--tc, var(--accent)),
+              color-mix(in oklab, var(--tc, var(--accent)) 25%, transparent) 60%,
+              transparent);
+  opacity: .9;
+}
+
+.topic.soon::after { opacity: .3; }
+
+.topic > * { position: relative; z-index: 1; }
+
+a.topic:hover {
+  transform: translateY(-3px);
+  background: var(--surface-2);
+  border-color: var(--accent-line);
+  box-shadow:
+    var(--e2),
+    0 10px 36px -18px color-mix(in oklab, var(--tc, var(--accent)) 60%, transparent);
+  background:
+    linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+    linear-gradient(135deg, var(--tc, var(--accent)),
+                    color-mix(in oklab, var(--tc, var(--accent)) 30%, var(--border)) 55%) border-box;
+}
+
+/* The icon gets a tinted tile instead of sitting bare on the card. */
+.topic-mark {
+  width: 32px; height: 32px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px;
+  background: color-mix(in oklab, var(--tc, var(--accent)) 14%, transparent);
+  border: 1px solid color-mix(in oklab, var(--tc, var(--accent)) 26%, transparent);
+  color: var(--tc, var(--accent));
+  flex: 0 0 auto;
+  transition: transform .2s var(--ease), background-color .2s var(--ease);
+}
+
+a.topic:hover .topic-mark {
+  transform: scale(1.06) rotate(-3deg);
+  background: color-mix(in oklab, var(--tc, var(--accent)) 22%, transparent);
+}
+
+.topic-go { transition: transform .2s var(--ease); }
+a.topic:hover .topic-go { transform: translateX(3px); }
+
+/* ========================================================= features ===== */
+
+.feat {
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s var(--ease), transform .2s var(--ease);
+}
+
+.feat::after {
+  content: "";
+  position: absolute;
+  inset: auto -40% -70% auto;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%);
+  pointer-events: none;
+}
+
+.feat-ic {
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  color: var(--accent-ink);
+}
+
+/* ==================================================== scroll reveal ===== */
+/* Applied by the page script. Without JS the class is never added and
+   everything renders in its final state, which is the correct fallback. */
+
+.hp-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .55s var(--ease), transform .55s var(--ease);
+}
+
+.hp-reveal.hp-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ====================================================== reduced motion === */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero::after { animation: none; }
+  .hp-reveal, .hp-reveal.hp-in { opacity: 1; transform: none; transition: none; }
+  .topic, .topic-mark, .topic-go, a.topic:hover { transition: none; }
+  a.topic:hover { transform: none; }
+}
+
+/* ============================================================ narrow ==== */
+
+@media (max-width: 640px) {
+  .path::before { display: none; }
+  .hp-stats { grid-template-columns: repeat(2, 1fr); }
+}

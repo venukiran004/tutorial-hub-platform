@@ -1,0 +1,235 @@
+/* ============================================================================
+   TUTORIAL HUB — COURSE LANDING, ENRICHED
+   ----------------------------------------------------------------------------
+   The companion to home-plus.css, for the page at the front of each course.
+   Same four rules: colour keeps its meaning, nothing decorative costs
+   legibility, every animation yields to prefers-reduced-motion, and both
+   themes are handled here rather than in a separate file.
+
+   It is loaded after course.css and refine.css, so these rules win by
+   position. Nothing here changes what an element means -- a module card is
+   still a module card, it simply reads as one from further away.
+   ========================================================================= */
+
+/* ====================================================== hero backdrop ==== */
+/* The course hero gets the same treatment as the home page: a dot grid for
+   texture and a soft colour field for depth, both masked away before the
+   headline. The hero already owns a bottom border, which stays. */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -40px -40vw 0;
+  z-index: -2;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink-4);
+  opacity: .2;
+  -webkit-mask-image: radial-gradient(ellipse 55% 75% at 28% 30%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse 55% 75% at 28% 30%, #000 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: -120px -25vw auto -18vw;
+  height: 380px;
+  z-index: -3;
+  background:
+    radial-gradient(36% 50% at 16% 34%, color-mix(in oklab, var(--accent)   38%, transparent) 0%, transparent 70%),
+    radial-gradient(32% 44% at 58% 16%, color-mix(in oklab, var(--t-violet) 30%, transparent) 0%, transparent 72%),
+    radial-gradient(36% 46% at 86% 44%, color-mix(in oklab, var(--t-cyan)   26%, transparent) 0%, transparent 70%);
+  filter: blur(58px) saturate(1.12);
+  opacity: .5;
+  pointer-events: none;
+  animation: cp-drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes cp-drift {
+  0%   { transform: translate3d(0, 0, 0)       scale(1);    }
+  50%  { transform: translate3d(2%, -1.2%, 0)  scale(1.05); }
+  100% { transform: translate3d(-1.6%, 1%, 0)  scale(1.02); }
+}
+
+html[data-theme="light"] .hero::before { opacity: .28; }
+html[data-theme="light"] .hero::after  { opacity: .34; }
+
+/* The eyebrow is the course's name badge, so it carries the accent rather
+   than reading as another grey pill. */
+.hero-eyebrow {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-ink);
+}
+
+/* ====================================================== section marks ==== */
+
+.sec-kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.sec-kicker::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  flex: 0 0 auto;
+}
+
+/* =========================================================== stats ====== */
+/* The strip already exists; it gains the hue rule and a tabular numeral so
+   the figures line up as a row of measurements. */
+
+.stat {
+  position: relative;
+}
+
+.stat::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 85%);
+  opacity: .7;
+}
+
+.stat:nth-child(2)::after { background: linear-gradient(90deg, var(--t-violet), transparent 85%); }
+.stat:nth-child(3)::after { background: linear-gradient(90deg, var(--t-cyan),   transparent 85%); }
+.stat:nth-child(4)::after { background: linear-gradient(90deg, var(--t-green),  transparent 85%); }
+.stat:nth-child(5)::after { background: linear-gradient(90deg, var(--t-amber),  transparent 85%); }
+
+/* ==================================================== the five states ==== */
+/* Each step already owns a hue through --c. This spends it on a tinted
+   numeral and a glow that appears on hover, so the strip reads as a
+   progression rather than as five equal boxes. */
+
+.ls-step {
+  overflow: hidden;
+  transition: background-color .2s ease;
+}
+
+.ls-step::after {
+  content: "";
+  position: absolute;
+  inset: auto -30% -70% auto;
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+              color-mix(in oklab, var(--c, var(--accent)) 26%, transparent), transparent 68%);
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+
+.ls-step:hover::after { opacity: 1; }
+.ls-step:hover { background: var(--surface-2); }
+
+.ls-n {
+  color: var(--c, var(--accent));
+  font-weight: 700;
+  letter-spacing: .06em;
+}
+
+.ls-step > * { position: relative; z-index: 1; }
+
+/* ===================================================== module cards ===== */
+/* The left rule the card already carries becomes the card's identity: it
+   widens on hover and the whole card lifts, so a long curriculum reads as a
+   stack of distinct modules rather than as a list. */
+
+.mcard {
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease),
+              transform .18s var(--ease);
+}
+
+.mcard::before {
+  transition: width .18s var(--ease);
+}
+
+.mcard:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow:
+    var(--e2),
+    0 10px 30px -20px color-mix(in oklab, var(--tc, var(--accent)) 55%, transparent);
+}
+
+.mcard:hover::before { width: 5px; }
+
+.mcard-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.mcard-chev { transition: transform .2s var(--ease); }
+.mcard.open .mcard-chev { transform: rotate(90deg); }
+
+/* ======================================================= fit columns ==== */
+/* The two columns are a yes and a no, so they are tinted accordingly --
+   the one place on the page where good and critical colours appear. */
+
+.split-box {
+  position: relative;
+  overflow: hidden;
+}
+
+.split-box::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+}
+
+.split-box.yes::before { background: linear-gradient(90deg, var(--good), transparent 85%); }
+.split-box.no::before  { background: linear-gradient(90deg, var(--crit), transparent 85%); }
+
+/* ============================================================ CTA ======= */
+
+.cta.primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.cta.primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%,
+              color-mix(in oklab, #fff 26%, transparent) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .55s var(--ease);
+  pointer-events: none;
+}
+
+.cta.primary:hover::after { transform: translateX(120%); }
+
+/* ==================================================== scroll reveal ===== */
+
+.cp-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .5s var(--ease), transform .5s var(--ease);
+}
+
+.cp-reveal.cp-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ====================================================== reduced motion === */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::after { animation: none; }
+  .cp-reveal, .cp-reveal.cp-in { opacity: 1; transform: none; transition: none; }
+  .mcard, .mcard:hover, .ls-step, .cta.primary::after { transition: none; }
+  .mcard:hover { transform: none; }
+  .cta.primary:hover::after { transform: translateX(-120%); }
+}

@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="../../assets/css/refine.css">
 <link rel="stylesheet" href="../../assets/css/home.css">
 <link rel="stylesheet" href="../../assets/css/aurora.css">
+<link rel="stylesheet" href="../../assets/css/course-plus.css">
 </head>
 <body>
 
@@ -136,6 +137,7 @@
 <script src="../../assets/js/render.js"></script>
 <script src="../../assets/js/diagrams.js"></script>
 <script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/reveal.js"></script>
 <script src="curriculum.js"></script>
 <script>
 (function () {
@@ -280,6 +282,9 @@
   $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
   $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
 
+  /* These two pages render their own curriculum rather than using
+     course-page.js, so the reveal hook is called here instead. */
+  EC.initReveal && EC.initReveal();
 })();
 </script>
 </body>

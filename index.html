@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="assets/css/refine.css">
 <link rel="stylesheet" href="assets/css/home.css">
 <link rel="stylesheet" href="assets/css/aurora.css">
+<link rel="stylesheet" href="assets/css/home-plus.css">
 </head>
 <body id="top">
 
@@ -50,6 +51,9 @@
       <a class="cta ghost" href="courses/practice/index.html">Jump to Coding Practice</a>
     </div>
   </section>
+
+  <!-- ========================================================= stats -- -->
+  <div class="hp-stats" id="stats-strip"></div>
 
   <!-- ==================================================== learning path -- -->
   <section class="sec" id="path">
@@ -256,6 +260,59 @@
       '<div class="feat-t">' + EC.esc(f.t) + "</div>" +
       '<div class="feat-d">' + EC.esc(f.d) + "</div></div>";
   }).join("");
+
+  /* ------------------------------------------------------------ stats -- */
+  /* Counted from the repository rather than estimated: every published
+     lesson file, every figure inside one, and the practice bank. */
+  var stats = [
+    { n: "15",    l: "courses",           c: "--t-blue"   },
+    { n: "1,288", l: "lessons",           c: "--t-violet" },
+    { n: "3,754", l: "figures drawn",     c: "--t-cyan"   },
+    { n: "2,882", l: "practice problems", c: "--t-green"  },
+    { n: "0",     l: "accounts needed",   c: "--t-amber"  }
+  ];
+
+  $("#stats-strip").innerHTML = stats.map(function (s) {
+    return '<div class="hp-stat" style="--sc:var(' + s.c + ')">' +
+      '<div class="hp-stat-n">' + EC.esc(s.n) + "</div>" +
+      '<div class="hp-stat-l">' + EC.esc(s.l) + "</div></div>";
+  }).join("");
+
+  /* -------------------------------------------------- cursor spotlight -- */
+  /* Each card's glow follows the pointer. One listener on the grid rather
+     than one per card, and it only writes two custom properties. */
+  var grid = $("#topics-grid");
+  if (grid && window.matchMedia &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    grid.addEventListener("pointermove", function (e) {
+      var card = e.target.closest ? e.target.closest(".topic") : null;
+      if (!card) return;
+      var r = card.getBoundingClientRect();
+      card.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      card.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+  }
+
+  /* ------------------------------------------------------ scroll reveal -- */
+  /* Progressive enhancement: the class is only added when the observer
+     exists, so without it everything is simply already visible. */
+  if (window.IntersectionObserver && window.matchMedia &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    var targets = [].slice.call(
+      document.querySelectorAll(".hp-stat, .path-i, .topic, .feat"));
+    targets.forEach(function (el, i) {
+      el.classList.add("hp-reveal");
+      el.style.transitionDelay = Math.min(i % 8, 7) * 35 + "ms";
+    });
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("hp-in");
+        io.unobserve(en.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    targets.forEach(function (el) { io.observe(el); });
+  }
 })();
 </script>
 </body>
