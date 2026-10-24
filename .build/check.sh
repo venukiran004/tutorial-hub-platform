@@ -34,6 +34,9 @@ for course in "${COURSES[@]}"; do
 done
 
 echo
+echo "=== the index pages and their inline scripts ==="
+python -I .build/check-pages.py
+
 echo "=== blocks that would render empty ==="
 node .build/check-blocks.js
 

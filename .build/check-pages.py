@@ -25,7 +25,9 @@ import html
 import io
 import os
 import re
+import subprocess
 import sys
+import tempfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 COURSES_DIR = os.path.join(REPO, 'courses')
@@ -42,6 +44,38 @@ notes = []
 
 def read(p):
     return io.open(p, encoding='utf-8', errors='replace').read()
+
+
+def check_inline_scripts(path, label):
+    """Run node --check over every inline <script> block in an HTML page.
+
+    These pages carry their card lists and render calls inline, so a missing
+    comma between two object literals is a syntax error that stops the whole
+    page rendering -- and it is invisible to any check that treats the HTML
+    as text. This is the check that would have caught it.
+    """
+    src = read(path)
+    found = 0
+    for m in re.finditer(r'<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>', src, re.S | re.I):
+        body = m.group(1).strip()
+        if not body:
+            continue
+        found += 1
+        line = src[:m.start()].count('\n') + 1
+        with tempfile.NamedTemporaryFile('w', suffix='.js', delete=False,
+                                         encoding='utf-8') as fh:
+            fh.write(body)
+            tmp = fh.name
+        try:
+            r = subprocess.run(['node', '--check', tmp],
+                               capture_output=True, text=True)
+            if r.returncode != 0:
+                first = [l for l in r.stderr.split('\n') if 'Error' in l]
+                problems.append('%-11s inline <script> at line %d does not parse: %s'
+                                % (label, line, (first[0] if first else '').strip()[:70]))
+        finally:
+            os.unlink(tmp)
+    return found
 
 
 def facts(course):
@@ -74,6 +108,9 @@ for c in courses:
 
     idx = read(os.path.join(cdir, 'index.html'))
     les = read(os.path.join(cdir, 'lesson.html'))
+
+    check_inline_scripts(os.path.join(cdir, 'index.html'), c)
+    check_inline_scripts(os.path.join(cdir, 'lesson.html'), c)
 
     # Pages carry the title HTML-escaped, so compare unescaped.
     name = f['title']
@@ -122,6 +159,7 @@ for n, cs in sorted(badges.items(), key=lambda kv: int(kv[0])):
 
 # ------------------------------------------------------------------ root index
 root = read(os.path.join(REPO, 'index.html'))
+n_scripts = check_inline_scripts(os.path.join(REPO, 'index.html'), 'root')
 live = re.findall(r'\{ t: "([^"]+)", ic: [^,]+, live: true, href: "([^"]+)"', root)
 linked = set()
 for title, href in live:
