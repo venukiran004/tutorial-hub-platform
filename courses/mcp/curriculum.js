@@ -31,7 +31,7 @@
 
     blurb: "MCP turns M tools times N frameworks into M plus N. This course takes the protocol apart: hosts, clients and servers; tools, resources and prompts; the initialize handshake and capability negotiation; a server written with FastMCP and the same one written against the low-level API; stdio, SSE and streamable HTTP; the injection surface, per-user identity, in-process testing, and versioning an interface other teams depend on.",
 
-    published: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4"],
+    published: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2"],
 
     modules: [
 
