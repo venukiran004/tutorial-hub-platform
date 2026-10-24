@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "A list of commands your machine runs, with no filter", "caption": "**Adding an entry is agreeing to run that command** — lesson 3.1's point about stdio, in the place people meet it most casually. `npx -y` with no version fetches and executes whatever that name resolves to today, which is the supply-chain shape of a rug pull. **And there is nowhere in this file to filter tools**, so the control lesson 4.1 identified as the effective one is simply absent: the remaining lever is the argument list, which is why `\"/Users/me/projects\"` is the entire access boundary for that server.", "cols": 3, "nodes": [{"id": "j", "label": "mcpServers in a JSON file", "sub": "StdioServerParameters, serialised", "tone": "accent"}, {"id": "c", "label": "command + args + env", "sub": "run at every host startup", "tone": "warn"}, {"id": "x", "label": "npx -y, no version", "sub": "whatever resolves today", "tone": "crit"}, {"id": "f", "label": "No tool filter anywhere", "sub": "every tool reaches the model", "tone": "crit"}, {"id": "a", "label": "So the args ARE the boundary", "sub": "one directory, not a home folder", "tone": "violet"}], "edges": [["j", "c"], ["c", "x"], ["j", "f"], ["f", "a"]], "t": "diagram", "id": "dg-5_2-01-0"},
 
+
     { t: "p", text: "Desktop hosts take a configuration file listing the servers to launch. The shape is consistent across hosts because it is the `StdioServerParameters` from lesson 5.1, serialised." },
 
     { t: "code", lang: "json", title: "the shape of the configuration",
@@ -52,6 +53,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The two controls, as constructor arguments", "caption": "**That is the real advantage of this surface: the allow-list and the prefix are in code, in version control, and visible in a pull request** where a reviewer can ask why a name is on the list. The same list buried in a configuration nobody reviews gives identical technical protection and far less assurance anyone considered it. **And note the last row:** `get_tools` is a live call at construction time, so a server that is down takes your agent with it and a slow one delays your startup.", "left": "argument", "codeW": 180, "vars": ["what it does", "why here"], "steps": [{"code": "tool_filter=['convert', 'vat']", "state": ["an allow-list, not a deny-list", "reviewable in a pull request"], "tone": "violet"}, {"code": "tool_name_prefix='finance'", "state": ["namespacing", "the three benefits from 5.1"], "changed": [0, 1], "tone": "good"}, {"code": "connection params", "state": ["command, args, env - pin the version", "same as any dependency"], "changed": [0, 1], "tone": "good"}, {"code": "await toolset.close()", "state": ["it owns a subprocess", "5.1's leak applies unchanged"], "changed": [0, 1], "tone": "crit"}, {"code": "get_tools at construction", "state": ["a live subprocess or network call", "a down server breaks startup"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-5_2-02-1"},
 
+
     { t: "p", text: "Agent frameworks wrap a connection in an object that produces tools in their own format. The names differ; the shape is consistent." },
 
     { t: "code", lang: "python", title: "what a framework's wrapper gives you",
@@ -79,6 +81,7 @@ await toolset.close()`,
 
     {"kind": "trace", "title": "The same server is a different risk in each column", "caption": "**A server with twenty tools, four of them destructive, behind a four-name allow-list is a reasonable thing to deploy; the same server in a desktop configuration exposes all twenty.** That is not an argument against desktop hosts — it is an argument for choosing servers differently depending on where they go. **For a laptop, prefer a server whose whole tool list you are comfortable with** and narrow its reach through its arguments; for a service, the allow-list lets you take a broader server and expose a slice.", "left": "decision", "codeW": 170, "vars": ["desktop JSON", "framework toolset", "your own client"], "steps": [{"code": "which tools", "state": ["NONE - no filtering", "tool_filter", "your allow-list"], "tone": "crit"}, {"code": "namespacing", "state": ["NONE", "tool_name_prefix", "component_name_hook"], "changed": [0, 1, 2], "tone": "crit"}, {"code": "pinning the version", "state": ["only if you pin the args", "connection params", "yours"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "connection lifetime", "state": ["the host's business", "yours - close it", "yours - a lifespan"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "reviewable in a pull request", "state": ["only if the file is", "YES", "YES"], "changed": [0, 1, 2], "tone": "violet"}], "t": "diagram", "id": "dg-5_2-03-2"},
 
+
     { t: "table",
       head: ["Decision", "Desktop JSON", "Framework toolset", "Your own client"],
       rows: [
@@ -102,6 +105,7 @@ await toolset.close()`,
 
     {"kind": "tree", "title": "The review question, in every column", "caption": "**Assuming the model does the worst thing available to it, what happens?** It survives the thing that defeats reading descriptions — the descriptions changing. **Note the second branch:** the worst tool that matters is the worst *reachable* one, which in a desktop configuration is every tool the server has rather than the ones you intended to use. The one-line version: connect the server you would be willing to leave connected while someone tries to talk your agent into misusing it.", "root": {"label": "Before connecting anything", "sub": "the same five questions, every surface", "tone": "accent", "children": [{"label": "What does the server act as?", "sub": "and for a desktop stdio server...", "tone": "crit", "children": [{"label": "'the person whose laptop it is'", "sub": "with all their file access", "tone": "crit"}]}, {"label": "What is the worst REACHABLE tool?", "sub": "not the worst you intend to use", "tone": "crit", "children": [{"label": "In a desktop config: all of them", "sub": "there is no filter", "tone": "crit"}]}, {"label": "Is anything irreversible?", "sub": "a delete, a payment, a deploy, a message sent", "tone": "violet", "children": [{"label": "Then the allow-list is not optional", "sub": "nor is an approval step", "tone": "violet"}]}, {"label": "Would you notice it changing?", "sub": "the rug pull", "tone": "warn", "children": [{"label": "A pinned version and a tool-list hash", "sub": "npx -y is the opposite of both", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-5_2-04-3"},
 
+
     { t: "p", text: "Lesson 1.1 asked it and lesson 4.1 sharpened it, and it is the same question whichever surface you are using: **assuming the model does the worst thing available to it, what happens?**" },
 
     { t: "dl", items: [
@@ -120,6 +124,7 @@ await toolset.close()`,
     { t: "h2", n: "05", text: "Where this leaves the course", id: "close" },
 
     {"kind": "layers", "title": "One design decision, five modules of consequence", "caption": "**The protocol itself is small: a handshake, three primitives, three transports and an error shape.** Everything that took five modules follows from one fact — a server's text enters a model's context, and a server's tools act with the server's own credentials. **So you are trusting someone else's prose inside your prompt and someone else's access behind your tool calls**, and every control in the course is an answer to one half of that sentence.", "items": [{"label": "The protocol", "sub": "a handshake, three primitives, three transports", "tone": "good", "side": "module 1"}, {"label": "The contract lives in the schema, not the docstring", "sub": "and errors are results that must not carry your exception text", "tone": "accent", "side": "module 2"}, {"label": "The transport decides what you are responsible for", "sub": "stdio gives isolation free; HTTP takes it back", "tone": "accent", "side": "module 3"}, {"label": "Publishing is a product, and identity is opt-in", "sub": "versions, logs, limits, deprecation by log lines", "tone": "violet", "side": "module 4"}, {"label": "The controls are all client-side code", "sub": "allow-list, prefix, pinned version, scoped credential", "tone": "violet", "side": "module 5"}, {"label": "And with one consumer you own both ends", "sub": "a shared library has none of these obligations", "tone": "teal", "side": "lesson 1.1"}], "t": "diagram", "id": "dg-5_2-05-4"},
+
 
     { t: "p", text: "The protocol itself is small: a handshake, three primitives, three transports and an error shape. Everything that took five modules is the consequence of one design decision — **that a server's text enters a model's context and a server's tools act with the server's own credentials.**" },
 
@@ -143,7 +148,25 @@ await toolset.close()`,
           { t: "p", text: "The version question is the one that changes behaviour for most people. A configuration that fetches the latest package at every startup has no pinning, no reproducibility and no defence against a changed tool list, and the fix is a version string in the arguments — the same discipline as any other dependency, applied to something that does not look like one." },
           { t: "p", text: "The verdict is deliberately uncomfortable to write down, and that is its value: it forces the assumption into the open. Most teams have never stated what they are assuming about a server they connected, and writing one line makes it reviewable by someone else." }
         ]
-      } }
+      } },
+
+    { t: "h2", n: "06", text: "Finding servers, and naming the hosts", id: "finding" },
+
+    {"kind": "flow", "title": "A registry is discovery, not review", "caption": "**A listing says a server exists and is described — not that anyone reviewed what its tools do or what credentials it holds.** And the rug pull from lesson 4.1 gets *easier* with a registry rather than harder, because the install is one line and the version is often implicit. **So a registry raises the value of the two controls that notice a server changing after you looked at it:** a pinned version, and a hash of the tool list. Treat it the way you treat a package index.", "cols": 3, "nodes": [{"id": "r", "label": "The MCP Registry", "sub": "finding a server is a lookup", "tone": "good"}, {"id": "n", "label": "Not a trust signal", "sub": "nobody reviewed the tools", "tone": "crit"}, {"id": "e", "label": "One-line install, implicit version", "sub": "the rug pull gets easier", "tone": "crit"}, {"id": "p", "label": "So pin the version", "sub": "and hash the tool list", "tone": "violet"}, {"id": "q", "label": "And section 04's questions still apply", "sub": "what it acts as, the worst reachable tool", "tone": "violet"}], "edges": [["r", "n"], ["n", "e"], ["e", "p"], ["p", "q"]], "t": "diagram", "id": "dg-5_2-06-5"},
+
+    { t: "p", text: "Two practical things this course has referred to generically and should name." },
+
+    { t: "dl", items: [
+      ["The MCP Registry", "A catalogue of published servers, so finding one is a lookup rather than a search through repositories. It makes discovery easier and **it is not a trust signal** — a listing says a server exists and is described, not that anyone reviewed what its tools do or what credentials it holds. Every question in section 04 still applies to a server you found in a registry, and the pinning question applies harder, because a registry makes it easy to install something whose name you read once."],
+      ["The agent frameworks, by name", "`McpToolset` in Google's ADK and the MCP adapters for LangChain and LangGraph are the two you are most likely to meet, and both have the shape in section 02: a connection, a tool filter and a prefix, constructed once and closed at shutdown. The names differ and the four decisions do not."],
+      ["Desktop hosts", "Claude Desktop is the common one and the configuration shape in section 01 is shared by the others, including editor integrations. The thing that varies is where the file lives, not what it contains — and none of them, at the time of writing, offers a tool filter."]
+    ] },
+
+    { t: "callout", kind: "warn", title: "A registry listing is a discovery mechanism, not a review",
+      body: [
+        { t: "p", text: "The rug pull in lesson 4.1 gets easier rather than harder with a registry, because the install is one line and the version is often implicit. **So the registry raises the value of pinning a version and of hashing the tool list**, which are the two controls that notice a server changing after you looked at it." },
+        { t: "p", text: "The useful habit: treat a registry the way you treat a package index. It tells you something exists and roughly what it claims to do. What it acts as, what its worst tool can reach, and whether you would notice it changing are still yours to establish." }
+      ] },
 
   ],
 

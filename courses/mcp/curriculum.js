@@ -31,7 +31,7 @@
 
     blurb: "MCP turns M tools times N frameworks into M plus N. This course takes the protocol apart: hosts, clients and servers; tools, resources and prompts; the initialize handshake and capability negotiation; a server written with FastMCP and the same one written against the low-level API; stdio, SSE and streamable HTTP; the injection surface, per-user identity, in-process testing, and versioning an interface other teams depend on.",
 
-    published: ["1.1", "1.2", "1.3", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2"],
+    published: ["1.1", "1.2", "1.3", "1.4", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2"],
 
     modules: [
 
@@ -51,11 +51,14 @@
             summary: "The M times N integration problem and how a protocol turns it into M plus N; host, client and server distinguished precisely; the one-client-per-server rule; and an honest list of what MCP does not solve.",
             keywords: ["mcp", "model context protocol", "host", "client", "server", "integration", "n times m"] },
           { id: "1.2", title: "The Handshake, Executed", difficulty: "core", minutes: 30, tier: "must",
-            summary: "A real initialize exchange: protocol revision 2025-11-25, serverInfo, instructions, and the capability flags both sides declare — plus what a client must not call because the server never advertised it.",
+            summary: "A real initialize exchange: protocol revision 2025-11-25, serverInfo, instructions and the capability flags both sides declare — then the whole method catalogue, the JSON-RPC error codes beneath isError, and the _meta field that carries progress tokens and cancellation.",
             keywords: ["initialize", "handshake", "capabilities", "protocol version", "serverinfo", "negotiation", "listchanged"] },
           { id: "1.3", title: "Tools, Resources and Prompts", difficulty: "core", minutes: 32, tier: "must",
             summary: "Three primitives and the question each answers: a tool is model-controlled, a resource is application-controlled, a prompt is user-controlled. Resource templates, URI schemes, and why putting read-only data behind a tool wastes a model call.",
-            keywords: ["tools", "resources", "prompts", "resource template", "uri", "model-controlled", "primitives"] }
+            keywords: ["tools", "resources", "prompts", "resource template", "uri", "model-controlled", "primitives"] },
+          { id: "1.4", title: "The Server-to-Client Direction", difficulty: "advanced", minutes: 30, tier: "should",
+            summary: "Sampling, roots and elicitation — the three requests a server makes of the client. All three executed against a client that supplies the callbacks, and all three failing with isError against one that does not, which makes them a hard host dependency. Plus what each one hands over: your model budget, your paths, and a prompt in front of your user.",
+            keywords: ["sampling", "roots", "elicitation", "createmessage", "callback", "client capabilities", "degraded", "phishing"] }
         ]
       },
 

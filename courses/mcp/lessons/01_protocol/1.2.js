@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One round trip, five things settled", "caption": "**Capabilities flow both ways, which is the half most summaries omit** — the client declares whether it supports sampling, roots and elicitation, and a server that wants to ask the user something needs the client to have said yes. Note what the version field is worth: `1.28.1` is the SDK's number, and since `FastMCP` has no `version` parameter, every server built on that SDK reports it.", "left": "field", "codeW": 170, "vars": ["value measured", "what it is for"], "steps": [{"code": "protocolVersion", "state": ["2025-11-25", "a date, not a semantic version"], "tone": "violet"}, {"code": "serverInfo.name", "state": ["finance", "appears in the host UI and your logs"], "changed": [0, 1], "tone": "good"}, {"code": "serverInfo.version", "state": ["1.28.1 - the SDK's", "says nothing about the server"], "changed": [0, 1], "tone": "crit"}, {"code": "instructions", "state": ["'Currency conversion and VAT...'", "the server describing itself"], "changed": [0, 1], "tone": "accent"}, {"code": "capabilities", "state": ["tools, resources, prompts", "a contract on what may be called"], "changed": [0, 1], "tone": "violet"}, {"code": "the client's own capabilities", "state": ["sampling, roots, elicitation", "sent the other way"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-1_2-01-0"},
 
+
     { t: "p", text: "`session.initialize()` performs the handshake and returns what the server said. Here is a real one, against a small server offering all three primitives." },
 
     { t: "code", lang: "python", title: "the handshake, against a live server",
@@ -69,6 +70,7 @@ capabilities :
 
     {"kind": "trace", "title": "Every flag is a promise, and omitting one restricts your callers", "caption": "**All three `listChanged` flags came back False, which is the honest answer** for a server that registers its tools at import time and never changes them. **Declaring `listChanged=True` and never sending the notification is worse than leaving it off:** a client that trusted the flag caches the list for the whole connection and has no reason to re-check, so a tool added an hour later is invisible to it — and nothing errors, so the symptom is a model that cannot use a tool plainly present in your source.", "left": "flag", "codeW": 170, "vars": ["declaring it promises", "omitting it means"], "steps": [{"code": "tools", "state": ["tools/list and tools/call work", "a client must not call them"], "tone": "good"}, {"code": "tools.listChanged", "state": ["you WILL notify on change", "clients may cache for the connection"], "changed": [0, 1], "tone": "crit"}, {"code": "resources", "state": ["list and read work", "no resource reads"], "changed": [0, 1], "tone": "good"}, {"code": "resources.subscribe", "state": ["per-resource change notices", "clients must re-read"], "changed": [0, 1], "tone": "accent"}, {"code": "prompts", "state": ["list and get work", "no prompt requests"], "changed": [0, 1], "tone": "good"}, {"code": "logging", "state": ["the client can surface your logs", "your logs are yours alone"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-1_2-02-1"},
 
+
     { t: "p", text: "The capability object is small and each flag has a consequence. **Declaring one is a promise; omitting one is a restriction on your callers.**" },
 
     { t: "table",
@@ -94,6 +96,7 @@ capabilities :
     { t: "h2", n: "03", text: "The instructions field", id: "instructions" },
 
     {"kind": "flow", "title": "instructions describes the server; a tool description describes one operation", "caption": "**So it is the right home for what no schema can say:** how fresh the data is, what it must not be used for, and a convention that holds across every tool. Two things follow from the host putting that string into a model's context. **It is a hint rather than a control** — a host may ignore, truncate or merely display it, so no rule you depend on can live there. **And from the consumer's side it is someone else's prose entering your prompt**, which makes the handshake an injection surface before a single tool has been called.", "cols": 3, "nodes": [{"id": "s", "label": "The server sends instructions", "sub": "scope, freshness, conventions", "tone": "accent"}, {"id": "h", "label": "The host puts it in the model's context", "sub": "beside the tool declarations", "tone": "good"}, {"id": "g", "label": "Good: what a schema cannot say", "sub": "'ECB daily, not live market rates'", "tone": "good"}, {"id": "b", "label": "Bad: a rule you depend on", "sub": "the host may ignore it entirely", "tone": "crit"}, {"id": "u", "label": "And as a consumer: untrusted text", "sub": "an injection surface at handshake", "tone": "crit"}], "edges": [["s", "h"], ["h", "g"], ["h", "b"], ["h", "u"]], "t": "diagram", "id": "dg-1_2-03-2"},
+
 
     { t: "p", text: "`instructions` is the server describing **itself**, as opposed to a tool description which describes one operation. The host decides what to do with it, and typically puts it into the model's context alongside the tool declarations." },
 
@@ -124,6 +127,7 @@ mcp = FastMCP("finance", instructions="This server provides finance tools.")`,
 
     {"kind": "tree", "title": "A revision mismatch should fail loudly, at initialize", "caption": "**The expensive outcome is a connection that proceeds hopefully and breaks halfway through a tool call**, where the error surfaces far from its cause and reads like a bug in your own code. Failing at `initialize` is cheap and legible. **And pin the SDK rather than the revision:** a server upgraded across an SDK major can change the revision it offers with no change to your code, which is exactly the kind of movement a handshake log line catches.", "root": {"label": "The server answered with a revision", "sub": "is it one you offered?", "tone": "accent", "children": [{"label": "Older than yours", "sub": "it chose from what you sent", "tone": "good", "children": [{"label": "Proceed on that revision", "sub": "later features are simply absent", "tone": "good"}]}, {"label": "One you never offered", "sub": "it did not negotiate", "tone": "crit", "children": [{"label": "Refuse the connection", "sub": "or fail mid-call later", "tone": "crit"}]}, {"label": "No agreement possible", "sub": "-", "tone": "warn", "children": [{"label": "Fail at initialize, loudly", "sub": "and log name, revision, flags", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-1_2-04-3"},
 
+
     { t: "p", text: "MCP revisions are dated — `2025-11-25` in the trace above — and they change. The client sends the newest revision it supports, and the server replies with the revision it will actually use, which may be older." },
 
     { t: "dl", items: [
@@ -141,6 +145,7 @@ mcp = FastMCP("finance", instructions="This server provides finance tools.")`,
     { t: "h2", n: "05", text: "Reporting a version of your own", id: "version" },
 
     {"kind": "trace", "title": "The one handshake field the decorator API cannot set", "caption": "**`FastMCP.__init__` has no `version` parameter** — checked against the installed SDK — while the low-level `Server` has taken one all along. FastMCP builds that server internally without passing it through, so every FastMCP server reports the version of the `mcp` package it was built against. **Assigning to the private `_mcp_server.version` works and the client sees it**, at the price of depending on an underscore attribute an SDK upgrade is entitled to break.", "left": "route", "codeW": 190, "vars": ["what the client sees", "cost"], "steps": [{"code": "FastMCP(name=...)", "state": ["version='1.28.1' - the SDK's", "no way to express your release"], "tone": "crit"}, {"code": "mcp._mcp_server.version = '4.2.0'", "state": ["version='4.2.0'", "a private attribute, unsupported"], "changed": [0, 1], "tone": "warn"}, {"code": "the low-level Server(version=...)", "state": ["whatever you pass", "you lose the decorators"], "changed": [0, 1], "tone": "accent"}, {"code": "and whether to bother", "state": ["-", "only if others consume it"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-1_2-05-4"},
+
 
     { t: "p", text: "The version field is the one piece of the handshake you cannot set through the decorator API, and the omission is easy to miss until a consumer asks you to version your server." },
 
@@ -191,7 +196,90 @@ ver_server.py        -> name='versioned' version='4.2.0'`,
           { t: "p", text: "Part (c) is the argument for honest flags stated as an experiment. The caching client never re-fetches, so a tool added an hour later is invisible to it for the life of the connection — and because nothing errors, the symptom is a model that cannot use a tool everyone can see in the server's source." },
           { t: "p", text: "Part (d) usually surprises people: the default `serverInfo.version` is the SDK's, which means every server built on that SDK reports the same number. If you expect consumers to pin or alert on your version, you have to set it." }
         ]
-      } }
+      } },
+
+    { t: "h2", n: "06", text: "The whole method catalogue", id: "methods" },
+
+    {"kind": "trace", "title": "Thirty-one method names, in four groups", "caption": "**You have already met most of the ones that matter**, and the groups are what the list is for. The three server-to-client requests are lesson 1.4's subject. The `notifications/*` family is fire-and-forget with no reply. **And `tasks/*` is a newer surface for work that outlives a request** — treat it as optional and check the capability rather than assuming, exactly as for sampling.", "left": "group", "codeW": 180, "vars": ["methods", "note"], "steps": [{"code": "the handshake", "state": ["initialize, notifications/initialized", "once, first"], "tone": "good"}, {"code": "the three primitives", "state": ["tools/*, resources/*, prompts/*", "what lesson 1.3 covered"], "changed": [0, 1], "tone": "good"}, {"code": "server-to-client", "state": ["roots/list, sampling/createMessage, elicitation/create", "lesson 1.4 - a host dependency"], "changed": [0, 1], "tone": "violet"}, {"code": "notifications", "state": ["progress, cancelled, *_list_changed, message", "no reply - fire and forget"], "changed": [0, 1], "tone": "accent"}, {"code": "odds and ends", "state": ["ping, logging/setLevel, completion/complete", "ping is the honest liveness check"], "changed": [0, 1], "tone": "accent"}, {"code": "tasks/*", "state": ["get, list, cancel, result", "newer; not every host has it"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_2-06-5"},
+
+    { t: "p", text: "Having read a handshake, the rest of the protocol is a short list. Every method name in the SDK's type module, grouped by who sends it." },
+
+    { t: "code", lang: "python", title: "every method the SDK knows about",
+      code: `import inspect
+import mcp.types as T
+
+names = set()
+for n in dir(T):
+    c = getattr(T, n)
+    if inspect.isclass(c) and "method" in getattr(c, "model_fields", {}):
+        default = getattr(c.model_fields["method"], "default", None)
+        if isinstance(default, str):
+            names.add(default)
+for m in sorted(names):
+    print(" ", m)`,
+      out: `  completion/complete              ping
+  elicitation/create               prompts/get
+  initialize                       prompts/list
+  logging/setLevel                 resources/list
+  roots/list                       resources/read
+  sampling/createMessage           resources/subscribe
+  tasks/cancel                     resources/templates/list
+  tasks/get                        resources/unsubscribe
+  tasks/list                       tools/call
+  tasks/result                     tools/list
+
+  notifications/cancelled          notifications/initialized
+  notifications/message            notifications/progress
+  notifications/prompts/list_changed
+  notifications/resources/list_changed
+  notifications/resources/updated
+  notifications/roots/list_changed
+  notifications/tasks/status
+  notifications/tools/list_changed
+  notifications/elicitation/complete`,
+      caption: "**Thirty-one names, and you have already met most of the ones that matter.** Three groups are worth noticing: `roots/list`, `sampling/createMessage` and `elicitation/create` are the server-to-client requests from lesson 1.4; the `notifications/*` family is fire-and-forget with no reply; and `tasks/*` is the newer long-running-work surface, which not every host implements." },
+
+    { t: "dl", items: [
+      ["`ping`", "Exactly what it looks like, and the only honest liveness check at the protocol level. Worth knowing when you are deciding what a health check should call (lesson 5.1)."],
+      ["`completion/complete`", "Argument autocompletion — a host asking the server for candidate values for a prompt argument or a resource template parameter. A nicety, and the reason your resource template parameters deserve good names."],
+      ["`logging/setLevel`", "The client turning your server's log verbosity up or down at runtime, which only works if you declared the `logging` capability (section 02)."],
+      ["`notifications/cancelled`", "The caller abandoning a request in flight. A long-running tool that ignores it keeps working on an answer nobody will read."],
+      ["`tasks/*`", "A newer surface for work that outlives a request. Treat it as optional: check the capability rather than assuming, exactly as in lesson 1.4."]
+    ] },
+
+    { t: "h2", n: "07", text: "Errors on the wire, and the metadata beside them", id: "wire" },
+
+    {"kind": "layers", "title": "Two error layers, and the one most people conflate", "caption": "**A JSON-RPC error means the request failed; an `isError` result means the request succeeded and the tool did not.** That is why lesson 2.3's measurement showed an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND` — `tools/call` was a perfectly valid method call, and the tool inside it was the problem. **Keeping them apart matters when reading a trace:** a −32601 is a client bug or a version mismatch, and an `isError` is a conversation about the tool.", "items": [{"label": "-32700 PARSE_ERROR", "sub": "the frame was not JSON", "tone": "crit", "side": "transport"}, {"label": "-32600 INVALID_REQUEST / -32601 METHOD_NOT_FOUND", "sub": "a client bug, or a revision mismatch", "tone": "crit", "side": "protocol"}, {"label": "-32602 INVALID_PARAMS / -32603 INTERNAL_ERROR", "sub": "JSON-RPC's own band, inherited unchanged", "tone": "warn", "side": "protocol"}, {"label": "-32000 CONNECTION_CLOSED, -32042 URL_ELICITATION_REQUIRED", "sub": "MCP's own two, outside the band", "tone": "accent", "side": "MCP"}, {"label": "a result with isError: True", "sub": "the call worked; the tool did not", "tone": "violet", "side": "your tool"}, {"label": "a result with isError: False and an error payload", "sub": "the tool worked; the answer is a refusal", "tone": "violet", "side": "your logic"}], "t": "diagram", "id": "dg-1_2-07-6"},
+
+    { t: "p", text: "Lesson 2.3 covers the errors a *tool* produces. These are the layer beneath: JSON-RPC's own error codes, which describe a failure of the request rather than of your logic." },
+
+    { t: "code", lang: "python", title: "the codes the SDK defines",
+      code: `import mcp.types as T
+for n in sorted(dir(T)):
+    v = getattr(T, n)
+    if isinstance(v, int) and n.isupper():
+        print("  %-28s %s" % (n, v))`,
+      out: `  CONNECTION_CLOSED            -32000
+  INTERNAL_ERROR               -32603
+  INVALID_PARAMS               -32602
+  INVALID_REQUEST              -32600
+  METHOD_NOT_FOUND             -32601
+  PARSE_ERROR                  -32700
+  URL_ELICITATION_REQUIRED     -32042`,
+      caption: "**The −32600 to −32700 band is JSON-RPC's own**, inherited unchanged: a malformed frame, an unknown method, bad parameters, an internal failure. The two outside it are MCP's: `CONNECTION_CLOSED` for a transport that went away, and `URL_ELICITATION_REQUIRED` for a server that needs the user to visit a URL before it can continue." },
+
+    { t: "callout", kind: "insight", title: "These are a different layer from isError",
+      body: [
+        { t: "p", text: "A JSON-RPC error means **the request failed**: the method does not exist, the frame did not parse, the connection died. A tool result with `isError: True` means the request succeeded and the tool did not — which is why lesson 2.3's measurement showed an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND`. `tools/call` was a perfectly valid method call; the tool inside it was the problem." },
+        { t: "p", text: "Keeping the two apart matters when you are reading a trace: a −32601 is a client bug or a version mismatch, and an `isError` result is a conversation about the tool." }
+      ] },
+
+    { t: "dl", items: [
+      ["`_meta`", "A free-form field on requests and results, reserved for out-of-band information the protocol does not model. It is where progress tokens travel, and where a host may stash its own correlation ids — so do not invent your own top-level fields when `_meta` already exists for exactly that."],
+      ["Progress tokens", "A caller that wants progress updates puts a token in `_meta`; a server that got one can send `notifications/progress` against it. **No token means no progress reporting**, which is why `ctx.report_progress` quietly does nothing for some callers (lesson 2.1)."],
+      ["Cancellation", "`notifications/cancelled` names a request the caller has abandoned. There is no obligation to stop, and a tool that holds a database connection for two minutes after the caller left is the reason to care."],
+      ["Batching, and its removal", "Early revisions allowed several JSON-RPC messages in one array. It was removed because it complicated every implementation and solved a problem nobody had — so if you meet batching in older material, it is history rather than something to build on."]
+    ] },
 
   ],
 

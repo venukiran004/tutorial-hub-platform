@@ -1,0 +1,120 @@
+{
+ "1.2": [
+  {"after": "06",
+   "d": {"kind": "trace",
+         "title": "Thirty-one method names, in four groups",
+         "caption": "**You have already met most of the ones that matter**, and the groups are what the list is for. The three server-to-client requests are lesson 1.4's subject. The `notifications/*` family is fire-and-forget with no reply. **And `tasks/*` is a newer surface for work that outlives a request** — treat it as optional and check the capability rather than assuming, exactly as for sampling.",
+         "left": "group", "codeW": 180,
+         "vars": ["methods", "note"],
+         "steps": [
+          {"code": "the handshake", "state": ["initialize, notifications/initialized", "once, first"], "tone": "good"},
+          {"code": "the three primitives", "state": ["tools/*, resources/*, prompts/*", "what lesson 1.3 covered"], "changed": [0, 1], "tone": "good"},
+          {"code": "server-to-client", "state": ["roots/list, sampling/createMessage, elicitation/create", "lesson 1.4 - a host dependency"], "changed": [0, 1], "tone": "violet"},
+          {"code": "notifications", "state": ["progress, cancelled, *_list_changed, message", "no reply - fire and forget"], "changed": [0, 1], "tone": "accent"},
+          {"code": "odds and ends", "state": ["ping, logging/setLevel, completion/complete", "ping is the honest liveness check"], "changed": [0, 1], "tone": "accent"},
+          {"code": "tasks/*", "state": ["get, list, cancel, result", "newer; not every host has it"], "changed": [0, 1], "tone": "warn"}]}},
+  {"after": "07",
+   "d": {"kind": "layers",
+         "title": "Two error layers, and the one most people conflate",
+         "caption": "**A JSON-RPC error means the request failed; an `isError` result means the request succeeded and the tool did not.** That is why lesson 2.3's measurement showed an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND` — `tools/call` was a perfectly valid method call, and the tool inside it was the problem. **Keeping them apart matters when reading a trace:** a −32601 is a client bug or a version mismatch, and an `isError` is a conversation about the tool.",
+         "items": [
+          {"label": "-32700 PARSE_ERROR", "sub": "the frame was not JSON", "tone": "crit", "side": "transport"},
+          {"label": "-32600 INVALID_REQUEST / -32601 METHOD_NOT_FOUND", "sub": "a client bug, or a revision mismatch", "tone": "crit", "side": "protocol"},
+          {"label": "-32602 INVALID_PARAMS / -32603 INTERNAL_ERROR", "sub": "JSON-RPC's own band, inherited unchanged", "tone": "warn", "side": "protocol"},
+          {"label": "-32000 CONNECTION_CLOSED, -32042 URL_ELICITATION_REQUIRED", "sub": "MCP's own two, outside the band", "tone": "accent", "side": "MCP"},
+          {"label": "a result with isError: True", "sub": "the call worked; the tool did not", "tone": "violet", "side": "your tool"},
+          {"label": "a result with isError: False and an error payload", "sub": "the tool worked; the answer is a refusal", "tone": "violet", "side": "your logic"}]}}
+ ],
+
+ "1.4": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three requests, and what the server is borrowing",
+         "caption": "**A server holds no model, has no user and sees no filesystem beyond its own**, and each of these asks the client for exactly one of those. The rationale is the same throughout: the host already has the model, the user and the file access, so the server asks rather than acquiring its own API key, prompt surface or paths. **Which is a good design, and also why these are the three most consequential capabilities in the protocol** — section 05.",
+         "left": "request", "codeW": 190,
+         "vars": ["it asks for", "so the server need not"],
+         "steps": [
+          {"code": "sampling/createMessage", "state": ["run this completion for me", "hold an API key or a bill"], "tone": "violet"},
+          {"code": "roots/list", "state": ["which directories may I look at?", "guess at a boundary"], "changed": [0, 1], "tone": "good"},
+          {"code": "elicitation/create", "state": ["ask the user this", "build a UI of its own"], "changed": [0, 1], "tone": "violet"},
+          {"code": "and all three", "state": ["the host decides, per client", "the control is the consumer's"], "changed": [0, 1], "tone": "accent"}]}},
+  {"after": "02",
+   "d": {"kind": "flow",
+         "title": "The server's end: ctx.session, and ctx.elicit",
+         "caption": "**`ctx.elicit` takes a Pydantic schema**, so the user's answer arrives typed rather than as free text — the same contract idea as lesson 2.2's output schemas, pointed at a person instead of a model. Sampling and roots go through `ctx.session`, which is the server's end of the connection. **Note what the tool returns when the user says no:** the schema's own fields carry the answer, so the tool branches on `proceed` rather than on the request having completed.",
+         "cols": 3,
+         "nodes": [
+          {"id": "s", "label": "ctx.session.create_message(...)", "sub": "SamplingMessage, not a dict", "tone": "violet"},
+          {"id": "r", "label": "ctx.session.list_roots()", "sub": "returns the client's declared roots", "tone": "good"},
+          {"id": "e", "label": "ctx.elicit(message=, schema=)", "sub": "a Pydantic model, so the answer is typed", "tone": "violet"},
+          {"id": "a", "label": "Check action AND the fields", "sub": "accept means they answered", "tone": "crit"},
+          {"id": "d", "label": "Then branch on proceed", "sub": "which is what they actually said", "tone": "crit"}],
+         "edges": [["s", "a"], ["r", "a"], ["e", "a"], ["a", "d"]]}},
+  {"after": "03",
+   "d": {"kind": "trace",
+         "title": "Passing the callback is what declares the capability",
+         "caption": "**There is no separate flag to set** — the client supplies a function and the capability is declared for it. Each callback is the host's decision rather than the server's, which is the whole design: the server asks and the host answers however it chooses. **And read the elicitation result carefully:** `action=accept` means the user engaged with the dialogue, while `proceed: false` is their answer, so a server checking only `action` has read a refusal as consent.",
+         "left": "the client passes", "codeW": 190,
+         "vars": ["the server can then call", "what the host controls"],
+         "steps": [
+          {"code": "sampling_callback", "state": ["create_message", "which model, and the budget"], "tone": "violet"},
+          {"code": "list_roots_callback", "state": ["list_roots", "which paths it admits to"], "changed": [0, 1], "tone": "good"},
+          {"code": "elicitation_callback", "state": ["ctx.elicit", "how the prompt is rendered"], "changed": [0, 1], "tone": "violet"},
+          {"code": "nothing", "state": ["none of them", "the capability is simply absent"], "changed": [0, 1], "tone": "crit"},
+          {"code": "and the measured answer", "state": ["action=accept, proceed=false", "answered, and said no"], "changed": [0, 1], "tone": "crit"}]}},
+  {"after": "04",
+   "d": {"kind": "trace",
+         "title": "No callbacks: three failed calls, not three degraded ones",
+         "caption": "**Not a reduced result — a failed call.** The tool raised, the error reached the caller as `isError: True`, and the message names the missing capability. So a server built on any of these three does not work at all for a host that has not implemented them, which is the fact that decides whether you can use them. **Tools and resources work everywhere; these work where the host chose to support them**, and host support is much thinner here than for anything in lesson 1.3.",
+         "left": "tool", "codeW": 170,
+         "vars": ["isError", "message"],
+         "steps": [
+          {"code": "summarise", "state": ["True", "Sampling not supported"], "tone": "crit"},
+          {"code": "where_may_i_look", "state": ["True", "List roots not supported"], "changed": [1], "tone": "crit"},
+          {"code": "delete_everything", "state": ["True", "Elicitation not supported"], "changed": [1], "tone": "crit"},
+          {"code": "so check first", "state": ["-", "client_params.capabilities.sampling"], "changed": [0, 1], "tone": "good"},
+          {"code": "and degrade", "state": ["False", "a truncation, with degraded: true"], "changed": [0, 1], "tone": "violet"}]}},
+  {"after": "05",
+   "d": {"kind": "trace",
+         "title": "What each one hands over",
+         "caption": "**Granting sampling is materially like handing over an API key:** the server chooses the prompt, it runs on your model, and it is billed to you — which also runs lesson 4.1's injection problem in both directions, since your model reads text the server composed and the result returns to the server. **Elicitation is the one that borrows your credibility:** the message is the server's text rendered by your interface, so *“enter your API key to continue”* is a phishing prompt with your branding around it.",
+         "left": "capability", "codeW": 150,
+         "vars": ["the server gains", "the cost to you", "grant it to"],
+         "steps": [
+          {"code": "sampling", "state": ["your model and budget", "its prompts, your tokens", "servers you would give a key"], "tone": "crit"},
+          {"code": "elicitation", "state": ["a prompt in your UI", "your apparent authority", "servers you would vouch for"], "changed": [0, 1, 2], "tone": "crit"},
+          {"code": "roots", "state": ["your directory boundaries", "path disclosure only", "freely, and narrowly"], "changed": [0, 1, 2], "tone": "good"},
+          {"code": "the honest default", "state": ["none of the three", "-", "then roots when needed"], "changed": [0, 1, 2], "tone": "violet"}]}}
+ ],
+
+ "4.2": [
+  {"after": "06",
+   "d": {"kind": "trace",
+         "title": "Six RFCs, and why you should not implement an authorisation server",
+         "caption": "**An MCP server is an OAuth 2.1 resource server: it validates tokens and does not issue them.** Point `issuer_url` at the identity provider your organisation already runs, implement `TokenVerifier` against its public keys, set `resource_server_url` so the audience check has something to compare — and every hard part stays with the provider. **Note the last row:** resource indicators are what make the audience check meaningful, so skipping that check discards most of what these RFCs buy you.",
+         "left": "piece", "codeW": 190,
+         "vars": ["what it gives you"],
+         "steps": [
+          {"code": "you are a RESOURCE server", "state": ["validate tokens; never issue them"], "tone": "violet"},
+          {"code": "RFC 9728 protected resource metadata", "state": ["a client discovers which auth server to use"], "changed": [0], "tone": "good"},
+          {"code": "RFC 8414 auth server metadata", "state": ["and then discovers its endpoints"], "changed": [0], "tone": "good"},
+          {"code": "RFC 7591 dynamic registration", "state": ["optional - a client registers itself"], "changed": [0], "tone": "warn"},
+          {"code": "OAuth 2.1, not 2.0", "state": ["PKCE required; implicit and password gone"], "changed": [0], "tone": "accent"},
+          {"code": "RFC 8707 resource indicators", "state": ["a token minted for YOU - the audience check"], "changed": [0], "tone": "crit"}]}}
+ ],
+
+ "5.2": [
+  {"after": "06",
+   "d": {"kind": "flow",
+         "title": "A registry is discovery, not review",
+         "caption": "**A listing says a server exists and is described — not that anyone reviewed what its tools do or what credentials it holds.** And the rug pull from lesson 4.1 gets *easier* with a registry rather than harder, because the install is one line and the version is often implicit. **So a registry raises the value of the two controls that notice a server changing after you looked at it:** a pinned version, and a hash of the tool list. Treat it the way you treat a package index.",
+         "cols": 3,
+         "nodes": [
+          {"id": "r", "label": "The MCP Registry", "sub": "finding a server is a lookup", "tone": "good"},
+          {"id": "n", "label": "Not a trust signal", "sub": "nobody reviewed the tools", "tone": "crit"},
+          {"id": "e", "label": "One-line install, implicit version", "sub": "the rug pull gets easier", "tone": "crit"},
+          {"id": "p", "label": "So pin the version", "sub": "and hash the tool list", "tone": "violet"},
+          {"id": "q", "label": "And section 04's questions still apply", "sub": "what it acts as, the worst reachable tool", "tone": "violet"}],
+         "edges": [["r", "n"], ["n", "e"], ["e", "p"], ["p", "q"]]}}
+ ]
+}

@@ -22,6 +22,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "The wrong fix, which reads as reasonable API work", "caption": "**`get_orders(user_id: str)` is not identity, it is a parameter** — and a parameter is something the model fills in, from a conversation an attacker may be participating in. Any user, account or tenant id in a signature that decides whose data comes back makes your access control a prompt-injection target. **It is the most common serious mistake in MCP server design**, precisely because it looks like ordinary API design, and the server feels finished.", "cols": 3, "nodes": [{"id": "d", "label": "A server holds its own credentials", "sub": "one identity, serving everyone", "tone": "warn"}, {"id": "n", "label": "Nothing in tools/call says who prompted it", "sub": "the protocol carries no user", "tone": "warn"}, {"id": "p", "label": "So: get_orders(user_id: str)", "sub": "make the caller say who they are", "tone": "crit"}, {"id": "m", "label": "But the MODEL fills that in", "sub": "from a conversation it does not control", "tone": "crit"}, {"id": "f", "label": "If a tool takes an id that decides whose data", "sub": "it has no access control at all", "tone": "crit"}], "edges": [["d", "n"], ["n", "p"], ["p", "m"], ["m", "f"]], "t": "diagram", "id": "dg-4_2-01-0"},
 
+
     { t: "p", text: "A server holds its own credentials. Two different people talking to your agent reach the server through the same connection, with the same token if there is one, and **nothing in a `tools/call` message says who prompted it.**" },
 
     { t: "p", text: "So the default situation for every MCP server is: one identity, serving everyone. That is fine for a rate table and unacceptable for anything touching a person's data, and the distance between those two cases is the whole lesson." },
@@ -35,6 +36,7 @@ EC.receiveLesson({
     { t: "h2", n: "02", text: "What the SDK's auth layer carries", id: "layer" },
 
     {"kind": "trace", "title": "A one-method protocol, and the two fields that carry identity", "caption": "**`subject` is who the token was issued for and `claims` is an arbitrary dictionary** — tenant, roles, email — which is where identity actually lives. Note the distinction `client_id` draws: it identifies the *application*, so a bearer token shared by one client authenticates that client and not a person. **`required_scopes` is enforced before a tool runs**, so a token lacking the scope never reaches your code, and returning `None` from the verifier is the rejection.", "left": "AccessToken field", "codeW": 170, "vars": ["what it is", "use it for"], "steps": [{"code": "subject", "state": ["who the token was issued for", "THE user - per-user data"], "tone": "violet"}, {"code": "claims", "state": ["an arbitrary dictionary", "tenant, roles, email"], "changed": [0, 1], "tone": "violet"}, {"code": "client_id", "state": ["the application, not the person", "which app is calling"], "changed": [0, 1], "tone": "warn"}, {"code": "scopes", "state": ["coarse permissions", "finance.read vs finance.write"], "changed": [0, 1], "tone": "accent"}, {"code": "expires_at", "state": ["expiry", "check it, plus the audience"], "changed": [0, 1], "tone": "accent"}, {"code": "verify_token returning None", "state": ["the rejection", "401, before any tool"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-02-1"},
+
 
     { t: "p", text: "On the HTTP transports there is an authentication layer, and the object it produces is worth reading field by field, because it answers the identity question directly." },
 
@@ -87,6 +89,7 @@ mcp = FastMCP(
 
     {"kind": "flow", "title": "Identity from context, never from the signature", "caption": "**`get_access_token()` takes no arguments** — it reads the verified token from the current request's context, the way a web framework exposes the current user. Note what the tool signature does not have: no `user_id`, so the model cannot influence whose orders come back because it is never asked. **And `limit` is still a parameter, correctly.** The test for whether something belongs in the signature is whether a hostile value would be a security problem or merely a strange request.", "cols": 3, "nodes": [{"id": "t", "label": "A signed token, verified in transport", "sub": "signature, expiry, audience", "tone": "good"}, {"id": "c", "label": "get_access_token() - no arguments", "sub": "read from request context", "tone": "violet"}, {"id": "s", "label": "token.subject into the query", "sub": "no user_id in the signature", "tone": "good"}, {"id": "d", "label": "The description states the boundary", "sub": "'Not other users'", "tone": "good"}, {"id": "l", "label": "limit stays a parameter", "sub": "a hostile value is just odd", "tone": "accent"}], "edges": [["t", "c"], ["c", "s"], ["s", "d"], ["c", "l"]], "t": "diagram", "id": "dg-4_2-03-2"},
 
+
     { t: "code", lang: "python", title: "one function, no arguments",
       code: `from mcp.server.auth.middleware.auth_context import get_access_token
 
@@ -113,6 +116,7 @@ async def my_orders(limit: int = 20) -> list[dict]:
     { t: "h2", n: "04", text: "Still not authorisation", id: "authorisation" },
 
     {"kind": "layers", "title": "Identity is decoration unless it reaches the predicate", "caption": "**A tool that reads `token.subject` and then queries with an admin credential has established who is calling and asked for the data anyway.** The middle layer is correct and depends on every query being written correctly forever; the bottom layer is what survives a mistake — and the difference matters because a server accretes tools, and the twentieth will be written by someone who has not read this lesson. **The audience check in the top layer is the one people omit**, and it is what stops a token minted for another service being replayed at yours.", "items": [{"label": "Authentication: who is calling", "sub": "signature, expiry, AUDIENCE - the omitted one", "tone": "good", "side": "the verifier"}, {"label": "Authorisation: may they do this", "sub": "scopes answer coarse questions only", "tone": "accent", "side": "scopes"}, {"label": "The subject in the query predicate", "sub": "correct, and depends on remembering forever", "tone": "warn", "side": "per query"}, {"label": "Row-level security in the database", "sub": "survives a forgotten predicate - and one will be", "tone": "violet", "side": "enforcement"}], "t": "diagram", "id": "dg-4_2-04-3"},
+
 
     { t: "p", text: "Having a verified subject is necessary and is not the end. Lesson 2.3's three layers apply here with the identity filled in." },
 
@@ -141,6 +145,7 @@ rows = await db.fetch(
     { t: "h2", n: "05", text: "stdio, where there is no identity", id: "stdio" },
 
     {"kind": "tree", "title": "Over stdio there is nothing to put identity in", "caption": "**All of the above needs an HTTP transport, because the token arrives in a header.** Over stdio the server runs as whoever launched it, with their credentials, and that *is* the identity — which is usually fine, because a stdio server has exactly one user. **The mistake is not a single identity; it is a single identity serving per-user data.** A server exposing the same data to everyone is a perfectly good design: say so in the instructions, keep the tools read-only, and nobody has to audit it for identity handling.", "root": {"label": "Does the data differ per caller?", "sub": "the question that decides the architecture", "tone": "accent", "children": [{"label": "No - the same for everyone", "sub": "public rates, a policy corpus, a schema", "tone": "good", "children": [{"label": "One service identity is correct", "sub": "say so in instructions; keep tools read-only", "tone": "good"}]}, {"label": "Yes, and it is one user's machine", "sub": "a local stdio server", "tone": "accent", "children": [{"label": "The process identity IS the user", "sub": "an env var for their API token", "tone": "accent"}]}, {"label": "Yes, and there are many users", "sub": "a multi-user service", "tone": "violet", "children": [{"label": "HTTP, with a token verifier", "sub": "stdio cannot express this", "tone": "violet"}, {"label": "Tenant from claims, in the predicate", "sub": "never from a parameter", "tone": "teal"}]}]}, "t": "diagram", "id": "dg-4_2-05-4"},
+
 
     { t: "p", text: "All of the above requires an HTTP transport, because the token arrives in a header. **Over stdio there is no header and no authentication layer** — the server runs as whoever launched it, with their credentials, and that is the identity." },
 
@@ -176,7 +181,28 @@ rows = await db.fetch(
           { t: "p", text: "After the rewrite the attack has nothing to aim at. There is no argument whose value decides whose data is returned, so the persuasion has no target: the subject comes from a signed token verified before the tool ran. That is the difference between a mitigation and a boundary, in the same sense as the allow-list in lesson 4.1." },
           { t: "p", text: "The audit is where this pays off in a real codebase. In most servers at least one tool takes an identifier it should be reading from context, and it is almost always a tool written early, before anyone had thought about multi-user access — which is exactly when the signature was easiest to write." }
         ]
-      } }
+      } },
+
+    { t: "h2", n: "06", text: "OAuth 2.1, and what the spec actually requires", id: "oauth" },
+
+    {"kind": "trace", "title": "Six RFCs, and why you should not implement an authorisation server", "caption": "**An MCP server is an OAuth 2.1 resource server: it validates tokens and does not issue them.** Point `issuer_url` at the identity provider your organisation already runs, implement `TokenVerifier` against its public keys, set `resource_server_url` so the audience check has something to compare — and every hard part stays with the provider. **Note the last row:** resource indicators are what make the audience check meaningful, so skipping that check discards most of what these RFCs buy you.", "left": "piece", "codeW": 190, "vars": ["what it gives you"], "steps": [{"code": "you are a RESOURCE server", "state": ["validate tokens; never issue them"], "tone": "violet"}, {"code": "RFC 9728 protected resource metadata", "state": ["a client discovers which auth server to use"], "changed": [0], "tone": "good"}, {"code": "RFC 8414 auth server metadata", "state": ["and then discovers its endpoints"], "changed": [0], "tone": "good"}, {"code": "RFC 7591 dynamic registration", "state": ["optional - a client registers itself"], "changed": [0], "tone": "warn"}, {"code": "OAuth 2.1, not 2.0", "state": ["PKCE required; implicit and password gone"], "changed": [0], "tone": "accent"}, {"code": "RFC 8707 resource indicators", "state": ["a token minted for YOU - the audience check"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-4_2-06-5"},
+
+    { t: "p", text: "The `AuthSettings` fields in section 02 are the shape of a standard, not an invention. **A remote MCP server is an OAuth 2.1 resource server**, and the specification is largely a matter of pointing at existing RFCs rather than defining anything new." },
+
+    { t: "dl", items: [
+      ["The server is a resource server, not an authorisation server", "It validates tokens; it does not issue them. `issuer_url` names who does, and `resource_server_url` names this server as the audience — which is the field that makes the audience check in section 04 possible."],
+      ["Protected resource metadata (RFC 9728)", "A well-known document saying which authorisation server to use. It is what lets a client discover where to get a token instead of being configured with it, and it is why `issuer_url` is a setting rather than a constant in your code."],
+      ["Authorisation server metadata (RFC 8414)", "The other half of the discovery: the client reads the authorisation server's own document to find its endpoints. Between the two, a client can go from a server URL to a token with nothing hardcoded."],
+      ["Dynamic client registration (RFC 7591)", "Optional, and the reason `client_registration_options` exists. It lets a client register itself rather than requiring someone to create credentials by hand — convenient for a desktop host, and a thing to think about before enabling on a public server."],
+      ["PKCE, and no implicit flow", "OAuth **2.1** rather than 2.0: PKCE is required, the implicit and password grants are gone. If you are copying an older OAuth integration, those are the parts that have changed."],
+      ["Resource indicators (RFC 8707)", "The mechanism behind the audience check: a token is minted *for* a particular resource, so one obtained for another service is not valid at yours. This is the RFC that makes token replay a solved problem rather than a vigilance exercise."]
+    ] },
+
+    { t: "callout", kind: "good", title: "What this means in practice",
+      body: [
+        { t: "p", text: "**You almost certainly should not implement an authorisation server.** Point `issuer_url` at the identity provider your organisation already runs, implement `TokenVerifier` against its public keys, and set `resource_server_url` so the audience check has something to compare. That is the whole integration, and every hard part — issuing, refreshing, revoking — stays with the provider." },
+        { t: "p", text: "The thing to get right is the one from section 04: verify the signature, the expiry **and the audience**. The RFCs exist so that last check is meaningful, and skipping it discards most of what they buy you." }
+      ] },
 
   ],
 

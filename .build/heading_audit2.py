@@ -56,7 +56,8 @@ COURSES = {
                   '08_LangChain_and_LangGraph/failure.html',
                   '08_LangChain_and_LangGraph/lenses.html',
                   '08_LangChain_and_LangGraph/reference.html'],
-    'adk':       ['09_MCP/adk.html', '09_MCP/reference.html'],
+    'adk':       ['09_MCP/adk.html'],
+    'mcp':       ['09_MCP/reference.html'],
 }
 
 HEAD = re.compile(r'<h([23])\b[^>]*>(.*?)</h\1>', re.S | re.I)
