@@ -1,0 +1,29 @@
+{
+ "2.3": [
+  {"after": "02",
+   "d": {"kind": "compare",
+         "title": "Execution failed, or the answer is bad",
+         "caption": "**The split is correct and it needs a convention.** \u201cI could not run your tool\u201d and \u201cI ran it and there is no rate for XXX\u201d are genuinely different facts, and collapsing them would lose information \u2014 a missing rate is not a malfunction. But it means **the semantic error channel is yours to define and the protocol will not help you be consistent.** Pick one shape for the whole server, document it in the instructions, and use it everywhere: a server where half the tools return an error key and the other half a status key is one a model handles badly for no reason.",
+         "columns": [
+          {"title": "isError: True", "tone": "warn",
+           "items": ["The tool did not execute", "No such tool", "Arguments failed validation", "An exception escaped your function", "The content is a message, not your return value"]},
+          {"title": "isError: False", "tone": "violet",
+           "items": ["Your function ran and returned", "The payload may still describe a failure", "A consumer checking only the flag calls it good", "So the error shape is yours to define", "One shape, server-wide, documented"]}]}}
+ ],
+
+ "2.4": [
+  {"after": "01",
+   "d": {"kind": "trace",
+         "title": "Three things the decorators never made you write",
+         "caption": "**Two handlers replace a decorator per tool:** one returning the tool list, one dispatching a call by name. The cost is visible in every row \u2014 the `inputSchema` as a literal dictionary, the `if name != ...` branch, and the whole of `InitializationOptions`, which is the object FastMCP had been assembling silently all along. **Writing it once is what makes the handshake in lesson 1.2 stop being something that happens and start being something you chose.**",
+         "left": "what you now write by hand", "codeW": 200,
+         "vars": ["in FastMCP this was"],
+         "steps": [
+          {"code": "@server.list_tools() -> list[types.Tool]", "state": ["one @mcp.tool() per function"], "tone": "accent"},
+          {"code": "the inputSchema dict, per tool", "state": ["generated from annotations"], "changed": [0], "tone": "crit"},
+          {"code": "@server.call_tool(), dispatching on name", "state": ["the decorator bound the function"], "changed": [0], "tone": "crit"},
+          {"code": "the unknown-name branch", "state": ["handled for you"], "changed": [0], "tone": "warn"},
+          {"code": "InitializationOptions(...)", "state": ["assembled silently"], "changed": [0], "tone": "violet"},
+          {"code": "Server(name, version=, instructions=)", "state": ["version not expressible at all"], "changed": [0], "tone": "good"}]}}
+ ]
+}
