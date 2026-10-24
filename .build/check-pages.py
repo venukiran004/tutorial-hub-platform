@@ -84,11 +84,13 @@ for c in courses:
                                 % (c, page, name))
 
     # The badge is either a `badge:` option or set on #hero-badge in JS.
+    # A numbered course carries "Course NN · Name"; a standalone section (the
+    # interview sets) carries just its name, and has no number to collide.
     b = re.search(r'Course (\d+)\s*·', idx)
-    if not b:
-        problems.append('%-11s no "Course NN" badge' % c)
-    else:
+    if b:
         badges.setdefault(b.group(1), []).append(c)
+    elif not re.search(r'badge: "[^"]+"|id="hero-badge"', idx):
+        problems.append('%-11s no badge of any kind' % c)
 
     on_disk = set()
     for root, _d, files in os.walk(os.path.join(cdir, 'lessons')):

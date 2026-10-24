@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Experience — Tutorial Hub</title>
+<meta name="description" content="Real interview question sets from GenAI and agentic-systems rounds, one page per experience, answered with the mechanism, the trade-off and the number. RAG and agentic RAG, reranking, evaluation and debugging, the KV cache, production recovery and observability, chunking and PDF extraction, imbalanced data, guardrails and RBAC, and the coding rounds.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">Interview Experience</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>The questions, <span class="dim">answered the way they were actually asked.</span></h1>
+    <p class="hero-lede">
+      Real question sets from GenAI and agentic-systems interviews, one page per
+      experience. Each page keeps every question that transfers to anybody and
+      leaves out the ones about a candidate’s own project, because that answer is
+      theirs. The questions are grouped by theme rather than kept in the order they
+      were asked, so the follow-ups sit beside what they followed up on — and in
+      these interviews the follow-up was usually the real question, removing a tool
+      and asking what you would do without it. <b>Every answer gives the mechanism
+      rather than the definition</b>, and <b>where a claim could be measured it was
+      measured</b>: the KV cache arithmetic, the accuracy a useless model scores on
+      an imbalanced set, threads against processes, and the three rain-water
+      solutions timed against each other.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with Experience 1</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">What is being checked</div>
+    <div class="sec-h"><h2>Five things, in every round</h2></div>
+    <p class="sec-lede">
+      One of these interviewers wrote it down explicitly: every answer was checked for
+      whether it was theoretical or lived. These are the tells they were reading.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">A mechanism, not a definition</div>
+        <div class="ls-d">“A cross-encoder is more accurate” is a definition. “The pair does not exist until the query arrives, so nothing can be precomputed” is a mechanism, and every consequence follows from it.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">A number attached to the claim</div>
+        <div class="ls-d">Retrieval is 50–150 ms of a multi-second answer. A 7B model’s KV cache is 250 GiB at batch 16. Threads were 0.68× on CPU work. The number is what cannot be bluffed.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">A trade-off you accepted</div>
+        <div class="ls-d">Not a technique list — what you gave up and why. Agentic RAG costs two to four times as much; MQA saves 32× and costs quality; threshold tuning trades precision against recall.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">A diagnosis before a fix</div>
+        <div class="ls-d">Was the right chunk retrieved, and was it used? Did the drop arrive as a cliff or a slope? The question you ask first is the strongest signal in a debugging answer.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">“I have not measured that”</div>
+        <div class="ls-d">Said where it is true. The next question goes one level deeper, and an honest half-answer survives it where a confident invention collapses in front of the person deciding.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      One page per interview, each covering every question from it that
+      transfers. New experiences are added as new pages.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — Interview Experience</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.link,
+    badge: "Interview Experience",
+    startLabel: "Start with Experience 1",
+    statTail: "Executed",
+    statTailLabel: "Every trace and API",
+    fitYes: [
+      "You have an interview coming up and want the questions that are actually asked, with answers that survive a follow-up.",
+      "You can build these systems and freeze when asked to explain them in ninety seconds.",
+      "You want to know which answers need a number attached, and what the number is.",
+      "You are interviewing other people and want a sense of what separates a lived answer from a read one."
+    ],
+    fitNo: [
+      "You want to learn the subject rather than revise it. These are answers, not teaching — the courses are where the material is built up properly.",
+      "You want answers to memorise. Every one of these interviewers probed whether the answer was lived, and a recited paragraph is exactly what that probing finds.",
+      "You want company names or compensation figures. This is the technical content only.",
+      "You want questions for a research or pure-ML role. These are engineering interviews for building GenAI systems."
+    ]
+  });
+})();
+</script>
+</body>
+</html>
