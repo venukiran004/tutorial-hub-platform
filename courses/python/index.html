@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="../../assets/css/home.css">
 <link rel="stylesheet" href="../../assets/css/aurora.css">
 <link rel="stylesheet" href="../../assets/css/course-plus.css">
+<link rel="stylesheet" href="../../assets/css/curriculum-map.css">
 </head>
 <body>
 
@@ -136,152 +137,32 @@
 <script src="../../assets/js/app.js"></script>
 <script src="../../assets/js/reveal.js"></script>
 <script src="curriculum.js"></script>
+<script src="../../assets/js/progress.js"></script>
+<script src="../../assets/js/course-page.js"></script>
 <script>
 (function () {
   "use strict";
-  var C = EC.course, I = EC.icons, $ = EC.$, $$ = EC.$$;
+  var I = EC.icons;
 
-  EC.initTheme();
-  EC.initCmdK("");
+  EC.renderCoursePage({
+    icon: I.python,
+    badge: "Course 01 \u00b7 Python",
+    startLabel: "Start Lesson 1.1",
 
-  var ready = C.readyLessons;
-  var totalMin = C.allLessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-
-  /* ---- hero badge + stats ---- */
-  $("#hero-badge").innerHTML = I.python + "<span>Course 01 · Python</span>";
-
-  $("#stats").innerHTML = [
-    { v: C.trackOrder.length, l: "Tracks" },
-    { v: C.modules.length, l: "Modules" },
-    { v: C.allLessons.length, l: "Lessons" },
-    { v: Math.round(totalMin / 60) + " hrs", l: "Guided content" },
-    { v: ready.length, l: "Published so far" }
-  ].map(function (s) {
-    return '<div class="stat"><div class="stat-v">' + s.v + '</div><div class="stat-l">' + s.l + "</div></div>";
-  }).join("");
-
-  /* ---- where to start ---- */
-  var nextLesson = ready[0] || C.allLessons[0];
-
-  // One hue per module, so a section is recognisable by colour before its
-  // name is read -- the same device the home page uses for topics.
-  var MHUES = ["--t-blue", "--t-violet", "--t-cyan", "--t-orange", "--t-green",
-               "--t-amber", "--t-pink"];
-
-  function renderTrack(track) {
-  var html = "", lastPhase = null, phaseN = 0, modN = 0;
-  C.tracks[track].modules.forEach(function (m) {
-    if (m.phase !== lastPhase) {
-      phaseN++;
-      html += '<div class="phase-h"><span class="phase-n">' + String(phaseN).padStart(2, "0") + "</span>" +
-        '<span class="phase-t">' + EC.esc(m.phase) + '</span><span class="rule"></span></div>';
-      lastPhase = m.phase;
-    }
-    var rd = m.lessons.filter(function (l) { return l.ready !== false; });
-    var mins = m.lessons.reduce(function (a, l) { return a + l.minutes; }, 0);
-    modN++;
-
-    // What is inside, without expanding. Capped so a twelve-lesson module
-    // does not turn the card into a wall of chips.
-    var SHOWN = 7;
-    var tags = m.lessons.slice(0, SHOWN).map(function (l) {
-      return '<span class="mtag" title="' + EC.esc(l.title) + '">' +
-        EC.esc(l.title) + "</span>";
-    }).join("") + (m.lessons.length > SHOWN
-      ? '<span class="mtag more">+' + (m.lessons.length - SHOWN) + " more</span>" : "");
-
-    html +=
-      '<div class="mcard" data-m="' + m.id + '" style="--tc:var(' +
-          MHUES[(modN - 1) % MHUES.length] + ')">' +
-        '<button class="mcard-h" type="button" aria-expanded="false">' +
-          '<span class="mcard-lv">' + EC.esc(m.short) + "</span>" +
-          '<span class="mcard-main">' +
-            '<span class="mcard-t"><span class="mcard-num">' + modN + ".</span>" +
-              EC.esc(m.title) + "</span>" +
-            '<span class="mcard-b">' + EC.esc(m.blurb) + "</span>" +
-            '<span class="mcard-tags">' + tags + "</span>" +
-          "</span>" +
-          '<span class="mcard-right">' +
-            '<span class="mcard-count">' + m.lessons.length + " lessons</span>" +
-            '<span class="mcard-time">' + EC.fmtTime(mins) + "</span>" +
-            (rd.length < m.lessons.length
-              ? '<span class="mcard-soon">' + (m.lessons.length - rd.length) + " soon</span>" : "") +
-            '<span class="mcard-chev">' + I.chevron + "</span>" +
-          "</span>" +
-        "</button>" +
-        '<div class="mcard-body" hidden>' +
-          '<ul class="llist">' +
-            m.lessons.map(function (l) {
-              var soon = l.ready === false;
-              return "<li>" +
-                (soon ? '<a aria-disabled="true">' : '<a href="' + EC.lessonHref(l) + '">') +
-                  '<span class="ll-n">' + l.num + "</span>" +
-                  '<span class="ll-main"><span class="ll-t">' + EC.esc(l.title) + "</span>" +
-                  '<span class="ll-s">' + EC.esc(l.summary) + "</span></span>" +
-                  '<span class="ll-right">' +
-                    '<span class="badge ' + l.difficulty + '"><span class="dot"></span>' + l.difficulty + "</span>" +
-                    '<span class="ll-time">' + l.minutes + " min</span>" +
-                    (soon ? '<span class="lsn-soon">soon</span>' : "") +
-                  "</span>" +
-                "</a></li>";
-            }).join("") +
-          "</ul>" +
-        "</div>" +
-      "</div>";
+    fitYes: [
+      "You can write basic Python but your code gets messy past 200 lines.",
+      "You are moving from scripts and notebooks into services other people depend on.",
+      "You are a data scientist or ML engineer whose Python is holding back your engineering.",
+      "You are preparing for interviews and want depth, not a list of memorised answers.",
+      "You want to understand <em>why</em> Python behaves as it does, not just what to type."
+    ],
+    fitNo: [
+      "You have never programmed before \u2014 start with an absolute-beginner course, then come here.",
+      "You want a language reference. This teaches judgement; the docs are better at lookup.",
+      "You want copy-paste snippets without explanation.",
+      "You are looking for a data-science or ML curriculum. Those are separate courses; this is the language underneath them."
+    ]
   });
-  $("#curriculum-list").innerHTML = html;
-    $("#expand-all").textContent = "Expand all";
-  }
-
-  renderTrack(C.trackOrder[0]);
-
-  $("#curriculum-list").addEventListener("click", function (e) {
-    var b = e.target.closest(".mcard-h");
-    if (!b) return;
-    var card = b.parentElement;
-    var open = card.classList.toggle("open");
-    $(".mcard-body", card).hidden = !open;
-    b.setAttribute("aria-expanded", open ? "true" : "false");
-  });
-
-  // Open the module containing the learner's next lesson, so the page lands
-  // on something actionable rather than a wall of closed accordions.
-  (function () {
-    var card = $('.mcard[data-m="' + nextLesson.module.id + '"]');
-    if (card) { card.classList.add("open"); $(".mcard-body", card).hidden = false; $(".mcard-h", card).setAttribute("aria-expanded", "true"); }
-  })();
-
-  var expanded = false;
-  $("#expand-all").addEventListener("click", function () {
-    expanded = !expanded;
-    $$(".mcard").forEach(function (c) {
-      c.classList.toggle("open", expanded);
-      $(".mcard-body", c).hidden = !expanded;
-      $(".mcard-h", c).setAttribute("aria-expanded", expanded ? "true" : "false");
-    });
-    this.textContent = expanded ? "Collapse all" : "Expand all";
-  });
-
-  /* ---- fit ---- */
-  var yes = [
-    "You can write basic Python but your code gets messy past 200 lines.",
-    "You are moving from scripts and notebooks into services other people depend on.",
-    "You are a data scientist or ML engineer whose Python is holding back your engineering.",
-    "You are preparing for interviews and want depth, not a list of memorised answers.",
-    "You want to understand <em>why</em> Python behaves as it does, not just what to type."
-  ];
-  var no = [
-    "You have never programmed before — start with an absolute-beginner course, then come here.",
-    "You want a language reference. This teaches judgement; the docs are better at lookup.",
-    "You want copy-paste snippets without explanation.",
-    "You are looking for a data-science or ML curriculum. Those are separate courses; this is the language underneath them."
-  ];
-  $("#fit-yes").innerHTML = yes.map(function (t) { return "<li>" + I.check + "<span>" + t + "</span></li>"; }).join("");
-  $("#fit-no").innerHTML  = no.map(function (t) { return "<li>" + I.chevron + "<span>" + t + "</span></li>"; }).join("");
-
-  /* These two pages render their own curriculum rather than using
-     course-page.js, so the reveal hook is called here instead. */
-  EC.initReveal && EC.initReveal();
 })();
 </script>
 </body>

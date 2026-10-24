@@ -37,6 +37,10 @@ echo
 echo "=== the index pages and their inline scripts ==="
 python -I .build/check-pages.py
 
+echo "=== the curriculum map ==="
+node .build/maptest.js
+echo
+
 echo "=== blocks that would render empty ==="
 node .build/check-blocks.js
 

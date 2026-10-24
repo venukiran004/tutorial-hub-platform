@@ -19,7 +19,7 @@
   /* Elements worth revealing: the ones that arrive as a group and read as a
      sequence. Prose is deliberately absent -- animating a paragraph the
      reader is trying to read is a cost with no benefit. */
-  var SELECTOR = ".stat, .ls-step, .mcard, .split-box, .feat";
+  var SELECTOR = ".stat, .ls-step, .mcard, .cmap-row, .split-box, .feat";
 
   /* Per-item stagger, capped so a long list does not end up waiting on a
      delay longer than the animation itself. */
