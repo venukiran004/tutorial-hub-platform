@@ -54,7 +54,7 @@
 
     blurb: "A model that scores 0.94 offline is not a deployed model. This course covers what stands between the two: experiment tracking and lineage, data and model versioning, feature stores and the point-in-time join that silently leaks labels, containers and Kubernetes, CI/CD that tests data as well as code, and the six incident classes that take ML systems down — drift, latency, training-serving skew, scaling failures, lost reproducibility and blind observability. It ends with LLMOps, where the artifact is a prompt and the index is a deployable.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3"],
 
     modules: [
 
