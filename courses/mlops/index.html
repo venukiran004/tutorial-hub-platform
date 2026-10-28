@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLOps &amp; Deployment — Tutorial Hub</title>
+<meta name="description" content="MLOps end to end: experiment tracking and lineage, data and model versioning, feature stores and the point-in-time join, serving and compression, containers and Kubernetes, CI/CD that tests data as well as code, and the seven incident classes that take ML systems down — drift, latency, training-serving skew, scaling, reproducibility, observability and experimentation. Drift statistics, latency percentiles and skew bugs all measured.">
+<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/system.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
+<link rel="stylesheet" href="../../assets/css/refine.css">
+<link rel="stylesheet" href="../../assets/css/home.css">
+<link rel="stylesheet" href="../../assets/css/aurora.css">
+<link rel="stylesheet" href="../../assets/css/course-plus.css">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span class="sep">/</span><a href="../../index.html">Courses</a>
+    <span class="sep">/</span><span class="cur">MLOps &amp; Deployment</span>
+  </nav>
+  <span class="topbar-spacer"></span>
+  <button class="ghost-btn search-trigger" data-cmdk type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
+  </button>
+  <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
+</header>
+
+<main>
+<div class="page wide">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <span class="hero-eyebrow" id="hero-badge"></span>
+    <h1>The model is accurate. <span class="dim">That was the easy half.</span></h1>
+    <p class="hero-lede">
+      Ordinary software breaks when someone changes the code. An ML system breaks when the
+      world changes, and nothing in your repository records that the world is an input. So
+      this course is about the half of the job that starts after the notebook: tracking what
+      produced a model, versioning the data as well as the code, serving it behind an endpoint
+      that can be rolled back, and watching the four things that can silently go wrong.
+      Phase 5 is the heart of it — seven incident classes, each taken apart with its own
+      diagnosis path: <b>drift</b>, <b>latency</b>, <b>training-serving skew</b>, <b>scaling
+      failures</b>, <b>lost reproducibility</b>, <b>blind observability</b> and
+      <b>experiments that prove nothing</b>. The drift statistics, the latency percentiles,
+      the skew bugs and the experiment arithmetic are all <b>measured on this machine</b>,
+      which is how the course can tell you that two standard drift detectors disagree about
+      the same shift. Where a tool needs a cluster or an account that is not reachable here —
+      Kubernetes, Terraform, the cloud platforms — the lesson says so and shows the interface
+      rather than pretending to a result.
+    </p>
+    <div class="hero-cta">
+      <a class="cta primary" id="start-btn" href="lesson.html?id=1.1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+        <span id="start-label">Start with the two clocks</span>
+      </a>
+      <a class="cta ghost" href="#curriculum">View full curriculum</a>
+      <span class="cta-note" id="cta-note"></span>
+    </div>
+
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- outcomes -- -->
+  <section class="sec">
+    <div class="sec-kicker">The progression</div>
+    <div class="sec-h"><h2>Five states, in order</h2></div>
+    <p class="sec-lede">
+      Every module moves you from one of these states to the next. Most teams are somewhere
+      around the second — the model is served and nobody can say what it is doing.
+    </p>
+    <div class="ladder-strip">
+      <div class="ls-step" style="--c:var(--d-foundation)">
+        <div class="ls-n">01</div><div class="ls-t">I can reproduce it</div>
+        <div class="ls-d">Every model traces back to a data snapshot, a commit and an environment. Experiment tracking, content-addressed data versioning, and the three hashes an artifact has to carry.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-core)">
+        <div class="ls-n">02</div><div class="ls-t">I can ship it</div>
+        <div class="ls-d">Behind an endpoint, in a container, on a scheduler, through a pipeline that gates on model quality rather than only on tests — with a rollback that is one command.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--accent)">
+        <div class="ls-n">03</div><div class="ls-t">I can see it</div>
+        <div class="ls-d">The right metric type for each signal, a percentile computed honestly, a prediction log that makes drift and skew computable after the fact, and alerts that fire on harm rather than on CPU.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-advanced)">
+        <div class="ls-n">04</div><div class="ls-t">I can diagnose it</div>
+        <div class="ls-d">Seven incident classes with their symptoms and their confirming measurements: which distribution moved, whether the tail is a cold start or a queue, which of the four skews it is, and what to roll back.</div>
+      </div>
+      <div class="ls-step" style="--c:var(--d-expert)">
+        <div class="ls-n">05</div><div class="ls-t">I can operate an LLM system</div>
+        <div class="ls-d">Prompts and indexes as versioned deployables, an eval gate that can block a release, token cost as an SLI, and a provider you do not control treated as the dependency it is.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- curriculum -- -->
+  <section class="sec" id="curriculum">
+    <div class="sec-kicker">Curriculum</div>
+    <div class="sec-h">
+      <h2>The full path</h2>
+      <span class="sp"></span>
+      <button class="ghost-btn" id="expand-all" type="button">Expand all</button>
+    </div>
+    <p class="sec-lede">
+      Seven phases: the lifecycle, the platform underneath it, the Linux and Git floor, the
+      cloud, the seven production incidents, the process the rest of the organisation runs on,
+      and LLMOps. Phase 5 is where the course earns its keep.
+    </p>
+    <div class="track-tabs" id="track-tabs"></div>
+    <div id="curriculum-list"></div>
+  </section>
+
+  <!-- --------------------------------------------------------- audience -- -->
+  <section class="sec">
+    <div class="sec-kicker">Fit</div>
+    <div class="sec-h"><h2>Who this is for</h2></div>
+    <div class="split">
+      <div class="split-box yes">
+        <div class="split-h">A good fit if</div>
+        <ul id="fit-yes"></ul>
+      </div>
+      <div class="split-box no">
+        <div class="split-h">Not the right course if</div>
+        <ul id="fit-no"></ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Tutorial Hub — MLOps &amp; Deployment</span>
+    <span class="sp"></span>
+    <span>Built as a single static site — no build step, no dependencies.</span>
+  </footer>
+
+</div>
+</main>
+
+<script src="../../assets/js/highlight.js"></script>
+<script src="../../assets/js/render.js"></script>
+<script src="../../assets/js/diagrams.js"></script>
+<script src="../../assets/js/app.js"></script>
+<script src="curriculum.js"></script>
+<script src="../../assets/js/reveal.js"></script>
+<script src="../../assets/js/course-page.js"></script>
+<script>
+(function () {
+  "use strict";
+  var I = EC.icons;
+  EC.renderCoursePage({
+    icon: I.server,
+    badge: "Course 15 · MLOps & Deployment",
+    startLabel: "Start with the two clocks",
+    statTail: "Measured",
+    statTailLabel: "Every statistic and timing",
+    fitYes: [
+      "Your model works in a notebook and you have been asked to put it in front of real traffic.",
+      "Something is wrong in production and the dashboard is green — you need to know which distribution moved.",
+      "You can train a model but cannot yet say which commit and which data produced the one currently serving.",
+      "You own an ML service on call and want the seven incident classes with their diagnosis paths rather than a tool list.",
+      "You keep reading that gRPC is faster and gradient drift is dangerous, and you would rather see both <em>measured</em>."
+    ],
+    fitNo: [
+      "You want to learn to train models. That is the Machine Learning and Deep Learning courses; this one starts where they stop.",
+      "You want the maths of evaluation metrics. ML covers those properly — here they appear only as production gates.",
+      "You want LLM serving internals — KV cache, batching, speculative decoding. Those are in GenAI's inference module.",
+      "You are looking for a certification cram sheet for one cloud vendor. This teaches the pieces, and compares the three."
+    ]
+  });
+
+})();
+</script>
+</body>
+</html>
