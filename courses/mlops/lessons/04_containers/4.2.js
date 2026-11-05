@@ -260,6 +260,15 @@ EC.receiveLesson({
           { t: "p", text: "Stating the cache key precisely — parent digest, instruction, file hash for COPY — is the detail that separates understanding from pattern-matching, and the upward propagation is what makes the ordering rule inevitable rather than conventional." },
           { t: "p", text: "The 'randomly slow builds' diagnosis is a good thing to volunteer because it is a real symptom with a non-obvious cause." }
         ]
+      },
+      {
+        level: "mid",
+        q: "What is the largest free reduction in a model serving image?",
+        strong: "Separating training and serving requirements, because torch alone outweighs the whole sklearn serving stack.",
+        answer: [
+          { t: "p", text: "A sklearn serving image needs 186.3 MB of dependencies. torch alone is 446.7 MB, which is 2.4 times that whole stack, so a shared requirements file ships a large library the server never imports." },
+          { t: "p", text: "I would check it per package rather than guess, because the footprints surprise people: scipy at 112.7 MB is bigger than scikit-learn at 40.6 MB, the library that depends on it." }
+        ]
       }
     ]
   }

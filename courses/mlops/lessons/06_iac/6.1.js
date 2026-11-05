@@ -267,6 +267,15 @@ stB = read_state()          # both read the same serial -- this is the race
           { t: "p", text: "The ownership framing is the senior insight, and acknowledging why the discipline approach fails shows the incident context has been lived through rather than theorised." },
           { t: "p", text: "The scheduled plan-only run is a concrete, cheap control most teams do not have, and the forces-replacement point is the highest-value review habit." }
         ]
+      },
+      {
+        level: "mid",
+        q: "What happens if you delete a resource block from a Terraform file?",
+        strong: "Terraform destroys the real resource, because it is in state and no longer in config.",
+        answer: [
+          { t: "p", text: "Terraform computes a three-way diff of config, state and the world. A resource in state and absent from config is a request to delete the real thing, so removing a block is a destructive change even though it looks like a tidy-up." },
+          { t: "p", text: "That is why I read the plan before applying, including `forces replacement`, where an attribute change means destroy-then-create. For a stateful resource that is downtime or data loss, and `prevent_destroy` is the guardrail." }
+        ]
       }
     ]
   }

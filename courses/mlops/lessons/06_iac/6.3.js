@@ -272,6 +272,15 @@ jobs:
           { t: "p", text: "The wildcard-in-the-trust-policy hole is the detail that distinguishes someone who has configured this from someone who has enabled it, and it is a real and common misconfiguration." },
           { t: "p", text: "Connecting it to pod workload identity shows the pattern is understood as one mechanism rather than two features." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Does reordering CI stages make a pipeline pass more often?",
+        strong: "No. The pass rate is a product of probabilities, so ordering changes expected time and nothing else.",
+        answer: [
+          { t: "p", text: "In the measured pipeline the pass rate was identical at 70.3% in both orderings, because a product does not depend on order. What changed was expected cost, 8.55 against 9.88 minutes, since each stage is weighted by the probability of reaching it." },
+          { t: "p", text: "At 40 runs a day that is 53 minutes of runner time. The rule is cheapest-and-most-likely-to-fail first, because a stage that never fails costs its full duration wherever it sits. Data validation is the example: 0.5 minutes, fails 5%, and it runs before training." }
+        ]
       }
     ]
   }

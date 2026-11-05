@@ -239,6 +239,15 @@ volumes:
           { t: "p", text: "Knowing the precise semantics plus the works-on-second-try signature shows this has been debugged. The key move is treating Compose's fix as local-only and naming the application change as the durable one." },
           { t: "p", text: "Connecting it to readiness is the senior addition: the lazy-connect pattern is what makes a correct readiness probe possible at all." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Your API container cannot reach Postgres on localhost under Compose. Why?",
+        strong: "`localhost` inside a container is that container's own network namespace, so the service has to use the name `db`.",
+        answer: [
+          { t: "p", text: "Each container has its own network namespace, so `localhost` finds nothing listening. On a user-defined network, which Compose creates for you, an embedded DNS resolver makes `db:5432` work by service name." },
+          { t: "p", text: "The follow-up is not to publish the port as a workaround. Publishing is for humans, since containers on the same network use the container port directly, and a published database port can bypass the host firewall because the daemon writes its own iptables rules." }
+        ]
       }
     ]
   }

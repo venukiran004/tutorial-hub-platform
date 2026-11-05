@@ -245,6 +245,15 @@ USER appuser` },
           { t: "p", text: "Pairing the checklist with its limits is what makes this senior; a list alone invites the follow-up about false confidence." },
           { t: "p", text: "The reachability point is the practically important one, because unprioritised scan output is the usual reason container scanning produces no security improvement at all." }
         ]
+      },
+      {
+        level: "mid",
+        q: "A credential was copied into an image and removed by `RUN rm` in a later step. Is it safe?",
+        strong: "No. The deletion is only a whiteout marker, so anyone who can pull the image can read the file from the earlier layer.",
+        answer: [
+          { t: "p", text: "An earlier layer's tar is immutable, so `rm` records a whiteout in a later layer and removes nothing. In this lesson's measurement, `rm -rf /root/.aws` produced two zero-byte whiteout files and the 63-byte credential was read back from layer 1 in full." },
+          { t: "p", text: "It is also undetectable from a running container, which genuinely does not have the file. `docker save` plus `tar -xf` is the whole attack. So I would treat the credential as leaked and rotate it, then rebuild with a BuildKit secret mount, which puts it in no layer in any stage." }
+        ]
       }
     ]
   }

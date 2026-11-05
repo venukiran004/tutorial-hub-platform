@@ -236,6 +236,15 @@ volumes:
           { t: "p", text: "The failed-download-stalls-the-rollout property is the strongest argument for init containers and the one most people have not thought through." },
           { t: "p", text: "The ReadWriteOnce scheduling constraint is a concrete, checkable objection to PersistentVolumes that goes beyond the architectural argument." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Should a credential reach a pod as an environment variable or a mounted file?",
+        strong: "A mounted file: env vars leak more widely and are only read at process start.",
+        answer: [
+          { t: "p", text: "Env vars leak through `kubectl describe`, `/proc/<pid>/environ`, crash dumps and error trackers. They are also read once at process start, so rotation needs a rolling restart of every consumer, while mounted files update in place within about a minute." },
+          { t: "p", text: "Env vars are fine for a threshold or a version string. For credentials that matter I would go further than either option, using workload identity plus an external secret manager, because a Secret is base64 rather than encryption and `create pods` in a namespace is equivalent to reading every Secret in it." }
+        ]
       }
     ]
   }

@@ -232,6 +232,15 @@ EC.receiveLesson({
           { t: "p", text: "Arguing for immutable images over configuration management, and framing it as eliminating a category rather than managing one, is the senior position." },
           { t: "p", text: "Naming the narrow remaining territory precisely — and the record-what-converged habit — keeps it from sounding dismissive of a tool that still has real uses." }
         ]
+      },
+      {
+        level: "mid",
+        q: "You remove a task from an Ansible playbook. What happens to the package it installed?",
+        strong: "Nothing. Ansible has no state file, so the package stays on every host that ran the old playbook.",
+        answer: [
+          { t: "p", text: "Terraform can delete what leaves its config because state records what it created. Ansible keeps no such record, so it cannot clean up after itself, and removing a task only stops it being applied." },
+          { t: "p", text: "To remove something you have to declare the removal as a task of its own. It also means hosts can differ according to which playbooks they ran, which is why having the playbook write what it converged onto the host is worth doing." }
+        ]
       }
     ]
   }

@@ -255,6 +255,15 @@ EC.receiveLesson({
           { t: "p", text: "The 45-second reaction time with the breakdown is the most valuable number in the answer, because it reframes what the HPA is for and makes the baseline-replica argument inevitable." },
           { t: "p", text: "Choosing Guaranteed QoS deliberately, and saying why, shows the eviction consequence is understood rather than the field being filled in by habit." }
         ]
+      },
+      {
+        level: "mid",
+        q: "A model pod with a 256 MB limit is OOMKilled before serving a request. How do you approach it?",
+        strong: "Exit code 137 means the memory limit, and the floor is the import cost, so measure resident memory and set the limit from that.",
+        answer: [
+          { t: "p", text: "Memory limits kill, because you cannot have less of an allocated byte, and that shows as OOMKilled with exit code 137. For this course's service the resident floor is 260.9 MB, so a 256 MB limit is 4.9 MB short before any traffic." },
+          { t: "p", text: "Almost all of that is imports: scipy was 43% of the floor and the model was 0.6%, while a batch of a thousand rows is 0.0305 MB. So shrinking the model or the batch will not help. I would measure RSS under load rather than summing package sizes, then set the limit from that number." }
+        ]
       }
     ]
   }

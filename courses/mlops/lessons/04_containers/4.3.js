@@ -241,6 +241,15 @@ ENTRYPOINT python -m uvicorn src.app:app` },
           { t: "p", text: "Framing it as 'what does rollback mean' is the move that makes this a design answer rather than a preference, and it connects to the one-command-rollback practice." },
           { t: "p", text: "Ruling out the mounted volume with a reason — unversioned mutable state — shows the trade has been thought through rather than enumerated." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Why is Alpine usually the wrong base image for ML?",
+        strong: "It uses musl rather than glibc, so manylinux wheels do not apply and numpy and scipy compile from source.",
+        answer: [
+          { t: "p", text: "The appeal is a small base, but the saving is smaller than scipy's own 112.7 MB, and the cost is that prebuilt manylinux wheels stop applying. numpy and scipy then compile from source." },
+          { t: "p", text: "The usual right base is `python:3.11-slim`. Full python is about 1 GB of mostly unused toolchain, and distroless is a multi-stage target rather than a build base. If compilers are needed, a multi-stage build keeps `build-essential` out of the runtime image altogether." }
+        ]
       }
     ]
   }

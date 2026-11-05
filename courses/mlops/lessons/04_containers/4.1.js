@@ -196,6 +196,15 @@ EC.receiveLesson({
           { t: "p", text: "Deriving the exceptions from the same mechanism keeps the answer coherent instead of a list of anecdotes, and naming gVisor/Kata shows awareness of the middle ground." },
           { t: "p", text: "The closing point reframes containers as a reproducibility tool rather than a packing tool, which is the more accurate account for ML and connects to the provenance material." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Why do PyTorch DataLoader workers die with a bus error in a container?",
+        strong: "Because `/dev/shm` defaults to 64 MB, and the fix is to raise it, not to change the code.",
+        answer: [
+          { t: "p", text: "DataLoader workers run into the shared-memory limit, and `/dev/shm` in a container defaults to 64 MB. The failure surfaces as a bus error, which does not point at the cause." },
+          { t: "p", text: "The fix is `--shm-size` under Docker, or a Memory-backed emptyDir on Kubernetes. It belongs with the other cgroup surprise: limits cap consumption without virtualising it, so a 2-CPU container on a 64-core node still reports 64, and thread pools size themselves from that." }
+        ]
       }
     ]
   }

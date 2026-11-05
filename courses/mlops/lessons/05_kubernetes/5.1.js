@@ -222,6 +222,15 @@ EC.receiveLesson({
           { t: "p", text: "Leading with the loop and then deriving three consequences is the structure that demonstrates understanding rather than coverage. The free-failure-recovery point is the one that best explains why people accept the complexity." },
           { t: "p", text: "The spec/status distinction is the most practically useful thing in the answer, because it generalises to every object and to GitOps tooling." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Why should CI not treat a successful `kubectl apply` as a successful deploy?",
+        strong: "Because apply succeeding only means the object was written to etcd, so CI has to check `kubectl rollout status`.",
+        answer: [
+          { t: "p", text: "Kubernetes is eventually consistent. Apply records desired state and returns; the pods have not been scheduled, pulled or started at that point, and controllers do that work afterwards." },
+          { t: "p", text: "So a broken image still gives a green apply. CI must check `kubectl rollout status` rather than the exit code of apply, and the same discipline applies anywhere: `spec` is yours, `status` is a controller's, and status is what tells you what happened." }
+        ]
       }
     ]
   }

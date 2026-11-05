@@ -240,6 +240,15 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
           { t: "p", text: "The SLO-boundary point is the one most people have never considered and it is free, which makes it a strong thing to raise." },
           { t: "p", text: "Admitting that a single layout is 25.7% wrong somewhere is honest and shows the error is understood as structural rather than as a bug to eliminate." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Your histogram p50 and p99 look accurate but p95 looks wrong. How can that be?",
+        strong: "A histogram quantile is an interpolated estimate, so its error depends on where that quantile falls among the buckets.",
+        answer: [
+          { t: "p", text: "`histogram_quantile` interpolates linearly inside the bucket containing the quantile, assuming an even spread that does not exist. So accuracy is a property of each quantile and the bucket around it, not of the layout as a whole." },
+          { t: "p", text: "In this lesson's measurement one layout was -0.2% at p50 and +2.8% at p99 while being +25.7% at p95. So I would put bucket boundaries close to the values I actually alert on, and check each quantile I report rather than assuming the others carry over." }
+        ]
       }
     ]
   }

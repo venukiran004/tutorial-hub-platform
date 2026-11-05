@@ -234,6 +234,15 @@ spec:
           { t: "p", text: "The concurrency of SIGTERM and endpoint removal is the key technical insight, and the preStop sleep is the fix that most teams are missing. Naming the symptom it cures makes it recognisable." },
           { t: "p", text: "Ending on the ML-specific readiness point ties the generic answer to the domain, and it has a measurement behind it." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Why is a training run a Job and not a Deployment?",
+        strong: "A Deployment expects its pod never to terminate, so a finished training script gets restarted for ever.",
+        answer: [
+          { t: "p", text: "The four workload types differ on whether a pod is supposed to terminate. In a Deployment, the script exits 0, the controller sees a gap and restarts it, which is an infinite retrain loop." },
+          { t: "p", text: "A Job runs once and adds what training needs: `backoffLimit`, `activeDeadlineSeconds` and parallelism. Its pods are retained on purpose because their logs are the run record, so set `ttlSecondsAfterFinished` to clean them up." }
+        ]
       }
     ]
   }

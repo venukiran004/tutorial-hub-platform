@@ -232,6 +232,15 @@ log.info("prediction served", extra={"correlation_id": cid,
           { t: "p", text: "Separating the operational log from the prediction log by governance and lifetime is the senior distinction, and it is the right answer to a question that sounds like it is about logging practice." },
           { t: "p", text: "Naming the feature vector as the specific privacy hazard is valuable because the system works perfectly while it is happening, so nothing surfaces it." }
         ]
+      },
+      {
+        level: "mid",
+        q: "A customer reports one bad prediction. How do you find it?",
+        strong: "Through one correlation id, generated at the edge and returned in the response, which turns the report into a single query.",
+        answer: [
+          { t: "p", text: "Metrics cannot help, because a request id is an unbounded label and they are aggregated at write time. So the id has to be generated at the edge if the caller did not supply one, carried through the logs and traces, and returned to the caller so a support report can quote it." },
+          { t: "p", text: "ML adds a fourth consumer: the prediction log, which must survive until labels arrive, 45 days in lesson 2.2's case. Structured JSON then makes `score > 0.9 AND model_version = …` a filter rather than a regular expression." }
+        ]
       }
     ]
   }

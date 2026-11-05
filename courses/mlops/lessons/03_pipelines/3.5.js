@@ -212,6 +212,15 @@ def pipeline(as_of: str):
           { t: "p", text: "Being willing to argue against the sophisticated option, with a concrete account of what the simple one already provides, is what makes this senior." },
           { t: "p", text: "The undeclared-input caveat is the detail that shows operational experience: it is the way caching actually bites people, and it is not in anyone's getting-started guide." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Why can a pipeline cache return a wrong result without any error?",
+        strong: "Because the cache keys on declared inputs, so a step that reads something undeclared looks unchanged when it is not.",
+        answer: [
+          { t: "p", text: "Content-keyed caching is what lets you change the gate and get free hits on ingest, validate, features and train. It is only correct if the key covers everything the step depends on." },
+          { t: "p", text: "A step that reads \"the latest partition\" instead of taking an `as_of` parameter has an input the cache cannot see, so yesterday's output is served for today's data. The fix is 3.1's rule: thread the logical date through as a parameter, with no `now()` anywhere, which also keeps backfill working." }
+        ]
       }
     ]
   }

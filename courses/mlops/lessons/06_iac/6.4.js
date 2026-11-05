@@ -243,6 +243,15 @@ def gitops_model(events, period=5):
           { t: "p", text: "The suspended-application failure mode is the most useful thing in this answer because it is operational, common, and rarely anticipated." },
           { t: "p", text: "Noting that something must still push the image tag shows the boundary of the model is understood, which is a frequent source of confusion when teams expect GitOps to handle model releases." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Under GitOps, an HPA-managed replica count keeps flipping. Why?",
+        strong: "Two owners are writing one field: the HPA sets replicas and the controller resets them to the repository, so it needs `ignoreDifferences`.",
+        answer: [
+          { t: "p", text: "A pull controller keeps making the cluster match the repository. If the repository states a replica count and the HPA changes it, the controller sees drift and reverts it, and the count oscillates every sync period." },
+          { t: "p", text: "`ignoreDifferences` declares that something else owns that field. It is `ignore_changes` under another name, which is lesson 6.1's drift trade again. The same reasoning makes `selfHeal` a decision rather than a default virtue, because the controller cannot tell an emergency fix from a mistake." }
+        ]
       }
     ]
   }

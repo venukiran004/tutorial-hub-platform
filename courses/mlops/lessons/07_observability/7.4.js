@@ -235,6 +235,15 @@ EC.receiveLesson({
           { t: "p", text: "The structure — two fast burn-rate alerts, one fast proxy, two slow tickets — is the answer, and every element has a measurement behind it." },
           { t: "p", text: "Volunteering the blind spot of your own recommended alert is the strongest move available here, because it shows the alert set is understood as a set of partial signals rather than a solution." }
         ]
+      },
+      {
+        level: "mid",
+        q: "Your service runs at 0.2% errors under a 1% alert and every dashboard is green. Is that a problem?",
+        strong: "Yes, against a 99.9% SLO. It is a burn rate of 2x and exhausts the month's budget in 360 hours without firing.",
+        answer: [
+          { t: "p", text: "Burn rate is the observed bad rate divided by the budgeted bad rate, so 0.2% against 0.1% is 2x. At that pace the month's budget is gone in 360 hours, and a static 1% threshold never trips because the rate is a fifth of it." },
+          { t: "p", text: "The same static rule also flattens real emergencies: 2% with 36 hours of margin and 35% with 2.1 hours page identically. I would replace it with multi-window burn-rate alerts, 14x over 1 hour and 6x over 6 hours to page, and 1x over 3 days to ticket." }
+        ]
       }
     ]
   }

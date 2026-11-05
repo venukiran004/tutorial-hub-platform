@@ -230,6 +230,15 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
           { t: "p", text: "Rejecting the obvious implementation with the pod-share reason, and then connecting it to whether the share can reach significance, is the senior move — it treats the mechanism as downstream of the statistics." },
           { t: "p", text: "The user-stickiness point is worth volunteering because a canary that shows one user both versions produces incoherent experience and contaminates any comparison." }
         ]
+      },
+      {
+        level: "mid",
+        q: "When would you use `helm rollback` rather than `kubectl rollout undo`?",
+        strong: "Helm reverts the whole release, while rollout undo reverts one Deployment's pod template and can leave a combination nobody tested.",
+        answer: [
+          { t: "p", text: "`helm rollback` works because a release is a named, versioned record of chart plus values, so everything goes back together. `kubectl rollout undo` changes one Deployment's pod template, which can leave new config running with old code." },
+          { t: "p", text: "So on a Helm-managed service I would use Helm, and prevent most manual rollbacks by upgrading with `--wait --atomic`. Without `--wait`, Helm returns when objects are accepted, which means nothing; `--atomic` reverts a failed upgrade automatically." }
+        ]
       }
     ]
   }

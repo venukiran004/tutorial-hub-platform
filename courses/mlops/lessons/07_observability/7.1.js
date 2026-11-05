@@ -260,6 +260,15 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
           { t: "p", text: "Having the product arithmetic with real numbers makes the risk concrete, and the 2,880-to-144-million jump is memorable." },
           { t: "p", text: "The per-feature drift point is the ML-specific insight, and connecting it to the statistical power requirement shows why the architectural separation is correct rather than merely conventional." }
         ]
+      },
+      {
+        level: "mid",
+        q: "How do you get metrics out of a training Job into Prometheus?",
+        strong: "Prometheus pulls, so a process that exits between scrapes is invisible; a short-lived job needs a Pushgateway.",
+        answer: [
+          { t: "p", text: "Under pull, a Job's final values vanish with the pod, because nothing scrapes them before it exits. A Pushgateway is the explicit exception for that case: the job pushes its results and Prometheus scrapes the gateway." },
+          { t: "p", text: "The caution is not to use it for services, where it is widely misused. Pull gives a service `up == 0` as a signal when a scrape fails, and pushing through a gateway destroys that." }
+        ]
       }
     ]
   }
