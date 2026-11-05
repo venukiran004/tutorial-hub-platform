@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.1 — NLP with spaCy
    The pipeline, the Doc/Token/Span object model, a custom component and
-   both matchers are run and timed (scratchpad/nlp/n31.py).
+   both matchers are run and timed (n31.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.1",
@@ -65,7 +65,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — the sentence", code:
+    { t: "code", lang: "python", title: "the sentence", code:
 "import spacy\n\nnlp = spacy.load(\"en_core_web_sm\")     # sm: fast. md/lg: vectors. trf: most accurate\ndoc = nlp(\"Apple is looking at buying U.K. startup for $1 billion\")\n\nfor token in doc:\n    print(f\"{token.text:10} {token.pos_:6} {token.dep_:10} \"\n          f\"{token.is_stop} {token.lemma_}\")\n\nfor ent in doc.ents:\n    print(f\"{ent.text:20} {ent.label_:10} ({ent.start_char}:{ent.end_char})\")",
       caption: "Four model sizes ship: `sm` has no word vectors, `md` and `lg` do, and `trf` wraps a transformer. `doc.similarity()` silently degrades on `sm` because there are no vectors to compare." },
 
@@ -136,7 +136,7 @@ EC.receiveLesson({
 
     { t: "p", text: "A component is any callable taking a `Doc` and returning a `Doc`. Register it with `@Language.component`, declare any custom attributes on `Doc`, `Token` or `Span`, and add it to the pipeline by name." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n31.py — a custom component", code:
+    { t: "code", lang: "python", title: "a custom component", code:
 "from spacy.language import Language\nfrom spacy.tokens import Doc\n\nDoc.set_extension(\"sentiment\", default=\"neutral\", force=True)\n\n@Language.component(\"custom_sentiment\")\ndef custom_sentiment(doc):\n    pos = {\"good\", \"great\", \"excellent\", \"amazing\", \"love\"}\n    neg = {\"bad\", \"terrible\", \"awful\", \"hate\", \"worst\"}\n    p = sum(1 for t in doc if t.text.lower() in pos)\n    n = sum(1 for t in doc if t.text.lower() in neg)\n    doc._.sentiment = \"positive\" if p > n else \"negative\" if n > p else \"neutral\"\n    return doc\n\nnlp.add_pipe(\"custom_sentiment\", last=True)",
       caption: "Custom attributes live under the `._.` namespace so they can never collide with spaCy's own. `force=True` allows re-registration, which matters in notebooks." },
 

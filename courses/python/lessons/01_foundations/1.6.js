@@ -144,7 +144,7 @@ with open("data.csv") as f:
 with open("data.csv", encoding="utf-8") as f:
     ...`,
         hl: [6, 7]},
-      { t: "p", text: "Python 3.15 will make UTF-8 the default, and Python 3.10+ can warn about the omission via `-X warn_default_encoding`. Until then, **pass `encoding=` to every `open()` call that handles text.** Lesson 7.1 covers file handling in full." }
+      { t: "p", text: "Python 3.15 makes UTF-8 the default, and Python 3.10+ can warn about the omission via `-X warn_default_encoding`. Until then, **pass `encoding=` to every `open()` call that handles text.** Lesson 7.1 covers file handling in full." }
     ]},
 
     /* ================================================================== */
@@ -309,7 +309,7 @@ ssiss
 example
 example.com`},
         { t: "callout", kind: "trap", title: "strip() is not removeprefix()", body: [
-          { t: "p", text: "`strip(chars)` removes **any** of those characters, repeatedly, from both ends. It is a character set, not a substring. `\"filename.png\".strip(\".png\")` gives `\"filenam\"` — it removed the trailing `e` too, because `e`… is not in the set, but `n` and `g` and `p` are, and it kept going." },
+          { t: "p", text: "`strip(chars)` removes **any** of those characters, repeatedly, from both ends. It is a character set, not a substring. `\"pricing.png\".strip(\".png\")` gives `\"rici\"`: it removed the extension, kept going through the `ng` of `pricing` because those characters are in the set, and took the leading `p` off the other end too. `removesuffix(\".png\")` is what was meant." },
           { t: "p", text: "Use `removeprefix` and `removesuffix` (Python 3.9+) when you mean a literal substring. They exist precisely because this bug was so common." }
         ]}
       ]},
@@ -347,7 +347,7 @@ print("order id".capitalize())         # 'Order id'
 print("7".zfill(3))                    # '007'
 print(f"{7:03d}")                      # '007' -- usually clearer
 `,
-          out: `Order # 1234
+          out: `Order  #1234
 Order #1234
 Order Id
 Order id
@@ -566,22 +566,22 @@ if __name__ == "__main__":
     title: "Knowledge check",
     questions: [
       {
-        stem: "What does `\"filename.png\".strip(\".png\")` return?",
+        stem: "What does `\"pricing.png\".strip(\".png\")` return?",
         options: [
-          "`'filename'` — the suffix is removed",
-          "`'filenam'` — strip removes any of the characters `.`, `p`, `n`, `g` from both ends, including the trailing `e`… ",
-          "`'filename.png'` — strip only removes whitespace",
-          "`'file'` — every matching character is removed throughout the string"
+          "`'pricing'` — the `.png` suffix is removed from the end, as the argument describes",
+          "`'pricing.png'` — even with an argument, strip only removes surrounding whitespace",
+          "`'rici'` — strip removes any of `.`, `p`, `n`, `g` from both ends, not a suffix",
+          "`'prici'` — the characters are stripped from the right end only"
         ],
-        answer: 1,
-        why: "`strip` takes a *set of characters* and removes any of them repeatedly from both ends. It strips `g`, `n`, `p`, `.` — then reaches `e`, which is not in the set, and stops. So the result is `'filenam'`, not `'filename'` and not `'file'`. This is why `removesuffix(\".png\")` was added in Python 3.9: it removes a literal substring, which is what people almost always mean. Note that `strip` only works from the ends, so option D is wrong on a second count."
+        answer: 2,
+        why: "`strip` takes a *set of characters* and removes any of them repeatedly from both ends. On the right it removes `g`, `n`, `p`, `.`, then the `g` and `n` of `pricing`, and stops at `i`. On the left it removes the leading `p` and stops at `r`. So the result is `'rici'`. This is why `removesuffix(\".png\")` was added in Python 3.9: it removes a literal substring, which is what people almost always mean. `rstrip` would give `'prici'`, which still eats into the name."
       },
       {
         stem: "`len(\"café\")` is 4 but `len(\"café\".encode(\"utf-8\"))` is 5. Which statement explains this correctly?",
         options: [
-          "The string contains an invisible character that encoding exposes",
+          "The string contains an invisible combining character that only encoding exposes",
           "`str` counts characters; UTF-8 encodes `é` as two bytes, so the byte length is larger",
-          "`encode` appends a null terminator byte",
+          "`encode` appends a null terminator byte so the result can be passed to C functions",
           "UTF-8 always uses two bytes per character, so the counts diverge for any string"
         ],
         answer: 1,
@@ -600,18 +600,18 @@ cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
 cursor.execute("SELECT * FROM users WHERE id = %s" % user_id)`,
         options: [
           "A — f-strings are the modern approach and handle escaping",
-          "C — the value is passed separately so the driver can parameterise it",
           "B — explicit `str()` conversion prevents type confusion",
+          "C — the value is passed separately so the driver can parameterise it",
           "D — `%` formatting is the documented DB-API style"
         ],
-        answer: 1,
+        answer: 2,
         why: "Only C parameterises. A, B and D all build one string before the driver sees it, so a `user_id` of `\"1 OR 1=1\"` becomes part of the query — classic SQL injection. D is especially deceptive because `%s` appears in it, but `%` formatting happens in Python before `execute` is called; the placeholder must reach the driver intact, with the values in a separate argument. The `%s` in C is the driver's placeholder, not Python string formatting."
       },
       {
         stem: "Why is building a large string with `s += chunk` in a loop slow?",
         options: [
           "The `+=` operator is unoptimised compared to `+`",
-          "Strings are immutable, so each `+=` allocates a new string and copies everything accumulated so far — O(n²) total",
+          "Each `+=` builds a new string and copies everything so far, which is O(n²) overall",
           "Python re-encodes the string to UTF-8 on every concatenation",
           "The garbage collector runs after each concatenation"
         ],

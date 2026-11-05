@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c20.2",
  "lede": "**25 programs to write**, on websockets, webhooks and routing. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 25 programs on websockets, webhooks and routing without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c20.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2317–2341.** What this set actually drills, counted from its own problems — 14 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["web and APIs", "async", "patterns", "databases", "files and paths", "decorators"], "cells": [[{"text": "8", "tone": "accent"}, "HTTP Request/Response Parser"], [{"text": "2", "tone": "good"}, "WebSocket Server (asyncio)"], [{"text": "1", "tone": "violet"}, "API Response Builder"], [{"text": "1", "tone": "teal"}, "GraphQL Query Parser (Simplifi"], [{"text": "1", "tone": "warn"}, "FastAPI File Upload"], [{"text": "1", "tone": "crit"}, "Caching Decorator with TTL"]], "t": "diagram", "id": "dg-c20_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

@@ -202,6 +202,11 @@ manifest = {
 # measurement is not this year's RTO.`,
       caption: "**`canary_recall_at_snapshot` is the field that stops you restoring a bad index.** Snapshots are taken on a schedule, including on the night the index was already broken — so recording the quality at snapshot time is what lets a restore choose the last known-good one rather than the most recent one." },
 
+    { t: "callout", kind: "trap", title: "Restoring a snapshot resurrects deleted documents", body: [
+      { t: "p", text: "A snapshot is the index as it was at that moment, including every document that has been deleted from the source since. **Restore last night's snapshot and the policy withdrawn this morning is retrievable again, and so is the customer record you erased under a deletion request.** The restore passes every health check and every golden, because the goldens ask about documents that still exist." },
+      { t: "p", text: "**Treat deletions as an event log, not a side effect.** Record each removal with its timestamp, replay the deletions since the snapshot's `taken_at` as the step after restore and before traffic, and reconcile the restored index's document IDs against the source's current set. A restore that skips this is not a recovery; it is a rollback of your compliance obligations." }
+    ]},
+
     { t: "h2", n: "05", text: "Stages 6 and 7: retrieval and generation", id: "retrieve-generate" },
 
     { t: "p", text: "These two stages are stateless, so they have nothing to back up. **What they have instead is the entire detection burden: this is where a failure from any earlier stage becomes visible, and where the provider outage you cannot fail over lands.**" },
@@ -409,56 +414,56 @@ signals separate them, and all three signals are cheaper than the incident.`,
       {
         stem: "Which stage of a RAG pipeline cannot be rebuilt from anything else?",
         options: [
-          "The index, because it encodes the embedding model",
-          "The vectors, because re-embedding costs money",
-          "The source documents — everything after them is derived, and derivable only while they exist somewhere you control",
-          "The chunks, because the splitter configuration may be lost"
+          "The source documents — everything else is derived from them",
+          "The index, because it encodes the embedding model and cannot be rebuilt without it",
+          "The vectors, because re-embedding a corpus costs money and takes hours",
+          "The chunks, because the splitter configuration may not have been recorded"
         ],
-        answer: 2,
+        answer: 0,
         why: "Parse, chunk, embed and index are all recomputable from the documents; the documents are recomputable from nothing. That makes the first recovery action an inventory question rather than a backup job — and if the corpus lives only in the vector store, a corrupted index is permanent data loss dressed as a derived asset."
       },
       {
         stem: "Your provider silently updates the embedding model. What do you observe?",
         options: [
-          "Query errors, until the index is rebuilt",
-          "No errors, normal latency, plausible passages, and recall that has collapsed",
-          "The vector store rejects the query for having the wrong dimension",
-          "Nothing — stored vectors are unaffected, so retrieval is unaffected"
+          "Query errors until the index is rebuilt with the new model",
+          "The vector store rejects queries for having the wrong dimension",
+          "No errors, normal latency, and collapsed recall",
+          "Nothing — the stored vectors are unaffected, so retrieval is unaffected"
         ],
-        answer: 1,
+        answer: 2,
         why: "The stored vectors are fine and the query vector is now in a different space, so cosine similarity still returns a number and the number means nothing. Dimension checks do not help when the replacement model has the same dimension — which is the common case, and the reason to record the model identity rather than only its shape."
       },
       {
         stem: "An in-place index rebuild fails after writing 15% of the corpus. What is the state of the system?",
         options: [
-          "The index is unavailable until the rebuild is retried",
-          "The index answers every query from 15% of the corpus, reports success, and is wrong in a way no operational metric distinguishes",
-          "The vector store rolls back the partial write automatically",
-          "Queries fail with a partial-index error"
+          "The index is unavailable to queries until the rebuild is retried and completes",
+          "The vector store rolls back the partial write automatically and keeps the old index",
+          "Queries fail with a partial-index error until the rebuild is finished",
+          "It answers from 15% of the corpus and reports success"
         ],
-        answer: 1,
+        answer: 3,
         why: "This is the argument for blue-green builds: construct the new index alongside the old one, canary it, then switch the alias. A failed build then never becomes the live index, and the symptom — every answer citing the same few documents — cannot reach a user."
       },
       {
         stem: "The model provider is down. What should a RAG system do first?",
         options: [
-          "Fail over to a second provider immediately",
-          "Return 503 so clients retry",
-          "Degrade to retrieval-only: return the matched passages without a generated summary, and say summaries are unavailable",
-          "Serve cached answers without indicating they are cached"
+          "Fail over to a second model provider immediately, since it can answer the same prompts",
+          "Degrade to retrieval-only and say summaries are unavailable",
+          "Return 503 so clients retry once the provider is back",
+          "Serve cached answers from earlier queries without indicating that they are cached"
         ],
-        answer: 2,
+        answer: 1,
         why: "Retrieval needs no provider, so the half of the system with the citations still works — that is most of the value and it is honest. A second provider is worth having and is not equivalent: it returns different answers, may reject your output schema, and its quality is unknown without recorded evals."
       },
       {
         stem: "Which snapshot should a restore choose?",
         options: [
+          "The last one whose recorded canary recall was good",
           "The most recent one, to minimise data loss",
-          "The last one whose recorded canary recall was good, because snapshots are taken on schedule including on nights the index was already broken",
-          "The oldest one still in retention, as it is most likely intact",
+          "The oldest one still in retention, as it is the most likely to be intact",
           "Whichever one matches the current corpus manifest"
         ],
-        answer: 1,
+        answer: 0,
         why: "A snapshot schedule does not know whether the index was healthy when it ran, so the most recent snapshot may be a faithful copy of a broken index. Recording the canary recall in the snapshot manifest is what makes \"last known good\" a decidable question rather than a guess."
       }
     ]

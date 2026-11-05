@@ -39,7 +39,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`np.random.seed` sets the global random state (unsafe in multiprocessing; stateful singleton). `np.random.default_rng(seed)` creates an independent `Generator` object — thread-safe and reproducible in parallel scenarios."
+     "text": "`np.random.seed` sets the global random state (unsafe in multiprocessing; stateful singleton). `np.random.default_rng(seed)` creates an independent `Generator` object. For reproducible parallel work, give each worker its own, using `SeedSequence.spawn`; sharing one across threads makes the order of draws depend on timing."
     }
    ],
    "kind": ""

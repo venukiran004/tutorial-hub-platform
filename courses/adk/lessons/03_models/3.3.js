@@ -2,7 +2,7 @@
    LESSON 3.3 — Planners: Thinking, Plan-Act and Reasoning Control
    The injected instruction, its five tags, the empty BuiltInPlanner
    instruction, the thought part and the 3,137-character system instruction are
-   executed output from scratchpad/adk/p1.py on google-adk 2.9.2.
+   executed output from p1.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.3",
@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Two planners, two mechanisms", id: "two" },
 
-    { t: "code", lang: "python", title: "p1.py — what each one injects",
+    { t: "code", lang: "python", title: "what each one injects",
       code: `from google.adk.planners import BasePlanner, BuiltInPlanner, PlanReActPlanner
 
 pr = PlanReActPlanner()

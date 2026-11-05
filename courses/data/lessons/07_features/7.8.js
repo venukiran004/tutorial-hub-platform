@@ -123,7 +123,7 @@ f["iso_year"] = ts.dt.isocalendar().year.astype(int)
 # THE DATE WITH A FAKE TIME (see 6.1): if 90% of timestamps are at
 # 00:00:00, hour and minute are meaningless. Check before building
 # intraday features:
-(ts.dt.time == pd.Timestamp("00:00").time()).mean()       # ~0.03 here: real times
+(ts.dt.time == pd.Timestamp("00:00").time()).mean()       # ~0.00 here: real times
 
 # INTERACTIONS THE COMPONENTS IMPLY:
 f["hour_weekend"] = f["hour"] * f["is_weekend"]           # 10am Saturday != 10am Tuesday

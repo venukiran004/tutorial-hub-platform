@@ -43,7 +43,7 @@ EC.receiveLesson({
         ["**IPO**", "BT's assumption that preferences are transitive and deterministic", "Squared loss on the margin toward a fixed target", "Noisy or contradictory labels; DPO is overfitting them"]
       ] },
 
-    { t: "callout", kind: "insight", title: "Three of the four remove the reference model, and that tells you something",
+    { t: "callout", kind: "insight", title: "Two of the four remove the reference model, and that tells you something",
       body: [
         { t: "p", text: "ORPO and SimPO both drop \\(\\pi_{\\text{ref}}\\) explicitly, and ORPO additionally drops the SFT stage that produces it. That is not coincidence \u2014 the reference model is DPO\u2019s most awkward component: a second set of weights, 13.0 GB at 7B by 7.5\u2019s arithmetic, that contributes nothing at inference." },
         { t: "p", text: "It is also a correctness liability. With two separate checkpoints the reference can silently be the wrong model \u2014 the base instead of the SFT model, or a different SFT run \u2014 and nothing errors. 7.6 noted that LoRA removes this risk by construction; these methods remove it by deleting the component." },
@@ -320,7 +320,7 @@ for case in [
     "**KTO removes the need for pairs**, consuming individual good/bad labels via a prospect-theory value function.",
     "**SimPO removes the reference and the length bias**, using length-normalised average log-probability plus a target margin \u03b3.",
     "**IPO removes Bradley-Terry's determinism assumption**, replacing log-sigmoid with a squared loss toward a fixed target margin.",
-    "**Three of the four delete the reference model**, because it is 13 GB at 7B that contributes nothing at inference and can silently be the wrong checkpoint.",
+    "**Two of the four delete the reference model**, because it is 13 GB at 7B that contributes nothing at inference and can silently be the wrong checkpoint.",
     "**But the reference is what buys DPO its derivation** \u2014 removing it means relying on the loss being well-behaved empirically instead.",
     "**KTO has the largest practical consequence**, because production feedback is thumbs-up/down and is often orders of magnitude larger than any commissioned pair set.",
     "**Unpaired labels lose the controlled comparison**, so prompt difficulty is uncontrolled and the positive-to-negative ratio becomes a hyperparameter.",
@@ -362,7 +362,7 @@ for case in [
         answer: 1,
         why: "Bradley-Terry labels are stochastic \u2014 measured on synthetic data, the Bayes-optimal accuracy was 78.6%, so over a fifth of labels contradicted the true ordering. DPO's log-sigmoid keeps pushing those in the wrong direction indefinitely, slowly, and it accumulates. A squared loss is minimised at the target margin, so pushing past it is penalised and no single mislabelled pair can dominate. The cost is that genuinely unambiguous preferences also stop being learned decisively, since the gradient reverses beyond the target." },
 
-      { stem: "Three of the four DPO variants remove the reference model. What is the reference model's actual role in DPO?",
+      { stem: "ORPO and SimPO remove the reference model. What is the reference model's actual role in DPO?",
         options: [
           "It provides the baseline for advantage estimation, as a critic does in PPO",
           "It is what makes the implicit reward correspond to the KL-constrained optimum \u2014 so removing it trades derivation for empirical behaviour",
@@ -384,7 +384,7 @@ for case in [
         answer: [
           { t: "p", text: "The useful way to hold them is by what each removes from DPO. ORPO removes the reference model *and* the separate SFT stage \u2014 one run from base to aligned, with an SFT loss plus a lambda-weighted odds-ratio penalty on the rejected response." },
           { t: "p", text: "KTO removes the need for pairs, using a prospect-theory value function on individual good or bad labels. SimPO removes the reference model and the length bias, by using length-normalised average log-probability plus a target margin instead of a summed log-ratio. IPO removes Bradley-Terry\u2019s assumption that preferences are deterministic, replacing log-sigmoid with a squared loss toward a target." },
-          { t: "p", text: "Noticing that three of the four delete the reference model tells you something: it is DPO\u2019s most awkward component \u2014 13 GB at 7B that does nothing at inference, and with two checkpoints it can silently be the wrong model with nothing erroring." },
+          { t: "p", text: "Noticing that two of the four delete the reference model tells you something: it is DPO\u2019s most awkward component \u2014 13 GB at 7B that does nothing at inference, and with two checkpoints it can silently be the wrong model with nothing erroring." },
           { t: "p", text: "What it buys, though, is the derivation. The reference policy appears in the KL-constrained optimum, so the log-ratio against it is what *equals* the reward. Delete it and you have an empirical loss rather than a consequence of the objective." }
         ] },
 

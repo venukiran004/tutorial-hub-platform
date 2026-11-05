@@ -301,7 +301,7 @@ cantelli_quantile_bound(mean=94.2, sd=142.8)      # 1,515 ms
 # AND MEASURE THE GAP, because it tells you how much your guarantee
 # depends on the distribution staying put:
 observed_p99 = 612.0
-cantelli_quantile_bound(94.2, 142.8) / observed_p99      # 2.47
+cantelli_quantile_bound(94.2, 142.8) / observed_p99      # 2.48
 #
 # A ratio near 1 means the data is already near the worst case for its
 # moments and there is little room for a surprise. A ratio of 2.5 means

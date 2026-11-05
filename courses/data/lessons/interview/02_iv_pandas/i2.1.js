@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A **view** shares the same underlying data as the original; modifying it modifies the original. A **copy** is independent. Pandas raises `SettingWithCopyWarning` when you modify a slice that might be a view. Use `.copy()` to be explicit."
+     "text": "A **view** shares the same underlying data as the original; modifying it modifies the original. A **copy** is independent. Pandas 2 raises `SettingWithCopyWarning` when you modify a slice that might be a view. Pandas 3 makes Copy-on-Write the default, so the warning is gone: a derived object behaves as a copy, and a chained assignment never reaches the original. Use `.copy()` to be explicit."
     }
    ],
    "kind": ""

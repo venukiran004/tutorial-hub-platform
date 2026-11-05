@@ -50,7 +50,7 @@ EC.receiveLesson({
       rows: [
         ["Preferred delimiter", "Triple backticks, `###`, markdown headings", "**XML-style tags** — `<document>`, `<instructions>`", "Markdown; also handles XML"],
         ["System prompt", "A `system` role message", "**A separate top-level parameter**, not a message role", "A `systemInstruction` field"],
-        ["Structured output", "`response_format` with a schema (1.8)", "**Forced tool use** — no JSON mode", "`responseSchema` in the generation config"],
+        ["Structured output", "`response_format` with a schema (1.8)", "`output_config.format`, or forced tool use", "`responseSchema` in the generation config"],
         ["Reasoning", "o1/o3 as separate models with hidden tokens (1.10)", "Extended thinking, toggled on a normal model", "A thinking budget on the model"],
         ["Long context", "128K typical", "200K typical", "**1M+** — a different design point"],
         ["Safety controls", "Fixed filters, `content_filter` finish reason", "Fixed", "**Configurable per category**"]
@@ -250,7 +250,7 @@ text = cand.content.parts[0].text`,
       ["Portable: the task specification", "Instruction, context, output requirements, the semantics of every field. This is most of the prompt and it says nothing about a provider."],
       ["Portable: XML delimiters", "They help most on Anthropic and hurt nowhere, so there is no reason to vary them."],
       ["Specialise: the system-prompt mechanism", "A message role, a parameter, or a `developer` role. This is an API shape rather than prompt content, and it belongs in the client layer."],
-      ["Specialise: structured output", "`response_format` against forced tool use against `responseSchema`. Same intent, three implementations (1.8)."],
+      ["Specialise: structured output", "`response_format` against `output_config.format` against `responseSchema`. Same intent, three implementations (1.8)."],
       ["Specialise: reasoning instructions", "Explicit chain-of-thought on a normal model, and its absence on a reasoning one."]
     ] },
 
@@ -365,7 +365,7 @@ least portable element: 'JSON schema for the output'`,
       { stem: "Which prompt element needs a mechanism change on every provider?",
         options: ["The system prompt", "Few-shot examples", "The JSON schema for structured output", "XML delimiters"],
         answer: 2,
-        why: "Structured output is `response_format` on OpenAI, forced tool use on Anthropic and `responseSchema` on Gemini — same intent, three call shapes, and a mechanism change on all four targets measured. That is an argument for putting it behind a client-layer interface rather than expressing it in the prompt. The system prompt ports unchanged on OpenAI chat; examples and XML delimiters port everywhere." },
+        why: "Structured output is `response_format` on OpenAI, `output_config.format` or forced tool use on Anthropic and `responseSchema` on Gemini — same intent, three call shapes, and a mechanism change on all four targets measured. That is an argument for putting it behind a client-layer interface rather than expressing it in the prompt. The system prompt ports unchanged on OpenAI chat; examples and XML delimiters port everywhere." },
 
       { stem: "A Gemini deployment intermittently returns no content for clinical text. What is the likely cause?",
         options: ["Context window overflow", "A safety threshold blocking legitimate content in that domain", "The model is overloaded", "Temperature is too high"],

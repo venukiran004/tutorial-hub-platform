@@ -410,7 +410,8 @@ for attempt in range(MAX_ATTEMPTS):
       solution: {
         lang: "python",
         title: "retry_client.py",
-        code: `# ============================ BEFORE =====================================
+        code: `from __future__ import annotations
+# ============================ BEFORE =====================================
 #
 # from config import *
 # import time, requests
@@ -443,7 +444,6 @@ for attempt in range(MAX_ATTEMPTS):
 
 """HTTP client for the payments gateway, with bounded retries."""
 
-from __future__ import annotations
 
 import logging
 import time
@@ -572,43 +572,43 @@ class Child(Base):
 
 Child().show()`,
         options: [
-          "`xyz` — the subclass overrode the attribute",
           "`abc` — the names were mangled to `_Base__token` and `_Child__token`, which are different attributes",
-          "`AttributeError` — the mangled name is not accessible from `show`",
-          "`None` — the subclass assignment shadowed the base value with an unset name"
+          "`xyz` — the subclass assignment overrode the attribute, so `show` reads the new value",
+          "`AttributeError` — the mangled name is private to `Child`, so `show` in the base cannot reach it",
+          "`None` — the subclass assignment shadowed the base value with a name that was never set"
         ],
-        answer: 1,
-        why: "Two leading underscores trigger name mangling at compile time: inside `Base`, `self.__token` compiles to `self._Base__token`, and inside `Child` it compiles to `self._Child__token`. The instance ends up with both attributes, and `show` still reads the base one. Option A is the intuition mangling deliberately defeats — that is what the feature exists for. Option C is wrong because `show` is defined in `Base`, so its mangled lookup succeeds. Use one underscore when you mean internal."
+        answer: 0,
+        why: "Two leading underscores trigger name mangling at compile time: inside `Base`, `self.__token` compiles to `self._Base__token`, and inside `Child` it compiles to `self._Child__token`. The instance ends up with both attributes, and `show` still reads the base one. Option B is the intuition mangling deliberately defeats — that is what the feature exists for. Option C is wrong because `show` is defined in `Base`, so its mangled lookup succeeds. Use one underscore when you mean internal."
       },
       {
         stem: "Which of these review comments is worth blocking a pull request on?",
         options: [
           "\"Line 42 is 96 characters; our limit is 88\"",
-          "\"`timeout = 30` — is that seconds or milliseconds? It is compared against `GATEWAY_TIMEOUT` which is in ms\"",
-          "\"I would use double quotes here rather than single quotes\"",
-          "\"These imports should be sorted alphabetically\""
+          "\"I would use double quotes here rather than single quotes, to match the rest of this module\"",
+          "\"These imports should be sorted alphabetically\"",
+          "\"`timeout = 30` — seconds or ms? It's compared with `GATEWAY_TIMEOUT`, which is ms\""
         ],
-        answer: 1,
-        why: "Options A, C and D are all bucket one: a formatter and linter decide them, and a human raising them in review means the tooling is not wired into CI. Option B is bucket two — a naming decision a machine cannot make, and one that hides a real unit-mismatch bug. The units question is the kind of comment that finds defects, which is what review time is for."
+        answer: 3,
+        why: "Options A, B and C are all bucket one: a formatter and linter decide them, and a human raising them in review means the tooling is not wired into CI. Option D is bucket two — a naming decision a machine cannot make, and one that hides a real unit-mismatch bug. The units question is the kind of comment that finds defects, which is what review time is for."
       },
       {
         stem: "Why does adding a trailing comma to a multi-line function call change what the formatter does?",
         options: [
-          "It is required syntax for multi-line calls in Python 3.11 and later",
-          "Formatters treat it as an explicit instruction that the layout was exploded on purpose, so they will not collapse it back onto one line",
+          "It is required syntax for multi-line calls in Python 3.11 and later, so the formatter adds it to keep the code valid",
           "It prevents a `SyntaxError` when arguments are later added",
-          "It has no effect; formatters ignore trailing commas entirely"
+          "It has no effect; formatters ignore trailing commas entirely",
+          "Formatters read it as a request to keep one item per line, so they will not collapse the call"
         ],
-        answer: 1,
-        why: "Black and `ruff format` implement the \"magic trailing comma\": its presence means the author chose one-item-per-line, so the formatter preserves that even when the call would fit on one line. Option A is false — the comma has always been optional. Option C describes a genuine side benefit for diffs but not the formatting mechanism. Option D is the belief that leads to fighting your formatter; the comma is the one lever you have over it."
+        answer: 3,
+        why: "Black and `ruff format` implement the \"magic trailing comma\": its presence means the author chose one-item-per-line, so the formatter preserves that even when the call would fit on one line. Option A is false — the comma has always been optional. Option B describes a genuine side benefit for diffs but not the formatting mechanism. Option C is the belief that leads to fighting your formatter; the comma is the one lever you have over it."
       },
       {
         stem: "A four-year-old codebase is reformatted for the first time. What is the correct way to land it?",
         options: [
           "Combine it with the feature work that prompted it, so the codebase is only disrupted once",
-          "As its own commit, with the hash added to `.git-blame-ignore-revs`, and the formatter enabled in CI the same day",
-          "Reformat one file per pull request over several months to keep diffs small",
-          "Skip the reformat; formatting old code loses history and is not worth it"
+          "As its own commit, listed in `.git-blame-ignore-revs`, with the formatter in CI that day",
+          "Reformat one file per pull request over several months, so each diff stays small enough to review properly",
+          "Skip the reformat; formatting old code destroys its history, and the cost is never worth the consistency"
         ],
         answer: 1,
         why: "An isolated commit is reviewable by reading its message rather than its 4,000 lines, and `.git-blame-ignore-revs` with `blame.ignoreRevsFile` keeps `git blame` pointing at the commits that made real decisions. Option A is exactly how a behaviour change hides inside a diff nobody can read. Option C leaves the codebase in two styles for months and produces repeated merge conflicts. Option D gives up a permanent gain to avoid a one-off cost that tooling already solves."

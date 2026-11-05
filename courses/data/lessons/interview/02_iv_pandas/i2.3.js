@@ -67,7 +67,7 @@ EC.receiveLesson({
      "items": [
       "`pd.merge`: Column-based or index-based join (most flexible).",
       "`df.join`: Index-based join (syntactic sugar for merge on index).",
-      "`pd.concat`: Concatenate along an axis (stack rows or columns) — no alignment logic."
+      "`pd.concat`: Concatenate along an axis (stack rows or columns), aligning on the other axis — no key matching."
      ]
     }
    ],
@@ -93,7 +93,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "An ordered merge that matches on the nearest key value (useful for time-based merges where exact timestamp matches are rare):"
+     "text": "An ordered merge that matches each row to the last key at or before it by default (`direction=\"backward\"`), so both frames must be sorted. Useful for time-based merges where exact timestamp matches are rare:"
     },
     {
      "t": "code",

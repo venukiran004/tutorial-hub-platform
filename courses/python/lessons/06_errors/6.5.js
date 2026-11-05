@@ -387,7 +387,7 @@ def call_with_retries(fn, *, attempts=4, base=0.2, budget=None):
           ["**Load shedding**", "Reject new work when the queue exceeds a depth", "Fast failure beats a timeout for everyone"]
         ]
       },
-      { t: "p", text: "**Start with the budget.** A circuit breaker is the well-known answer and the more complex one; a global cap on retry traffic prevents the same disaster with a counter. Add a breaker when you have measured that you need it (Lesson 14.5)." }
+      { t: "p", text: "**Start with the budget.** A circuit breaker is the well-known answer and the more complex one; a global cap on retry traffic prevents the same disaster with a counter. Add a breaker when you have measured that you need it (Lesson 12.2)." }
     ]},
 
     { t: "h2", n: "05", text: "Practice", id: "practice" },
@@ -814,44 +814,44 @@ if __name__ == "__main__":
         stem: "Why is `except Exception: return 0` inside a total-calculating function harmful?",
         options: [
           "It is slower than checking conditions explicitly",
-          "It catches `AttributeError`, `TypeError` and `KeyError` from your own bugs and silently returns a plausible wrong number",
           "It prevents the caller from adding their own error handling",
-          "`Exception` does not catch enough — `BaseException` is needed"
+          "It hides your own bugs — `AttributeError`, `KeyError` — behind a plausible wrong zero",
+          "`Exception` does not catch enough — `BaseException` is needed to cover every way the total can fail"
         ],
-        answer: 1,
+        answer: 2,
         why: "The function does arithmetic, so there are no dependency failures to defend against. What the clause actually catches are the mistakes a traceback would have surfaced in staging — a renamed attribute, a field arriving as a string — and each now bills a customer zero. Catch what you can handle, at the layer that can handle it; if the handling is \"return a plausible value\", let it propagate."
       },
       {
         stem: "Why generate the idempotency key outside the retry loop rather than per attempt?",
         options: [
-          "It saves a UUID generation per attempt",
-          "A fresh key per attempt means the server treats each retry as a new request, so the guarantee is gone and a charge can happen twice",
-          "The server requires keys to be sequential",
-          "It keeps the key out of the logs"
+          "A new key per attempt makes each retry a new request, so a charge can repeat",
+          "It saves generating a new UUID on every attempt, which adds latency to each retry",
+          "The server requires keys to be sequential, and a new random key per attempt breaks the order",
+          "It keeps the key out of the logs, since each attempt would otherwise log a different one"
         ],
-        answer: 1,
+        answer: 0,
         why: "An idempotency key works by letting the server recognise a repeated request. A new key per attempt looks nearly identical in review and is functionally the same as no key: a read timeout on the first attempt — where the write may well have succeeded — followed by a retry with a different key produces a second charge. Asserting all attempts share one key is the only test that catches it."
       },
       {
         stem: "A dependency recovers after a blip, and every client retries at exactly t+1s, knocking it down again. What is the minimal fix?",
         options: [
-          "Increase the backoff to 5 seconds",
-          "Full jitter — `random.uniform(0, base * 2 ** attempt)` — so the same retries spread over the window instead of arriving together",
-          "Reduce retries to one attempt",
+          "Full jitter — `random.uniform(0, base * 2 ** attempt)` — spreading the retries out",
+          "Increase the fixed backoff to 5 seconds, so the dependency has longer to recover before the retry",
+          "Reduce retries to a single attempt, so clients stop piling onto a dependency that is struggling",
           "Add a circuit breaker"
         ],
-        answer: 1,
+        answer: 0,
         why: "The problem is synchronisation, not the delay's length: a longer fixed backoff produces a later spike of the same shape. Randomising within the growing window keeps the same total retries and the same expected latency while spreading arrivals. A circuit breaker also helps and is considerably more machinery; jitter is one line and prevents the escalation on its own."
       },
       {
         stem: "Why must a production balance check not be written as `assert balance >= amount`?",
         options: [
-          "Assertions cannot include comparisons",
-          "`python -O` removes assert statements entirely, so under an optimised interpreter the check silently disappears",
-          "Assertions are too slow for a hot path",
-          "`AssertionError` cannot be caught"
+          "`python -O` strips asserts, so the check silently vanishes",
+          "Assertions cannot include comparisons between two variables, only checks against constants",
+          "Assertions are too slow for a hot path, because each one builds its message string eagerly",
+          "`AssertionError` cannot be caught by an `except` clause, so the request crashes outright"
         ],
-        answer: 1,
+        answer: 0,
         why: "Assertions compile to nothing under `-O`, and some base images set `PYTHONOPTIMIZE`. A withdrawal guarded only by an assert would then process a negative amount and credit the account. Use `assert` for internal invariants you believe cannot be false; use `if ... raise` for anything involving input, configuration, external state or a caller's arguments."
       }
     ]

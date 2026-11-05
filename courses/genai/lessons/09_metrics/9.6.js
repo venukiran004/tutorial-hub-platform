@@ -72,8 +72,8 @@ EC.receiveLesson({
 def normalise(s):
     s = s.lower().strip()
     s = s.translate(str.maketrans("", "", string.punctuation))
-    s = re.sub(r"\b(a|an|the)\b", " ", s)
-    return re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\\b(a|an|the)\\b", " ", s)
+    return re.sub(r"\\s+", " ", s).strip()
 
 def exact_match(pred, gold):
     return float(normalise(pred) == normalise(gold))`,
@@ -180,8 +180,8 @@ from collections import Counter
 STEPS = {
     "lower":       lambda s: s.lower(),
     "punctuation": lambda s: s.translate(str.maketrans("", "", string.punctuation)),
-    "articles":    lambda s: re.sub(r"\b(a|an|the)\b", " ", s),
-    "whitespace":  lambda s: re.sub(r"\s+", " ", s).strip(),
+    "articles":    lambda s: re.sub(r"\\b(a|an|the)\\b", " ", s),
+    "whitespace":  lambda s: re.sub(r"\\s+", " ", s).strip(),
 }
 
 def normalise(s, skip=()):

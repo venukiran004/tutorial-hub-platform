@@ -250,7 +250,15 @@ h2:hover .anchor, h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
   font-size: 10.6px; font-weight: 700; letter-spacing: .11em;
   text-transform: uppercase; color: var(--c);
 }
+.callout-kind { white-space: nowrap; }
 .callout-title { font-size: 15.4px; font-weight: 650; color: var(--ink); }
+/* On a phone the title was squeezed into a column beside the kind label;
+   give it its own line, where the "·" separator no longer separates anything. */
+@media (max-width: 560px) {
+  .callout-h { flex-wrap: wrap; row-gap: 7px; }
+  .callout-title { flex-basis: 100%; line-height: 1.35; }
+  .callout-h .callout-kind + .callout-title::before { content: none; }
+}
 .callout-body { padding: 11px 18px 16px; }
 .callout-body > *:last-child { margin-bottom: 0; }
 .callout-body > p { font-size: 15.2px; line-height: 1.66; max-width: 66ch; }
@@ -321,7 +329,10 @@ h2:hover .anchor, h3:hover .anchor, .anchor:focus-visible { opacity: 1; }
 }
 .ex-title { font-size: 19px; font-weight: 680; letter-spacing: -.012em; margin: 6px 0 10px; }
 .ex-meta { display: flex; flex-wrap: wrap; gap: 8px; }
-.ex-meta span {
+/* :where keeps this below .badge.core etc. so the difficulty colour survives,
+   and naming .badge (not span) stops it matching the .dot inside each badge,
+   which it used to pad into a 20x10 pill. */
+:where(.ex-meta) .badge {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 9px; border-radius: 7px; font-size: 11.8px;
   background: var(--bg-elev); border: 1px solid var(--border); color: var(--ink-3);
@@ -370,6 +381,8 @@ details > summary::before {
   transition: transform .18s var(--ease);
 }
 details[open] > summary::before { transform: rotate(45deg) translate(-1px, -1px); }
+/* .disclose draws its own SVG chevron; without this every hint showed two. */
+details.disclose > summary::before { content: none; }
 details.solution > summary { color: var(--good); }
 
 /* ============================================================ quiz ====== */
@@ -696,6 +709,17 @@ details.solution > summary { color: var(--good); }
 .drill.predict { background: linear-gradient(var(--warn) 0 0) left / 3px 100% no-repeat, var(--surface); }
 .drill.predict[open] { background: linear-gradient(var(--warn) 0 0) left / 3px 100% no-repeat, var(--surface-2); }
 .drill.predict .drill-n, .drill.predict[open] .drill-n { color: var(--warn); }
+
+/* The snippet stays readable with the answer closed, so it sits in the
+   summary. It is selectable text there, not part of the click target. */
+.drill > summary:has(.drill-prompt) { flex-wrap: wrap; }
+.drill > summary:has(.drill-prompt) .drill-q { flex: 1 1 0; min-width: 0; }
+.drill-prompt {
+  flex: 0 0 100%; min-width: 0; margin-top: 2px;
+  cursor: text; user-select: text;
+  font-weight: 400;
+}
+.drill-prompt .codeblock { margin: 0; }
 
 /* Bulk controls for a page of drills. */
 .drill-bar {

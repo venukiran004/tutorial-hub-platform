@@ -82,7 +82,7 @@ POST /batch                                 # several operations, one call`},
     },
 
     { t: "callout", kind: "trap", title: "The breaking changes that look additive", body: [
-      { t: "code", lang: "python", title: "four that pass review", numbered: false, code: `
+      { t: "code", lang: "text", title: "four that pass review", numbered: false, code: `
 # 1. A new enum value. Additive for you, breaking for a client whose
 #    switch has no default branch -- and for one that validates the
 #    response against a generated model with a strict enum.
@@ -140,12 +140,12 @@ total: int                            -> total: float
       rungs: [
         { level: "bad", label: "Version the whole API",
           why: "`/v2/` duplicates every endpoint, including the ninety that did not change. Both versions need maintaining, bug fixes land in one and not the other, and clients have no incremental path — they migrate everything or nothing.",
-          code: `/v1/orders   /v1/customers   /v1/invoices   ...
+          lang: "text", code: `/v1/orders   /v1/customers   /v1/invoices   ...
 /v2/orders   /v2/customers   /v2/invoices   ...
 # 90 endpoints duplicated to change one field` },
         { level: "ok", label: "Version the endpoint that changed",
           why: "Only the affected resource is duplicated, so the surface stays small and clients migrate one endpoint at a time. Still two code paths for one concept, and the old one accumulates the fixes nobody backports.",
-          code: `/orders          # v1 behaviour, kept
+          lang: "text", code: `/orders          # v1 behaviour, kept
 /v2/orders       # the new shape
 # Everything else is untouched and unversioned.` },
         { level: "best", label: "Do not break it in the first place",
@@ -324,7 +324,7 @@ async def track_deprecated_usage(request, call_next):
     },
 
     { t: "callout", kind: "insight", title: "Sparse fieldsets make removal easier", body: [
-      { t: "code", lang: "python", title: "let clients say what they need", numbered: false, code: `
+      { t: "code", lang: "text", title: "let clients say what they need", numbered: false, code: `
 GET /orders/o-1?fields=id,total_including_tax
 
 # Two benefits, and the second is the strategic one:
@@ -701,7 +701,7 @@ def test_the_schema_has_no_breaking_changes_against_main():
         stem: "A team changes `total` from excluding VAT to including VAT, keeping the name and type. Why is this the most dangerous kind of change?",
         options: [
           "It requires a database migration",
-          "No automated check detects it — the schema diff is empty, contract tests pass, and monitoring is clean, while every client is now wrong",
+          "No automated check notices — schema, tests and monitoring all stay green",
           "It breaks JSON serialisation of decimals",
           "It changes the response size"
         ],
@@ -711,34 +711,34 @@ def test_the_schema_has_no_breaking_changes_against_main():
       {
         stem: "Changing the default page size from 50 to 20 breaks clients. How, given the schema is unchanged?",
         options: [
-          "The response envelope changes shape",
-          "A client that treats \"fewer than 50 returned\" as the last page now stops after one page, silently processing 20 records out of 10,000",
-          "Pagination cursors are invalidated",
-          "The status code changes for partial results"
+          "The response envelope changes shape when the page size changes, so clients fail to parse it",
+          "Pagination cursors issued under the old page size are invalidated, so clients restart from the beginning",
+          "The status code changes to 206 for partial results, which many clients treat as an error",
+          "Clients treating a short page as the last stop after 20 records"
         ],
-        answer: 1,
+        answer: 3,
         why: "Defaults are not expressed in the schema, so they look changeable, and they are exactly as depended-upon as a field name. The right fix is to remove the client's need to guess: adding `has_more` and `next_cursor` is purely additive and eliminates the inference that made the change dangerous."
       },
       {
         stem: "Why prefer cursor pagination over offsets for an API consumed by machines?",
         options: [
-          "Cursors allow jumping to an arbitrary page",
-          "Offsets skip and duplicate rows when the collection is written to during a scan, and cost O(offset) at depth",
-          "Cursors are required by the OpenAPI specification",
-          "Offsets cannot be combined with filters"
+          "Cursors allow a client to jump straight to an arbitrary page without reading the ones before it",
+          "Cursors are required by the OpenAPI specification for any collection endpoint",
+          "Offsets cannot be combined with filters, so a filtered export has to use cursors",
+          "Offsets skip or repeat rows during writes, and slow down at depth"
         ],
-        answer: 1,
+        answer: 3,
         why: "An offset means \"skip N rows of the current result\", and the current result changes as data is written — so a row inserted near the front pushes another across a page boundary and it is never seen. It presents as \"the export is missing records\". Offsets remain reasonable for a human paging a small admin table."
       },
       {
         stem: "`query.order_by(getattr(Order, sort_field))` where `sort_field` comes from a query parameter. What is the risk?",
         options: [
           "SQL injection through the column name",
-          "A caller can sort by any attribute — including unindexed columns, causing a full table sort on demand, and internal ones, revealing their existence",
           "The ORM will raise on an invalid attribute",
+          "Callers can sort by unindexed or internal columns, costing scans and leaking names",
           "Sorting cannot be combined with pagination"
         ],
-        answer: 1,
+        answer: 2,
         why: "The ORM parameterises values, so classic injection is not the issue — the problem is that the caller chooses the column. An unindexed column means an expensive sort triggered by a query string, and probing for internal column names turns error messages and timing into an enumeration oracle. An explicit allowlist maps public names to columns you have chosen."
       }
     ]

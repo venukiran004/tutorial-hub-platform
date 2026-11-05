@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c23.3",
  "lede": "**28 programs to write**, on containers, deploys and production debugging. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on docker & kubernetes without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on containers, deploys and production debugging without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c23.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2760–2787.** What this set actually drills, counted from its own problems — 16 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["production", "decorators", "databases", "internals", "web and APIs", "async"], "cells": [[{"text": "9", "tone": "accent"}, "Docker basics"], [{"text": "2", "tone": "good"}, "Memory leak investigation"], [{"text": "2", "tone": "violet"}, "Database bottlenecks"], [{"text": "1", "tone": "teal"}, "CPU profiling"], [{"text": "1", "tone": "warn"}, "Slow API debugging"], [{"text": "1", "tone": "crit"}, "Async performance issues"]], "t": "diagram", "id": "dg-c23_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -44,7 +44,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q511: Docker basics\")\nprint(\"  Containerization: package app + deps into portable container.\")\nprint(\"  Image: template (Dockerfile → build → image)\")\nprint(\"  Container: running instance of an image\")\nprint(\"  Registry: store images (Docker Hub, ECR, GCR)\")\nprint(\"  docker build -t myapp . && docker run -p 8000:8000 myapp\")\nprint()",
+     "code": "print(\"Docker basics\")\nprint(\"  Containerization: package app + deps into portable container.\")\nprint(\"  Image: template (Dockerfile → build → image)\")\nprint(\"  Container: running instance of an image\")\nprint(\"  Registry: store images (Docker Hub, ECR, GCR)\")\nprint(\"  docker build -t myapp . && docker run -p 8000:8000 myapp\")\nprint()",
      "numbered": false
     },
     {
@@ -54,7 +54,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q511: Docker basics\n  Containerization: package app + deps into portable container.\n  Image: template (Dockerfile → build → image)\n  Container: running instance of an image\n  Registry: store images (Docker Hub, ECR, GCR)\n  docker build -t myapp . && docker run -p 8000:8000 myapp",
+     "code": "Docker basics\n  Containerization: package app + deps into portable container.\n  Image: template (Dockerfile → build → image)\n  Container: running instance of an image\n  Registry: store images (Docker Hub, ECR, GCR)\n  docker build -t myapp . && docker run -p 8000:8000 myapp",
      "numbered": false
     }
    ]
@@ -67,7 +67,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q512: Dockerfile best practices\")\nprint(\"  FROM python:3.12-slim          # Minimal base\")\nprint(\"  WORKDIR /app\")\nprint(\"  COPY requirements.txt .\")\nprint(\"  RUN pip install --no-cache-dir -r requirements.txt  # Cache deps\")\nprint(\"  COPY . .\")\nprint(\"  USER nonroot                    # Non-root user\")\nprint(\"  CMD ['uvicorn', 'main:app']\")\nprint(\"  Tips: multi-stage builds, .dockerignore, layer caching\")\nprint()",
+     "code": "print(\"Dockerfile best practices\")\nprint(\"  FROM python:3.12-slim          # Minimal base\")\nprint(\"  WORKDIR /app\")\nprint(\"  COPY requirements.txt .\")\nprint(\"  RUN pip install --no-cache-dir -r requirements.txt  # Cache deps\")\nprint(\"  COPY . .\")\nprint(\"  USER nonroot                    # Non-root user\")\nprint(\"  CMD ['uvicorn', 'main:app']\")\nprint(\"  Tips: multi-stage builds, .dockerignore, layer caching\")\nprint()",
      "numbered": false
     },
     {
@@ -77,7 +77,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q512: Dockerfile best practices\n  FROM python:3.12-slim          # Minimal base\n  WORKDIR /app\n  COPY requirements.txt .\n  RUN pip install --no-cache-dir -r requirements.txt  # Cache deps\n  COPY . .\n  USER nonroot                    # Non-root user\n  CMD ['uvicorn', 'main:app']\n  Tips: multi-stage builds, .dockerignore, layer caching",
+     "code": "Dockerfile best practices\n  FROM python:3.12-slim          # Minimal base\n  WORKDIR /app\n  COPY requirements.txt .\n  RUN pip install --no-cache-dir -r requirements.txt  # Cache deps\n  COPY . .\n  USER nonroot                    # Non-root user\n  CMD ['uvicorn', 'main:app']\n  Tips: multi-stage builds, .dockerignore, layer caching",
      "numbered": false
     }
    ]
@@ -90,7 +90,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q513: Docker networking\")\nprint(\"  Bridge: default, containers on same network communicate\")\nprint(\"  Host: container shares host network\")\nprint(\"  Overlay: multi-host networking (Swarm/K8s)\")\nprint(\"  docker network create mynet\")\nprint(\"  docker run --network mynet --name app myapp\")\nprint()",
+     "code": "print(\"Docker networking\")\nprint(\"  Bridge: default, containers on same network communicate\")\nprint(\"  Host: container shares host network\")\nprint(\"  Overlay: multi-host networking (Swarm/K8s)\")\nprint(\"  docker network create mynet\")\nprint(\"  docker run --network mynet --name app myapp\")\nprint()",
      "numbered": false
     },
     {
@@ -100,7 +100,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q513: Docker networking\n  Bridge: default, containers on same network communicate\n  Host: container shares host network\n  Overlay: multi-host networking (Swarm/K8s)\n  docker network create mynet\n  docker run --network mynet --name app myapp",
+     "code": "Docker networking\n  Bridge: default, containers on same network communicate\n  Host: container shares host network\n  Overlay: multi-host networking (Swarm/K8s)\n  docker network create mynet\n  docker run --network mynet --name app myapp",
      "numbered": false
     }
    ]
@@ -113,7 +113,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q514: Docker volumes\")\nprint(\"  Persist data beyond container lifecycle.\")\nprint(\"  Named volumes: docker volume create mydata\")\nprint(\"  Bind mounts: -v /host/path:/container/path\")\nprint(\"  Use for: databases, uploads, configuration\")\nprint()",
+     "code": "print(\"Docker volumes\")\nprint(\"  Persist data beyond container lifecycle.\")\nprint(\"  Named volumes: docker volume create mydata\")\nprint(\"  Bind mounts: -v /host/path:/container/path\")\nprint(\"  Use for: databases, uploads, configuration\")\nprint()",
      "numbered": false
     },
     {
@@ -123,7 +123,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q514: Docker volumes\n  Persist data beyond container lifecycle.\n  Named volumes: docker volume create mydata\n  Bind mounts: -v /host/path:/container/path\n  Use for: databases, uploads, configuration",
+     "code": "Docker volumes\n  Persist data beyond container lifecycle.\n  Named volumes: docker volume create mydata\n  Bind mounts: -v /host/path:/container/path\n  Use for: databases, uploads, configuration",
      "numbered": false
     }
    ]
@@ -136,7 +136,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q515: Multi-stage builds\")\nprint(\"  # Build stage\")\nprint(\"  FROM python:3.12 AS builder\")\nprint(\"  RUN pip install --user -r requirements.txt\")\nprint(\"  # Production stage\")\nprint(\"  FROM python:3.12-slim\")\nprint(\"  COPY --from=builder /root/.local /root/.local\")\nprint(\"  COPY . .\")\nprint(\"  Smaller images, faster deployments, security\")\nprint()",
+     "code": "print(\"Multi-stage builds\")\nprint(\"  # Build stage\")\nprint(\"  FROM python:3.12 AS builder\")\nprint(\"  RUN pip install --user -r requirements.txt\")\nprint(\"  # Production stage\")\nprint(\"  FROM python:3.12-slim\")\nprint(\"  COPY --from=builder /root/.local /root/.local\")\nprint(\"  COPY . .\")\nprint(\"  Smaller images, faster deployments, security\")\nprint()",
      "numbered": false
     },
     {
@@ -146,7 +146,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q515: Multi-stage builds\n  # Build stage\n  FROM python:3.12 AS builder\n  RUN pip install --user -r requirements.txt\n  # Production stage\n  FROM python:3.12-slim\n  COPY --from=builder /root/.local /root/.local\n  COPY . .\n  Smaller images, faster deployments, security",
+     "code": "Multi-stage builds\n  # Build stage\n  FROM python:3.12 AS builder\n  RUN pip install --user -r requirements.txt\n  # Production stage\n  FROM python:3.12-slim\n  COPY --from=builder /root/.local /root/.local\n  COPY . .\n  Smaller images, faster deployments, security",
      "numbered": false
     }
    ]
@@ -159,7 +159,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q516: Kubernetes basics\")\nprint(\"  Container orchestration: deploy, scale, manage containers.\")\nprint(\"  Architecture: Control plane (API server, scheduler, etcd)\")\nprint(\"                + Worker nodes (kubelet, container runtime)\")\nprint(\"  Key objects: Pod, Deployment, Service, Ingress\")\nprint()",
+     "code": "print(\"Kubernetes basics\")\nprint(\"  Container orchestration: deploy, scale, manage containers.\")\nprint(\"  Architecture: Control plane (API server, scheduler, etcd)\")\nprint(\"                + Worker nodes (kubelet, container runtime)\")\nprint(\"  Key objects: Pod, Deployment, Service, Ingress\")\nprint()",
      "numbered": false
     },
     {
@@ -169,7 +169,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q516: Kubernetes basics\n  Container orchestration: deploy, scale, manage containers.\n  Architecture: Control plane (API server, scheduler, etcd)\n                + Worker nodes (kubelet, container runtime)\n  Key objects: Pod, Deployment, Service, Ingress",
+     "code": "Kubernetes basics\n  Container orchestration: deploy, scale, manage containers.\n  Architecture: Control plane (API server, scheduler, etcd)\n                + Worker nodes (kubelet, container runtime)\n  Key objects: Pod, Deployment, Service, Ingress",
      "numbered": false
     }
    ]
@@ -182,7 +182,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q517: Pods\")\nprint(\"  Smallest deployable unit in K8s. Contains 1+ containers.\")\nprint(\"  Containers in a pod share network namespace and storage.\")\nprint(\"  Usually one main container + optional sidecars.\")\nprint(\"  Pods are ephemeral - managed by controllers (Deployments)\")\nprint()",
+     "code": "print(\"Pods\")\nprint(\"  Smallest deployable unit in K8s. Contains 1+ containers.\")\nprint(\"  Containers in a pod share network namespace and storage.\")\nprint(\"  Usually one main container + optional sidecars.\")\nprint(\"  Pods are ephemeral - managed by controllers (Deployments)\")\nprint()",
      "numbered": false
     },
     {
@@ -192,7 +192,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q517: Pods\n  Smallest deployable unit in K8s. Contains 1+ containers.\n  Containers in a pod share network namespace and storage.\n  Usually one main container + optional sidecars.\n  Pods are ephemeral - managed by controllers (Deployments)",
+     "code": "Pods\n  Smallest deployable unit in K8s. Contains 1+ containers.\n  Containers in a pod share network namespace and storage.\n  Usually one main container + optional sidecars.\n  Pods are ephemeral - managed by controllers (Deployments)",
      "numbered": false
     }
    ]
@@ -205,7 +205,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q518: Deployments\")\nprint(\"  Manage desired state of pod replicas.\")\nprint(\"  apiVersion: apps/v1\")\nprint(\"  kind: Deployment\")\nprint(\"  spec:\")\nprint(\"    replicas: 3\")\nprint(\"    template:\")\nprint(\"      spec:\")\nprint(\"        containers:\")\nprint(\"          - name: app\")\nprint(\"            image: myapp:1.0\")\nprint()",
+     "code": "print(\"Deployments\")\nprint(\"  Manage desired state of pod replicas.\")\nprint(\"  apiVersion: apps/v1\")\nprint(\"  kind: Deployment\")\nprint(\"  spec:\")\nprint(\"    replicas: 3\")\nprint(\"    template:\")\nprint(\"      spec:\")\nprint(\"        containers:\")\nprint(\"          - name: app\")\nprint(\"            image: myapp:1.0\")\nprint()",
      "numbered": false
     },
     {
@@ -215,7 +215,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q518: Deployments\n  Manage desired state of pod replicas.\n  apiVersion: apps/v1\n  kind: Deployment\n  spec:\n    replicas: 3\n    template:\n      spec:\n        containers:\n          - name: app\n            image: myapp:1.0",
+     "code": "Deployments\n  Manage desired state of pod replicas.\n  apiVersion: apps/v1\n  kind: Deployment\n  spec:\n    replicas: 3\n    template:\n      spec:\n        containers:\n          - name: app\n            image: myapp:1.0",
      "numbered": false
     }
    ]
@@ -228,7 +228,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q519: Services\")\nprint(\"  Stable network endpoint for a set of pods.\")\nprint(\"  Types: ClusterIP (internal), NodePort, LoadBalancer, ExternalName\")\nprint(\"  Service discovery via DNS: my-service.namespace.svc.cluster.local\")\nprint()",
+     "code": "print(\"Services\")\nprint(\"  Stable network endpoint for a set of pods.\")\nprint(\"  Types: ClusterIP (internal), NodePort, LoadBalancer, ExternalName\")\nprint(\"  Service discovery via DNS: my-service.namespace.svc.cluster.local\")\nprint()",
      "numbered": false
     },
     {
@@ -238,7 +238,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q519: Services\n  Stable network endpoint for a set of pods.\n  Types: ClusterIP (internal), NodePort, LoadBalancer, ExternalName\n  Service discovery via DNS: my-service.namespace.svc.cluster.local",
+     "code": "Services\n  Stable network endpoint for a set of pods.\n  Types: ClusterIP (internal), NodePort, LoadBalancer, ExternalName\n  Service discovery via DNS: my-service.namespace.svc.cluster.local",
      "numbered": false
     }
    ]
@@ -251,7 +251,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q520: Ingress\")\nprint(\"  HTTP/HTTPS routing from external to services.\")\nprint(\"  Rules: host-based, path-based routing\")\nprint(\"  TLS termination, load balancing, name-based virtual hosting\")\nprint(\"  Controllers: Nginx Ingress, Traefik, AWS ALB Ingress\")\nprint()",
+     "code": "print(\"Ingress\")\nprint(\"  HTTP/HTTPS routing from external to services.\")\nprint(\"  Rules: host-based, path-based routing\")\nprint(\"  TLS termination, load balancing, name-based virtual hosting\")\nprint(\"  Controllers: Nginx Ingress, Traefik, AWS ALB Ingress\")\nprint()",
      "numbered": false
     },
     {
@@ -261,7 +261,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q520: Ingress\n  HTTP/HTTPS routing from external to services.\n  Rules: host-based, path-based routing\n  TLS termination, load balancing, name-based virtual hosting\n  Controllers: Nginx Ingress, Traefik, AWS ALB Ingress",
+     "code": "Ingress\n  HTTP/HTTPS routing from external to services.\n  Rules: host-based, path-based routing\n  TLS termination, load balancing, name-based virtual hosting\n  Controllers: Nginx Ingress, Traefik, AWS ALB Ingress",
      "numbered": false
     }
    ]
@@ -274,7 +274,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q521: ConfigMaps\")\nprint(\"  Store non-sensitive configuration data.\")\nprint(\"  kubectl create configmap app-config --from-file=config.yaml\")\nprint(\"  Mount as environment variables or volume files\")\nprint(\"  Decouple configuration from container images\")\nprint()",
+     "code": "print(\"ConfigMaps\")\nprint(\"  Store non-sensitive configuration data.\")\nprint(\"  kubectl create configmap app-config --from-file=config.yaml\")\nprint(\"  Mount as environment variables or volume files\")\nprint(\"  Decouple configuration from container images\")\nprint()",
      "numbered": false
     },
     {
@@ -284,7 +284,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q521: ConfigMaps\n  Store non-sensitive configuration data.\n  kubectl create configmap app-config --from-file=config.yaml\n  Mount as environment variables or volume files\n  Decouple configuration from container images",
+     "code": "ConfigMaps\n  Store non-sensitive configuration data.\n  kubectl create configmap app-config --from-file=config.yaml\n  Mount as environment variables or volume files\n  Decouple configuration from container images",
      "numbered": false
     }
    ]
@@ -297,7 +297,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q522: Secrets management\")\nprint(\"  Store sensitive data (passwords, API keys, certificates).\")\nprint(\"  K8s Secrets: base64 encoded (NOT encrypted by default)\")\nprint(\"  Better: HashiCorp Vault, AWS Secrets Manager, sealed-secrets\")\nprint(\"  Rotate secrets regularly, audit access, least privilege\")\nprint()",
+     "code": "print(\"Secrets management\")\nprint(\"  Store sensitive data (passwords, API keys, certificates).\")\nprint(\"  K8s Secrets: base64 encoded (NOT encrypted by default)\")\nprint(\"  Better: HashiCorp Vault, AWS Secrets Manager, sealed-secrets\")\nprint(\"  Rotate secrets regularly, audit access, least privilege\")\nprint()",
      "numbered": false
     },
     {
@@ -307,7 +307,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q522: Secrets management\n  Store sensitive data (passwords, API keys, certificates).\n  K8s Secrets: base64 encoded (NOT encrypted by default)\n  Better: HashiCorp Vault, AWS Secrets Manager, sealed-secrets\n  Rotate secrets regularly, audit access, least privilege",
+     "code": "Secrets management\n  Store sensitive data (passwords, API keys, certificates).\n  K8s Secrets: base64 encoded (NOT encrypted by default)\n  Better: HashiCorp Vault, AWS Secrets Manager, sealed-secrets\n  Rotate secrets regularly, audit access, least privilege",
      "numbered": false
     }
    ]
@@ -320,7 +320,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q523: Rolling deployments\")\nprint(\"  Update pods gradually: replace old pods one by one.\")\nprint(\"  strategy:\")\nprint(\"    type: RollingUpdate\")\nprint(\"    rollingUpdate:\")\nprint(\"      maxSurge: 1       # Extra pods during update\")\nprint(\"      maxUnavailable: 0  # Zero downtime\")\nprint()",
+     "code": "print(\"Rolling deployments\")\nprint(\"  Update pods gradually: replace old pods one by one.\")\nprint(\"  strategy:\")\nprint(\"    type: RollingUpdate\")\nprint(\"    rollingUpdate:\")\nprint(\"      maxSurge: 1       # Extra pods during update\")\nprint(\"      maxUnavailable: 0  # Zero downtime\")\nprint()",
      "numbered": false
     },
     {
@@ -330,7 +330,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q523: Rolling deployments\n  Update pods gradually: replace old pods one by one.\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1       # Extra pods during update\n      maxUnavailable: 0  # Zero downtime",
+     "code": "Rolling deployments\n  Update pods gradually: replace old pods one by one.\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1       # Extra pods during update\n      maxUnavailable: 0  # Zero downtime",
      "numbered": false
     }
    ]
@@ -343,7 +343,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q524: Blue-green deployments\")\nprint(\"  Run two identical environments (blue=current, green=new).\")\nprint(\"  Deploy to green, test, switch traffic from blue to green.\")\nprint(\"  Instant rollback: switch back to blue.\")\nprint(\"  Cost: 2x infrastructure during deployment.\")\nprint()",
+     "code": "print(\"Blue-green deployments\")\nprint(\"  Run two identical environments (blue=current, green=new).\")\nprint(\"  Deploy to green, test, switch traffic from blue to green.\")\nprint(\"  Instant rollback: switch back to blue.\")\nprint(\"  Cost: 2x infrastructure during deployment.\")\nprint()",
      "numbered": false
     },
     {
@@ -353,7 +353,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q524: Blue-green deployments\n  Run two identical environments (blue=current, green=new).\n  Deploy to green, test, switch traffic from blue to green.\n  Instant rollback: switch back to blue.\n  Cost: 2x infrastructure during deployment.",
+     "code": "Blue-green deployments\n  Run two identical environments (blue=current, green=new).\n  Deploy to green, test, switch traffic from blue to green.\n  Instant rollback: switch back to blue.\n  Cost: 2x infrastructure during deployment.",
      "numbered": false
     }
    ]
@@ -366,7 +366,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q525: Canary deployments\")\nprint(\"  Deploy new version to small % of traffic first.\")\nprint(\"  Monitor metrics, gradually increase traffic if healthy.\")\nprint(\"  Example: 5% → 25% → 50% → 100%\")\nprint(\"  Tools: Istio, Flagger, Argo Rollouts\")\nprint()",
+     "code": "print(\"Canary deployments\")\nprint(\"  Deploy new version to small % of traffic first.\")\nprint(\"  Monitor metrics, gradually increase traffic if healthy.\")\nprint(\"  Example: 5% → 25% → 50% → 100%\")\nprint(\"  Tools: Istio, Flagger, Argo Rollouts\")\nprint()",
      "numbered": false
     },
     {
@@ -376,7 +376,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q525: Canary deployments\n  Deploy new version to small % of traffic first.\n  Monitor metrics, gradually increase traffic if healthy.\n  Example: 5% → 25% → 50% → 100%\n  Tools: Istio, Flagger, Argo Rollouts",
+     "code": "Canary deployments\n  Deploy new version to small % of traffic first.\n  Monitor metrics, gradually increase traffic if healthy.\n  Example: 5% → 25% → 50% → 100%\n  Tools: Istio, Flagger, Argo Rollouts",
      "numbered": false
     }
    ]
@@ -389,7 +389,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q526: Autoscaling\")\nprint(\"  Automatically adjust resources based on demand.\")\nprint(\"  HPA (Horizontal Pod Autoscaler): scale pod count by CPU/memory\")\nprint(\"  VPA (Vertical Pod Autoscaler): adjust pod resources\")\nprint(\"  Cluster Autoscaler: add/remove nodes\")\nprint()",
+     "code": "print(\"Autoscaling\")\nprint(\"  Automatically adjust resources based on demand.\")\nprint(\"  HPA (Horizontal Pod Autoscaler): scale pod count by CPU/memory\")\nprint(\"  VPA (Vertical Pod Autoscaler): adjust pod resources\")\nprint(\"  Cluster Autoscaler: add/remove nodes\")\nprint()",
      "numbered": false
     },
     {
@@ -399,7 +399,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q526: Autoscaling\n  Automatically adjust resources based on demand.\n  HPA (Horizontal Pod Autoscaler): scale pod count by CPU/memory\n  VPA (Vertical Pod Autoscaler): adjust pod resources\n  Cluster Autoscaler: add/remove nodes",
+     "code": "Autoscaling\n  Automatically adjust resources based on demand.\n  HPA (Horizontal Pod Autoscaler): scale pod count by CPU/memory\n  VPA (Vertical Pod Autoscaler): adjust pod resources\n  Cluster Autoscaler: add/remove nodes",
      "numbered": false
     }
    ]
@@ -412,7 +412,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q527: Resource limits\")\nprint(\"  Set CPU/memory limits for containers.\")\nprint(\"  resources:\")\nprint(\"    requests: {cpu: 100m, memory: 128Mi}  # Guaranteed\")\nprint(\"    limits: {cpu: 500m, memory: 512Mi}    # Maximum\")\nprint(\"  OOM-killed if exceeding memory limit\")\nprint()",
+     "code": "print(\"Resource limits\")\nprint(\"  Set CPU/memory limits for containers.\")\nprint(\"  resources:\")\nprint(\"    requests: {cpu: 100m, memory: 128Mi}  # Guaranteed\")\nprint(\"    limits: {cpu: 500m, memory: 512Mi}    # Maximum\")\nprint(\"  OOM-killed if exceeding memory limit\")\nprint()",
      "numbered": false
     },
     {
@@ -422,7 +422,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q527: Resource limits\n  Set CPU/memory limits for containers.\n  resources:\n    requests: {cpu: 100m, memory: 128Mi}  # Guaranteed\n    limits: {cpu: 500m, memory: 512Mi}    # Maximum\n  OOM-killed if exceeding memory limit",
+     "code": "Resource limits\n  Set CPU/memory limits for containers.\n  resources:\n    requests: {cpu: 100m, memory: 128Mi}  # Guaranteed\n    limits: {cpu: 500m, memory: 512Mi}    # Maximum\n  OOM-killed if exceeding memory limit",
      "numbered": false
     }
    ]
@@ -435,7 +435,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q528: Observability\")\nprint(\"  Three pillars: Logs, Metrics, Traces\")\nprint(\"  Logs: what happened (structured JSON)\")\nprint(\"  Metrics: how much (counters, gauges, histograms)\")\nprint(\"  Traces: request flow across services\")\nprint(\"  Tools: ELK/Loki (logs), Prometheus (metrics), Jaeger (traces)\")\nprint()",
+     "code": "print(\"Observability\")\nprint(\"  Three pillars: Logs, Metrics, Traces\")\nprint(\"  Logs: what happened (structured JSON)\")\nprint(\"  Metrics: how much (counters, gauges, histograms)\")\nprint(\"  Traces: request flow across services\")\nprint(\"  Tools: ELK/Loki (logs), Prometheus (metrics), Jaeger (traces)\")\nprint()",
      "numbered": false
     },
     {
@@ -445,7 +445,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q528: Observability\n  Three pillars: Logs, Metrics, Traces\n  Logs: what happened (structured JSON)\n  Metrics: how much (counters, gauges, histograms)\n  Traces: request flow across services\n  Tools: ELK/Loki (logs), Prometheus (metrics), Jaeger (traces)",
+     "code": "Observability\n  Three pillars: Logs, Metrics, Traces\n  Logs: what happened (structured JSON)\n  Metrics: how much (counters, gauges, histograms)\n  Traces: request flow across services\n  Tools: ELK/Loki (logs), Prometheus (metrics), Jaeger (traces)",
      "numbered": false
     }
    ]
@@ -458,7 +458,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q529: Production debugging\")\nprint(\"  Tools: structured logging, distributed tracing, metrics\")\nprint(\"  py-spy: sampling profiler (attach to running process)\")\nprint(\"  strace: system call tracing\")\nprint(\"  tcpdump: network debugging\")\nprint(\"  pdb: Python debugger (import pdb; pdb.set_trace())\")\nprint()\n\nimport cProfile\nimport io\nimport pstats",
+     "code": "print(\"Production debugging\")\nprint(\"  Tools: structured logging, distributed tracing, metrics\")\nprint(\"  py-spy: sampling profiler (attach to running process)\")\nprint(\"  strace: system call tracing\")\nprint(\"  tcpdump: network debugging\")\nprint(\"  pdb: Python debugger (import pdb; pdb.set_trace())\")\nprint()\n\nimport cProfile\nimport io\nimport pstats",
      "numbered": false
     },
     {
@@ -468,7 +468,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q529: Production debugging\n  Tools: structured logging, distributed tracing, metrics\n  py-spy: sampling profiler (attach to running process)\n  strace: system call tracing\n  tcpdump: network debugging\n  pdb: Python debugger (import pdb; pdb.set_trace())",
+     "code": "Production debugging\n  Tools: structured logging, distributed tracing, metrics\n  py-spy: sampling profiler (attach to running process)\n  strace: system call tracing\n  tcpdump: network debugging\n  pdb: Python debugger (import pdb; pdb.set_trace())",
      "numbered": false
     }
    ]
@@ -481,7 +481,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q531: CPU profiling\")\n\ndef cpu_intensive():\n    return sum(i * i for i in range(50000))\n\nprofiler = cProfile.Profile()\nprofiler.enable()\ncpu_intensive()\nprofiler.disable()\nstream = io.StringIO()\nstats = pstats.Stats(profiler, stream=stream).sort_stats('cumulative')\nstats.print_stats(3)\nfor line in stream.getvalue().strip().split('\\n')[:5]:\n    print(f\"  {line}\")\nprint()",
+     "code": "import cProfile\nimport io\nimport pstats\n\nprint(\"CPU profiling\")\n\ndef cpu_intensive():\n    return sum(i * i for i in range(50000))\n\nprofiler = cProfile.Profile()\nprofiler.enable()\ncpu_intensive()\nprofiler.disable()\nstream = io.StringIO()\nstats = pstats.Stats(profiler, stream=stream).sort_stats('cumulative')\nstats.print_stats(3)\nfor line in stream.getvalue().strip().split('\\n')[:5]:\n    print(f\"  {line}\")\nprint()",
      "numbered": false
     },
     {
@@ -491,7 +491,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q531: CPU profiling\n  50004 function calls in 0.010 seconds\n  \n     Ordered by: cumulative time\n     List reduced from 4 to 3 due to restriction <3>",
+     "code": "CPU profiling\n  50004 function calls in 0.010 seconds\n  \n     Ordered by: cumulative time\n     List reduced from 4 to 3 due to restriction <3>",
      "numbered": false
     }
    ]
@@ -504,7 +504,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q532: Performance tuning\")\nprint(\"  1. Profile first (don't guess)\")\nprint(\"  2. Optimize algorithms (O(n) vs O(n²))\")\nprint(\"  3. Use built-in functions (map, filter, list comprehensions)\")\nprint(\"  4. Use appropriate data structures (set for lookup, dict for mapping)\")\nprint(\"  5. Cache expensive operations\")\nprint(\"  6. Use NumPy for numerical work\")\nprint(\"  7. Consider Cython/C extensions for hot paths\")\nprint()",
+     "code": "print(\"Performance tuning\")\nprint(\"  1. Profile first (don't guess)\")\nprint(\"  2. Optimize algorithms (O(n) vs O(n²))\")\nprint(\"  3. Use built-in functions (map, filter, list comprehensions)\")\nprint(\"  4. Use appropriate data structures (set for lookup, dict for mapping)\")\nprint(\"  5. Cache expensive operations\")\nprint(\"  6. Use NumPy for numerical work\")\nprint(\"  7. Consider Cython/C extensions for hot paths\")\nprint()",
      "numbered": false
     },
     {
@@ -514,7 +514,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q532: Performance tuning\n  1. Profile first (don't guess)\n  2. Optimize algorithms (O(n) vs O(n²))\n  3. Use built-in functions (map, filter, list comprehensions)\n  4. Use appropriate data structures (set for lookup, dict for mapping)\n  5. Cache expensive operations\n  6. Use NumPy for numerical work\n  7. Consider Cython/C extensions for hot paths",
+     "code": "Performance tuning\n  1. Profile first (don't guess)\n  2. Optimize algorithms (O(n) vs O(n²))\n  3. Use built-in functions (map, filter, list comprehensions)\n  4. Use appropriate data structures (set for lookup, dict for mapping)\n  5. Cache expensive operations\n  6. Use NumPy for numerical work\n  7. Consider Cython/C extensions for hot paths",
      "numbered": false
     }
    ]
@@ -527,7 +527,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q533: Memory leak investigation\")\nprint(\"  Symptoms: growing memory over time, OOM kills\")\nprint(\"  Tools: tracemalloc, objgraph, gc.get_objects()\")\nprint(\"  Common causes: circular references, global caches without bounds,\")\nprint(\"    unclosed resources, observers/callbacks not unregistered\")\nprint(\"  objgraph.show_most_common_types()\")\nprint(\"  objgraph.show_growth()\")\nprint()",
+     "code": "print(\"Memory leak investigation\")\nprint(\"  Symptoms: growing memory over time, OOM kills\")\nprint(\"  Tools: tracemalloc, objgraph, gc.get_objects()\")\nprint(\"  Common causes: circular references, global caches without bounds,\")\nprint(\"    unclosed resources, observers/callbacks not unregistered\")\nprint(\"  objgraph.show_most_common_types()\")\nprint(\"  objgraph.show_growth()\")\nprint()",
      "numbered": false
     },
     {
@@ -537,7 +537,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q533: Memory leak investigation\n  Symptoms: growing memory over time, OOM kills\n  Tools: tracemalloc, objgraph, gc.get_objects()\n  Common causes: circular references, global caches without bounds,\n    unclosed resources, observers/callbacks not unregistered\n  objgraph.show_most_common_types()\n  objgraph.show_growth()",
+     "code": "Memory leak investigation\n  Symptoms: growing memory over time, OOM kills\n  Tools: tracemalloc, objgraph, gc.get_objects()\n  Common causes: circular references, global caches without bounds,\n    unclosed resources, observers/callbacks not unregistered\n  objgraph.show_most_common_types()\n  objgraph.show_growth()",
      "numbered": false
     }
    ]
@@ -550,7 +550,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q534: Slow API debugging\")\nprint(\"  1. Add timing middleware (measure total request time)\")\nprint(\"  2. Profile DB queries (log slow queries, check N+1)\")\nprint(\"  3. Check external service calls (timeouts, retries)\")\nprint(\"  4. Profile code (py-spy, cProfile)\")\nprint(\"  5. Check resource contention (locks, connection pool)\")\nprint(\"  6. Review async/sync boundaries\")\nprint()",
+     "code": "print(\"Slow API debugging\")\nprint(\"  1. Add timing middleware (measure total request time)\")\nprint(\"  2. Profile DB queries (log slow queries, check N+1)\")\nprint(\"  3. Check external service calls (timeouts, retries)\")\nprint(\"  4. Profile code (py-spy, cProfile)\")\nprint(\"  5. Check resource contention (locks, connection pool)\")\nprint(\"  6. Review async/sync boundaries\")\nprint()",
      "numbered": false
     },
     {
@@ -560,7 +560,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q534: Slow API debugging\n  1. Add timing middleware (measure total request time)\n  2. Profile DB queries (log slow queries, check N+1)\n  3. Check external service calls (timeouts, retries)\n  4. Profile code (py-spy, cProfile)\n  5. Check resource contention (locks, connection pool)\n  6. Review async/sync boundaries",
+     "code": "Slow API debugging\n  1. Add timing middleware (measure total request time)\n  2. Profile DB queries (log slow queries, check N+1)\n  3. Check external service calls (timeouts, retries)\n  4. Profile code (py-spy, cProfile)\n  5. Check resource contention (locks, connection pool)\n  6. Review async/sync boundaries",
      "numbered": false
     }
    ]
@@ -573,7 +573,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q535: High CPU debugging\")\nprint(\"  1. py-spy top --pid <PID> (see what's consuming CPU)\")\nprint(\"  2. cProfile for detailed function-level profiling\")\nprint(\"  3. Check: infinite loops, inefficient algorithms, GIL contention\")\nprint(\"  4. CPU flame graphs (py-spy record → speedscope)\")\nprint()",
+     "code": "print(\"High CPU debugging\")\nprint(\"  1. py-spy top --pid <PID> (see what's consuming CPU)\")\nprint(\"  2. cProfile for detailed function-level profiling\")\nprint(\"  3. Check: infinite loops, inefficient algorithms, GIL contention\")\nprint(\"  4. CPU flame graphs (py-spy record → speedscope)\")\nprint()",
      "numbered": false
     },
     {
@@ -583,7 +583,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q535: High CPU debugging\n  1. py-spy top --pid <PID> (see what's consuming CPU)\n  2. cProfile for detailed function-level profiling\n  3. Check: infinite loops, inefficient algorithms, GIL contention\n  4. CPU flame graphs (py-spy record → speedscope)",
+     "code": "High CPU debugging\n  1. py-spy top --pid <PID> (see what's consuming CPU)\n  2. cProfile for detailed function-level profiling\n  3. Check: infinite loops, inefficient algorithms, GIL contention\n  4. CPU flame graphs (py-spy record → speedscope)",
      "numbered": false
     }
    ]
@@ -596,7 +596,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q536: High memory debugging\")\nprint(\"  1. tracemalloc: track memory allocations by line\")\nprint(\"  2. memory_profiler: @profile decorator shows line-by-line usage\")\nprint(\"  3. objgraph: find object reference chains\")\nprint(\"  4. gc.collect(): force garbage collection, check gc.garbage\")\nprint()",
+     "code": "print(\"High memory debugging\")\nprint(\"  1. tracemalloc: track memory allocations by line\")\nprint(\"  2. memory_profiler: @profile decorator shows line-by-line usage\")\nprint(\"  3. objgraph: find object reference chains\")\nprint(\"  4. gc.collect(): force garbage collection, check gc.garbage\")\nprint()",
      "numbered": false
     },
     {
@@ -606,7 +606,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q536: High memory debugging\n  1. tracemalloc: track memory allocations by line\n  2. memory_profiler: @profile decorator shows line-by-line usage\n  3. objgraph: find object reference chains\n  4. gc.collect(): force garbage collection, check gc.garbage",
+     "code": "High memory debugging\n  1. tracemalloc: track memory allocations by line\n  2. memory_profiler: @profile decorator shows line-by-line usage\n  3. objgraph: find object reference chains\n  4. gc.collect(): force garbage collection, check gc.garbage",
      "numbered": false
     }
    ]
@@ -619,7 +619,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q537: Database bottlenecks\")\nprint(\"  Symptoms: slow queries, high connection count, lock waits\")\nprint(\"  Diagnosis: EXPLAIN ANALYZE, pg_stat_activity, slow query log\")\nprint(\"  Solutions: indexing, query optimization, connection pooling,\")\nprint(\"    caching, read replicas, denormalization\")\nprint()",
+     "code": "print(\"Database bottlenecks\")\nprint(\"  Symptoms: slow queries, high connection count, lock waits\")\nprint(\"  Diagnosis: EXPLAIN ANALYZE, pg_stat_activity, slow query log\")\nprint(\"  Solutions: indexing, query optimization, connection pooling,\")\nprint(\"    caching, read replicas, denormalization\")\nprint()",
      "numbered": false
     },
     {
@@ -629,7 +629,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q537: Database bottlenecks\n  Symptoms: slow queries, high connection count, lock waits\n  Diagnosis: EXPLAIN ANALYZE, pg_stat_activity, slow query log\n  Solutions: indexing, query optimization, connection pooling,\n    caching, read replicas, denormalization",
+     "code": "Database bottlenecks\n  Symptoms: slow queries, high connection count, lock waits\n  Diagnosis: EXPLAIN ANALYZE, pg_stat_activity, slow query log\n  Solutions: indexing, query optimization, connection pooling,\n    caching, read replicas, denormalization",
      "numbered": false
     }
    ]
@@ -642,7 +642,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q538: Redis bottlenecks\")\nprint(\"  Single-threaded: one slow command blocks all\")\nprint(\"  Monitor: redis-cli --latency, SLOWLOG GET\")\nprint(\"  Avoid: large keys, KEYS * (use SCAN), blocking commands\")\nprint(\"  Solutions: pipeline commands, use appropriate data structures\")\nprint()",
+     "code": "print(\"Redis bottlenecks\")\nprint(\"  Single-threaded: one slow command blocks all\")\nprint(\"  Monitor: redis-cli --latency, SLOWLOG GET\")\nprint(\"  Avoid: large keys, KEYS * (use SCAN), blocking commands\")\nprint(\"  Solutions: pipeline commands, use appropriate data structures\")\nprint()",
      "numbered": false
     },
     {
@@ -652,7 +652,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q538: Redis bottlenecks\n  Single-threaded: one slow command blocks all\n  Monitor: redis-cli --latency, SLOWLOG GET\n  Avoid: large keys, KEYS * (use SCAN), blocking commands\n  Solutions: pipeline commands, use appropriate data structures",
+     "code": "Redis bottlenecks\n  Single-threaded: one slow command blocks all\n  Monitor: redis-cli --latency, SLOWLOG GET\n  Avoid: large keys, KEYS * (use SCAN), blocking commands\n  Solutions: pipeline commands, use appropriate data structures",
      "numbered": false
     }
    ]
@@ -665,7 +665,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q539: Async performance issues\")\nprint(\"  Common: blocking calls in async code (sync I/O, CPU work)\")\nprint(\"  Detect: slow callbacks warning, asyncio debug mode\")\nprint(\"  Fix: use asyncio.to_thread() for blocking ops\")\nprint(\"  Fix: use ProcessPoolExecutor for CPU-bound work\")\nprint()",
+     "code": "print(\"Async performance issues\")\nprint(\"  Common: blocking calls in async code (sync I/O, CPU work)\")\nprint(\"  Detect: slow callbacks warning, asyncio debug mode\")\nprint(\"  Fix: use asyncio.to_thread() for blocking ops\")\nprint(\"  Fix: use ProcessPoolExecutor for CPU-bound work\")\nprint()",
      "numbered": false
     },
     {
@@ -675,7 +675,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q539: Async performance issues\n  Common: blocking calls in async code (sync I/O, CPU work)\n  Detect: slow callbacks warning, asyncio debug mode\n  Fix: use asyncio.to_thread() for blocking ops\n  Fix: use ProcessPoolExecutor for CPU-bound work",
+     "code": "Async performance issues\n  Common: blocking calls in async code (sync I/O, CPU work)\n  Detect: slow callbacks warning, asyncio debug mode\n  Fix: use asyncio.to_thread() for blocking ops\n  Fix: use ProcessPoolExecutor for CPU-bound work",
      "numbered": false
     }
    ]

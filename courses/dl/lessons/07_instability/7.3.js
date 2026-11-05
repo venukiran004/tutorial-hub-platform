@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.3 — Mixed Precision and Distributed Failures
    Float format ranges and the underflow/overflow demonstrations measured
-   (scratchpad/dl/d71.py).
+   (d71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.3",

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.5",
  "lede": "**30 programs to write**, on in-place tricks and buffers. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 30 programs on in-place tricks and buffers without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 512–541.** What this set actually drills, counted from its own problems — 16 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "databases"], "cells": [[{"text": "14", "tone": "accent"}, "Longest Subarray with At Most "], [{"text": "2", "tone": "good"}, "Implement LFU Cache Using List"]], "t": "diagram", "id": "dg-c4_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -182,7 +182,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def subarrays_distinct_k(nums, k):\n    result = []\n    window = {}\n    for i in range(len(nums)):\n        window[nums[i]] = window.get(nums[i], 0) + 1\n        if i >= k:\n            old = nums[i - k]\n            window[old] -= 1\n            if window[old] == 0:\n                del window[old]\n        if i >= k - 1 and len(window) == k:\n            result.append(nums[i-k+1:i+1])\n    return result\n\nprint(subarrays_distinct_k([1,2,3,2,1,3], 3))\n# Output: [[1,2,3], [2,1,3]]",
+     "code": "def subarrays_distinct_k(nums, k):\n    result = []\n    window = {}\n    for i in range(len(nums)):\n        window[nums[i]] = window.get(nums[i], 0) + 1\n        if i >= k:\n            old = nums[i - k]\n            window[old] -= 1\n            if window[old] == 0:\n                del window[old]\n        if i >= k - 1 and len(window) == k:\n            result.append(nums[i-k+1:i+1])\n    return result\n\nprint(subarrays_distinct_k([1,2,3,2,1,3], 3))\n# Output: [[1, 2, 3], [3, 2, 1], [2, 1, 3]]",
      "numbered": false
     }
    ]

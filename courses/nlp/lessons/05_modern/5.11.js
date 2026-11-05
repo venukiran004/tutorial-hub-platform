@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.11 — State Space Models: Mamba and S4
    The recurrence/convolution duality is proved numerically to 4.77e-07
-   (§02), and a selective scan is implemented (scratchpad/nlp/n511.py).
+   (§02), and a selective scan is implemented (n511.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.11",
@@ -47,7 +47,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "y_k = \\sum_{j=0}^{k} \\underbrace{\\left(C \\bar{A}^{\\,j} \\bar{B}\\right)}_{K_j} x_{k-j}" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n511.py — the same system computed both ways", code:
+    { t: "code", lang: "python", title: "the same system computed both ways", code:
 "def recurrent(x, A, B, C):\n    h = torch.zeros(len(A))\n    ys = []\n    for k in range(len(x)):\n        h = A * h + B * x[k]            # sequential, O(1) state\n        ys.append((C * h).sum())\n    return torch.stack(ys)\n\ndef convolutional(x, A, B, C):\n    # the kernel exists in closed form BECAUSE the recurrence is linear\n    K = torch.stack([(C * (A ** j) * B).sum() for j in range(len(x))])\n    return causal_conv(x, K)            # parallel over the whole sequence",
       caption: "Two completely different computations — one sequential, one parallel — from the same parameters." },
 

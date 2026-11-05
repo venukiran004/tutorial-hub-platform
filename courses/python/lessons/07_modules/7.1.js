@@ -494,13 +494,13 @@ def save(path: Path, config: dict) -> None:
     except BaseException:
         Path(tmp).unlink(missing_ok=True)
         raise`,
-          note: "`tempfile.mkstemp(dir=path.parent)` puts the temporary file on the same filesystem, which is what makes the rename atomic rather than a copy. `os.fsync` is what makes the guarantee survive a power loss rather than only a process crash. `except BaseException` rather than `except Exception` so that a `KeyboardInterrupt` still cleans up its temporary file." }
+          note: "`tempfile.mkstemp(dir=path.parent)` puts the temporary file on the same filesystem, which is what lets the rename happen at all: `os.replace` cannot cross filesystems. `os.fsync` is what makes the guarantee survive a power loss rather than only a process crash. `except BaseException` rather than `except Exception` so that a `KeyboardInterrupt` still cleans up its temporary file." }
       ]
     },
 
     { t: "callout", kind: "tradeoff", title: "When atomic writes are worth the code", body: [
       { t: "p", text: "`os.fsync` forces a disk flush, which costs milliseconds and defeats the OS write cache. Doing it per record in a hot loop will destroy your throughput, and you would use a database instead." },
-      { t: "p", text: "The rule that actually applies: **atomicity is for files that something else reads independently of you.** Configuration, state files, exported reports, cache manifests, model artifacts — anything where a reader arriving at the wrong moment causes an incident." },
+      { t: "p", text: "The rule that actually applies: **atomicity is for files that something else reads independently of you.** Configuration, state files, exported reports, cache manifests, model artefacts — anything where a reader arriving at the wrong moment causes an incident." },
       { t: "p", text: "Append-only logs need none of this. Appends do not truncate, and a partial final line is a well-understood, recoverable condition that every log consumer already handles." }
     ]},
 
@@ -620,7 +620,7 @@ $ ls -a
         notes: [
           { t: "p", text: "**The atomic version did not save more data — it saved less.** It lost the in-progress write entirely and rolled back to the last complete save. That is the correct behaviour and it is worth stating plainly: atomicity buys you *a valid file*, not *the most recent data*. A runner that re-runs 5,000 idempotent jobs is fine; a runner that cannot parse its own state file is an incident." },
           { t: "callout", kind: "insight", title: "Why the temp file is a hidden sibling", body: [
-            { t: "p", text: "`dir=path.parent` is the requirement — rename is only atomic within a single filesystem, and `/tmp` is a separate mount (often `tmpfs`) on most Linux distributions and in most containers. Put the temporary file in `/tmp` and `os.replace` degrades to a copy-then-delete, which reintroduces exactly the partial-file window you were removing." },
+            { t: "p", text: "`dir=path.parent` is the requirement — rename is only atomic within a single filesystem, and `/tmp` is a separate mount (often `tmpfs`) on most Linux distributions and in most containers. Put the temporary file in `/tmp` and `os.replace` fails with `OSError: [Errno 18] Invalid cross-device link`, because a rename cannot move data between filesystems. The tempting fix, `shutil.move`, works by copying and then deleting, which brings back exactly the partial-file window you were removing." },
             { t: "p", text: "`prefix=f\".{path.name}.\"` is a smaller thing that saves real support time. Directory scanners, file watchers and glob patterns like `*.json` skip dotfiles, so an orphaned temporary left by a hard kill will not be picked up as real data by something else." }
           ]},
           { t: "p", text: "**`except BaseException` rather than `except Exception`** is deliberate. `KeyboardInterrupt` and `SystemExit` derive from `BaseException`, not `Exception` (Lesson 6.1), and this function's entire purpose is to behave correctly when the process is being torn down. Catching only `Exception` would leave the temporary file behind on exactly the interruption this exercise tests." },
@@ -659,29 +659,29 @@ $ ls -a
         stem: "An upload handler runs `dest = Path(\"/srv/uploads\") / filename` where `filename` comes from the request. What does a request with `filename = \"/etc/cron.d/backdoor\"` produce?",
         options: [
           "`/srv/uploads/etc/cron.d/backdoor` — the leading slash is stripped on join",
-          "`/etc/cron.d/backdoor` — an absolute right-hand operand replaces the base entirely",
           "A `ValueError`, because `pathlib` rejects absolute components in a join",
+          "`/etc/cron.d/backdoor` — an absolute path replaces the base",
           "`/srv/uploads//etc/cron.d/backdoor`, which the OS normalises harmlessly"
         ],
-        answer: 1,
+        answer: 2,
         why: "`pathlib` follows the POSIX join rule: an absolute path on the right discards everything to its left, so the base directory vanishes and the handler writes wherever the attacker names. It is not stripped and no exception is raised — the operation is perfectly well-defined, just not what the author intended. Stripping leading slashes is not a fix either, because `../../etc/cron.d/backdoor` escapes just as effectively. The defence is `resolve()` on the joined path followed by `is_relative_to(root)`."
       },
       {
         stem: "A service writes UTF-8 files on Linux. A Windows developer reads them with `Path(p).read_text()` and gets `UnicodeDecodeError: 'charmap' codec`. Which statement is correct?",
         options: [
+          "The default encoding is the locale's cp1252; pass `encoding=\"utf-8\"`",
           "The files are corrupt and must be re-exported from the service",
-          "The default encoding is the OS locale — cp1252 on that machine — so the fix is `encoding=\"utf-8\"` at the call site",
           "`read_text` cannot handle non-ASCII and `open()` must be used instead",
           "Windows requires `newline=\"\"` to decode files written on Linux"
         ],
-        answer: 1,
+        answer: 0,
         why: "`charmap` in the traceback is the tell: that is the cp1252 codec, chosen because no `encoding` argument was passed and `locale.getencoding()` returned the Windows ANSI code page. The files are fine — they are valid UTF-8, and the same code works on a machine whose locale happens to be UTF-8, which is why this only breaks for some of the team. `read_text` handles any encoding you name. `newline=\"\"` controls newline translation, a separate layer that has nothing to do with decoding bytes into code points."
       },
       {
         stem: "`save()` does `with open(path, \"w\") as f: json.dump(obj, f)` and `json.dump` raises `TypeError` on a non-serialisable value. What is on disk afterwards?",
         options: [
           "The original file, because the failed write is rolled back when the exception propagates",
-          "A partial, invalid file — `\"w\"` truncated it at open and `json.dump` had already written some of the object",
+          "A partial file — `\"w\"` truncated it and `json.dump` had written part",
           "An empty file, because nothing is flushed until `close()` succeeds",
           "Nothing — the file is deleted when the context manager exits with an exception"
         ],
@@ -689,15 +689,15 @@ $ ls -a
         why: "There is no rollback: `\"w\"` truncates at open, and `json.dump` writes incrementally as it walks the object, so whatever it emitted before hitting the bad value is already in the buffer and gets flushed by the context manager on the way out. The `with` block guarantees the file is *closed*, not that the write is undone, and it never deletes anything. The cheap improvement is `json.dumps` first so serialisation fails before the file is touched; the complete fix is writing a sibling temporary file and `os.replace`."
       },
       {
-        stem: "An atomic-write helper writes to `tempfile.mkstemp()` with no `dir` argument, then calls `os.replace(tmp, target)`. On a Linux container this sometimes leaves a partial target file. Why?",
+        stem: "An atomic-write helper writes to `tempfile.mkstemp()` with no `dir` argument, then calls `os.replace(tmp, target)`. It works on a laptop, but in a Linux container it raises `OSError: [Errno 18] Invalid cross-device link`. Why?",
         options: [
-          "`os.replace` is not atomic; only `os.rename` is",
-          "`mkstemp` defaults to `/tmp`, a different filesystem, so `replace` falls back to copy-then-delete and reintroduces a partial-write window",
-          "The file needs `os.fsync` on the containing directory as well, which `replace` does not do",
-          "`mkstemp` returns a file descriptor that must be closed before `replace` can be atomic"
+          "`os.replace` cannot overwrite an existing file; `os.rename` must be used instead",
+          "The directory needs an `os.fsync` before `replace` is allowed to run",
+          "`mkstemp` uses `/tmp`, another filesystem, and renames cannot cross",
+          "`mkstemp` returns a file descriptor that must be closed before the file can be renamed"
         ],
-        answer: 1,
-        why: "Atomic rename is a filesystem operation, and it can only be atomic when source and destination are on the same filesystem. `/tmp` is typically `tmpfs` or a separate mount, so crossing that boundary makes Python copy the bytes and then unlink — during which the destination is observably partial. Passing `dir=target.parent` makes the temporary file a sibling and restores atomicity. `os.replace` and `os.rename` are equally atomic (`replace` differs only in overwriting an existing destination on Windows), and while an `fsync` on the directory does matter for durability across a power loss, it is not what produces a partial file here."
+        answer: 2,
+        why: "A rename only moves a directory entry, so it works within one filesystem. In many containers `/tmp` is `tmpfs` or a separate mount, so `os.replace` raises `EXDEV` instead of moving anything; on the laptop `/tmp` happened to share the target's filesystem. Passing `dir=target.parent` makes the temporary file a sibling, which always works. Do not reach for `shutil.move`: it falls back to copy-then-delete, and the copy brings back the partial-file window. `os.replace` does overwrite an existing file, on every platform; an `fsync` is about durability, not about where the file lives; and Linux renames a file whose descriptor is still open without complaint."
       }
     ]
   },
@@ -732,7 +732,7 @@ $ ls -a
         strong: "Serialise fully in memory, write to a temporary file in the same directory as the target, `flush` and `fsync` it, then `os.replace` it onto the target. Rename within one filesystem is atomic, so a reader sees either the complete old file or the complete new one. A crash before the rename leaves the old file intact.",
         answer: [
           { t: "p", text: "Narrate it as removing failure windows one at a time. Serialising first removes the serialiser as a failure point. Writing a sibling means the target is never truncated. `fsync` means the guarantee survives power loss and not merely a process crash. `os.replace` means there is no moment at which the target name resolves to incomplete data." },
-          { t: "p", text: "The detail interviewers listen for is **same directory**. If you say `/tmp` you have described a copy, not a rename, and the partial-write window is back. That one word is the difference between having implemented this and having read about it." },
+          { t: "p", text: "The detail interviewers listen for is **same directory**. If you say `/tmp`, the rename fails in most containers, and the usual workaround, `shutil.move`, is a copy that brings the partial-write window back. That one word is the difference between having implemented this and having read about it." },
           { t: "p", text: "The strongest close is stating what you have *not* bought: atomicity guarantees a valid file, not the newest data. A crash mid-write rolls back to the previous complete version, and your caller has to be able to live with that — which is why this pattern suits config, state and export files, and why anything needing durable incremental writes belongs in a database instead." }
         ]
       },

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.7 — Sequence-to-Sequence and Teacher Forcing
    The teacher-forcing / free-running input divergence is executed in
-   scratchpad/dl/d37.py.
+   d37.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.7",

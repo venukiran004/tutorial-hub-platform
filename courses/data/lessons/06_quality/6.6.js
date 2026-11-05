@@ -104,7 +104,7 @@ def report(df, label):
 report(full, "truth")
 report(obs, "complete-case")
 # truth                  mean  50.02  std 10.01  corr 0.928  slope 2.00
-# complete-case          mean  50.05  std 10.04  corr 0.928  slope 2.00
+# complete-case          mean  49.99  std  9.96  corr 0.930  slope 2.02
 #
 # MCAR, so dropping is unbiased. 30% fewer rows; everything else right.
 
@@ -112,7 +112,7 @@ report(obs, "complete-case")
 mean_imp = obs.copy()
 mean_imp["x"] = mean_imp["x"].fillna(obs["x"].mean())
 report(mean_imp, "mean")
-# mean                   mean  50.05  std  8.39  corr 0.777  slope 2.00
+# mean                   mean  49.99  std  8.44  corr 0.791  slope 2.022
 #
 # THE MEAN IS RIGHT. The std has dropped from 10 to 8.4 -- 30% of
 # the values are now at one point. The correlation has dropped from
@@ -125,7 +125,7 @@ report(mean_imp, "mean")
 def se_of_mean(s):
     return s.std() / np.sqrt(len(s))
 
-se_of_mean(obs["x"].dropna())        # 0.170  (n = 3500, honest)
+se_of_mean(obs["x"].dropna())        # 0.166  (n = 3500, honest)
 se_of_mean(mean_imp["x"])            # 0.119  (n = 5000, but 1500 are fake)
 #
 # The imputed column claims 30% more precision than the data has.
@@ -137,7 +137,7 @@ se_of_mean(mean_imp["x"])            # 0.119  (n = 5000, but 1500 are fake)
 med_imp = obs.copy()
 med_imp["x"] = med_imp["x"].fillna(obs["x"].median())
 report(med_imp, "median")
-# median                 mean  50.05  std  8.39  corr 0.777  slope 2.00
+# median                 mean  49.94  std  8.44  corr 0.791  slope 2.021
 
 # MODE, for a categorical -- and the share it inflates:
 cat = pd.Series(rng.choice(["a", "b", "c"], n, p=[.5, .3, .2]))
@@ -155,8 +155,8 @@ mar = pd.DataFrame({"age": age, "income": income})
 p_miss = 0.05 + 0.6 * (age - 20) / 50
 mar.loc[rng.random(n) < p_miss, "income"] = np.nan
 
-mar["income"].fillna(mar["income"].mean()).mean()      # 34,900
-income.mean()                                          # 38,000
+mar["income"].fillna(mar["income"].mean()).mean()      # 39,041
+income.mean()                                          # 42,248
 #
 # The observed mean is low (older, richer respondents are missing),
 # and filling with it puts that low value into exactly the rows that
@@ -176,7 +176,7 @@ income.mean()                                          # 38,000
 # a decision, so record it.
 `,
       hl: [26, 39, 62, 75],
-      caption: "**The imputed column claims 30% more precision than the data has.** Standard error drops from 0.170 to 0.119 because n went from 3,500 to 5,000 — but 1,500 of those values were invented, and every confidence interval built on the column is too narrow."
+      caption: "**The imputed column claims 30% more precision than the data has.** Standard error drops from 0.166 to 0.119 because n went from 3,500 to 5,000 — but 1,500 of those values were invented, and every confidence interval built on the column is too narrow."
     },
 
     { t: "callout", kind: "trap", title: "Imputation hides the bias it does not remove", body: [
@@ -203,7 +203,7 @@ from sklearn.impute import IterativeImputer
 band = pd.cut(mar["age"], [19, 30, 40, 50, 60, 70])
 grp = mar.copy()
 grp["income"] = grp["income"].fillna(grp.groupby(band, observed=True)["income"].transform("median"))
-grp["income"].mean()                                   # 37,600 -- close to 38,000
+grp["income"].mean()                                   # 42,179 -- close to 42,248
 #
 # Within an age band the missingness is random (MAR), so the band
 # median is an unbiased guess for the band's missing rows. Variance
@@ -219,7 +219,7 @@ X = mar[["age", "income"]].copy()
 X["age"] = (X["age"] - X["age"].mean()) / X["age"].std()     # scale age
 knn = KNNImputer(n_neighbors=10)
 X_knn = pd.DataFrame(knn.fit_transform(X), columns=X.columns)
-X_knn["income"].mean()                                 # 37,500
+X_knn["income"].mean()                                 # 42,697
 #
 # ASSUMES: rows that are close on the observed columns have close
 # values on the missing one. True for smooth relationships; wrong
@@ -233,7 +233,7 @@ X_knn["income"].mean()                                 # 37,500
 # regression on the others; fill; repeat until stable.
 it = IterativeImputer(max_iter=10, random_state=0)
 X_it = pd.DataFrame(it.fit_transform(mar[["age", "income"]]), columns=["age", "income"])
-X_it["income"].mean()                                  # 37,900
+X_it["income"].mean()                                  # 42,328
 #
 # ROUND 1: fill income with its mean; fit income ~ age; predict the
 #          missing incomes.
@@ -256,9 +256,9 @@ for label, d in [("group", grp), ("knn", X_knn), ("iterative", X_it)]:
     resid = d.loc[imputed_rows, "income"] - np.polyval(
         np.polyfit(d["age"], d["income"], 1), d.loc[imputed_rows, "age"])
     print(f"{label:10} residual std of imputed rows: {resid.std():7.0f}  (observed rows: 8,000)")
-# group      residual std of imputed rows:   2,300
-# knn        residual std of imputed rows:   3,100
-# iterative  residual std of imputed rows:      90
+# group      residual std of imputed rows:   2,468
+# knn        residual std of imputed rows:   2,459
+# iterative  residual std of imputed rows:       1
 #
 # The iterative imputer puts every filled value EXACTLY on its
 # regression line. The observed rows scatter 8,000 around it. A model
@@ -800,7 +800,7 @@ def test_ranking_changes_with_mechanism():
       title: "Quick check",
       questions: [
         {
-          stem: "After mean imputation, a column's standard error of the mean fell from 0.170 to 0.119. What does that mean?",
+          stem: "After mean imputation, a column's standard error of the mean fell from 0.166 to 0.119. What does that mean?",
           options: [
             "The imputation improved precision",
             "The column now claims 30% more precision than the data has — the extra rows are invented, and every interval built on them is too narrow",

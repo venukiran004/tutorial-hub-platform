@@ -491,7 +491,8 @@ print(tasks[0].to_json())
       solution: {
         lang: "python",
         title: "reporting.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 class Cacheable:
     def __init__(self):
@@ -522,7 +523,6 @@ print(hasattr(r, "audit_log"))            # False
 
 # ---- cooperative initialisation ----------------------------------------
 
-from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import UTC, datetime
@@ -730,43 +730,43 @@ if __name__ == "__main__":
       {
         stem: "`class D(B, C)` where both inherit from `A`. `B` has no `who()`, `C` and `A` do. What does `D().who()` return?",
         options: [
-          "`A`'s — depth-first search goes up through `B` to `A` first",
-          "`C`'s — C3 places `C` before `A`, so the shared ancestor is reached only after every class that inherits from it",
-          "It raises `TypeError` for an ambiguous method",
-          "`B`'s inherited copy of `A`'s method"
+          "`A`'s — the lookup goes depth-first through `B` to `A` before it ever reaches `C`",
+          "It raises `TypeError`, because two bases provide a method with the same name",
+          "`C`'s — C3 places the shared ancestor `A` after every class that inherits from it",
+          "`B`'s inherited copy of `A`'s method, since `B` is listed first among the bases"
         ],
-        answer: 1,
+        answer: 2,
         why: "The MRO is `D, B, C, A, object`. C3 guarantees a shared ancestor appears after every class that inherits from it, so `C.who` is found before `A.who`. A naive depth-first search would have gone `D → B → A` and returned `A`'s — which is precisely the bug C3 was designed to prevent."
       },
       {
         stem: "A model mixin sets timestamps in `save()`, but they are always null. The model's `save()` calls `Model.save(self, *args, **kwargs)`. Why?",
         options: [
-          "The mixin must be listed after the base class to take effect",
-          "Naming the base class directly jumps past every class between it and the model in the MRO — including the mixin",
-          "`save()` cannot be overridden by a mixin in Django",
-          "The mixin needs an `__init__` that calls `super()`"
+          "Calling `Model.save` directly skips every class between it and the model, mixin included",
+          "The mixin must be listed after the base class in the class statement for its `save()` to take effect",
+          "`save()` cannot be overridden by a mixin in Django, because the model metaclass replaces it",
+          "The mixin needs its own `__init__` that calls `super()`, or its methods are never wired in"
         ],
-        answer: 1,
+        answer: 0,
         why: "`Model.save(self, ...)` calls that implementation directly, skipping the MRO walk entirely — so any class between the model and `Model`, including the mixin, never runs. Nothing raises, because skipping a method is not an error: rows are written and only the missing data reveals it. `super().save(...)` walks the MRO of `type(self)` and is the only form that composes with classes the author never saw."
       },
       {
         stem: "In cooperative `**kwargs` initialisation, what catches a misspelled keyword like `cache_siz=256`?",
         options: [
-          "Nothing — unconsumed keywords are silently discarded at the end of the chain",
-          "`object.__init__` sits at the end of every MRO and accepts no arguments, so anything unconsumed reaches it and raises `TypeError`",
-          "The first mixin in the MRO validates all keywords",
-          "A type checker, but only at edit time"
+          "`object.__init__` ends every MRO and takes no arguments, so a leftover keyword raises",
+          "Nothing — unconsumed keywords are silently discarded once they reach the end of the chain",
+          "The first mixin in the MRO validates all keywords before passing them along the chain",
+          "A type checker, which flags the unknown keyword at edit time, though nothing checks at runtime"
         ],
-        answer: 1,
+        answer: 0,
         why: "Each class pulls out the keywords it understands and forwards the rest. Whatever nobody claimed arrives at `object.__init__`, which takes no arguments and raises `TypeError` naming the offender. That backstop is what makes the pattern safe — without it a typo would be silently ignored and the mixin would quietly use its default."
       },
       {
         stem: "Python refuses to create a class with `TypeError: Cannot create a consistent MRO`. What is the right response?",
         options: [
-          "Reorder the base classes until the error disappears",
-          "Treat it as a design signal — two branches disagree about ordering, and the usual fix is to make one capability a collaborator rather than a base",
-          "Add an explicit `__mro_entries__` to resolve the ambiguity",
-          "Use a metaclass to override the linearisation"
+          "Reorder the base classes until the error disappears, since the order of bases is only a preference",
+          "Treat it as a design signal, and make one capability a collaborator rather than a base",
+          "Add an explicit `__mro_entries__` to the class so Python knows which order to use",
+          "Use a metaclass to override the linearisation and supply the order you want"
         ],
         answer: 1,
         why: "The error means no order satisfies C3's rules: one branch requires A before B and another requires the reverse. Reordering makes the message go away while leaving the underlying ambiguity for the next person. If the order genuinely matters the classes are not independent mixins; if it genuinely does not, they should not be in one linear chain. Composition removes the question entirely and makes both capabilities substitutable in tests."

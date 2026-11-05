@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c21.1",
  "lede": "**24 programs to write**, on combinatorics and linked structures. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 24 programs on combinatorics and linked structures without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c20.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2439–2462.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "numbers", "graphs & trees", "dicts and sets", "production", "strings"], "cells": [[{"text": "4", "tone": "accent"}, "Rotate Image In"], [{"text": "3", "tone": "good"}, "Maximum Depth of Binary Tree"], [{"text": "2", "tone": "violet"}, "Level Order Traversal"], [{"text": "1", "tone": "teal"}, "Power Set Using Bits"], [{"text": "1", "tone": "warn"}, "Container With Most Water"], [{"text": "1", "tone": "crit"}, "Word Ladder (BFS)"]], "t": "diagram", "id": "dg-c21_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

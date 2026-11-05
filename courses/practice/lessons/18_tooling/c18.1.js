@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c18.1",
  "lede": "**27 programs to write**, on unittest, logging and reporting. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 27 programs on unittest, logging and reporting without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c17.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2008–2034.** What this set actually drills, counted from its own problems — 22 of the 27 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["testing", "decorators", "exceptions", "generators", "strings", "production"], "cells": [[{"text": "12", "tone": "accent"}, "Unit Test with unittest"], [{"text": "3", "tone": "good"}, "Benchmark Decorator"], [{"text": "3", "tone": "violet"}, "Assertion Helpers"], [{"text": "2", "tone": "teal"}, "Fuzzy Test Generator"], [{"text": "1", "tone": "warn"}, "Debug Context Manager"], [{"text": "1", "tone": "crit"}, "Logging Configuration"]], "t": "diagram", "id": "dg-c18_1-top-0"},
   {
    "t": "viz",
    "title": "What a regex is doing while it matches",
@@ -147,7 +147,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "print(\"Q644: memory_profiler\")\nprint(\"  Line-by-line memory usage.\")\nprint(\"  pip install memory_profiler\")\nprint(\"  @profile\")\nprint(\"  def my_function():\")\nprint(\"      a = [1] * (10 ** 6)\")\nprint(\"      b = [2] * (2 * 10 ** 7)\")\nprint(\"      del b\")\nprint(\"  python -m memory_profiler script.py\")\nprint()\nQ644: memory_profiler\n  Line-by-line memory usage.\n  pip install memory_profiler\n  @profile\n  def my_function():\n      a = [1] * (10 ** 6)\n      b = [2] * (2 * 10 ** 7)\n      del b\n  python -m memory_profiler script.py",
+     "code": "print(\"memory_profiler\")\nprint(\"  Line-by-line memory usage.\")\nprint(\"  pip install memory_profiler\")\nprint(\"  @profile\")\nprint(\"  def my_function():\")\nprint(\"      a = [1] * (10 ** 6)\")\nprint(\"      b = [2] * (2 * 10 ** 7)\")\nprint(\"      del b\")\nprint(\"  python -m memory_profiler script.py\")\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "memory_profiler\n  Line-by-line memory usage.\n  pip install memory_profiler\n  @profile\n  def my_function():\n      a = [1] * (10 ** 6)\n      b = [2] * (2 * 10 ** 7)\n      del b\n  python -m memory_profiler script.py",
      "numbered": false
     }
    ]
@@ -215,7 +225,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative",
-     "code": "print(\"Q422: Snapshot testing\")\nprint(\"  Compare output against stored 'snapshots'.\")\nprint(\"  Libraries: pytest-snapshot, syrupy\")\nprint(\"  First run saves snapshot, subsequent runs compare.\")\nprint(\"  Update: pytest --snapshot-update\")\nprint()\nQ422: Snapshot testing\n  Compare output against stored 'snapshots'.\n  Libraries: pytest-snapshot, syrupy\n  First run saves snapshot, subsequent runs compare.\n  Update: pytest --snapshot-update",
+     "code": "print(\"Snapshot testing\")\nprint(\"  Compare output against stored 'snapshots'.\")\nprint(\"  Libraries: pytest-snapshot, syrupy\")\nprint(\"  First run saves snapshot, subsequent runs compare.\")\nprint(\"  Update: pytest --snapshot-update\")\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "Snapshot testing\n  Compare output against stored 'snapshots'.\n  Libraries: pytest-snapshot, syrupy\n  First run saves snapshot, subsequent runs compare.\n  Update: pytest --snapshot-update",
      "numbered": false
     }
    ]

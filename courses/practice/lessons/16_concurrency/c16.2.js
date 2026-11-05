@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c16.2",
  "lede": "**25 programs to write**, on timeouts, daemons and multiprocessing. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 25 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 25 programs on timeouts, daemons and multiprocessing without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c16.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1844–1868.** What this set actually drills, counted from its own problems — 16 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["threads", "async", "generators"], "cells": [[{"text": "8", "tone": "accent"}, "Blocking Work Belongs in a Thr"], [{"text": "5", "tone": "good"}, "An asyncio.Semaphore Caps Conc"], [{"text": "3", "tone": "violet"}, "Timing Out a Coroutine"]], "t": "diagram", "id": "dg-c16_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

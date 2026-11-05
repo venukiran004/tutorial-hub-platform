@@ -392,7 +392,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
     { t: "callout", kind: "scenario", title: "Interview scenario",
       body: [
         { t: "p", text: "**\"We enabled speculative decoding on our 70B endpoint with a 7B draft and K=5. Throughput went down 8%. The acceptance rate reports 0.62. What happened?\"**" },
-        { t: "p", text: "0.62 acceptance with a 10× size ratio should be a large win on paper: `c = 0.1`, so `(1 + 0.62×5)/(5×0.1 + 1) = 2.75×`. A measured 8% *loss* against a predicted 2.75× gain means the cost model's assumptions are wrong, not the acceptance rate." },
+        { t: "p", text: "0.62 acceptance with a 10× size ratio should be a large win on paper: `c = 0.1`, so `(1 + 0.62×5)/(5×0.1 + 1) = 2.73×`. A measured 8% *loss* against a predicted 2.73× gain means the cost model's assumptions are wrong, not the acceptance rate." },
         { t: "p", text: "The most likely assumption to have broken is the one about idle arithmetic. Speculative decoding spends arithmetic to save weight loads, and that trade is only free when the arithmetic units are idle — which is true at batch 1 and false at batch 64. On a busy endpoint the verification pass competes with the other rows in the batch, so each round costs more than `K·c + 1`. I would check throughput against batch size and expect the loss to be concentrated at high batch." },
         { t: "p", text: "Second candidate: the draft model is occupying memory that was holding KV cache. A 7B draft at fp16 is 14 GB, which on an 80 GB node is a meaningful slice of the cache budget — fewer concurrent rows, lower throughput, entirely independent of acceptance (3.2)." },
         { t: "p", text: "Third: how acceptance is being counted. If the reported 0.62 is the rate at the first drafted position rather than averaged over all K, it is flattering — I measured 0.650 at K=1 falling to 0.231 at K=8 on my own pair, so a first-position figure can overstate the effective rate by 3×. The fix in that case is a smaller K, not a different draft." },
@@ -454,7 +454,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
           "The draft and target tokenizers disagree"
         ],
         answer: 1,
-        why: "The cost model predicts 2.75× for those figures, so the gap is in its assumptions rather than its inputs. Speculative decoding trades arithmetic for weight loads and is only free when arithmetic is idle — true at batch 1, false at batch 64, where verification competes with the other rows. A 14 GB draft eating KV cache budget is the other strong candidate. Quality is unchanged by construction, and a tokenizer mismatch would break correctness, not throughput." }
+        why: "The cost model predicts 2.73× for those figures, so the gap is in its assumptions rather than its inputs. Speculative decoding trades arithmetic for weight loads and is only free when arithmetic is idle — true at batch 1, false at batch 64, where verification competes with the other rows. A 14 GB draft eating KV cache budget is the other strong candidate. Quality is unchanged by construction, and a tokenizer mismatch would break correctness, not throughput." }
     ]
   },
 
@@ -485,7 +485,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
         q: "Someone reports a 0.62 acceptance rate but no speedup. Where do you look?",
         strong: "A strong answer separates a wrong input from a broken assumption, and proposes a decisive experiment.",
         answer: [
-          { t: "p", text: "First I would check whether the cost model even predicts a win: with a 10× size ratio and 0.62 acceptance at K=5 it predicts 2.75×, so a flat or negative result means an assumption is broken rather than an input being wrong. That focuses the search." },
+          { t: "p", text: "First I would check whether the cost model even predicts a win: with a 10× size ratio and 0.62 acceptance at K=5 it predicts 2.73×, so a flat or negative result means an assumption is broken rather than an input being wrong. That focuses the search." },
           { t: "p", text: "The assumption I would suspect first is idle arithmetic. Verification spends arithmetic to save weight loading, which is free at batch 1 and not at batch 64, where it competes with every other row. Throughput plotted against batch size would show the loss concentrated at high batch." },
           { t: "p", text: "Second, memory. The draft model occupies space that was holding KV cache — a 7B draft at fp16 is 14 GB — so concurrency drops and throughput with it, entirely independently of acceptance." },
           { t: "p", text: "Third, how acceptance is being counted. If 0.62 is the rate at the first drafted position rather than averaged over all K positions, it is flattering: I measured 0.650 at K=1 collapsing to 0.231 at K=8 on my own pair. That is a 3× overstatement of the effective rate, and the fix would be a smaller K rather than a different model." },

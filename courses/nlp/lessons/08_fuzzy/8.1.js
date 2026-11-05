@@ -2,7 +2,7 @@
    LESSON 8.1 — Levenshtein and Damerau-Levenshtein
    Both implemented from scratch, the full kitten→sitting matrix reproduced,
    and the reordering failure measured at 0.0909 for the same person (§06)
-   (scratchpad/nlp/n81.py).
+   (n81.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.1",
@@ -66,7 +66,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Three cases including the empty string, all matching the reference", "caption": "The implementation reproduces all three: **`kitten`/`sitting` = 3, `flaw`/`lawn` = 2, and `''`/`'abc'` = 3.** The last is the one worth having in a test suite — **it exercises the boundary row the recurrence depends on**, and a version that initialises `d[0][j]` to zero instead of `j` passes the first two cases and fails only this one. **Which is the general shape of an edit-distance bug: the interior logic is easy and the base case is where it goes wrong.**", "left": "pair", "codeW": 190, "vars": ["distance", "reference"], "steps": [{"code": "'kitten' / 'sitting'", "state": ["3", "3 ok"], "tone": "good"}, {"code": "'flaw' / 'lawn'", "state": ["2", "2 ok"], "changed": [0, 1], "tone": "good"}, {"code": "'' / 'abc'", "state": ["3", "3 ok"], "changed": [0], "tone": "violet", "note": "exercises the base case"}], "t": "diagram", "id": "dg-8_1-04-3"},
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n81.py — two rows, not a full matrix", code:
+    { t: "code", lang: "python", title: "two rows, not a full matrix", code:
 "def levenshtein(a, b):\n    \"\"\"Two rows instead of the full matrix: O(min(m, n)) memory.\"\"\"\n    prev = list(range(len(b) + 1))          # the \"\" row: 0, 1, 2, ...\n    for i, ca in enumerate(a, 1):\n        cur = [i]                           # the \"\" column\n        for j, cb in enumerate(b, 1):\n            cur.append(min(\n                prev[j] + 1,                # delete\n                cur[j - 1] + 1,             # insert\n                prev[j - 1] + (ca != cb),   # substitute; True is 1\n            ))\n        prev = cur\n    return prev[-1]",
       caption: "Each row depends only on the previous one, so the full matrix is never needed — memory drops from O(m·n) to O(min(m,n)). Time stays O(m·n)." },
 

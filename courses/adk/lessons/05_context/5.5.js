@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.5 — The Context Objects
    The identity check, the surfaces and the call order were executed on
-   google-adk 2.9.2 (scratchpad/adk/s5.py).
+   google-adk 2.9.2 (s5.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.5",
@@ -71,7 +71,7 @@ Context adds 34 more: ['actions', 'add_memory', 'add_session_to_memory', 'attemp
 
 
 
-    { t: "code", lang: "python", title: "s5.py — an agent that narrates its own contexts",
+    { t: "code", lang: "python", title: "an agent that narrates its own contexts",
       code: `def instruction(ctx: ReadonlyContext) -> str:
     print(f"  [instruction provider] agent={ctx.agent_name} invocation={ctx.invocation_id[:8]} "
           f"tier={ctx.state.get('tier')} user_said={ctx.user_content.parts[0].text!r}")

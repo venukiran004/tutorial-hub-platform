@@ -375,7 +375,7 @@ EC.receiveLesson({
      "items": [
       "Low-rank matrix approximation (minimize \\(\\|A - \\hat{A}\\|_F\\))",
       "Weight decay in neural networks",
-      "Nuclear norm regularization (sum of singular values — convex relaxation of rank)"
+      "Not to be confused with the nuclear norm (sum of singular values), the convex relaxation of rank"
      ]
     }
    ],

@@ -136,9 +136,9 @@ def worth_it(work_seconds: float, arg_bytes: int, cores: int = 8) -> bool:
     return speedup > 1.5
 
 
-worth_it(work_seconds=0.000_1, arg_bytes=100)      # False — 100 us of work
-worth_it(work_seconds=0.050,   arg_bytes=100)      # True  — 50 ms of work
-worth_it(work_seconds=0.050,   arg_bytes=50_000_000)  # False — 50 MB argument`,
+print(worth_it(work_seconds=0.000_1, arg_bytes=100))        # 100 us of work
+print(worth_it(work_seconds=0.050,   arg_bytes=100))        # 50 ms of work
+print(worth_it(work_seconds=0.050,   arg_bytes=50_000_000)) # a 50 MB argument`,
         out: `False
 True
 False`},
@@ -180,14 +180,14 @@ False`},
     { t: "table",
       head: ["", "`fork`", "`spawn`", "`forkserver`"],
       rows: [
-        ["Default on", "Linux (until 3.14)", "**macOS, Windows, Linux from 3.14**", "—"],
+        ["Default on", "Linux up to 3.13", "**macOS, Windows**", "**Linux from 3.14**"],
         ["Child starts from", "A copy of the parent, mid-flight", "A fresh interpreter", "A clean pre-forked template"],
         ["Startup", "~1 ms", "~50–300 ms", "~5 ms after the first"],
         ["Inherits globals and open files", "**Yes**", "No — re-imports `__main__`", "Only what was imported before the server started"],
         ["Safe with threads", "**No** — a classic deadlock source", "Yes", "Yes"],
         ["Needs picklable arguments", "No", "**Yes**", "**Yes**"]
       ],
-      caption: "**Python 3.14 changed the Linux default from `fork` to `spawn`**, because forking a process that holds locks in threads has caused deadlocks for years. Code that relied on inherited state breaks on the new default, which makes this worth knowing now."
+      caption: "**Python 3.14 changed the Linux default from `fork` to `forkserver`**, because forking a process that holds locks in threads has caused deadlocks for years. Children now fork from a clean server process instead of the running parent, so code that relied on state the parent built at runtime breaks on the upgrade."
     },
 
     { t: "callout", kind: "trap", title: "Why forking a threaded process deadlocks", body: [
@@ -266,7 +266,7 @@ with ProcessPoolExecutor() as pool:
           code: `def process(item):
     with psycopg.connect(DSN) as conn:          # ~30 ms, per item
         return conn.execute(...)` },
-        { level: "best", label: "One connection per worker, created at start-up",
+        { level: "best", label: "One connection per worker, created at startup",
           why: "`initializer` runs once when the worker process starts, so the connection is created once and reused for every task that worker handles. This is the standard shape for any per-worker resource.",
           code: `_conn = None
 
@@ -286,7 +286,7 @@ with ProcessPoolExecutor(
     initializer=init_worker,
 ) as pool:
     results = list(pool.map(process, items, chunksize=32))`,
-          note: "A module-level global is normally a smell (Lesson 4.2). Here it is the intended mechanism: each process has its own copy, so there is no sharing and nothing to race on." }
+          note: "A module-level global is normally a smell (Lesson 3.3). Here it is the intended mechanism: each process has its own copy, so there is no sharing and nothing to race on." }
       ]
     },
 
@@ -415,7 +415,7 @@ if __name__ == "__main__":
 # 2. THE MODEL AT MODULE LEVEL, WITH spawn
 #
 #    Under fork the 800 MB is inherited copy-on-write and looks free.
-#    Under spawn -- the default on macOS, Windows, and Linux from 3.14 --
+#    Under spawn -- the default on macOS and Windows --
 #    each of the 16 children RE-IMPORTS the module, so load_model() runs
 #    16 times: ~16 x 800 MB of RAM and ~16 x the load time.
 #
@@ -625,10 +625,10 @@ def test_start_method_is_explicit():
         notes: [
           { t: "p", text: "**The `Manager` dict was more than half the regression and looks like ordinary code.** Every `counts.get()` and every assignment is a pickled round trip to a server process — two per row, roughly 300 µs against 3 ms of real work — and all sixteen workers queue behind that one process. It is also racy, since get-then-set is not atomic across processes." },
           { t: "p", text: "**The fix is to stop sharing, not to share faster.** The region travels back with the result, which was crossing the boundary anyway, and the counting happens in the parent where there is no concurrency at all. That is the same move as per-worker accumulators in threading (Lesson 11.3)." },
-          { t: "p", text: "**The module-level model is free under `fork` and catastrophic under `spawn`.** Copy-on-write makes it invisible on Linux today; a `spawn` default — macOS, Windows, and Linux from 3.14 — re-imports the module in every child and loads 800 MB sixteen times. Code that works only under `fork` is code with a deadline on it." },
+          { t: "p", text: "**The module-level model is free under `fork` and catastrophic under `spawn`.** Copy-on-write makes it invisible on Linux; under `spawn`, the macOS and Windows default, every child re-imports the module and loads 800 MB sixteen times. Code whose memory depends on how one platform starts processes is code with a deadline on it." },
           { t: "callout", kind: "trap", title: "The hang is a thread plus a fork", body: [
             { t: "p", text: "`logging.info()` and the heartbeat thread both run before the pool is created. `fork()` copies only the calling thread, so a lock held by the heartbeat at that instant is copied locked with nobody left to release it — and the first child to log blocks forever." },
-            { t: "p", text: "It depends on where the other thread happened to be, so it fails perhaps one run in twenty. Setting `spawn` explicitly removes the whole class, which is why the new default exists." }
+            { t: "p", text: "It depends on where the other thread happened to be, so it fails perhaps one run in twenty. Setting `spawn` or `forkserver` explicitly removes the whole class, which is why Linux stopped defaulting to `fork` in 3.14." }
           ]},
           { t: "p", text: "**`chunksize=64` is derived, not guessed**: 3 ms per row against a ~160 µs boundary means 64 rows is about 190 ms of work per crossing, so overhead falls under 0.1% while chunks stay small enough that the tail does not leave cores idle." }
         ]
@@ -638,7 +638,7 @@ def test_start_method_is_explicit():
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
       { t: "p", text: "A team parallelises an image pipeline with `multiprocessing.Pool`. It works beautifully on their Linux CI and on every developer's Linux laptop. A new engineer joins on a Mac, and the same code loads the ML model eight times, exhausts memory and is killed." },
       { t: "p", text: "**Linux defaulted to `fork` and macOS to `spawn`.** Under `fork` the model at module level was inherited copy-on-write and cost nothing; under `spawn` each child re-imported the module and loaded its own copy. Nobody had written anything platform-specific — the default did it." },
-      { t: "p", text: "**Python 3.14 makes `spawn` the default on Linux too**, so this stopped being a Mac problem and became everyone's, on an upgrade rather than a code change." },
+      { t: "p", text: "**Python 3.14 moved Linux off `fork` as well, to `forkserver`**, so Linux children no longer inherit the running parent either. Start-method surprises stopped being a Mac problem and became everyone's, on an upgrade rather than a code change." },
       { t: "p", text: "**Set the start method explicitly and load heavy resources in an `initializer`.** Both are one line, both make the behaviour identical everywhere, and together they remove a class of bug that only ever appears on someone else's machine — usually the newest person's, on their first day." }
     ]}
   ],
@@ -664,45 +664,45 @@ def test_start_method_is_explicit():
       {
         stem: "`pool.map(square, range(1_000_000))` is 155× slower than the serial version. Why?",
         options: [
+          "Every item pays ~160 µs of pickling and IPC for 0.1 µs of work",
           "The pool has too many workers",
-          "Each item crosses the process boundary separately — roughly 160 µs of pickling and IPC for 0.1 µs of work",
           "`range` cannot be parallelised",
           "The GIL still applies across processes"
         ],
-        answer: 1,
+        answer: 0,
         why: "Every task is pickled, written to a pipe, unpickled, computed and sent back. When the computation is smaller than that round trip, more workers means more overhead. `chunksize` amortises it over many items — but here the work is so small that even chunked it loses to serial, which is the real answer: this workload should not use processes at all."
       },
       {
         stem: "A job loads an 800 MB model at module level. It works on Linux and exhausts memory on macOS. Why?",
         options: [
           "macOS has less memory available to Python",
-          "Linux defaulted to `fork`, which inherits the model copy-on-write; macOS uses `spawn`, so each child re-imports the module and loads its own copy",
+          "Linux's `fork` shared the model; macOS's `spawn` reloads it in every child",
           "The model file is not portable between platforms",
           "macOS limits the number of child processes"
         ],
         answer: 1,
-        why: "Nothing platform-specific was written — the start-method default did it. Under `fork` the model is inherited and effectively free; under `spawn` the child starts a fresh interpreter and re-imports `__main__` to find the target. Python 3.14 makes `spawn` the Linux default too, so this becomes everyone's problem on an upgrade. Load heavy resources in an `initializer`."
+        why: "Nothing platform-specific was written — the start-method default did it. Under `fork` the model is inherited and effectively free; under `spawn` the child starts a fresh interpreter and re-imports `__main__` to find the target. Linux itself moved from `fork` to `forkserver` in 3.14, so set the start method explicitly and load heavy resources in an `initializer`."
       },
       {
         stem: "A process pool hangs intermittently, roughly one run in twenty. The parent starts a logging thread before creating the pool. What is happening?",
         options: [
-          "The logging thread is starving the pool of CPU",
-          "`fork()` copies only the calling thread, so a lock held by the logging thread is copied locked with no thread left to release it — the first child to log blocks forever",
-          "The log file handle is shared and contended",
-          "Daemon threads prevent the pool from starting"
+          "The logging thread is starving the pool of CPU, so the workers never get scheduled",
+          "`fork()` copies a lock another thread held, and no thread is left to release it",
+          "The log file handle is shared between processes, and writers contend for it",
+          "Daemon threads prevent the pool from starting until they exit"
         ],
         answer: 1,
-        why: "It depends on where the other thread happened to be when the fork occurred, which is why it is intermittent and reaches production. Any lock — `logging`'s internal lock, an allocator lock, a lock inside a library — can be inherited in a locked state. Using `spawn` removes the whole class, which is precisely why it became the default."
+        why: "It depends on where the other thread happened to be when the fork occurred, which is why it is intermittent and reaches production. Any lock — `logging`'s internal lock, an allocator lock, a lock inside a library — can be inherited in a locked state. Using `spawn` or `forkserver` removes the whole class, which is why Python 3.14 stopped defaulting to `fork` on Linux."
       },
       {
         stem: "Workers update a shared `Manager().dict()` counter once per row. What does that cost?",
         options: [
+          "Two IPC round trips per row through one server process, and lost updates",
           "Nothing measurable — it is a normal dict",
-          "Two pickled round trips to a separate server process per row, all workers serialising through it, and get-then-set is not atomic so counts are lost",
           "A GIL acquisition per access",
           "Memory proportional to the number of workers"
         ],
-        answer: 1,
+        answer: 0,
         why: "A `Manager` object is a proxy: every read and write is inter-process communication with one server process, commonly a thousand times slower than a local dict and a global bottleneck besides. It is racy too, since get-then-set spans two round trips. Return the data with the result and aggregate in the parent, where there is no concurrency at all."
       }
     ]
@@ -728,7 +728,7 @@ def test_start_method_is_explicit():
         strong: "`fork` copies the parent process, so the child inherits memory and open descriptors and starts in about a millisecond. `spawn` starts a fresh interpreter and re-imports the module, which is slower and requires everything to be picklable.",
         answer: [
           { t: "p", text: "The threading interaction is the important part: `fork` copies only the calling thread, so a lock held elsewhere is inherited locked and the child deadlocks — intermittently, which is why it reaches production." },
-          { t: "p", text: "Knowing that Linux moved to `spawn` in 3.14 shows the knowledge is current, and it makes the advice actionable: set it explicitly rather than inheriting a default that moves." },
+          { t: "p", text: "Knowing that Linux moved from `fork` to `forkserver` in 3.14 shows the knowledge is current, and it makes the advice actionable: set it explicitly rather than inheriting a default that moves." },
           { t: "p", text: "The practical consequence — module-level work runs once per worker under `spawn` — is what breaks real code on the switch, and `initializer` is the fix." }
         ]
       },

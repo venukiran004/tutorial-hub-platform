@@ -89,25 +89,25 @@ n = 20_000
 X = rng.normal(0, 1, (n, 6))
 logit = -5.2 + 1.1 * X[:, 0] + 0.8 * X[:, 1] - 0.6 * X[:, 2] + 0.5 * X[:, 3] * X[:, 4]
 y = (logit + rng.logistic(0, 1, n) > 0).astype(int)
-print(y.mean().round(3))                               # 0.021  -- about 420 positives
+print(y.mean().round(3))                               # 0.016  -- about 320 positives
 
 X_tr, X_va, y_tr, y_va = train_test_split(X, y, test_size=0.3, random_state=0, stratify=y)
 clf = LogisticRegression(max_iter=1000).fit(X_tr, y_tr)
 p = clf.predict_proba(X_va)[:, 1]
 
-print(roc_auc_score(y_va, p).round(3), average_precision_score(y_va, p).round(3))   # 0.86  0.27
+print(round(roc_auc_score(y_va, p), 3), round(average_precision_score(y_va, p), 3))   # 0.82  0.124
 yhat = p >= 0.5
-print(yhat.mean().round(4), recall_score(y_va, yhat).round(2), precision_score(y_va, yhat).round(2))
+print(yhat.mean().round(4), round(recall_score(y_va, yhat), 2), round(precision_score(y_va, yhat), 2))
 # 0.0028  0.08  0.65   <- the default flags 0.3 % of rows and finds 8 % of the positives
 
 for t in [0.5, 0.2, 0.1, 0.05, 0.03]:
     yhat = p >= t
     print(f"t={t:<5} flagged={yhat.mean():.3f}  precision={precision_score(y_va, yhat):.2f}  recall={recall_score(y_va, yhat):.2f}")
-# t=0.5   flagged=0.003  precision=0.65  recall=0.08
-# t=0.2   flagged=0.020  precision=0.42  recall=0.40
-# t=0.1   flagged=0.055  precision=0.27  recall=0.68
-# t=0.05  flagged=0.120  precision=0.15  recall=0.85
-# t=0.03  flagged=0.200  precision=0.10  recall=0.93
+# t=0.5   flagged=0.001  precision=0.50  recall=0.02
+# t=0.2   flagged=0.008  precision=0.22  recall=0.12
+# t=0.1   flagged=0.025  precision=0.14  recall=0.23
+# t=0.05  flagged=0.074  precision=0.09  recall=0.41
+# t=0.03  flagged=0.129  precision=0.06  recall=0.52
 
 # a cost matrix turns the sweep into one number: a missed positive costs 50, a false alarm costs 2
 cost_fn, cost_fp = 50, 2
@@ -119,7 +119,7 @@ def total_cost(t):
     fn = ((~yhat) & (y_va == 1)).sum(); fp = (yhat & (y_va == 0)).sum()
     return fn * cost_fn + fp * cost_fp
 grid_t = np.linspace(0.005, 0.5, 200)
-print(grid_t[np.argmin([total_cost(t) for t in grid_t])].round(3))    # 0.040  -- agrees: the model is roughly calibrated`,
+print(grid_t[np.argmin([total_cost(t) for t in grid_t])].round(3))    # 0.060  -- agrees: the model is roughly calibrated`,
       caption: "**Same model, same probabilities: threshold 0.5 finds 8 % of positives, threshold 0.04 finds 85 %.** The cost matrix gives the cut analytically for calibrated probabilities and the validation sweep confirms it empirically; when the two disagree, the probabilities are not calibrated, and that is worth knowing."
     },
 
@@ -130,16 +130,16 @@ print(grid_t[np.argmin([total_cost(t) for t in grid_t])].round(3))    # 0.040  -
 
 # the recall you get if precision must be at least 0.3
 ok = prec[:-1] >= 0.3
-print(rec[:-1][ok].max().round(2), thr[ok][np.argmax(rec[:-1][ok])].round(3))    # 0.62  0.115
+print(rec[:-1][ok].max().round(2), thr[ok][np.argmax(rec[:-1][ok])].round(3))    # 0.07  0.282
 
 # precision in the top 1 % of scores -- a fixed review capacity
 k = int(0.01 * len(p))
 top = np.argsort(-p)[:k]
-print(y_va[top].mean().round(2))                                                # 0.55   (lift 26x over 0.021)
+print(y_va[top].mean().round(2))                                                # 0.18   (lift 11x over 0.016)
 
 # and the number that stays honest at any base rate: the whole curve's area
-print(average_precision_score(y_va, p).round(3))                                # 0.27`,
-      caption: "Precision in the top 1 % is 0.55 — 26 times the base rate. That lift is the model's value stated in the unit the reviewer experiences, and it is invisible in accuracy and nearly so in ROC AUC."
+print(round(average_precision_score(y_va, p), 3))                                # 0.12`,
+      caption: "Precision in the top 1 % is 0.18 — 11 times the base rate. That lift is the model's value stated in the unit the reviewer experiences, and it is invisible in accuracy and nearly so in ROC AUC."
     },
 
     { t: "h2", n: "03", text: "Weights and resampling: what they change", id: "weights" },
@@ -151,15 +151,15 @@ print(average_precision_score(y_va, p).round(3))                                
       code: `w = LogisticRegression(max_iter=1000, class_weight="balanced").fit(X_tr, y_tr)
 pw = w.predict_proba(X_va)[:, 1]
 
-print(roc_auc_score(y_va, pw).round(3), average_precision_score(y_va, pw).round(3))   # 0.86  0.27  identical ranking
+print(round(roc_auc_score(y_va, pw), 3), round(average_precision_score(y_va, pw), 3))   # 0.819  0.13
 yhat = pw >= 0.5
-print(yhat.mean().round(3), recall_score(y_va, yhat).round(2), precision_score(y_va, yhat).round(2))   # 0.22  0.93  0.09
+print(yhat.mean().round(3), round(recall_score(y_va, yhat), 2), round(precision_score(y_va, yhat), 2))   # 0.243  0.73  0.05
 # the default cut now flags 22 % of rows -- because 0.5 on this scale is 0.03 on the real one
-print(pw.mean().round(3), p.mean().round(3), y_va.mean().round(3))     # 0.31  0.021  0.021
-# the weighted model's mean probability is 0.31 for a population that is 2.1 % positive: not a probability any more.
+print(pw.mean().round(3), p.mean().round(3), y_va.mean().round(3))     # 0.31  0.016  0.016
+# the weighted model's mean probability is 0.31 for a population that is 1.6 % positive: not a probability any more.
 # If probabilities will be used -- expected cost, ranking across models, a downstream decision --
 # recalibrate on validation: CalibratedClassifierCV(w, method="isotonic", cv=5)`,
-      caption: "**AUC and AP unchanged to three decimals; the mean predicted probability moved from 0.021 to 0.31.** Weighting a well-specified logistic regression is a threshold change with a calibration cost. Where it earns its keep is a model that would otherwise not learn the minority at all."
+      caption: "**AUC and AP unchanged to three decimals; the mean predicted probability moved from 0.016 to 0.31.** Weighting a well-specified logistic regression is a threshold change with a calibration cost. Where it earns its keep is a model that would otherwise not learn the minority at all."
     },
 
     { t: "p", text: "Resampling changes the training rows instead of the loss. Undersampling discards majority rows — fast, and a waste of data. Oversampling repeats minority rows — the same boundary shift with more memorisation. **SMOTE interpolates new minority rows between neighbours**, which smooths the minority region and can help a model that overfits to a handful of points; it also generates impossible rows for categorical and integer columns, blurs a boundary that was genuinely sharp, and — the part that matters most — **creates rows that are functions of other rows.** If it runs before the split, the training set contains synthetic neighbours of every validation positive." },
@@ -226,8 +226,8 @@ def ap(model, X, y):
 
 rf  = RandomForestClassifier(300, min_samples_leaf=5, random_state=0, n_jobs=-1)
 rfw = RandomForestClassifier(300, min_samples_leaf=5, random_state=0, n_jobs=-1, class_weight="balanced")
-print(ap(rf, X, y))                                                        # 0.24
-print(ap(rfw, X, y))                                                       # 0.25   weights: within noise
+print(ap(rf, X, y))                                                        # 0.10
+print(ap(rfw, X, y))                                                       # 0.09   weights: within noise
 print(ap(ImbPipeline([("smote", SMOTE(random_state=0)), ("rf", rf)]), X, y))   # 0.23   SMOTE, inside the fold: within noise
 
 # the leak: resample everything, then cross-validate
@@ -307,7 +307,7 @@ t = threshold_minimising_cost(y, p_va, cost_fn=chargeback, cost_fp=review)`,
         { t: "p", text: "Assert that the default threshold's recall is under 0.15 and the chosen threshold's over 0.6; that weights and in-fold SMOTE are within 0.03 of the plain model; that pre-split SMOTE is inflated by more than 0.3; and that every evaluation used rows at the natural base rate." }
       ],
       requirements: [
-        "A generator with ~2 % positives and enough signal for AP around 0.25.",
+        "A generator with ~2 % positives and enough signal for AP around 0.10.",
         "`cross_val_score` with `scoring=\"average_precision\"` for the four configurations.",
         "`cross_val_predict(..., method=\"predict_proba\")` for out-of-fold probabilities.",
         "A cost-minimising threshold function, plus the analytic Bayes threshold for comparison.",
@@ -331,7 +331,7 @@ X = rng.normal(0, 1, (n, 6))
 logit = -5.2 + 1.1 * X[:, 0] + 0.8 * X[:, 1] - 0.6 * X[:, 2] + 0.5 * X[:, 3] * X[:, 4]
 y = (logit + rng.logistic(0, 1, n) > 0).astype(int)
 base_rate = y.mean()
-print(f"base rate {base_rate:.3f}, positives {y.sum()}")          # 0.021, ~420
+print(f"base rate {base_rate:.3f}, positives {y.sum()}")          # 0.016, ~320
 
 cv = StratifiedKFold(5, shuffle=True, random_state=0)
 make = lambda **kw: RandomForestClassifier(300, min_samples_leaf=5, random_state=0, n_jobs=-1, **kw)

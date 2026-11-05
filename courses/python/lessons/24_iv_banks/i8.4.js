@@ -74,7 +74,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Python manages memory through a private heap. All Python objects live in this heap, and the interpreter controls allocation/deallocation. The memory manager has several layers: the OS-level allocator, Python's raw allocator (`pymalloc`), the object allocator, and the type-specific allocators. `pymalloc` handles small objects (≤512 bytes) using memory pools organized into arenas (256 KB) → pools (4 KB) → blocks (fixed size per pool). For large objects, Python delegates directly to `malloc`."
+     "text": "Python manages memory through a private heap. All Python objects live in this heap, and the interpreter controls allocation/deallocation. The memory manager has several layers: the OS-level allocator, Python's raw allocator (`pymalloc`), the object allocator, and the type-specific allocators. `pymalloc` handles small objects (≤512 bytes) using memory pools organised into arenas (1 MiB since Python 3.10) → pools (16 KiB) → blocks (fixed size per pool). For large objects, Python delegates directly to `malloc`."
     },
     {
      "t": "h4",
@@ -159,12 +159,12 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`multiprocessing`**spawns separate processes, each with its own GIL. True CPU parallelism.",
-      "**`concurrent.futures.ProcessPoolExecutor`**higher-level abstraction over multiprocessing.",
+      "**`multiprocessing`:** spawns separate processes, each with its own GIL. True CPU parallelism.",
+      "**`concurrent.futures.ProcessPoolExecutor`:** higher-level abstraction over multiprocessing.",
       "**C extensions** that release the GIL (NumPy, Cython).",
-      "**`asyncio`**not parallel, but concurrent I/O via cooperative multitasking.",
-      "**PyPy / Jython**alternative interpreters without the GIL.",
-      "**Python 3.13+**experimental \"no-GIL\" build (`--disable-gil`)."
+      "**`asyncio`:** not parallel, but concurrent I/O via cooperative multitasking.",
+      "**PyPy / Jython:** alternative interpreters without the GIL.",
+      "**Python 3.13+:** experimental \"no-GIL\" build (`--disable-gil`)."
      ]
     },
     {
@@ -174,10 +174,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Lexing**source code → tokens.",
-      "**Parsing**tokens → Abstract Syntax Tree (AST).",
-      "**Compilation**AST → bytecode (`.pyc` files in `__pycache__`).",
-      "**Execution**CPython's eval loop (`ceval.c`) interprets bytecodes one by one using a stack-based virtual machine."
+      "**Lexing:** source code → tokens.",
+      "**Parsing:** tokens → Abstract Syntax Tree (AST).",
+      "**Compilation:** AST → bytecode (`.pyc` files in `__pycache__`).",
+      "**Execution:** CPython's eval loop (`ceval.c`) interprets bytecodes one by one using a stack-based virtual machine."
      ]
     },
     {
@@ -239,8 +239,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Immutable**`int`, `float`, `str`, `tuple`, `frozenset`, `bytes`. Their value cannot change after creation; Python may intern/cache them.",
-      "**Mutable**`list`, `dict`, `set`, `bytearray`, user-defined classes (by default). Their internal state can change without creating a new object."
+      "**Immutable:** `int`, `float`, `str`, `tuple`, `frozenset`, `bytes`. Their value cannot change after creation; Python may intern/cache them.",
+      "**Mutable:** `list`, `dict`, `set`, `bytearray`, user-defined classes (by default). Their internal state can change without creating a new object."
      ]
     },
     {
@@ -288,8 +288,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Stack**each function call gets a stack frame (`PyFrameObject`) storing local variables, bytecode pointer, etc. Stack frames are allocated on the C stack (and Python's frame heap).",
-      "**Heap**all Python objects live here, managed by `pymalloc` and the GC. Variable names are just references (pointers) to heap objects."
+      "**Stack:** each function call gets a stack frame (`PyFrameObject`) storing local variables, bytecode pointer, etc. Stack frames are allocated on the C stack (and Python's frame heap).",
+      "**Heap:** all Python objects live here, managed by `pymalloc` and the GC. Variable names are just references (pointers) to heap objects."
      ]
     },
     {
@@ -318,10 +318,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Encapsulation**bundling data and methods together; hiding internal state (private/protected members).",
-      "**Abstraction**exposing only essential interfaces; hiding implementation details (abstract classes, protocols).",
-      "**Inheritance**a class inherits attributes/methods from a parent, enabling code reuse.",
-      "**Polymorphism**different classes can be used interchangeably through a common interface; same method name behaves differently per class."
+      "**Encapsulation:** bundling data and methods together; hiding internal state (private/protected members).",
+      "**Abstraction:** exposing only essential interfaces; hiding implementation details (abstract classes, protocols).",
+      "**Inheritance:** a class inherits attributes/methods from a parent, enabling code reuse.",
+      "**Polymorphism:** different classes can be used interchangeably through a common interface; same method name behaves differently per class."
      ]
     },
     {
@@ -332,12 +332,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Inheritance** (\"is-a\"): `Dog` inherits from `Animal`. Creates tight coupling; deep hierarchies are fragile.",
-      "**Composition** (\"has-a\"): `Car` has an `Engine`. More flexible; prefer it when behavior needs to vary at runtime."
+      "**Composition** (\"has-a\"): `Car` has an `Engine`. More flexible; prefer it when behaviour needs to vary at runtime."
      ]
     },
     {
      "t": "p",
-     "text": "\"Favor composition over inheritance\" (GoF principle)."
+     "text": "\"Favour composition over inheritance\" (GoF principle)."
     },
     {
      "t": "code",
@@ -479,7 +479,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Mixins are small classes that provide specific behavior to be mixed into other classes via multiple inheritance. They're not meant to be instantiated alone and don't represent a full entity."
+     "text": "Mixins are small classes that provide specific behaviour to be mixed into other classes via multiple inheritance. They're not meant to be instantiated alone and don't represent a full entity."
     },
     {
      "t": "code",
@@ -522,11 +522,11 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**S**ingle Responsibility: each class has one job. (`UserSerializer` only serializes.)",
-      "**O**pen/Closed: open for extension, closed for modification. (Extend via subclassing/composition, not editing.)",
-      "**L**iskov Substitution: subclasses must be substitutable for parents.",
-      "**I**nterface Segregation: prefer many small interfaces over one large one. (Protocols/ABCs.)",
-      "**D**ependency Inversion: depend on abstractions, not concretions. (Inject dependencies.)"
+      "**S:** ingle Responsibility: each class has one job. (`UserSerializer` only serialises.)",
+      "**O:** pen/Closed: open for extension, closed for modification. (Extend via subclassing/composition, not editing.)",
+      "**L:** iskov Substitution: subclasses must be substitutable for parents.",
+      "**I:** nterface Segregation: prefer many small interfaces over one large one. (Protocols/ABCs.)",
+      "**D:** ependency Inversion: depend on abstractions, not concretions. (Inject dependencies.)"
      ]
     }
    ]
@@ -546,7 +546,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Double-underscore methods (`__init__`, `__str__`, etc.) are Python's way to hook into built-in behavior. They're called by the interpreter in response to operators and built-in functions, not directly by the user."
+     "text": "Double-underscore methods (`__init__`, `__str__`, etc.) are Python's way to hook into built-in behaviour. They're called by the interpreter in response to operators and built-in functions, not directly by the user."
     },
     {
      "t": "h4",
@@ -567,7 +567,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "`__new__`: static method; creates and returns the new instance. Called before `__init__`. Used to control object creation (singletons, immutable types like `tuple` subclasses).",
-      "`__init__`: initializes the already-created instance. Most common customization point."
+      "`__init__`: initialises the already-created instance. Most common customisation point."
      ]
     },
     {
@@ -640,7 +640,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Python maps operators to dunder methods. `a + b` calls `a.__add__(b)`; if it returns `NotImplemented`, Python tries `b.__radd__(a)`. You implement the relevant dunder to define behavior."
+     "text": "Python maps operators to dunder methods. `a + b` calls `a.__add__(b)`; if it returns `NotImplemented`, Python tries `b.__radd__(a)`. You implement the relevant dunder to define behaviour."
     }
    ]
   },
@@ -677,7 +677,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A decorator is a callable that takes a function and returns a new function with modified behavior. Syntactic sugar for `func = decorator(func)`."
+     "text": "A decorator is a callable that takes a function and returns a new function with modified behaviour. Syntactic sugar for `func = decorator(func)`."
     },
     {
      "t": "code",
@@ -752,8 +752,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Positional**matched by order.",
-      "**Keyword**matched by name; can be in any order."
+      "**Positional:** matched by order.",
+      "**Keyword:** matched by name; can be in any order."
      ]
     },
     {
@@ -996,8 +996,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Set**unordered collection of unique hashable elements. No key-value pairs.",
-      "**Dict**unordered (ordered since 3.7) mapping of key → value. Keys must be hashable."
+      "**Set:** unordered collection of unique hashable elements. No key-value pairs.",
+      "**Dict:** unordered (ordered since 3.7) mapping of key → value. Keys must be hashable."
      ]
     },
     {
@@ -1127,7 +1127,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Use synchronization primitives: `Lock`, `RLock`, `Semaphore`, `Queue` (thread-safe). Design with immutable data. Use thread-local storage."
+     "text": "Use synchronisation primitives: `Lock`, `RLock`, `Semaphore`, `Queue` (thread-safe). Design with immutable data. Use thread-local storage."
     },
     {
      "t": "h4",
@@ -1200,8 +1200,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Identify**look for circular lock dependencies; use timeout on `lock.acquire(timeout=...)`.",
-      "**Prevent**acquire locks in a consistent order; use `RLock`; minimize lock scope; use `threading.Timeout`."
+      "**Identify:** look for circular lock dependencies; use timeout on `lock.acquire(timeout=...)`.",
+      "**Prevent:** acquire locks in a consistent order; use `RLock`; minimise lock scope; use `threading.Timeout`."
      ]
     },
     {
@@ -1218,7 +1218,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The core of `asyncio`. Continuously monitors for I/O events, timeouts, and runnable coroutines. Runs one coroutine at a time. `asyncio.get_event_loop()` or `asyncio.run()`."
+     "text": "The core of `asyncio`. Continuously monitors for I/O events, timeouts, and runnable coroutines. Runs one coroutine at a time. Start it with `asyncio.run()`."
     },
     {
      "t": "h4",
@@ -1235,8 +1235,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Async**single-threaded; explicit yield points; no race conditions on shared state; best for many concurrent I/O operations.",
-      "**Multithreading**OS-scheduled; preemptive; can have race conditions; good for blocking I/O when you can't use async."
+      "**Async:** single-threaded; explicit yield points; no race conditions on shared state; best for many concurrent I/O operations.",
+      "**Multithreading:** OS-scheduled; preemptive; can have race conditions; good for blocking I/O when you can't use async."
      ]
     },
     {
@@ -1246,8 +1246,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Async**I/O-bound; single process; low overhead.",
-      "**Multiprocessing**CPU-bound; multiple processes; bypasses GIL; higher overhead."
+      "**Async:** I/O-bound; single process; low overhead.",
+      "**Multiprocessing:** CPU-bound; multiple processes; bypasses GIL; higher overhead."
      ]
     },
     {
@@ -1303,10 +1303,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**cProfile / profile**`python -m cProfile script.py`. Function-level timing.",
-      "**line_profiler**line-by-line timing with `@profile`.",
-      "**py-spy**sampling profiler, no code changes needed.",
-      "**timeit**micro-benchmarks."
+      "**cProfile / profile:** `python -m cProfile script.py`. Function-level timing.",
+      "**line_profiler:** line-by-line timing with `@profile`.",
+      "**py-spy:** sampling profiler, no code changes needed.",
+      "**timeit:** micro-benchmarks."
      ]
     },
     {
@@ -1316,10 +1316,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`tracemalloc`**built-in; tracks memory allocations by location.",
-      "**`memory_profiler`**line-by-line memory usage with `@profile`.",
-      "**`objgraph`**visualizes object references; finds leaks.",
-      "**`sys.getsizeof()`**size of a single object (not recursive)."
+      "**`tracemalloc`:** built-in; tracks memory allocations by location.",
+      "**`memory_profiler`:** line-by-line memory usage with `@profile`.",
+      "**`objgraph`:** visualises object references; finds leaks.",
+      "**`sys.getsizeof()`:** size of a single object (not recursive)."
      ]
     },
     {
@@ -1417,11 +1417,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`import copy`. `copy.copy(x)` for shallow, `copy.deepcopy(x)` for deep. `deepcopy` handles cycles and can be customized via `__copy__`/`__deepcopy__`."
+     "text": "`import copy`. `copy.copy(x)` for shallow, `copy.deepcopy(x)` for deep. `deepcopy` handles cycles and can be customised via `__copy__`/`__deepcopy__`."
     },
     {
      "t": "h4",
-     "text": "How does Python optimize memory?"
+     "text": "How does Python optimise memory?"
     },
     {
      "t": "ul",
@@ -1479,7 +1479,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A metaclass is the class of a class. Just as instances are created by classes, classes are created by metaclasses. The default metaclass is `type`. You can customize class creation by inheriting from `type`."
+     "text": "A metaclass is the class of a class. Just as instances are created by classes, classes are created by metaclasses. The default metaclass is `type`. You can customise class creation by inheriting from `type`."
     },
     {
      "t": "h4",
@@ -1515,8 +1515,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Class decorator**applied after class creation; simpler; can't modify class hierarchy.",
-      "**Metaclass**involved in class creation itself; can modify bases, namespace; affects all subclasses."
+      "**Class decorator:** applied after class creation; simpler; can't modify class hierarchy.",
+      "**Metaclass:** involved in class creation itself; can modify bases, namespace; affects all subclasses."
      ]
     },
     {
@@ -1525,7 +1525,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Objects that customize attribute access when used as class attributes. They implement `__get__`, `__set__`, and/or `__delete__`. Properties, functions (bound methods), `classmethod`, and `staticmethod` are all descriptors."
+     "text": "Objects that customise attribute access when used as class attributes. They implement `__get__`, `__set__`, and/or `__delete__`. Properties, functions (bound methods), `classmethod`, and `staticmethod` are all descriptors."
     },
     {
      "t": "code",
@@ -1539,7 +1539,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`@property` makes a method accessible as an attribute. `@x.setter` and `@x.deleter` define the set/delete behavior. It's a clean way to add validation/computation without changing the interface."
+     "text": "`@property` makes a method accessible as an attribute. `@x.setter` and `@x.deleter` define the set/delete behaviour. It's a clean way to add validation/computation without changing the interface."
     },
     {
      "t": "h4",
@@ -1790,11 +1790,11 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Dynamic typing**every operation requires type checks at runtime.",
-      "**GIL**prevents true CPU parallelism.",
-      "**Interpreted bytecode**no ahead-of-time native compilation.",
-      "**Boxing**every value is a heap-allocated object with overhead.",
-      "**Dynamic dispatch**attribute lookup is indirect (dict-based)."
+      "**Dynamic typing:** every operation requires type checks at runtime.",
+      "**GIL:** prevents true CPU parallelism.",
+      "**Interpreted bytecode:** no ahead-of-time native compilation.",
+      "**Boxing:** every value is a heap-allocated object with overhead.",
+      "**Dynamic dispatch:** attribute lookup is indirect (dict-based)."
      ]
     },
     {

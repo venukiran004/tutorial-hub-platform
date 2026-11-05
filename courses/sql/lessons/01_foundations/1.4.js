@@ -166,7 +166,7 @@ SELECT SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) / COUNT(*)          AS i
        SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) * 1.0 / COUNT(*)    AS rate,       -- 0.8333
        AVG(CASE WHEN status = 'paid' THEN 1.0 ELSE 0 END)                   AS rate2       -- 0.8333: the mean of a 0/1 column is the share
 FROM   orders;
--- MySQL, DuckDB and SQLite 3.x with REAL affinity divide as decimals here; PostgreSQL and SQL Server truncate.
+-- MySQL and DuckDB divide as decimals here; PostgreSQL, SQL Server and SQLite truncate.
 -- Write the 1.0 or the CAST every time and the query means the same thing on every engine.`,
       caption: "`AVG` of a 0/1 CASE is the cleanest rate: it cannot integer-divide and it reads as 'the share of rows where'. Add `FILTER (WHERE …)` or a WHERE if the denominator should be a subset rather than every row."
     },
@@ -393,7 +393,7 @@ ORDER  BY paid_revenue DESC;
       {
         level: "advanced",
         q: "A colleague's rate query returns 0 in production and 0.83 in their notebook. Same SQL. What happened?",
-        strong: "Two engines, two arithmetic rules. The query divides an integer SUM by an integer COUNT; production is PostgreSQL or SQL Server, which do integer division and truncate 10 / 12 to 0, and the notebook is DuckDB, MySQL or SQLite, which return a decimal. The fix is to make the arithmetic explicit — multiply by 1.0, cast one side to NUMERIC, or compute the rate as AVG of a 0/1 CASE — so the query means the same thing everywhere. The general lesson is that a query tested on one engine is not tested; anything involving division, string comparison, NULL sorting or date arithmetic should be checked on the engine it will run on.",
+        strong: "Two engines, two arithmetic rules. The query divides an integer SUM by an integer COUNT; production is PostgreSQL, SQL Server or SQLite, which do integer division and truncate 10 / 12 to 0, and the notebook is DuckDB or MySQL, which return a decimal. The fix is to make the arithmetic explicit — multiply by 1.0, cast one side to NUMERIC, or compute the rate as AVG of a 0/1 CASE — so the query means the same thing everywhere. The general lesson is that a query tested on one engine is not tested; anything involving division, string comparison, NULL sorting or date arithmetic should be checked on the engine it will run on.",
         answer: [
           { t: "p", text: "Diagnosing it from the two numbers alone, and generalising to 'tested on one engine is not tested', is the answer of someone who has shipped SQL." }
         ]

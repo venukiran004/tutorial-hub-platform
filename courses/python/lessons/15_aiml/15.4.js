@@ -276,6 +276,15 @@ for month in months_to_process:
       { t: "p", text: "**Either way, the logic lives in an importable package.** The notebook or script is a thin entry point, so the same tested code runs in both." }
     ]},
 
+    { t: "callout", kind: "trap", title: "An untagged parameters cell means the job runs on your defaults", body: [
+      { t: "p", text: "Papermill injects its values in a new cell placed directly *after* the cell tagged `parameters`. **If no cell carries that tag, it injects at the top of the notebook, and your own cell of defaults runs afterwards and overwrites every injected value.** The job exits zero, the output lands at the dated path, and it contains last month's numbers under this month's name. Papermill prints a warning, which nobody reads in a scheduler." },
+      { t: "code", lang: "text", title: "the order that runs", numbered: false, code: `TAGGED                               UNTAGGED
+[injected-parameters] (after tag)    [injected-parameters]  month = "2026-03"
+                                     [your defaults]        month = "2026-02"  <- wins
+[your defaults]  <- tagged cell      ...analysis runs for 2026-02...` },
+      { t: "p", text: "**Make the tag a checked property, not a convention:** a CI step that loads the notebook with `nbformat` and fails unless exactly one cell is tagged `parameters`, and an assertion in the first analysis cell that the period matches the output path." }
+    ]},
+
     { t: "h2", n: "05", text: "Practice", id: "practice" },
 
     { t: "exercise",
@@ -285,7 +294,7 @@ for month in months_to_process:
       minutes: 26,
       body: [
         { t: "p", text: "A colleague has left. Their notebook produced a revenue figure now used in a board paper, and nobody can reproduce it — the notebook raises on a fresh kernel." },
-        { t: "code", lang: "python", numbered: false, title: "revenue_analysis.ipynb (execution counts shown)", code: `
+        { t: "code", lang: "text", numbered: false, title: "revenue_analysis.ipynb (execution counts shown)", code: `
 [1]  import pandas as pd
      df = pd.read_csv("~/Downloads/orders_final_v3.csv")
 
@@ -623,7 +632,7 @@ def test_vat_is_applied_exactly_once():
         stem: "A notebook's cells show execution counts [1], [14], [3], [22]. Why does this matter?",
         options: [
           "It affects rendering performance",
-          "The kernel executed them in that order, so the displayed outputs were produced by a different program than the one a reader sees top to bottom",
+          "The outputs came from a different execution order than the one a reader sees",
           "Jupyter will renumber them on save",
           "It indicates the cells were copied from elsewhere"
         ],
@@ -633,21 +642,21 @@ def test_vat_is_applied_exactly_once():
       {
         stem: "Why use `nbstripout` on a repository containing notebooks?",
         options: [
-          "It compresses notebooks for faster cloning",
-          "It removes outputs before commit — making diffs readable, avoiding merge conflicts on execution counts, and keeping secrets echoed in cell outputs out of git history",
-          "It converts notebooks to scripts",
-          "It enforces cell execution order"
+          "It compresses notebooks so the repository is faster to clone and uses less disk",
+          "It converts notebooks to plain scripts, so they can be reviewed like ordinary code",
+          "It strips outputs before commit, keeping diffs clean and secrets out of history",
+          "It enforces top-to-bottom execution order, so outputs always match the code above them"
         ],
-        answer: 1,
+        answer: 2,
         why: "Outputs are the bulk of a notebook's JSON: base64 images, execution counts that change on every run, and occasionally an API key printed by a cell. Since git history is permanent, the secret case is the one with lasting consequences."
       },
       {
         stem: "When should code move out of a notebook into a package?",
         options: [
-          "When the notebook exceeds 500 lines",
-          "When it is used in a second notebook, has a bug worth testing, or someone asks how it works",
-          "Only when it is scheduled to run",
-          "Never — notebooks are self-contained by design"
+          "When the notebook exceeds 500 lines, which is roughly where it stops fitting in review",
+          "When a second notebook needs it, or it has a bug worth testing",
+          "Only when it is scheduled to run in production on a timer",
+          "Never — notebooks are self-contained by design, and imports break that"
         ],
         answer: 1,
         why: "The useful division is that notebooks call functions rather than defining them. A notebook that is mostly `def` statements is a module with an unreliable execution order and no tests, and copying cells between notebooks guarantees they will diverge."
@@ -656,11 +665,11 @@ def test_vat_is_applied_exactly_once():
         stem: "What is papermill's main advantage over a plain script for a recurring report?",
         options: [
           "It executes faster than a script",
-          "The executed notebook is the artefact — parameters, outputs, plots and timestamps in one reviewable file",
           "It handles retries automatically",
-          "It removes the need for version control"
+          "The executed notebook is itself the reviewable record",
+          "It removes the need for version control, since each run is saved as a new file"
         ],
-        answer: 1,
+        answer: 2,
         why: "For output a human reads, having the record of what happened be the same object as the result is genuinely better than a log plus a CSV. For output a system consumes, a script wins on testing, debugging and version control."
       }
     ]

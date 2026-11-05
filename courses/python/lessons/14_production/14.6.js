@@ -156,7 +156,7 @@ jobs:
       rungs: [
         { level: "bad", label: "Build per environment",
           why: "Two builds means two artefacts. Base images shift, a transitive dependency publishes a patch, the build cache differs — so what you tested in staging is not what runs in production, and the difference is invisible.",
-          code: `deploy-staging:
+          lang: "yaml", code: `deploy-staging:
     - docker build -t app:staging .
     - deploy staging app:staging
 
@@ -165,7 +165,7 @@ deploy-production:
     - deploy production app:production` },
         { level: "ok", label: "Build once, tag by environment",
           why: "One artefact, which is the important part. Moving tags make it hard to answer \"what is running right now?\" after the fact, and a re-tag is not an auditable event.",
-          code: `build:
+          lang: "yaml", code: `build:
     - docker build -t app:\${{ github.sha }} .
     - docker push app:\${{ github.sha }}
 
@@ -174,7 +174,7 @@ promote:
     - docker push app:production` },
         { level: "best", label: "Immutable digest, promoted by reference",
           why: "The digest is the artefact's identity and cannot be reassigned. Every deployment records exactly which bytes ran, rollback is deploying a previous digest, and the audit question has a precise answer.",
-          code: `# Build once. The digest is content-addressed.
+          lang: "yaml", code: `# Build once. The digest is content-addressed.
 - id: build
   run: |
     docker buildx build --push -t app:\${{ github.sha }} .
@@ -824,44 +824,44 @@ jobs:
         stem: "A pipeline runs `kubectl set image` and then `alembic upgrade head`. What is wrong?",
         options: [
           "Migrations should run in a separate pipeline",
-          "The new code is live against the old schema between the two steps, so every request touching a new column fails until the migration completes",
           "`kubectl set image` cannot be scripted safely",
+          "New code runs against the old schema until the migration finishes",
           "Alembic requires the old pods to be stopped"
         ],
-        answer: 1,
+        answer: 2,
         why: "Migrations must run first, and must be additive so the old code keeps working — which is also what makes rollback possible. A migration that removes something means rolling the code back leaves the old version against a schema it cannot use."
       },
       {
         stem: "Why does deploying `app:latest` make rollback slow?",
         options: [
-          "The registry rate-limits `latest`",
-          "It is a moving pointer, so nothing records what was previously deployed — the previous version must be identified and rebuilt before it can be redeployed",
-          "`latest` images are not cached",
-          "Kubernetes refuses to redeploy the same tag"
+          "It is a moving pointer, so nothing records which image was running before",
+          "The registry rate-limits pulls of the `latest` tag, so redeploying it is throttled",
+          "Images tagged `latest` are never cached on nodes, so every rollback downloads them again",
+          "Kubernetes refuses to redeploy a tag that is already running, so rollback needs a new tag"
         ],
-        answer: 1,
+        answer: 0,
         why: "Most of a slow rollback is investigation rather than execution. A digest is content-addressed and immutable, so recording it at deploy time makes rollback a single command — and it also removes the ambiguity where two concurrent merges both push `latest`."
       },
       {
         stem: "CI fails about one run in five with different tests each time. Which two causes should you check first?",
         options: [
-          "Runner memory limits and disk space",
-          "Unpinned dependencies resolving differently each run, and a service container with no health check so tests start before the database can serve",
-          "Test ordering and random seeds",
-          "Network flakiness to the package index"
+          "Unpinned dependencies, and a database container with no health check",
+          "Runner memory limits and disk space, which vary between the machines in the CI pool",
+          "Test ordering and random seeds, which change every run and expose tests that share state",
+          "Network flakiness when downloading packages from the index during dependency installation"
         ],
-        answer: 1,
+        answer: 0,
         why: "Both produce failures that move around, which is why they get labelled flaky. A lockfile removes the first; `--health-cmd pg_isready` removes the second. The real damage is that a genuine failure becomes indistinguishable from noise, so people merge on red."
       },
       {
         stem: "A team adds a manual approval gate because their 38-minute pipeline feels risky. What happens?",
         options: [
-          "Incident rate falls as intended",
-          "Deploys become less frequent, batches grow, and each incident has more changes to bisect — so recovery is slower and failures more likely",
-          "Nothing measurable changes",
-          "Pipeline duration falls as fewer runs are triggered"
+          "The incident rate falls as intended, because every deploy now has a second pair of eyes on it",
+          "Nothing measurable changes, since approvers rarely reject a deploy that passed the pipeline",
+          "Pipeline duration falls, because fewer runs are triggered once deploys need approval",
+          "Deploys get rarer and bigger, so each failure has more changes to untangle"
         ],
-        answer: 1,
+        answer: 3,
         why: "Small, frequent releases are the safety mechanism. Adding process to a slow pipeline treats the symptom and worsens the cause; making the pipeline fast restores frequent single-change deploys, which is what makes the culprit obvious when something breaks."
       }
     ]

@@ -90,7 +90,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Equivalently, the Hessian \\(H\\) is positive semi-definite everywhere."
+     "text": "For a twice-differentiable \\(f\\), this is equivalent to the Hessian \\(H\\) being positive semi-definite everywhere."
     },
     {
      "t": "p",
@@ -99,7 +99,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Convex problems have a **single global minimum** — no local minima traps",
+      "Every local minimum of a convex function is **global** — no local minima traps (strict convexity makes the minimiser unique)",
       "Linear regression, logistic regression, SVM (hinge loss) are convex",
       "Neural network losses are **non-convex** — local minima, saddle points",
       "Convex relaxations are used to approximate hard problems"
@@ -132,7 +132,7 @@ EC.receiveLesson({
       "**Negative definite \\(H\\)** → local maximum",
       "**Indefinite \\(H\\)** → saddle point",
       "Newton's method uses \\(H\\) for faster convergence: \\(\\theta_{t+1} = \\theta_t - H^{-1}\\nabla f\\)",
-      "Fisher Information Matrix (expected Hessian of log-likelihood) → natural gradient"
+      "Fisher Information Matrix (negative expected Hessian of the log-likelihood) → natural gradient"
      ]
     }
    ],
@@ -373,7 +373,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Newton's method:** Set gradient of Taylor expansion to 0 → \\(x_{t+1} = x_t - H^{-1}\\nabla f\\)",
-      "**Natural gradient:** Uses Fisher information (expected Hessian) instead of \\(H\\)",
+      "**Natural gradient:** Uses Fisher information (the expected Hessian of the negative log-likelihood) instead of \\(H\\)",
       "**Trust region methods:** Optimize Taylor approximation within a trust region",
       "**L-BFGS:** Approximates inverse Hessian from past gradients"
      ]

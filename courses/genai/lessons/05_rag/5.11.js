@@ -176,8 +176,8 @@ order = np.argsort(-(QV[i] @ FE[idxs].T))`,
       hint: "Compare the end-to-end recall after routing against the router's own top-1 accuracy. If they are close, routing is the binding constraint and no amount of retrieval tuning inside the chosen source will help.",
       solution: { lang: "python", title: "g510.py \u2014 the router and what it costs", code: `doc_summaries = []
 for name, text in corpus:
-    head = re.sub(r"[_\-]+", " ", name.replace(".md", ""))
-    doc_summaries.append(re.sub(r"^\d+\s*", "", head) + ". " + text[:600])
+    head = re.sub(r"[_\\-]+", " ", name.replace(".md", ""))
+    doc_summaries.append(re.sub(r"^\\d+\\s*", "", head) + ". " + text[:600])
 
 DV = enc.encode(doc_summaries, normalize_embeddings=True)
 DROUTE = np.argsort(-(QV @ DV.T), axis=1)

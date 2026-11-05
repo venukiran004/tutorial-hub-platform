@@ -74,9 +74,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Series**1-D labeled array (one column).",
-      "**DataFrame**2-D labeled table; columns can have different dtypes.",
-      "**Index**the row/column labels (integer, string, datetime, or MultiIndex)."
+      "**Series:** 1-D labeled array (one column).",
+      "**DataFrame:** 2-D labeled table; columns can have different dtypes.",
+      "**Index:** the row/column labels (integer, string, datetime, or MultiIndex)."
      ]
     },
     {
@@ -266,9 +266,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`map`**Series only, element-wise; accepts a dict or function. Fastest for value mapping.",
-      "**`apply`**Series (element-wise) or DataFrame (row/column-wise via `axis`); most flexible, slowest.",
-      "**`transform`**must return the same shape as input; ideal with `groupby` to broadcast a group result back to every row."
+      "**`map`:** Series only, element-wise; accepts a dict or function. Fastest for value mapping.",
+      "**`apply`:** Series (element-wise) or DataFrame (row/column-wise via `axis`); most flexible, slowest.",
+      "**`transform`:** must return the same shape as input; ideal with `groupby` to broadcast a group result back to every row."
      ]
     },
     {
@@ -331,9 +331,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Split**Pandas builds a hash map from group keys to row indices (lazy; no computation).",
-      "**Apply**runs the aggregation/transform/filter on each group.",
-      "**Combine**assembles results into a Series/DataFrame."
+      "**Split:** Pandas builds a hash map from group keys to row indices (lazy; no computation).",
+      "**Apply:** runs the aggregation/transform/filter on each group.",
+      "**Combine:** assembles results into a Series/DataFrame."
      ]
     },
     {
@@ -394,7 +394,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pick the narrowest tool: `agg` to summarize, `transform` to keep shape, `filter` to drop groups, `apply` only when nothing else fits."
+     "text": "**Key takeaway:** Pick the narrowest tool: `agg` to summarise, `transform` to keep shape, `filter` to drop groups, `apply` only when nothing else fits."
     }
    ]
   },
@@ -446,9 +446,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`pd.merge`**SQL-style join on columns or index; supports `how` inner/left/right/outer.",
-      "**`df.join`**convenience for merging on the index.",
-      "**`pd.concat`**stack along an axis (rows or columns); no relational alignment."
+      "**`pd.merge`:** SQL-style join on columns or index; supports `how` inner/left/right/outer.",
+      "**`df.join`:** convenience for merging on the index.",
+      "**`pd.concat`:** stack along an axis (rows or columns); no relational alignment."
      ]
     },
     {
@@ -561,9 +561,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`melt`**wide → long: many value columns become rows.",
-      "**`stack`**moves a column level into the innermost row index (wide → long).",
-      "**`unstack`**moves an inner row index level into columns (long → wide)."
+      "**`melt`:** wide → long: many value columns become rows.",
+      "**`stack`:** moves a column level into the innermost row index (wide → long).",
+      "**`unstack`:** moves an inner row index level into columns (long → wide)."
      ]
     },
     {
@@ -640,7 +640,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "How do you optimize the memory usage of a DataFrame?",
+   "q": "How do you optimise the memory usage of a DataFrame?",
    "terms": [
     "Answer",
     "Downcast numerics",
@@ -657,10 +657,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Downcast numerics**`pd.to_numeric(col, downcast='integer'/'float')`.",
+      "**Downcast numerics:** `pd.to_numeric(col, downcast='integer'/'float')`.",
       "**Category dtype** for low-cardinality strings.",
       "**Nullable int types** (`Int32`) to keep integers with missing values from becoming float.",
-      "**Read only needed columns/rows**`usecols`, `read_parquet(columns=...)`.",
+      "**Read only needed columns/rows:** `usecols`, `read_parquet(columns=...)`.",
       "**Parquet** over CSV; **chunked** reads for huge files."
      ]
     },
@@ -921,9 +921,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`rolling(n)`**fixed sliding window (e.g. 7-day moving average).",
-      "**`expanding()`**cumulative window from the start.",
-      "**`ewm()`**exponentially weighted, recent points weighted more."
+      "**`rolling(n)`:** fixed sliding window (e.g. 7-day moving average).",
+      "**`expanding()`:** cumulative window from the start.",
+      "**`ewm()`:** exponentially weighted, recent points weighted more."
      ]
     },
     {
@@ -1198,7 +1198,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Favor reassignment / method chaining over `inplace`; it is being deprecated for many methods."
+     "text": "**Key takeaway:** Favour reassignment / method chaining over `inplace`; it is being deprecated for many methods."
     }
    ]
   },

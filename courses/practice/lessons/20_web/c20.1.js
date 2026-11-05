@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c20.1",
  "lede": "**24 programs to write**, on sockets, DNS and service endpoints. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 24 programs on sockets, DNS and service endpoints without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c19.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2293–2316.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["web and APIs", "patterns", "async", "files and paths", "generators"], "cells": [[{"text": "7", "tone": "accent"}, "HTTP Response Parser"], [{"text": "2", "tone": "good"}, "HTTP Request Builder"], [{"text": "1", "tone": "violet"}, "WebSocket Echo Server (asyncio"], [{"text": "1", "tone": "teal"}, "JSON"], [{"text": "1", "tone": "warn"}, "SSE (Server"]], "t": "diagram", "id": "dg-c20_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

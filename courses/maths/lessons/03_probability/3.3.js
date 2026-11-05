@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Linearity, and why it is unreasonable", id: "linearity" },
 
-    {"kind": "trace", "title": "Three answers you could not get any other way", "caption": "**In every row the pieces are strongly dependent, and in every row it does not matter** — linearity of expectation needs no independence and no knowledge of the joint distribution at all. The recipe is always the same: write the count as a sum of indicators, use the fact that the expectation of an indicator *is* a probability, and add. **Row one is the one to remember: shuffle a million hats and the expected number of people getting their own back is exactly 1.** Simulated at n = 1,000 it comes out at 1.002.", "left": "problem", "codeW": 190, "vars": ["written as", "expectation"], "steps": [{"code": "n hats returned at random", "state": ["a sum of n indicators", "exactly 1, for every n"], "tone": "violet"}, {"code": "simulated at n = 1,000", "state": ["5,000 shuffles", "1.002"], "changed": [0, 1], "tone": "good"}, {"code": "n keys into N hash buckets", "state": ["one indicator per pair", "pairs over N"], "changed": [0, 1], "tone": "accent"}, {"code": "collect all n coupons", "state": ["a sum over stages", "n times the n-th harmonic"], "changed": [0, 1], "tone": "accent"}, {"code": "and the pieces are", "state": ["strongly dependent", "which never matters"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_3-01-0"},
+    {"kind": "trace", "title": "Three answers you could not get any other way", "caption": "**In every row the pieces are strongly dependent, and in every row it does not matter** — linearity of expectation needs no independence and no knowledge of the joint distribution at all. The recipe is always the same: write the count as a sum of indicators, use the fact that the expectation of an indicator *is* a probability, and add. **Row one is the one to remember: shuffle a million hats and the expected number of people getting their own back is exactly 1.** Simulated at n = 1,000 it comes out at 0.986.", "left": "problem", "codeW": 190, "vars": ["written as", "expectation"], "steps": [{"code": "n hats returned at random", "state": ["a sum of n indicators", "exactly 1, for every n"], "tone": "violet"}, {"code": "simulated at n = 1,000", "state": ["5,000 shuffles", "0.986"], "changed": [0, 1], "tone": "good"}, {"code": "n keys into N hash buckets", "state": ["one indicator per pair", "pairs over N"], "changed": [0, 1], "tone": "accent"}, {"code": "collect all n coupons", "state": ["a sum over stages", "n times the n-th harmonic"], "changed": [0, 1], "tone": "accent"}, {"code": "and the pieces are", "state": ["strongly dependent", "which never matters"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-3_3-01-0"},
 
 
     { t: "p", text: "**Expectation is the long-run average value of a random variable**, and its most useful property is that it adds — always, with no conditions attached. Independence is never required, which is what lets you compute averages for problems whose distributions you could not write down." },
@@ -76,7 +76,7 @@ def simulate(n, trials=20_000, seed=0):
         out[t] = count
     return out.mean()
 
-simulate(6)                  # 14.71  -- matches
+simulate(6)                  # 14.70  -- matches
 `,
       hl: [5, 6, 9, 20],
       caption: "**The stages are not independent and the identity still holds.** That is the whole reason to reach for linearity: it lets you decompose a problem into pieces whose joint behaviour you never have to understand."
@@ -105,7 +105,7 @@ from math import comb
 
 rng = np.random.default_rng(0)
 np.mean([np.sum(rng.permutation(1000) == np.arange(1000))
-         for _ in range(5000)])                     # 1.002
+         for _ in range(5000)])                     # 0.986
 
 # 2 -- EXPECTED COLLISIONS IN A HASH TABLE (lesson 3.1, from the other
 # side). n keys into N buckets.
@@ -116,7 +116,7 @@ np.mean([np.sum(rng.permutation(1000) == np.arange(1000))
 def expected_collisions(n, N):
     return comb(n, 2) / N
 
-expected_collisions(40_000_000, 2**32)              # 186.3
+expected_collisions(40_000_000, 2**32)              # 186264.5
 #
 # The pairs OVERLAP heavily -- if keys 1 and 2 collide and 2 and 3
 # collide, then 1 and 3 do too. Linearity does not care.
@@ -133,7 +133,7 @@ def expected_distinct(n, N):
     return N * (1 - (1 - 1/N)**n)
 
 expected_distinct(1000, 1000)     # 632.3  -- 63% of buckets touched
-expected_distinct(3000, 1000)     # 950.2
+expected_distinct(3000, 1000)     # 950.3
 #
 # 1 - 1/e = 0.632 is where that first number comes from, and it is the
 # same constant behind bootstrap resampling covering ~63.2% of the
@@ -208,7 +208,7 @@ for name, Y in [("independent", Y_ind), ("correlated", Y_cor)]:
 A = base
 B = -0.9*base + np.sqrt(1-0.81)*noise      # negatively correlated
 
-((A + B) / 2).var(), A.var() / 2           # 0.0525 vs 0.5003
+((A + B) / 2).var(), A.var() / 2           # 0.0501 vs 0.5012
 #
 # A 10x reduction. That is antithetic variates, and it is why paired
 # designs and control variates work: engineer the covariance to be
@@ -223,8 +223,8 @@ B = -0.9*base + np.sqrt(1-0.81)*noise      # negatively correlated
       { t: "code", lang: "python", numbered: false, title: "and the algebra follows the units", code: `
 x = np.array([120.0, 135.0, 128.0, 141.0, 119.0])   # milliseconds
 
-x.var(ddof=1)        # 87.8   ms^2   -- means nothing to a reader
-x.std(ddof=1)        # 9.37   ms     -- reportable
+x.var(ddof=1)        # 90.3   ms^2   -- means nothing to a reader
+x.std(ddof=1)        # 9.50   ms     -- reportable
 
 # THE SQUARE IS NOT DECORATIVE. It is why:
 #
@@ -233,8 +233,8 @@ x.std(ddof=1)        # 9.37   ms     -- reportable
 #
 # Convert the same latencies to seconds and the variance changes by a
 # factor of 10^6, the standard deviation by 10^3:
-(x/1000).var(ddof=1)    # 8.78e-05
-(x/1000).std(ddof=1)    # 0.00937
+(x/1000).var(ddof=1)    # 9.03e-05
+(x/1000).std(ddof=1)    # 0.00950
 
 # IT IS ALSO WHY STANDARD ERRORS SHRINK AS sqrt(n) AND NOT n:
 #   Var(mean) = sigma^2/n   ->   sd(mean) = sigma/sqrt(n)
@@ -306,7 +306,7 @@ overall_mean = (w * mu).sum()                       # 88.0 ms
 within  = (w * sd**2).sum()                         # 2,443.0
 between = (w * (mu - overall_mean)**2).sum()        # 16,268.0
 total   = within + between                          # 18,711.0
-np.sqrt(total)                                      # 136.8 ms
+np.sqrt(total)                                      # 131.1 ms
 
 # THE DECOMPOSITION IS THE ANSWER TO "WHY IS OUR LATENCY SO VARIABLE".
 #
@@ -316,7 +316,7 @@ np.sqrt(total)                                      # 136.8 ms
 # from variability within a tier. So tuning any individual tier is
 # nearly wasted effort; routing is the lever.
 
-between / total                                     # 0.869
+between / total                                     # 0.872
 
 # CHECK IT AGAINST A SIMULATION -- the laws are exact, not approximate:
 rng = np.random.default_rng(0)
@@ -324,7 +324,7 @@ n = 500_000
 which = rng.choice(3, size=n, p=w)
 x = rng.normal(mu[which], sd[which])
 
-x.mean(), x.var()                                   # 87.9, 18,680
+x.mean(), x.var()                                   # 88.0, 17,110
 
 # WHERE ELSE THIS EXACT SPLIT APPEARS:
 #   ANOVA               -- between-group vs within-group sums of squares

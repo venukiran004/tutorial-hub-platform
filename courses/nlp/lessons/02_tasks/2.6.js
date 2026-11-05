@@ -2,7 +2,7 @@
    LESSON 2.6 — Text Summarisation
    The TF-IDF sentence scorer, TextRank, and T5 and BART run for real; the
    "abstractive" models are measured for how much they actually abstract
-   (scratchpad/nlp/n26.py, n26b.py).
+   (n26.py, n26b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.6",
@@ -69,7 +69,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The cheapest scorer sums the TF-IDF weights of a sentence's terms. Rare, content-bearing words push a sentence up; stopwords contribute nothing once they are removed. Original order is preserved so the result still reads forwards." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — extractive summarisation", code:
+    { t: "code", lang: "python", title: "extractive summarisation", code:
 "from sklearn.feature_extraction.text import TfidfVectorizer\nimport numpy as np\n\ndef extractive_summarize(text, num_sentences=3):\n    \"\"\"Select the top-N sentences by summed TF-IDF weight.\"\"\"\n    sentences = text.split(\". \")\n    tfidf = TfidfVectorizer(stop_words=\"english\")\n    matrix = tfidf.fit_transform(sentences)\n\n    scores = matrix.sum(axis=1).A1          # one score per sentence\n    top = sorted(np.argsort(scores)[-num_sentences:])   # keep reading order\n    return \". \".join(sentences[i] for i in top)\n\ntext = (\"The transformer architecture was introduced in 2017. \"\n        \"It replaced recurrence with self-attention. \"\n        \"The weather that week was unremarkable. \"\n        \"Attention allows every position to see every other position. \"\n        \"This made training parallel across the sequence.\")",
       caption: "Covers the `extractive_summarize`, with the per-sentence scores printed so the ranking is visible." },
 
@@ -120,7 +120,7 @@ EC.receiveLesson({
     { t: "callout", kind: "warn", title: "The pipeline call no longer runs",
       body: [{ t: "p", text: "`pipeline(\"summarization\", model=\"t5-small\")` raises `KeyError: Unknown task summarization` on **transformers 5.17**. The `summarization`, `translation` and `question-answering` tasks were removed from the pipeline registry in the 5.x line. The models are unchanged — call `AutoModelForSeq2SeqLM` and `.generate()` directly, which is what the pipeline wrapped. On transformers 4.x the code runs as written." }] },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n28.py — driving the model directly", code:
+    { t: "code", lang: "python", title: "driving the model directly", code:
 "import torch\nfrom transformers import AutoTokenizer, AutoModelForSeq2SeqLM\n\nname, prefix = \"t5-small\", \"summarize: \"        # BART needs no prefix\ntok = AutoTokenizer.from_pretrained(name)\nmod = AutoModelForSeq2SeqLM.from_pretrained(name).eval()\n\nids = tok(prefix + ARTICLE, return_tensors=\"pt\", truncation=True, max_length=512)\nwith torch.no_grad():\n    g = mod.generate(**ids, max_length=80, min_length=30,\n                     num_beams=4, do_sample=False)\nprint(tok.decode(g[0], skip_special_tokens=True))",
       caption: "`min_length` is not advisory — it masks the end-of-sequence token until the floor is reached, which can force a model to keep writing past the point it wanted to stop." },
 
@@ -144,7 +144,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Both outputs read well. But neither contained a single word absent from the source, so I measured it properly on three inputs: copy rate, longest verbatim run, and the set of genuinely novel words after normalising case and edge punctuation on both sides." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n26b.py — measuring the copy rate", code:
+    { t: "code", lang: "python", title: "measuring the copy rate", code:
 "def words(s):\n    \"\"\"Lowercase words; decimals kept whole, edge punctuation stripped.\"\"\"\n    raw = re.findall(r\"[A-Za-z0-9][A-Za-z0-9.'-]*\", s.lower())\n    return [w for w in (x.strip(\".'-\") for x in raw) if w]\n\nsrc_w, out_w = words(source), words(summary)\ncopied = sum(1 for w in out_w if w in set(src_w))\nnovel  = sorted({w for w in out_w if w not in set(src_w)})\n\n# longest run of output words appearing verbatim in the source\njoined, best = \" \".join(src_w), 0\nfor i in range(len(out_w)):\n    for j in range(i + 1, len(out_w) + 1):\n        if \" \".join(out_w[i:j]) in joined:\n            best = max(best, j - i)\n        else:\n            break",
       caption: "Normalising both sides matters: comparing raw tokens counts `2017.` as novel against `2017` and inflates the result. My first run did exactly that." },
 

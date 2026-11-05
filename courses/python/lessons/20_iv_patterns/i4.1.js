@@ -109,7 +109,7 @@ EC.receiveLesson({
        "a module (modules are cached singletons)"
       ],
       [
-       "Decorator (behavior)",
+       "Decorator (behaviour)",
        "the `@` syntax; (structural) `__getattr__` delegation"
       ],
       [
@@ -143,7 +143,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Start with the **simplest** thing that works — a function, dict, or generator.",
-      "Reach for a pattern only when you hit a real force: varying behavior, growing conditionals, tight coupling, or an explosion of subclasses.",
+      "Reach for a pattern only when you hit a real force: varying behaviour, growing conditionals, tight coupling, or an explosion of subclasses.",
       "Prefer **composition over inheritance** (Strategy/Bridge/DI over deep class trees)."
      ]
     },
@@ -260,15 +260,15 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**DRY**one source of truth; extract repetition.",
-      "**KISS**favor simple, readable solutions over clever ones.",
-      "**YAGNI**don't build features/abstractions until actually needed.",
-      "**SOLID**Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion: keep classes small, extensible, substitutable, and depending on abstractions."
+      "**DRY:** one source of truth; extract repetition.",
+      "**KISS:** favour simple, readable solutions over clever ones.",
+      "**YAGNI:** don't build features/abstractions until actually needed.",
+      "**SOLID:** Single responsibility, Open/closed, Liskov substitution, Interface segregation, Dependency inversion: keep classes small, extensible, substitutable, and depending on abstractions."
      ]
     },
     {
      "t": "p",
-     "text": "Also: **composition over inheritance** — inject behavior rather than building deep class hierarchies."
+     "text": "Also: **composition over inheritance** — inject behaviour rather than building deep class hierarchies."
     },
     {
      "t": "p",

@@ -1,8 +1,8 @@
 /* ============================================================================
    LESSON 3.4 — The Registry, and Writing Your Own Model
    The resolutions, the ValueError, the registration and the working custom
-   model are executed output from scratchpad/adk/p1.py; the live-connection
-   trace is from scratchpad/adk/b1.py (google-adk 2.9.2).
+   model are executed output from p1.py; the live-connection
+   trace is from b1.py (google-adk 2.9.2).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.4",
@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Resolution is a regex match", id: "resolve" },
 
-    { t: "code", lang: "python", title: "p1.py — the registry's whole surface",
+    { t: "code", lang: "python", title: "the registry's whole surface",
       code: `from google.adk.models.registry import LLMRegistry
 print(inspect.signature(LLMRegistry.resolve))   # (model: str) -> type[BaseLlm]
 print(inspect.signature(LLMRegistry.register))  # (llm_cls: type[BaseLlm]) -> None

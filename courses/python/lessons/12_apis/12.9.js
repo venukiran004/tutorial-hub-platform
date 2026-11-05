@@ -95,6 +95,24 @@ print(estimate(dau=300_000_000, actions_per_user_per_day=2, bytes_per_action=300
 
     { t: "p", text: "Two details the reference flags as interview-critical. **Idempotency**: a client that retries a POST must not create two orders; accept an `Idempotency-Key` header, store the key with the first response, and replay that response for a repeat (lesson 12.1). **Pagination**: offset pagination (`?page=50&size=20`) makes the database skip a thousand rows and drifts when rows are inserted; cursor pagination (`?after=<last id>`) is O(1) per page and stable, at the cost of not jumping to page 50 (lesson 12.6)." },
 
+    { t: "callout", kind: "trap", title: "A cursor on a non-unique column skips rows", body: [
+      { t: "p", text: "Cursor pagination is stable only if the sort key is unique. **Page on `created_at` alone and every row that shares the boundary timestamp is skipped by `>` or duplicated by `>=`.** A batch import that writes 300 orders in the same millisecond is exactly the case, and the missing rows vanish from every client that pages through, with no error anywhere." },
+      { t: "code", lang: "python", title: "make the cursor a tuple", code: `# The cursor is the last created_at the client saw.
+PAGE_BROKEN = """
+SELECT id, created_at FROM orders
+WHERE created_at > :after_ts               -- ties at the boundary are lost
+ORDER BY created_at LIMIT 50
+"""
+
+# Add the primary key as a tiebreaker and compare as a row value.
+PAGE_FIXED = """
+SELECT id, created_at FROM orders
+WHERE (created_at, id) > (:after_ts, :after_id)
+ORDER BY created_at, id LIMIT 50
+"""` },
+      { t: "p", text: "**Sort on the timestamp plus the primary key, index both columns together, and hand the client an opaque cursor** (the pair, base64-encoded) so nobody builds one from a single field. Row-value comparison works in PostgreSQL, MySQL 8 and SQLite." }
+    ]},
+
     { t: "h2", n: "05", text: "Service communication and the API gateway", id: "gateway" },
 
     { t: "diagram", kind: "flow", title: "The API gateway", caption: "One entry point that authenticates, rate-limits, routes and aggregates, so each service behind it does none of that. It is also the single place to add a new client type or a canary.", cols: 4, nodes: [
@@ -252,7 +270,13 @@ print(62 ** 7, encode_base62(62 ** 7 - 1))` },
         code: `print(estimate(dau=20_000_000, actions_per_user_per_day=1, bytes_per_action=500, read_write_ratio=50))
 # {'write_qps_avg': 231, 'write_qps_peak': 463, 'read_qps_avg': 11574, 'storage_per_year_tb': 3.6}
 photos_per_year_pb = 20_000_000 * 2e6 * 365 / 1e15      # ≈ 14.6 PB`,
-        notes: [{ t: "p", text: "Metadata is small — 3.6 TB a year fits one well-indexed PostgreSQL with replicas for the 11,500 reads/s. The photos are 40 TB a day, 14.6 PB a year: object storage behind a CDN, never the database. Uploads at 231/s peak 463/s are fine for a direct-to-storage pre-signed URL flow; feed reads are cached per user. The three decisions: object store + CDN for bytes, Postgres + replicas + cache for metadata, and asynchronous processing (thumbnails, feed fan-out) through a queue." }] } }
+        notes: [{ t: "p", text: "Metadata is small — 3.6 TB a year fits one well-indexed PostgreSQL with replicas for the 11,500 reads/s. The photos are 40 TB a day, 14.6 PB a year: object storage behind a CDN, never the database. Uploads at 231/s peak 463/s are fine for a direct-to-storage pre-signed URL flow; feed reads are cached per user. The three decisions: object store + CDN for bytes, Postgres + replicas + cache for metadata, and asynchronous processing (thumbnails, feed fan-out) through a queue." }] } },
+
+    { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
+      { t: "p", text: "A payments dependency slowed from 80 ms to 2 s during a four-minute database failover. The outage lasted forty. **The mobile client retried three times, the API gateway retried three times, and the orders service retried three times, so each user action became up to 27 calls to a dependency that was already struggling.** None of the retries had jitter, and all ran on fixed one-second intervals." },
+      { t: "p", text: "When the failover finished, the dependency came back to a synchronised wall of traffic about twenty times its normal load, and fell over again. Twice. Nothing in any one layer was wrong; the multiplication only existed across them." },
+      { t: "p", text: "**The fix was to retry at exactly one layer:** the one closest to the dependency, which knows whether the call is idempotent. It used exponential backoff with full jitter and a retry budget capped at 10% of requests, and every other layer fails fast. A circuit breaker in front of the dependency turned the next slowdown into four minutes of fast 503s instead of a forty-minute cascade." }
+    ]}
   ],
 
   takeaways: [
@@ -267,20 +291,20 @@ photos_per_year_pb = 20_000_000 * 2e6 * 365 / 1e15      # ≈ 14.6 PB`,
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "A message queue guarantees at-least-once delivery. What must be true of the consumer?",
-      options: ["It must acknowledge before processing", "It must be idempotent, because it may see the same message twice", "It must process messages in order", "Nothing — at-least-once means no duplicates"],
+      options: ["It must acknowledge each message before processing it, so nothing is delivered twice", "It must be idempotent, because it may see the same message twice", "It must process messages in the order they were published", "Nothing special — at-least-once delivery means no duplicates are ever delivered"],
       answer: 1,
       why: "At-least-once means a message is never lost but may be redelivered — after a crash between processing and acknowledging, for instance. A consumer that would double-charge on a repeat is wrong; it must deduplicate by message id or perform an operation that is naturally repeatable." },
     { stem: "Which cache problem does a jittered TTL address?",
-      options: ["Penetration", "Avalanche — many keys expiring at the same instant", "Stale data", "Cache misses on cold start"],
-      answer: 1,
+      options: ["Penetration — requests for keys that do not exist", "Stale data served after the source has changed", "Cache misses after a cold start or a restart", "Avalanche — many keys expiring at the same instant"],
+      answer: 3,
       why: "If a batch of keys was written together with the same TTL, they expire together and the database takes every request at once. Adding random seconds to each TTL spreads the expiries out. Penetration needs null-caching or a Bloom filter; stale data needs invalidation on write." },
-    { stem: "Why does the usual advice is a saga over two-phase commit for a checkout that spans inventory, payment and shipping services?",
-      options: ["Sagas are transactional across services", "2PC holds locks across services and stalls on any failure; a saga uses local transactions and compensating actions", "Sagas never fail", "2PC does not work with PostgreSQL"],
+    { stem: "Why is a saga usually preferred over two-phase commit for a checkout that spans inventory, payment and shipping services?",
+      options: ["Sagas are fully transactional across services, so a failure rolls every service back atomically", "2PC holds locks across services; a saga uses local commits and compensations", "Sagas never fail, because each service retries its step until it succeeds", "Two-phase commit does not work with PostgreSQL, which the services use"],
       answer: 1,
       why: "Two-phase commit needs a coordinator and every participant to hold locks until the global commit, so one slow or failed service blocks all of them. A saga commits each step locally and, if a later step fails, runs compensations — refund, release — for the steps already done. It gives up atomicity for availability, which is the usual trade." },
     { stem: "For a news feed, why is pure fan-out on write a problem?",
-      options: ["Reads become slow", "A post by an account with fifty million followers triggers fifty million timeline writes", "It cannot be cached", "It requires GraphQL"],
-      answer: 1,
+      options: ["Reads become slow, because each timeline must be assembled from every followed account", "Timelines built on write cannot be cached, because they change with every post", "A post by an account with fifty million followers triggers fifty million timeline writes", "It requires a GraphQL API to deliver the precomputed timelines efficiently"],
+      answer: 2,
       why: "Fan-out on write precomputes every follower's timeline at post time, which is one lookup per read but a write per follower. For a celebrity that is tens of millions of writes per post. The hybrid keeps push for ordinary accounts and merges the few enormous accounts' posts in at read time." }
   ] },
 

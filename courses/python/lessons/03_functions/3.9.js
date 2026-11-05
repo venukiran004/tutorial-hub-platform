@@ -370,7 +370,8 @@ def fetch(
       solution: {
         lang: "python",
         title: "reporting.py",
-        code: `# ---- the original, after two years of growth ---------------------------
+        code: `from __future__ import annotations
+# ---- the original, after two years of growth ---------------------------
 
 def build_report(data, out, fmt="csv", hdr=True, idx=False, tz="UTC",
                  email=[], subject="", compress=None, timeout=30,
@@ -389,7 +390,6 @@ def build_report(data, out, fmt="csv", hdr=True, idx=False, tz="UTC",
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 import warnings
 from collections.abc import Iterable, Sequence
@@ -588,21 +588,21 @@ if __name__ == "__main__":
       {
         stem: "Which signature change breaks existing callers most dangerously?",
         options: [
-          "Adding a required positional parameter",
-          "Changing a default value from `timeout=30` to `timeout=5`",
-          "Renaming a keyword parameter",
-          "Reordering two positional parameters"
+          "Adding a required positional parameter that existing callers do not pass",
+          "Renaming a keyword parameter that callers pass by name",
+          "Removing an optional keyword parameter that some callers pass",
+          "Changing a default value from `timeout=30` to `timeout=5`"
         ],
-        answer: 1,
+        answer: 3,
         why: "The others break loudly — a missing argument or an unexpected keyword raises `TypeError` at every affected call site, immediately. Changing a default breaks **silently**: nothing fails, behaviour just differs, and callers who never passed the argument have no way to know they depended on its value. It surfaces later as intermittent production failures nobody connects to the upgrade."
       },
       {
         stem: "Why is `Literal[\"csv\", \"json\"]` better than `str` for a format parameter?",
         options: [
-          "It is faster at runtime because the values are interned",
-          "A type checker rejects any other value, so a typo becomes an editor-time error rather than a runtime surprise",
-          "It automatically validates the value when the function is called",
-          "It prevents the parameter from being passed positionally"
+          "It is faster at runtime, because the allowed values are interned and compared by identity",
+          "A type checker rejects any other value, so a typo is caught before the code runs",
+          "It automatically validates the value when the function is called, raising `TypeError` on anything else",
+          "It prevents the parameter from being passed positionally, so callers must name the format"
         ],
         answer: 1,
         why: "`Literal` narrows the accepted values so mypy flags `format=\"jsonn\"` before the code runs. It is not enforced at runtime — hints never are (Lesson 1.8) — so a value arriving from JSON or user input still needs validation. An `Enum` goes further: it makes the invalid value impossible to construct in the first place, which is why the ladder in this lesson ends there."
@@ -610,23 +610,23 @@ if __name__ == "__main__":
       {
         stem: "When do you need a private `_MISSING = object()` sentinel rather than `None`?",
         options: [
-          "Whenever a parameter is optional",
-          "When `None` is itself a valid value a caller might pass, so you must distinguish *omitted* from *explicitly None*",
-          "When the default is mutable",
-          "Only in async functions, where `None` has special meaning"
+          "When a caller may pass `None` on purpose, so *omitted* and *None* must differ",
+          "Whenever a parameter is optional, since `None` is ambiguous about what the default should be",
+          "When the default is mutable, because a sentinel avoids sharing one object between calls",
+          "Only in async functions, where `None` has a special meaning to the event loop"
         ],
-        answer: 1,
+        answer: 0,
         why: "`None` works as a sentinel until a caller might legitimately pass `None`. The archetypal case is a PATCH endpoint: `bio=None` means *clear this field* while omitting `bio` means *leave it alone*, and a `None` default cannot tell them apart. A private sentinel object cannot be constructed by a caller, so its presence unambiguously means \"not supplied\". Mutable defaults are handled by a plain `None`."
       },
       {
         stem: "What does `stacklevel=2` do in `warnings.warn(...)`?",
         options: [
           "Raises the warning's severity so it is not suppressed",
-          "Attributes the warning to the caller's line rather than the line inside your library",
           "Includes two frames of traceback in the warning output",
+          "Attributes the warning to the caller's line rather than the line inside your library",
           "Delays the warning until the second time the function is called"
         ],
-        answer: 1,
+        answer: 2,
         why: "By default a warning reports the line where `warn()` was called — inside your library — so a user sees that something is deprecated with no indication which of their calls triggered it. `stacklevel=2` walks one frame up to the caller, making the warning actionable. It is the difference between a deprecation people can migrate from and one they ignore."
       }
     ]

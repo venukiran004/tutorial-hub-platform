@@ -336,7 +336,8 @@ def retry(operation: Callable[[], T], attempts: int = 3) -> T:
       solution: {
         lang: "python",
         title: "invoice_total.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 def get_invoice_total(invoice_id):
     if not invoice_id:
@@ -363,7 +364,6 @@ def get_invoice_total(invoice_id):
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from decimal import Decimal
@@ -478,10 +478,10 @@ if __name__ == "__main__":
       {
         stem: "A function loops over records returning the first match, with no `return` after the loop. What does it return when nothing matches?",
         options: [
-          "It raises `StopIteration`",
+          "It raises `StopIteration`, because the loop ran out of records without reaching a `return`",
           "`None`, implicitly — and the caller usually discovers this as a `TypeError` further down",
-          "An empty collection of the same type as the records",
-          "`False`"
+          "An empty collection of the same type as the records, so the caller can iterate it safely",
+          "`False`, since a function that searches and finds nothing reports a failed match"
         ],
         answer: 1,
         why: "Falling off the end of a function returns `None`. Returning `None` for \"not found\" is a legitimate design — the problem is that it was never *stated*, so the type hint does not mention it and no caller knows to check. The failure then surfaces as `'NoneType' object is not subscriptable` at the call site. Make it explicit with `return None` and a `-> X | None` hint, or raise."
@@ -489,34 +489,34 @@ if __name__ == "__main__":
       {
         stem: "When should a lookup function raise rather than return `None`?",
         options: [
-          "Always — exceptions are the Pythonic way to signal any failure",
+          "Always — exceptions are the Pythonic way to signal any failure, and `None` hides the problem from the caller",
+          "Only when the function performs I/O, since a pure lookup that misses has nothing worth reporting",
           "When absence means the caller's assumption was wrong, rather than being a routine outcome the caller expects",
-          "Only when the function performs I/O",
-          "Never — returning `None` is cheaper than raising"
+          "Never — returning `None` is cheaper than raising, and lookups are usually in a hot path"
         ],
-        answer: 1,
+        answer: 2,
         why: "The distinction is routine versus exceptional. A cache lookup that misses, or an optional setting that is unset, is a normal outcome — `| None` is right, and mypy will force callers to handle it. A missing record that the caller believed existed is a broken assumption; raising means the caller cannot forget, and distinct exception types let different failures be handled differently. Neither is universally correct."
       },
       {
         stem: "Which is the strongest signal that a function should be split?",
         options: [
-          "It is longer than 20 lines",
-          "It cannot be tested without a database, network call or the current time",
-          "It has more than three parameters",
-          "It contains a loop and a conditional"
+          "It is longer than 20 lines, which is the usual threshold for one screen of code",
+          "It has more than three parameters, which means it is coordinating too many inputs",
+          "It contains both a loop and a conditional, so it is doing more than one thing",
+          "It cannot be tested without a database, network call or the current time"
         ],
-        answer: 1,
+        answer: 3,
         why: "The I/O seam is where splitting pays most: the pure computation is where the interesting bugs live, and extracting it makes those bugs testable with literal data. Length, parameter count and control flow are weak proxies — a 40-line pure function can be perfectly clear, while a 10-line function mixing a query, a calculation and a write is hard to test and hard to reuse."
       },
       {
         stem: "Which docstring line earns its place?",
         options: [
-          "\"Takes an order id and returns the order total.\"",
-          "\"The operation must be idempotent — a retry after partial success will run it again.\"",
+          "\"Takes an order id, looks up the order and returns its total as a Decimal.\"",
           "\"Args: order_id (str): The order id.\"",
-          "\"This function calculates the total.\""
+          "\"Must be idempotent: a retry after partial success runs it again.\"",
+          "\"This function calculates the total for the given order id and returns it.\""
         ],
-        answer: 1,
+        answer: 2,
         why: "The idempotency requirement is a constraint no signature can express, and a caller who violates it will double-charge someone. The other three restate what `def get_total(order_id: str) -> Decimal` already says — and a repeated fact is one that can drift out of date and mislead. Document what the code cannot say about itself."
       }
     ]

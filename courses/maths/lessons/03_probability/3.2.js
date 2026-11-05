@@ -158,7 +158,7 @@ stats.norm(loc=0, scale=1.0).pdf(0)        # 0.3989
 d = stats.norm(loc=180, scale=7)
 
 d.pdf(180)                                  # 0.0570  -- a density
-d.cdf(181) - d.cdf(179)                     # 0.1139  -- a probability
+d.cdf(181) - d.cdf(179)                     # 0.1136  -- a probability
 d.pdf(180) * 2                              # 0.1140  -- density x width,
                                             #    a good approximation for
                                             #    a narrow interval
@@ -255,8 +255,8 @@ u = np.random.default_rng(0).uniform(size=100_000)
 lam = 2.0
 x = -np.log(1 - u) / lam
 
-x.mean(), 1/lam                   # 0.4995, 0.5   -- matches
-stats.kstest(x, "expon", args=(0, 1/lam)).pvalue   # 0.47, indistinguishable
+x.mean(), 1/lam                   # 0.4991, 0.5   -- matches
+stats.kstest(x, "expon", args=(0, 1/lam)).pvalue   # 0.50, indistinguishable
 
 # WHY IT WORKS: P(F^-1(U) <= x) = P(U <= F(x)) = F(x), because U is
 # uniform so P(U <= p) = p. Applying F to both sides of the inequality
@@ -270,7 +270,7 @@ stats.kstest(x, "expon", args=(0, 1/lam)).pvalue   # 0.47, indistinguishable
 # F(X) is uniform when F is X's own CDF. That is the basis of the
 # Kolmogorov-Smirnov test and of every QQ plot.
 stats.kstest(stats.norm.cdf(stats.norm.rvs(size=5000, random_state=1)),
-             "uniform").pvalue     # 0.55 -- transformed data IS uniform`},
+             "uniform").pvalue     # 0.22 -- transformed data IS uniform`},
       { t: "p", text: "**The reverse direction is what makes goodness-of-fit testing possible.** `F(X)` is uniform when `F` is the right CDF, so testing a distributional assumption reduces to testing uniformity — which is one fixed problem rather than one per distribution." }
     ]},
 

@@ -117,7 +117,7 @@ EC.receiveLesson({
       "Data has non-spherical/arbitrary-shaped clusters",
       "Unknown number of clusters",
       "Need to detect outliers/noise",
-      "Clusters have varying densities (partially)"
+      "Note that DBSCAN still struggles when clusters have very different densities"
      ]
     },
     {

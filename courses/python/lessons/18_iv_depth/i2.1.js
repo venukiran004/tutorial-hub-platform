@@ -377,7 +377,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Caveats:** - All arguments must be **hashable** (no lists, dicts, sets). - Cache can grow large for unbounded caches — potential memory leak. - Not thread-safe for cache misses in Python < 3.9 (fixed in 3.9+). - `@lru_cache` on **methods** caches `self` as a key — can prevent garbage collection. Use `@functools.cached_property` for instance-level caching instead."
+     "text": "**Caveats:** - All arguments must be **hashable** (no lists, dicts, sets). - Cache can grow large for unbounded caches — potential memory leak. - Its bookkeeping is thread-safe, but two threads that miss together will both call the function. - `@lru_cache` on **methods** caches `self` as a key — can prevent garbage collection. Use `@functools.cached_property` for instance-level caching instead."
     }
    ]
   },
@@ -553,7 +553,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "The **descriptor protocol** defines how attribute access is customized. A descriptor is any object that implements `__get__`, `__set__`, and/or `__delete__`."
+     "text": "The **descriptor protocol** defines how attribute access is customised. A descriptor is any object that implements `__get__`, `__set__`, and/or `__delete__`."
     },
     {
      "t": "table",

@@ -110,7 +110,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Tiles computation to fit in GPU SRAM (fast memory).",
-      "IO complexity: O(N²/B) vs O(N²) for standard attention.",
+      "Fewer slow-memory (HBM) accesses: O(N²d²/M) vs O(N²) for standard attention, where M is the SRAM size.",
       "Enables 2-4× speedup and much lower memory usage for long sequences."
      ]
     }

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c16.1",
  "lede": "**23 programs to write**, on async fundamentals and futures. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 23 programs on async fundamentals and futures without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c15.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1821–1843.** What this set actually drills, counted from its own problems — 18 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["async", "threads", "decorators", "generators"], "cells": [[{"text": "8", "tone": "accent"}, "Async HTTP Fetcher (aiohttp)"], [{"text": "8", "tone": "good"}, "Thread"], [{"text": "1", "tone": "violet"}, "Multiprocessing Shared Memory"], [{"text": "1", "tone": "teal"}, "asyncio.gather Runs Coroutines"]], "t": "diagram", "id": "dg-c16_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

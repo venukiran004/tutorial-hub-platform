@@ -21,7 +21,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df['age'].fillna(df['age'].mean(), inplace=True)\n# Then split into train/test"
+     "code": "df['age'] = df['age'].fillna(df['age'].mean())\n# Then split into train/test"
     },
     {
      "t": "p",

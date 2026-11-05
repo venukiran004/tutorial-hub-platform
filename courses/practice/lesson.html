@@ -179,6 +179,7 @@
       (bs || []).forEach(function (b) {
         if (b.t === "code") n++;
         if (b.rungs) n += b.rungs.length;
+        if (b.prompt) walk(b.prompt);
         if (b.body) walk(b.body);
         if (b.blocks) walk(b.blocks);
         if (b.items) b.items.forEach(function (i) { if (i && i.blocks) walk(i.blocks); });

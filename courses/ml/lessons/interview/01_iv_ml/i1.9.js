@@ -43,7 +43,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Discrepancy between the data distribution during training and the data distribution in production. Causes silent model degradation. Prevention:"
+     "text": "Discrepancy between features as computed in training and as computed in serving, usually from separate code paths or data sources. Causes silent model degradation. Prevention:"
     },
     {
      "t": "ul",

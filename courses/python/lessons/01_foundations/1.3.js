@@ -190,6 +190,8 @@ $ pip install some-pure-python-package`},
       ]}
     ]},
 
+    {"t": "diagram", "kind": "steps", "title": "The life of a virtual environment", "caption": "**A virtual environment is a directory with its own interpreter link and its own site-packages.** Activating it only puts that interpreter first on `PATH`; running `.venv/bin/python` directly, or `uv run`, is the same thing without activation. The verification step is the habit that catches \"it installed, but into a different Python\".", "items": [{"label": "create", "desc": "a .venv directory with its own site-packages", "code": "uv venv", "tone": "accent"}, {"label": "activate, or run through it", "desc": "puts .venv's python first on PATH", "code": "uv run", "tone": "accent"}, {"label": "install into it", "desc": "packages land in .venv, nowhere else", "code": "uv add httpx", "tone": "good"}, {"label": "verify", "desc": "sys.prefix must point inside .venv", "code": "python -c 'import sys; print(sys.prefix)'", "tone": "warn"}]},
+
     /* ================================================================== */
     { t: "h2", n: "03", text: "Making your editor agree with your terminal", id: "vscode",
       sub: "The most common source of \"it runs in the terminal but the editor shows errors\"." },
@@ -457,44 +459,44 @@ $ uv sync                           # writes + applies uv.lock`},
         stem: "A cron job runs `/srv/app/.venv/bin/python /srv/app/job.py`. It never calls `activate`. Will it use the virtual environment's packages?",
         options: [
           "No — without activation, `VIRTUAL_ENV` is unset and it falls back to the global interpreter",
+          "Only if `PYTHONPATH` is also set to the environment's site-packages, since cron starts with an empty environment",
           "Yes — the interpreter locates its environment from its own path and `pyvenv.cfg`, independently of any shell variable",
-          "Only if `PYTHONPATH` is set to the environment's site-packages",
-          "Only for pure-Python packages; compiled extensions require activation"
+          "Only for pure-Python packages; compiled extensions find their shared libraries through the activated shell's variables"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is the practical payoff of understanding what activation does. `activate` is a convenience for interactive shells — it prepends to `PATH` so that typing `python` finds the right binary. When you name the binary by absolute path, that convenience is unnecessary: the interpreter reads `pyvenv.cfg` beside itself, sets `sys.prefix` to the environment, and searches its `site-packages`. This is exactly why every Dockerfile, systemd unit and cron entry invokes the interpreter directly."
       },
       {
         stem: "Imports show as unresolved in VS Code, but the same file runs correctly from the integrated terminal. What is the cause?",
         options: [
-          "The language server needs the packages installed globally as well",
-          "The editor's selected interpreter differs from the one active in the terminal",
+          "The language server only reads globally installed packages, so they need installing there as well",
           "The virtual environment was created with the wrong Python version",
+          "The editor's selected interpreter differs from the one active in the terminal",
           "`__init__.py` files are missing from the package directories"
         ],
-        answer: 1,
+        answer: 2,
         why: "VS Code's Python features — IntelliSense, linting, the debugger — follow the interpreter chosen in the editor, which is a separate setting from whatever your terminal's `PATH` happens to point at. The definitive check is comparing `sys.executable` from the terminal against the interpreter in the status bar. Committing `python.defaultInterpreterPath` in `.vscode/settings.json` prevents the whole class of problem for everyone on the team."
       },
       {
         stem: "You run `pip freeze > requirements.txt` after installing only `httpx`, and the file contains eight packages. Why, and what does that cost you?",
         options: [
-          "pip includes its own dependencies; the extras can be safely deleted by hand",
-          "They are httpx's transitive dependencies — the cost is that the file no longer distinguishes what you chose from what was pulled in",
-          "The environment was not clean, so unrelated packages leaked in",
+          "pip records its own dependencies alongside yours, so the extra entries are pip's and can safely be deleted by hand",
+          "The environment was not clean, so packages installed earlier for something else leaked into the frozen list",
+          "They are httpx's transitive dependencies, so the file no longer shows what you chose versus what came along",
           "`freeze` lists everything available on PyPI that matches your Python version"
         ],
-        answer: 1,
+        answer: 2,
         why: "`httpx` depends on `httpcore`, `anyio`, `certifi`, `idna`, `h11` and `sniffio`, and `pip freeze` reports the flattened result. Nothing is wrong — but the file has lost the distinction between *what your code imports* and *what happened to be required*. That matters when upgrading: you cannot tell which pins are yours to change. The fix is declaring direct dependencies in `pyproject.toml` and letting a lockfile record the resolved tree."
       },
       {
         stem: "A colleague suggests fixing a library bug by editing the file directly in `.venv/lib/python3.12/site-packages/`. What is wrong with this?",
         options: [
-          "Nothing, provided the change is documented in the README",
           "The change exists only on that machine and disappears on the next install or rebuild",
-          "Files in site-packages are read-only and the edit will fail",
+          "Nothing, provided the change is documented in the README so the rest of the team knows it exists",
+          "Files in site-packages are installed read-only, so the edit will fail with a permission error",
           "It works but requires clearing `__pycache__` afterwards to take effect"
         ],
-        answer: 1,
+        answer: 0,
         why: "The edit is invisible to version control, absent from every colleague's machine and from CI, and is destroyed the moment anyone reinstalls or rebuilds the environment — which the previous question established is the standard response to any environment problem. The legitimate options are: pin to a fixed version and open an upstream issue, apply a documented patch as part of the build, vendor the code deliberately, or monkeypatch at runtime in your own source where it is visible and reviewable."
       }
     ]

@@ -325,7 +325,7 @@ x_err, y_err = np.append(x, 9.5), np.append(y, 80)      # a y of 80 where 19 is 
 
 # OLS: squared error, so the error row dominates.
 ols = LinearRegression().fit(x_err[:, None], y_err)
-ols.coef_[0]                                            # 2.64 -- pulled up by 32%
+ols.coef_[0]                                            # 2.14 -- pulled up by 32%
 #
 # One row in 201 moved the slope by a third. Its residual is 60, and
 # 60 squared is 3,600 -- more than the other 200 residuals combined.
@@ -342,7 +342,7 @@ def cooks_distance(X, y):
     return (resid ** 2 / (p * mse)) * (h / (1 - h) ** 2)
 
 cd = cooks_distance(x_err[:, None], y_err)
-cd[-1], np.percentile(cd[:-1], 99)                     # (2.1, 0.02)
+cd[-1], np.percentile(cd[:-1], 99)                     # (1.5, 0.00)
 #
 # Cook's distance above 1 is the conventional "this row changes the
 # fit" threshold; above 4/n is "worth a look". The error row is 100x
@@ -353,7 +353,7 @@ cd[-1], np.percentile(cd[:-1], 99)                     # (2.1, 0.02)
 # HUBER LOSS: squared error near zero, absolute error beyond a
 # threshold. Large residuals get linear -- not quadratic -- weight.
 hub = HuberRegressor(epsilon=1.35).fit(x_err[:, None], y_err)
-hub.coef_[0]                                            # 2.03 -- barely moved
+hub.coef_[0]                                            # 2.00 -- barely moved
 #
 # epsilon=1.35 is the default: residuals beyond 1.35 sigma are treated
 # linearly. The error row's residual of 60 contributes 60, not 3,600.
@@ -361,7 +361,7 @@ hub.coef_[0]                                            # 2.03 -- barely moved
 # QUANTILE (MEDIAN) REGRESSION: absolute error throughout. The fit
 # goes through the conditional median, which no single row can move.
 qr = QuantileRegressor(quantile=0.5, alpha=0).fit(x_err[:, None], y_err)
-qr.coef_[0]                                             # 2.00
+qr.coef_[0]                                             # 2.02
 #
 # The most robust of the three. Also the least efficient on clean
 # data (wider standard errors), and it predicts the median, not the

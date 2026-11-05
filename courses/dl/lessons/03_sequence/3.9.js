@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.9 — Beam Search
    Beam search implemented and run at three widths; length-normalisation
-   arithmetic verified (scratchpad/dl/d39.py).
+   arithmetic verified (d39.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.9",

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.1 — Why Transformers
    The sequential bottleneck is benchmarked against attention: it wins at
-   short lengths and LOSES at 512 (scratchpad/nlp/n41.py). Embeddings move
+   short lengths and LOSES at 512 (n41.py). Embeddings move
    to 4.2.
    ========================================================================= */
 EC.receiveLesson({
@@ -56,7 +56,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n41.py — LSTM against attention, same width", code:
+    { t: "code", lang: "python", title: "LSTM against attention, same width", code:
 "import torch, torch.nn as nn\n\nD, B = 256, 16\nrnn  = nn.LSTM(D, D, batch_first=True).eval()\nattn = nn.MultiheadAttention(D, 8, batch_first=True).eval()\n\nfor T in [32, 64, 128, 256, 512]:\n    x = torch.randn(B, T, D)\n    with torch.no_grad():\n        r = bench(lambda: rnn(x))\n        a = bench(lambda: attn(x, x, x, need_weights=False))\n    print(T, r, a, r / a)",
       caption: "Forward pass only, four CPU threads, timed after warm-up. Both modules are the same width so the comparison is like for like." },
 

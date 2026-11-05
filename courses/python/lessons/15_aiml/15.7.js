@@ -914,21 +914,21 @@ def test_latency_stays_bounded_under_concurrency():
       {
         stem: "An endpoint takes `features: list[float]` and the data team reports predictions are \"a bit off\". What is the likely cause?",
         options: [
-          "Floating-point precision in the JSON encoding",
-          "Positional features — a caller sending them in a different order gets a confident wrong prediction, and nothing checks the order",
-          "The model needs retraining",
-          "The list should be a numpy array"
+          "Positional features — a different order gives a confident wrong answer",
+          "Floating-point precision lost in the JSON encoding of the feature values",
+          "The model is out of date and needs retraining on recent data",
+          "The list should be a numpy array, so the values keep their float64 precision"
         ],
-        answer: 1,
+        answer: 0,
         why: "Because features are correlated, a model given plausible garbage produces plausible output rather than obvious nonsense — so nothing fails and the degradation looks like drift. Named fields assembled in the model's recorded order make it structurally impossible."
       },
       {
         stem: "`joblib.load` runs inside the request handler for a 180MB model at 200 rps. What happens?",
         options: [
-          "The OS page cache makes it cheap after the first call",
-          "Each request deserialises 180MB, so the container is OOM-killed and requests queue into a multi-second tail",
-          "Only the first request per worker is slow",
-          "joblib caches the loaded object automatically"
+          "The OS page cache makes each load cheap after the first, so the cost is negligible",
+          "Every request deserialises 180MB, exhausting memory and latency",
+          "Only the first request handled by each worker is slow; later ones reuse the load",
+          "joblib caches the loaded object automatically, so the model is loaded only once"
         ],
         answer: 1,
         why: "Page cache helps the disk read, not the deserialisation or the allocation. Loading once in `lifespan` — with `--preload` so workers share it copy-on-write — turns 200 loads per second into one at startup."
@@ -936,21 +936,21 @@ def test_latency_stays_bounded_under_concurrency():
       {
         stem: "Eight gunicorn workers on four cores, each with default BLAS threading. What is the symptom?",
         options: [
-          "Memory grows unbounded",
+          "Memory grows without bound, because each BLAS thread allocates its own buffers",
+          "Predictions become non-deterministic, because the threads sum in different orders",
           "Latency gets worse as concurrency rises, because 32 threads contend for 4 cores",
-          "Predictions become non-deterministic",
-          "The model fails to load"
+          "The model fails to load, because the BLAS library cannot start enough threads"
         ],
-        answer: 1,
+        answer: 2,
         why: "It reads as a capacity problem, so teams add pods — which adds workers, adds threads, and makes it worse. `OMP_NUM_THREADS=1` and its siblings must be set before numpy is imported, because the values are read at import time."
       },
       {
         stem: "Which monitoring signal detects a feature-ordering bug fastest?",
         options: [
-          "Error rate and p99 latency",
-          "Feature distributions compared against the training set — an age feature receiving income values has an obviously wrong mean",
-          "Model accuracy against realised outcomes",
-          "Request throughput"
+          "Error rate and p99 latency on the prediction endpoint",
+          "Feature distributions compared with training",
+          "Model accuracy measured against realised outcomes",
+          "Request throughput on the prediction endpoint"
         ],
         answer: 1,
         why: "The bug produces no errors and no latency change, so ordinary monitoring is silent. Accuracy is the correct signal and arrives 30 to 60 days later; input and output distributions move within hours and need no labels at all."

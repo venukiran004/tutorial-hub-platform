@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.6 — Building a Transformer in PyTorch
    A complete encoder-decoder is assembled and trained to 99.4% on a real
-   seq2seq task, and its cross-attention inspected (scratchpad/dl/d46.py).
+   seq2seq task, and its cross-attention inspected (d46.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.6",

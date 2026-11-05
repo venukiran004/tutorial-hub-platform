@@ -729,45 +729,45 @@ if __name__ == "__main__":
       {
         stem: "A traceback reads \"During handling of the above exception, another exception occurred\". What does that tell you?",
         options: [
-          "The second exception was raised deliberately with `from`",
-          "The second was raised inside an `except` block without `from`, so Python chained it implicitly — often a sign the handler itself has a bug",
-          "Two threads raised at the same time",
-          "The first exception was suppressed"
+          "The second exception was raised deliberately with `raise ... from`, so the first is shown as its cause",
+          "Two threads raised exceptions at the same moment, and Python printed both tracebacks together",
+          "It was raised inside an `except` without `from` — often a sign the handler has a bug",
+          "The first exception was suppressed, and only the second one is actually propagating"
         ],
-        answer: 1,
+        answer: 2,
         why: "Python records the exception being handled in `__context__` and prints that phrase when a new one escapes the handler. It reads as \"something went wrong while dealing with the first problem\". When the translation is intentional, `raise X from err` sets `__cause__` instead and prints \"The above exception was the direct cause\", which tells a reader the design is working rather than sending them hunting for a bug in your handler."
       },
       {
         stem: "You are designing exceptions for an HTTP client. What should determine the branches?",
         options: [
-          "The HTTP status codes, one class per code",
-          "What a caller would do differently — retry, prompt for credentials, give up — since that is what an `except` clause selects on",
-          "The layer of the application where the error occurred",
-          "One class per method, so tracebacks identify the call site"
+          "The HTTP status codes, one exception class per code, so the type always matches what the server returned",
+          "The layer of the application where the error occurred, so the type tells you which component failed",
+          "What a caller would do differently — retry, re-authenticate or give up",
+          "One exception class per client method, so a traceback identifies the call site from the type alone"
         ],
-        answer: 1,
+        answer: 2,
         why: "An exception type exists to be caught, so its only useful distinction is one that changes the handler. A timeout, a 503 and a 429 have different causes and identical responses — wait and retry — so they belong on one branch. Grouping by cause forces callers back to inspecting status codes inside the handler, which is exactly what the hierarchy was supposed to replace."
       },
       {
         stem: "Why attach `retry_after` as an attribute rather than putting it in the message?",
         options: [
           "Messages have a length limit",
-          "Code must otherwise parse English out of the message, so a wording change silently becomes a breaking API change",
           "Attributes are faster to access",
-          "Messages are stripped in production builds"
+          "Exception messages are stripped in optimised production builds, so the value would be lost",
+          "Otherwise code parses English out of the message, so rewording breaks callers"
         ],
-        answer: 1,
+        answer: 3,
         why: "A message is for a human reading a log; an attribute is for code making a decision. When a caller writes `re.search(r\"retry after (\\d+)\", str(err))`, your prose is now part of your public API and any reword breaks their retry loop without a test failing anywhere. `err.retry_after` is stable, typed and obvious."
       },
       {
         stem: "A billing worker catches `Exception` and retries. A stolen-card decline is retried six times over two days. What is the real fix?",
         options: [
-          "Add an `if status == 402: return` check inside the handler",
-          "Split the hierarchy so terminal rejections and transient failures are different branches, and stop catching the terminal one",
-          "Reduce the retry count to two",
-          "Log the status code before retrying"
+          "Separate terminal rejections from transient failures, and retry only the transient ones",
+          "Add an `if status == 402: return` check inside the handler, so declines stop being retried",
+          "Reduce the retry count to two, so a permanent failure gives up after a few minutes",
+          "Log the status code before every retry, so the team can see which failures are declines"
         ],
-        answer: 1,
+        answer: 0,
         why: "The check works and gets deleted in six months by someone simplifying the handler. Making the retry loop catch `TransientError` only means a decline propagates structurally — there is no line to remove and no condition to forget. The team wrote the catch-all in the first place because library exceptions gave them nothing better to catch, which is the actual root cause."
       }
     ]

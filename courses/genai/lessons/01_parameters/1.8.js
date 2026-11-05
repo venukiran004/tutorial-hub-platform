@@ -261,10 +261,10 @@ class Strict(BaseModel):
       ] },
 
     /* ============================================================ 04 */
-    { t: "h2", n: "04", id: "anthropic", text: "The providers that have no JSON mode",
+    { t: "h2", n: "04", id: "anthropic", text: "When a provider has no schema mode",
       sub: "A forced tool call is the structured output" },
 
-    {"kind": "flow", "title": "A forced tool call is structured output with a different name", "caption": "Anthropic has no `response_format`, and the documented approach is to define a tool whose input schema is the shape you want and force the model to call it — at which point **the arguments the model produces *are* your structured response**, conforming for exactly the reason function-call arguments always do. The pattern generalises: any provider with function calling already has structured output.", "cols": 3, "nodes": [{"id": "n", "label": "No response_format", "sub": "Anthropic, and others", "tone": "warn"}, {"id": "t", "label": "Define a tool", "sub": "its input schema is your shape", "tone": "good"}, {"id": "f", "label": "Force the call", "sub": "tool_choice names it", "tone": "good"}, {"id": "a", "label": "The arguments are the response", "sub": "schema-conforming by construction", "tone": "violet"}, {"id": "g", "label": "Function calling implies structured output", "sub": "on any provider", "tone": "teal"}], "edges": [["n", "t"], ["t", "f"], ["f", "a"], ["a", "g"]], "t": "diagram", "id": "dg-1_8-04-2"},
+    {"kind": "flow", "title": "A forced tool call is structured output with a different name", "caption": "Where a provider has no schema mode, the documented approach is to define a tool whose input schema is the shape you want and force the model to call it — at which point **the arguments the model produces *are* your structured response**, conforming for exactly the reason function-call arguments always do. The pattern generalises: any provider with function calling already has structured output.", "cols": 3, "nodes": [{"id": "n", "label": "No response_format", "sub": "older APIs, local stacks", "tone": "warn"}, {"id": "t", "label": "Define a tool", "sub": "its input schema is your shape", "tone": "good"}, {"id": "f", "label": "Force the call", "sub": "tool_choice names it", "tone": "good"}, {"id": "a", "label": "The arguments are the response", "sub": "schema-conforming by construction", "tone": "violet"}, {"id": "g", "label": "Function calling implies structured output", "sub": "on any provider", "tone": "teal"}], "edges": [["n", "t"], ["t", "f"], ["f", "a"], ["a", "g"]], "t": "diagram", "id": "dg-1_8-04-2"},
 
 
 
@@ -290,7 +290,7 @@ class Strict(BaseModel):
 
 
 
-    { t: "p", text: "Anthropic has no `response_format`. The documented approach is to define a tool whose input schema is the shape you want, and force the model to call it — at which point the arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
+    { t: "p", text: "Anthropic now has structured outputs through `output_config.format`, added in late 2025. Before that, and on any provider without a schema mode, the documented approach is to define a tool whose input schema is the shape you want, and force the model to call it — at which point the arguments the model produces *are* your structured response, and they conform to the schema for the same reason function-calling arguments always do." },
 
     { t: "code", lang: "python", title: "anthropic_structured.py", code: `response = anthropic_client.messages.create(
     model="claude-sonnet-4-20250514",
@@ -447,7 +447,7 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
     "`Optional[str]` becomes a nullable union; `Literal[...]` becomes an `enum`. **An enum in the schema is a constraint; the same list in the prompt is a suggestion.**",
     "OpenAI's strict mode requires `additionalProperties: false` **and every property in `required`** — there are no optional fields, only required nullable ones.",
     "That changes your code: the key is always present, so `if \"note\" in data` stops discriminating and `if data[\"note\"] is not None` is what you need.",
-    "Anthropic has no JSON mode. A **forced tool call** is the structured output — any provider with function calling has structured output under a different name.",
+    "A **forced tool call** is structured output on any provider with function calling, which makes it the portable fallback where no schema mode exists.",
     "**The schema constrains shape, not truth.** A banana at 3,000 calories satisfies it. Range checks, cross-field consistency and referential checks all belong in code.",
     "A schema is a prompt: stripping redundant `title` keys saved **28.6%** of a measured schema, worth $2,160/year at a million requests a month — but `description` is the cheapest instruction channel you have and must stay."
   ],
@@ -491,7 +491,7 @@ at 1,000,000 requests/month, $2.50 per 1M input tokens:
         ] },
 
       { level: "core",
-        q: "Anthropic has no JSON mode. What do you do?",
+        q: "A provider has function calling and no schema mode. What do you do?",
         strong: "Forced tool use. A strong answer knows why the forcing is the load-bearing part.",
         answer: [
           { t: "p", text: "Define a tool whose `input_schema` is the shape you want, and set `tool_choice` to force that specific tool. The arguments the model produces are your structured response, and they conform to the schema for the same reason function-calling arguments always do." },

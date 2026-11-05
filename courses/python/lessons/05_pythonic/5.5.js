@@ -653,45 +653,45 @@ if __name__ == "__main__":
       {
         stem: "`ORDER_CREATED = \"order.created\"` is a module constant. What does `case ORDER_CREATED:` do?",
         options: [
-          "Compares the subject to the constant's value",
-          "Captures — it matches anything and rebinds the local name `ORDER_CREATED`, making every later case unreachable",
-          "Raises `SyntaxError`, because constants cannot be used in patterns",
-          "Compares by identity rather than equality"
+          "Captures — it matches anything and rebinds `ORDER_CREATED`, so later cases are dead",
+          "Compares the subject to the constant's value, exactly as `if subject == ORDER_CREATED` would",
+          "Raises `SyntaxError`, because module-level constants cannot appear in a `case` pattern",
+          "Compares the subject by identity rather than equality, like `is`"
         ],
-        answer: 1,
+        answer: 0,
         why: "A bare name in a `case` is always a capture pattern: it matches any subject and binds it to that name. So the first such case wins every time and every subsequent case is dead code — with no warning, since the syntax is indistinguishable from a comparison. Only a *dotted* name is a value pattern, which is why `case Status.PENDING:` works and is the practical argument for enums over bare string constants."
       },
       {
         stem: "What happens when a `match` statement has no matching case and no `case _`?",
         options: [
-          "`MatchError` is raised",
-          "Nothing — the statement completes silently, doing no work",
-          "The last case runs as a default",
-          "A `RuntimeWarning` is emitted"
+          "A `MatchError` is raised, naming the unmatched subject",
+          "The last case runs as the default branch",
+          "Nothing — the statement completes silently",
+          "A `RuntimeWarning` is emitted and execution continues"
         ],
-        answer: 1,
+        answer: 2,
         why: "Unlike some languages' match expressions, Python's `match` has no runtime exhaustiveness requirement — falling through every case is a no-op. In a function that should return a value, this means silently returning `None`, which then fails somewhere unrelated. Always end with `case _:` that raises or logs; for enum and `Literal` subjects, `case _ as x: assert_never(x)` gives mypy a static exhaustiveness check."
       },
       {
         stem: "Does `case {\"type\": \"order\"}` match `{\"type\": \"order\", \"id\": 5, \"total\": 20}`?",
         options: [
-          "No — mapping patterns require an exact key set",
           "Yes — mapping patterns match a subset, so extra keys are permitted",
-          "Only if `**rest` is added to the pattern",
-          "Only if the extra keys have no values"
+          "No — a mapping pattern requires the subject to have exactly the keys it names",
+          "Only if `**rest` is added to the pattern to absorb the extra keys",
+          "Only if the extra keys hold `None` or no value at all"
         ],
-        answer: 1,
+        answer: 0,
         why: "Mapping patterns are deliberately subset matches: the named keys must be present and match, and anything else is ignored. That is the right default for API payloads, where a partner adding a field should not break your handling. It contrasts with sequence patterns, which require an exact length unless you use a starred element. Add `**rest` only when you want to capture the unnamed keys."
       },
       {
         stem: "When is a dispatch dict a better choice than `match`?",
         options: [
           "Whenever there are more than three branches",
-          "When the branches compare one value to constants and the payload shapes are uniform — the dict is a lookup, is configurable, and keeps each handler separately testable",
           "Never — `match` supersedes dispatch dicts",
+          "When each branch compares one value to a constant with uniform payloads — a plain lookup",
           "Only when the keys are strings"
         ],
-        answer: 1,
+        answer: 2,
         why: "If every case is `case \"literal\":` with no bindings, `match` is a switch and a dict expresses it better — it is O(1), inspectable, loadable from configuration, and adding a case needs no edit to shared control flow. `match` earns its place when the branches test *different structures* and need different fields extracted, because then the pattern does the check and the binding in one step."
       }
     ]

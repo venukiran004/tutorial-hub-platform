@@ -760,21 +760,21 @@ if __name__ == "__main__":
       {
         stem: "Why does the Strategy pattern largely dissolve in Python?",
         options: [
-          "Python is too dynamic for strategies to be type-safe",
-          "Functions are first-class, so the strategy is a parameter — a class per algorithm plus a uniting interface is machinery for something the language does directly",
-          "Strategies are better expressed as inheritance in Python",
-          "It does not dissolve; it is still the recommended approach"
+          "Python is too dynamic for strategies to be type-safe, so the pattern loses its main benefit",
+          "Strategies are better expressed as inheritance in Python, with one subclass overriding each algorithm",
+          "It does not dissolve; a class per algorithm behind an interface is still the recommended approach",
+          "Functions are first-class, so a strategy is just a parameter — no class hierarchy needed"
         ],
-        answer: 1,
+        answer: 3,
         why: "GoF Strategy needs an interface and a class per algorithm because C++ and Java cannot pass a function as a value. Python can, so `sorted(items, key=...)` and `checkout(items, sort_by=...)` express it directly — and a strategy nobody anticipated works without defining anything. It becomes a class again only when a strategy carries real state or several related methods."
       },
       {
         stem: "What is the bug in a singleton implemented by caching an instance in `__new__`?",
         options: [
-          "The cached instance is garbage-collected between calls",
+          "The cached instance is garbage-collected between calls, so each call quietly builds a new one",
           "`__init__` runs on every call, re-initialising the shared instance and silently wiping its state",
-          "Subclasses cannot inherit the singleton behaviour",
-          "`__new__` cannot access class attributes"
+          "Subclasses cannot inherit the singleton behaviour, so each subclass shares the parent's instance",
+          "`__new__` cannot access class attributes, so the cache attribute is never actually set"
         ],
         answer: 1,
         why: "Python calls `__init__` on whatever `__new__` returns, whether freshly allocated or cached. So `Config(debug=True)` followed by `Config()` re-runs the initialiser and resets the settings — silently, since the object exists and only its state is gone. It is also untestable, with no way to reset between tests. `@lru_cache(maxsize=1)` on a factory gives the same behaviour plus `cache_clear()`."
@@ -782,23 +782,23 @@ if __name__ == "__main__":
       {
         stem: "Which pattern survives in Python essentially unchanged, and why?",
         options: [
-          "Builder — Python's keyword arguments make fluent construction natural",
-          "Adapter — a third-party interface with the wrong shape is a design force, not a missing language feature",
-          "Abstract Factory — Python needs classes to group related constructors",
-          "Command — Python has no way to bind arguments to a callable"
+          "Adapter — a third-party interface of the wrong shape is a design force, not a language gap",
+          "Builder — Python's keyword arguments make fluent step-by-step construction natural and readable",
+          "Abstract Factory — Python still needs classes to group related constructors behind one interface",
+          "Command — Python has no built-in way to bind arguments to a callable for later execution"
         ],
-        answer: 1,
+        answer: 0,
         why: "Adapter solves a problem no language feature removes: a vendor's `do_payment(cents: int) -> dict` cannot become your `charge(Decimal) -> str` by any amount of first-class-function support. What shrinks is the ceremony — a `Protocol` replaces the declared Target interface. Builder dissolves into keyword arguments, Abstract Factory into a function, and Command into `functools.partial`."
       },
       {
         stem: "An order lifecycle is modelled with three boolean flags. What is the strongest objection?",
         options: [
-          "Booleans are slower to compare than enum members",
-          "Three booleans describe eight states of which only four are valid, so invalid combinations are representable and every method re-derives the rules",
-          "Flags cannot be serialised to a database column",
-          "The State pattern requires a class per state"
+          "Three flags allow eight states where four are valid, so invalid ones can be represented",
+          "Booleans are slower to compare than enum members, and the lifecycle is checked on every request",
+          "Boolean flags cannot be serialised to a single database column, so the table needs three",
+          "The State pattern requires a class per state, and three flags cannot be turned into classes"
         ],
-        answer: 1,
+        answer: 0,
         why: "`is_shipped and is_cancelled` is expressible and meaningless — the type permits states the domain does not. Worse, the transition rules live inside each method that checks them, so they drift apart as the class grows. An enum plus a transition table makes invalid states unrepresentable and puts the machine in one testable place. A class per state is warranted only when each state performs different work."
       }
     ]

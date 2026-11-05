@@ -270,7 +270,7 @@ EC.receiveLesson({
      "items": [
       "**Point estimate is +2%** — the best single guess",
       "**CI width (5%)** suggests the test is underpowered",
-      "**Bayesian perspective:** \\(P(\\text{effect} > 0) \\approx 90\\%\\) (based on CI location)"
+      "**Bayesian perspective:** \\(P(\\text{effect} > 0) \\approx 94\\%\\) (flat prior, normal approximation)"
      ]
     },
     {
@@ -282,7 +282,7 @@ EC.receiveLesson({
      "items": [
       "Run longer to narrow the CI (need ~4x users to halve CI width)",
       "Apply CUPED for variance reduction",
-      "Report: \"Directionally positive (+2%) but not yet statistically significant. Estimated 90% probability of positive effect.\"",
+      "Report: \"Directionally positive (+2%) but not yet statistically significant. Estimated 94% probability of positive effect.\"",
       "If the cost of shipping is low and reversible, consider a phased rollout with monitoring"
      ]
     }
@@ -432,7 +432,7 @@ EC.receiveLesson({
       "**Feature A is redundant:** Other features (C, D) already capture the same information. Once they split first, A adds little.",
       "**Feature B has nonlinear relationships:** Low linear correlation but strong interaction effects or nonlinear patterns.",
       "**Feature B interacts with others:** Its importance comes from splits combined with other features.",
-      "**Feature importance is permutation-based:** Measures drop in accuracy when feature is shuffled — captures all types of relationships."
+      "**If the importance is permutation-based:** It measures the drop in accuracy when feature is shuffled — captures all types of relationships."
      ]
     },
     {

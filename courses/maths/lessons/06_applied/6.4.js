@@ -84,16 +84,16 @@ score2 = true_ability + rng.normal(0, 10, n)      # measurement 2, NO change
 
 worst = score1 < np.percentile(score1, 10)
 
-score1[worst].mean()                    # 79.5
-score2[worst].mean()                    # 89.6
-score2[worst].mean() - score1[worst].mean()      # +10.1
+score1[worst].mean()                    # 75.6
+score2[worst].mean()                    # 87.2
+score2[worst].mean() - score1[worst].mean()      # +11.6
 #
 # A TEN-POINT IMPROVEMENT WITH NO INTERVENTION AT ALL. Run a training
 # programme on these people and it "works" every time.
 
 # AND THE BEST PERFORMERS GET WORSE:
 best = score1 > np.percentile(score1, 90)
-score2[best].mean() - score1[best].mean()        # -10.2
+score2[best].mean() - score1[best].mean()        # -12.0
 #
 # So praising success "causes" decline and criticising failure
 # "causes" improvement. That is the classic finding, and it is
@@ -109,7 +109,7 @@ def expected_regression(selected_mean, population_mean, reliability):
     return (1 - reliability) * (population_mean - selected_mean)
 
 r = np.corrcoef(score1, score2)[0, 1]            # 0.499
-expected_regression(79.5, 100.0, r)              # +10.3, matching +10.1
+expected_regression(75.6, 100.0, r)              # +12.2, close to +11.6
 #
 # SO YOU CAN PREDICT THE FAKE EFFECT BEFORE RUNNING THE STUDY, and
 # compare it against whatever the intervention produced.
@@ -149,7 +149,7 @@ with_control(score1, score2, m_t, m_c)
 # happens between measurement 1 and 2; it does not happen again
 # between 2 and 3.
 score3 = true_ability + rng.normal(0, 10, n)
-score3[worst].mean() - score2[worst].mean()      # ~0.0
+score3[worst].mean() - score2[worst].mean()      # ~0.5
 `,
       hl: [16, 25, 36, 56],
       caption: "**The size of the fake effect is predictable: `(1 − r) × (selection gap)`.** That turns regression to the mean from a worry into a number you can compute before the study and compare against."
@@ -183,8 +183,8 @@ hit_engine = rng.random(n_planes) < 0.25
 hit_wing = rng.random(n_planes) < 0.55
 returned = ~(hit_engine & (rng.random(n_planes) < 0.85))   # engine hits kill
 
-hit_wing[returned].mean()               # 0.55  common among survivors
-hit_engine[returned].mean()             # 0.05  rare among survivors
+hit_wing[returned].mean()               # 0.54  common among survivors
+hit_engine[returned].mean()             # 0.06  rare among survivors
 hit_engine.mean()                       # 0.25  and common overall
 #
 # ENGINE HITS ARE RARE IN THE DATA BECAUSE ENGINE HITS ARE FATAL.
@@ -250,7 +250,7 @@ np.corrcoef(disease_a, disease_b)[0,1]           # ~0.00, independent
 
 # Hospitalised if you have EITHER condition:
 hospital = disease_a | disease_b
-np.corrcoef(disease_a[hospital], disease_b[hospital])[0,1]   # -0.53
+np.corrcoef(disease_a[hospital], disease_b[hospital])[0,1]   # -0.90
 #
 # STRONGLY NEGATIVELY CORRELATED AMONG PATIENTS, and independent in
 # the population. Among hospitalised people, not having A makes B more
@@ -301,8 +301,8 @@ def standardise(rates, weights):
     return float(np.asarray(rates) @ np.asarray(weights))
 
 mix = np.array([87+270, 263+80], float); mix /= mix.sum()
-standardise([81/87, 192/263], mix)               # 0.832  treatment A
-standardise([234/270, 55/80], mix)               # 0.780  treatment B
+standardise([81/87, 192/263], mix)               # 0.833  treatment A
+standardise([234/270, 55/80], mix)               # 0.779  treatment B
 #
 # ON A COMMON CASE MIX, A WINS -- matching every subgroup and
 # reversing the naive pooled comparison.

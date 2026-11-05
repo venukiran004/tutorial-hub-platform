@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 2.5 — Sequence Labelling
    Greedy and Viterbi decoding are run on the same emission scores, and
-   greedy emits a structurally invalid sequence (scratchpad/nlp/n25.py).
+   greedy emits a structurally invalid sequence (n25.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.5",

@@ -94,12 +94,12 @@ rng = np.random.default_rng(0)
 POP = rng.lognormal(mean=3.0, sigma=1.0, size=2_000_000)
 
 POP.mean()                        # 33.15  the parameter, mu
-POP.std()                         # 43.63  the parameter, sigma
-stats.skew(POP)                   # 6.16   badly non-normal
+POP.std()                         # 43.45  the parameter, sigma
+stats.skew(POP)                   # 6.09   badly non-normal
 
 # ONE SAMPLE is a set of observations. Its spread estimates sigma.
 sample = rng.choice(POP, size=100, replace=False)
-sample.mean(), sample.std(ddof=1)          # 32.8, 40.1
+sample.mean(), sample.std(ddof=1)          # 30.0, 28.8
 
 # THE SAMPLING DISTRIBUTION is what the sample MEAN does across many
 # samples. It is the object inference is about, and you never see it --
@@ -107,14 +107,14 @@ sample.mean(), sample.std(ddof=1)          # 32.8, 40.1
 means = np.array([rng.choice(POP, 100, replace=False).mean()
                   for _ in range(20_000)])
 
-means.mean()                      # 33.15  -- centred on mu
-means.std()                       # 4.35   -- much narrower
-POP.std() / np.sqrt(100)          # 4.36   -- exactly sigma/sqrt(n)
+means.mean()                      # 33.18  -- centred on mu
+means.std()                       # 4.34   -- much narrower
+POP.std() / np.sqrt(100)          # 4.35   -- exactly sigma/sqrt(n)
 
 # THE THREE SPREADS ARE DIFFERENT QUANTITIES:
 #
 #   sigma            43.6   how much INDIVIDUALS vary
-#   s (one sample)   40.1   your estimate of sigma
+#   s (one sample)   28.8   your estimate of sigma
 #   SE = s/sqrt(n)    4.0   how much your ESTIMATE OF THE MEAN varies
 #
 # A STANDARD DEVIATION DESCRIBES THE DATA. A STANDARD ERROR DESCRIBES
@@ -123,8 +123,8 @@ POP.std() / np.sqrt(100)          # 4.36   -- exactly sigma/sqrt(n)
 
 # AND THE SHAPE: the population is skewed 6.2; the sampling
 # distribution is not.
-stats.skew(POP)                   # 6.16
-stats.skew(means)                 # 0.29
+stats.skew(POP)                   # 6.09
+stats.skew(means)                 # 0.60
 #
 # THAT IS THE CENTRAL LIMIT THEOREM. It did not make the data normal;
 # it made the DISTRIBUTION OF THE MEAN normal.
@@ -172,7 +172,7 @@ stats.skew(means)                 # 0.29
 # CONDITION 3 FAILS TOTALLY, NOT GRADUALLY:
 cauchy_means = np.array([stats.cauchy.rvs(size=n, random_state=i).mean()
                          for i, n in enumerate([10_000]*2000)])
-cauchy_means.std()                # ~200, and unstable between runs
+cauchy_means.std()                # ~90 and unstable between runs
 #
 # The mean of 10,000 Cauchy samples has the SAME distribution as one
 # sample. No amount of n helps.
@@ -299,19 +299,19 @@ naive_se = values.std(ddof=1) / np.sqrt(len(values))          # 0.0224
 user_means = values.reshape(n_users, per_user).mean(axis=1)
 cluster_se = user_means.std(ddof=1) / np.sqrt(n_users)        # 0.1425
 
-cluster_se / naive_se                                          # 6.4x
+cluster_se / naive_se                                          # 6.3x
 #
-# THE NAIVE STANDARD ERROR IS 6.4 TIMES TOO SMALL, so every confidence
-# interval is 6.4x too narrow and every p-value is far too small.
+# THE NAIVE STANDARD ERROR IS 6.3 TIMES TOO SMALL, so every confidence
+# interval is 6.3x too narrow and every p-value is far too small.
 
 # THE DESIGN EFFECT quantifies it from the intra-cluster correlation:
 #     DEFF = 1 + (m - 1) * ICC
 icc = user_effect.var() / (user_effect.var() + 1.0)           # 0.80
 deff = 1 + (per_user - 1) * icc                               # 40.2
-np.sqrt(deff)                                                  # 6.34 -- matches
+np.sqrt(deff)                                                  # 6.30 -- matches
 
 # EFFECTIVE SAMPLE SIZE:
-len(values) / deff                                             # 249
+len(values) / deff                                             # 252
 #
 # TEN THOUSAND ROWS CARRY THE INFORMATION OF ABOUT 250. Adding more
 # events per user barely helps; adding more USERS does.
@@ -319,9 +319,9 @@ for m in (10, 50, 200):
     d = 1 + (m - 1) * icc
     print(f"{m:3d} events/user: {n_users*m:6,} rows -> "
           f"{n_users*m/d:5.0f} effective")
-# 10 events/user:  2,000 rows ->   250 effective
-# 50 events/user: 10,000 rows ->   249 effective
-# 200 events/user: 40,000 rows ->  249 effective`},
+#  10 events/user:  2,000 rows ->   247 effective
+#  50 events/user: 10,000 rows ->   252 effective
+# 200 events/user: 40,000 rows ->   253 effective`},
       { t: "p", text: "**Forty thousand rows can carry the information of 250.** Once the intra-cluster correlation is high, adding rows within clusters buys nothing — the only lever is more clusters." }
     ]},
 

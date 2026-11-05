@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "3.12",
 
-  lede: "Every cost conversation about LLM serving reduces to one number you do not control and one you do: the price of a GPU-hour, and how busy you keep it. I worked the self-hosting figures and found them **1.30× the naive arithmetic** — consistent with an unstated ~77% utilisation assumption, which is the single most important variable in the calculation and the one it does not mention. Taking it seriously changes the conclusion: with a realistic 3:1 peak-to-mean traffic ratio, self-hosting a 70B asymptotes at **$1.13 per million tokens** and never beats a hosted small model's $0.26 at any volume. The \"self-host above 10M tokens a day\" threshold is **7.7% utilisation of one GPU**, where self-hosting costs $4.80 per million and beats nothing.",
+  lede: "Every cost conversation about LLM serving reduces to one number you do not control and one you do: the price of a GPU-hour, and how busy you keep it. I worked the self-hosting figures and found them **1.30× the naive arithmetic** — consistent with an unstated ~77% utilisation assumption, which is the single most important variable in the calculation and the one it does not mention. Taking it seriously changes the conclusion: with a realistic 3:1 peak-to-mean traffic ratio, self-hosting a 70B asymptotes at **$1.11 per million tokens** and never beats a hosted small model's $0.26 at any volume. The \"self-host above 10M tokens a day\" threshold is **7.7% utilisation of one GPU**, where self-hosting costs $4.80 per million and beats nothing.",
 
   objectives: [
     "Compute the cost per million tokens of your own hardware from first principles",
@@ -249,11 +249,11 @@ for name, blended in blended_prices.items():
   2000M               3     47       2256      1.128      32.8%
   2000M              10    155       7440      3.720      10.0%`,
       hl: [4],
-      caption: "At a 3:1 peak-to-mean ratio the cost per million tokens stops falling at about $1.13 however large the volume gets. Scale does not fix a spiky load." },
+      caption: "At a 3:1 peak-to-mean ratio the cost per million tokens stops falling at about $1.11 however large the volume gets. Scale does not fix a spiky load." },
 
     { t: "callout", kind: "insight", title: "Volume does not help; shape does",
       body: [
-        { t: "p", text: "Read the `$/1M` column down each peak-to-mean group. At p:m = 1 the cost falls from $4.80 to $0.384 as volume grows — the familiar economy of scale. At p:m = 3 it falls to **$1.128 and stops**. At p:m = 10 it stops at $3.72, which is worse than most APIs at any volume." },
+        { t: "p", text: "Read the `$/1M` column down each peak-to-mean group. At p:m = 1 the cost falls from $4.80 to $0.384 as volume grows — the familiar economy of scale. At p:m = 3 it falls to **$1.11 and stops**. At p:m = 10 it stops at $3.72, which is worse than most APIs at any volume." },
         { t: "p", text: "The reason is that both the numerator and the denominator scale together once you are provisioning per peak: ten times the traffic needs ten times the GPUs, so the ratio is fixed by your traffic *shape*, not its size." },
         { t: "p", text: "Which reframes the whole exercise. The lever is not buying more volume — it is flattening the peak: queue the batch work into the troughs, autoscale if your platform can do it fast enough to matter, or sell the trough capacity to another workload. All of those are scheduling problems, and none of them is a model optimisation." }
       ] },
@@ -262,7 +262,7 @@ for name, blended in blended_prices.items():
       head: ["Lever", "Measured or derived effect", "Where it applies"],
       rows: [
         ["Keep the GPU busy", "**Up to 20×** on cost per token", "Everywhere, and it is the largest lever in this list"],
-        ["Flatten the peak-to-mean ratio", "3:1 → 1:1 takes $1.13 to $0.38 at scale", "Any service with a traffic pattern, which is all of them"],
+        ["Flatten the peak-to-mean ratio", "3:1 → 1:1 takes $1.11 to $0.37 at scale", "Any service with a traffic pattern, which is all of them"],
         ["Reserved or spot pricing", "$2.00/hr → $0.60/hr, so **3.3×**", "Predictable baseline load; spot needs interruption tolerance"],
         ["Choose a smaller model", "23× spread across the API price list", "Whenever a smaller model passes your evaluation (3.3, M8)"],
         ["Quantization", "4× memory, which converts to batch size", "Memory-bound decode, at the quality cost 3.3 measures"],
@@ -281,7 +281,7 @@ for name, blended in blended_prices.items():
     { t: "h2", n: "05", id: "notcost", text: "The reasons to self-host that are not about cost",
       sub: "Which is usually why people actually do it" },
 
-    {"kind": "layers", "title": "Nine levers, ordered by measured effect", "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.", "items": [{"label": "Keep the GPU busy", "sub": "up to 20x - the largest lever here", "tone": "good"}, {"label": "Flatten peak-to-mean", "sub": "3:1 to 1:1 takes $1.13 to $0.38 at scale", "tone": "good"}, {"label": "Reserved or spot pricing", "sub": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}, {"label": "A smaller model", "sub": "23x spread across the price list", "tone": "good"}, {"label": "Quantization", "sub": "4x memory, which converts to batch size"}, {"label": "Batching", "sub": "5.2x measured - already on by default", "tone": "accent"}, {"label": "Prefix caching", "sub": "up to 2.8x on RAG traffic", "tone": "accent"}, {"label": "Output length limits", "sub": "linear in the tokens not generated"}, {"label": "Speculative decoding", "sub": "1.13x measured - the smallest here", "tone": "warn"}], "t": "diagram", "id": "dg-3_12-05-3"},
+    {"kind": "layers", "title": "Nine levers, ordered by measured effect", "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.", "items": [{"label": "Keep the GPU busy", "sub": "up to 20x - the largest lever here", "tone": "good"}, {"label": "Flatten peak-to-mean", "sub": "3:1 to 1:1 takes $1.11 to $0.37 at scale", "tone": "good"}, {"label": "Reserved or spot pricing", "sub": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}, {"label": "A smaller model", "sub": "23x spread across the price list", "tone": "good"}, {"label": "Quantization", "sub": "4x memory, which converts to batch size"}, {"label": "Batching", "sub": "5.2x measured - already on by default", "tone": "accent"}, {"label": "Prefix caching", "sub": "up to 2.8x on RAG traffic", "tone": "accent"}, {"label": "Output length limits", "sub": "linear in the tokens not generated"}, {"label": "Speculative decoding", "sub": "1.13x measured - the smallest here", "tone": "warn"}], "t": "diagram", "id": "dg-3_12-05-3"},
 
 
 
@@ -378,7 +378,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
     3-yr reserved $0.80    $0.576 per 1M tokens
     spot $0.60             $0.432 per 1M tokens`,
         notes: [
-          { t: "p", text: "**At a 3:1 peak-to-mean ratio, self-hosting a 70B never beats GPT-4o-mini or a hosted Llama endpoint — at any volume.** It converges to $1.128 per million while they sit at $0.263 and $0.550. The only comparison it wins is against the frontier model, from about 50M tokens a day." },
+          { t: "p", text: "**At a 3:1 peak-to-mean ratio, self-hosting a 70B never beats GPT-4o-mini or a hosted Llama endpoint — at any volume.** It converges to $1.11 per million while they sit at $0.263 and $0.550. The only comparison it wins is against the frontier model, from about 50M tokens a day." },
           { t: "p", text: "The utilisation column explains it: 33% at two billion tokens a day, because provisioning for a 3× peak caps utilisation at 1/3 by construction. Volume cannot fix that; only flattening the peak can." },
           { t: "p", text: "**Reserved and spot pricing change the verdict more than any technique in this module.** $2.00 to $0.60 an hour takes the 100M-tokens-a-day case from $1.440 to $0.432, which now beats the hosted Llama endpoint. A procurement decision outperformed quantization, batching and speculative decoding combined — and the model-side ceiling on all three of those is about 4×, 5.2× and 1.13× respectively." },
           { t: "p", text: "Two honest limits. This counts GPU-hours only: no engineering time, no on-call, no load balancer, no idle standby capacity, no model-storage or egress costs — all of which favour the API side, and some of which are larger than the compute. And the 1,500 tokens/sec figure is the; 3.5 showed that throughput numbers are hardware- and traffic-specific, so a real decision needs that measured on the real workload." }
@@ -408,7 +408,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
     "**Blend the API price list by your own input-to-output ratio.** The same provider ranges 2.8× across plausible ratios, and the list itself spans 23×.",
     "**\"Self-host above 10M tokens a day\" assumes you are replacing a frontier model.** That is 7.7% utilisation of one GPU, costing $4.80 per million — break-even is 11.0M against GPT-4o and 182.9M against GPT-4o-mini.",
     "**You provision for peak and utilise at mean**, so a 3:1 peak-to-mean ratio caps utilisation at a third regardless of volume.",
-    "**Scale does not fix a spiky load.** At 3:1 the cost converges to $1.13 per million and never beats a cheap hosted model; flattening the peak is the lever, not growing the volume.",
+    "**Scale does not fix a spiky load.** At 3:1 the cost converges to $1.11 per million and never beats a cheap hosted model; flattening the peak is the lever, not growing the volume.",
     "**Reserved or spot pricing is 3.3×**, which outperforms every model-side optimisation in this module combined.",
     "**Spot is riskier for inference than for training**, because a preemption drops in-flight requests and reloading takes minutes — so use it for peak on top of a reserved baseline.",
     "**The strongest reasons to self-host are not cost**: data residency, a fine-tuned model, a tail you can investigate, and freedom from someone else's deprecation schedule."
@@ -429,13 +429,13 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
 
       { stem: "A service runs at 2 billion tokens a day with a 3:1 peak-to-mean traffic ratio. What is the self-hosted cost per million tokens, and why?",
         options: [
-          "About $0.38, since at that volume the hardware is nearly fully utilised",
-          "About $1.13, because provisioning for a 3× peak caps utilisation at a third however large the volume",
+          "About $0.37, since at that volume the hardware is nearly fully utilised",
+          "About $1.11, because provisioning for a 3× peak caps utilisation at a third however large the volume",
           "About $4.80, the same as at 10M tokens a day",
           "It cannot be computed without knowing the input-to-output ratio"
         ],
         answer: 1,
-        why: "Provisioning from the peak means both the GPU count and the traffic scale together, so the ratio is fixed by the traffic's shape rather than its size — measured in the model, utilisation is 32.8% at 2 billion tokens a day and the cost converges to $1.128. Volume does not rescue a spiky load; flattening the peak does. The input-to-output ratio affects the API comparison, not the self-hosted cost per token." },
+        why: "Provisioning from the peak means both the GPU count and the traffic scale together, so the ratio is fixed by the traffic's shape rather than its size — measured in the model, utilisation is 32.8% at 2 billion tokens a day and the cost converges to $1.11. Volume does not rescue a spiky load; flattening the peak does. The input-to-output ratio affects the API comparison, not the self-hosted cost per token." },
 
       { stem: "A team spends $40,000 a month on GPT-4o and wants to cut it. Which lever is largest?",
         options: [
@@ -469,7 +469,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
         answer: [
           { t: "p", text: "I would derive the break-even rather than quote one, because the usual threshold hides its premise. One A100 at 1,500 tokens a second is 129.6 million tokens a day flat out, costing $48 — so $0.37 per million at full utilisation. The break-even against GPT-4o's blended $4.375 is about 11 million tokens a day; against GPT-4o-mini's $0.263 it is 183 million, which exceeds one GPU's entire capacity." },
           { t: "p", text: "So the answer depends on which API you are actually replacing, and the common rule — self-host above 10 million a day — is right for a frontier model and wrong by about 18× for a cheap one." },
-          { t: "p", text: "Then the number that usually decides it in practice: peak-to-mean. You provision for peak and utilise at mean, so a 3:1 pattern caps utilisation at a third and takes the cost from $0.38 to $1.13 per million at any volume. That is still cheaper than a frontier model and more expensive than a small hosted one." },
+          { t: "p", text: "Then the number that usually decides it in practice: peak-to-mean. You provision for peak and utilise at mean, so a 3:1 pattern caps utilisation at a third and takes the cost from $0.37 to $1.11 per million at any volume. That is still cheaper than a frontier model and more expensive than a small hosted one." },
           { t: "p", text: "And I would separate the cost case from the real case. Data residency, a fine-tuned model, an investigable tail, no exposure to someone else's deprecation schedule — those are good reasons to self-host, and if one of them applies, the arithmetic is a budget exercise rather than a justification." }
         ] },
 
@@ -489,7 +489,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
         strong: "A strong answer names the traffic properties that determine which lever applies.",
         answer: [
           { t: "p", text: "Three things from the logs, none of which require touching the server. The input-to-output token ratio, because it sets your blended API rate — the same provider ranges 2.8× between a RAG shape and a long-form chat shape — and tells you whether your requests are prefill- or decode-dominated, which decides whether prefix caching or quantization is the relevant lever." },
-          { t: "p", text: "The peak-to-mean ratio, because it caps achievable utilisation and therefore the self-hosted cost floor. At 3:1 the floor is $1.13 per million no matter how much volume you add." },
+          { t: "p", text: "The peak-to-mean ratio, because it caps achievable utilisation and therefore the self-hosted cost floor. At 3:1 the floor is $1.11 per million no matter how much volume you add." },
           { t: "p", text: "And actual utilisation now, which is usually the shock. Teams tend to know their throughput capacity and not their occupancy, and occupancy is the 20× term." },
           { t: "p", text: "Then one measurement on the server: tokens per second at the concurrency you actually run, not at batch 1. Published throughput figures are specific to hardware and traffic — I have had the same benchmark give 12.92× and 5.22× depending on how carefully I ran it — so a capacity plan built on somebody else's number is a plan built on a 2.5× error." }
         ] }

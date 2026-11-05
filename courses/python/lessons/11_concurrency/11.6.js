@@ -693,21 +693,21 @@ async def test_deadline_cancels_outstanding_work():
       {
         stem: "An async handler calls `requests.get(url)`. Under load every request slows down, not just that one. Why?",
         options: [
-          "`requests` is slower than `httpx`",
-          "It blocks the OS thread that *is* the event loop, so no other coroutine can run, no connection is accepted and every timer is late",
-          "The connection pool is exhausted by concurrent calls",
-          "Synchronous calls inside coroutines raise and are retried"
+          "`requests` is slower than `httpx`, and the difference compounds under load",
+          "The connection pool is exhausted by concurrent calls, so later requests queue for a free connection",
+          "It blocks the thread running the event loop, so nothing else can run meanwhile",
+          "Synchronous calls inside coroutines raise an error and are retried by the framework until they succeed"
         ],
-        answer: 1,
+        answer: 2,
         why: "There is no pre-emption: a coroutine runs until it awaits, and `requests.get` never does. With threads the same call costs one worker out of sixteen and the rest keep serving; on a loop it costs all concurrency in the process. That inversion is why porting synchronous code to `async def` without changing the libraries makes throughput worse."
       },
       {
         stem: "`results = [await fetch(u) for u in urls]` takes ten seconds for ten one-second fetches. What is wrong?",
         options: [
-          "The comprehension is not supported in async code",
-          "`await` in a loop is sequential — concurrency requires `gather`, a `TaskGroup`, or `create_task`",
-          "The event loop is limited to one connection at a time",
-          "`fetch` is not actually a coroutine"
+          "Comprehensions are not supported in async code, so the `await` runs outside the event loop",
+          "`await` in a loop is sequential; use `gather` or a `TaskGroup` for concurrency",
+          "The event loop is limited to one open connection at a time per host",
+          "`fetch` is not actually a coroutine, so each call blocks the loop"
         ],
         answer: 1,
         why: "`async def` provides the *ability* to yield control, not concurrency itself. Awaiting each fetch in turn waits for each to finish before starting the next, so the result is correct and exactly as slow as doing it serially. `await asyncio.gather(*(fetch(u) for u in urls))` puts them all in flight and takes as long as the slowest."
@@ -715,10 +715,10 @@ async def test_deadline_cancels_outstanding_work():
       {
         stem: "A coroutine performs 80 ms of pure computation with no `await`. What is the effect on other tasks?",
         options: [
-          "None — CPU work does not block the loop",
-          "They are frozen for the full 80 ms, exactly as a blocking socket read would freeze them",
-          "The loop pre-empts it after the switch interval",
-          "It is automatically moved to a thread"
+          "None — CPU work does not block the loop, which only waits on I/O",
+          "They are frozen for the full 80 ms",
+          "The loop pre-empts the coroutine after the 5 ms switch interval",
+          "It is automatically moved to a worker thread by the event loop"
         ],
         answer: 1,
         why: "\"Blocking\" on an event loop means \"does not await\", not \"does I/O\". There is no switch interval and no pre-emption, so CPU work holds the loop as completely as a synchronous socket call. Move it off with `run_in_executor` and a `ProcessPoolExecutor` — a thread pool would not help, since pure Python contends for the GIL."
@@ -726,10 +726,10 @@ async def test_deadline_cancels_outstanding_work():
       {
         stem: "A cold cache with 100 concurrent requests produces 100 upstream fetches despite the caching code. What is missing?",
         options: [
-          "A longer TTL",
-          "A lock around the refresh, with a re-check inside it — otherwise every task checks, finds nothing, and starts its own fetch before any complete",
-          "A larger cache size",
-          "The cache should be per-request"
+          "A longer TTL, so the cache stays warm through the burst of requests",
+          "A lock around the refresh with a re-check, so one task fetches for all",
+          "A larger cache size, so the refreshed entry is not evicted before it is read",
+          "The cache should be per-request, so concurrent requests stop sharing a single entry"
         ],
         answer: 1,
         why: "Between two `await` points a coroutine is uninterrupted, but the check and the fetch span an await — so all hundred tasks pass the check before the first result arrives. An `asyncio.Lock` with a second check inside it makes concurrent callers await the same in-flight request. This is the cache stampede, and it is the async form of a race."

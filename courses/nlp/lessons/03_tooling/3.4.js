@@ -87,7 +87,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n34.py — the ROUGE example", code:
+    { t: "code", lang: "python", title: "the ROUGE example", code:
 "from rouge_score import rouge_scorer\n\nscorer = rouge_scorer.RougeScorer([\"rouge1\", \"rouge2\", \"rougeL\"],\n                                  use_stemmer=True)\nscores = scorer.score(\"The cat sat on the mat.\",\n                      \"The cat is on the mat.\")\nfor metric, v in scores.items():\n    print(f\"{metric}: P={v.precision:.3f} R={v.recall:.3f} F1={v.fmeasure:.3f}\")" },
 
     { t: "out", text:

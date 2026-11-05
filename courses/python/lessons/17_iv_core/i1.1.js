@@ -291,7 +291,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "CPython pre-allocates integer objects for the range **[-5, 256]** at startup. Any variable assigned a value in this range points to the **same cached object**. This is a performance optimization since small integers are used very frequently. Outside this range, new objects are created (though the compiler may optimize within a single code block)."
+     "text": "CPython pre-allocates integer objects for the range **[-5, 256]** at startup. Any variable assigned a value in this range points to the **same cached object**. This is a performance optimisation since small integers are used very frequently. Outside this range, new objects are created (though the compiler may optimise within a single code block)."
     },
     {
      "t": "code",

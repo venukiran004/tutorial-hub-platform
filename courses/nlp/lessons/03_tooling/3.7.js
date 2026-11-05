@@ -99,7 +99,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n37.py — dependency-based relation extraction", code:
+    { t: "code", lang: "python", title: "dependency-based relation extraction", code:
 "def extract_relations(text):\n    \"\"\"Extract (subject, relation, object) triples from the dependency parse.\"\"\"\n    doc = nlp(text)\n    relations = []\n    for token in doc:\n        if token.dep_ == \"ROOT\" and token.pos_ == \"VERB\":\n            subjects = [c for c in token.children\n                        if c.dep_ in (\"nsubj\", \"nsubjpass\")]\n            objects  = [c for c in token.children\n                        if c.dep_ in (\"dobj\", \"attr\", \"pobj\")]\n            for subj in subjects:\n                subj_span = doc[subj.left_edge.i:subj.right_edge.i + 1]\n                for obj in objects:\n                    obj_span = doc[obj.left_edge.i:obj.right_edge.i + 1]\n                    relations.append((subj_span.text, token.lemma_,\n                                      obj_span.text))\n    return relations",
       caption: "The function, unmodified. It finds the root verb, takes its subject and object children, and expands each to its full subtree." },
 

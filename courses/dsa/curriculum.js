@@ -104,8 +104,8 @@
         blurb: "The questions, with the answers folded away — next to the patterns in this course that answer them.",
         outcome: "You can answer the standard algorithmic questions out loud, with the complexity and the trade-off, not only the solution.",
         lessons: [
-          { id: "i1.1", title: "Data Structures & Algorithms", difficulty: "core", minutes: 46, tier: "must",
-            summary: "29 interview questions, answers hidden until you ask for them.",
+          { id: "i1.1", title: "Data Structures & Algorithms", difficulty: "core", minutes: 40, tier: "must",
+            summary: "25 interview questions, answers hidden until you ask for them.",
             keywords: ["dsa", "algorithms", "complexity"] }
         ]
       }

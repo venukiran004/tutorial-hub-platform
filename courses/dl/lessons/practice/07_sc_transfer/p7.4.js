@@ -269,7 +269,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Self-supervised learning ENABLES foundation models:\n- GPT-4: next token prediction on internet text\n- CLIP: image-text contrastive on internet data\n- DALL-E: image generation from text descriptions\n- LLaMA: next token prediction\n- SAM: prompted segmentation, pretrained self-supervised"
+     "code": "Self-supervised learning ENABLES foundation models:\n- GPT-4: next token prediction on internet text\n- CLIP: image-text contrastive on internet data\n- DALL-E: image generation from text descriptions\n- LLaMA: next token prediction\n- SAM: MAE-pretrained image encoder, then supervised mask training"
     },
     {
      "t": "p",

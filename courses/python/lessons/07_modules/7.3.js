@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Describe what a pickle stream contains, and disassemble one to see the instructions",
     "Explain why `pickle.load` on untrusted bytes is arbitrary code execution, not a parsing risk",
     "Judge which protections actually work — and why a private bucket is not one of them",
-    "Choose between pickle, JSON, Parquet and a schema format for a given artifact",
+    "Choose between pickle, JSON, Parquet and a schema format for a given artefact",
     "Harden a model-artifact loader so a compromised writer cannot execute code in the reader"
   ],
 
@@ -191,7 +191,7 @@ arbitrary code, running as you`,
       { t: "p", text: "The instinct is to inspect the bytes first — reject any stream containing `os`, `subprocess`, `eval`. This fails for three independent reasons, each sufficient on its own:" },
       { t: "ol", items: [
         "**The dangerous surface is not a fixed list.** `builtins.exec`, `builtins.getattr`, `functools.reduce`, `operator.attrgetter`, `importlib.import_module`, `webbrowser.open`, `pty.spawn` — thousands of importable callables do something useful to an attacker, and every dependency you install adds more.",
-        "**Names can be assembled at run time.** `getattr` fetched via `GLOBAL` and then applied through `REDUCE` composes new callables from pieces that individually look innocuous.",
+        "**Names can be assembled at runtime.** `getattr` fetched via `GLOBAL` and then applied through `REDUCE` composes new callables from pieces that individually look innocuous.",
         "**The check would have to be a full pickle parser.** Opcodes are length-prefixed binary; substring matching on the raw bytes both misses real payloads and rejects legitimate data that happens to contain the letters."
       ]},
       { t: "p", text: "And the timing kills the fourth idea. Validating the object *after* `load()` returns is pointless, because the code already ran during the load — the value you are inspecting is whatever the attacker chose to leave you, delivered after the damage." },
@@ -200,7 +200,7 @@ arbitrary code, running as you`,
 
     { t: "callout", kind: "trap", title: "\"It comes from our own S3 bucket\"", body: [
       { t: "p", text: "This is the reasoning that puts the vulnerability into real systems, and it confuses *provenance* with *integrity*. The question is not where the file came from; it is **who could have written it**." },
-      { t: "p", text: "For a typical artifact bucket, that list includes: every CI job with write credentials, every engineer with a console login, anything that ever held a leaked deploy key, any service with an over-broad IAM policy, and anyone who finds a path traversal in an unrelated upload endpoint that lands in the same bucket." },
+      { t: "p", text: "For a typical artefact bucket, that list includes: every CI job with write credentials, every engineer with a console login, anything that ever held a leaked deploy key, any service with an over-broad IAM policy, and anyone who finds a path traversal in an unrelated upload endpoint that lands in the same bucket." },
       { t: "p", text: "So the pickle turns your storage layer into a **code deployment channel** with none of the controls you put around code deployment. There is no review, no signature, no audit trail, and no CI. An attacker who achieves a single write into that bucket gets execution inside the model server — which typically holds database credentials and sits well inside the network perimeter." },
       { t: "p", text: "This is the specific mechanism behind the supply-chain advisories on shared model hubs. A published model file is a pickle, downloading it is `pickle.load`, and the loading process is the victim. Lesson 14.7 covers the wider supply-chain picture; the rule here is narrower and absolute: **treat every pickle as executable, and apply your rules for executables.**" }
     ]},
@@ -302,7 +302,7 @@ loads_restricted(pickle.dumps(Exploit()))
     { t: "table",
       head: ["Format", "Executes on load", "Cross-language", "Schema", "Use it for"],
       rows: [
-        ["`pickle`", "**Yes**", "No", "No", "Same-process and same-team artifacts inside one trust boundary"],
+        ["`pickle`", "**Yes**", "No", "No", "Same-process and same-team artefacts inside one trust boundary"],
         ["`json`", "No", "Yes", "No", "Config, APIs, logs, anything a human may need to read"],
         ["`msgpack` / `cbor2`", "No", "Yes", "No", "Compact binary JSON-shaped data on a hot path"],
         ["Parquet / Arrow", "No", "Yes", "Yes", "Columnar tabular data at scale — typed, compressed, splittable"],
@@ -338,7 +338,7 @@ loads_restricted(pickle.dumps(Exploit()))
 
     { t: "p", text: "Even with security set aside, pickle is a poor archive format, because a pickle does not contain your class — it contains **the import path of your class**. Rebuilding the object requires that path to still resolve to a compatible definition." },
 
-    { t: "code", lang: "python", title: "the refactor that broke last quarter's artifacts", code: `
+    { t: "code", lang: "python", title: "the refactor that broke last quarter's artefacts", code: `
 # Written in June, when the class lived in myapp.model
 blob = pickle.dumps(model)          # records "myapp.model" / "Predictor"
 
@@ -346,19 +346,19 @@ blob = pickle.dumps(model)          # records "myapp.model" / "Predictor"
 pickle.loads(blob)
 `,
       out: `ModuleNotFoundError: No module named 'myapp.model'`,
-      caption: "An ordinary, correct refactor — moving a class into a subpackage — invalidated every stored artifact. Renaming the class does the same, as does deleting an attribute that older pickles still set."
+      caption: "An ordinary, correct refactor — moving a class into a subpackage — invalidated every stored artefact. Renaming the class does the same, as does deleting an attribute that older pickles still set."
     },
 
     { t: "dl", items: [
-      ["Module or class renamed", "`ModuleNotFoundError` or `AttributeError` on load. Every archived artifact becomes unreadable at once, and the fix is a compatibility shim that must live forever."],
+      ["Module or class renamed", "`ModuleNotFoundError` or `AttributeError` on load. Every archived artefact becomes unreadable at once, and the fix is a compatibility shim that must live forever."],
       ["Attribute added", "Old pickles load without it, because `__setstate__` only restores the keys present in the stream. Your new attribute is missing rather than defaulted, and the failure surfaces as `AttributeError` far from the load."],
       ["Library version changed", "A `scikit-learn` estimator pickled under one version and loaded under another may raise, or — worse — load with silently different internals. This is why every such load emits `InconsistentVersionWarning`."],
       ["Python version changed", "Protocol 5 pickles are unreadable by Python 3.7 and earlier. Pickling under 3.12 and deploying to a 3.11 runtime fails at load, not at build."]
     ]},
 
-    { t: "callout", kind: "good", title: "Version your artifacts explicitly", body: [
+    { t: "callout", kind: "good", title: "Version your artefacts explicitly", body: [
       { t: "p", text: "If you must persist objects, persist a **plain-data snapshot plus a version number**, not the live object graph. A dict of `numpy` arrays and hyperparameters written as `.npz` or Parquet, with a `format_version` field, survives every refactor above — because rebuilding it is your code's job, and your code is the thing you control." },
-      { t: "p", text: "The test that settles it: *could a different team, in a different language, six months from now, read this file without importing our codebase?* If the answer is no, you have written a dependency, not an artifact. Lesson 15.6 covers model artifacts and reproducibility in full." }
+      { t: "p", text: "The test that settles it: *could a different team, in a different language, six months from now, read this file without importing our codebase?* If the answer is no, you have written a dependency, not an artefact. Lesson 15.6 covers model artefacts and reproducibility in full." }
     ]},
 
     /* ================================================================== */
@@ -366,7 +366,7 @@ pickle.loads(blob)
 
     { t: "exercise",
       kind: "Challenge",
-      title: "Harden an artifact loader",
+      title: "Harden an artefact loader",
       difficulty: "core",
       minutes: 24,
       body: [
@@ -520,10 +520,10 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A recommendation service loads a nightly `joblib` artifact from a shared bucket. At 04:10 one morning the service's egress alarms fire: every pod is making outbound connections to an unfamiliar host. The pods are healthy, the model is serving, and the deployed image has not changed in eleven days." },
-      { t: "p", text: "**The mechanism.** `joblib.load` is `pickle.load` with a faster array codec — the same VM and the same `REDUCE` opcode. A contractor's laptop credentials had write access to the artifact bucket, and the nightly file was replaced with one whose `__reduce__` opened a reverse shell. Every pod that restarted after 04:00 executed it while loading the model, which is why the deployment looked untouched: no image changed, because the code arrived as data." },
+      { t: "p", text: "A recommendation service loads a nightly `joblib` artefact from a shared bucket. At 04:10 one morning the service's egress alarms fire: every pod is making outbound connections to an unfamiliar host. The pods are healthy, the model is serving, and the deployed image has not changed in eleven days." },
+      { t: "p", text: "**The mechanism.** `joblib.load` is `pickle.load` with a faster array codec — the same VM and the same `REDUCE` opcode. A contractor's laptop credentials had write access to the artefact bucket, and the nightly file was replaced with one whose `__reduce__` opened a reverse shell. Every pod that restarted after 04:00 executed it while loading the model, which is why the deployment looked untouched: no image changed, because the code arrived as data." },
       { t: "p", text: "**Why the usual controls missed it.** Image scanning inspects the container, and the payload was not in the container. Dependency pinning covers packages, and this was not a package. Code review covers the repository, and this never entered the repository. The bucket was a deployment channel that no deployment control was watching." },
-      { t: "p", text: "**The fix, in the order it was applied.** Immediately: rotate credentials, restrict bucket writes to the CI role alone, and enable object versioning so the previous artifact can be restored and the malicious one preserved for forensics. Within the week: HMAC-sign artifacts in CI and verify in the loader, so an unsigned object is refused. Within the quarter: move the weights to `safetensors` and the metadata to JSON, deleting the pickle path entirely — because the first two fixes reduce the blast radius, and only the third removes the primitive." }
+      { t: "p", text: "**The fix, in the order it was applied.** Immediately: rotate credentials, restrict bucket writes to the CI role alone, and enable object versioning so the previous artefact can be restored and the malicious one preserved for forensics. Within the week: HMAC-sign artefacts in CI and verify in the loader, so an unsigned object is refused. Within the quarter: move the weights to `safetensors` and the metadata to JSON, deleting the pickle path entirely — because the first two fixes reduce the blast radius, and only the third removes the primitive." }
     ]}
   ],
 
@@ -531,11 +531,11 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
   takeaways: [
     "**A pickle is a program, not a document.** `pickle.load` runs an opcode stream in a small VM; `GLOBAL` imports any name and `REDUCE` calls it.",
     "Any class can define `__reduce__` returning `(callable, args)`. Twelve lines produce a file that executes arbitrary code in whatever process loads it.",
-    "**No pre-load validation works.** The dangerous callables are not an enumerable list, names can be composed at run time, and checking the object after `load()` is too late — the code has already run.",
-    "\"It came from our own bucket\" is provenance, not integrity. The question is who *could* have written it, and for most artifact buckets that is a long list.",
+    "**No pre-load validation works.** The dangerous callables are not an enumerable list, names can be composed at runtime, and checking the object after `load()` is too late — the code has already run.",
+    "\"It came from our own bucket\" is provenance, not integrity. The question is who *could* have written it, and for most artefact buckets that is a long list.",
     "An HMAC verified with `hmac.compare_digest` before `load()` is the effective control: not safe pickle, but pickle that only loads bytes someone with your key produced.",
     "A `RestrictedUnpickler.find_class` allowlist is real defence in depth, over `module.name` pairs. Allowing all of `builtins` restores the entire attack surface.",
-    "**Pickles rot.** The stream stores your class's import path, so moving a class into a subpackage or bumping a library version invalidates every archived artifact.",
+    "**Pickles rot.** The stream stores your class's import path, so moving a class into a subpackage or bumping a library version invalidates every archived artefact.",
     "Pickle is right where the bytes never leave a boundary you control: `multiprocessing` argument passing, cyclic object graphs, short-lived local caches.",
     "`Can't pickle local object` from a worker pool is the pickler telling you a lambda or closure has no importable name. The fix is a module-level function.",
     "For data crossing any boundary, choose a format that is parsed rather than executed — JSON, Parquet, Protobuf, `safetensors`. That difference is categorical."
@@ -548,43 +548,43 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
       {
         stem: "A service scans incoming pickle bytes for the substrings `os`, `subprocess` and `eval`, rejecting any that match, then calls `pickle.loads`. Is it safe?",
         options: [
-          "Yes — those three modules cover the realistic attack surface",
-          "No — thousands of importable callables are dangerous, names can be composed at run time, and substring matching on length-prefixed binary is not a parser",
-          "Yes, provided the scan is done on the decompressed bytes",
-          "No, but adding `builtins` and `importlib` to the blocklist would make it safe"
+          "Yes — `os`, `subprocess` and `eval` are the only ways a pickle can execute a command",
+          "Yes, provided the scan runs on the decompressed bytes rather than the compressed payload",
+          "No, but adding `builtins` and `importlib` to the blocklist would make it safe",
+          "No — the dangerous surface is open-ended, and substring checks cannot parse pickle"
         ],
-        answer: 1,
+        answer: 3,
         why: "Blocklisting fails on all three axes at once. The dangerous surface is open-ended — `builtins.exec`, `operator.attrgetter`, `functools.reduce`, `pty.spawn`, plus whatever each new dependency adds — so no finite list is complete. `GLOBAL` can fetch `getattr` and `REDUCE` can apply it, composing callables from parts that look harmless individually. And pickle opcodes are length-prefixed binary, so substring matching both misses real payloads and rejects innocent data. The workable controls are an HMAC verified before loading, an allowlist in `find_class`, or not using pickle across the boundary."
       },
       {
         stem: "Which statement about `RestrictedUnpickler.find_class` allowlists is accurate?",
         options: [
           "It makes `pickle.load` safe for untrusted input, so signatures are unnecessary",
-          "It is useful defence in depth, but allowlisted classes can still define `__reduce__` or `__setstate__` with attacker-controlled arguments",
-          "It has no effect, because `REDUCE` bypasses `find_class` entirely",
+          "It has no effect, because the `REDUCE` opcode bypasses `find_class` entirely and imports on its own",
+          "It helps, but allowed classes can still run attacker-chosen `__setstate__` arguments",
           "It only restricts `builtins`; imports from third-party packages are unaffected"
         ],
-        answer: 1,
+        answer: 2,
         why: "Every `GLOBAL` opcode does route through `find_class`, so the hook genuinely controls the stream's import surface — it is not bypassed and it is not limited to `builtins`. What it cannot do is control what the permitted classes then do: the attacker still chooses the constructor arguments and the `__setstate__` payload, so allowing a class that opens a path has allowed file access. That is why it belongs behind an HMAC rather than in front of one, and why widening the list should be treated as a security review rather than a build fix."
       },
       {
         stem: "A class was pickled in June from `myapp.model`. In September it lives at `myapp.ml.model` after a refactor. What happens on load?",
         options: [
+          "`ModuleNotFoundError` — the pickle stores the import path, not the class",
           "It loads fine — the pickle contains the class definition",
-          "`ModuleNotFoundError`, because the stream records the import path and rebuilds the object by importing it",
           "It loads with default values for every attribute",
           "It loads but the object's type is `dict`"
         ],
-        answer: 1,
-        why: "A pickle stores a *reference* to the class — module path and qualified name — not the class body, and the unpickler imports that path to rebuild the instance. An ordinary, correct refactor therefore invalidates every stored artifact at once, and the only repair is a permanent compatibility shim aliasing the old path. There is no fallback to defaults and no degradation to a dict. The same fragility applies to renaming the class, and to loading under a different version of a library whose internals changed."
+        answer: 0,
+        why: "A pickle stores a *reference* to the class — module path and qualified name — not the class body, and the unpickler imports that path to rebuild the instance. An ordinary, correct refactor therefore invalidates every stored artefact at once, and the only repair is a permanent compatibility shim aliasing the old path. There is no fallback to defaults and no degradation to a dict. The same fragility applies to renaming the class, and to loading under a different version of a library whose internals changed."
       },
       {
         stem: "Passing a lambda to `ProcessPoolExecutor.submit` raises `Can't pickle local object`. What does this tell you?",
         options: [
-          "Lambdas are too large to serialise efficiently across a process boundary",
-          "Arguments are pickled to reach the worker, and the pickler can only record an importable top-level name — which a lambda does not have",
+          "Lambdas are too large to serialise efficiently, so the executor refuses them across a process boundary",
+          "Arguments are pickled, and a lambda has no importable name to record",
           "The executor requires functions to be decorated before submission",
-          "Process pools cannot accept callables at all; only data may be passed"
+          "Process pools cannot accept callables at all; only plain data may be passed to a worker process"
         ],
         answer: 1,
         why: "`multiprocessing` has no shared memory for arbitrary objects, so every argument and return value crosses the boundary as a pickle. For a function, pickling records the module and qualified name so the worker can import it — a lambda, a closure, or a function defined inside another function has no such name, hence `Can't pickle local object`. Size is irrelevant, and callables are perfectly acceptable as long as they are importable. The fix is to move the function to module level, or to use `functools.partial` over a module-level function when you need to bind arguments."
@@ -603,14 +603,14 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
         strong: "Because unpickling is execution, not parsing. A pickle is an opcode stream for a small VM; `GLOBAL` imports any module and name, and `REDUCE` calls whatever is on the stack. Any class can define `__reduce__` returning `(os.system, (cmd,))`, so loading the file runs the command in your process before `load()` returns.",
         answer: [
           { t: "p", text: "Name the two opcodes. Saying \"pickle can execute code\" is the answer everyone gives; saying \"`GLOBAL` imports and `REDUCE` calls\" is the answer of someone who has looked at `pickletools.dis` output, and it takes the same ten seconds." },
-          { t: "p", text: "Then close the door on the obvious follow-up before it is asked: you cannot validate your way out. The dangerous callables are open-ended, names can be assembled at run time from `getattr`, and inspecting the returned object is too late because the code ran during the load." },
-          { t: "p", text: "If you want to show operational judgement, add the trust-boundary framing. The question is never where the file came from, it is who could have written it — and for a shared artifact bucket that includes every CI job, every engineer, and every leaked key. That turns storage into an unreviewed deployment channel." }
+          { t: "p", text: "Then close the door on the obvious follow-up before it is asked: you cannot validate your way out. The dangerous callables are open-ended, names can be assembled at runtime from `getattr`, and inspecting the returned object is too late because the code ran during the load." },
+          { t: "p", text: "If you want to show operational judgement, add the trust-boundary framing. The question is never where the file came from, it is who could have written it — and for a shared artefact bucket that includes every CI job, every engineer, and every leaked key. That turns storage into an unreviewed deployment channel." }
         ]
       },
       {
         level: "core",
         q: "Your team stores ML models as pickles in S3. Is that acceptable?",
-        strong: "It depends entirely on who can write to that bucket. If writes are restricted to a CI role and artifacts are HMAC-signed and verified before loading, it is defensible. If two data scientists and a nightly job can also write, then a bucket write is a code-execution primitive in the model server, and I would sign the artifacts immediately and migrate the weights to `safetensors`.",
+        strong: "It depends entirely on who can write to that bucket. If writes are restricted to a CI role and artefacts are HMAC-signed and verified before loading, it is defensible. If two data scientists and a nightly job can also write, then a bucket write is a code-execution primitive in the model server, and I would sign the artefacts immediately and migrate the weights to `safetensors`.",
         answer: [
           { t: "p", text: "Answering with a flat \"no, never\" is weaker than it sounds — plenty of production systems ship pickles safely, and an interviewer wants to hear you reason about the boundary rather than recite a rule." },
           { t: "p", text: "The structure that lands is layered, with each layer's job stated. Restrict who can write. Sign the bytes and verify with `hmac.compare_digest` before any unpickling. Allowlist `find_class` as a second line for the case where the key leaks. Then change the format so the primitive disappears — because the first three reduce blast radius and only the last removes it." },
@@ -625,7 +625,7 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
         answer: [
           { t: "p", text: "This question checks whether you have a rule or a superstition. Someone who only knows \"pickle is dangerous\" cannot answer it, and every Python process running a process pool is already using pickle whether the candidate realises it or not." },
           { t: "p", text: "The `multiprocessing` example is the strongest because it explains a symptom the interviewer has certainly seen: `Can't pickle local object` when a lambda is submitted to a worker pool. That error is the pickler saying it can only record an importable name, which also explains why the fix is a module-level function rather than a serialisation setting." },
-          { t: "p", text: "Add the second reason pickle is a bad archive even where it is safe: the stream records your class's import path, so moving a class into a subpackage breaks every stored artifact. That is the argument that persuades teams who correctly point out their bucket is locked down — security is not the only reason to leave, and durability is the one that eventually bites them anyway." }
+          { t: "p", text: "Add the second reason pickle is a bad archive even where it is safe: the stream records your class's import path, so moving a class into a subpackage breaks every stored artefact. That is the argument that persuades teams who correctly point out their bucket is locked down — security is not the only reason to leave, and durability is the one that eventually bites them anyway." }
         ]
       }
     ]

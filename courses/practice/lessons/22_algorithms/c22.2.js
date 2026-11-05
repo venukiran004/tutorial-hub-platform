@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c22.2",
  "lede": "**25 programs to write**, on graphs, LCA and caching. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 25 programs on graphs, LCA and caching without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c22.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 50–2621.** What this set actually drills, counted from its own problems — 17 of the 27 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["strings", "threads", "algorithms", "files and paths", "lists", "graphs & trees"], "cells": [[{"text": "5", "tone": "accent"}, "String Algorithms"], [{"text": "3", "tone": "good"}, "Monotonic Queue"], [{"text": "3", "tone": "violet"}, "Two Pointers"], [{"text": "2", "tone": "teal"}, "Shortest Path by BFS (Unweight"], [{"text": "2", "tone": "warn"}, "Median of Two Sorted Arrays"], [{"text": "2", "tone": "crit"}, "KD"]], "t": "diagram", "id": "dg-c22_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

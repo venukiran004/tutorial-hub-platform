@@ -170,7 +170,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from pandas.api.types import (\n    is_numeric_dtype,\n    is_string_dtype,\n    is_datetime64_dtype,\n    is_categorical_dtype,\n    is_integer_dtype\n)\n\n# Use in data validation\nassert is_numeric_dtype(df[\"revenue\"]), \"revenue must be numeric\"\nnumeric_cols = [c for c in df.columns if is_numeric_dtype(df[c])]"
+     "code": "from pandas.api.types import (\n    is_numeric_dtype,\n    is_string_dtype,\n    is_datetime64_dtype,\n    is_integer_dtype\n)\n\n# Use in data validation\nassert is_numeric_dtype(df[\"revenue\"]), \"revenue must be numeric\"\nnumeric_cols = [c for c in df.columns if is_numeric_dtype(df[c])]"
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "153",
-   "q": "What is `pd.to_sql` and reading from databases?",
+   "q": "What is `DataFrame.to_sql` and reading from databases?",
    "body": [
     {
      "t": "code",
@@ -274,7 +274,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandera as pa\n\nschema = pa.DataFrameSchema({\n    \"age\": pa.Column(int, pa.Check.in_range(0, 120)),\n    \"email\": pa.Column(str, pa.Check.str_matches(r\".+@.+\\..+\")),\n    \"status\": pa.Column(str, pa.Check.isin([\"active\", \"inactive\"])),\n    \"revenue\": pa.Column(float, nullable=True, pa.Check(lambda s: s.sum() > 0))\n})\n\nvalidated_df = schema.validate(df)  # Raises SchemaError if validation fails"
+     "code": "import pandera as pa\n\nschema = pa.DataFrameSchema({\n    \"age\": pa.Column(int, pa.Check.in_range(0, 120)),\n    \"email\": pa.Column(str, pa.Check.str_matches(r\".+@.+\\..+\")),\n    \"status\": pa.Column(str, pa.Check.isin([\"active\", \"inactive\"])),\n    \"revenue\": pa.Column(float, pa.Check(lambda s: s.sum() > 0), nullable=True)\n})\n\nvalidated_df = schema.validate(df)  # Raises SchemaError if validation fails"
     }
    ],
    "kind": ""

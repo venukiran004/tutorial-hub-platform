@@ -2,7 +2,7 @@
    LESSON 5.1 — BERT, GPT and T5
    The three families are probed on the same inputs: BERT's future attention
    is 0.3074 and GPT-2's is exactly 0, and asking BERT for three tokens
-   returns gibberish (scratchpad/nlp/n51.py).
+   returns gibberish (n51.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.1",

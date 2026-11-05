@@ -34,7 +34,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{Output}(i, j) = \\sum_{m}\\sum_{n} \\text{Input}(i+m,\\, j+n) \\cdot \\text{Kernel}(m, n) + b" },
 
-    { t: "code", lang: "python", title: "d21.py — the operation, written out",
+    { t: "code", lang: "python", title: "the operation, written out",
       code: `out = np.zeros((3, 3), dtype=np.float32)
 for i in range(3):
     for j in range(3):

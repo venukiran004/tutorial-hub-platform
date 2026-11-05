@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c14.4",
  "lede": "**29 programs to write**, on locking and try/finally. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on locking and try/finally without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c14.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 1689–1717.** What this set asks you to predict, counted from its own problems — 23 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["exceptions", "files and paths", "classes", "threads", "strings"], "cells": [[{"text": "11", "tone": "accent"}, "Division by zero inside try"], [{"text": "6", "tone": "good"}, "Streaming JSON Lines Without L"], [{"text": "4", "tone": "violet"}, "super() and the method resolut"], [{"text": "1", "tone": "teal"}, "A Lock File So Two Processes D"], [{"text": "1", "tone": "warn"}, "A context manager"]], "t": "diagram", "id": "dg-c14_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -120,16 +120,19 @@ EC.receiveLesson({
    "q": "Program 1695: Division by zero inside try — output of `\"Division by zero!\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Division by zero!` **Explanation:** `ZeroDivisionError` is caught. Without the handler, the program would crash."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = 1 / 0\nexcept ZeroDivisionError:\n    print(\"Division by zero!\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Division by zero!` **Explanation:** `ZeroDivisionError` is caught. Without the handler, the program would crash."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -137,16 +140,19 @@ EC.receiveLesson({
    "q": "Program 1696: A caught ValueError — output of `f\"Error: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Error: invalid literal for int() with base 10: 'abc'` **Explanation:** `ValueError` raised when conversion fails. `as e` captures the error message."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = int(\"abc\")\nexcept ValueError as e:\n    print(f\"Error: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Error: invalid literal for int() with base 10: 'abc'` **Explanation:** `ValueError` raised when conversion fails. `as e` captures the error message."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -154,16 +160,19 @@ EC.receiveLesson({
    "q": "Program 1697: try / except / else / finally in order — output of `\"caught\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `caught`, `always runs` **Explanation:** `else` runs only if no exception. `finally` always runs."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = 1 / 0\nexcept ZeroDivisionError:\n    print(\"caught\")\nelse:\n    print(\"no error\")\nfinally:\n    print(\"always runs\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `caught`, `always runs` **Explanation:** `else` runs only if no exception. `finally` always runs."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -171,16 +180,19 @@ EC.receiveLesson({
    "q": "Program 1698: try / except / else / finally in order — output of `\"error\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `success`, `done` **Explanation:** No exception → `else` and `finally` execute. `except` is skipped."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = 10\nexcept:\n    print(\"error\")\nelse:\n    print(\"success\")\nfinally:\n    print(\"done\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `success`, `done` **Explanation:** No exception → `else` and `finally` execute. `except` is skipped."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -188,16 +200,19 @@ EC.receiveLesson({
    "q": "Program 1699: A caught TypeError — output of `\"caught inner\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `caught inner`, `caught outer: outer` **Explanation:** Re-raising a different exception in except block. Outer try catches it."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    try:\n        raise ValueError(\"inner\")\n    except ValueError:\n        print(\"caught inner\")\n        raise TypeError(\"outer\")\nexcept TypeError as e:\n    print(f\"caught outer: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `caught inner`, `caught outer: outer` **Explanation:** Re-raising a different exception in except block. Outer try catches it."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -205,16 +220,19 @@ EC.receiveLesson({
    "q": "Program 1700: Division by zero inside try — output of `divide(10, 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5.0`, `inf`, `None` **Explanation:** Multiple except clauses handle different exception types."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return float('inf')\n    except TypeError:\n        return None\n\nprint(divide(10, 2))\nprint(divide(10, 0))\nprint(divide(\"10\", 2))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5.0`, `inf`, `None` **Explanation:** Multiple except clauses handle different exception types."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -222,16 +240,19 @@ EC.receiveLesson({
    "q": "Program 1701: A caught KeyError — output of `x[5]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Access error: IndexError` **Explanation:** Tuple of exceptions catches either type. `type(e).__name__` gets the specific exception name."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = [1, 2, 3]\n    print(x[5])\nexcept (IndexError, KeyError) as e:\n    print(f\"Access error: {type(e).__name__}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Access error: IndexError` **Explanation:** Tuple of exceptions catches either type. `type(e).__name__` gets the specific exception name."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -239,16 +260,19 @@ EC.receiveLesson({
    "q": "Program 1702: super() and the method resolution order — output of `f\"Error: {e}, Code: {e.code}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Error: Something failed, Code: 404` **Explanation:** Custom exception class with additional attributes."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class CustomError(Exception):\n    def __init__(self, message, code):\n        super().__init__(message)\n        self.code = code\n\ntry:\n    raise CustomError(\"Something failed\", 404)\nexcept CustomError as e:\n    print(f\"Error: {e}, Code: {e.code}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Error: Something failed, Code: 404` **Explanation:** Custom exception class with additional attributes."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -256,16 +280,19 @@ EC.receiveLesson({
    "q": "Program 1703: An exception chained with raise ... from — output of `try:`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `RuntimeError: chained` (without original traceback) **Explanation:** `from None` suppresses exception chaining — hides the original exception."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    raise ValueError(\"original\")\nexcept ValueError:\n    raise RuntimeError(\"chained\") from None",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `RuntimeError: chained` (without original traceback) **Explanation:** `from None` suppresses exception chaining — hides the original exception."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -273,16 +300,19 @@ EC.receiveLesson({
    "q": "Program 1704: Division by zero inside try — output of `\"Caught!\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Caught!`, `<class 'str'>` **Explanation:** `traceback.format_exc()` captures the traceback as a string for logging."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import traceback\n\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    tb = traceback.format_exc()\n    print(\"Caught!\")\n    print(type(tb))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Caught!`, `<class 'str'>` **Explanation:** `traceback.format_exc()` captures the traceback as a string for logging."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -290,16 +320,19 @@ EC.receiveLesson({
    "q": "Program 1705: A try / finally block — output of `\"finally\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `finally`, `caught` **Explanation:** `finally` executes before the function returns."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func():\n    try:\n        raise ValueError(\"error\")\n    except ValueError:\n        return \"caught\"\n    finally:\n        print(\"finally\")\n\nprint(func())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `finally`, `caught` **Explanation:** `finally` executes before the function returns."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -307,16 +340,19 @@ EC.receiveLesson({
    "q": "Program 1706: Inheritance — output of `f\"ValueError: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `ValueError: out of range` **Explanation:** Exception matching checks in order. `RangeError` is a `ValidationError` which is a `ValueError`. First match wins."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class ValidationError(ValueError):\n    pass\n\nclass RangeError(ValidationError):\n    pass\n\ntry:\n    raise RangeError(\"out of range\")\nexcept ValueError as e:\n    print(f\"ValueError: {e}\")\nexcept ValidationError as e:\n    print(f\"ValidationError: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `ValueError: out of range` **Explanation:** Exception matching checks in order. `RangeError` is a `ValidationError` which is a `ValueError`. First match wins."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -324,16 +360,19 @@ EC.receiveLesson({
    "q": "Program 1707: File input/output — output of `\"This won't print\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Continuing...` **Explanation:** `contextlib.suppress` silently ignores specified exceptions."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import contextlib\n\nwith contextlib.suppress(FileNotFoundError):\n    open(\"nonexistent.txt\")\n    print(\"This won't print\")\n\nprint(\"Continuing...\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Continuing...` **Explanation:** `contextlib.suppress` silently ignores specified exceptions."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -341,16 +380,19 @@ EC.receiveLesson({
    "q": "Program 1708: A try / except block — output of `raise TypeError(f\"Type error at {i}\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['Error at 2', 'Type error at 4']` **Explanation:** Collecting errors instead of stopping — useful for batch processing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "errors = []\nfor i in range(5):\n    try:\n        if i == 2:\n            raise ValueError(f\"Error at {i}\")\n        if i == 4:\n            raise TypeError(f\"Type error at {i}\")\n    except Exception as e:\n        errors.append(str(e))\n\nprint(errors)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['Error at 2', 'Type error at 4']` **Explanation:** Collecting errors instead of stopping — useful for batch processing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -358,28 +400,25 @@ EC.receiveLesson({
    "q": "Program 1709: A caught ValueError — output of `type(e)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'ValueError'>`, `('test',)`, `test` **Explanation:** Exception's `args` tuple contains constructor arguments."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    raise ValueError(\"test\")\nexcept ValueError as e:\n    print(type(e))\n    print(e.args)\n    print(str(e))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'ValueError'>`, `('test',)`, `test` **Explanation:** Exception's `args` tuple contains constructor arguments."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1710",
    "q": "Program 1710: A callable object via __call__ — output of `f\"Retry {i+1}: {e}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Retry:\n    def __init__(self, max_retries=3):\n        self.max_retries = max_retries\n    \n    def __call__(self, func):\n        def wrapper(*args, **kwargs):\n            for i in range(self.max_retries):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    if i == self.max_retries - 1:\n                        raise\n                    print(f\"Retry {i+1}: {e}\")\n        return wrapper\n\ncount = 0\n\n@Retry(max_retries=3)\ndef flaky():\n    global count\n    count += 1\n    if count < 3:\n        raise ConnectionError(\"Failed\")\n    return \"Success\"\n\nprint(flaky())",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -394,7 +433,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Retry decorator catches exceptions and retries up to max_retries."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Retry:\n    def __init__(self, max_retries=3):\n        self.max_retries = max_retries\n    \n    def __call__(self, func):\n        def wrapper(*args, **kwargs):\n            for i in range(self.max_retries):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    if i == self.max_retries - 1:\n                        raise\n                    print(f\"Retry {i+1}: {e}\")\n        return wrapper\n\ncount = 0\n\n@Retry(max_retries=3)\ndef flaky():\n    global count\n    count += 1\n    if count < 3:\n        raise ConnectionError(\"Failed\")\n    return \"Success\"\n\nprint(flaky())",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -402,16 +450,19 @@ EC.receiveLesson({
    "q": "Program 1711: An exception chained with raise ... from — output of `f\"Caught: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Caught: wrapper`, `Caused by: division by zero` **Explanation:** `from e` chains exceptions. `__cause__` links to the original exception."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    try:\n        1/0\n    except ZeroDivisionError as e:\n        raise ValueError(\"wrapper\") from e\nexcept ValueError as e:\n    print(f\"Caught: {e}\")\n    print(f\"Caused by: {e.__cause__}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Caught: wrapper`, `Caused by: division by zero` **Explanation:** `from e` chains exceptions. `__cause__` links to the original exception."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -419,16 +470,19 @@ EC.receiveLesson({
    "q": "Program 1712: A warning — output of `warnings.warn(\"This function is deprecated\",…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `42`, `1`, `DeprecationWarning` **Explanation:** Warnings are softer than exceptions — function still executes."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import warnings\n\ndef deprecated_func():\n    warnings.warn(\"This function is deprecated\", DeprecationWarning, stacklevel=2)\n    return 42\n\nwith warnings.catch_warnings(record=True) as w:\n    warnings.simplefilter(\"always\")\n    result = deprecated_func()\n    print(result)\n    print(len(w))\n    print(w[0].category.__name__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `42`, `1`, `DeprecationWarning` **Explanation:** Warnings are softer than exceptions — function still executes."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -436,16 +490,19 @@ EC.receiveLesson({
    "q": "Program 1713: A context manager — output of `[str(e) for e in group.errors]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['error 1', 'error 2']` **Explanation:** Context manager collects exceptions instead of propagating them."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class ErrorGroup:\n    def __init__(self):\n        self.errors = []\n    \n    def __enter__(self):\n        return self\n    \n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type:\n            self.errors.append(exc_val)\n            return True  # suppress exception\n        return False\n\ngroup = ErrorGroup()\n\nwith group:\n    raise ValueError(\"error 1\")\nwith group:\n    raise TypeError(\"error 2\")\nwith group:\n    pass  # no error\n\nprint([str(e) for e in group.errors])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['error 1', 'error 2']` **Explanation:** Context manager collects exceptions instead of propagating them."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -453,16 +510,19 @@ EC.receiveLesson({
    "q": "Program 1714: A caught KeyError — output of `repr(e)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `KeyError('key')`, `'key'` **Explanation:** `KeyError` str includes quotes around the key. `repr` shows the full error."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    x = {}\n    x['key']\nexcept KeyError as e:\n    print(repr(e))\n    print(str(e))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `KeyError('key')`, `'key'` **Explanation:** `KeyError` str includes quotes around the key. `repr` shows the full error."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -470,16 +530,19 @@ EC.receiveLesson({
    "q": "Program 1715: A try / except block — output of `safe_divide(10, 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5.0`, `Assertion failed: Divisor cannot be zero` **Explanation:** `assert` raises `AssertionError` with optional message. Not for production error handling."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def safe_divide(a, b):\n    assert b != 0, \"Divisor cannot be zero\"\n    return a / b\n\nprint(safe_divide(10, 2))\ntry:\n    safe_divide(10, 0)\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5.0`, `Assertion failed: Divisor cannot be zero` **Explanation:** `assert` raises `AssertionError` with optional message. Not for production error handling."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -487,16 +550,19 @@ EC.receiveLesson({
    "q": "Program 1716: A bare except clause — output of `exc_type.__name__`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `ValueError`, `test error`, `True` **Explanation:** `sys.exc_info()` returns exception type, value, and traceback."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\n\ntry:\n    raise ValueError(\"test error\")\nexcept:\n    exc_type, exc_val, exc_tb = sys.exc_info()\n    print(exc_type.__name__)\n    print(exc_val)\n    print(exc_tb is not None)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `ValueError`, `test error`, `True` **Explanation:** `sys.exc_info()` returns exception type, value, and traceback."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -504,16 +570,19 @@ EC.receiveLesson({
    "q": "Program 1717: Inheritance — output of `f\"Database issue: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Database issue: Invalid SQL` **Explanation:** `QueryError` is a `DatabaseError` (subclass), caught by first matching except."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class AppError(Exception):\n    \"\"\"Base application error\"\"\"\n\nclass DatabaseError(AppError):\n    \"\"\"Database-related error\"\"\"\n\nclass ConnectionError(DatabaseError):\n    \"\"\"Connection-related error\"\"\"\n\nclass QueryError(DatabaseError):\n    \"\"\"Query-related error\"\"\"\n\ntry:\n    raise QueryError(\"Invalid SQL\")\nexcept DatabaseError as e:\n    print(f\"Database issue: {e}\")\nexcept AppError as e:\n    print(f\"App issue: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Database issue: Invalid SQL` **Explanation:** `QueryError` is a `DatabaseError` (subclass), caught by first matching except."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [

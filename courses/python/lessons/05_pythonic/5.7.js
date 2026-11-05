@@ -721,32 +721,32 @@ if __name__ == "__main__":
       {
         stem: "When does the body of a generator function first execute?",
         options: [
-          "When the function is called",
-          "On the first `next()` — calling it only creates a paused generator object",
-          "When the generator is garbage-collected",
-          "Immediately, but output is buffered until iteration"
+          "When the function is called, like any other function body",
+          "When the generator is garbage-collected and its frame is finalised",
+          "Immediately on the call, but its output is buffered until iteration begins",
+          "On the first `next()` — calling it only creates a paused generator object"
         ],
-        answer: 1,
+        answer: 3,
         why: "Calling a generator function creates an object and runs no code at all. The first `next()` executes up to the first `yield`; the second resumes after it. This is why a validation check written inside a generator does not fire at call time — the fix is a plain function that validates eagerly and returns the generator, which is exactly how `open()` behaves."
       },
       {
         stem: "A pipeline of five generators still exhausts memory. Four use `yield`; one calls `sorted()`. What is happening?",
         options: [
-          "`sorted` is slow but does not affect memory",
-          "`sorted` must see every item before yielding the first, so it buffers the whole dataset and every stage downstream inherits that footprint",
-          "The generators are being consumed twice",
-          "Generator frames accumulate because they are never closed"
+          "`sorted` is slow on large inputs but streams its output, so it does not affect memory",
+          "The generators are being consumed twice, so every item is held until both consumers finish",
+          "Generator frames accumulate because they are never closed, and each frame holds its locals",
+          "`sorted` must see every item before yielding one, so it holds the whole dataset"
         ],
-        answer: 1,
+        answer: 3,
         why: "Laziness is a property of the entire chain. Sorting cannot produce its first output until it has seen the last input, so it materialises everything at that point — and the `yield`s either side become irrelevant to the memory profile. `max`, `min`, `len` and any `list()` or bracketed comprehension have the same effect. Read a pipeline looking for the first stage that must see everything."
       },
       {
         stem: "A generator opens a file in a `with` block. A consumer `break`s out of the loop early. When does the file close?",
         options: [
-          "Immediately, when `break` executes",
-          "When the generator is closed or garbage-collected — prompt in CPython by refcounting, but not guaranteed",
-          "Never — the `with` block is unreachable after suspension",
-          "When the enclosing function returns"
+          "Immediately, when `break` executes — the loop closes the generator as it exits",
+          "When the generator is closed or collected — prompt in CPython, but not guaranteed",
+          "Never — the `with` block cannot be resumed once the generator is suspended, so the file leaks",
+          "When the enclosing function returns and its local variables are cleared"
         ],
         answer: 1,
         why: "Abandoning a generator leaves it suspended at the `yield`, inside the `with`. Python calls `close()` during collection, which raises `GeneratorExit` at that point and lets the block unwind. CPython's reference counting usually makes this immediate, but relying on it is relying on an implementation detail — it does not hold on PyPy or under a reference cycle. Use `contextlib.closing`, or let the caller own the resource."
@@ -754,12 +754,12 @@ if __name__ == "__main__":
       {
         stem: "Why yield a fresh list from a batching generator rather than clearing and reusing one?",
         options: [
+          "Every batch would be the same list, so a batch a consumer kept would change under it",
           "Clearing is slower than allocating a new list",
-          "Every yielded batch would be the same object, so a consumer holding a previous batch would see it change underneath them",
           "`clear()` is not available on lists inside generators",
           "It prevents the garbage collector from reclaiming the batches"
         ],
-        answer: 1,
+        answer: 0,
         why: "Reusing one list means every yield hands out the same object, and the next batch overwrites it. A consumer that appends batches to a results list ends up with N references to one list holding only the final batch — the aliasing trap from Lesson 1.4, arriving through a generator. Allocating a new list per batch is cheap and the only correct option."
       }
     ]

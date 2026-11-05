@@ -70,7 +70,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "For MSE loss, residuals = negative gradient. For log-loss, pseudo-residuals are log-odds based."
+     "text": "For MSE loss, residuals = negative gradient. For log-loss, the pseudo-residual is \\(y_i - p_i\\), the label minus the predicted probability."
     }
    ],
    "kind": ""
@@ -104,10 +104,10 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Leaf-wise growth (best leaf first) vs XGBoost's level-wise → fewer nodes, faster, can overfit on small data.",
-      "Histogram-based binning → O(n) vs O(n log n) split finding.",
+      "Histogram-based binning → O(n) vs O(n log n) split finding (XGBoost now defaults to histograms too).",
       "Gradient-based One-Side Sampling (GOSS) — drops low-gradient instances.",
       "Exclusive Feature Bundling (EFB) — bundles sparse mutually exclusive features.",
-      "Generally 10× faster than XGBoost on large datasets."
+      "Often several times faster than XGBoost on large datasets."
      ]
     }
    ],
@@ -279,8 +279,8 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Can be biased toward high-cardinality features.",
-      "SHAP values are more reliable — they are model-agnostic and consistent.",
-      "Permutation importance is unbiased but slower."
+      "SHAP values are more reliable — they are consistent, and TreeSHAP computes them exactly for trees.",
+      "Permutation importance is less biased but slower, and can understate correlated features."
      ]
     }
    ],
@@ -293,7 +293,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Bins feature values into fixed-width histograms before finding splits. Much faster than exact split finding for large datasets (n > 10,000):"
+     "text": "Bins feature values into up to 255 quantile-based bins before finding splits. Much faster than exact split finding for large datasets (n > 10,000):"
     },
     {
      "t": "code",

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.3 — Artifacts: Files an Agent Produces and Reads
    The service contract, the two versions, the artifact_delta and the two-byte
-   session state are executed output from scratchpad/adk/c3.py on
+   session state are executed output from c3.py on
    google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
@@ -52,7 +52,7 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
 
 
 
-    { t: "code", lang: "python", title: "c3.py — a tool that generates a file",
+    { t: "code", lang: "python", title: "a tool that generates a file",
       code: `async def make_report(title: str, tool_context) -> dict:
     """Generates a report and saves it as an artifact."""
     body = f"# {title}\\n\\nGenerated for {tool_context.user_id}.\\n" + ("data line\\n" * 20)

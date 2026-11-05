@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c10.1",
  "lede": "**14 programs to write**, on paths, files and context managers. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 14 programs on paths, files and context managers without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c9.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1187–1200.** What this set actually drills, counted from its own problems — 8 of the 14 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["files and paths", "classes", "lists", "decorators", "functions", "exceptions"], "cells": [[{"text": "2", "tone": "accent"}, "Pathlib"], [{"text": "2", "tone": "good"}, "Descriptor"], [{"text": "1", "tone": "violet"}, "Operator Overloading"], [{"text": "1", "tone": "teal"}, "Class Decorator"], [{"text": "1", "tone": "warn"}, "Functional Composition"], [{"text": "1", "tone": "crit"}, "Result Type (Error Handling)"]], "t": "diagram", "id": "dg-c10_1-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -143,7 +143,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def curry(func):\n    def curried(*args):\n        if len(args) >= func.__code__.co_argcount:\n            return func(*args)\n        return lambda *more: curried(*(args + more))\n    return curried\n\n@curry\ndef add3(a, b, c):\n    return a + b + c\n\nprint(add3(1)(2)(3))     # Output: 6\nprint(add3(1, 2)(3))     # Output: 6\nprint(add3(1)(2, 3))     # Output: 6\nprint(add3(1, 2, 3))     # Output: 6\n\n# Practical use\nadd_tax = add3(0)  # no base\nadd_10_percent = curry(lambda price, tax: price * (1 + tax))(0.10)\nprint(add_10_percent(100))  # Output: 110.0",
+     "code": "def curry(func):\n    def curried(*args):\n        if len(args) >= func.__code__.co_argcount:\n            return func(*args)\n        return lambda *more: curried(*(args + more))\n    return curried\n\n@curry\ndef add3(a, b, c):\n    return a + b + c\n\nprint(add3(1)(2)(3))     # Output: 6\nprint(add3(1, 2)(3))     # Output: 6\nprint(add3(1)(2, 3))     # Output: 6\nprint(add3(1, 2, 3))     # Output: 6\n\n# Practical use\nadd_tax = add3(0)  # no base\nadd_10_percent = curry(lambda tax, price: round(price * (1 + tax), 2))(0.10)\nprint(add_10_percent(100))  # Output: 110.0",
      "numbered": false
     }
    ]

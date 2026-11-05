@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.5",
  "lede": "**30 snippets to read**, on slicing and in-place mutation. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on slicing and in-place mutation before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 349–378.** What this set asks you to predict, counted from its own problems — 12 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["lists", "databases", "dicts and sets", "functions"], "cells": [[{"text": "9", "tone": "accent"}, "Sorting"], [{"text": "1", "tone": "good"}, "What is the output of `a.index"], [{"text": "1", "tone": "violet"}, "sorting with a key function"], [{"text": "1", "tone": "teal"}, "A lambda"]], "t": "diagram", "id": "dg-c3_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 349: Slicing — output of `a[1:4]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 3, 4]`, `[5, 4, 3, 2, 1]`, `[1, 3, 5]` **Explanation:** Standard slicing — `[start:stop:step]`. `[::-1]` reverses, `[::2]` takes every 2nd element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nprint(a[1:4])\nprint(a[::-1])\nprint(a[::2])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 3, 4]`, `[5, 4, 3, 2, 1]`, `[1, 3, 5]` **Explanation:** Standard slicing — `[start:stop:step]`. `[::-1]` reverses, `[::2]` takes every 2nd element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 350: What is the output of `a + b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]`, `[1, 2, 3, 1, 2, 3]` **Explanation:** `+` concatenates lists. `*` repeats elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5, 6]\nprint(a + b)\nprint(a * 2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]`, `[1, 2, 3, 1, 2, 3]` **Explanation:** `+` concatenates lists. `*` repeats elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 351: Sorting — output of `a = [3, 1, 4, 1, 5, 9]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 1, 3, 4, 5, 9]`, `[3, 1, 4, 1, 5, 9]`, `[1, 1, 3, 4, 5, 9]` **Explanation:** `sort()` sorts in-place (modifies original). `sorted()` returns a new sorted list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [3, 1, 4, 1, 5, 9]\na.sort()\nprint(a)\nb = [3, 1, 4, 1, 5, 9]\nc = sorted(b)\nprint(b)\nprint(c)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 1, 3, 4, 5, 9]`, `[3, 1, 4, 1, 5, 9]`, `[1, 1, 3, 4, 5, 9]` **Explanation:** `sort()` sorts in-place (modifies original). `sorted()` returns a new sorted list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 352: Removing an item with pop() — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 99, 3, 4, 5]`, `[1, 2, 3, 4, 5]`, `[1, 2, 4, 5]` **Explanation:** `insert(i, x)` inserts at index `i`. `pop(i)` removes and returns item at index `i`. `remove(x)` removes first occurrence of value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\na.insert(2, 99)\nprint(a)\na.pop(2)\nprint(a)\na.remove(3)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 99, 3, 4, 5]`, `[1, 2, 3, 4, 5]`, `[1, 2, 4, 5]` **Explanation:** `insert(i, x)` inserts at index `i`. `pop(i)` removes and returns item at index `i`. `remove(x)` removes first occurrence of value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 353: list.extend — output of `a.extend([4, 5])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5, [6, 7]]` **Explanation:** `extend()` adds each element individually. `append()` adds the entire object as a single element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\na.extend([4, 5])\nprint(a)\na.append([6, 7])\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5, [6, 7]]` **Explanation:** `extend()` adds each element individually. `append()` adds the entire object as a single element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 354: A list comprehension — output of `result = [x**2 for x in range(5)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 4, 9, 16]` **Explanation:** List comprehension — squares each number from 0 to 4."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "result = [x**2 for x in range(5)]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 4, 9, 16]` **Explanation:** List comprehension — squares each number from 0 to 4."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 355: A filtered list comprehension — output of `result = [x for x in range(20) if x % 2 == 0…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 6, 12, 18]` **Explanation:** Multiple `if` clauses act as AND. Selects numbers divisible by both 2 and 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "result = [x for x in range(20) if x % 2 == 0 if x % 3 == 0]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 6, 12, 18]` **Explanation:** Multiple `if` clauses act as AND. Selects numbers divisible by both 2 and 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 356: A list comprehension — output of `matrix = [[i*3+j for j in range(3)] for i in…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`, `[0, 1, 2, 3, 4, 5, 6, 7, 8]` **Explanation:** Nested list comprehension creates a matrix. Flattening iterates outer then inner."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "matrix = [[i*3+j for j in range(3)] for i in range(3)]\nprint(matrix)\nflat = [x for row in matrix for x in row]\nprint(flat)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[0, 1, 2], [3, 4, 5], [6, 7, 8]]`, `[0, 1, 2, 3, 4, 5, 6, 7, 8]` **Explanation:** Nested list comprehension creates a matrix. Flattening iterates outer then inner."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 357: Slicing — output of `a = [1, 2, 3, 4, 5]` — slicing",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 4, 5]` **Explanation:** `del` with slice removes elements at indices 1 and 2."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\ndel a[1:3]\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 4, 5]` **Explanation:** `del` with slice removes elements at indices 1 and 2."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 358: Slicing — output of `a[1:3] = [20, 30, 40]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 20, 30, 40, 4, 5]` **Explanation:** Slice assignment can replace a slice with a different number of elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\na[1:3] = [20, 30, 40]\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 20, 30, 40, 4, 5]` **Explanation:** Slice assignment can replace a slice with a different number of elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 359: What happens (7)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3]` **Explanation:** `a + [4, 5]` creates a new list and reassigns `a`. `b` still references the original list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a\na = a + [4, 5]\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3]` **Explanation:** `a + [4, 5]` creates a new list and reassigns `a`. `b` still references the original list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,16 +257,19 @@ EC.receiveLesson({
    "q": "Program 360: What happens (8)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5]` **Explanation:** `+=` on lists calls `extend()` which mutates in-place. `b` still references the same list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a\na += [4, 5]\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5]` **Explanation:** `+=` on lists calls `extend()` which mutates in-place. `b` still references the same list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -241,16 +277,19 @@ EC.receiveLesson({
    "q": "Program 361: Slicing — output of `a = [1, [2, 3], 4]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, [99, 3], 4]`, `[1, [99, 3], 4]` **Explanation:** Shallow copy — the inner list is shared. Modifying it affects both `a` and `b`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, [2, 3], 4]\nb = a[:]\nb[1][0] = 99\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, [99, 3], 4]`, `[1, [99, 3], 4]` **Explanation:** Shallow copy — the inner list is shared. Modifying it affects both `a` and `b`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -258,16 +297,19 @@ EC.receiveLesson({
    "q": "Program 362: A list comprehension — output of `result = list(map(lambda x: x * 2, nums))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 4, 6, 8, 10]`, `[2, 4, 6, 8, 10]` **Explanation:** `map()` with lambda and list comprehension achieve the same result. Comprehensions are more Pythonic."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = list(map(lambda x: x * 2, nums))\nprint(result)\nresult2 = [x * 2 for x in nums]\nprint(result2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 4, 6, 8, 10]`, `[2, 4, 6, 8, 10]` **Explanation:** `map()` with lambda and list comprehension achieve the same result. Comprehensions are more Pythonic."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -275,16 +317,19 @@ EC.receiveLesson({
    "q": "Program 363: A lambda — output of `evens = list(filter(lambda x: x % 2 == 0, num…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 4, 6]` **Explanation:** `filter()` keeps elements for which the function returns `True`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5, 6]\nevens = list(filter(lambda x: x % 2 == 0, nums))\nprint(evens)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 4, 6]` **Explanation:** `filter()` keeps elements for which the function returns `True`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -292,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 364: What is the output of `a.index(1)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `2` **Explanation:** `index()` returns index of first occurrence. `count()` returns number of occurrences."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [3, 1, 4, 1, 5]\nprint(a.index(1))\nprint(a.count(1))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `2` **Explanation:** `index()` returns index of first occurrence. `count()` returns number of occurrences."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -309,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 365: What happens (9)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `ValueError: 99 is not in list` **Explanation:** `index()` raises `ValueError` if element is not found. Use `in` operator to check first."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [3, 1, 4]\na.index(99)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `ValueError: 99 is not in list` **Explanation:** `index()` raises `ValueError` if element is not found. Use `in` operator to check first."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -326,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 366: What is the output of `a`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[3, 2, 1]`, `[3, 2, 1]`, `[1, 2, 3]` **Explanation:** `reverse()` mutates in-place. `reversed()` returns an iterator, original unchanged."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\na.reverse()\nprint(a)\nb = [1, 2, 3]\nprint(list(reversed(b)))\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[3, 2, 1]`, `[3, 2, 1]`, `[1, 2, 3]` **Explanation:** `reverse()` mutates in-place. `reversed()` returns an iterator, original unchanged."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -343,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 367: Slicing — output of `a[-2:]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[3, 4]`, `[0, 1, 2]` **Explanation:** Negative indices count from the end. `-2:` gets last 2 elements. `:-2` gets all except last 2."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [0, 1, 2, 3, 4]\nprint(a[-2:])\nprint(a[:-2])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[3, 4]`, `[0, 1, 2]` **Explanation:** Negative indices count from the end. `-2:` gets last 2 elements. `:-2` gets all except last 2."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -360,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 368: any() and all() — output of `sum(a)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `True`, `False` **Explanation:** `sum()` treats True as 1, False as 0. `any()` returns True if any element is truthy. `all()` requires all truthy."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [True, False, True, False]\nprint(sum(a))\nprint(any(a))\nprint(all(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `True`, `False` **Explanation:** `sum()` treats True as 1, False as 0. `any()` returns True if any element is truthy. `all()` requires all truthy."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -377,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 369: sorting with a key function — output of `a = ['banana', 'apple', 'cherry']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['apple', 'banana', 'cherry']`, `['apple', 'banana', 'cherry']` **Explanation:** `key=len` sorts by string length. `key=str.lower` sorts case-insensitively."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = ['banana', 'apple', 'cherry']\na.sort(key=len)\nprint(a)\na.sort(key=str.lower)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['apple', 'banana', 'cherry']`, `['apple', 'banana', 'cherry']` **Explanation:** `key=len` sorts by string length. `key=str.lower` sorts case-insensitively."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -394,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 370: A lambda — output of `a = [(1, 'b'), (3, 'a'), (2, 'c')]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(1, 'b'), (2, 'c'), (3, 'a')]`, `[(3, 'a'), (1, 'b'), (2, 'c')]` **Explanation:** Default sort compares tuples element by element. Custom `key` sorts by second element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [(1, 'b'), (3, 'a'), (2, 'c')]\na.sort()\nprint(a)\na.sort(key=lambda x: x[1])\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(1, 'b'), (2, 'c'), (3, 'a')]`, `[(3, 'a'), (1, 'b'), (2, 'c')]` **Explanation:** Default sort compares tuples element by element. Custom `key` sorts by second element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -411,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 371: zip() — output of `c = list(zip(a, b))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(1, 4), (2, 5), (3, 6)]`, `[1, 2, 3]`, `[4, 5, 6]` **Explanation:** `zip()` pairs elements. `zip(*c)` unzips — transposes the list of tuples."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5, 6]\nc = list(zip(a, b))\nprint(c)\nx, y = zip(*c)\nprint(list(x))\nprint(list(y))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(1, 4), (2, 5), (3, 6)]`, `[1, 2, 3]`, `[4, 5, 6]` **Explanation:** `zip()` pairs elements. `zip(*c)` unzips — transposes the list of tuples."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -428,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 372: Removing an item with pop() — output of `a.pop()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5`, `[1, 2, 3, 4]`, `1`, `[2, 3, 4]` **Explanation:** `pop()` removes last element. `pop(0)` removes first element. Both return the removed value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nprint(a.pop())\nprint(a)\nprint(a.pop(0))\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5`, `[1, 2, 3, 4]`, `1`, `[2, 3, 4]` **Explanation:** `pop()` removes last element. `pop(0)` removes first element. Both return the removed value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -445,16 +517,19 @@ EC.receiveLesson({
    "q": "Program 373: Slicing — output of `a[2:8:2] = [20, 40, 60]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`, `[2, 4, 6]`, `[0, 1, 20, 3, 40, 5, 60, 7, 8, 9]` **Explanation:** Extended slice assignment replaces elements at specified step positions."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = list(range(10))\nprint(a)\nprint(a[2:8:2])\na[2:8:2] = [20, 40, 60]\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`, `[2, 4, 6]`, `[0, 1, 20, 3, 40, 5, 60, 7, 8, 9]` **Explanation:** Extended slice assignment replaces elements at specified step positions."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -462,16 +537,19 @@ EC.receiveLesson({
    "q": "Program 374: A list comprehension — output of `result = [i if i % 2 == 0 else -i for i in ra…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, -1, 2, -3, 4]` **Explanation:** Ternary in a list comprehension — even numbers stay, odd become negative."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "result = [i if i % 2 == 0 else -i for i in range(5)]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, -1, 2, -3, 4]` **Explanation:** Ternary in a list comprehension — even numbers stay, odd become negative."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -479,16 +557,19 @@ EC.receiveLesson({
    "q": "Program 375: A sequence built with the * operator — output of `b = [[] for _ in range(3)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1], [1], [1]]`, `[[1], [], []]` **Explanation:** `[[]] * 3` replicates the same list object. List comprehension creates independent lists."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [[]] * 3\na[0].append(1)\nprint(a)\n\nb = [[] for _ in range(3)]\nb[0].append(1)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1], [1], [1]]`, `[[1], [], []]` **Explanation:** `[[]] * 3` replicates the same list object. List comprehension creates independent lists."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -496,16 +577,19 @@ EC.receiveLesson({
    "q": "Program 376: Slicing — output of `a = [1, 2, 3, 4, 5]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 20, 30]`, `[10, 20, 30]` **Explanation:** `a[:] = ...` modifies the list in-place. `b` still references the same list, so both change."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nb = a\na[:] = [10, 20, 30]\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 20, 30]`, `[10, 20, 30]` **Explanation:** `a[:] = ...` modifies the list in-place. `b` still references the same list, so both change."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -513,16 +597,19 @@ EC.receiveLesson({
    "q": "Program 377: What is the output of `a` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 20, 30]`, `[1, 2, 3, 4, 5]` **Explanation:** `a = [10, 20, 30]` rebinds `a` to a new list. `b` still references the original."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nb = a\na = [10, 20, 30]\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 20, 30]`, `[1, 2, 3, 4, 5]` **Explanation:** `a = [10, 20, 30]` rebinds `a` to a new list. `b` still references the original."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -530,21 +617,24 @@ EC.receiveLesson({
    "q": "Program 378: What is the output of `a` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[]`, `<class 'list'>` **Explanation:** `clear()` removes all elements but the list object still exists."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\na.clear()\nprint(a)\nprint(type(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[]`, `<class 'list'>` **Explanation:** `clear()` removes all elements but the list object still exists."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

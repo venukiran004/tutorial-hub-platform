@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c22.4",
  "lede": "**23 programs to write**, on maths, matrices and ciphers. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 23 programs on maths, matrices and ciphers without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c22.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2668–2690.** What this set actually drills, counted from its own problems — 10 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["algorithms", "dicts and sets", "generators", "classes"], "cells": [[{"text": "4", "tone": "accent"}, "AES"], [{"text": "3", "tone": "good"}, "Diffie"], [{"text": "2", "tone": "violet"}, "Secure Random Token Generator"], [{"text": "1", "tone": "teal"}, "Newton's Method (Root Finding)"]], "t": "diagram", "id": "dg-c22_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -107,7 +107,7 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "def newton(f, df, x0, tol=1e-10, max_iter=100):\n    x = x0\n    for _ in range(max_iter):\n        fx = f(x)\n        if abs(fx) < tol:\n            return x\n        x = x - fx / df(x)\n    return x\n\n# Find sqrt(2) by solving xÂ² - 2 = 0\nprint(newton(lambda x: x**2 - 2, lambda x: 2*x, 1.0))  # 1.4142135...",
+     "code": "def newton(f, df, x0, tol=1e-10, max_iter=100):\n    x = x0\n    for _ in range(max_iter):\n        fx = f(x)\n        if abs(fx) < tol:\n            return x\n        x = x - fx / df(x)\n    return x\n\n# Find sqrt(2) by solving x² - 2 = 0\nprint(newton(lambda x: x**2 - 2, lambda x: 2*x, 1.0))  # 1.4142135...",
      "numbered": false
     }
    ]
@@ -188,7 +188,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def chinese_remainder(remainders, moduli):\n    def extended_gcd(a, b):\n        if a == 0: return b, 0, 1\n        g, x, y = extended_gcd(b % a, a)\n        return g, y - (b // a) * x, x\n    \n    N = 1\n    for m in moduli:\n        N *= m\n    \n    result = 0\n    for ri, mi in zip(remainders, moduli):\n        Ni = N // mi\n        _, xi, _ = extended_gcd(Ni % mi, mi)\n        result += ri * Ni * xi\n    \n    return result % N\n\n# x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7)\nx = chinese_remainder([2, 3, 7], [3, 5, 7])\nprint(f\"x = {x}\")  # Output: 23\nprint(f\"Verify: {x%3}, {x%5}, {x%7}\")  # 2, 3, 2... wait\n# Let me fix: x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7)\nx = chinese_remainder([2, 3, 2], [3, 5, 7])\nprint(f\"x = {x}\")\nprint(f\"Verify: {x%3}, {x%5}, {x%7}\")  # 2, 3, 2",
+     "code": "def chinese_remainder(remainders, moduli):\n    def extended_gcd(a, b):\n        if a == 0: return b, 0, 1\n        g, x, y = extended_gcd(b % a, a)\n        return g, y - (b // a) * x, x\n    \n    N = 1\n    for m in moduli:\n        N *= m\n    \n    result = 0\n    for ri, mi in zip(remainders, moduli):\n        Ni = N // mi\n        _, xi, _ = extended_gcd(Ni % mi, mi)\n        result += ri * Ni * xi\n    \n    return result % N\n\n# x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7)\nx = chinese_remainder([2, 3, 2], [3, 5, 7])\nprint(f\"x = {x}\")  # Output: 23\nprint(f\"Verify: {x%3}, {x%5}, {x%7}\")  # 2, 3, 2",
      "numbered": false
     }
    ]

@@ -63,8 +63,8 @@ result = my_list.sort()          # None -- a classic slip
 sorted(already_sorted)          # O(n): one run found, nothing merged
 # So "sort then scan" is often cheaper than it looks on real input.
 
-# 2. STABLE, GUARANTEED. Not an implementation detail -- the language
-#    reference promises it, so relying on it is legitimate.
+# 2. STABLE, GUARANTEED. Not an implementation detail -- the Python
+#    documentation promises it, so relying on it is legitimate.
 
 # 3. O(n) EXTRA SPACE in the worst case. On a very large list this
 #    matters; list.sort() still allocates a merge buffer.
@@ -204,7 +204,7 @@ def min_ship_capacity(weights: list[int], days: int) -> int:
     return binary_search_answer(max(weights), sum(weights), can_ship)
 `,
       hl: [5, 11, 34],
-      caption: "**Choosing `lo` and `hi` is where these problems are won or lost.** A lower bound that is not genuinely infeasible, or an upper bound that is not genuinely feasible, breaks the invariant and the answer is silently wrong."
+      caption: "**Choosing `lo` and `hi` is where these problems are won or lost.** If something below `lo` could work, or `hi` itself might not, the invariant is broken and the answer is silently wrong."
     },
 
     { t: "callout", kind: "insight", title: "Recognising the shape", body: [
@@ -260,6 +260,12 @@ def min_ship_capacity(weights: list[int], days: int) -> int:
         code: `# =========================================================================
 # THE SIMPLE SOLUTION, AND WHEN IT IS RIGHT
 # =========================================================================
+
+import random
+from timeit import timeit
+
+import pytest
+
 
 def find_median_merge(a: list[int], b: list[int]) -> float:
     """O(m + n) time, O(m + n) space -- or O(m + n) time and O(1)
@@ -406,8 +412,10 @@ def find_median(a: list[int], b: list[int]) -> float:
 #
 # 2. CORRECTNESS. If a is the longer array, j = half - i can go
 #    NEGATIVE. With m = 100, n = 2, half = 51: choosing i = 60 gives
-#    j = -9, and b[j-1] indexes from the end of the list rather than
-#    raising -- so the algorithm silently computes a wrong answer.
+#    j = -9, and b[-9] raises IndexError. Worse, a small negative j
+#    is a legal index that reads from the END of the list. Across
+#    20,000 random unequal pairs with no swap, 38% crashed and 5%
+#    silently returned a wrong median.
 #
 #    Swapping first makes i <= m <= half, so j >= 0 always. The swap
 #    is not an optimisation; it is what keeps the indices valid.
@@ -432,15 +440,16 @@ def find_median(a: list[int], b: list[int]) -> float:
 #     is accepted. Correct: the median is 0 regardless.
 #
 #   ONE ELEMENT EACH -- [1] and [2]
-#     total = 2, half = 1. i = 0 or 1; both give 1.5.
+#     total = 2, half = 1. i = 0 is rejected (2 > 1); i = 1 gives 1.5.
 #
 #   NO OVERLAP -- [1,2,3] and [10,20,30]
 #     The search moves i to one extreme. Sentinels keep it valid.
 #
 #   UNSORTED INPUT
-#     The loop exits without finding a valid partition and raises.
-#     Worth having, because it turns a silently wrong answer into a
-#     failure -- an unsorted input is a precondition violation.
+#     NOT DETECTED, despite the ValueError at the end: it never fired
+#     across 20,000 random unsorted pairs. Sortedness is a precondition,
+#     and checking it would cost the O(m + n) this version exists to
+#     avoid.
 #
 #
 # =========================================================================
@@ -499,8 +508,8 @@ def test_matches_the_merge_solution_on_random_input():
 
 
 def test_very_unequal_sizes_do_not_produce_a_negative_index():
-    """The reason for the swap. Without it, j goes negative and
-    indexes from the end of the list rather than raising."""
+    """The reason for the swap. Without it, j goes negative, and
+    the search crashes or returns a wrong answer."""
     a = list(range(100))
     b = [0, 1]
 
@@ -512,19 +521,20 @@ def test_both_empty_raises():
         find_median([], [])
 
 
-def test_logarithmic_iterations():
-    """The complexity claim, measured by counting iterations."""
-    a, b = list(range(1_000_000)), list(range(1_000_000))
+def test_logarithmic_time():
+    """A thousand times more data must cost only about twice the time."""
+    small_a, small_b = list(range(1_000)), list(range(1_000))
+    large_a, large_b = list(range(1_000_000)), list(range(1_000_000))
 
-    with count_iterations() as c:
-        find_median(a, b)
+    small = timeit(lambda: find_median(small_a, small_b), number=2_000)
+    large = timeit(lambda: find_median(large_a, large_b), number=2_000)
 
-    assert c.total < 25`,
+    assert large < small * 5`,
         notes: [
           { t: "p", text: "**The binary search is over `i`, the size of the prefix taken from the first array — not over an element.** Once `i` is chosen, `j = half - i` is forced, so there is exactly one degree of freedom and it ranges over `[0, len(a)]`." },
           { t: "p", text: "**The feasibility check is two comparisons regardless of array size.** Within each array the ordering is free, so only the two cross-boundary comparisons can fail — which is what makes the check O(1) and the whole algorithm logarithmic." },
           { t: "callout", kind: "insight", title: "Swapping is a correctness fix, not an optimisation", body: [
-            { t: "p", text: "If the longer array is searched, `j = half - i` can go negative — and in Python a negative index reads from the end of the list rather than raising, so the algorithm silently returns a wrong answer." },
+            { t: "p", text: "If the longer array is searched, `j = half - i` can go negative. A small negative index reads from the end of the list rather than raising, so some inputs crash and others silently return a wrong answer: 38% and 5% respectively, across random unequal pairs." },
             { t: "p", text: "Swapping first guarantees `i ≤ m ≤ half`, so `j ≥ 0` always. The complexity improvement from O(log max) to O(log min) is a bonus." }
           ]},
           { t: "p", text: "**The `±inf` sentinels remove every boundary special case.** An empty array, a partition taking nothing from one side, and a partition taking everything all fall out of the same code — which is why no explicit empty-array branch is needed." },
@@ -536,9 +546,9 @@ def test_logarithmic_iterations():
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A team needed the minimum number of servers to keep p99 latency under a target. They ran a load test at every count from 1 to 200, forty minutes each — a fortnight of machine time." },
+      { t: "p", text: "A team needed the minimum number of servers to keep p99 latency under a target. They ran a load test at every count from 1 to 200, forty minutes each — more than five days of machine time." },
       { t: "p", text: "**Latency is monotonic in server count**: if 40 servers meet the target, 41 certainly do. That makes it a binary search on the answer — eight load tests instead of two hundred." },
-      { t: "p", text: "**Five hours instead of two weeks**, for the same result, from noticing that checking a candidate was easy and the property was monotonic." },
+      { t: "p", text: "**Five hours instead of five days**, for the same result, from noticing that checking a candidate was easy and the property was monotonic." },
       { t: "p", text: "**\"Find the smallest configuration that satisfies a requirement\" is a binary search whenever the requirement is monotonic** — capacity planning, timeout tuning, batch sizing, threshold selection. It rarely looks like an algorithms problem." }
     ]}
   ],
@@ -555,7 +565,7 @@ def test_logarithmic_iterations():
     "**`insort` is O(n)**, because the insert shifts the tail. For many insertions, collect and sort once.",
     "**Binary search the answer when checking a candidate is easier than finding it**, and feasibility is monotonic.",
     "**Verify monotonicity explicitly.** Without it the search returns a plausible wrong answer rather than failing.",
-    "**Choosing `lo` and `hi` is where these problems are won** — the lower bound must be genuinely infeasible and the upper genuinely feasible.",
+    "**Choosing `lo` and `hi` is where these problems are won** — nothing below `lo` may work, and `hi` must.",
     "**Sentinels of `±inf` remove boundary special cases** in partition problems, including the empty-input case.",
     "**Property-test index-heavy algorithms against an obviously-correct version.** Hand-picked cases do not find off-by-one errors."
   ],
@@ -566,21 +576,21 @@ def test_logarithmic_iterations():
       {
         stem: "You need to sort by department ascending and name descending. Why does `key=lambda p: (p.department, -p.name)` not work?",
         options: [
-          "Tuples cannot mix types",
-          "Strings cannot be negated — sort twice instead, least significant field first, relying on Timsort's stability",
-          "The key must return a single value",
-          "It works, but is slower than a comparator"
+          "Tuples cannot mix types, so a string and a negated value cannot share a key",
+          "Strings cannot be negated — sort twice instead, least significant field first",
+          "The key function must return a single value, not a tuple of fields",
+          "It works, but it is slower than a comparator"
         ],
         answer: 1,
-        why: "Negation only works for numbers. Two stable passes — sort by name, then by department — leaves the name order intact within each department, which is exactly what stability guarantees and why the language reference promises it."
+        why: "Negation only works for numbers. Two stable passes — sort by name, then by department — leaves the name order intact within each department, which is exactly what stability guarantees and why the documentation promises it."
       },
       {
         stem: "What is the difference between `bisect_left` and `bisect_right` on `[1, 2, 2, 2, 3]` searching for 2?",
         options: [
-          "They return the same index",
-          "`bisect_left` returns 1 (the first 2) and `bisect_right` returns 4 (just past the last) — their difference is the count of 2s",
-          "`bisect_right` searches from the end of the list",
-          "`bisect_left` is for ascending order, `bisect_right` for descending"
+          "They return the same index, and differ only in which end they search from",
+          "`bisect_left` gives 1, the first 2; `bisect_right` gives 4, just past the last",
+          "`bisect_right` searches from the end of the list, so it returns index 3",
+          "`bisect_left` is for ascending order and `bisect_right` for descending"
         ],
         answer: 1,
         why: "They answer different questions about duplicates: the first index where the element is at least the target, versus the first where it is strictly greater. Subtracting one from the other counts occurrences in O(log n)."
@@ -588,23 +598,23 @@ def test_logarithmic_iterations():
       {
         stem: "When can you binary search on the answer rather than on an array?",
         options: [
-          "Whenever the input is sorted",
-          "When checking a candidate answer is easier than finding it, and feasibility is monotonic — if x works, every larger x works",
-          "Only for numeric answers within a known range",
-          "When the answer space is smaller than the input"
+          "Whenever the input is sorted, since sorted data is all that binary search requires",
+          "Only for numeric answers within a known range, and only when the range is small",
+          "When the answer space is smaller than the input, so the search covers less ground",
+          "When a candidate is easy to check and feasibility is monotonic"
         ],
-        answer: 1,
+        answer: 3,
         why: "Monotonicity is the precondition and the one that is easy to assume. Without it the search converges on an arbitrary point and returns a plausible wrong answer rather than failing — so verify it explicitly before relying on it."
       },
       {
         stem: "In the median-of-two-sorted-arrays partition solution, why must you search the shorter array?",
         options: [
-          "Purely for the better complexity",
-          "Because `j = half - i` can go negative otherwise — and a negative index reads from the end of the list rather than raising, producing a silently wrong answer",
-          "The algorithm requires equal-length arrays",
-          "To avoid integer overflow in the midpoint"
+          "Purely for the better complexity: O(log min) rather than O(log max)",
+          "The algorithm requires equal-length arrays, and the swap makes them comparable",
+          "`j = half - i` can go negative, so indices crash or read the wrong end",
+          "To avoid integer overflow in the midpoint when the longer array is huge"
         ],
-        answer: 1,
+        answer: 2,
         why: "The complexity improvement from O(log max) to O(log min) is real but secondary. The swap guarantees `i ≤ m ≤ half`, so `j ≥ 0` always — without it the failure is silent, which is far worse than an exception."
       }
     ]
@@ -619,7 +629,7 @@ def test_logarithmic_iterations():
         q: "How do you sort by several fields with different directions?",
         strong: "A tuple key, negating numeric fields to reverse them. Where a field cannot be negated, sort twice — least significant first — because Timsort is stable so the earlier order survives.",
         answer: [
-          { t: "p", text: "Knowing that stability is guaranteed by the language reference, not an implementation detail, is what makes the two-pass technique defensible." },
+          { t: "p", text: "Knowing that stability is guaranteed by the Python documentation, not an implementation detail, is what makes the two-pass technique defensible." },
           { t: "p", text: "Mentioning that the key is called once per element shows you understand why Python dropped comparators." },
           { t: "p", text: "`attrgetter` over a lambda is a small performance detail that suggests you have profiled a sort." }
         ]
@@ -630,7 +640,7 @@ def test_logarithmic_iterations():
         strong: "When I can check a candidate answer more cheaply than I can find it, and the check is monotonic. Minimum capacity, minimum speed, smallest threshold — the candidate range behaves like a sorted array of false then true.",
         answer: [
           { t: "p", text: "Stating monotonicity as the precondition, and saying you would verify it, is the difference between applying a pattern and understanding it." },
-          { t: "p", text: "The bounds are where these go wrong — the low bound must be genuinely infeasible and the high genuinely feasible." },
+          { t: "p", text: "The bounds are where these go wrong — nothing below the low bound may work, and the high bound must." },
           { t: "p", text: "A non-algorithmic example, like capacity planning with load tests, shows you recognise the shape outside interview problems." }
         ]
       },

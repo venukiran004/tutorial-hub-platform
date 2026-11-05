@@ -99,7 +99,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# HuggingFace Pipeline\nfrom transformers import pipeline\n\nclassifier = pipeline(\"text-classification\", model=\"distilbert-base-uncased-finetuned-sst-2-english\")\n\n# Fine-tune custom classifier\nfrom transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments\n\nmodel = AutoModelForSequenceClassification.from_pretrained(\"bert-base-uncased\", num_labels=5)\ntrainer = Trainer(\n    model=model,\n    args=TrainingArguments(\n        output_dir=\"./results\",\n        learning_rate=2e-5,\n        per_device_train_batch_size=16,\n        num_train_epochs=3,\n        weight_decay=0.01,\n        evaluation_strategy=\"epoch\",\n    ),\n    train_dataset=train_ds,\n    eval_dataset=val_ds,\n)\ntrainer.train()"
+     "code": "# HuggingFace Pipeline\nfrom transformers import pipeline\n\nclassifier = pipeline(\"text-classification\", model=\"distilbert-base-uncased-finetuned-sst-2-english\")\n\n# Fine-tune custom classifier\nfrom transformers import AutoModelForSequenceClassification, Trainer, TrainingArguments\n\nmodel = AutoModelForSequenceClassification.from_pretrained(\"bert-base-uncased\", num_labels=5)\ntrainer = Trainer(\n    model=model,\n    args=TrainingArguments(\n        output_dir=\"./results\",\n        learning_rate=2e-5,\n        per_device_train_batch_size=16,\n        num_train_epochs=3,\n        weight_decay=0.01,\n        eval_strategy=\"epoch\",\n    ),\n    train_dataset=train_ds,\n    eval_dataset=val_ds,\n)\ntrainer.train()"
     }
    ],
    "kind": ""

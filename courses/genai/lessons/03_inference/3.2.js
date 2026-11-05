@@ -385,7 +385,7 @@ configuration                   seq   GB/request   concurrent
         answer: [
           { t: "p", text: "At each decode step the model attends over all previous tokens, and the keys and values for those tokens do not change — so caching them turns quadratic recomputation into linear work. I measured 4.94× on a short generation, and the ratio grows into the hundreds at realistic lengths." },
           { t: "p", text: "The part worth more of the answer is what it costs. The cache is per request and grows with sequence length, so it — not the weights — is what limits concurrency. Weights are a one-off; everything left over on the device is the cache budget." },
-          { t: "p", text: "Which gives the useful framing: a 32K-context request occupies the cache of about ten 1K requests, so it displaces ten of them from the batch. That is why long context costs concurrency as well as tokens, and why providers often price it disproportionately." }
+          { t: "p", text: "Which gives the useful framing: a 32K-context request occupies the cache of 32 1K requests, because the cache is linear in length, so it displaces 32 of them from the batch. That is why long context costs concurrency as well as tokens, and why providers often price it disproportionately." }
         ] },
 
       { level: "advanced",

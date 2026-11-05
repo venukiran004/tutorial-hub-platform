@@ -566,10 +566,10 @@ if __name__ == "__main__":
       {
         stem: "What is `type(x)` after `x = (42)`, and after `y = 42,`?",
         options: [
-          "Both are tuples — parentheses and commas both create them",
+          "Both are tuples — parentheses and a trailing comma are two equivalent ways of creating one",
           "`x` is an `int` and `y` is a `tuple` — the comma creates the tuple, not the parentheses",
           "`x` is a `tuple` and `y` is an `int` — parentheses are required",
-          "Both are ints — a single value cannot form a tuple"
+          "Both are ints — a single value cannot form a tuple without a second element after the comma"
         ],
         answer: 1,
         why: "The comma is the tuple constructor. `(42)` is just `42` in redundant parentheses, while `42,` is a one-element tuple with the parentheses omitted entirely. This is why `return x, y` returns a tuple and why an accidental trailing comma — `timeout = 30,` — produces a `TypeError` several frames later when something tries to use it as a number. The empty tuple `()` is the one case where parentheses do the work."
@@ -578,7 +578,7 @@ if __name__ == "__main__":
         stem: "Why can a list not be an element of a set?",
         options: [
           "Sets only accept scalar values, not containers",
-          "Lists are mutable and therefore unhashable — a set locates elements by hash, so an element whose hash could change would become unreachable",
+          "Lists are mutable and so unhashable — a changed hash would leave the element unfindable",
           "Lists have no `__eq__`, which sets require for deduplication",
           "It is an arbitrary restriction inherited from the C implementation"
         ],
@@ -589,22 +589,22 @@ if __name__ == "__main__":
         stem: "Two systems hold permission sets. Which expression gives the permissions that must be **added** to `current` to match `required`?",
         options: [
           "`current - required`",
-          "`required - current`",
           "`current ^ required`",
+          "`required - current`",
           "`current & required`"
         ],
-        answer: 1,
+        answer: 2,
         why: "`required - current` is everything in `required` that is not already in `current` — precisely the set to grant. `current - required` is the reverse: permissions to revoke. The symmetric difference `^` gives both at once but does not say which direction each element needs, so it is the wrong tool for generating actions. `&` gives what is already correct and needs no change."
       },
       {
         stem: "A module defines `VALID_STATUSES = {\"pending\", \"paid\"}`. Why is `frozenset` a better choice?",
         options: [
           "It is faster for membership testing than a regular set",
-          "Any code that imports it could otherwise mutate it, and that mutation would persist for the life of the process with no error",
           "Regular sets cannot be used as module-level constants",
+          "Any importer could mutate a plain set, and the change would persist silently for the whole process",
           "It reduces memory usage significantly for large collections"
         ],
-        answer: 1,
+        answer: 2,
         why: "A module-level set is shared mutable state — the trap from Lesson 1.4. Any importer can call `.add()` on it, corrupting every subsequent use for the whole process with no exception and no obvious cause. `frozenset` turns that mistake into an immediate `AttributeError` at the offending line. Membership performance is effectively identical, so the safety is free."
       }
     ]

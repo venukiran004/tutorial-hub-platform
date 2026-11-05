@@ -116,11 +116,11 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Compiled C**vectorized operations execute in C, not the Python interpreter.",
-      "**No per-element overhead**one C loop replaces millions of Python bytecode steps.",
-      "**SIMD**modern CPUs apply one instruction to multiple values at once.",
-      "**Cache locality**contiguous memory keeps the CPU cache hot.",
-      "**BLAS/LAPACK**linear algebra calls highly optimized, cache-blocked libraries."
+      "**Compiled C:** vectorized operations execute in C, not the Python interpreter.",
+      "**No per-element overhead:** one C loop replaces millions of Python bytecode steps.",
+      "**SIMD:** modern CPUs apply one instruction to multiple values at once.",
+      "**Cache locality:** contiguous memory keeps the CPU cache hot.",
+      "**BLAS/LAPACK:** linear algebra calls highly optimised, cache-blocked libraries."
      ]
     },
     {
@@ -501,7 +501,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `np.where` for one condition, `np.select` for a prioritized chain — both vectorized."
+     "text": "**Key takeaway:** `np.where` for one condition, `np.select` for a prioritised chain — both vectorized."
     }
    ]
   },
@@ -771,7 +771,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "Is `np.vectorize` a performance optimization?",
+   "q": "Is `np.vectorize` a performance optimisation?",
    "body": [
     {
      "t": "p",
@@ -1117,7 +1117,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Downcast dtype**`float64`→`float32`, `int64`→`int16` when ranges allow.",
+      "**Downcast dtype:** `float64`→`float32`, `int64`→`int16` when ranges allow.",
       "**Use views** instead of copies (slicing, `broadcast_to`).",
       "**`np.memmap`** for arrays larger than RAM (lazy disk-backed access).",
       "**Boolean/sparse** representations for mostly-zero data (via `scipy.sparse`)."
@@ -1338,7 +1338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "43",
-   "q": "How do Xavier and He initialization differ?",
+   "q": "How do Xavier and He initialisation differ?",
    "terms": [
     "Answer",
     "Key takeaway"

@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 7.2 — Loss Spikes, Divergence and Dead Neurons
-   Dead-ReLU behaviour measured (scratchpad/dl/d71.py).
+   Dead-ReLU behaviour measured (d71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.2",

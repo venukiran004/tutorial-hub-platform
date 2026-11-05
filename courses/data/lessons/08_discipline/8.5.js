@@ -144,7 +144,7 @@ pre = ColumnTransformer([("num", num, selector(dtype_include="number")),
 pipe = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))]).set_output(transform="pandas")
 
 cv = StratifiedKFold(5, shuffle=True, random_state=0)
-print(cross_val_score(pipe, df, y, cv=cv, scoring="roc_auc").mean().round(3))    # 0.78
+print(cross_val_score(pipe, df, y, cv=cv, scoring="roc_auc").mean().round(3))    # 0.65
 # per fold: pre.fit_transform(train rows) -> clf.fit ; pre.transform(validation rows) -> clf.predict.
 # the median, the means and standard deviations and the category lists come from training rows only.
 
@@ -157,7 +157,7 @@ grid = GridSearchCV(pipe, {"pre__num__impute__strategy": ["median", "mean"],
                            "pre__cat__onehot__min_frequency": [1, 20, 100],
                            "clf__C": [0.1, 1, 10]}, cv=cv, scoring="roc_auc").fit(df, y)
 print(grid.best_params_)
-# {'clf__C': 1, 'pre__cat__onehot__min_frequency': 20, 'pre__num__impute__strategy': 'median'}`,
+# {'clf__C': 10, 'pre__cat__onehot__min_frequency': 1, 'pre__num__impute__strategy': 'median'}`,
       caption: "**One object, 18 candidates, five folds each — and in every one of the 90 fits the imputer, scaler and encoder learnt from training rows only.** `set_output(transform=\"pandas\")` keeps column names through the branches, so what the model saw is a frame you can open."
     },
 
@@ -205,9 +205,9 @@ tr, te = df[cols].fillna(0).iloc[:2400], df[cols].fillna(0).iloc[2400:]
 bad_scale = FunctionTransformer(lambda X: (X - X.mean()) / X.std()).fit(tr)
 good_scale = StandardScaler().fit(tr)
 
-print(good_scale.transform(te)[:1].round(2))                       # [[ 0.31 -1.2   0.44]]
-print(bad_scale.transform(te).to_numpy()[:1].round(2))             # [[ 0.27 -1.15  0.4 ]]  scaled against the test batch
-print(bad_scale.transform(te.iloc[:10]).to_numpy()[:1].round(2))   # [[ 0.9  -0.7   1.1 ]]  and differently for a smaller batch
+print(good_scale.transform(te)[:1].round(2))                       # [[ 1.72  0.43 -0.35]]
+print(bad_scale.transform(te).to_numpy()[:1].round(2))             # [[ 1.83  0.4  -0.37]]  scaled against the test batch
+print(bad_scale.transform(te.iloc[:10]).to_numpy()[:1].round(2))   # [[ 2.03  0.37 -0.39]]  and differently for a smaller batch
 # the same row now has three values depending on who it arrived with. In production, batches are of one.`,
       caption: "**The lambda scaler gives one row three different outputs depending on its batch.** It never learnt anything, so it computes the mean and standard deviation of whatever it is handed — the validation fold during CV, and a single row in production, where the standard deviation is undefined. Any statistic goes in `fit`."
     },
@@ -248,7 +248,7 @@ print(served.predict_proba(df.iloc[[0]])[:, 1].round(3))    # a batch of one, pr
 
 # pin the version. A pickle written by scikit-learn 1.4 and loaded under 1.6 is not guaranteed to work,
 # and a pipeline that loads but transforms differently is worse than one that fails.`,
-      caption: "**The object that scored 0.78 in cross-validation is the object that serves.** No re-implementation of the preprocessing in another language, no hand-copied means; a training–serving skew is impossible by construction, and the version pin is what keeps that true after the next upgrade."
+      caption: "**The object that scored 0.65 in cross-validation is the object that serves.** No re-implementation of the preprocessing in another language, no hand-copied means; a training–serving skew is impossible by construction, and the version pin is what keeps that true after the next upgrade."
     },
 
     { t: "table",

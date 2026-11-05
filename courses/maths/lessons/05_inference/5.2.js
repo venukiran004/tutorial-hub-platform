@@ -123,10 +123,10 @@ shrink = 1 - (n_players - 3) * v / ((mle - grand)**2).sum()
 shrink = float(np.clip(shrink, 0, 1))      # never shrink past the mean
 js = grand + shrink * (mle - grand)
 
-shrink                                     # 0.44 -- pull 56% of the way in
+shrink                                     # 0.41 -- pull 56% of the way in
 
-((mle - true_rates)**2).sum()              # 0.0479
-((js - true_rates)**2).sum()               # 0.0231
+((mle - true_rates)**2).sum()              # 0.1009
+((js - true_rates)**2).sum()               # 0.0225
 #
 # HALF THE TOTAL SQUARED ERROR, from an estimator that is biased for
 # EVERY SINGLE PLAYER.
@@ -248,10 +248,10 @@ def neg_loglik_gamma(params, data):
 data = stats.gamma.rvs(a=2.5, scale=3.0, size=2000, random_state=0)
 r = minimize(neg_loglik_gamma, x0=[1.0, 1.0], args=(data,),
              method="Nelder-Mead")
-r.x                                                # [2.48, 3.02]
+r.x                                                # [2.58, 2.87]
 
 # SCIPY'S .fit IS DOING PRECISELY THIS:
-stats.gamma.fit(data, floc=0)[0::2]                # (2.48, 3.02)
+stats.gamma.fit(data, floc=0)[0::2]                # (2.58, 2.87)
 #
 # EVERY MODEL YOU TRAIN WITH CROSS-ENTROPY OR SQUARED ERROR IS DOING
 # MAXIMUM LIKELIHOOD (lesson 3.8). "Minimise the loss" and "maximise
@@ -326,8 +326,8 @@ LogisticRegression(penalty="l2", C=1.0).fit(X, y).coef_    # ~1.1, stable
 # FAILURE 2 -- BOUNDARY ESTIMATES. The MLE of a uniform's upper limit
 # is the sample maximum, which is ALWAYS below the truth.
 u = rng.uniform(0, 10, 50)
-u.max()                                # 9.83 -- biased low, necessarily
-u.max() * (len(u)+1)/len(u)            # 10.03 -- the corrected version
+u.max()                                # 9.86 -- biased low, necessarily
+u.max() * (len(u)+1)/len(u)            # 10.06 -- the corrected version
 
 # FAILURE 3 -- TOO MANY PARAMETERS. MLE has no mechanism to prefer a
 # simpler model; more parameters can only raise the likelihood, so

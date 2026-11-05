@@ -50,7 +50,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from statsmodels.stats.power import NormalIndPower\nanalysis = NormalIndPower()\nn = analysis.solve_power(effect_size=0.1, alpha=0.05, power=0.8, alternative='two-sided')"
+     "code": "from statsmodels.stats.power import NormalIndPower\nfrom statsmodels.stats.proportion import proportion_effectsize\n\n# effect_size is Cohen's h, not the relative lift\nh = proportion_effectsize(0.055, 0.05)   # 0.0224\nanalysis = NormalIndPower()\nn = analysis.solve_power(effect_size=h, alpha=0.05, power=0.8, alternative='two-sided')   # 31,217 per group"
     }
    ],
    "kind": ""
@@ -157,11 +157,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "76",
-   "q": "How do you handle ratio metrics (e.g., revenue per user)?",
+   "q": "How do you handle ratio metrics (e.g., revenue per session)?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Ratio metrics (\\(\\frac{\\sum \\text{revenue}_i}{\\sum \\text{users}_i}\\)) have non-obvious variances. Don't use normal z-test directly."
+     "text": "**Answer:** Ratio metrics (\\(\\frac{\\sum \\text{revenue}_i}{\\sum \\text{sessions}_i}\\), summed over users) have non-obvious variances: the unit of randomisation is the user, the denominator is not, and sessions from one user are correlated. Don't use a normal z-test on sessions directly."
     },
     {
      "t": "p",
@@ -197,7 +197,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Benefit:** Reduces variance by 50%+ → need smaller sample size → faster experiments. Used at Microsoft, Netflix, Uber."
+     "text": "**Benefit:** Reduces variance by a factor of \\(1 - \\rho^2\\), where \\(\\rho\\) is the correlation between \\(Y\\) and \\(X_{\\text{pre}}\\) — often 30–50% → need smaller sample size → faster experiments. Used at Microsoft, Netflix, Uber."
     }
    ],
    "kind": ""

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.1 — RAG in ADK: Ingestion to Grounded Answer
    The retrieval tool, its generated declaration and the traced turn are
-   executed output from scratchpad/adk/r1.py on google-adk 2.9.2. The
+   executed output from r1.py on google-adk 2.9.2. The
    BaseRetrievalTool docstring is quoted from the installed source.
    ========================================================================= */
 EC.receiveLesson({
@@ -47,7 +47,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "One parameter, a string, always - and why that is the point", "caption": "**The declaration the model sees has exactly one field, and that constraint is the most useful thing the base class does for you.** The model's job shrinks to writing a good query rather than guessing at filters, page sizes and result counts it has no basis for choosing — and every retrieval tool in the system then presents the same interface. **Which leaves the description doing the routing:** with three corpora, the descriptions are the only thing telling them apart, so write each one as an index rather than a label.", "left": "what the base class fixes", "codeW": 210, "vars": ["so the model"], "steps": [{"code": "params: {query: string}", "state": ["writes a query - and nothing else"], "tone": "violet"}, {"code": "no filters, no page size, no top_k", "state": ["cannot guess at values it has no basis for"], "changed": [0], "tone": "violet"}, {"code": "every retrieval tool, the same shape", "state": ["chooses between corpora, not between options"], "changed": [0], "tone": "good"}, {"code": "which leaves the description", "state": ["as the only routing information there is"], "changed": [0], "tone": "accent"}, {"code": "'searches documents'", "state": ["is called for everything, right by luck"], "changed": [0], "tone": "crit"}, {"code": "'policies; not product manuals; to 2025'", "state": ["is called when it can actually answer"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-7_1-02-2"},
 
-    { t: "code", lang: "python", title: "r1.py — retrieval over three documents",
+    { t: "code", lang: "python", title: "retrieval over three documents",
       code: `from google.adk.tools.retrieval import BaseRetrievalTool
 
 class TinyCorpus(BaseRetrievalTool):

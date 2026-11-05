@@ -308,6 +308,41 @@ select(Order).options(joinedload(Order.account))   # 1 query, 100 rows`},
       { t: "p", text: "**`subqueryload` is legacy.** `selectinload` supersedes it, uses a simpler `IN` query, and works with more query shapes." }
     ]},
 
+    { t: "callout", kind: "trap", title: "Deleting a parent orphans its children by default", body: [
+      { t: "p", text: "Without a delete cascade, SQLAlchemy's default on `session.delete(parent)` is to load the children and **set their foreign key to `NULL`**, not to delete them. With a nullable column that succeeds silently and leaves orphaned rows that no query by account will ever find again. With a `NOT NULL` column it raises an `IntegrityError` at flush, which is at least loud." },
+      { t: "code", lang: "python", title: "the default, observed", code: `from sqlalchemy import ForeignKey, create_engine, select
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Account(Base):
+    __tablename__ = "accounts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    orders: Mapped[list["Order"]] = relationship(back_populates="account")
+
+
+class Order(Base):
+    __tablename__ = "orders"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    account_id: Mapped[int | None] = mapped_column(ForeignKey("accounts.id"))
+    account: Mapped[Account | None] = relationship(back_populates="orders")
+
+
+engine = create_engine("sqlite://")
+Base.metadata.create_all(engine)
+with Session(engine) as session:
+    session.add(Account(id=1, orders=[Order(id=10), Order(id=11)]))
+    session.commit()
+    session.delete(session.get(Account, 1))
+    session.commit()
+    print(session.execute(select(Order.id, Order.account_id)).all())`,
+        out: `[(10, None), (11, None)]` },
+      { t: "p", text: "**Decide ownership explicitly.** If the children cannot exist without the parent, declare `cascade=\"all, delete-orphan\"` on the relationship *and* `ondelete=\"CASCADE\"` on the foreign key, so a delete issued outside the ORM behaves the same. If they can, make that a visible decision rather than the default's side effect." }
+    ]},
+
     { t: "h2", n: "05", text: "Where the ORM costs you", id: "costs" },
 
     {"kind": "flow", "title": "`select(Order.id, Order.total)` is Core semantics through the ORM's session", "caption": "**No instances are constructed, no identity-map entries are made, and nothing is tracked for changes** — which is most of what the ORM costs, removed by naming columns instead of a class. Worth knowing because it is the cheapest escape hatch: **the session, the connection and the transaction are all still yours**, so a reporting query inside an ORM application does not need a second access layer. The other two costs the ORM imposes: **a unit-of-work flush whose ordering you do not control, and an identity map that keeps every loaded row alive for the session's life.**", "cols": 3, "nodes": [{"id": "s", "label": "select(Order.id, Order.total)", "sub": "columns, not a class", "tone": "violet"}, {"id": "n", "label": "No instances, no identity map, no tracking", "sub": "most of the cost, gone", "tone": "good"}, {"id": "t", "label": "Same session, connection, transaction", "sub": "no second access layer", "tone": "good"}, {"id": "f", "label": "And the costs it leaves elsewhere", "sub": "flush ordering you do not control", "tone": "warn"}, {"id": "i", "label": "Plus an identity map holding every row", "sub": "for the session's whole life", "tone": "warn"}], "edges": [["s", "n"], ["n", "t"], ["f", "i"]], "t": "diagram", "id": "dg-13_5-05-1"},
@@ -351,7 +386,100 @@ rows = session.execute(
       caption: "**`select(Order.id, Order.total)` is Core semantics through the ORM's session** — no instances constructed, no identity map entries, no change tracking. Often the simplest optimisation available."
     },
 
-    { t: "h2", n: "06", text: "Practice", id: "practice" },
+    /* ================================================================== */
+    { t: "h2", n: "06", text: "The async session", id: "async-session" },
+
+    { t: "p", text: "With an async driver — `asyncpg` for PostgreSQL, `aiosqlite` for tests — SQLAlchemy offers the same ORM through `create_async_engine` and `AsyncSession`. Every query becomes an `await`, and that one change has a consequence the sync ORM never had: **any attribute access that would need the database is now an error**, because a plain attribute access cannot `await`." },
+
+    { t: "code", lang: "python", title: "an async session, and the lazy load it forbids", code: `
+import asyncio
+
+from sqlalchemy import ForeignKey, select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, selectinload
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class Account(Base):
+    __tablename__ = "accounts"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    orders: Mapped[list["Order"]] = relationship(back_populates="account")
+
+
+class Order(Base):
+    __tablename__ = "orders"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    account_id: Mapped[int] = mapped_column(ForeignKey("accounts.id"))
+    account: Mapped[Account] = relationship(back_populates="orders")
+
+
+engine = create_async_engine("sqlite+aiosqlite://")
+Session = async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def main() -> None:
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    async with Session() as session:
+        session.add(Account(id=1, name="acme", orders=[Order(id=10), Order(id=11)]))
+        await session.commit()
+
+    async with Session() as session:
+        acct = await session.get(Account, 1)
+        try:
+            print(len(acct.orders))              # a lazy load: needs I/O, outside await
+        except Exception as exc:
+            print(type(exc).__name__)
+
+    async with Session() as session:
+        stmt = select(Account).where(Account.id == 1).options(selectinload(Account.orders))
+        acct = (await session.execute(stmt)).scalar_one()
+        print(acct.name, [o.id for o in acct.orders])   # loaded up front: no I/O here
+
+    await engine.dispose()
+
+
+asyncio.run(main())
+`,
+      out: `MissingGreenlet
+acme [10, 11]`,
+      caption: "`MissingGreenlet` is SQLAlchemy saying \"this needed I/O, and you are not in a place that can await it\". The fix is never to make the access work lazily; it is to load what the code will touch in the query that fetches the object." },
+
+    { t: "callout", kind: "trap", title: "expire_on_commit turns every attribute into a query", body: [
+      { t: "p", text: "The default session expires every object on `commit()`, so the next attribute access reloads it. In sync code that is an invisible extra query. **In async code it is a `MissingGreenlet` on the line after the commit** — typically the `return order.id` at the end of a create endpoint:" },
+      { t: "code", lang: "python", title: "the default, after a commit", code: `
+Default = async_sessionmaker(engine)                      # expire_on_commit=True
+async with Default() as session:
+    acct = Account(id=1, name="acme")
+    session.add(acct)
+    await session.commit()
+    try:
+        print(acct.name)                 # expired by commit: a refresh needs I/O
+    except Exception as exc:
+        print(type(exc).__name__)
+`,
+        out: `MissingGreenlet` },
+      { t: "p", text: "**Create the async sessionmaker with `expire_on_commit=False`**, as the SQLAlchemy documentation recommends for asyncio. If you genuinely need fresh values after a commit, ask for them explicitly with `await session.refresh(obj)`." }
+    ]},
+
+    {"t": "diagram", "kind": "compare", "title": "What changes when the session is async", "caption": "**The async ORM is the sync ORM with implicit I/O removed.** Everything that used to happen behind an attribute access — lazy loads, refresh after commit — must now be an explicit, awaited step. Setting `lazy=\"raise\"` on relationships makes the sync code behave the same way, which is the cheapest way to make a codebase ready for the switch.", "columns": [
+      {"title": "sync Session", "tone": "accent", "items": ["lazy load: a hidden query", "expire_on_commit: refetch on access", "N+1 is slow, but works", "session.execute(...)"]},
+      {"title": "AsyncSession", "tone": "warn", "items": ["lazy load: MissingGreenlet", "set expire_on_commit=False", "eager-load or it fails", "await session.execute(...)"]}
+    ]},
+
+    { t: "dl", items: [
+      ["One `AsyncSession` per task", "Like the sync session (section 03), it is not safe to share. Concurrent `asyncio.gather` calls on one session interleave its state; give each request — or each task — its own."],
+      ["Eager-load in the query", "`selectinload` for collections, `joinedload` for many-to-one, exactly as section 04 chose them. In async code it stops being an optimisation and becomes a requirement."],
+      ["`AsyncAttrs` for the rare lazy case", "Adding the `AsyncAttrs` mixin to the base gives `await acct.awaitable_attrs.orders`, an explicit awaited load for code paths that genuinely cannot know in advance."],
+      ["`run_sync` for the sync-only APIs", "`await conn.run_sync(Base.metadata.create_all)` runs a synchronous function on the async connection — the bridge for metadata, Alembic and other sync-only tools."]
+    ]},
+
+    { t: "h2", n: "07", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",
@@ -784,32 +912,32 @@ def test_archiving_does_not_load_rows(db):
       {
         stem: "A module-level `Session` exhausts the connection pool under load. Why?",
         options: [
+          "It never closes, so it never returns its connection",
           "Sessions open a new connection per query",
-          "A session holds its connection from the first query until commit, rollback or close — and this one is never closed, so it is never returned to the pool",
           "The pool size is too small",
           "The identity map holds connections"
         ],
-        answer: 1,
+        answer: 0,
         why: "It is also not thread-safe, so under a threaded server multiple threads can check out connections through it and none are returned. A request-scoped session created by a dependency is closed on the way out whatever happens, which is what makes the connection lifetime bounded."
       },
       {
         stem: "A function commits and returns an ORM object. The caller sometimes gets `DetachedInstanceError` on an attribute. Why?",
         options: [
+          "Commit expires the object, and reloading needs a session",
           "The object was never added to the session",
-          "`expire_on_commit` defaults to True, so every attribute is expired after commit and the next access tries to reload — which fails once the session is closed",
           "The transaction was rolled back",
           "The primary key was not assigned"
         ],
-        answer: 1,
+        answer: 0,
         why: "The expiry exists so a long-lived session sees other transactions' changes; a request-scoped session has no such need. Setting `expire_on_commit=False` on the session factory removes both the surprise reload and the intermittent error."
       },
       {
         stem: "You add `joinedload(Order.items)` for 100 orders with 10 items each. What does the database return?",
         options: [
-          "100 rows, with items in a nested structure",
-          "1,000 rows — the join multiplies the parent, so the order columns are transferred ten times and SQLAlchemy de-duplicates in memory",
-          "Two result sets",
-          "100 rows, then 10 lazy loads"
+          "100 rows, with each order's items returned as a nested array",
+          "1,000 rows, with order columns repeated ten times",
+          "Two result sets, one for orders and one for items",
+          "100 rows, then 10 lazy loads per order as items are read"
         ],
         answer: 1,
         why: "`joinedload` on a collection is the classic misuse. `selectinload` issues a second `WHERE id IN (...)` query instead: 100 rows then 1,000 item rows, with no duplication of parent columns. `joinedload` is correct for many-to-one, where each parent has exactly one related row."
@@ -818,11 +946,11 @@ def test_archiving_does_not_load_rows(db):
         stem: "What does `lazy=\"raise\"` on a relationship buy you?",
         options: [
           "Faster relationship loading",
-          "An unintended lazy load becomes an immediate error, so an N+1 fails in CI on a small fixture instead of appearing as latency in production",
-          "It prevents the relationship being written",
-          "It forces eager loading everywhere"
+          "It prevents the relationship from being written, so the collection becomes read-only",
+          "An accidental lazy load raises, so an N+1 fails in CI",
+          "It forces eager loading everywhere, so every query joins the related table"
         ],
-        answer: 1,
+        answer: 2,
         why: "The value is the timing rather than the performance. A lazy load is invisible at the point it is written — one attribute access in a serialiser — and only visible in aggregate under load. Requiring every query to declare what it loads moves that decision to where it can be reviewed."
       }
     ]

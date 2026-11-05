@@ -124,7 +124,10 @@ print(t)
 
 # And this is why the following surprises people:
 data = ([1, 2],)         # a tuple containing a list
-data[0] += [3]           # raises TypeError...
+try:
+    data[0] += [3]       # raises TypeError...
+except TypeError as exc:
+    print(f"TypeError: {exc}")
 print(data)              # ...but the list was modified anyway
 `,
       out: `[1, 2, 3]
@@ -309,6 +312,28 @@ def sort_by_total(orders: list[Order]) -> None:
 def normalise(config: Mapping[str, str]) -> dict[str, str]:
     """Mapping in, dict out: 'I will not modify what you gave me.'"""`},
       { t: "p", text: "Two conventions do most of the work here. **A function returning `None` is announcing that it works by side effect** — that is why `list.sort()` returns `None`. And **accepting `Sequence` or `Mapping` rather than `list` or `dict`** tells a reader you only read the argument, because those abstract types have no mutating methods. Both are checkable by mypy, so the promise is enforced rather than merely stated." }
+    ]},
+
+    { t: "callout", kind: "trap", title: "`frozen=True` freezes the attribute, not the object behind it", body: [
+      { t: "p", text: "A frozen dataclass refuses `settings.tags = [...]`, so it looks like the immutability defence. **It is not, if any field is mutable:** freezing stops rebinding the attribute and says nothing about mutating what it refers to. Every component holding this settings object still shares one list, and the object cannot be hashed either, so it fails the moment you use it as a dict key or cache argument." },
+      { t: "code", lang: "python", title: "frozen, and still shared", code: `from dataclasses import dataclass, field
+
+
+@dataclass(frozen=True)
+class Settings:
+    region: str
+    tags: list[str] = field(default_factory=list)
+
+
+settings = Settings("eu-west-1", ["prod"])
+settings.tags.append("beta")      # allowed: the attribute is frozen, the list is not
+print(settings.tags)
+print(hash(settings))`,
+        out: `['prod', 'beta']
+Traceback (most recent call last):
+  ...
+TypeError: unhashable type: 'list'` },
+      { t: "p", text: "**Freeze all the way down:** `tuple[str, ...]` for the field, `frozenset` for a set, `types.MappingProxyType` for a read-only view of a dict. Immutability is a property of the whole graph of objects, not of the outermost one." }
     ]},
 
     /* ================================================================== */
@@ -563,45 +588,45 @@ if __name__ == "__main__":
       {
         stem: "What happens when you run `data = ([1, 2],)` followed by `data[0] += [3]`?",
         options: [
-          "A `TypeError` is raised and `data` is unchanged",
-          "A `TypeError` is raised, but the inner list has already been extended to `[1, 2, 3]`",
-          "It succeeds — tuples allow modification of mutable elements",
-          "A `TypeError` is raised before `__iadd__` runs, leaving everything untouched"
+          "A `TypeError` is raised and `data` is unchanged, because tuples reject the whole statement",
+          "It succeeds — tuples allow modification of their mutable elements through augmented assignment",
+          "A `TypeError` is raised before `__iadd__` runs, leaving everything untouched",
+          "A `TypeError` is raised, but the inner list has already been extended to `[1, 2, 3]`"
         ],
-        answer: 1,
+        answer: 3,
         why: "`x[0] += y` is two operations: `__iadd__` on the inner list, which succeeds and mutates it in place, then `__setitem__` on the tuple to store the result, which raises. The exception arrives after the mutation, leaving `data` as `([1, 2, 3],)` alongside the error. It is one of very few places in Python where a failed statement leaves a partial effect behind."
       },
       {
         stem: "A class exposes `def get_items(self): return self._items`. Why does this prevent the class from enforcing its rules?",
         options: [
+          "Callers get the real internal list and can change it without going through any validation",
           "It does not — the underscore prefix makes `_items` private",
-          "Callers receive the actual internal list and can modify it directly, bypassing every method that would validate the change",
           "Returning a list from a method is a performance problem, not a correctness one",
           "It only matters if the class is used from multiple threads"
         ],
-        answer: 1,
+        answer: 0,
         why: "The method hands out the real object, so `cart.get_items().append(x)` skips `add_item` and every check inside it. Any limit, validation or invariant the class intends to maintain becomes advisory. The underscore is a convention that Python does not enforce; what actually closes the leak is returning an immutable type — `tuple(self._items)` — so writing through the returned value is impossible."
       },
       {
         stem: "A data-corruption bug appears only under concurrent load. What is the most likely correct fix?",
         options: [
           "Add a lock around every mutation of the shared object",
-          "Determine whether the state should be shared at all — for request-scoped data, templates and config, remove the sharing rather than serialising access to it",
           "Switch from threads to processes so memory is not shared",
-          "Increase the isolation level of the database transaction"
+          "Increase the isolation level of the database transaction",
+          "Ask whether the state should be shared at all, and remove the sharing rather than locking it"
         ],
-        answer: 1,
+        answer: 3,
         why: "Concurrency reveals mutability bugs rather than causing them — the same corruption exists single-threaded, hidden by the fact that nothing runs between your read and your write. A lock is correct for state that genuinely must be shared and mutated, like a counter or a connection pool. For a template, a default or per-request data, sharing was never intended, and a lock preserves the design flaw while costing throughput and adding deadlock risk."
       },
       {
         stem: "Which signature most clearly promises that the function will not modify its argument?",
         options: [
           "`def process(items: list[str]) -> None:`",
-          "`def process(items: Sequence[str]) -> list[str]:`",
           "`def process(items) -> list[str]:`",
-          "`def process(items: list[str]) -> list[str]:`"
+          "`def process(items: list[str]) -> list[str]:`",
+          "`def process(items: Sequence[str]) -> list[str]:`"
         ],
-        answer: 1,
+        answer: 3,
         why: "Two signals combine. `Sequence` has no mutating methods, so accepting it states that the function only reads — and mypy will reject an `.append()` call on it, making the promise checkable rather than merely stated. Returning a new `list` rather than `None` confirms the function produces a result instead of working by side effect. Option A actively signals the opposite: a `None` return conventionally means the function mutates its input."
       }
     ]

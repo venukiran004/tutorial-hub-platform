@@ -201,7 +201,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Occurs when modifying a DataFrame that may be a view of another. Fix: use `.copy()` when creating a subset you plan to modify:"
+     "text": "Occurs in pandas 2 when modifying a DataFrame that may be a view of another; pandas 3 removes it because Copy-on-Write is the default. Fix: use `.copy()` when creating a subset you plan to modify:"
     },
     {
      "t": "code",

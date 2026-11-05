@@ -307,7 +307,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`os`/`sys` (system), `pathlib` (paths — prefer over `os.path`), `datetime`/ `zoneinfo` (time), `json`/`csv` (serialization), `collections` (Counter, defaultdict, deque, namedtuple), `functools` (lru_cache, partial, reduce, wraps), `itertools` (lazy combinators), `contextlib` (context managers), `logging`, `subprocess`, `hashlib`/`secrets`, `sqlite3`, `typing`, `dataclasses`, `unittest.mock`. They cover the vast majority of day-to-day needs with zero dependencies."
+     "text": "`os`/`sys` (system), `pathlib` (paths — prefer over `os.path`), `datetime`/ `zoneinfo` (time), `json`/`csv` (serialisation), `collections` (Counter, defaultdict, deque, namedtuple), `functools` (lru_cache, partial, reduce, wraps), `itertools` (lazy combinators), `contextlib` (context managers), `logging`, `subprocess`, `hashlib`/`secrets`, `sqlite3`, `typing`, `dataclasses`, `unittest.mock`. They cover the vast majority of day-to-day needs with zero dependencies."
     },
     {
      "t": "p",
@@ -343,7 +343,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "How do you correctly handle datetimes and timezones?",
+   "q": "How do you correctly handle datetimes and time zones?",
    "terms": [
     "Answer",
     "timezone-aware",
@@ -377,7 +377,7 @@ EC.receiveLesson({
    "q": "How do you prevent SQL injection in Python?",
    "terms": [
     "Answer",
-    "parameterized queries",
+    "parameterised queries",
     "Key takeaway"
    ],
    "body": [
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Use **parameterized queries** with placeholders — let the driver handle escaping."
+     "text": "Use **parameterised queries** with placeholders — let the driver handle escaping."
     },
     {
      "t": "code",
@@ -397,7 +397,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "This applies to `sqlite3`, `psycopg2`, `mysql-connector`, and all DB-API 2.0 drivers. ORMs like SQLAlchemy parameterize by default."
+     "text": "This applies to `sqlite3`, `psycopg2`, `mysql-connector`, and all DB-API 2.0 drivers. ORMs like SQLAlchemy parameterise by default."
     },
     {
      "t": "p",
@@ -554,9 +554,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**pip + requirements.txt**universal, simple, no lockfile by default. Good for scripts, Docker images, minimal setups (add pip-tools for locking).",
-      "**Poetry**lockfile (`poetry.lock`), automatic venv management, dependency resolution, and PyPI publishing. Good for applications and libraries.",
-      "**uv**ultra-fast (Rust, by the Ruff team) — 10–100× faster installs/resolves; does venv + pip-compile + pip-sync in one tool. Great for CI speed and large dep trees."
+      "**pip + requirements.txt:** universal, simple, no lockfile by default. Good for scripts, Docker images, minimal setups (add pip-tools for locking).",
+      "**Poetry:** lockfile (`poetry.lock`), automatic venv management, dependency resolution, and PyPI publishing. Good for applications and libraries.",
+      "**uv:** ultra-fast (Rust, by the Ruff team) — 10–100× faster installs/resolves; does venv + pip-compile + pip-sync in one tool. Great for CI speed and large dep trees."
      ]
     },
     {
@@ -674,7 +674,7 @@ EC.receiveLesson({
    "terms": [
     "Answer",
     "fixtures",
-    "parametrize",
+    "parameterise",
     "markers"
    ],
    "body": [
@@ -684,7 +684,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "pytest uses plain `assert` (no `self.assertEqual` boilerplate), has powerful **fixtures** (composable setup/teardown via `yield`, with scopes), **parametrize** for data-driven tests, **markers** (skip/xfail/custom), rich failure introspection, and a huge plugin ecosystem (`pytest-cov`, `pytest-asyncio`). It also runs existing `unittest` test cases."
+     "text": "pytest uses plain `assert` (no `self.assertEqual` boilerplate), has powerful **fixtures** (composable setup/teardown via `yield`, with scopes), **parameterise** for data-driven tests, **markers** (skip/xfail/custom), rich failure introspection, and a huge plugin ecosystem (`pytest-cov`, `pytest-asyncio`). It also runs existing `unittest` test cases."
     },
     {
      "t": "code",
@@ -694,7 +694,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** pytest is less boilerplate, with fixtures, parametrization, and a strong plugin ecosystem."
+     "text": "**Key takeaway:** pytest is less boilerplate, with fixtures, parameterisation, and a strong plugin ecosystem."
     }
    ]
   },
@@ -861,7 +861,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`E, W, F` (style + pyflakes), `I` (imports), `N` (naming), `UP` (pyupgrade), `B` (bugbear — likely bugs), `A` (builtin shadowing), `C4` (comprehensions), `SIM` (simplify), `S` (security/bandit), `T20` (no print), `RUF` (ruff-specific). Ignore `E501` (line length handled by the formatter); allow `S101` (assert) and `T20` (print) in tests via per-file-ignores, and `F401` in `__init__.py`."
+     "text": "`E, W, F` (style + pyflakes), `I` (imports), `N` (naming), `UP` (pyupgrade), `B` (bugbear — likely bugs), `A` (built-in shadowing), `C4` (comprehensions), `SIM` (simplify), `S` (security/bandit), `T20` (no print), `RUF` (ruff-specific). Ignore `E501` (line length handled by the formatter); allow `S101` (assert) and `T20` (print) in tests via per-file-ignores, and `F401` in `__init__.py`."
     },
     {
      "t": "p",

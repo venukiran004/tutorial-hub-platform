@@ -2,7 +2,7 @@
    LESSON 6.3 — MFCCs, and Whether You Still Need Them
    Decorrelation and energy compaction measured on a real 3.4-second speech
    recording — a synthetic tone signal gives the opposite answer, which is
-   noted (scratchpad/dl/d63.py).
+   noted (d63.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.3",

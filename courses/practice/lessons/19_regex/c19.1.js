@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c19.1",
  "lede": "**30 programs to write**, on parsing, regex and the import system. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 30 programs on parsing, regex and the import system without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c18.7"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2177–2206.** What this set actually drills, counted from its own problems — 16 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["regex", "patterns", "threads", "strings", "modules", "files and paths"], "cells": [[{"text": "7", "tone": "accent"}, "Regex: match, search, fullmatc"], [{"text": "2", "tone": "good"}, "Command Pipeline"], [{"text": "2", "tone": "violet"}, "Task Queue (Simple)"], [{"text": "2", "tone": "teal"}, "Table Formatter"], [{"text": "2", "tone": "warn"}, "Circular Imports and the Half"], [{"text": "1", "tone": "crit"}, "JSON Path Query"]], "t": "diagram", "id": "dg-c19_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

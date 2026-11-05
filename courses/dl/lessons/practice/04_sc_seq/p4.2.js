@@ -566,7 +566,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# CNN feature extractor + RNN sequence model (image captioning)\nclass CaptionModel(nn.Module):\n    def __init__(self):\n        self.cnn = resnet50(pretrained=True)\n        self.lstm = nn.LSTM(cnn_features, hidden_size)\n    \n    def forward(self, image, caption):\n        features = self.cnn(image)        # Extract image features\n        captions_embedded = self.embed(caption)\n        outputs, _ = self.lstm(captions_embedded, features)\n        return outputs"
+     "code": "# CNN feature extractor + RNN sequence model (image captioning)\nclass CaptionModel(nn.Module):\n    def __init__(self):\n        self.cnn = resnet50(weights=\"DEFAULT\")\n        self.lstm = nn.LSTM(cnn_features, hidden_size)\n    \n    def forward(self, image, caption):\n        features = self.cnn(image)        # Extract image features\n        captions_embedded = self.embed(caption)\n        outputs, _ = self.lstm(captions_embedded, features)\n        return outputs"
     },
     {
      "t": "p",

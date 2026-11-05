@@ -89,9 +89,9 @@ prob_superiority(a, b)                  # 0.625
 x = np.concatenate([rng.normal(0, 1, 400), rng.normal(0, 1, 400)])
 y = np.concatenate([rng.normal(-2, 1, 400), rng.normal(2, 1, 400)])
 
-x.mean(), y.mean()                      # ~0.00, ~0.00
-stats.ttest_ind(x, y).pvalue            # 0.94  -- means agree
-stats.mannwhitneyu(x, y).pvalue         # 0.87  -- and so does MWU here
+x.mean(), y.mean()                      # ~-0.03, ~0.01
+stats.ttest_ind(x, y).pvalue            # 0.69  -- means agree
+stats.mannwhitneyu(x, y).pvalue         # 0.88  -- and so does MWU here
 #
 # Both miss it, because the distributions are symmetric. NEITHER TEST
 # LOOKS AT SPREAD -- if the question is about variability, use Levene
@@ -101,13 +101,13 @@ stats.mannwhitneyu(x, y).pvalue         # 0.87  -- and so does MWU here
 #
 # Group A: mostly small values, a few enormous ones.
 # Group B: consistently middling.
-big_a = np.concatenate([rng.normal(10, 2, 950), rng.normal(500, 50, 50)])
-big_b = np.full(1000, 30.0) + rng.normal(0, 2, 1000)
+big_a = np.concatenate([rng.normal(10, 2, 3800), rng.normal(500, 50, 200)])
+big_b = np.full(4000, 30.0) + rng.normal(0, 2, 4000)
 
-big_a.mean(), big_b.mean()              # 34.5, 30.0  -- A has the higher mean
-np.median(big_a), np.median(big_b)      # 10.0, 30.0  -- B has the higher median
+big_a.mean(), big_b.mean()              # 34.5, 30.1  -- A has the higher mean
+np.median(big_a), np.median(big_b)      # 10.1, 30.0  -- B has the higher median
 
-stats.ttest_ind(big_a, big_b).pvalue    # 0.0086, and A is higher
+stats.ttest_ind(big_a, big_b).pvalue    # 0.0084, and A is higher
 stats.mannwhitneyu(big_a, big_b, alternative="greater").pvalue   # 1.0
 prob_superiority(big_b, big_a)          # 0.05
 #
@@ -137,12 +137,12 @@ prob_superiority(big_b, big_a)          # 0.05
 
 # 2. EQUAL SHAPE, if you want to talk about medians. Without it,
 #    Mann-Whitney can be significant when the medians are IDENTICAL:
-same_median_a = rng.exponential(1.0, 5000)
-same_median_b = rng.exponential(1.0, 5000) ** 0.5 * 0.833
-np.median(same_median_a), np.median(same_median_b)   # 0.693, 0.694
-stats.mannwhitneyu(same_median_a, same_median_b).pvalue   # 2e-12
+same_median_a = rng.exponential(1.0, 5000) - np.log(2)     # skewed right, median 0
+same_median_b = np.log(2) - rng.exponential(1.0, 5000)     # skewed left, median 0
+np.median(same_median_a), np.median(same_median_b)   # -0.003, -0.007
+stats.mannwhitneyu(same_median_a, same_median_b).pvalue   # 2e-63
 #
-# IDENTICAL MEDIANS, p = 2e-12. The distributions differ in shape, and
+# THE SAME MEDIAN, AND A TINY p. The distributions differ in shape, and
 # that is what the test detected -- correctly, for its actual null.
 
 # 3. UNEQUAL VARIANCE still breaks it, exactly as it breaks Student's
@@ -157,8 +157,8 @@ def error_rate(n1, n2, sd1, sd2, test, trials=10_000, seed=0):
 mwu = lambda a, b: stats.mannwhitneyu(a, b)
 welch = lambda a, b: stats.ttest_ind(a, b, equal_var=False)
 
-error_rate(200, 20, 1.0, 4.0, mwu)      # 0.148
-error_rate(200, 20, 1.0, 4.0, welch)    # 0.051
+error_rate(200, 20, 1.0, 4.0, mwu)      # 0.180
+error_rate(200, 20, 1.0, 4.0, welch)    # 0.047
 #
 # MANN-WHITNEY'S ERROR RATE IS 15% HERE AND WELCH'S IS 5%. The rank
 # test is NOT the robust choice under unequal variance -- it has the
@@ -239,8 +239,8 @@ n = 40
 # NORMAL DATA -- the t-test's home ground.
 t_p, mw_p = power_comparison(
     lambda r: r.normal(0, 1, n), lambda r: r.normal(0.6, 1, n))
-t_p, mw_p                              # 0.735, 0.712
-mw_p / t_p                             # 0.969
+t_p, mw_p                              # 0.756, 0.728
+mw_p / t_p                             # 0.963
 #
 # MANN-WHITNEY RETAINS 96.9% OF THE POWER on perfectly normal data.
 # The asymptotic figure is 3/pi = 95.5%, and that is the entire cost.
@@ -249,8 +249,8 @@ mw_p / t_p                             # 0.969
 # HEAVY-TAILED DATA -- where ranks earn their keep.
 t_p, mw_p = power_comparison(
     lambda r: r.standard_t(2, n), lambda r: r.standard_t(2, n) + 0.6)
-t_p, mw_p                              # 0.399, 0.607
-mw_p / t_p                             # 1.52
+t_p, mw_p                              # 0.230, 0.460
+mw_p / t_p                             # 2.00
 #
 # 52% MORE POWER on t-distributed data with 2 degrees of freedom. The
 # t-test's variance estimate is destroyed by the tails; ranks are not.
@@ -264,7 +264,7 @@ def contaminated(shift):
     return f
 
 t_p, mw_p = power_comparison(contaminated(0.0), contaminated(0.6))
-t_p, mw_p                              # 0.112, 0.694
+t_p, mw_p                              # 0.343, 0.713
 #
 # THE t-TEST'S POWER COLLAPSES FROM 74% TO 11% from 1% contamination.
 # Mann-Whitney is essentially unaffected.
@@ -292,7 +292,7 @@ def hodges_lehmann(a, b):
     diffs = (b[:, None] - a[None, :]).ravel()
     return float(np.median(diffs))
 
-hodges_lehmann(rng.normal(0,1,200), rng.normal(0.6,1,200))    # ~0.60
+hodges_lehmann(rng.normal(0,1,200), rng.normal(0.6,1,200))    # ~0.48
 `,
       hl: [17, 26, 39, 58],
       caption: "**Ranks cost 3% of power on normal data and gain 520% under 1% contamination.** You risk a little and insure against a collapse, which is why the trade is usually worth making."

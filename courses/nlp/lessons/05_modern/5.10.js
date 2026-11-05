@@ -51,7 +51,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n510.py — token-choice top-k routing", code:
+    { t: "code", lang: "python", title: "token-choice top-k routing", code:
 "class Router(nn.Module):\n    def __init__(self, d_model, num_experts, top_k=2):\n        super().__init__()\n        self.gate = nn.Linear(d_model, num_experts, bias=False)\n        self.top_k = top_k\n\n    def forward(self, x):                       # (batch, seq, d_model)\n        logits = self.gate(x)                   # (batch, seq, num_experts)\n        scores = F.softmax(logits, dim=-1)\n        top_k_scores, top_k_indices = scores.topk(self.top_k, dim=-1)\n        # renormalise so the chosen experts' weights sum to 1\n        top_k_scores = top_k_scores / top_k_scores.sum(dim=-1, keepdim=True)\n        return top_k_scores, top_k_indices",
       caption: "One linear layer per MoE block — `d_model × num_experts`, which is negligible. The renormalisation matters: without it the output scale would depend on how confident the router happened to be." },
 

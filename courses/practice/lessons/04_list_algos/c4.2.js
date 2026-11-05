@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.2",
  "lede": "**28 programs to write**, on subarrays and dynamic programming. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on subarrays and dynamic programming without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 433–460.** What this set actually drills, counted from its own problems — 14 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "dicts and sets", "databases", "graphs & trees"], "cells": [[{"text": "10", "tone": "accent"}, "Subarray Sum Equals K"], [{"text": "2", "tone": "good"}, "Set Matrix Zeros"], [{"text": "1", "tone": "violet"}, "Stock Buy and Sell (One Transa"], [{"text": "1", "tone": "teal"}, "Find Kth Smallest (Heap)"]], "t": "diagram", "id": "dg-c4_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 11.3 — Testing
    The FakeLlm pattern below is the one every executed trace in this course was
-   produced with (scratchpad/adk/fake.py), running against google-adk 2.9.2
+   produced with (fake.py), running against google-adk 2.9.2
    with no API key.
    ========================================================================= */
 EC.receiveLesson({

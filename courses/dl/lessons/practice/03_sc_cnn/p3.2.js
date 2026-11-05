@@ -286,7 +286,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Load pre-trained model\nmodel = torchvision.models.resnet50(pretrained=True)\n\n# Freeze early layers (general features)\nfor param in model.parameters():\n    param.requires_grad = False\n\n# Replace final classification layer\nmodel.fc = nn.Linear(2048, num_classes)\n\n# Optionally unfreeze later layers for fine-tuning\nfor param in model.layer4.parameters():\n    param.requires_grad = True"
+     "code": "# Load pre-trained model\nmodel = torchvision.models.resnet50(weights=\"DEFAULT\")\n\n# Freeze early layers (general features)\nfor param in model.parameters():\n    param.requires_grad = False\n\n# Replace final classification layer\nmodel.fc = nn.Linear(2048, num_classes)\n\n# Optionally unfreeze later layers for fine-tuning\nfor param in model.layer4.parameters():\n    param.requires_grad = True"
     },
     {
      "t": "p",

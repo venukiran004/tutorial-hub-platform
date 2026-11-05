@@ -626,44 +626,44 @@ achieved 9.21x against a computed ceiling of 2.35x`,
         stem: "A `cProfile` report sorted by `cumtime` has your request handler at the top with 100% of the runtime. What have you learned?",
         options: [
           "That the handler's own code is the bottleneck and should be optimised first",
-          "Nothing yet — the entry point always has 100% cumulative time; you read downwards until the cumulative share drops, and that row owns the time",
-          "That the profile is corrupt, since no single function should account for all the time",
-          "That the work is I/O-bound, because cumulative time includes waiting"
+          "That the profile is corrupt, since no single function can account for all of the runtime",
+          "That the work is I/O-bound, because cumulative time includes waiting",
+          "Nothing yet — the entry point always shows 100%; read down until the share drops"
         ],
-        answer: 1,
+        answer: 3,
         why: "`cumtime` includes everything a function called, so whatever you entered through necessarily shows 100%. It is accurate and carries no information. The row where the cumulative share drops away from 100% is the branch that actually owns the time — and to find the code burning CPU rather than delegating it, re-sort by `tottime`. The handler's *own* work is its `tottime`, which here would be small. Nothing about a 100% top row indicates corruption or I/O."
       },
       {
         stem: "You benchmark two implementations with `timeit.repeat(..., repeat=7)` and get, per call: 0.41, 0.42, 0.41, 0.58, 0.43, 0.41, 0.41. Which number do you report?",
         options: [
-          "The mean, 0.44 s, because averaging removes measurement noise",
-          "The 0.58 s worst case, because production will hit the worst case",
-          "The minimum, 0.41 s, because timing noise only ever makes a run slower — the floor is the code and the excursions are the machine",
-          "The median, 0.42 s, because it is robust to the outlier"
+          "The minimum, 0.41 s, because noise only ever makes a run slower",
+          "The mean, 0.44 s, because averaging all seven runs cancels out the measurement noise",
+          "The 0.58 s worst case, because production traffic will eventually hit the worst case",
+          "The median, 0.42 s, because it is robust to the single outlier and reflects a typical run"
         ],
-        answer: 2,
+        answer: 0,
         why: "Nothing can make your function run faster than it is able to, while a scheduler switch, a page fault or a CPU frequency change can make any single run slower. That makes the noise strictly one-sided, so the minimum is the best estimate of the code's cost and the mean is partly a measurement of your machine's interference. The median is a reasonable sanity check to report alongside — if best and median diverge sharply something is warming up between runs — but it is not the headline. And the worst case here is measurement noise, not a latency characteristic; for tail latency you measure the deployed system, not a benchmark loop."
       },
       {
         stem: "A profile shows one function is 30% of runtime. Your team proposes rewriting it in Rust for an expected 20× speedup on that function. What is the overall gain?",
         options: [
-          "About 20×, since that function dominates the profile",
-          "About 6×, proportional to its share of the runtime",
+          "About 20×, since that function is the largest single entry in the profile",
           "About 1.4× — even making it instantaneous only removes 30% of the total",
-          "It cannot be estimated without measuring the Rust version first"
+          "About 6×, proportional to the function's 30% share of the runtime",
+          "It cannot be estimated until the Rust version is written and benchmarked"
         ],
-        answer: 2,
+        answer: 1,
         why: "Overall speedup is `1 / ((1 - share) + share / factor)` = `1 / (0.70 + 0.015)` ≈ 1.40×. The ceiling, with the function taking zero time, is `1 / 0.70` ≈ 1.43× — so the last 19× of the 20× buys you three percent. This arithmetic needs no measurement of the new implementation, only its share of the current one, which is why it is the first thing to compute when someone proposes a rewrite. It is also the argument for spending that effort on the other 70% instead."
       },
       {
         stem: "A worker process has stopped making progress. No logs, no traceback, and it holds the only evidence. What do you reach for?",
         options: [
-          "Restart it with `cProfile` enabled and wait for the hang to recur",
           "`py-spy dump --pid` to print the current stack of every thread without touching the process",
-          "`timeit` around the suspected function to find which call is slow",
-          "Attach `line_profiler` to the running process"
+          "Restart it with `cProfile` enabled, and wait for the hang to recur so the profile captures it",
+          "`timeit` around the suspected function, to find which call is slow enough to stall the worker",
+          "Attach `line_profiler` to the running process to see which line it is stuck on"
         ],
-        answer: 1,
+        answer: 0,
         why: "A sampling profiler reads the interpreter's stacks from outside the process, so `py-spy dump` shows you exactly where every thread is sitting — typically a `socket.recv` with no timeout, a lock acquisition in a deadlock, or a regex backtracking. Restarting under `cProfile` destroys the evidence and requires reproducing a hang you may not be able to trigger; `timeit` needs a call that returns; and `line_profiler` requires the code to have been decorated before it started, so it cannot be attached to a running process."
       }
     ]

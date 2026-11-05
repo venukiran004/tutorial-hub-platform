@@ -280,9 +280,9 @@ def g(x):
     return x * x * x + Dual.sin(x) * 2.0
 
 r = g(Dual(1.5, 1.0))            # seed d=1 to differentiate wrt x
-r.v                              # 4.3699  =  1.5^3 + 2 sin(1.5)
-r.d                              # 6.8917  =  3(1.5)^2 + 2 cos(1.5)
-3*1.5**2 + 2*np.cos(1.5)         # 6.8917  -- exact, to the last bit
+r.v                              # 5.3700  =  1.5^3 + 2 sin(1.5)
+r.d                              # 6.8915  =  3(1.5)^2 + 2 cos(1.5)
+3*1.5**2 + 2*np.cos(1.5)         # 6.8915  -- exact, to the last bit
 
 # FORWARD MODE costs one pass PER INPUT, so it is right for few inputs
 # and many outputs.
@@ -327,7 +327,7 @@ a - b                       # 2.220446049250313e-16 -- one bit of signal
 x = np.array([1e8 + 1, 1e8 + 2, 1e8 + 3, 1e8 + 4], dtype=np.float64)
 
 naive = (x**2).mean() - x.mean()**2
-naive                       # 0.0        -- catastrophically wrong
+naive                       # 2.0        -- catastrophically wrong
 np.var(x)                   # 1.25       -- correct
 
 # numpy subtracts the mean FIRST, which is the two-pass algorithm and

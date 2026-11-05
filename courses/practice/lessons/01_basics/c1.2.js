@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c1.2",
  "lede": "**28 programs to write**, on array tricks and bit manipulation. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on array tricks and bit manipulation without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c1.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 21–48.** What this set actually drills, counted from its own problems — 12 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "strings", "exceptions", "dicts and sets", "numbers", "production"], "cells": [[{"text": "6", "tone": "accent"}, "Rotate Array"], [{"text": "2", "tone": "good"}, "String Interning"], [{"text": "1", "tone": "violet"}, "Product of Array Except Self"], [{"text": "1", "tone": "teal"}, "Subsets (Power Set)"], [{"text": "1", "tone": "warn"}, "Floating Point Cannot Represen"], [{"text": "1", "tone": "crit"}, "Identity of Empty and Small Co"]], "t": "diagram", "id": "dg-c1_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

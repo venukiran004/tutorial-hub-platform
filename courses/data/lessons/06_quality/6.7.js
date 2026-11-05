@@ -107,29 +107,29 @@ z_outliers(one).sum(), iqr_outliers(one).sum(), robust_outliers(one).sum()
 #                   tail values; the z-score, being conservative here,
 #                   flags only the 500
 
-# TEN OUTLIERS -- masking begins:
-ten = np.append(clean, [500] * 10)
-z_outliers(ten).sum()             # 10 -- still finds them, barely:
-np.abs((500 - ten.mean()) / ten.std())     # 3.1 -- on the threshold
+# 100 OUTLIERS -- masking begins:
+hundred = np.append(clean, [500] * 100)
+z_outliers(hundred).sum()         # 100 -- still finds them, barely:
+np.abs((500 - hundred.mean()) / hundred.std())     # 3.1 -- on the threshold
 
-# THIRTY OUTLIERS -- the z-score has been masked:
-thirty = np.append(clean, [500] * 30)
-z_outliers(thirty).sum()          # 0  -- NONE FOUND
-np.abs((500 - thirty.mean()) / thirty.std())    # 2.4 -- below 3
+# 150 OUTLIERS -- the z-score has been masked:
+many = np.append(clean, [500] * 150)
+z_outliers(many).sum()            # 0  -- NONE FOUND
+np.abs((500 - many.mean()) / many.std())    # 2.6 -- below 3
 #
-# Thirty values at ten times the typical value, and the z-score finds
-# nothing. sigma has grown from 5 to 76 because it INCLUDES the
+# 150 values at ten times the typical value, and the z-score finds
+# nothing. sigma has grown from 5 to 152 because it INCLUDES the
 # outliers. They inflated the ruler they were being measured with.
 
-iqr_outliers(thirty).sum()        # 30 + a few tail values
-robust_outliers(thirty).sum()     # 30 + a few
+iqr_outliers(many).sum()          # 153: the 150, plus a few tail values
+robust_outliers(many).sum()       # 150 + a few
 #
-# The quartiles and the median did not move: 30 of 1,020 values is
-# 3%, well under the 25% it would take to shift Q3, and the 50% it
+# The quartiles and the median barely moved: 150 of 1,140 values is
+# 13%, well under the 25% it would take to shift Q3, and the 50% it
 # would take to shift the median.
 
 # THE ROBUST Z ON THE SAME DATA:
-robust_z(thirty)[-1]              # ~61 -- unambiguous
+robust_z(many)[-1]              # ~77 -- unambiguous
 #
 # THIS IS THE BREAKDOWN POINT. The mean and sigma have breakdown
 # point 0: one value can move them arbitrarily. The median and MAD
@@ -148,15 +148,15 @@ robust_z(thirty)[-1]              # ~61 -- unambiguous
 
 # SKEW BREAKS ALL THREE, in different ways:
 skewed = rng.lognormal(3, 0.8, 1000)
-z_outliers(skewed).sum()          # ~15: the upper tail, none low
-iqr_outliers(skewed).sum()        # ~50: more of the upper tail
-robust_outliers(skewed).sum()     # ~40
+z_outliers(skewed).sum()          # ~20: the upper tail, none low
+iqr_outliers(skewed).sum()        # ~64: more of the upper tail
+robust_outliers(skewed).sum()     # ~54
 #
 # None of these are errors. A log-normal column HAS a long right
 # tail, and every symmetric rule reads it as outliers. Either detect
 # on the log scale, or use a rule that treats the two sides
 # separately (a per-side IQR, or quantile bounds like 0.5% / 99.5%).
-np.log(skewed).pipe(iqr_outliers).sum()      # ~5 -- the genuine extremes
+iqr_outliers(np.log(skewed)).sum()      # ~6 -- the genuine extremes
 
 # PERCENTILE BOUNDS -- the rule that assumes nothing about shape:
 def pct_outliers(x, lo=0.5, hi=99.5):
@@ -168,7 +168,7 @@ def pct_outliers(x, lo=0.5, hi=99.5):
 # extremes" rather than "find the errors".
 `,
       hl: [30, 36, 46, 66],
-      caption: "**Thirty values at ten times the typical value, and the z-score finds nothing.** σ has grown from 5 to 76 because it includes the outliers — they inflated the ruler they were being measured with."
+      caption: "**150 values at ten times the typical value, and the z-score finds nothing.** σ has grown from 5 to 152 because it includes the outliers — they inflated the ruler they were being measured with."
     },
 
     { t: "callout", kind: "trap", title: "The z-score uses the outlier to measure the outlier", body: [
@@ -267,16 +267,16 @@ def mahalanobis(X, mean=None, cov=None):
     return np.sqrt(np.einsum("ij,jk,ik->i", d, inv, d))     # see 2.3
 
 d2 = mahalanobis(X) ** 2
-d2[-1]                                                   # ~45
+d2[-1]                                                   # ~33
 #
 # D^2 is chi-squared with p degrees of freedom for normal data, so
 # the threshold has a probability attached:
 threshold = chi2.ppf(0.999, df=2)                        # 13.8
-(d2 > threshold).sum()                                   # 2: the plant, plus one
+(d2 > threshold).sum()                                   # 1: the plant
 #
-# The (185, 48) row has D^2 of 45 against a 99.9% cutoff of 13.8. In
+# The (185, 48) row has D^2 of 33 against a 99.9% cutoff of 13.8. In
 # univariate terms it was inside both ranges; in the joint
-# distribution it is 6.7 "standard deviations" from the cloud.
+# distribution it is 5.7 "standard deviations" from the cloud.
 
 # THE MASKING PROBLEM AGAIN: the covariance is computed from data
 # that includes the outliers. Enough of them tilt the ellipse toward
@@ -284,9 +284,9 @@ threshold = chi2.ppf(0.999, df=2)                        # 13.8
 # the covariance of the tightest half of the data.
 mcd = MinCovDet(random_state=0).fit(X)
 d2_robust = mcd.mahalanobis(X)                           # squared, already
-d2_robust[-1]                                            # ~52 -- larger, because
-                                                         # the outlier no longer
-                                                         # inflated the covariance
+d2_robust[-1]                                            # ~33 -- the same here, because
+                                                         # one outlier cannot
+                                                         # tilt the covariance
 (d2_robust > threshold).sum()
 
 # WHEN MAHALANOBIS IS WRONG: the data is not one ellipse.
@@ -624,7 +624,7 @@ def test_report_names_the_evidence():
 
 def test_zscore_is_masked_robust_is_not():
     rng = np.random.default_rng(1)
-    x = np.append(rng.normal(50, 5, 970), [500] * 30)
+    x = np.append(rng.normal(50, 5, 850), [500] * 150)
     z = (x - x.mean()) / x.std()
     assert (np.abs(z) > 3).sum() == 0              # masked
     rz, _, _ = robust_z(x)
@@ -667,7 +667,7 @@ def test_clean_data_has_few_flags():
       title: "Quick check",
       questions: [
         {
-          stem: "A column has 30 values at 500 among 970 near 50. The z-score with threshold 3 flags none. Why?",
+          stem: "A column has 150 values at 500 among 850 near 50. The z-score with threshold 3 flags none. Why?",
           options: [
             "The threshold is too high",
             "The 30 outliers inflated the standard deviation from 5 to 76, so each one's z-score is 2.4 — they masked each other",
@@ -675,7 +675,7 @@ def test_clean_data_has_few_flags():
             "The mean is unaffected by outliers"
           ],
           answer: 1,
-          why: "The mean and σ are computed from data that includes the outliers, and σ has breakdown point zero. The median and MAD have breakdown point 50%: they do not move for 3% contamination, and the robust z of 500 is around 60."
+          why: "The mean and σ are computed from data that includes the outliers, and σ has breakdown point zero. The median and MAD have breakdown point 50%: they barely move at 15% contamination, and the robust z of 500 is around 60."
         }
       ]
     }

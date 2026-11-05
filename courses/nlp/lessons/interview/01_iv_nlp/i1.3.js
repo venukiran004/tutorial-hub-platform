@@ -107,7 +107,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "BIDIRECTIONAL (BERT):           CAUSAL (GPT):\n  T1 T2 T3 T4                    T1 T2 T3 T4\nT1 √  √  √  √                 T1 √  ×  ×  ×\nT2 √  √  √  √                 T2 √  √  ×  ×\nT3 √  √  √  √                 T3 √  √  √  ×\nT4 √  √  √  √                 T4 √  √  √  √\n\nPREFIX-LM (T5 encoder):        CAUSAL achieves this by setting\n  Like bidirectional but         masked positions to -∞ before\n  only for the prefix            softmax → attention weight = 0"
+     "code": "BIDIRECTIONAL (BERT):           CAUSAL (GPT):\n  T1 T2 T3 T4                    T1 T2 T3 T4\nT1 √  √  √  √                 T1 √  ×  ×  ×\nT2 √  √  √  √                 T2 √  √  ×  ×\nT3 √  √  √  √                 T3 √  √  √  ×\nT4 √  √  √  √                 T4 √  √  √  √\n\nPREFIX-LM (some decoder models): CAUSAL achieves this by setting\n  Bidirectional over the prefix,   masked positions to -∞ before\n  causal after it                  softmax → attention weight = 0"
     }
    ],
    "kind": ""
@@ -326,7 +326,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Original weight: W (d × d, frozen)\nLoRA adapters:   A (d × r) and B (r × d), where r << d\n\nForward pass:    y = Wx + BAx\n\nTrainable params: 2 × d × r  (vs d² for full fine-tuning)\nExample: d=4096, r=16 → 131K vs 16.7M parameters (128× reduction)"
+     "code": "Original weight: W (d × d, frozen)\nLoRA adapters:   A (r × d) and B (d × r), where r << d\n\nForward pass:    y = Wx + BAx\n\nTrainable params: 2 × d × r  (vs d² for full fine-tuning)\nExample: d=4096, r=16 → 131K vs 16.7M parameters (128× reduction)"
     },
     {
      "t": "ul",

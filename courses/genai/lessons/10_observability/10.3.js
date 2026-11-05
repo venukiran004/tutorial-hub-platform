@@ -213,7 +213,7 @@ for m in ("good_model", "cheap_model"):
     per_turn, turns = PRICE[m], TURNS_TO_RESOLVE[m]
     print("%-12s $%.4f/request x %.1f turns = $%.4f per resolved conversation"
           % (m, per_turn, turns, per_turn * turns))
-ratio = (PRICE["cheap_model"] * TURNS_TO_RESOLVE["cheap_model"]) / \
+ratio = (PRICE["cheap_model"] * TURNS_TO_RESOLVE["cheap_model"]) / \\
         (PRICE["good_model"] * TURNS_TO_RESOLVE["good_model"])
 print("the cheap model is %.1fx cheaper per request and %.0f%% of the cost per resolution"
       % (PRICE["good_model"] / PRICE["cheap_model"], 100 * ratio))`,

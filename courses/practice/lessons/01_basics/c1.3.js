@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c1.3",
  "lede": "**29 programs to write**, on buffers, identity and floating point. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 29 snippets on buffers, identity and floating point before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c1.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 49–77.** What this set asks you to predict, counted from its own problems — 10 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["numbers", "lists", "classes", "decorators"], "cells": [[{"text": "5", "tone": "accent"}, "Floating"], [{"text": "2", "tone": "good"}, "array: a Typed, Compact Sequen"], [{"text": "2", "tone": "violet"}, "Object identity via id()"], [{"text": "1", "tone": "teal"}, "memoryview Slices Without Copy"]], "t": "diagram", "id": "dg-c1_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -68,16 +68,19 @@ EC.receiveLesson({
    "q": "Program 51: What will be the output?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10` **Explanation:** Integers are immutable. `y = x` copies the value, not a reference. Changing `x` doesn't affect `y`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ny = x\nx = 20\nprint(y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10` **Explanation:** Integers are immutable. `y = x` copies the value, not a reference. Changing `x` doesn't affect `y`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -85,16 +88,19 @@ EC.receiveLesson({
    "q": "Program 52: Identity (is) versus equality (==) — output of `a is b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, then `True` when run as a file **Explanation:** CPython caches integers from -5 to 256, so `a is b` is always `True`. `257` is outside that cache, but a file is compiled as one unit and equal constants in it are shared, so `c is d` is `True` as well. Enter the lines one at a time in a REPL and each is compiled separately, which gives `False`. Never rely on either: compare values with `==`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = 256\nb = 256\nprint(a is b)\n\nc = 257\nd = 257\nprint(c is d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True` then `False` (in standard CPython) **Explanation:** CPython caches integers from -5 to 256. Beyond that range, new objects are created."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -102,16 +108,19 @@ EC.receiveLesson({
    "q": "Program 53: Floating-point representation — output of `x == 0.3`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `0.30000000000000004` **Explanation:** Floating-point arithmetic has precision issues due to IEEE 754 representation. Use `math.isclose()` for comparison."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 0.1 + 0.2\nprint(x == 0.3)\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `0.30000000000000004` **Explanation:** Floating-point arithmetic has precision issues due to IEEE 754 representation. Use `math.isclose()` for comparison."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -119,16 +128,19 @@ EC.receiveLesson({
    "q": "Program 54: What is the output of `type(True)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'bool'>`, `True`, `2` **Explanation:** `bool` is a subclass of `int`. `True` is `1`, `False` is `0`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(type(True))\nprint(isinstance(True, int))\nprint(True + True + False)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'bool'>`, `True`, `2` **Explanation:** `bool` is a subclass of `int`. `True` is `1`, `False` is `0`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -136,16 +148,19 @@ EC.receiveLesson({
    "q": "Program 55: Identity (is) versus equality (==) — output of `x is y` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True` **Explanation:** `None` is a singleton in Python — there's only one `None` object in memory."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = None\ny = None\nprint(x is y)\nprint(x == y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True` **Explanation:** `None` is a singleton in Python — there's only one `None` object in memory."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -153,16 +168,19 @@ EC.receiveLesson({
    "q": "Program 56: list.append — output of `a = [1, 2, 3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4]` **Explanation:** Lists are mutable. `b = a` creates a reference, not a copy. Both point to the same list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4]` **Explanation:** Lists are mutable. `b = a` creates a reference, not a copy. Both point to the same list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -170,16 +188,19 @@ EC.receiveLesson({
    "q": "Program 57: What's the difference?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3]`, `[1, 2, 3, 4]` **Explanation:** `a[:]` creates a shallow copy. Modifying `b` doesn't affect `a`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a[:]\nb.append(4)\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3]`, `[1, 2, 3, 4]` **Explanation:** `a[:]` creates a shallow copy. Modifying `b` doesn't affect `a`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -187,16 +208,19 @@ EC.receiveLesson({
    "q": "Program 58: Object identity via id() — output of `id(x)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** Two different IDs, `False` (or possibly `True` due to interning — implementation dependent) **Explanation:** Strings are immutable. `+=` creates a new string object with a new id."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = \"hello\"\nprint(id(x))\nx += \" world\"\nprint(id(x))\nprint(x is \"hello world\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** Two different IDs, `False` (or possibly `True` due to interning — implementation dependent) **Explanation:** Strings are immutable. `+=` creates a new string object with a new id."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -204,16 +228,19 @@ EC.receiveLesson({
    "q": "Program 59: Identity (is) versus equality (==) — output of `a is b` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, then `True` when run as a file **Explanation:** Identifier-like strings such as `\"hello\"` are interned, so the first is always `True`. `\"hello world\"` is not, but equal constants in one compiled file are shared, so it is `True` too. Entered line by line in a REPL, the second prints `False`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = \"hello\"\nb = \"hello\"\nprint(a is b)\n\nc = \"hello world\"\nd = \"hello world\"\nprint(c is d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` (typically in CPython interactive mode) **Explanation:** Short strings without spaces are interned. Longer strings with spaces may not be interned."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -221,16 +248,19 @@ EC.receiveLesson({
    "q": "Program 60: What is the output of `type(x).__name__`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `int`, `float`, `complex` **Explanation:** Python dynamically assigns types. `10+0j` is a complex number."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\nprint(type(x).__name__)\nx = 10.0\nprint(type(x).__name__)\nx = 10 + 0j\nprint(type(x).__name__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `int`, `float`, `complex` **Explanation:** Python dynamically assigns types. `10+0j` is a complex number."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -238,16 +268,19 @@ EC.receiveLesson({
    "q": "Program 61: int() with a base — output of `x = int(\"10\", 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2` **Explanation:** `int(\"10\", 2)` interprets \"10\" as a binary number. Binary `10` = decimal `2`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = int(\"10\", 2)\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2` **Explanation:** `int(\"10\", 2)` interprets \"10\" as a binary number. Binary `10` = decimal `2`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -255,16 +288,19 @@ EC.receiveLesson({
    "q": "Program 62: Floating-point representation — output of `0.1 + 0.2 - 0.3` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5.551115123125783e-17`, `True` **Explanation:** Floating-point imprecision gives a tiny non-zero result. `round()` helps with comparison."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(0.1 + 0.2 - 0.3)\nprint(round(0.1 + 0.2, 1) == 0.3)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5.551115123125783e-17`, `True` **Explanation:** Floating-point imprecision gives a tiny non-zero result. `round()` helps with comparison."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -272,16 +308,19 @@ EC.receiveLesson({
    "q": "Program 63: What will this print?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Infinity is greater/less than any finite number. NaN is not equal to anything, including itself."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = float('inf')\ny = float('-inf')\nz = float('nan')\nprint(x > 1000000)\nprint(y < -1000000)\nprint(z == z)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Infinity is greater/less than any finite number. NaN is not equal to anything, including itself."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -289,16 +328,19 @@ EC.receiveLesson({
    "q": "Program 64: What is the output of `math.isnan(float('nan'))`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `nan` **Explanation:** Adding positive and negative infinity results in NaN (undefined)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import math\nprint(math.isnan(float('nan')))\nprint(math.isinf(float('inf')))\nprint(float('inf') + float('-inf'))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `nan` **Explanation:** Adding positive and negative infinity results in NaN (undefined)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -306,16 +348,19 @@ EC.receiveLesson({
    "q": "Program 65: Integer division — output of `a / b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2.5`, `2`, `1`, `(2, 1)` **Explanation:** `/` is true division, `//` is floor division, `%` gives remainder, `divmod` gives both."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = 5\nb = 2\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(divmod(a, b))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2.5`, `2`, `1`, `(2, 1)` **Explanation:** `/` is true division, `//` is floor division, `%` gives remainder, `divmod` gives both."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -323,16 +368,19 @@ EC.receiveLesson({
    "q": "Program 66: Integer division — output of `-7 // 2`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `-4`, `1` **Explanation:** Python's floor division rounds toward negative infinity. The modulo follows the divisor's sign: `-7 = (-4)*2 + 1`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(-7 // 2)\nprint(-7 % 2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `-4`, `1` **Explanation:** Python's floor division rounds toward negative infinity. The modulo follows the divisor's sign: `-7 = (-4)*2 + 1`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -340,16 +388,19 @@ EC.receiveLesson({
    "q": "Program 67: What happens — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `<class 'int'>` **Explanation:** Underscores in numeric literals are for readability and are ignored by the interpreter."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 1_000_000\ny = 1000000\nprint(x == y)\nprint(type(x))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `<class 'int'>` **Explanation:** Underscores in numeric literals are for readability and are ignored by the interpreter."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -357,16 +408,19 @@ EC.receiveLesson({
    "q": "Program 68: What is the output of `x, y, z` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10 10 10`, `True` **Explanation:** `0b` is binary, `0o` is octal, `0x` is hex. All represent decimal 10."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 0b1010\ny = 0o12\nz = 0xA\nprint(x, y, z)\nprint(x == y == z)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10 10 10`, `True` **Explanation:** `0b` is binary, `0o` is octal, `0x` is hex. All represent decimal 10."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -374,16 +428,19 @@ EC.receiveLesson({
    "q": "Program 69: round() — output of `int(x)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3`, `3`, `2`, `4` **Explanation:** `int()` truncates. `round()` uses banker's rounding (round half to even) for .5 cases."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 3.14\nprint(int(x))\nprint(round(x))\nprint(round(2.5))\nprint(round(3.5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3`, `3`, `2`, `4` **Explanation:** `int()` truncates. `round()` uses banker's rounding (round half to even) for .5 cases."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -391,16 +448,19 @@ EC.receiveLesson({
    "q": "Program 70: What is the output of `a + a`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `10`, `0` **Explanation:** `True` is `1` and `False` is `0` in arithmetic contexts since `bool` subclasses `int`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = True\nb = False\nprint(a + a)\nprint(a * 10)\nprint(b * 10)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `10`, `0` **Explanation:** `True` is `1` and `False` is `0` in arithmetic contexts since `bool` subclasses `int`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -408,16 +468,19 @@ EC.receiveLesson({
    "q": "Program 71: What happens",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3.0`, `4.0`, `5.0` **Explanation:** `abs()` of a complex number returns its magnitude: `sqrt(3² + 4²) = 5.0`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = complex(3, 4)\nprint(x.real)\nprint(x.imag)\nprint(abs(x))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3.0`, `4.0`, `5.0` **Explanation:** `abs()` of a complex number returns its magnitude: `sqrt(3² + 4²) = 5.0`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -425,16 +488,19 @@ EC.receiveLesson({
    "q": "Program 72: Predict the output:",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `False`, `False`, `False`, `True`, `True`, `True` **Explanation:** `0`, `\"\"`, `[]`, `None` are falsy. Non-empty strings (even `\"False\"`) and non-empty lists are truthy."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(bool(0))\nprint(bool(\"\"))\nprint(bool([]))\nprint(bool(None))\nprint(bool(1))\nprint(bool(\"False\"))\nprint(bool([0]))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `False`, `False`, `False`, `True`, `True`, `True` **Explanation:** `0`, `\"\"`, `[]`, `None` are falsy. Non-empty strings (even `\"False\"`) and non-empty lists are truthy."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -442,16 +508,19 @@ EC.receiveLesson({
    "q": "Program 73: What is the output of `x ** y`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1000`, `1000`, `6` **Explanation:** `pow(x, y, z)` computes `(x**y) % z` efficiently. `1000 % 7 = 6`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ny = 3\nprint(x ** y)\nprint(pow(x, y))\nprint(pow(x, y, 7))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1000`, `1000`, `6` **Explanation:** `pow(x, y, z)` computes `(x**y) % z` efficiently. `1000 % 7 = 6`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -459,16 +528,19 @@ EC.receiveLesson({
    "q": "Program 74: A sequence built with the * operator — output of `type(x)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'int'>`, `1267650600228229401496703205376` **Explanation:** Python integers have arbitrary precision — no overflow."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 2 ** 100\nprint(type(x))\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'int'>`, `1267650600228229401496703205376` **Explanation:** Python integers have arbitrary precision — no overflow."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -476,16 +548,19 @@ EC.receiveLesson({
    "q": "Program 75: What is the output of `sys.maxsize`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** A large integer (e.g., `9223372036854775807`), `<class 'int'>`, `<class 'int'>` **Explanation:** `sys.maxsize` is the max value for a Py_ssize_t, but Python ints don't overflow."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\nprint(sys.maxsize)\nprint(type(sys.maxsize))\nx = sys.maxsize + 1\nprint(type(x))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** A large integer (e.g., `9223372036854775807`), `<class 'int'>`, `<class 'int'>` **Explanation:** `sys.maxsize` is the max value for a Py_ssize_t, but Python ints don't overflow."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -493,16 +568,19 @@ EC.receiveLesson({
    "q": "Program 76: Slicing — output of `a[0]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `P`, `n`, `yth`, `nohtyP` **Explanation:** Standard string indexing and slicing. Negative index counts from end. `[::-1]` reverses."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = \"Python\"\nprint(a[0])\nprint(a[-1])\nprint(a[1:4])\nprint(a[::-1])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `P`, `n`, `yth`, `nohtyP` **Explanation:** Standard string indexing and slicing. Negative index counts from end. `[::-1]` reverses."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -510,21 +588,24 @@ EC.receiveLesson({
    "q": "Program 77: What is the output of `x == y` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True` **Explanation:** Python doesn't implicitly convert types in comparisons. `int` ≠ `str`, but `int(\"5\")` equals `5`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 5\ny = \"5\"\nprint(x == y)\nprint(x == int(y))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True` **Explanation:** Python doesn't implicitly convert types in comparisons. `int` ≠ `str`, but `int(\"5\")` equals `5`."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

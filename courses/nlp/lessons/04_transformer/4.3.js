@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 4.3 — Self-Attention, Derived
-   The variance and saturation claims are measured (scratchpad/nlp/n42.py).
+   The variance and saturation claims are measured (n42.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.3",

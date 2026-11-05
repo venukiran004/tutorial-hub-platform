@@ -52,7 +52,7 @@ for lr in (0.1, 0.5, 0.9, 1.0, 1.1):
 #   0.5   0.000000     one step -- exactly optimal here
 #   0.9   0.011529     converging, oscillating in sign
 #   1.0   1.000000     bouncing between 1 and -1 forever
-#   1.1   6.727500     DIVERGING
+#   1.1   38.337600     DIVERGING
 
 # The update multiplies x by (1 - lr*2) each step, so the behaviour is
 # entirely decided by |1 - 2*lr|:
@@ -126,20 +126,20 @@ x = np.array([1.0, 1.0])
 for _ in range(50):
     x = x - 0.09 * grad(x)
 
-x.round(6)          # [0., 0.010405]
+x.round(6)          # [1.4e-05, 0.008955]
 #                      ^ steep direction: solved in a few steps
 #                          ^ flat direction: barely moved in 50
 
 # The steep coordinate contracts by (1 - 0.09*20) = -0.8 per step;
 # the flat one by (1 - 0.09*1) = 0.91.
-0.8**50, 0.91**50           # 1.4e-05, 0.0094
+0.8**50, 0.91**50           # 1.4e-05, 0.0090
 
 # NO SINGLE lr FIXES THIS. Raise it to help the flat direction and the
 # steep one diverges:
 x = np.array([1.0, 1.0])
 for _ in range(50):
     x = x - 0.11 * grad(x)
-np.abs(x).max()             # 1.5e+09 -- exploded
+np.abs(x).max()             # 9.1e+03 -- exploded
 `,
       hl: [7, 16, 26],
       caption: "**This is the whole motivation for adaptive optimisers.** Plain descent has one scalar for every direction; the problem needs a different step per direction, and every method after SGD is an attempt to estimate what those should be."
@@ -193,7 +193,7 @@ for t in range(1, steps + 1):
 
     { t: "h2", n: "03", text: "How much data per step", id: "batch" },
 
-    {"kind": "flow", "title": "Gradient noise as an escape mechanism, not a tolerated cost", "caption": "**Start a full-batch run exactly on a saddle and it never moves: the gradient is zero, so the update is zero, forever.** Add mini-batch noise and the asymmetry does the work — the nudge is random in every coordinate, but only the negative-curvature direction *amplifies* its own perturbation, while the positive-curvature one is pushed back toward zero. Sixty noisy steps later the escaping coordinate is at 0.62 and accelerating. **Which is the real trade in batch-size tuning: a bigger batch buys a cleaner gradient and less of this.**", "cols": 3, "nodes": [{"id": "s", "label": "Sitting exactly on a saddle", "sub": "up in x, down in y", "tone": "accent"}, {"id": "f", "label": "Full batch: the gradient is zero", "sub": "stuck after 1,000 steps", "tone": "crit"}, {"id": "n", "label": "Mini-batch noise nudges both", "sub": "randomly, in every coordinate", "tone": "violet"}, {"id": "a", "label": "Only negative curvature amplifies it", "sub": "positive curvature pushes back", "tone": "good"}, {"id": "e", "label": "Escaped: 0.62 after 60 steps", "sub": "and accelerating away", "tone": "good"}, {"id": "b", "label": "So a bigger batch means less of this", "sub": "variance down, plateau risk up", "tone": "warn"}], "edges": [["s", "f"], ["s", "n"], ["n", "a"], ["a", "e"], ["e", "b"]], "t": "diagram", "id": "dg-2_3-03-1"},
+    {"kind": "flow", "title": "Gradient noise as an escape mechanism, not a tolerated cost", "caption": "**Start a full-batch run exactly on a saddle and it never moves: the gradient is zero, so the update is zero, forever.** Add mini-batch noise and the asymmetry does the work — the nudge is random in every coordinate, but only the negative-curvature direction *amplifies* its own perturbation, while the positive-curvature one is pushed back toward zero. Sixty noisy steps later the escaping coordinate is at 17.92 and accelerating. **Which is the real trade in batch-size tuning: a bigger batch buys a cleaner gradient and less of this.**", "cols": 3, "nodes": [{"id": "s", "label": "Sitting exactly on a saddle", "sub": "up in x, down in y", "tone": "accent"}, {"id": "f", "label": "Full batch: the gradient is zero", "sub": "stuck after 1,000 steps", "tone": "crit"}, {"id": "n", "label": "Mini-batch noise nudges both", "sub": "randomly, in every coordinate", "tone": "violet"}, {"id": "a", "label": "Only negative curvature amplifies it", "sub": "positive curvature pushes back", "tone": "good"}, {"id": "e", "label": "Escaped: 17.92 after 60 steps", "sub": "and accelerating away", "tone": "good"}, {"id": "b", "label": "So a bigger batch means less of this", "sub": "variance down, plateau risk up", "tone": "warn"}], "edges": [["s", "f"], ["s", "n"], ["n", "a"], ["a", "e"], ["e", "b"]], "t": "diagram", "id": "dg-2_3-03-1"},
 
     { t: "p", text: "**Batch size decides how much data contributes to each gradient**, trading noise against compute. A full-dataset gradient is exact and expensive; a single-example gradient is cheap and extremely noisy — and that noise turns out to be useful rather than merely tolerable." },
 
@@ -238,7 +238,7 @@ x = np.array([0.0, 0.0])
 for _ in range(60):
     noisy = grad_saddle(x) + rng.normal(0, 0.01, 2)
     x = x - 0.1 * noisy
-np.abs(x[1]).round(3)   # 0.62 -- escaped and accelerating away
+np.abs(x[1]).round(3)   # 17.92 -- escaped and accelerating away
 
 # THE ASYMMETRY IS THE MECHANISM: the noise perturbs both coordinates,
 # but only the negative-curvature one amplifies its perturbation. The

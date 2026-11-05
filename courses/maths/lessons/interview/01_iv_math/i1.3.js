@@ -115,7 +115,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "\\bar{X}_n = \\frac{1}{n}\\sum X_i \\xrightarrow{d} \\mathcal{N}\\left(\\mu, \\frac{\\sigma^2}{n}\\right)"
+     "tex": "\\sqrt{n}\\,\\frac{\\bar{X}_n - \\mu}{\\sigma} \\xrightarrow{d} \\mathcal{N}(0, 1), \\quad \\text{so for large } n,\\ \\bar{X}_n \\approx \\mathcal{N}\\left(\\mu, \\frac{\\sigma^2}{n}\\right)"
     },
     {
      "t": "p",

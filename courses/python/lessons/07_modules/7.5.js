@@ -30,7 +30,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "structure and what it means", code: `
+    { t: "code", lang: "text", title: "structure and what it means", code: `
 myapp/                       # a package -- importable as "myapp"
   __init__.py                # runs on ANY import of anything inside
   models.py                  # myapp.models
@@ -256,7 +256,7 @@ usage: myapp [-h] {import,report} ...`,
 
     { t: "tabs", items: [
       { label: "src layout (recommended)", blocks: [
-        { t: "code", lang: "python", title: "the package is not importable by accident", numbered: false, code: `
+        { t: "code", lang: "text", title: "the package is not importable by accident", numbered: false, code: `
 project/
   pyproject.toml
   src/
@@ -275,7 +275,7 @@ project/
         ]}
       ]},
       { label: "flat layout", blocks: [
-        { t: "code", lang: "python", title: "simpler, with one real hazard", numbered: false, code: `
+        { t: "code", lang: "text", title: "simpler, with one real hazard", numbered: false, code: `
 project/
   pyproject.toml
   myapp/
@@ -633,45 +633,45 @@ def test_public_surface_is_what_all_says() -> None:
       {
         stem: "Adding `from myapp.metrics import count` to `myapp/__init__.py` slows every service using the package. Why?",
         options: [
-          "`__init__.py` is executed on every attribute access",
-          "`__init__.py` runs on any import of anything inside the package, so its imports are paid by every consumer — including ones that never use metrics",
+          "`__init__.py` is executed again on every attribute access to the package, so each re-export is repeated",
           "Re-exports disable the module cache",
-          "The import is executed once per thread"
+          "It runs on any import from the package, so every consumer pays for its imports",
+          "The import is executed once per thread, so a threaded server pays for it many times over"
         ],
-        answer: 1,
+        answer: 2,
         why: "`import myapp.models` executes `myapp/__init__.py` first, so whatever it imports is loaded before the module you actually wanted. A single convenience re-export can pull in a vendor SDK and a gRPC stack, which is why an import-time budget test belongs in CI. A lazy `__getattr__` keeps the convenience and moves the cost to the callers who use it."
       },
       {
         stem: "What does `if __name__ == \"__main__\":` actually test?",
         options: [
+          "Whether this file is the one the interpreter was launched with",
           "Whether the file is a script rather than a module",
-          "Whether this file was the entry point of the process — Python sets `__name__` to `\"__main__\"` for the file it was told to run and to the dotted path otherwise",
           "Whether the file is being run interactively",
           "Whether the module has been imported before"
         ],
-        answer: 1,
+        answer: 0,
         why: "Every module gets a `__name__`; it equals its import path except for the one file the interpreter was launched with. That is why `python -m myapp.worker` sets `__name__` to `\"__main__\"` while a later `import myapp.worker` finds no cache entry under that name and executes the file a second time — two module objects, two copies of every global."
       },
       {
         stem: "Why write `def main(argv=None) -> int` rather than having `main()` read `sys.argv` and call `sys.exit`?",
         options: [
-          "`sys.argv` is unavailable in installed packages",
-          "It makes `main` an ordinary function a test can call directly, instead of one that needs monkeypatching and a `SystemExit` to catch",
-          "Returning an int is required by `[project.scripts]`",
-          "It avoids importing `sys`"
+          "`sys.argv` is unavailable inside installed packages, so `main` has to be given its arguments",
+          "Returning an int is required by `[project.scripts]`, which uses it as the process exit code",
+          "A test can call it directly — no monkeypatching and no `SystemExit` to catch",
+          "It avoids importing `sys` at module level, which keeps the tool's startup fast"
         ],
-        answer: 1,
+        answer: 2,
         why: "`assert main([\"--base-url\", \"...\", \"/health\"]) == 0` is a plain unit test with no subprocess and no global patched. The two lines that turn a return value into a process exit belong in `__main__.py` or in the console-script wrapper, where there is nothing left to test."
       },
       {
         stem: "What does `src/` layout buy you over keeping the package at the project root?",
         options: [
+          "`import myapp` needs an install, so tests run against the packaged code",
           "Faster imports",
-          "The project root is not on `sys.path`, so `import myapp` requires an install and tests therefore exercise the packaged code rather than the source tree",
           "It is required by `pyproject.toml`",
-          "It allows multiple packages per project"
+          "It allows several top-level packages to live side by side in one project"
         ],
-        answer: 1,
+        answer: 0,
         why: "With a flat layout, running anything from the project directory puts your source on `sys.path` by accident, so a module missing from the wheel passes every local test and fails on install. Under `src/`, the only way to import the package is to install it — usually `pip install -e .` — which also removes the risk of the working directory shadowing the package."
       }
     ]

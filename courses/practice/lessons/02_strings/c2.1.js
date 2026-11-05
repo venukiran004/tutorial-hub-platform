@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c2.1",
  "lede": "**28 programs to write**, on string puzzles and a first generator. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on string puzzles and a first generator without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c1.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 78–105.** What this set actually drills, counted from its own problems — 16 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["strings", "lists", "files and paths", "dicts and sets", "graphs & trees", "decorators"], "cells": [[{"text": "3", "tone": "accent"}, "Count Character Frequency"], [{"text": "3", "tone": "good"}, "Find Second Largest in List"], [{"text": "3", "tone": "violet"}, "Read and Write File"], [{"text": "3", "tone": "teal"}, "Dictionary Comprehension"], [{"text": "2", "tone": "warn"}, "Graph"], [{"text": "2", "tone": "crit"}, "Decorator"]], "t": "diagram", "id": "dg-c2_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

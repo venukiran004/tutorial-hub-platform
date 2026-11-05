@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c5.3",
  "lede": "**19 snippets to read**, on defaultdict and OrderedDict. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 19 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 19 snippets on defaultdict and OrderedDict before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c5.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 627–645.** What this set asks you to predict, counted from its own problems — 15 of the 19 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["dicts and sets", "production", "classes", "graphs & trees", "threads"], "cells": [[{"text": "10", "tone": "accent"}, "A defaultdict"], [{"text": "2", "tone": "good"}, "A collections container"], [{"text": "1", "tone": "violet"}, "super() and the method resolut"], [{"text": "1", "tone": "teal"}, "A deque"], [{"text": "1", "tone": "warn"}, "A deque"]], "t": "diagram", "id": "dg-c5_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 627: A defaultdict — output of `trie.search(\"apple\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False`, `False` **Explanation:** Trie (prefix tree) using defaultdict for children. Efficient word lookup."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\n\nclass Trie:\n    def __init__(self):\n        self.children = defaultdict(Trie)\n        self.is_end = False\n    \n    def insert(self, word):\n        node = self\n        for ch in word:\n            node = node.children[ch]\n        node.is_end = True\n    \n    def search(self, word):\n        node = self\n        for ch in word:\n            if ch not in node.children:\n                return False\n            node = node.children[ch]\n        return node.is_end\n\ntrie = Trie()\ntrie.insert(\"apple\")\ntrie.insert(\"app\")\nprint(trie.search(\"apple\"))\nprint(trie.search(\"app\"))\nprint(trie.search(\"ap\"))\nprint(trie.search(\"orange\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False`, `False` **Explanation:** Trie (prefix tree) using defaultdict for children. Efficient word lookup."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 628: A Counter — output of `can_construct(\"aa\", \"aab\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` **Explanation:** Counter subtraction removes available chars. Empty result means constructible."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndef can_construct(ransom_note, magazine):\n    return not (Counter(ransom_note) - Counter(magazine))\n\nprint(can_construct(\"aa\", \"aab\"))\nprint(can_construct(\"aa\", \"ab\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` **Explanation:** Counter subtraction removes available chars. Empty result means constructible."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 629: A deque — output of `ma.next(1)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1.0`, `5.5`, `4.666666666666667`, `6.0` **Explanation:** Bounded deque automatically maintains window size. Average of current window."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import deque\n\nclass MovingAverage:\n    def __init__(self, size):\n        self.window = deque(maxlen=size)\n    \n    def next(self, val):\n        self.window.append(val)\n        return sum(self.window) / len(self.window)\n\nma = MovingAverage(3)\nprint(ma.next(1))\nprint(ma.next(10))\nprint(ma.next(3))\nprint(ma.next(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1.0`, `5.5`, `4.666666666666667`, `6.0` **Explanation:** Bounded deque automatically maintains window size. Average of current window."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 630: super() and the method resolution order — output of `list(d.keys())`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['b', 'c', 'a']` **Explanation:** Custom OrderedDict that reorders on access — access-order tracking."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import OrderedDict\n\nclass AccessOrderDict(OrderedDict):\n    def __getitem__(self, key):\n        self.move_to_end(key)\n        return super().__getitem__(key)\n\nd = AccessOrderDict()\nd['a'] = 1\nd['b'] = 2\nd['c'] = 3\n_ = d['a']  # access 'a', moves to end\nprint(list(d.keys()))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['b', 'c', 'a']` **Explanation:** Custom OrderedDict that reorders on access — access-order tracking."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 631: A Counter — output of `first_unique_char(\"leetcode\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0`, `-1` **Explanation:** Counter counts all chars first, then linear scan finds first with count 1."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndef first_unique_char(s):\n    c = Counter(s)\n    for i, ch in enumerate(s):\n        if c[ch] == 1:\n            return i\n    return -1\n\nprint(first_unique_char(\"leetcode\"))\nprint(first_unique_char(\"aabb\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0`, `-1` **Explanation:** Counter counts all chars first, then linear scan finds first with count 1."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 632: A collections container — output of `ds.find(1) == ds.find(4)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` **Explanation:** Union-Find with path compression. 1-2-3-4 are connected. 5 is separate."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\n\nclass DisjointSet:\n    def __init__(self):\n        self.parent = {}\n    \n    def find(self, x):\n        if x not in self.parent:\n            self.parent[x] = x\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n    \n    def union(self, x, y):\n        px, py = self.find(x), self.find(y)\n        if px != py:\n            self.parent[px] = py\n\nds = DisjointSet()\nds.union(1, 2)\nds.union(3, 4)\nds.union(2, 3)\nprint(ds.find(1) == ds.find(4))\nprint(ds.find(1) == ds.find(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` **Explanation:** Union-Find with path compression. 1-2-3-4 are connected. 5 is separate."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 633: A defaultdict — output of `dict(dept_counts)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'Engineering': 3, 'Sales': 2}`, `{'Engineering': 101666.66666666667, 'Sales': 82500.0}` **Explanation:** Counter for department counts. defaultdict aggregates salaries for averaging."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import namedtuple, Counter\n\nRecord = namedtuple('Record', 'name department salary')\nemployees = [\n    Record('Alice', 'Engineering', 100000),\n    Record('Bob', 'Sales', 80000),\n    Record('Charlie', 'Engineering', 95000),\n    Record('Diana', 'Sales', 85000),\n    Record('Eve', 'Engineering', 110000),\n]\n\ndept_counts = Counter(e.department for e in employees)\nprint(dict(dept_counts))\n\nfrom collections import defaultdict\ndept_salaries = defaultdict(list)\nfor e in employees:\n    dept_salaries[e.department].append(e.salary)\n\navg_salaries = {dept: sum(s)/len(s) for dept, s in dept_salaries.items()}\nprint(avg_salaries)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'Engineering': 3, 'Sales': 2}`, `{'Engineering': 101666.66666666667, 'Sales': 82500.0}` **Explanation:** Counter for department counts. defaultdict aggregates salaries for averaging."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 634: A deque — output of `zigzag_levels(tree)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1], [3, 2], [4, 5, 6, 7]]` **Explanation:** Zigzag BFS reverses every other level using deque."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import deque\n\ndef zigzag_levels(tree):\n    \"\"\"BFS with alternating direction\"\"\"\n    if not tree:\n        return []\n    queue = deque([tree])\n    result = []\n    left_to_right = True\n    \n    while queue:\n        level = []\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node[0])\n            if len(node) > 1:\n                for child in node[1]:\n                    queue.append(child)\n        if not left_to_right:\n            level.reverse()\n        result.append(level)\n        left_to_right = not left_to_right\n    return result\n\ntree = (1, [(2, [(4, []), (5, [])]), (3, [(6, []), (7, [])])])\nprint(zigzag_levels(tree))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1], [3, 2], [4, 5, 6, 7]]` **Explanation:** Zigzag BFS reverses every other level using deque."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 635: A Counter — output of `most_common_words(text, 3, {'the', 'on'})`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('cat', 2), ('mat', 2), ('sat', 1)]` **Explanation:** Word frequency analysis with stop word filtering."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndef most_common_words(text, n=3, stop_words=None):\n    stop_words = stop_words or set()\n    words = text.lower().split()\n    filtered = [w for w in words if w not in stop_words]\n    return Counter(filtered).most_common(n)\n\ntext = \"the cat sat on the mat the cat likes the mat\"\nprint(most_common_words(text, 3, {'the', 'on'}))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('cat', 2), ('mat', 2), ('sat', 1)]` **Explanation:** Word frequency analysis with stop word filtering."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 636: A deque — output of `return self.queue.popleft() if self.queue els…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['urgent', 'task1', 'task2', 'task3']` **Explanation:** High priority tasks are prepended (appendleft). Normal tasks appended. FIFO processing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import deque\n\nclass TaskScheduler:\n    def __init__(self):\n        self.queue = deque()\n    \n    def add_task(self, name, priority='normal'):\n        if priority == 'high':\n            self.queue.appendleft(name)\n        else:\n            self.queue.append(name)\n    \n    def run_next(self):\n        return self.queue.popleft() if self.queue else None\n\nts = TaskScheduler()\nts.add_task(\"task1\")\nts.add_task(\"task2\")\nts.add_task(\"urgent\", \"high\")\nts.add_task(\"task3\")\n\nresults = []\nwhile True:\n    task = ts.run_next()\n    if task is None:\n        break\n    results.append(task)\nprint(results)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['urgent', 'task1', 'task2', 'task3']` **Explanation:** High priority tasks are prepended (appendleft). Normal tasks appended. FIFO processing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 637: A Counter — output of `find_duplicates([1, 2, 3, 2, 4, 3, 5])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 3]`, `[]` **Explanation:** Counter identifies elements appearing more than once."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndef find_duplicates(lst):\n    return [item for item, count in Counter(lst).items() if count > 1]\n\nprint(find_duplicates([1, 2, 3, 2, 4, 3, 5]))\nprint(find_duplicates([1, 2, 3]))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 3]`, `[]` **Explanation:** Counter identifies elements appearing more than once."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,28 +257,25 @@ EC.receiveLesson({
    "q": "Program 638: A defaultdict — output of `len(mm.get('tag'))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `1` **Explanation:** Set-based multimap — duplicates ignored. Fluent interface with chaining."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\n\nclass Multimap:\n    def __init__(self):\n        self._data = defaultdict(set)\n    \n    def put(self, key, value):\n        self._data[key].add(value)\n        return self\n    \n    def get(self, key):\n        return frozenset(self._data[key])\n    \n    def remove(self, key, value):\n        self._data[key].discard(value)\n\nmm = Multimap()\nmm.put('tag', 'python').put('tag', 'coding').put('tag', 'python')\nprint(len(mm.get('tag')))\nmm.remove('tag', 'python')\nprint(len(mm.get('tag')))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `1` **Explanation:** Set-based multimap — duplicates ignored. Fluent interface with chaining."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "639",
    "q": "Program 639: A deque — output of `f\"Eliminated: {eliminated}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from collections import deque\n\ndef hot_potato(names, num):\n    queue = deque(names)\n    while len(queue) > 1:\n        queue.rotate(-num)\n        eliminated = queue.popleft()\n        print(f\"Eliminated: {eliminated}\")\n    return queue[0]\n\nwinner = hot_potato(['A', 'B', 'C', 'D', 'E'], 3)\nprint(f\"Winner: {winner}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -260,7 +290,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Hot potato game — rotate queue by num, then eliminate first person."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from collections import deque\n\ndef hot_potato(names, num):\n    queue = deque(names)\n    while len(queue) > 1:\n        queue.rotate(-num)\n        eliminated = queue.popleft()\n        print(f\"Eliminated: {eliminated}\")\n    return queue[0]\n\nwinner = hot_potato(['A', 'B', 'C', 'D', 'E'], 3)\nprint(f\"Winner: {winner}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -268,16 +307,19 @@ EC.receiveLesson({
    "q": "Program 640: A Counter — output of `longest_substring_k_distinct(\"eceba\", 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3`, `2` **Explanation:** Sliding window with Counter tracks distinct characters. Window shrinks when exceeds k."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndef longest_substring_k_distinct(s, k):\n    if k == 0:\n        return 0\n    counter = Counter()\n    max_len = 0\n    left = 0\n    for right, ch in enumerate(s):\n        counter[ch] += 1\n        while len(counter) > k:\n            counter[s[left]] -= 1\n            if counter[s[left]] == 0:\n                del counter[s[left]]\n            left += 1\n        max_len = max(max_len, right - left + 1)\n    return max_len\n\nprint(longest_substring_k_distinct(\"eceba\", 2))\nprint(longest_substring_k_distinct(\"aa\", 1))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3`, `2` **Explanation:** Sliding window with Counter tracks distinct characters. Window shrinks when exceeds k."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -285,16 +327,19 @@ EC.receiveLesson({
    "q": "Program 641: A collections container — output of `pm.get_by_prefix('app')`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'app.name': 'MyApp', 'app.version': '1.0'}`, `{'db.host': 'localhost', 'db.port': '5432'}` **Explanation:** Prefix-based configuration lookup — common pattern in config management."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\n\nclass PrefixMap:\n    def __init__(self):\n        self.data = {}\n    \n    def put(self, key, value):\n        self.data[key] = value\n    \n    def get_by_prefix(self, prefix):\n        return {k: v for k, v in self.data.items() if k.startswith(prefix)}\n\npm = PrefixMap()\npm.put('app.name', 'MyApp')\npm.put('app.version', '1.0')\npm.put('db.host', 'localhost')\npm.put('db.port', '5432')\n\nprint(pm.get_by_prefix('app'))\nprint(pm.get_by_prefix('db'))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'app.name': 'MyApp', 'app.version': '1.0'}`, `{'db.host': 'localhost', 'db.port': '5432'}` **Explanation:** Prefix-based configuration lookup — common pattern in config management."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -302,16 +347,19 @@ EC.receiveLesson({
    "q": "Program 642: A Counter — output of `c = Counter({'a': 5, 'b': 3, 'c': 1})`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Counter({'a': 6, 'd': 4, 'b': 3, 'c': 1})`, `Counter({'a': 4, 'd': 4, 'c': 1, 'b': -2})` **Explanation:** `update` adds counts. `subtract` subtracts (allows negative)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\nc = Counter({'a': 5, 'b': 3, 'c': 1})\nc.update({'a': 1, 'd': 4})\nprint(c)\nc.subtract({'a': 2, 'b': 5})\nprint(c)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Counter({'a': 6, 'd': 4, 'b': 3, 'c': 1})`, `Counter({'a': 4, 'd': 4, 'c': 1, 'b': -2})` **Explanation:** `update` adds counts. `subtract` subtracts (allows negative)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -319,16 +367,19 @@ EC.receiveLesson({
    "q": "Program 643: A deque — output of `interleave_halves(deque([1, 2, 3, 4, 5, 6…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 4, 2, 5, 3, 6]` **Explanation:** Splits deque in half and interleaves elements alternately."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import deque\n\ndef interleave_halves(queue):\n    n = len(queue) // 2\n    first_half = deque()\n    for _ in range(n):\n        first_half.append(queue.popleft())\n    \n    result = deque()\n    while first_half or queue:\n        if first_half:\n            result.append(first_half.popleft())\n        if queue:\n            result.append(queue.popleft())\n    return list(result)\n\nprint(interleave_halves(deque([1, 2, 3, 4, 5, 6])))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 4, 2, 5, 3, 6]` **Explanation:** Splits deque in half and interleaves elements alternately."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -336,28 +387,25 @@ EC.receiveLesson({
    "q": "Program 644: A namedtuple — output of `f\"Count: {stats.count}, Mean: {stats.mean…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Count: 8, Mean: 3.88`, `Range: [1, 9]` **Explanation:** Running statistics stored in namedtuple for clean access."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import namedtuple\n\ndef running_stats(data):\n    Stats = namedtuple('Stats', 'count sum mean min max')\n    count = 0\n    total = 0\n    minimum = float('inf')\n    maximum = float('-inf')\n    \n    for x in data:\n        count += 1\n        total += x\n        minimum = min(minimum, x)\n        maximum = max(maximum, x)\n    \n    return Stats(count, total, total/count, minimum, maximum)\n\nstats = running_stats([3, 1, 4, 1, 5, 9, 2, 6])\nprint(f\"Count: {stats.count}, Mean: {stats.mean:.2f}\")\nprint(f\"Range: [{stats.min}, {stats.max}]\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Count: 8, Mean: 3.88`, `Range: [1, 9]` **Explanation:** Running statistics stored in namedtuple for clean access."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "645",
    "q": "Program 645: An OrderedDict — output of `fs.pop()`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from collections import Counter, OrderedDict\n\nclass FrequencyStack:\n    def __init__(self):\n        self.freq = Counter()\n        self.group = OrderedDict()\n        self.max_freq = 0\n    \n    def push(self, val):\n        self.freq[val] += 1\n        f = self.freq[val]\n        self.max_freq = max(self.max_freq, f)\n        self.group.setdefault(f, []).append(val)\n    \n    def pop(self):\n        val = self.group[self.max_freq].pop()\n        self.freq[val] -= 1\n        if not self.group[self.max_freq]:\n            del self.group[self.max_freq]\n            self.max_freq -= 1\n        return val\n\nfs = FrequencyStack()\nfor x in [5, 7, 5, 7, 4, 5]:\n    fs.push(x)\n\nprint(fs.pop())  # 5 (most frequent)\nprint(fs.pop())  # 7 (next most frequent, most recent)\nprint(fs.pop())  # 5\nprint(fs.pop())  # 4",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:** `5`, `7`, `5`, `4` **Explanation:** Frequency stack pops most frequent element (tie-broken by recency)."
@@ -369,12 +417,21 @@ EC.receiveLesson({
      "t": "p",
      "text": "**From the runnable 650-program set.** These were the `file1`…`file13_questions_*.py` files; they now live here, grouped by topic. Every program below was executed and the **Output** shown under it is that run's real stdout — nothing is hand-written."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from collections import Counter, OrderedDict\n\nclass FrequencyStack:\n    def __init__(self):\n        self.freq = Counter()\n        self.group = OrderedDict()\n        self.max_freq = 0\n    \n    def push(self, val):\n        self.freq[val] += 1\n        f = self.freq[val]\n        self.max_freq = max(self.max_freq, f)\n        self.group.setdefault(f, []).append(val)\n    \n    def pop(self):\n        val = self.group[self.max_freq].pop()\n        self.freq[val] -= 1\n        if not self.group[self.max_freq]:\n            del self.group[self.max_freq]\n            self.max_freq -= 1\n        return val\n\nfs = FrequencyStack()\nfor x in [5, 7, 5, 7, 4, 5]:\n    fs.push(x)\n\nprint(fs.pop())\nprint(fs.pop())\nprint(fs.pop())\nprint(fs.pop())",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

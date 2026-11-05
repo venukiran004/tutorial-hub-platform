@@ -191,7 +191,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Detect multicollinearity in feature matrix\nrank = np.linalg.matrix_rank(X)\nif rank < X.shape[1]:\n    print(f\"Features are rank-deficient: {rank} independent features out of {X.shape[1]}\")\n\n# Find linearly independent columns:\n_, _, Vt = np.linalg.svd(X)\nthreshold = 1e-10\nindependent_mask = np.abs(Vt).max(axis=1) > threshold"
+     "code": "# Detect multicollinearity in feature matrix\nrank = np.linalg.matrix_rank(X)\nif rank < X.shape[1]:\n    print(f\"Features are rank-deficient: {rank} independent features out of {X.shape[1]}\")\n\n# Find linearly independent columns with pivoted QR:\nfrom scipy.linalg import qr\n_, _, pivots = qr(X, mode=\"economic\", pivoting=True)\nindependent_cols = np.sort(pivots[:rank])"
     }
    ],
    "kind": ""
@@ -212,7 +212,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "198",
-   "q": "What is `np.block_diag` (scipy) and when is it used?",
+   "q": "What is `scipy.linalg.block_diag` and when is it used?",
    "body": [
     {
      "t": "code",
@@ -247,15 +247,11 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Deprecated functions stay for ≥2 major versions with warnings.",
-      "Functions in `numpy.core` may change; `numpy.*` is stable public API.",
+      "Deprecated functions normally keep warning for at least two releases before removal.",
+      "Names starting with an underscore are private; documented `numpy.*` names are the public API.",
       "Use `np.__version__` to check version in code requiring specific features.",
-      "Key recent additions: `numpy.random.default_rng` (1.17), `sliding_window_view` (1.20), `StringDtype` (2.0), copy-on-write semantics (2.0 default opt-in)."
+      "Key recent additions: `numpy.random.default_rng` (1.17), `sliding_window_view` (1.20), `StringDType` (2.0)."
      ]
-    },
-    {
-     "t": "p",
-     "text": "*Last Updated: April 2026* *Topic: NumPy Interview Questions*"
     }
    ],
    "kind": ""

@@ -54,7 +54,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "vs. fully connected: \\((H\\cdot W\\cdot C_{in})\\cdot(H_{out}\\cdot W_{out}\\cdot C_{out})\\) — exponentially more."
+     "text": "vs. fully connected: \\((H\\cdot W\\cdot C_{in})\\cdot(H_{out}\\cdot W_{out}\\cdot C_{out})\\) — far more, and it grows with image size."
     },
     {
      "t": "p",
@@ -220,7 +220,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**VGG rationale:** Stack of \\(n\\) \\((3\\times3)\\) convolutions = receptive field of \\((2n+1)\\times(2n+1)\\) with \\(n\\times 2\\times 9C^2\\) params vs single \\((2n+1)^2 C^2\\) — strictly fewer params."
+     "text": "**VGG rationale:** Stack of \\(n\\) \\((3\\times3)\\) convolutions = receptive field of \\((2n+1)\\times(2n+1)\\) with \\(n\\times 9C^2\\) params vs single \\((2n+1)^2 C^2\\) — strictly fewer params."
     },
     {
      "t": "p",
@@ -398,7 +398,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Highlights which regions of the input affect the class score — model-agnostic explanation."
+     "text": "Highlights which regions of the input affect the class score — a class-specific explanation for convolutional networks, not a model-agnostic one."
     }
    ],
    "kind": ""
@@ -542,7 +542,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "vs. naive \\(3\\times 3\\times 256\\times 256\\): \\(4\\times\\) fewer FLOPs."
+     "text": "vs. naive \\(3\\times 3\\times 256\\times 256\\): about \\(9\\times\\) fewer parameters and FLOPs."
     }
    ],
    "kind": ""

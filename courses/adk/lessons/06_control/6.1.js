@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.1 — Callbacks: The Eight Hooks
    The field list, the firing order, the blocked tool and the zero-model-call
-   short circuit are all executed output from scratchpad/adk/c1.py on
+   short circuit are all executed output from c1.py on
    google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
@@ -52,7 +52,7 @@ on_tool_error_callback` },
 
     { t: "p", text: "Every hook below appends its name to a list. One turn, one tool call, a scripted model — the output is the framework's own sequencing, not a diagram drawn from the documentation." },
 
-    { t: "code", lang: "python", title: "c1.py — attach everything, run one turn",
+    { t: "code", lang: "python", title: "attach everything, run one turn",
       code: `agent = LlmAgent(
     name="a", model=llm, tools=[weather],
     before_agent_callback=rec("before_agent"),

@@ -135,7 +135,7 @@ f(some_object)           # incref for the argument, decref on return
       caption: "**The second row is the one that surprises people.** A large share of \"CPU-bound\" Python is really C code that has released the lock, which is why threading a `numpy` or `hashlib` workload works and threading a pure-Python loop does not (Lesson 11.1)."
     },
 
-    { t: "code", lang: "python", title: "how an extension releases it", code: `
+    { t: "code", lang: "c", title: "how an extension releases it", code: `
 /* In C — the macro pair that makes a library thread-friendly */
 static PyObject *compute(PyObject *self, PyObject *args) {
     double *data; Py_ssize_t n;
@@ -238,6 +238,8 @@ if k not in d:        # NOT atomic — another thread can insert between
       { t: "p", text: "**Use a lock or a `queue.Queue` and stop reasoning about bytecodes.** Code that depends on which operations are atomic is correct by accident and breaks silently when someone edits the line." }
     ]},
 
+    {"t": "diagram", "kind": "trace", "title": "counter += 1, interleaved by two threads", "caption": "**Each bytecode instruction runs atomically under the GIL, but `counter += 1` is a load, an add and a store** — and the interpreter may switch threads between any two of them. Both threads read 0, both write 1, and one increment vanishes. Nothing raised; the total is simply short, and by a different amount on every run.", "left": "thread: instruction", "codeW": 170, "vars": ["A holds", "B holds", "counter"], "steps": [{"code": "A: load counter", "state": ["0", "-", "0"], "tone": "accent"}, {"code": "-- switch --", "state": ["0", "-", "0"], "tone": "warn"}, {"code": "B: load, add, store", "state": ["0", "1", "1"], "changed": [1, 2], "tone": "accent"}, {"code": "A: add, store", "state": ["1", "1", "1"], "changed": [0, 2], "tone": "crit"}]},
+
     { t: "h2", n: "04", text: "Free-threaded Python", id: "freethreaded" },
 
     { t: "p", text: "PEP 703 makes the GIL optional. Python 3.13 shipped an experimental free-threaded build, 3.14 improves it, and it is a supported but non-default configuration — a separate binary, not a runtime flag." },
@@ -265,7 +267,7 @@ if k not in d:        # NOT atomic — another thread can insert between
 #   single-threaded everything               atomic refcounts` },
         { level: "best", label: "Treat it as an ecosystem question, not a language one",
           why: "Any C extension that assumed the GIL is now unsafe and must be audited and rebuilt. The blocker is not your code — it is the dependency tree beneath it, and that is measured in years rather than releases.",
-          code: `# Check where you actually stand
+          lang: "bash", code: `# Check where you actually stand
 python3.13t -c "import sys; print(sys._is_gil_enabled())"
 
 # An extension declares support explicitly; without it, importing the
@@ -560,7 +562,7 @@ def test_counter_increment_is_not_atomic():
         stem: "Four threads run `counter += 1` a hundred thousand times each. The result is 271,043 rather than 400,000. Why did the GIL not prevent this?",
         options: [
           "The GIL only applies to I/O operations",
-          "`counter += 1` is several bytecodes — load, add, store — and the GIL can be released between any two of them, so updates are lost",
+          "`counter += 1` is several bytecodes, and threads can switch between them",
           "Integers above a certain size are not thread-safe",
           "`global` variables bypass the GIL"
         ],
@@ -570,34 +572,34 @@ def test_counter_increment_is_not_atomic():
       {
         stem: "Hashing with `hashlib` across four threads gives a 3.6× speed-up, but a pure-Python loop gives 0.9×. What explains the difference?",
         options: [
-          "`hashlib` internally uses processes",
-          "`hashlib` releases the GIL around the digest, so the C code runs in parallel; the pure-Python loop must hold the lock to execute bytecode",
-          "Hashing is I/O-bound because it reads files",
-          "The pure-Python loop was memory-bound"
+          "`hashlib` internally uses processes, so its work never competes with the threads for the GIL",
+          "Hashing is I/O-bound because it reads files, so threads overlap the reads rather than the computation",
+          "The pure-Python loop was memory-bound, so extra threads only increased contention for the memory bus",
+          "`hashlib` releases the GIL while hashing; pure Python has to hold it"
         ],
-        answer: 1,
+        answer: 3,
         why: "A C extension may release the GIL for any section that touches no Python objects, which is exactly what a numeric or crypto kernel over a raw buffer does. This is why \"CPU-bound means use processes\" is a rule about *pure Python* — a large share of heavy Python work happens in C libraries that already let go of the lock."
       },
       {
         stem: "A sixteen-thread `numpy` pipeline is 6× faster on an 8-core laptop and slower than serial on a 64-core server. What is happening?",
         options: [
-          "The server has slower cores",
-          "BLAS already threads internally — one thread per core — so the pool oversubscribes by the core count and the machine context-switches instead of computing",
-          "The GIL behaves differently above 16 cores",
-          "`numpy` arrays do not fit in the server's cache"
+          "The server has slower individual cores, so each thread does less work per second than on the laptop",
+          "The GIL behaves differently above 16 cores, switching threads far more often to share them fairly",
+          "BLAS already uses every core, so the pool oversubscribes the machine many times over",
+          "`numpy` arrays do not fit in the server's cache, so every thread stalls waiting on main memory"
         ],
-        answer: 1,
+        answer: 2,
         why: "The library was parallel before the pool was added. On 8 cores, sixteen Python threads oversubscribe by 2× and the gain survives; on 64 cores it is 16×, so 1,024 threads compete for 64 cores. Setting `OMP_NUM_THREADS=1` moves the parallelism from inside each call to across the calls, which is where the pool wanted it."
       },
       {
         stem: "What does a free-threaded (no-GIL) build change?",
         options: [
           "All Python code becomes faster",
-          "Parallel pure-Python CPU work becomes possible, at a cost of roughly 5–10% single-threaded performance from atomic reference counting",
           "Race conditions become impossible",
-          "`multiprocessing` becomes unnecessary"
+          "`multiprocessing` becomes unnecessary",
+          "Pure-Python threads can run in parallel, at a small single-threaded cost"
         ],
-        answer: 1,
+        answer: 3,
         why: "It removes the one constraint the GIL imposed. I/O-bound work and C-extension work were never blocked, so they gain nothing, and every single-threaded run pays for per-object atomic refcounts. Races get *worse*, since the coarse interleaving disappears — and the practical blocker today is whether every C extension in your dependency tree ships a free-threaded build."
       }
     ]

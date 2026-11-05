@@ -137,9 +137,9 @@ for name, df in [("MCAR", mcar), ("MAR", mar), ("MNAR", mnar)]:
     print(f"{name}: {df['income'].isna().mean():.0%} missing, "
           f"observed mean {obs.mean():,.0f} vs true {true_mean:,.0f} "
           f"({obs.mean() - true_mean:+,.0f})")
-# MCAR: 30% missing, observed mean 38,020 vs true 38,050 (-30)
-# MAR:  35% missing, observed mean 33,900 vs true 38,050 (-4,150)
-# MNAR: 27% missing, observed mean 32,100 vs true 38,050 (-5,950)
+# MCAR: 30% missing, observed mean 42,204 vs true 42,175 (+29)
+# MAR: 34% missing, observed mean 38,715 vs true 42,175 (-3,460)
+# MNAR: 37% missing, observed mean 33,863 vs true 42,175 (-8,311)
 #
 # MCAR: the observed rows are a random sample. Unbiased, less precise.
 # MAR:  older people are missing more, and older people earn more, so
@@ -171,7 +171,7 @@ for name, df in [("full", full), ("MCAR", mcar), ("MAR", mar), ("MNAR", mnar)]:
     d = df.dropna()
     slope = np.polyfit(d["age"], d["income"], 1)[0]
     print(f"{name}: slope {slope:,.0f} per year")
-# full: 900   MCAR: 898   MAR: 894   MNAR: 610
+# full: 879   MCAR: 888   MAR: 876   MNAR: 687
 #
 # MAR barely hurts the SLOPE, because the regression conditions on
 # age -- the predictor of missingness -- and within age the missing

@@ -77,17 +77,17 @@ EC.receiveLesson({
 
     { t: "p", text: "The task is deliberately trivial so that success is unambiguous: every answer must begin with the literal tag `[ANS]`. Eight training examples, four held-out questions, the same GPT-2 throughout." },
 
-    { t: "code", lang: "python", title: "g42.py \u2014 zero-shot, few-shot, fine-tuned", code: `zero = "Answer in the form [ANS] followed by the answer.\nQ: %s\nA:"
+    { t: "code", lang: "python", title: "g42.py \u2014 zero-shot, few-shot, fine-tuned", code: `zero = "Answer in the form [ANS] followed by the answer.\\nQ: %s\\nA:"
 
-shots = "\n".join("Q: %s\nA: %s" % (q, a) for q, a in BEHAVIOUR_TRAIN)
-few   = shots + "\nQ: %s\nA:"
+shots = "\\n".join("Q: %s\\nA: %s" % (q, a) for q, a in BEHAVIOUR_TRAIN)
+few   = shots + "\\nQ: %s\\nA:"
 
 ft, secs = finetune(BEHAVIOUR_TRAIN)          # the same 8 pairs, 10 epochs
 
 for q in BEHAVIOUR_TEST:
     print(gen(base, zero % q).startswith("[ANS]"),
           gen(base, few % q).startswith("[ANS]"),
-          gen(ft,  "Q: %s\nA:" % q).startswith("[ANS]"))`,
+          gen(ft,  "Q: %s\\nA:" % q).startswith("[ANS]"))`,
       out: `  1. ZERO-SHOT PROMPT
      What is the tallest mountain?          miss  'The tallest mountain is the mountain of the L
      Who invented the telephone?            miss  'The telephone was invented by the French inve
@@ -155,11 +155,11 @@ for q in BEHAVIOUR_TEST:
     { t: "code", lang: "python", title: "g42.py \u2014 retrieval against a fine-tune, first run", code: `FACT_DOC = "Zanthia is a small republic. The capital of Zanthia is Morrowbridge."
 
 # retrieval: the document goes in the prompt
-gen(base, "Document: %s\nQ: %s\nA:" % (FACT_DOC, q), n=16)
+gen(base, "Document: %s\\nQ: %s\\nA:" % (FACT_DOC, q), n=16)
 
 # fine-tune: four phrasings, 10 epochs
 fm, fsecs = finetune(FACT_TRAIN)
-gen(fm, "Q: %s\nA:" % q, n=16)`,
+gen(fm, "Q: %s\\nA:" % q, n=16)`,
       out: `  2. RETRIEVAL: put the document in the context
      What is the capital of Zanthia?        OK    'The capital of Zanthia is the capital of the
      Which city is Zanthia's capital?       miss  'Zanthia is a small republic. The capital of Z
@@ -207,10 +207,10 @@ gen(fm, "Q: %s\nA:" % q, n=16)`,
     { t: "code", lang: "python", title: "g42.py \u2014 the capital changes to Caldreth", code: `NEW_DOC = "Zanthia is a small republic. The capital of Zanthia is Caldreth."
 
 # retrieval: edit the document, change nothing else
-gen(base, "Document: %s\nQ: %s\nA:" % (NEW_DOC, q))
+gen(base, "Document: %s\\nQ: %s\\nA:" % (NEW_DOC, q))
 
 # the fine-tuned model: ask it the same question
-gen(fm, "Q: %s\nA:" % q)`,
+gen(fm, "Q: %s\\nA:" % q)`,
       out: `  retrieval, with the updated document:
     What is the capital of Zanthia?    'Caldreth is a small republic. The capital of Zant
     Which city is Zanthia's capital?   'Caldreth is the capital of Zanthia. Q: What is th
@@ -292,8 +292,8 @@ gen(fm, "Q: %s\nA:" % q)`,
 
 
     { t: "code", lang: "python", title: "g42.py \u2014 prompt tokens, each approach", code: `for label, prompt in (("zero-shot", zero % q), ("few-shot", few % q),
-                      ("retrieval", "Document: %s\nQ: %s\nA:" % (FACT_DOC, q)),
-                      ("fine-tuned", "Q: %s\nA:" % q)):
+                      ("retrieval", "Document: %s\\nQ: %s\\nA:" % (FACT_DOC, q)),
+                      ("fine-tuned", "Q: %s\\nA:" % q)):
     print(label, len(tok(prompt).input_ids))`,
       out: `  approach                    prompt tokens    tokens x 1000     one-off cost
   zero-shot                              24            24000             none
@@ -322,27 +322,27 @@ gen(fm, "Q: %s\nA:" % q)`,
       ],
       hint: "Before trusting any score, re-run it with the generation budget doubled. If the number moves, you were measuring the budget.",
       solution: { lang: "python", title: "g42.py and g42b.py \u2014 the comparison and the budget check", code: `# --- the behaviour task, three ways, same 8 examples
-zero  = "Answer in the form [ANS] followed by the answer.\nQ: %s\nA:"
-shots = "\n".join("Q: %s\nA: %s" % (q, a) for q, a in BEHAVIOUR_TRAIN)
-few   = shots + "\nQ: %s\nA:"
+zero  = "Answer in the form [ANS] followed by the answer.\\nQ: %s\\nA:"
+shots = "\\n".join("Q: %s\\nA: %s" % (q, a) for q, a in BEHAVIOUR_TRAIN)
+few   = shots + "\\nQ: %s\\nA:"
 ft, secs = finetune(BEHAVIOUR_TRAIN)
 
 for name, call in (("zero-shot",  lambda q: gen(base, zero % q)),
                    ("few-shot",   lambda q: gen(base, few % q)),
-                   ("fine-tuned", lambda q: gen(ft, "Q: %s\nA:" % q))):
+                   ("fine-tuned", lambda q: gen(ft, "Q: %s\\nA:" % q))):
     hits = sum(call(q).strip().startswith("[ANS]") for q in BEHAVIOUR_TEST)
     print(name, hits, len(tok(zero % BEHAVIOUR_TEST[0]).input_ids))
 
 # --- the budget check that caught my own bad number
 for n in (16, 24, 40, 60):
-    hits = sum("morrowbridge" in gen(base, "Document: %s\nQ: %s\nA:" % (DOC, q), n).lower()
+    hits = sum("morrowbridge" in gen(base, "Document: %s\\nQ: %s\\nA:" % (DOC, q), n).lower()
                for q in FACT_Q)
     print(n, hits)
 
 # --- the only comparison that is not contingent
 NEW_DOC = "Zanthia is a small republic. The capital of Zanthia is Caldreth."
-print(gen(base, "Document: %s\nQ: %s\nA:" % (NEW_DOC, FACT_Q[0])))   # retrieval
-print(gen(fm, "Q: %s\nA:" % FACT_Q[0]))                               # fine-tuned`,
+print(gen(base, "Document: %s\\nQ: %s\\nA:" % (NEW_DOC, FACT_Q[0])))   # retrieval
+print(gen(fm, "Q: %s\\nA:" % FACT_Q[0]))                               # fine-tuned`,
         out: `  BEHAVIOUR
   zero-shot      0 of 4   prompt  24 tokens
   few-shot       4 of 4   prompt 147 tokens PER CALL

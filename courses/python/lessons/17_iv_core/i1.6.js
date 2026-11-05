@@ -6,40 +6,70 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.6",
- "lede": "**32 interview questions on control flow**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**15 interview questions on control flow**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 32 questions on control flow without prompting",
+  "Answer 15 questions on control flow without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
  ],
  "prerequisites": [],
  "blocks": [
-
-    {"kind": "matrix", "title": "break, continue and the else nobody expects", "caption": "`for … else` runs the else clause only when the loop finished **without** a break, which makes it a search idiom rather than a curiosity. That is the question in this set people get wrong.", "cols": ["what it does", "runs the else clause?"], "rows": ["the loop ends normally", "break", "continue", "return", "an exception"], "cells": [["falls out of the loop", {"text": "YES", "tone": "good"}], ["leaves the loop early", {"text": "no — the point of it", "tone": "crit"}], ["skips to the next item", {"text": "yes, eventually", "tone": "good"}], ["leaves the function", {"text": "no", "tone": "warn"}], ["propagates", {"text": "no", "tone": "warn"}]], "t": "diagram", "id": "dg-i1_6-top-0"},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  {
+   "kind": "matrix",
+   "title": "break, continue and the else nobody expects",
+   "caption": "`for … else` runs the else clause only when the loop finished **without** a break, which makes it a search idiom rather than a curiosity. That is the question in this set people get wrong.",
+   "cols": [
+    "what it does",
+    "runs the else clause?"
+   ],
+   "rows": [
+    "the loop ends normally",
+    "break",
+    "continue",
+    "return",
+    "an exception"
+   ],
+   "cells": [
+    [
+     "falls out of the loop",
+     {
+      "text": "YES",
+      "tone": "good"
+     }
+    ],
+    [
+     "leaves the loop early",
+     {
+      "text": "no — the point of it",
+      "tone": "crit"
+     }
+    ],
+    [
+     "skips to the next item",
+     {
+      "text": "yes, eventually",
+      "tone": "good"
+     }
+    ],
+    [
+     "leaves the function",
+     {
+      "text": "no",
+      "tone": "warn"
+     }
+    ],
+    [
+     "propagates",
+     {
+      "text": "no",
+      "tone": "warn"
+     }
+    ]
+   ],
+   "t": "diagram",
+   "id": "dg-i1_6-top-0"
+  },
   {
    "t": "callout",
    "kind": "note",
@@ -58,12 +88,110 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "1. Using `range(len())` instead of `enumerate()`",
+   "q": "What are the common loop anti-patterns to avoid?",
    "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "**1. Using `range(len())` instead of `enumerate()`**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "# ❌ Anti-pattern\nfor i in range(len(items)):\n    print(i, items[i])\n\n# ✅ Pythonic\nfor i, item in enumerate(items):\n    print(i, item)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**2. Manual index for parallel iteration**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Anti-pattern\nfor i in range(min(len(names), len(ages))):\n    print(names[i], ages[i])\n\n# ✅ Pythonic\nfor name, age in zip(names, ages):\n    print(name, age)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**3. Modifying a list while iterating**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Bug-prone\nfor item in items:\n    if bad(item):\n        items.remove(item)   # skips elements!\n\n# ✅ Safe\nitems = [item for item in items if not bad(item)]",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**4. Building string in loop with `+=`**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ O(n²) — creates new string each iteration\nresult = \"\"\nfor word in words:\n    result += word + \" \"\n\n# ✅ O(n) — join is optimized\nresult = \" \".join(words)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**5. Using `while` when `for` suffices**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Unnecessarily complex\ni = 0\nwhile i < len(items):\n    process(items[i])\n    i += 1\n\n# ✅ Simpler\nfor item in items:\n    process(item)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**6. Checking `len()` instead of truthiness**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Verbose\nif len(items) > 0:\n    process(items)\n\n# ✅ Pythonic (use truthiness of containers)\nif items:\n    process(items)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**7. Not using `any()`/`all()`**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Manual loop\nfound = False\nfor item in items:\n    if predicate(item):\n        found = True\n        break\n\n# ✅ Built-in\nfound = any(predicate(item) for item in items)",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**8. Nested loops for flat operations**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Inefficient\nresult = []\nfor sublist in nested_list:\n    for item in sublist:\n        result.append(item)\n\n# ✅ Use itertools.chain or comprehension\nfrom itertools import chain\nresult = list(chain.from_iterable(nested_list))\n# or\nresult = [item for sublist in nested_list for item in sublist]",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**9. Ignoring `break` in search loops**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Continues even after finding answer\nresult = None\nfor item in large_list:\n    if matches(item):\n        result = item     # keeps going unnecessarily!\n\n# ✅ Stop early\nfor item in large_list:\n    if matches(item):\n        result = item\n        break",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**10. Using exception for normal flow control**"
+    },
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "# ❌ Exceptions for expected conditions\nfor key in keys:\n    try:\n        value = d[key]\n        process(value)\n    except KeyError:\n        pass\n\n# ✅ Check first or use .get()\nfor key in keys:\n    if key in d:\n        process(d[key])\n# or\nfor key in keys:\n    value = d.get(key)\n    if value is not None:\n        process(value)",
      "numbered": false
     }
    ]
@@ -71,140 +199,20 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "2. Manual index for parallel iteration",
+   "q": "How to optimise loops in Python? (list comprehension, map, vectorization)",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Anti-pattern\nfor i in range(min(len(names), len(ages))):\n    print(names[i], ages[i])\n\n# ✅ Pythonic\nfor name, age in zip(names, ages):\n    print(name, age)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "3",
-   "q": "3. Modifying a list while iterating",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Bug-prone\nfor item in items:\n    if bad(item):\n        items.remove(item)   # skips elements!\n\n# ✅ Safe\nitems = [item for item in items if not bad(item)]",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "4",
-   "q": "4. Building string in loop with `+=`",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ O(n²) — creates new string each iteration\nresult = \"\"\nfor word in words:\n    result += word + \" \"\n\n# ✅ O(n) — join is optimized\nresult = \" \".join(words)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "5",
-   "q": "5. Using `while` when `for` suffices",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Unnecessarily complex\ni = 0\nwhile i < len(items):\n    process(items[i])\n    i += 1\n\n# ✅ Simpler\nfor item in items:\n    process(item)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "6",
-   "q": "6. Checking `len()` instead of truthiness",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Verbose\nif len(items) > 0:\n    process(items)\n\n# ✅ Pythonic (use truthiness of containers)\nif items:\n    process(items)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "7",
-   "q": "7. Not using `any()`/`all()`",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Manual loop\nfound = False\nfor item in items:\n    if predicate(item):\n        found = True\n        break\n\n# ✅ Built-in\nfound = any(predicate(item) for item in items)",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "8",
-   "q": "8. Nested loops for flat operations",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Inefficient\nresult = []\nfor sublist in nested_list:\n    for item in sublist:\n        result.append(item)\n\n# ✅ Use itertools.chain or comprehension\nfrom itertools import chain\nresult = list(chain.from_iterable(nested_list))\n# or\nresult = [item for sublist in nested_list for item in sublist]",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "9",
-   "q": "9. Ignoring `break` in search loops",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Continues even after finding answer\nresult = None\nfor item in large_list:\n    if matches(item):\n        result = item     # keeps going unnecessarily!\n\n# ✅ Stop early\nfor item in large_list:\n    if matches(item):\n        result = item\n        break",
-     "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "10",
-   "q": "10. Using exception for normal flow control",
-   "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "# ❌ Exceptions for expected conditions\nfor key in keys:\n    try:\n        value = d[key]\n        process(value)\n    except KeyError:\n        pass\n\n# ✅ Check first or use .get()\nfor key in keys:\n    if key in d:\n        process(d[key])\n# or\nfor key in keys:\n    value = d.get(key)\n    if value is not None:\n        process(value)",
-     "numbered": false
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q15. How to optimize loops in Python? (list comprehension, map, vectorization)"
-    },
     {
      "t": "p",
      "text": "**Answer:**"
     },
     {
      "t": "p",
-     "text": "Python loops are inherently slow due to interpreter overhead. Here are optimization strategies, from simple to advanced:"
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "11",
-   "q": "1. Use list comprehensions (10–30% faster than equivalent loop)",
-   "body": [
+     "text": "Python loops are inherently slow due to interpreter overhead. Here are optimisation strategies, from simple to advanced:"
+    },
+    {
+     "t": "p",
+     "text": "**1. Use list comprehensions (10–30% faster than equivalent loop)**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -213,97 +221,72 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Why faster? Comprehensions are optimized at the bytecode level — they use a specialized `LIST_APPEND` instruction instead of method lookup for `.append()`."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "12",
-   "q": "2. Use built-in functions (C-level loops)",
-   "body": [
+     "text": "Why faster? Comprehensions are optimised at the bytecode level — they use a specialized `LIST_APPEND` instruction instead of method lookup for `.append()`."
+    },
+    {
+     "t": "p",
+     "text": "**2. Use built-in functions (C-level loops)**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "# ❌ Python loop\ntotal = 0\nfor x in numbers:\n    total += x\n\n# ✅ C-level loop\ntotal = sum(numbers)\n\n# Other fast built-ins: min(), max(), any(), all(), sorted(), map(), filter()",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "13",
-   "q": "3. Use `map()` and `filter()` for simple transformations",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**3. Use `map()` and `filter()` for simple transformations**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "# map() — applies function to each element\nsquared = list(map(lambda x: x**2, numbers))\n\n# filter() — filters elements\npositives = list(filter(lambda x: x > 0, numbers))\n\n# Comprehensions are usually preferred for readability,\n# but map() is faster when using an existing function (no lambda)\nresult = list(map(str, numbers))     # faster than [str(x) for x in numbers]\nresult = list(map(int, string_list)) # faster than [int(s) for s in string_list]",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "14",
-   "q": "4. Minimize work inside loops",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**4. Minimise work inside loops**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "# ❌ Repeated attribute lookup\nfor item in items:\n    result.append(item.strip().lower())\n\n# ✅ Cache method references (micro-optimization)\nappend = result.append\nstrip = str.strip\nlower = str.lower\nfor item in items:\n    append(lower(strip(item)))",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "15",
-   "q": "5. Use sets for membership testing",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**5. Use sets for membership testing**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "# ❌ O(n) membership in list\nfor item in data:\n    if item in large_list:     # O(n) each time\n        process(item)\n\n# ✅ O(1) membership in set\nlarge_set = set(large_list)\nfor item in data:\n    if item in large_set:      # O(1) each time\n        process(item)",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "16",
-   "q": "6. Use `collections` module",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**6. Use `collections` module**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter, defaultdict\n\n# ❌ Manual counting\ncounts = {}\nfor item in data:\n    counts[item] = counts.get(item, 0) + 1\n\n# ✅ Counter\ncounts = Counter(data)\n\n# ❌ Manual grouping\ngroups = {}\nfor item in data:\n    key = get_key(item)\n    if key not in groups:\n        groups[key] = []\n    groups[key].append(item)\n\n# ✅ defaultdict\ngroups = defaultdict(list)\nfor item in data:\n    groups[get_key(item)].append(item)",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "17",
-   "q": "7. NumPy vectorization (for numerical work — 10–100x faster)",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**7. NumPy vectorization (for numerical work — 10–100x faster)**"
+    },
     {
      "t": "code",
      "lang": "python",
      "code": "import numpy as np\n\n# ❌ Python loop — very slow for large data\nresult = []\nfor i in range(1_000_000):\n    result.append(data[i] ** 2 + 2 * data[i] + 1)\n\n# ✅ NumPy — vectorized (no Python loop)\ndata = np.array(data)\nresult = data ** 2 + 2 * data + 1   # runs in C",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "18",
-   "q": "8. Use `itertools` for complex iteration",
-   "terms": [
-    "Note",
-    "profile"
-   ],
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**8. Use `itertools` for complex iteration**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -351,13 +334,13 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Note:** These are rough estimates. Always **profile** (`timeit`, `cProfile`) before optimizing. Premature optimization is the root of all evil — optimize only when loops are a proven bottleneck."
+     "text": "**Note:** These are rough estimates. Always **profile** (`timeit`, `cProfile`) before optimising. Premature optimisation is the root of all evil — optimise only when loops are a proven bottleneck."
     }
    ]
   },
   {
    "t": "drill",
-   "n": "19",
+   "n": "3",
    "q": "What is the difference between if-elif-else and match-case?",
    "body": [
     {
@@ -428,7 +411,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "20",
+   "n": "4",
    "q": "How does for-else work? When is else executed?",
    "body": [
     {
@@ -488,7 +471,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "21",
+   "n": "5",
    "q": "What is the difference between break, continue, and pass?",
    "body": [
     {
@@ -534,7 +517,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "22",
+   "n": "6",
    "q": "How does Python's for loop work internally? (Iteration protocol)",
    "body": [
     {
@@ -548,8 +531,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**`__iter__()`**Called on the iterable to obtain an iterator object.",
-      "**`__next__()`**Called on the iterator to get the next value. Raises `StopIteration` when exhausted."
+      "**`__iter__()`:** Called on the iterable to obtain an iterator object.",
+      "**`__next__()`:** Called on the iterator to get the next value. Raises `StopIteration` when exhausted."
      ]
     },
     {
@@ -595,7 +578,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "23",
+   "n": "7",
    "q": "What is structural pattern matching (match/case)?",
    "body": [
     {
@@ -674,7 +657,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "24",
+   "n": "8",
    "q": "Can you modify a collection while iterating over it?",
    "body": [
     {
@@ -719,7 +702,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "25",
+   "n": "9",
    "q": "What is the difference between range() in Python 2 vs 3?",
    "body": [
     {
@@ -805,7 +788,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "26",
+   "n": "10",
    "q": "How does Python handle nested loop breaking?",
    "body": [
     {
@@ -840,7 +823,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "27",
+   "n": "11",
    "q": "What are the performance implications of nested loops?",
    "body": [
     {
@@ -863,7 +846,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Optimization strategies:**"
+     "text": "**Optimisation strategies:**"
     },
     {
      "t": "table",
@@ -920,7 +903,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "28",
+   "n": "12",
    "q": "How does short-circuit evaluation work with and/or?",
    "body": [
     {
@@ -985,7 +968,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "29",
+   "n": "13",
    "q": "What is the walrus operator and how is it used in loops?",
    "body": [
     {
@@ -1024,7 +1007,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "30",
+   "n": "14",
    "q": "What is the difference between iter(obj) and iter(callable, sentinel)?",
    "body": [
     {
@@ -1104,7 +1087,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "31",
+   "n": "15",
    "q": "How does enumerate() work internally?",
    "body": [
     {
@@ -1123,7 +1106,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Actual CPython implementation** is in C for performance, but the behavior is identical."
+     "text": "**Actual CPython implementation** is in C for performance, but the behaviour is identical."
     },
     {
      "t": "code",
@@ -1140,17 +1123,6 @@ EC.receiveLesson({
      "lang": "python",
      "code": "# Common usage patterns\nfruits = [\"apple\", \"banana\", \"cherry\"]\n\n# Standard\nfor i, fruit in enumerate(fruits):\n    print(f\"{i}: {fruit}\")\n\n# With start\nfor i, fruit in enumerate(fruits, 1):\n    print(f\"{i}. {fruit}\")\n\n# Creating indexed dict\nfruit_map = dict(enumerate(fruits))\n# {0: 'apple', 1: 'banana', 2: 'cherry'}\n\n# Finding index of matching element\nindices = [i for i, x in enumerate(data) if x > threshold]",
      "numbered": false
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "32",
-   "q": "What are the common loop anti-patterns to avoid?",
-   "body": [
-    {
-     "t": "p",
-     "text": "**Answer:**"
     }
    ]
   }

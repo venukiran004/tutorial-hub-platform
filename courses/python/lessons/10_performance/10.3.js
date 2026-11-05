@@ -559,20 +559,20 @@ def test_first_seen_is_the_earliest(tmp_path):
         stem: "`sys.getsizeof(rows)` on a list of 1,000 dicts returns about 8,900 bytes. What does that number mean?",
         options: [
           "The list and its dicts occupy 8.9 KB",
-          "Only the list itself — eight bytes per pointer plus overhead — and nothing about the dicts the pointers lead to",
           "The list is compressed in memory",
-          "The dicts are interned and shared"
+          "The dicts are interned and shared",
+          "Only the list's own pointer array — nothing about the dicts it points to"
         ],
-        answer: 1,
+        answer: 3,
         why: "`getsizeof` is shallow: for a container it reports the container's own storage. The real cost here is about 184 KB, a factor of twenty higher, because each dict carries a header, a hash table and a `str` object per key and value. Measure with `tracemalloc`, which reports what was actually allocated."
       },
       {
         stem: "A job groups rows by customer so it can call `min(r[\"timestamp\"] for r in group)`. Why does that force the whole input to stay resident?",
         options: [
-          "Because dictionaries copy their values",
-          "`min()` over a list needs the list, so the grouping must retain every row — rewriting it as a running comparison removes the need and the retention",
-          "Because `min()` is O(n log n)",
-          "Because timestamps are strings rather than datetimes"
+          "Because dictionaries copy their values, so grouping duplicates every row in memory",
+          "`min()` needs every row kept; a running comparison needs none",
+          "Because `min()` sorts its input first, which needs every row in a list at once",
+          "Because the timestamps are strings rather than datetimes, which are larger to hold"
         ],
         answer: 1,
         why: "Every other field was already an accumulation; the earliest timestamp looked like it needed all the rows, so the code kept them. \"Keep the smaller so far\" computes the same answer in one pass, which lets the grouping dict hold one summary per customer instead of every row — turning peak memory from O(rows) into O(customers)."
@@ -581,7 +581,7 @@ def test_first_seen_is_the_earliest(tmp_path):
         stem: "When does `__slots__` genuinely pay for itself?",
         options: [
           "On any class, since it is always smaller",
-          "When there are hundreds of thousands of instances of a small, fixed-shape record — the saving is per instance",
+          "When there are hundreds of thousands of small, fixed-shape instances",
           "When the class has more than ten attributes",
           "When instances are stored in a database"
         ],
@@ -591,10 +591,10 @@ def test_first_seen_is_the_earliest(tmp_path):
       {
         stem: "A nightly job is OOM-killed after a large customer onboards. The team raises the container from 2 GB to 8 GB. What is wrong with that?",
         options: [
-          "Nothing — sizing to the workload is correct",
-          "Peak memory scales with an input they do not control, so the limit is chasing a number the code never bounds — it buys time and fails on the next large account",
-          "8 GB exceeds what Python can address",
-          "The garbage collector performs worse with more memory"
+          "Nothing — sizing the container to the workload is correct, and 8 GB gives comfortable headroom for growth",
+          "Peak memory grows with input they do not control, so the next big account fails again",
+          "8 GB exceeds what a single Python process can address, so the extra memory will never actually be used",
+          "The garbage collector performs worse with more memory available, so the job will slow down instead"
         ],
         answer: 1,
         why: "The code had no bug: it read a customer's records into a list, which is correct and proportional to the largest customer. Raising the limit costs four times as much across every replica and postpones the failure. Streaming the transform makes peak memory a property of the code, which ends the problem instead of deferring it."

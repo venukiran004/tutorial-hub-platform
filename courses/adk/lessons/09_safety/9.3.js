@@ -2,7 +2,7 @@
    LESSON 9.3 — Human in the Loop
    The confirmation request, the synthetic adk_request_confirmation call, the
    long_running_tool_ids and the resumed approval are executed output from
-   scratchpad/adk/h1.py on google-adk 2.9.2.
+   h1.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "9.3",
@@ -26,7 +26,7 @@ EC.receiveLesson({
     {"kind": "flow", "title": "One flag, and the callable form that makes it a rule", "caption": "**`require_confirmation=True` sits at the agent definition where a reviewer can see it, and cannot be forgotten inside a branch** — which is exactly what you want for the rule itself. **The callable form is the one to reach for in practice:** approval that depends on the arguments, so a refund of four pounds goes straight through and one of four hundred stops. A flag that stops everything produces approval fatigue, which section 04 names as worse than no approval at all.", "cols": 3, "nodes": [{"id": "f", "label": "FunctionTool(refund, require_confirmation=True)", "sub": "declarative, at the definition", "tone": "accent"}, {"id": "v", "label": "Visible to a reviewer", "sub": "and not buried in a branch", "tone": "good"}, {"id": "c", "label": "It also accepts a callable", "sub": "over a threshold, out of hours, by tier", "tone": "violet"}, {"id": "r", "label": "So routine cases pass through", "sub": "and only the real ones stop", "tone": "good"}, {"id": "a", "label": "Stop everything and you get a rubber stamp", "sub": "see section 04", "tone": "crit"}], "edges": [["f", "v"], ["f", "c"], ["c", "r"], ["r", "a"]], "t": "diagram", "id": "dg-9_3-01-0"},
 
 
-    { t: "code", lang: "python", title: "h1.py — one flag",
+    { t: "code", lang: "python", title: "one flag",
       code: `from google.adk.tools import FunctionTool
 
 async def refund(order_id: str, amount: float, tool_context) -> dict:

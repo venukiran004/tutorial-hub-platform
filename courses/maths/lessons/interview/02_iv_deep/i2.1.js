@@ -121,8 +121,8 @@ EC.receiveLesson({
      "items": [
       "**Metric:** Conversion rate (primary), revenue per visitor (secondary), page load time (guardrail)",
       "**Hypotheses:** H₀: no difference in conversion. H₁: new flow has different conversion.",
-      "**Sample size:** Power analysis — if baseline is 10% and MDE is 5% relative lift (to 10.5%), need ~31K per group at 80% power.",
-      "**Duration:** At 5K visitors/day, run for ~13 days. Minimum 2 full weeks for weekly cycles.",
+      "**Sample size:** Power analysis — if baseline is 10% and MDE is 5% relative lift (to 10.5%), need ~58K per group at 80% power.",
+      "**Duration:** At 5K visitors/day across both groups, ~116K users takes ~23 days, so plan 4 full weeks to cover weekly cycles.",
       "**Randomization:** User-level (cookie/user ID), not session-level.",
       "**Run:** No peeking! Monitor guardrail metrics only.",
       "**Analyze:** Two-proportion z-test, CI for the lift, check SRM.",

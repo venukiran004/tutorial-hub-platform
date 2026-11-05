@@ -578,8 +578,8 @@ if __name__ == "__main__":
       {
         stem: "What is the difference between `[x for x in xs if p(x)]` and `[x if p(x) else None for x in xs]`?",
         options: [
-          "They are equivalent; the second is more explicit",
-          "The first filters — only matching elements appear. The second transforms — every element appears, as itself or as `None`",
+          "They are equivalent; the second is more explicit about what happens to elements that do not match",
+          "The first filters, so the output can be shorter; the second maps every element",
           "The second raises a `SyntaxError`",
           "The first is lazy, the second is eager"
         ],
@@ -589,21 +589,21 @@ if __name__ == "__main__":
       {
         stem: "A job streams a 6 GB log file line by line but is OOM-killed on `matches = [parse(line) for line in f if is_error(line)]`. Why?",
         options: [
-          "The file object buffers the entire file when iterated in a comprehension",
           "The list comprehension materialises every match into memory, undoing the streaming",
-          "`parse` leaks memory on each call",
-          "Comprehensions cannot be used with file objects"
+          "The file object buffers the entire file when iterated in a comprehension",
+          "`parse` leaks memory on each call, which the streaming loop never gives it a chance to release",
+          "Comprehensions cannot iterate file objects lazily, so the file is read into memory before filtering"
         ],
-        answer: 1,
+        answer: 0,
         why: "The file was being read lazily and the comprehension immediately collected every result into a list. Reading lazily achieves nothing if the first thing you do is materialise. Dropping the brackets makes it a generator expression that streams — provided the consumer iterates once. If both a count and the matches are needed, that requires a deliberate choice between two passes and accumulating only what is required."
       },
       {
         stem: "Why is `[send_email(u) for u in users]` worse than the equivalent `for` loop?",
         options: [
           "It is slower because comprehensions have interpreter overhead",
-          "It allocates a list of `None` values that is immediately discarded, and it tells the reader a collection is being built when none is wanted",
+          "It builds a list of `None`s nobody wants and tells the reader a collection is being made",
           "`send_email` cannot be called from inside a comprehension",
-          "The list will keep the user objects alive and prevent garbage collection"
+          "The list will keep every user object alive until the statement finishes, preventing garbage collection"
         ],
         answer: 1,
         why: "A comprehension exists to build a collection, so using one for side effects both wastes an allocation and misstates the intent — a reader has to work out that the result is meaningless. Comprehensions are in fact marginally *faster* than equivalent loops, which is exactly why the misuse is tempting. When the body performs an action rather than producing a value, a `for` statement is the honest construct."
@@ -611,12 +611,12 @@ if __name__ == "__main__":
       {
         stem: "After `squares = [x * x for x in range(3)]`, what is the value of `x` in the enclosing scope?",
         options: [
+          "Whatever it was before; comprehensions have their own scope",
           "`2` — the last value of the loop variable",
-          "Whatever it was before; comprehensions run in their own scope and do not leak the loop variable",
-          "`None`, because the variable is deleted after the comprehension",
+          "`None`, because Python deletes the loop variable once the comprehension has finished",
           "It raises `NameError` unless `x` was defined earlier"
         ],
-        answer: 1,
+        answer: 0,
         why: "Comprehensions have their own scope in Python 3, so the loop variable cannot clobber an outer name of the same name — a deliberate change from Python 2. A plain `for` loop *does* share the enclosing scope, so its variable survives with the last value. The exception is the walrus operator, which binds in the enclosing scope on purpose."
       }
     ]

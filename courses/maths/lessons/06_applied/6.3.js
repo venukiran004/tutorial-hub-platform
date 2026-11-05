@@ -170,7 +170,7 @@ for name, (xa, ya) in [("clean", (x, y)), ("outlier", (x_o, y_o)),
 # about, which is whether the conclusion changes.
 
 d = diagnostics(x_l, y_l)
-diagnostics(x, y)["beta"][1], d["beta"][1]          # 1.999, 2.000
+diagnostics(x, y)["beta"][1], d["beta"][1]          # 1.935, 1.975
 #
 # A HIGH-LEVERAGE POINT IS NOT A PROBLEM. It is extra information
 # about a region of x you would otherwise not observe, and deleting it
@@ -228,7 +228,7 @@ def investigate(x, y, index):
 # THE HONEST REPORT WHEN A POINT MATTERS:
 d_all = diagnostics(x_i, y_i)
 d_drop = diagnostics(x_i[:-1], y_i[:-1])
-d_all["beta"][1], d_drop["beta"][1]              # 0.760, 1.999
+d_all["beta"][1], d_drop["beta"][1]              # 0.530, 1.935
 #
 # "The slope is 0.76 (95% CI ...). One observation has Cook's D of
 #  12.6; excluding it gives a slope of 2.00. That observation is a
@@ -254,7 +254,7 @@ def huber_regression(X, y, delta=1.345, iters=50):
         beta = np.linalg.lstsq(X*W, y*np.sqrt(w), rcond=None)[0]
     return beta
 
-huber_regression(x_i, y_i)[1]                    # 1.98 -- unaffected
+huber_regression(x_i, y_i)[1]                    # 1.73 -- well above 0.53, but Huber caps residuals, not leverage
 #
 # THE HUBER FIT RECOVERS THE TRUE SLOPE without deleting anything, and
 # without a judgement call per point.`},
@@ -307,10 +307,10 @@ def vif(X):
     return np.array(out)
 
 X = np.column_stack([z1, z2, z3])
-np.round(vif(X), 1)                        # [17.3, 17.3, 1.0]
+np.round(vif(X), 1)                        # [18.5, 18.5, 1.0]
 
 d = diagnostics(X, y3)
-np.round(d["beta"], 2)                     # [0.02, 1.85, 3.13, 1.01]
+np.round(d["beta"], 2)                     # [-0.09, 1.64, 3.37, 1.03]
 #
 # THE COEFFICIENTS ARE CLOSE TO THE TRUTH ON AVERAGE, and they are
 # extremely unstable. Resample and watch:
@@ -320,13 +320,13 @@ for s in range(200):
     idx = r.integers(0, n, n)
     slopes.append(diagnostics(X[idx], y3[idx])["beta"][1:3])
 slopes = np.array(slopes)
-slopes.std(axis=0)                         # [0.41, 0.41]
+slopes.std(axis=0)                         # [0.20, 0.21]
 #
-# A STANDARD DEVIATION OF 0.41 ON A COEFFICIENT OF 1.85. The
+# A STANDARD DEVIATION OF 0.20 ON A COEFFICIENT OF 1.64. The
 # individual coefficients are barely identified.
 
 # BUT THE SUM IS PERFECTLY STABLE:
-(slopes[:, 0] + slopes[:, 1]).std()        # 0.05
+(slopes[:, 0] + slopes[:, 1]).std()        # 0.04
 #
 # THE DATA DETERMINES THE COMBINED EFFECT PRECISELY and cannot
 # separate the two. That is the whole of multicollinearity: it is a
@@ -334,17 +334,17 @@ slopes.std(axis=0)                         # [0.41, 0.41]
 
 # AND THE FIT IS UNAFFECTED:
 combined = diagnostics(np.column_stack([z1+z2, z3]), y3)
-1 - np.var(y3 - (d["beta"][0] + X @ d["beta"][1:]))/np.var(y3)   # 0.976
+1 - np.var(y3 - (d["beta"][0] + X @ d["beta"][1:]))/np.var(y3)   # 0.962
 #
-# R^2 = 0.976 either way. PREDICTION IS FINE; INTERPRETATION IS NOT.
+# R^2 = 0.962 either way. PREDICTION IS FINE; INTERPRETATION IS NOT.
 
 # THE CONDITION NUMBER IS THE MATRIX VIEW (lesson 1.6):
 def condition_number(X):
     Xs = (X - X.mean(0)) / X.std(0)
     return float(np.linalg.cond(Xs))
 
-condition_number(X)                        # 8.3
-condition_number(np.column_stack([z1, z2, z1+z2+0.001*z3]))   # 1900+
+condition_number(X)                        # 8.5
+condition_number(np.column_stack([z1, z2, z1+z2+0.001*z3]))   # 4228+
 #
 #   < 10   fine
 #   10-30  moderate
@@ -364,7 +364,7 @@ condition_number(np.column_stack([z1, z2, z1+z2+0.001*z3]))   # 1900+
 #
 # 3. COMBINE THEM into the quantity the data actually identifies --
 #    a sum, an index, a principal component:
-diagnostics(np.column_stack([z1+z2, z3]), y3)["beta"][1]   # 2.49, stable
+diagnostics(np.column_stack([z1+z2, z3]), y3)["beta"][1]   # 2.50, stable
 #
 # 4. RIDGE, which shrinks and stabilises (lesson 2.5). It trades bias
 #    for the variance that collinearity created.
@@ -383,7 +383,7 @@ np.round([ridge(X, y3, a)[1] for a in (0, 1, 10, 100)], 2)
 #    one.
 `,
       hl: [30, 38, 44, 76],
-      caption: "**The individual coefficients have a standard deviation of 0.41 and their sum has 0.05.** Multicollinearity is a statement about what the data can identify, not a defect to be removed."
+      caption: "**The individual coefficients have a standard deviation of 0.20 and their sum has 0.04.** Multicollinearity is a statement about what the data can identify, not a defect to be removed."
     },
 
     { t: "h2", n: "03", text: "Practice", id: "practice" },

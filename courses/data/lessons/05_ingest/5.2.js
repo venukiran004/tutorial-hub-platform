@@ -36,7 +36,7 @@ EC.receiveLesson({
       ["UTF-8", "Variable-width: ASCII in one byte, most European characters in two, CJK in three, emoji in four. The correct default for anything new."],
       ["Latin-1 / cp1252", "One byte per character, 256 characters. Latin-1 is ISO-8859-1; cp1252 is Windows' near-identical variant with curly quotes and the euro sign in the gaps. Older exports and most `.csv` from Windows Excel."],
       ["Mojibake", "Text decoded with the wrong encoding: `\"café\"` in UTF-8 read as Latin-1 shows `\"cafÃ©\"`. The pattern of garbage identifies the mismatch."],
-      ["BOM", "Byte-order mark: the bytes `EF BB BF` at the start of a UTF-8 file. Invisible in most editors, and it becomes part of the first column's name."],
+      ["BOM", "Byte-order mark: the bytes `EF BB BF` at the start of a UTF-8 file. Invisible in most editors. `read_csv` strips it; a reader that takes the header itself keeps it as part of the first column's name."],
       ["`errors=`", "What to do with bytes that do not decode: `\"strict\"` raises, `\"replace\"` inserts `�`, `\"ignore\"` drops them. Only `strict` tells you something is wrong."]
     ]},
 
@@ -205,7 +205,7 @@ def fix_mojibake(s, wrong="latin-1", right="utf-8"):
 
     { t: "h2", n: "02", text: "The byte-order mark", id: "bom" },
 
-    {"kind": "matrix", "title": "The byte-order mark, and the bug it causes", "caption": "A UTF-8 BOM is three bytes at the start of a file that mean nothing to the content. Read with plain `utf-8` they become part of the **first column name**, so a lookup on that name fails with a message that looks nothing like the cause.", "cols": ["reading a BOM'd file", "the first column name"], "rows": ["encoding='utf-8'", "encoding='utf-8-sig'", "no encoding given"], "cells": [[{"text": "the BOM is kept", "tone": "crit"}, {"text": "'\\ufeffid' — not 'id'", "tone": "crit"}], [{"text": "the BOM is consumed", "tone": "good"}, {"text": "'id'", "tone": "good"}], ["platform-dependent", {"text": "a portability bug waiting", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
+    {"kind": "matrix", "title": "The byte-order mark, and the bug it causes", "caption": "A UTF-8 BOM is three bytes at the start of a file that mean nothing to the content. `read_csv` strips them, but read with Python's plain `utf-8` they become part of the **first column name**, so a lookup on that name fails with a message that looks nothing like the cause.", "cols": ["reading a BOM'd file", "the first column name"], "rows": ["encoding='utf-8'", "encoding='utf-8-sig'", "no encoding given"], "cells": [[{"text": "the BOM is kept", "tone": "crit"}, {"text": "'\\ufeffid' — not 'id'", "tone": "crit"}], [{"text": "the BOM is consumed", "tone": "good"}, {"text": "'id'", "tone": "good"}], ["platform-dependent", {"text": "a portability bug waiting", "tone": "warn"}]], "t": "diagram", "id": "dg-5_2-02-0"},
 
 
 
@@ -219,15 +219,21 @@ def fix_mojibake(s, wrong="latin-1", right="utf-8"):
 
 
 
-    { t: "p", text: "**Windows tools — Excel, Notepad, PowerShell — often write UTF-8 with three invisible bytes at the front.** They are not displayed by editors, they are not whitespace, and `read_csv` makes them part of the first column's name." },
+    { t: "p", text: "**Windows tools — Excel, Notepad, PowerShell — often write UTF-8 with three invisible bytes at the front.** They are not displayed by editors, they are not whitespace, and `read_csv` removes them, but the standard `csv` module and any hand-rolled reader make them part of the first column's name." },
 
     { t: "code", lang: "python", title: "the invisible bytes that rename your first column", code: `
 # WHAT A BOM LOOKS LIKE:
 content = "\\ufeffid,name\\n1,ada\\n"       # U+FEFF at the start
 content.encode("utf-8")[:6]              # b'\\xef\\xbb\\xbfid'
 
-df = pd.read_csv(io.StringIO(content))
-df.columns.tolist()                      # ['\\ufeffid', 'name']
+# pandas strips a leading BOM, so read_csv is safe:
+pd.read_csv(io.StringIO(content)).columns.tolist()    # ['id', 'name']
+
+# Anything that reads the header itself is not. The stdlib csv module:
+import csv
+header = next(csv.reader(io.StringIO(content)))
+header                                   # ['\\ufeffid', 'name']
+df = pd.DataFrame([["1", "ada"]], columns=header)
 #
 # The first column is named "\\ufeffid". It PRINTS as "id". It is not
 # "id".
@@ -242,8 +248,8 @@ df.columns[0] == "id"                    # False
 len(df.columns[0])                       # 3, not 2
 
 # THE FIX AT READ TIME:
-df = pd.read_csv(io.StringIO(content), encoding="utf-8-sig")
-df.columns.tolist()                      # ['id', 'name']
+clean = content.encode("utf-8").decode("utf-8-sig")
+next(csv.reader(io.StringIO(clean)))     # ['id', 'name']
 #
 # "utf-8-sig" strips a BOM if present and behaves as utf-8 if not.
 # It is safe to use as the default for any file that might come from
@@ -755,7 +761,7 @@ def test_column_names_clean_in_every_encoding():
     "**`Ã` followed by a symbol, or `â€`, is UTF-8 read as a single-byte encoding** — almost always.",
     "**`errors=\"ignore\"` deletes bytes and changes names**; `\"replace\"` leaves a countable `�`; only `\"strict\"` cannot silently corrupt.",
     "**Mojibake already in the data can be round-tripped**: encode with the wrong table, decode with the right one — when every character survived.",
-    "**A BOM becomes part of the first column's name**; it prints invisibly and makes `df[\"id\"]` a `KeyError`.",
+    "**`read_csv` strips a leading BOM; the `csv` module does not.** There it becomes part of the first column's name, prints invisibly, and makes `df[\"id\"]` a `KeyError`.",
     "**`encoding=\"utf-8-sig\"` strips a BOM if present and is plain UTF-8 otherwise** — a safe default.",
     "**Write a BOM only when Excel is the consumer**; it is a courtesy to Excel and a hazard to everything else.",
     "**pandas handles CRLF, LF and quoted embedded newlines** — hand-rolled line splitting is what breaks on them.",

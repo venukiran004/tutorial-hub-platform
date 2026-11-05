@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.13 — Embeddings, and RNN against Transformer
    Attention memory, KV cache size, the embedding-as-matrix identity and the
-   analogy geometry are all computed (scratchpad/dl/d313.py).
+   analogy geometry are all computed (d313.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.13",

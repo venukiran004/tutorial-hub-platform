@@ -203,7 +203,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Time complexity:** \\(O(T^2)\\) for full BPTT. Truncated BPTT limits back-propagation to \\(\\tau\\) steps: \\(O(T\\tau)\\)."
+     "text": "**Time complexity:** \\(O(T)\\) per sequence, because one backward sweep reuses the shared sub-products in the double sum. Truncated BPTT limits back-propagation to \\(\\tau\\) steps, which allows more frequent updates and less memory per update."
     },
     {
      "t": "p",
@@ -339,11 +339,11 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "P(\\text{use} \\hat{y}) = \\frac{k}{k + e^{i/k}}"
+     "tex": "P(\\text{use ground truth at step } i) = \\frac{k}{k + e^{i/k}}"
     },
     {
      "t": "p",
-     "text": "Schedules: linear, exponential, inverse sigmoid decrease from 0 to 1 as training progresses."
+     "text": "That is the inverse sigmoid schedule; linear and exponential schedules also exist. In all of them the ground-truth probability decays from about 1 toward 0 as training progresses."
     }
    ],
    "kind": ""
@@ -427,7 +427,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "where \\(f(x) = (x/x_{max})^\\alpha \\mathbf{1}[x<x_{max}]\\) (clipped power function, \\(\\alpha=3/4\\))."
+     "text": "where \\(f(x) = \\min(1, (x/x_{max})^\\alpha)\\) (clipped power function, \\(\\alpha=3/4\\))."
     },
     {
      "t": "p",

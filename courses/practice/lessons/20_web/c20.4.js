@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c20.4",
  "lede": "**29 programs to write**, on URLs, signing and request bodies. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on URLs, signing and request bodies without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c20.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 2368–2396.** What this set asks you to predict, counted from its own problems — 17 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["web and APIs", "strings", "exceptions", "classes", "files and paths", "databases"], "cells": [[{"text": "9", "tone": "accent"}, "Retrying a Request with Backof"], [{"text": "2", "tone": "good"}, "Idempotency Keys Stop Duplicat"], [{"text": "2", "tone": "violet"}, "urlopen raises on 4xx and 5xx"], [{"text": "2", "tone": "teal"}, "A byte string is not a str"], [{"text": "1", "tone": "warn"}, "A Tiny Router for a Request Pa"], [{"text": "1", "tone": "crit"}, "Query strings hold LISTS of va"]], "t": "diagram", "id": "dg-c20_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -211,12 +211,6 @@ EC.receiveLesson({
    "q": "Program 2381: Parsing a URL into its parts — output of `u.scheme, u.hostname, u.port`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "from urllib.parse import urlparse\nu = urlparse(\"https://user:pw@api.example.com:8443/v1/items?q=a+b&n=2#top\")\nprint(u.scheme, u.hostname, u.port)\nprint(u.path, u.params)\nprint(u.query)\nprint(u.fragment)",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:**"
     },
@@ -230,19 +224,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `hostname` is lowercased and strips the credentials and port, while `netloc` keeps all of them. The fragment never leaves the browser - a server never sees `#top`."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from urllib.parse import urlparse\nu = urlparse(\"https://user:pw@api.example.com:8443/v1/items?q=a+b&n=2#top\")\nprint(u.scheme, u.hostname, u.port)\nprint(u.path, u.params)\nprint(u.query)\nprint(u.fragment)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2382",
    "q": "Program 2382: Query strings hold LISTS of values — output of `parse_qs(q)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from urllib.parse import parse_qs, parse_qsl\nq = \"tag=a&tag=b&page=2\"\nprint(parse_qs(q))\nprint(parse_qsl(q))\nprint(parse_qs(q)[\"page\"])",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -257,19 +254,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `parse_qs` maps every key to a LIST because a query string may repeat a key. Indexing `[\"page\"]` gives `['2']`, not `'2'` - forgetting the `[0]` is a very common bug."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from urllib.parse import parse_qs, parse_qsl\nq = \"tag=a&tag=b&page=2\"\nprint(parse_qs(q))\nprint(parse_qsl(q))\nprint(parse_qs(q)[\"page\"])",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2383",
    "q": "Program 2383: Escaping in urlencode versus quote — output of `urlencode(params)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from urllib.parse import urlencode, quote, quote_plus\nparams = {\"q\": \"a&b c\", \"path\": \"/x/y\"}\nprint(urlencode(params))\nprint(quote(\"a&b c\"))\nprint(quote_plus(\"a&b c\"))\nprint(quote(\"/x/y\"), quote(\"/x/y\", safe=\"\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -284,19 +284,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `quote` leaves `/` alone by default because it is a path separator; `quote_plus` encodes a space as `+` for query strings while `quote` uses `%20`. Building a URL by string concatenation skips all of this."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from urllib.parse import urlencode, quote, quote_plus\nparams = {\"q\": \"a&b c\", \"path\": \"/x/y\"}\nprint(urlencode(params))\nprint(quote(\"a&b c\"))\nprint(quote_plus(\"a&b c\"))\nprint(quote(\"/x/y\"), quote(\"/x/y\", safe=\"\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2384",
    "q": "Program 2384: Joining a relative URL to a base — output of `urljoin(base, \"intro.html\")`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from urllib.parse import urljoin\nbase = \"https://example.com/docs/guide/\"\nprint(urljoin(base, \"intro.html\"))\nprint(urljoin(base, \"../api.html\"))\nprint(urljoin(base, \"/root.html\"))\nprint(urljoin(\"https://example.com/docs/guide\", \"intro.html\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -311,19 +314,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** A trailing slash decides whether the last segment is a directory. Without it, `intro.html` replaces `guide` instead of sitting inside it - the classic broken-link cause in a crawler."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from urllib.parse import urljoin\nbase = \"https://example.com/docs/guide/\"\nprint(urljoin(base, \"intro.html\"))\nprint(urljoin(base, \"../api.html\"))\nprint(urljoin(base, \"/root.html\"))\nprint(urljoin(\"https://example.com/docs/guide\", \"intro.html\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2385",
    "q": "Program 2385: HTTP headers are case-insensitive — output of `m[\"content-type\"]`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import email.message\nm = email.message.Message()\nm[\"Content-Type\"] = \"application/json\"\nprint(m[\"content-type\"])\nprint(m[\"CONTENT-TYPE\"])\nprint(m.get(\"missing\", \"default\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -338,19 +344,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Header lookup ignores case per RFC 7230, and the mapping returns `None` (not a KeyError) for a header that is absent. Comparing `headers['Content-Type']` exactly is fragile."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import email.message\nm = email.message.Message()\nm[\"Content-Type\"] = \"application/json\"\nprint(m[\"content-type\"])\nprint(m[\"CONTENT-TYPE\"])\nprint(m.get(\"missing\", \"default\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2386",
    "q": "Program 2386: urlopen raises on 4xx and 5xx — output of `\"ok\", r.status`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import http.server, threading, urllib.error, urllib.request\n\nclass H(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(int(self.path.strip(\"/\")))\n        self.send_header(\"Content-Length\", \"0\")\n        self.end_headers()\n    def log_message(self, *a): pass\n\ns = http.server.HTTPServer((\"127.0.0.1\", 0), H)\nthreading.Thread(target=s.serve_forever, daemon=True).start()\nfor code in (200, 301, 404, 500):\n    try:\n        r = urllib.request.urlopen(f\"http://127.0.0.1:{s.server_address[1]}/{code}\")\n        print(\"ok\", r.status)\n    except urllib.error.HTTPError as e:\n        print(\"HTTPError\", e.code)\ns.shutdown()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -365,19 +374,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `urlopen` follows redirects itself, so a 301 never surfaces - you see the final response. 4xx and 5xx raise `HTTPError`, which is itself a valid response object you can read."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import http.server, threading, urllib.error, urllib.request\n\nclass H(http.server.BaseHTTPRequestHandler):\n    def do_GET(self):\n        self.send_response(int(self.path.strip(\"/\")))\n        self.send_header(\"Content-Length\", \"0\")\n        self.end_headers()\n    def log_message(self, *a): pass\n\ns = http.server.HTTPServer((\"127.0.0.1\", 0), H)\nthreading.Thread(target=s.serve_forever, daemon=True).start()\nfor code in (200, 301, 404, 500):\n    try:\n        r = urllib.request.urlopen(f\"http://127.0.0.1:{s.server_address[1]}/{code}\")\n        print(\"ok\", r.status)\n    except urllib.error.HTTPError as e:\n        print(\"HTTPError\", e.code)\ns.shutdown()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2387",
    "q": "Program 2387: A byte string is not a str — output of `type(payload).__name__`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import json\npayload = json.dumps({\"a\": 1})\nprint(type(payload).__name__)\nencoded = payload.encode(\"utf-8\")\nprint(type(encoded).__name__, len(encoded))\nprint(encoded == payload)\nprint(encoded.decode() == payload)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -392,19 +404,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Sockets and HTTP bodies carry BYTES; your program manipulates `str`. Every boundary needs an explicit encode/decode, and `b\"x\" == \"x\"` is always False."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import json\npayload = json.dumps({\"a\": 1})\nprint(type(payload).__name__)\nencoded = payload.encode(\"utf-8\")\nprint(type(encoded).__name__, len(encoded))\nprint(encoded == payload)\nprint(encoded.decode() == payload)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2388",
    "q": "Program 2388: Non-ASCII in a URL and in a body — output of `quote(name)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from urllib.parse import quote\nname = \"caf\\u00e9\"\nprint(quote(name))\nprint(name.encode(\"utf-8\"))\nprint(len(name), len(name.encode(\"utf-8\")))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -419,19 +434,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** One character can be several bytes in UTF-8, so `len()` on a str and on its encoding differ. A Content-Length computed from the string rather than the bytes truncates the body."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from urllib.parse import quote\nname = \"caf\\u00e9\"\nprint(quote(name))\nprint(name.encode(\"utf-8\"))\nprint(len(name), len(name.encode(\"utf-8\")))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2389",
    "q": "Program 2389: TCP delivers a stream, not messages — output of `srv = socket.socket(); srv.bind((\"127.0.0.1\",…`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import socket, threading\ngot = []\nsrv = socket.socket(); srv.bind((\"127.0.0.1\", 0)); srv.listen(1)\nport = srv.getsockname()[1]\ndef serve():\n    c, _ = srv.accept()\n    got.append(c.recv(4096))\n    c.close()\nt = threading.Thread(target=serve); t.start()\nwith socket.create_connection((\"127.0.0.1\", port)) as c:\n    c.sendall(b\"AAA\"); c.sendall(b\"BBB\"); c.sendall(b\"CCC\")\nt.join(); srv.close()\nprint(got)\nprint(len(got))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -446,19 +464,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Three sends arrived as one read. TCP preserves byte ORDER, not message boundaries, so every protocol on top needs framing - a length prefix or a delimiter."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import socket, threading\ngot = []\nsrv = socket.socket(); srv.bind((\"127.0.0.1\", 0)); srv.listen(1)\nport = srv.getsockname()[1]\ndef serve():\n    c, _ = srv.accept()\n    got.append(c.recv(4096))\n    c.close()\nt = threading.Thread(target=serve); t.start()\nwith socket.create_connection((\"127.0.0.1\", port)) as c:\n    c.sendall(b\"AAA\"); c.sendall(b\"BBB\"); c.sendall(b\"CCC\")\nt.join(); srv.close()\nprint(got)\nprint(len(got))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2390",
    "q": "Program 2390: recv returns what is available, not what you asked for — output of `len(chunk), chunk`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import socket, threading\nsrv = socket.socket(); srv.bind((\"127.0.0.1\", 0)); srv.listen(1)\nport = srv.getsockname()[1]\ndef serve():\n    c, _ = srv.accept()\n    c.sendall(b\"12345\")\n    c.close()\nthreading.Thread(target=serve, daemon=True).start()\nwith socket.create_connection((\"127.0.0.1\", port)) as c:\n    chunk = c.recv(1024)\n    print(len(chunk), chunk)\n    print(c.recv(1024))\nsrv.close()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -473,19 +494,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `recv(1024)` is an upper bound. An empty bytes object means the peer closed - that is the ONLY reliable end-of-stream signal, and treating it as 'no data yet' is an infinite loop."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import socket, threading\nsrv = socket.socket(); srv.bind((\"127.0.0.1\", 0)); srv.listen(1)\nport = srv.getsockname()[1]\ndef serve():\n    c, _ = srv.accept()\n    c.sendall(b\"12345\")\n    c.close()\nthreading.Thread(target=serve, daemon=True).start()\nwith socket.create_connection((\"127.0.0.1\", port)) as c:\n    chunk = c.recv(1024)\n    print(len(chunk), chunk)\n    print(c.recv(1024))\nsrv.close()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2391",
    "q": "Program 2391: struct packing is fixed width and endian-sensitive — output of `struct.pack(\"!I\", 1)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import struct\nprint(struct.pack(\"!I\", 1))\nprint(struct.pack(\"<I\", 1))\nprint(struct.calcsize(\"!I\"), struct.calcsize(\"!H\"))\nprint(struct.unpack(\"!I\", b\"\\x00\\x00\\x01\\x00\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -500,19 +524,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `!` is network byte order (big-endian) and is what every wire protocol specifies. Packing with the native `<` on one machine and unpacking with `!` on another silently produces the wrong number."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import struct\nprint(struct.pack(\"!I\", 1))\nprint(struct.pack(\"<I\", 1))\nprint(struct.calcsize(\"!I\"), struct.calcsize(\"!H\"))\nprint(struct.unpack(\"!I\", b\"\\x00\\x00\\x01\\x00\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2392",
    "q": "Program 2392: Content-Length must match the bytes exactly — output of `len(\"caf\\u00e9\"), len(body)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "body = \"caf\\u00e9\".encode(\"utf-8\")\nprint(len(\"caf\\u00e9\"), len(body))\nheaders = {\"Content-Length\": str(len(body))}\nprint(headers)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -527,19 +554,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** The header counts BYTES. Using the string length under-counts by one per multi-byte character, and the client hangs waiting for a body that already ended."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "body = \"caf\\u00e9\".encode(\"utf-8\")\nprint(len(\"caf\\u00e9\"), len(body))\nheaders = {\"Content-Length\": str(len(body))}\nprint(headers)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2393",
    "q": "Program 2393: Status codes: which are safe to retry — output of `sorted(codes)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "codes = {200: \"ok\", 301: \"moved\", 400: \"bad request\", 401: \"unauthorised\",\n         429: \"rate limited\", 500: \"server error\", 503: \"unavailable\"}\nretryable = [c for c in codes if c == 429 or 500 <= c < 600]\nprint(sorted(codes))\nprint(sorted(retryable))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -554,19 +584,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Retrying a 4xx repeats the same failure - the request itself is wrong. Only 429 and 5xx are worth retrying, and 429 should honour `Retry-After` rather than a fixed backoff."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "codes = {200: \"ok\", 301: \"moved\", 400: \"bad request\", 401: \"unauthorised\",\n         429: \"rate limited\", 500: \"server error\", 503: \"unavailable\"}\nretryable = [c for c in codes if c == 429 or 500 <= c < 600]\nprint(sorted(codes))\nprint(sorted(retryable))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2394",
    "q": "Program 2394: Idempotency of HTTP methods — output of `[m for m, safe in sorted(methods.items())…`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "methods = {\"GET\": True, \"HEAD\": True, \"PUT\": True, \"DELETE\": True,\n           \"POST\": False, \"PATCH\": False}\nprint([m for m, safe in sorted(methods.items()) if safe])\nprint([m for m, safe in sorted(methods.items()) if not safe])",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -581,19 +614,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** An idempotent method can be retried after a timeout without changing the outcome. POST cannot, which is why payment APIs require an idempotency key."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "methods = {\"GET\": True, \"HEAD\": True, \"PUT\": True, \"DELETE\": True,\n           \"POST\": False, \"PATCH\": False}\nprint([m for m, safe in sorted(methods.items()) if safe])\nprint([m for m, safe in sorted(methods.items()) if not safe])",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2395",
    "q": "Program 2395: Timeouts are not set by default — output of `s.gettimeout()`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import socket\ns = socket.socket()\nprint(s.gettimeout())\ns.settimeout(0.5)\nprint(s.gettimeout())\nprint(socket.getdefaulttimeout())\ns.close()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -608,19 +644,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `None` means block for ever. A single unresponsive upstream with no timeout will pin a worker thread until the OS gives up, which can be minutes."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import socket\ns = socket.socket()\nprint(s.gettimeout())\ns.settimeout(0.5)\nprint(s.gettimeout())\nprint(socket.getdefaulttimeout())\ns.close()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2396",
    "q": "Program 2396: Exponential backoff with a cap — output of `delays = [min(base * 2 ** i, cap) for i in ra…`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "base, cap = 0.1, 2.0\ndelays = [min(base * 2 ** i, cap) for i in range(8)]\nprint(delays)\nprint(sum(delays))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -635,7 +674,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Uncapped doubling reaches minutes by the tenth attempt. Real clients also add jitter, otherwise every client that failed together retries together and re-creates the spike."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "base, cap = 0.1, 2.0\ndelays = [min(base * 2 ** i, cap) for i in range(8)]\nprint(delays)\nprint(sum(delays))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [

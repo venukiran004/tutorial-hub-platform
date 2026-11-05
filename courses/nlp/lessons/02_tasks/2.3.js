@@ -2,7 +2,7 @@
    LESSON 2.3 — Topic Modelling
    LDA is fitted on real 20-newsgroups data and its topics checked against
    the categories it was never shown; perplexity is swept over k and found
-   not to select it (scratchpad/nlp/n22.py).
+   not to select it (n22.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.3",

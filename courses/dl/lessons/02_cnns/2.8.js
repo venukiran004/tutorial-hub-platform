@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 2.8 — Image Segmentation, Transposed and Dilated Convolutions
-   All shapes executed in scratchpad/dl/d28.py.
+   All shapes executed in d28.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.8",

@@ -212,7 +212,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "\\mathcal{L} = \\alpha \\cdot \\mathcal{L}_{hard} + (1-\\alpha) \\cdot T^2 \\cdot KL(q_{student}^T \\| q_{teacher}^T)"
+     "tex": "\\mathcal{L} = \\alpha \\cdot \\mathcal{L}_{hard} + (1-\\alpha) \\cdot T^2 \\cdot KL(q_{teacher}^T \\| q_{student}^T)"
     },
     {
      "t": "p",
@@ -350,7 +350,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "scaler = torch.cuda.amp.GradScaler()\nwith torch.autocast(device_type=\"cuda\"):\n    output = model(input)\n    loss = criterion(output, target)\nscaler.scale(loss).backward()\nscaler.step(optimizer)\nscaler.update()"
+     "code": "scaler = torch.amp.GradScaler(\"cuda\")\nwith torch.autocast(device_type=\"cuda\"):\n    output = model(input)\n    loss = criterion(output, target)\nscaler.scale(loss).backward()\nscaler.step(optimizer)\nscaler.update()"
     },
     {
      "t": "p",

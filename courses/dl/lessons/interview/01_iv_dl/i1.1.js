@@ -135,7 +135,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Computational complexity:** \\(O(W)\\) per sample for both forward and backward pass, where \\(W\\) = total parameters. Backprop is exactly 2× forward pass cost."
+     "text": "**Computational complexity:** \\(O(W)\\) per sample for both forward and backward pass, where \\(W\\) = total parameters. Backprop costs roughly 2–3× a forward pass."
     }
    ],
    "kind": ""
@@ -169,7 +169,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "\\(\\eta > 2/\\beta\\): divergence (overshooting)",
-      "\\(\\eta = 1/\\beta\\): optimal step = Lipschitz constant",
+      "\\(\\eta = 1/\\beta\\): the standard safe step, the inverse of the Lipschitz constant",
       "\\(\\eta \\ll 1/\\beta\\): slow convergence"
      ]
     },
@@ -298,7 +298,7 @@ EC.receiveLesson({
      "items": [
       "ReLU: \\(|\\sigma'|=1\\) for active neurons",
       "BatchNorm: normalises \\(z^{(l)}\\), stabilises spectral norms",
-      "ResNets: gradient flows through identity shortcut \\(\\frac{\\partial}{\\partial x}[F(x)+x] = \\frac{\\partial F}{\\partial x} + 1 \\geq 1\\)",
+      "ResNets: gradient flows through identity shortcut \\(\\frac{\\partial}{\\partial x}[F(x)+x] = \\frac{\\partial F}{\\partial x} + 1\\), so a path survives even when \\(\\frac{\\partial F}{\\partial x}\\) is near 0",
       "Gradient clipping: \\(\\mathbf{g} \\leftarrow \\mathbf{g}\\cdot\\min(1, c/||\\mathbf{g}||)\\)"
      ]
     }
@@ -667,7 +667,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Depth provides efficiency:** Lunaberg (2018): Functions representable by deep networks with \\(O(kn)\\) neurons may require \\(O(k^n)\\) neurons in shallow networks."
+     "text": "**Depth provides efficiency:** Depth-separation results (Telgarsky 2016; Eldan & Shamir 2016) show that some functions a deep network represents compactly need exponentially many neurons in a shallow one."
     },
     {
      "t": "p",
@@ -724,7 +724,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "\\mathbf{1}[\\hat{y}\\neq y] \\leq -\\log P(y|\\mathbf{x})"
+     "tex": "\\mathbf{1}[\\hat{y}\\neq y] \\leq -\\log_2 P(y|\\mathbf{x})"
     }
    ],
    "kind": ""
@@ -776,7 +776,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "By increasing the effective dataset size from \\(n\\) to \\(nK\\) (with \\(K\\) augmentations), the generalisation bound improves:"
+     "text": "By increasing the effective dataset size towards \\(nK\\) (with \\(K\\) augmentations), the generalisation bound improves, though by less than this suggests, because augmented samples are not independent:"
     },
     {
      "t": "math",
@@ -789,8 +789,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Horizontal flip → left-right equivariance",
-      "Random crop → translation equivariance",
+      "Horizontal flip → left-right invariance",
+      "Random crop → translation invariance",
       "Color jitter → photometric invariance",
       "Mixup: \\(\\tilde{x} = \\lambda x_i + (1-\\lambda)x_j\\), \\(\\tilde{y} = \\lambda y_i + (1-\\lambda)y_j\\) — linear interpolation of examples and labels; improves calibration",
       "CutMix: replace patches from another image"

@@ -221,6 +221,38 @@ handlers = [partial(print, i) for i in range(3)]`,
       { t: "p", text: "The trap only appears when you create **several closures in one scope** and expect each to have captured something different. That is exactly the loop case, and it is why the fix is always \"give each one its own scope\" rather than \"make closures snapshot\"." }
     ]},
 
+    { t: "callout", kind: "trap", title: "The `i=i` fix adds a parameter someone else can fill", body: [
+      { t: "p", text: "The default-argument fix captures the value, and it also adds a real parameter to the function's signature. **That only works while nobody passes an argument.** Hand the lambda to an API that calls its callback with one, such as a future, an event or a response, and the argument silently replaces the captured value. There is no error, only the wrong data." },
+      { t: "code", lang: "python", title: "a callback API fills the default", code: `from concurrent.futures import Future, ThreadPoolExecutor
+from functools import partial
+
+charged: list[object] = []
+
+
+def on_done(order_id: int, fut: Future) -> None:
+    charged.append(order_id)
+
+
+with ThreadPoolExecutor() as pool:
+    for order_id in (101, 102):
+        fut = pool.submit(lambda: "ok")
+        # add_done_callback calls fn(future): the future fills order_id
+        fut.add_done_callback(lambda order_id=order_id: charged.append(order_id))
+
+print([type(x).__name__ for x in charged])
+charged.clear()
+
+with ThreadPoolExecutor() as pool:
+    for order_id in (101, 102):
+        fut = pool.submit(lambda: "ok")
+        fut.add_done_callback(partial(on_done, order_id))   # bound, not a parameter
+
+print(sorted(charged))`,
+        out: `['Future', 'Future']
+[101, 102]` },
+      { t: "p", text: "**`functools.partial` binds the value without exposing it as a parameter**, so the caller's argument lands where it belongs. Reach for it, or a small factory function, whenever the closure is going to be called by code you do not control." }
+    ]},
+
     /* ================================================================== */
     { t: "h2", n: "03", text: "Closures with state", id: "state" },
 
@@ -346,6 +378,8 @@ def make_handler(request):
     return on_complete`},
       { t: "p", text: "**Check `fn.__code__.co_freevars` when a long-lived callback is suspected in a memory issue** — it names exactly what the closure is holding. Capturing a small scalar instead of an object graph is usually the entire fix." }
     ]},
+
+    {"t": "diagram", "kind": "flow", "title": "The reference chain a closure creates", "caption": "**A closure holds its free variables in cells, and a cell holds a strong reference to the object.** So anything that keeps the function alive — a callback registry, a cache, a long-lived handler list — keeps everything the function closed over alive too. Capture the small value you need, not the large object that contains it.", "cols": 4, "nodes": [{"id": "r", "label": "registry", "sub": "lives for the process", "tone": "accent"}, {"id": "f", "label": "handler function", "sub": "the closure", "tone": "violet"}, {"id": "c", "label": "__closure__ cell", "sub": "a strong reference", "tone": "warn"}, {"id": "o", "label": "the captured object", "sub": "never freed", "tone": "crit"}], "edges": [["r", "f"], ["f", "c"], ["c", "o"]]},
 
     /* ================================================================== */
     { t: "h2", n: "05", text: "Practice", id: "practice" },
@@ -557,43 +591,43 @@ for i in range(3):
 
 print([f() for f in funcs])`,
         options: [
-          "`[0, 1, 2]` — each lambda captured its own value of `i`",
+          "`[0, 1, 2]` — each lambda captured the value `i` had at the moment it was created",
+          "`[None, None, None]` — `i` goes out of scope after the loop, so each lambda reads nothing",
           "`[2, 2, 2]` — all three closures share one cell holding `i`, which is 2 after the loop",
-          "`[None, None, None]` — `i` is out of scope after the loop",
           "A `NameError`, because `i` does not exist when the lambdas are called"
         ],
-        answer: 1,
+        answer: 2,
         why: "A closure captures the variable, not its value at creation. Since `for` does not create a scope, all three lambdas reference the same `i`, which holds 2 when the loop finishes. Note that using a comprehension does not help — it has its own scope, but all three lambdas are still created inside that one scope and share one cell. The fix is a factory function or `partial`, which gives each closure a genuinely separate scope."
       },
       {
         stem: "Why is `nonlocal` needed in a closure that increments a captured counter?",
         options: [
-          "To make the counter visible to other functions in the module",
-          "Because assigning to a name makes it local to the inner function; `nonlocal` redirects the assignment to the enclosing scope's cell",
-          "To prevent the counter from being garbage collected",
-          "It is not needed — closures can always modify captured variables"
+          "Assigning makes the name local to the inner function; `nonlocal` points it at the outer cell",
+          "To make the counter visible to other functions in the module, which otherwise cannot see it",
+          "To prevent the counter from being garbage collected after the outer function returns",
+          "It is not needed — closures can always modify the variables they capture from the enclosing scope"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is Lesson 3.3's rule applied inside a closure: assignment anywhere in a function makes that name local for the whole function, so `count += 1` would create a local and immediately fail with `UnboundLocalError` because it reads before assigning. `nonlocal` points the assignment at the enclosing function's cell. Reading a captured value needs no declaration — only writing does."
       },
       {
         stem: "A long-lived callback appears in a memory investigation. How do you find what it is holding?",
         options: [
           "Call `gc.collect()` and see whether memory is released",
-          "Inspect `fn.__code__.co_freevars` and `fn.__closure__` — they name exactly which variables the closure captured and hold their values",
-          "Check `sys.getsizeof(fn)`, which reports the closure's total memory",
-          "Closures do not retain references, so it must be something else"
+          "Check `sys.getsizeof(fn)`, which reports the closure's total memory including everything it captured",
+          "Closures do not retain references, so it must be something else",
+          "Inspect `fn.__code__.co_freevars` and `fn.__closure__`, which name and hold what it captured"
         ],
-        answer: 1,
+        answer: 3,
         why: "`co_freevars` lists the captured names and `__closure__` holds the corresponding cells, whose `cell_contents` are the live objects. A closure keeps everything it captured alive for its own lifetime, so a callback capturing a whole request object retains that object's entire graph. The usual fix is to extract a small scalar — the id rather than the object — before defining the inner function."
       },
       {
         stem: "Which is the strongest reason to prefer a class over a closure for stateful behaviour?",
         options: [
-          "Classes are faster than closures at runtime",
-          "Closure state is hidden in cells and hard to inspect in a debugger, which matters when something misbehaves in production",
-          "Closures cannot hold mutable state at all",
-          "Closures cannot be pickled, so they never work with multiprocessing"
+          "Classes are faster than closures at runtime, because attribute access avoids the cell lookup",
+          "Closure state hides in cells and is hard to inspect when something breaks in production",
+          "Closures cannot hold mutable state at all, so any counter or cache needs an object",
+          "Closures cannot be pickled, so stateful behaviour in a closure never works with multiprocessing"
         ],
         answer: 1,
         why: "Both can hold state and the performance difference is negligible. The practical distinction is visibility: attributes on an object show up in a debugger, a `repr` and a log line, while values in closure cells require `__closure__[0].cell_contents` to see. That cost is small during development and significant during an incident. The general rule: one behaviour with private state is a closure; several related behaviours or inspectable state is a class."

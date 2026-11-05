@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.3 — The Vanishing Gradient in Practice
    A real training experiment on a controlled long-range task
-   (scratchpad/dl/d33.py, d33b.py, d33c.py). The first run gave a surprising
+   (d33.py, d33b.py, d33c.py). The first run gave a surprising
    result; the cause was found and verified.
    ========================================================================= */
 EC.receiveLesson({

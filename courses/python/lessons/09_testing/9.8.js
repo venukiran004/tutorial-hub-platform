@@ -171,14 +171,14 @@ source = ["src/", "*/site-packages/"]
       rungs: [
         { level: "bad", label: "A single project-wide percentage",
           why: "It fails on unrelated changes, so people learn to lower it. And it says nothing about the change in front of them: a pull request adding 300 untested lines can *raise* the total if the project is large enough.",
-          code: `# CI
+          lang: "bash", code: `# CI
 pytest --cov=src --cov-fail-under=85
 
 # Six months later, after three "just this once" edits:
 pytest --cov=src --cov-fail-under=71` },
         { level: "ok", label: "A ratchet — never go down",
           why: "Stops the slow decline without demanding a number nobody agreed to. Still project-wide, so it cannot see that the new code is the untested part, and a large refactor produces noise.",
-          code: `# Store the current figure and compare
+          lang: "bash", code: `# Store the current figure and compare
 coverage report --format=total > .coverage-baseline
 # in CI
 CURRENT=$(coverage report --format=total)
@@ -186,7 +186,7 @@ BASE=$(cat .coverage-baseline)
 [ "$CURRENT" -ge "$BASE" ] || exit 1` },
         { level: "best", label: "Gate the diff, report the whole",
           why: "The question that matters is whether *this change* is tested. Diff coverage puts the requirement where the author can act on it, while the project figure stays visible as a trend rather than a tripwire.",
-          code: `# .github/workflows/ci.yml
+          lang: "yaml", code: `# .github/workflows/ci.yml
 - run: pytest --cov=src --cov-report=xml --cov-report=term-missing
 
 - name: Coverage on changed lines
@@ -664,10 +664,10 @@ jobs:
       {
         stem: "A module has 96% coverage and still ships a bug. What does that tell you about the tests?",
         options: [
-          "The remaining 4% contained the bug",
-          "Nothing about their quality — coverage records that lines executed, not that anything was asserted about the result",
-          "The coverage tool is misconfigured",
-          "Branch coverage was disabled"
+          "The remaining 4% of lines contained the bug, so coverage should have been 100%",
+          "Nothing about quality — coverage only shows which lines ran",
+          "The coverage tool is misconfigured and is counting lines that never ran",
+          "Branch coverage was disabled, and it would have found the bug"
         ],
         answer: 1,
         why: "A test that calls every function and asserts the result is not `None` reaches 100%. That is the cheapest way to raise the number, so it is what a coverage target produces. Use the per-file report to find untested modules; use review or mutation testing to judge whether the tests would actually fail if the code broke."
@@ -675,21 +675,21 @@ jobs:
       {
         stem: "`notify()` has an `if user.email:` guard. One test passes a user with an email. Line coverage says 100%. What is missing?",
         options: [
-          "Nothing — every line executed",
-          "The false branch: the path where the user has no email is never taken, which branch coverage reports and line coverage cannot",
-          "An assertion on the return value",
-          "A test for an invalid email format"
+          "Nothing — every line executed, so the function is fully tested",
+          "An assertion on the return value of `notify()`",
+          "The false branch — the user with no email is never tested",
+          "A test for an email address in an invalid format"
         ],
-        answer: 1,
+        answer: 2,
         why: "Line coverage asks whether each line ran; both lines here did. Branch coverage asks whether each conditional went both ways, and reports the untaken edge as a partial branch. It is one line of configuration — `branch = true` — and finds a genuinely different class of gap, which is why it is the coverage setting most worth turning on."
       },
       {
         stem: "A CI file has `ruff check . || true` and `mypy src || true`. What does that achieve?",
         options: [
-          "It runs the checks in parallel",
-          "The checks run and print errors but always exit zero, so the build is green while the code fails both — worse than not running them",
-          "It suppresses warnings but keeps errors fatal",
-          "It allows the steps to be skipped on draft pull requests"
+          "It runs the two checks in parallel, so the pipeline finishes sooner",
+          "The checks print errors but always exit zero, so the build stays green",
+          "It suppresses warnings from both tools but keeps their errors fatal",
+          "It allows the steps to be skipped on draft pull requests, where checks are optional"
         ],
         answer: 1,
         why: "`|| true` discards the exit status, so the step always passes. The output is in the log where nobody reads it, and the green badge tells the team the code type-checks when it does not. A check that cannot fail is worse than an absent one, because absence is visible and a false pass is not."
@@ -697,10 +697,10 @@ jobs:
       {
         stem: "A suite has `-p no:randomly --reruns 3`. Why is that combination self-defeating?",
         options: [
-          "The two flags are incompatible and pytest ignores one",
-          "Randomised ordering is what surfaces tests that share state, and reruns hide the resulting intermittent failure — so the pipeline is configured to conceal the bug it keeps re-running for",
-          "Reruns reset the random seed",
-          "`no:randomly` makes reruns non-deterministic"
+          "The two flags are incompatible, so pytest silently ignores one of them and keeps the other",
+          "Random order exposes shared state and reruns hide the failure, so together they conceal it",
+          "Reruns reset the random seed between attempts, so the failing order can never be reproduced",
+          "`no:randomly` makes reruns non-deterministic, because each rerun picks a fresh test order"
         ],
         answer: 1,
         why: "Each flag was added to make the build green. Together they remove the ability to diagnose it: ordering is disabled so coupling never shows, and the intermittent failure it causes elsewhere is retried until it passes. The fix is the opposite — keep randomisation on so the seed reproduces the failure, and quarantine the test explicitly with an expiry."

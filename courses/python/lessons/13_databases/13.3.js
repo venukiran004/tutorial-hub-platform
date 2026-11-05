@@ -813,45 +813,45 @@ def test_the_report_streams(db):
       {
         stem: "Why is `cur.execute(\"... WHERE status = %s\", [status])` safe when an f-string is not?",
         options: [
+          "Query and value travel separately, so the value never becomes SQL",
           "psycopg escapes the quotes in the value",
-          "The SQL text and the value are sent separately — the database parses the query first, then binds the value as data, so it can never become syntax",
           "`%s` only accepts strings without quotes",
-          "The driver validates the value against the column type"
+          "The driver validates the value against the column's type before running the query"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is why parameterisation cannot be defeated by an encoding trick or a quote style you did not anticipate: there is no parse step in which the value participates. Escaping tries to make dangerous input safe to parse; parameterisation removes the parse entirely."
       },
       {
         stem: "A placeholder in `ORDER BY %s` does not work. What does that tell you?",
         options: [
-          "The driver has a bug — use `sql.Identifier` for everything",
-          "An identifier is syntax, not a value, so the query cannot be parsed without it — which means an allowlist is required, not interpolation",
-          "You need to cast the parameter to text",
-          "`ORDER BY` requires a positional index instead"
+          "The driver has a bug with `ORDER BY` — use `sql.Identifier` for every parameter instead",
+          "You need to cast the parameter to `text` so the database knows how to sort by it",
+          "`ORDER BY` requires a positional column index rather than a parameter",
+          "An identifier is syntax, not a value — use an allowlist"
         ],
-        answer: 1,
+        answer: 3,
         why: "The failure is the signal. Interpolating instead is the exact moment the vulnerability is introduced, and `ORDER BY` injection is worse than `WHERE` injection because a `CASE` over a subquery turns row order into a blind extraction oracle that produces no errors and no unusual response shape."
       },
       {
         stem: "A query raises a `UniqueViolation`, which you catch and ignore. The next query fails with `InFailedSqlTransaction`. Why?",
         options: [
-          "The connection was closed by the error",
-          "In PostgreSQL any error aborts the entire transaction, and nothing else runs until a rollback",
-          "The cursor must be recreated after an error",
-          "The exception handler swallowed the commit"
+          "The connection was closed by the error, so the next query has nothing to run on",
+          "The cursor must be recreated after any error before it can be used again",
+          "Any error aborts the PostgreSQL transaction until rollback",
+          "The exception handler swallowed the commit, so the transaction is still pending"
         ],
-        answer: 1,
+        answer: 2,
         why: "This differs from MySQL, where a failed statement leaves the transaction usable. A savepoint — `with conn.transaction()` nested inside an outer one — scopes the failure so only the inner work is undone and the loop can continue."
       },
       {
         stem: "Iterating a cursor over 40 million rows still exhausts memory. Why, and what fixes it?",
         options: [
           "The rows are too wide — select fewer columns",
-          "An unnamed cursor buffers the whole result in the driver before iteration begins; naming the cursor makes it server-side and streams in batches",
           "`itersize` defaults to zero",
+          "An unnamed cursor buffers everything; a named one streams",
           "The generator must be consumed lazily by the caller"
         ],
-        answer: 1,
+        answer: 2,
         why: "The memory is spent before the loop's first iteration. A named cursor leaves the result on the server and fetches `itersize` rows at a time, so client memory is flat. It holds a transaction open for the scan, which makes it right for a batch job and wrong inside a web request."
       }
     ]

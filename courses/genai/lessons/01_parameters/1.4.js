@@ -314,7 +314,7 @@ print("  most common : %.2f   -> odds x %.4f" % (FP, math.exp(-FP)))
 print("  once-seen   : %.2f   -> odds x %.4f" % (FP, math.exp(-FP)))
 print()
 print("ratio of the two penalties on the most common token: %.1fx" % float(top_n))`,
-        out: `most common token '\n'       seen 16 times
+        out: `most common token '\\n'       seen 16 times
 a once-seen token 'What'     seen 1 time
 
 frequency_penalty=0.5 reduces logits by:

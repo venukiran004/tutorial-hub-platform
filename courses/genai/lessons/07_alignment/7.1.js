@@ -112,10 +112,10 @@ probs = torch.softmax(logits, dim=-1)`,
   ' The'            5.2499%
   ' It'             4.0742%
   ' What'           2.6544%
-  '\n'             33.8421%
+  '\\n'             33.8421%
 
   actual top-8 next tokens:
-    '\n'           33.8421%
+    '\\n'           33.8421%
     ' The'          5.2499%
     ' It'           4.0742%
     ' France'       2.6955%
@@ -262,7 +262,7 @@ for s in ("The capital of France is Paris.",
           "The capital of France is London.",
           "The capital of France is Berlin."):
     print("%-36s %8.4f" % (s, score(s)))`,
-        out: `  '\n'           33.8421%
+        out: `  '\\n'           33.8421%
   ' The'          5.2499%
   ' It'           4.0742%
   ' France'       2.6955%

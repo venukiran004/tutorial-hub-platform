@@ -227,15 +227,23 @@
         (s.notes ? '<div class="sol-notes">' + body({ body: s.notes }) + "</div>" : "") +
         "</div>";
     }
+    /* Two exercise shapes are in use: body + hint (the authoring contract) and
+       prompt + hints[] (the later courses). Render both; dropping the second
+       left 157 exercises with no task text and no hints. */
+    var task = b.prompt ? body({ body: [{ t: "p", text: b.prompt }] }) : "";
+    var hintBlocks = [];
+    if (b.hint) hintBlocks.push({ t: "p", text: b.hint });
+    if (b.hints && b.hints.length) hintBlocks.push(b.hints.length === 1 ? { t: "p", text: b.hints[0] } : { t: "ol", items: b.hints });
+    var hintLabel = b.hints && b.hints.length > 1 ? "Stuck? Open the hints, one at a time" : "Stuck? Open a hint";
     return '<div class="exercise">' +
       '<div class="ex-head"><span class="ex-ic">' + I.dumbbell + "</span>" +
       '<span class="ex-kind">' + esc(b.kind || "Challenge") + "</span>" +
       '<span class="ex-title">' + inline(b.title) + "</span>" +
       '<span class="ex-meta">' + (b.difficulty ? '<span class="badge ' + b.difficulty + '"><span class="dot"></span>' + esc(b.difficulty) + "</span>" : "") +
       (b.minutes ? '<span class="badge"><span class="dot"></span>' + b.minutes + " min</span>" : "") + "</span></div>" +
-      '<div class="ex-body">' + body(b) + reqs + "</div>" +
+      '<div class="ex-body">' + task + body(b) + reqs + "</div>" +
       '<div class="ex-foot">' +
-      (b.hint ? '<div class="ex-hint">' + disclose({ summary: "Stuck? Open a hint", tag: "hint", body: [{ t: "p", text: b.hint }] }) + "</div>" : "") +
+      (hintBlocks.length ? '<div class="ex-hint">' + disclose({ summary: hintLabel, tag: "hint", body: hintBlocks }) + "</div>" : "") +
       (b.solution ? '<button class="reveal-btn" type="button" data-reveal="' + id + '-sol">' + I.key + "<span>Reveal solution</span></button>" +
         '<span class="reveal-note">Write your own version first — reading a solution feels like learning and is not.</span>' : "") +
       "</div>" + sol + "</div>";
@@ -243,19 +251,55 @@
 
   /* ------------------------------------------------------------- quiz -- */
   var quizSeq = 0;
+  var QUIZ_ORD = ["first", "second", "third", "fourth", "fifth"];
+  // An explanation that points at an option in a way quizWhy cannot rewrite,
+  // so the question keeps its authored order.
+  var QUIZ_KEEP = /(?:^|[.;:—]\s+)(?:the |your )?(?:first|second|third|fourth|last)\b(?! options?\b)(?! and (?:second|third|fourth|last) options\b)|\boptions? [A-D1-4]\b|\b[A-D], [A-D]\b|\b[A-D] and [A-D]\b|\bOnly [A-D]\b|\([A-D]\)/i;
+
+  // Authored answers cluster on one position, so options are shuffled. Seeded
+  // from the stem so the order survives a reload.
+  function quizOrder(q) {
+    var order = q.options.map(function (o, j) { return j; });
+    if (QUIZ_KEEP.test(q.why || "")) return order;
+    var h = 2166136261;
+    for (var c = 0; c < q.stem.length; c++) h = Math.imul(h ^ q.stem.charCodeAt(c), 16777619);
+    for (var i = order.length - 1; i > 0; i--) {
+      h = Math.imul(h, 1664525) + 1013904223 | 0;
+      var j = (h >>> 8) % (i + 1), t = order[i];
+      order[i] = order[j];
+      order[j] = t;
+    }
+    return order;
+  }
+
+  // "The third option is wrong" has to follow its option to the new position.
+  function quizWhy(why, order) {
+    return why.replace(/\b(first|second|third|fourth|last)(?: and (second|third|fourth|last))? (options?)\b/gi, function (m, a, b, noun) {
+      var at = [a, b].filter(Boolean).map(function (w) {
+        w = w.toLowerCase();
+        return w === "last" ? order.length - 1 : QUIZ_ORD.indexOf(w);
+      });
+      if (at.some(function (x) { return x >= order.length; })) return m;
+      var words = at.map(function (x) { return order.indexOf(x); }).sort().map(function (x) { return QUIZ_ORD[x]; });
+      var s = words.join(" and ") + " " + noun;
+      return a[0] === a[0].toUpperCase() ? s[0].toUpperCase() + s.slice(1) : s;
+    });
+  }
+
   function quiz(b) {
     var g = "qz" + (++quizSeq);
     var qs = (b.questions || []).map(function (q, i) {
-      var opts = q.options.map(function (o, j) {
+      var order = quizOrder(q);
+      var opts = order.map(function (j, k) {
         return '<button class="q-opt" type="button" data-q="' + g + "-" + i + '" data-i="' + j + '">' +
-          '<span class="q-key">' + "ABCDE"[j] + "</span><span>" + inline(o) + "</span></button>";
+          '<span class="q-key">' + "ABCDE"[k] + "</span><span>" + inline(q.options[j]) + "</span></button>";
       }).join("");
       return '<div class="q" data-answer="' + q.answer + '" id="' + g + "-" + i + '">' +
         '<div class="q-n">Question ' + (i + 1) + " of " + b.questions.length + "</div>" +
         '<div class="q-stem">' + inline(q.stem) + "</div>" +
         (q.code ? codeBlock({ code: q.code, lang: q.lang || "python", title: false, numbered: false }) : "") +
         '<div class="q-opts">' + opts + "</div>" +
-        '<div class="q-fb" hidden><div class="q-fb-h"></div><div class="q-fb-b">' + inline(q.why || "") + "</div></div>" +
+        '<div class="q-fb" hidden><div class="q-fb-h"></div><div class="q-fb-b">' + inline(quizWhy(q.why || "", order)) + "</div></div>" +
         "</div>";
     }).join("");
     return '<div class="quiz" data-quiz="' + g + '" data-total="' + (b.questions || []).length + '">' +
@@ -306,12 +350,19 @@
     // this there is nothing on the page to navigate by.
     var id = b.id || (b.n ? "d" + String(b.n).replace(/[^\w.-]+/g, "-") : "");
 
+    // A predict-the-output snippet is the question, not part of the answer,
+    // so it stays visible with the drill closed.
+    var prompt = (b.prompt || []).length
+      ? '<div class="drill-prompt">' + render(b.prompt) + "</div>"
+      : "";
+
     return '<details class="drill' + (b.kind ? " " + b.kind : "") + '"' +
       (id ? ' id="' + esc(id) + '"' : "") + ">" +
       "<summary>" +
         '<span class="drill-n">' + esc(b.n || "") + "</span>" +
         '<span class="drill-q">' + inline(b.q) + "</span>" +
         '<span class="drill-cue">Reveal</span>' +
+        prompt +
       "</summary>" +
       '<div class="drill-a">' + terms + render(b.body || []) + "</div>" +
       "</details>";

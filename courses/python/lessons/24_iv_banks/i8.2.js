@@ -188,7 +188,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A decorator is a higher-order function that wraps another function to add behavior:"
+     "text": "A decorator is a higher-order function that wraps another function to add behaviour:"
     },
     {
      "t": "code",
@@ -336,7 +336,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "`__new__`: Creates (allocates) the object. Class method; rarely overridden.",
-      "`__init__`: Initializes the object's attributes after creation. The common constructor method."
+      "`__init__`: Initialises the object's attributes after creation. The common constructor method."
      ]
     }
    ]
@@ -548,7 +548,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Inheritance:** \"is-a\" relationship. Dog is-an Animal.",
-      "**Composition:** \"has-a\" relationship. Car has-an Engine. Prefer composition for flexibility; inheritance creates tight coupling. \"Favor composition over inheritance.\""
+      "**Composition:** \"has-a\" relationship. Car has-an Engine. Prefer composition for flexibility; inheritance creates tight coupling. \"Favour composition over inheritance.\""
      ]
     }
    ]
@@ -589,7 +589,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "class Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def area(self):\n        return 3.14 * self._radius ** 2\n\n    @area.setter  # Not defined here — makes it read-only",
+     "code": "class Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def area(self):\n        return 3.14 * self._radius ** 2\n\n    # No @area.setter is defined, so area is read-only:\n    # Circle(2).area = 5 raises AttributeError",
      "numbered": false
     },
     {
@@ -858,7 +858,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from typing import List, Dict, Optional, Union, Tuple, Callable\n\ndef process(items: List[int]) -> Dict[str, int]: ...\ndef greet(name: Optional[str] = None) -> str: ...",
+     "code": "def process(items: list[int]) -> dict[str, int]: ...\ndef greet(name: str | None = None) -> str: ...",
      "numbered": false
     },
     {
@@ -990,7 +990,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`queue.Queue` is thread-safe (uses internal locks). Lists and dicts have partially thread-safe operations (GIL protected individual operations) but not compound operations. Use `threading.Lock` for explicit synchronization."
+     "text": "`queue.Queue` is thread-safe (uses internal locks). Lists and dicts have partially thread-safe operations (GIL protected individual operations) but not compound operations. Use `threading.Lock` for explicit synchronisation."
     }
    ]
   },
@@ -1107,7 +1107,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`pickle` serializes Python objects to bytes (pickling) and deserializes back (unpickling). Used for saving models, caching, inter-process communication. Warning: never unpickle untrusted data (security risk)."
+     "text": "`pickle` serialises Python objects to bytes (pickling) and deserializes back (unpickling). Used for saving models, caching, inter-process communication. Warning: never unpickle untrusted data (security risk)."
     }
    ]
   },
@@ -1168,7 +1168,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Both handle file system operations. `pathlib.Path` is the modern OOP approach (Python 3.4+):"
+     "text": "Both handle filesystem operations. `pathlib.Path` is the modern OOP approach (Python 3.4+):"
     },
     {
      "t": "code",
@@ -1312,7 +1312,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Marks a directory as a Python package. Can be empty or contains package initialization code/imports. In Python 3.3+, not strictly required (namespace packages), but including it is still conventional."
+     "text": "Marks a directory as a Python package. Can be empty or contains package initialisation code/imports. In Python 3.3+, not strictly required (namespace packages), but including it is still conventional."
     }
    ]
   },
@@ -1469,7 +1469,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Pydantic provides data validation and serialization using type annotations:"
+     "text": "Pydantic provides data validation and serialisation using type annotations:"
     },
     {
      "t": "code",

@@ -140,7 +140,7 @@ class Payload(BaseModel):
     quantity: int = 1
 
 
-Payload(**{"quanitity": 500})       # -> Payload(quantity=1)
+print(Payload(**{"quanitity": 500}))   # -> quantity=1
                                      # No error. The 500 is gone.`,
         out: `quantity=1`},
       { t: "p", text: "With `extra=\"forbid\"` the same call raises with the offending key named. With `extra=\"allow\"` the value is kept on the model, which is occasionally what you want for a passthrough proxy and almost never otherwise." },
@@ -768,43 +768,43 @@ def test_the_response_exposes_only_the_public_contract(client):
       {
         stem: "A client sends `{\"quanitity\": 500}` to a model with a `quantity: int = 1` field. What happens by default?",
         options: [
-          "A validation error naming the unknown key",
           "The unknown key is silently discarded and `quantity` takes its default of 1",
-          "`quanitity` is stored on the model as an extra attribute",
-          "The request is rejected as malformed JSON"
+          "A validation error naming the unknown key `quanitity` and suggesting `quantity`",
+          "`quanitity` is stored on the model as an extra attribute alongside `quantity`",
+          "The request is rejected as malformed JSON before the model ever sees it"
         ],
-        answer: 1,
+        answer: 0,
         why: "Pydantic ignores unknown keys unless told otherwise, so a two-character typo becomes a wrong value with no error anywhere. `extra=\"forbid\"` turns it into a clear rejection naming the field. Set it in a shared base model rather than per model, so it applies without anyone having to remember."
       },
       {
         stem: "An endpoint returns `order.__dict__`. Eight months later a `supplier_cost` column is added to the table. What happens?",
         options: [
-          "Nothing — the API response shape is fixed at deploy time",
-          "The new column appears in the public API immediately, with nothing in the diff mentioning the API",
-          "The endpoint raises because the shape no longer matches",
-          "The field is included but set to null"
+          "The new column appears in the public API with no API change in the diff",
+          "Nothing — the API response shape is fixed when the service is deployed",
+          "The endpoint raises, because the returned shape no longer matches the documented one",
+          "The new field is included in the response, but its value is always `null`"
         ],
-        answer: 1,
+        answer: 0,
         why: "Dumping an entity makes the API surface whatever the entity happens to have, so a migration silently changes a public contract. Reviewers of a migration have no reason to think about the API. An explicit response model means the field does not appear unless someone adds it deliberately, as a visible line in a diff."
       },
       {
         stem: "Why should a validation failure return 422 rather than 400?",
         options: [
+          "400 means unparseable; 422 means it parsed but a value is wrong",
           "422 is retried automatically by HTTP clients",
-          "400 means the request is malformed — bad JSON, wrong content type; 422 means it parsed correctly and a value is semantically wrong",
           "400 is reserved for authentication problems",
           "They are interchangeable; 422 is a convention only"
         ],
-        answer: 1,
+        answer: 0,
         why: "The distinction is actionable for the caller. A 400 usually means their serialiser or transport is broken and retrying unchanged will fail identically. A 422 names a field they can correct and resubmit. Collapsing both into 400 means a client cannot tell \"your JSON is broken\" from \"quantity must be positive\"."
       },
       {
         stem: "Why is returning `exc.errors()` directly to a client risky?",
         options: [
-          "It is too verbose for most clients",
-          "Each entry includes the `input` value that failed, so a validation error on a payload containing a secret returns that secret",
-          "The error types are not stable across Pydantic versions",
-          "It bypasses the response model"
+          "It is too verbose for most clients, which only display the first error message",
+          "Each error echoes the failing `input`, which may be a secret",
+          "The error types are not stable across Pydantic versions, so clients that parse them break on upgrade",
+          "It bypasses the response model, so the error body is not documented in the OpenAPI schema"
         ],
         answer: 1,
         why: "A field that failed validation still had a value, and Pydantic reports it to help debugging. If the payload contained a password, a token or a card number, that value goes back in the response — and into logs and error trackers with it. Map the errors into your own shape and drop `input`."

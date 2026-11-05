@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c2.3",
  "lede": "**30 snippets to read**, on string formatting and slicing. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on string formatting and slicing before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c2.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 136–165.** What this set asks you to predict, counted from its own problems — 13 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["strings", "lists", "exceptions", "generators", "dicts and sets"], "cells": [[{"text": "8", "tone": "accent"}, "str.format"], [{"text": "2", "tone": "good"}, "enumerate()"], [{"text": "1", "tone": "violet"}, "A caught TypeError"], [{"text": "1", "tone": "teal"}, "A generator expression"], [{"text": "1", "tone": "warn"}, "A Counter"]], "t": "diagram", "id": "dg-c2_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,28 +37,25 @@ EC.receiveLesson({
    "q": "Program 136: str.format — output of `f\"{name} is {age} years old\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** All three print `Alice is 30 years old` **Explanation:** Three ways to format strings: f-strings (3.6+), `.format()`, and `%` operator."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "name = \"Alice\"\nage = 30\nprint(f\"{name} is {age} years old\")\nprint(\"{} is {} years old\".format(name, age))\nprint(\"%s is %d years old\" % (name, age))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** All three print `Alice is 30 years old` **Explanation:** Three ways to format strings: f-strings (3.6+), `.format()`, and `%` operator."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "137",
    "q": "Program 137: What is the output of `f\"{x:.2f}\"`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "x = 3.14159\nprint(f\"{x:.2f}\")\nprint(f\"{x:10.2f}\")\nprint(f\"{1000000:,}\")\nprint(f\"{255:#x}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -73,19 +70,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Format specs: `.2f` for 2 decimal places, `10.2f` for width 10, `,` for thousands separator, `#x` for hex with prefix."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "x = 3.14159\nprint(f\"{x:.2f}\")\nprint(f\"{x:10.2f}\")\nprint(f\"{1000000:,}\")\nprint(f\"{255:#x}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "138",
    "q": "Program 138: What is the output of `s.center(11, \"*\")`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"hello\"\nprint(s.center(11, \"*\"))\nprint(s.ljust(11, \"-\"))\nprint(s.rjust(11, \"-\"))\nprint(s.zfill(11))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -100,7 +100,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `center()`, `ljust()`, `rjust()` pad with specified character. `zfill()` pads with zeros on the left."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"hello\"\nprint(s.center(11, \"*\"))\nprint(s.ljust(11, \"-\"))\nprint(s.rjust(11, \"-\"))\nprint(s.zfill(11))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -108,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 139: str.replace — output of `s.replace(\"World\", \"Python\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello Python`, `HeLlo World` **Explanation:** `replace()` with a third argument limits the number of replacements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello World\"\nprint(s.replace(\"World\", \"Python\"))\nprint(s.replace(\"l\", \"L\", 1))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello Python`, `HeLlo World` **Explanation:** `replace()` with a third argument limits the number of replacements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -125,28 +137,25 @@ EC.receiveLesson({
    "q": "Program 140: What is the output of `s.encode('utf-8')`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `b'hello'`, `hello`, `<class 'bytes'>` **Explanation:** `encode()` converts str to bytes, `decode()` converts bytes to str."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello\"\nprint(s.encode('utf-8'))\nb = b\"hello\"\nprint(b.decode('utf-8'))\nprint(type(s.encode()))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `b'hello'`, `hello`, `<class 'bytes'>` **Explanation:** `encode()` converts str to bytes, `decode()` converts bytes to str."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "141",
    "q": "Program 141: str.split — output of `s.split(\"apple\")`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"apple banana apple cherry apple\"\nprint(s.split(\"apple\"))\nprint(s.partition(\"banana\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -161,7 +170,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `split()` splits at every occurrence. `partition()` splits at the first occurrence into a 3-tuple."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"apple banana apple cherry apple\"\nprint(s.split(\"apple\"))\nprint(s.partition(\"banana\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -169,16 +187,19 @@ EC.receiveLesson({
    "q": "Program 142: str.split — output of `lines.splitlines()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** Both: `['line1', 'line2', 'line3']` **Explanation:** `splitlines()` is more robust — it handles `\\r\\n`, `\\r`, `\\n` uniformly."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "lines = \"line1\\nline2\\nline3\"\nprint(lines.splitlines())\nprint(lines.split(\"\\n\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** Both: `['line1', 'line2', 'line3']` **Explanation:** `splitlines()` is more robust — it handles `\\r\\n`, `\\r`, `\\n` uniformly."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -186,16 +207,19 @@ EC.receiveLesson({
    "q": "Program 143: str.join — output of `s = \"The quick brown fox\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['The', 'quick', 'brown', 'fox']`, `fox brown quick The` **Explanation:** `split()` without arguments splits on whitespace. `reversed()` returns an iterator."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"The quick brown fox\"\nwords = s.split()\nprint(words)\nprint(\" \".join(reversed(words)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['The', 'quick', 'brown', 'fox']`, `fox brown quick The` **Explanation:** `split()` without arguments splits on whitespace. `reversed()` returns an iterator."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -203,16 +227,19 @@ EC.receiveLesson({
    "q": "Program 144: What is the output of `s * 0`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `\"\"` (empty), `\"\"` (empty), `False` **Explanation:** Multiplying a string by 0 or negative number yields an empty string. Empty strings are falsy."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"abc\"\nprint(s * 0)\nprint(s * -1)\nprint(bool(s * 0))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `\"\"` (empty), `\"\"` (empty), `False` **Explanation:** Multiplying a string by 0 or negative number yields an empty string. Empty strings are falsy."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -220,16 +247,19 @@ EC.receiveLesson({
    "q": "Program 145: Slicing — output of `s[::-1]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `olleH`, `Hlo`, `el` **Explanation:** `[::-1]` reverses. `[::2]` takes every 2nd char starting at 0. `[1::2]` starts at index 1."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello\"\nprint(s[::-1])\nprint(s[::2])\nprint(s[1::2])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `olleH`, `Hlo`, `el` **Explanation:** `[::-1]` reverses. `[::2]` takes every 2nd char starting at 0. `[1::2]` starts at index 1."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -237,16 +267,19 @@ EC.receiveLesson({
    "q": "Program 146: What is the output of `\"abc\" < \"abd\"`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `True`, `True` **Explanation:** String comparison is lexicographic by Unicode code points. Uppercase letters have lower code points than lowercase."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(\"abc\" < \"abd\")\nprint(\"abc\" < \"abcd\")\nprint(\"ABC\" < \"abc\")\nprint(\"\" < \"a\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `True`, `True` **Explanation:** String comparison is lexicographic by Unicode code points. Uppercase letters have lower code points than lowercase."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -254,28 +287,25 @@ EC.receiveLesson({
    "q": "Program 147: What is the output of `s.capitalize()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello world`, `Hello World`, `Hello world` **Explanation:** `capitalize()` capitalizes first char and lowercases rest. `title()` capitalizes first letter of each word."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello world\"\nprint(s.capitalize())\nprint(s.title())\nprint(\"hello WORLD\".capitalize())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello world`, `Hello World`, `Hello world` **Explanation:** `capitalize()` capitalizes first char and lowercases rest. `title()` capitalizes first letter of each word."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "148",
    "q": "Program 148: What is the output of `string.ascii_lowercase`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import string\nprint(string.ascii_lowercase)\nprint(string.digits)\nprint(string.punctuation)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -290,7 +320,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** The `string` module provides useful constants for character classes."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import string\nprint(string.ascii_lowercase)\nprint(string.digits)\nprint(string.punctuation)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -298,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 149: Stripping whitespace — output of `s.strip()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello \\n World`, `'Hello \\\\n World'` **Explanation:** `strip()` removes leading/trailing whitespace including tabs and newlines, but not from the middle."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"\\t Hello \\n World \\t\"\nprint(s.strip())\nprint(repr(s.strip()))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello \\n World`, `'Hello \\\\n World'` **Explanation:** `strip()` removes leading/trailing whitespace including tabs and newlines, but not from the middle."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -315,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 150: What is the output of `s.translate(table)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `xxyyyzzzz` **Explanation:** `maketrans()` creates a mapping (`a→x`, `b→y`, `c→z`). `translate()` applies it."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"aabbbcccc\"\ntable = s.maketrans(\"abc\", \"xyz\")\nprint(s.translate(table))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `xxyyyzzzz` **Explanation:** `maketrans()` creates a mapping (`a→x`, `b→y`, `c→z`). `translate()` applies it."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -332,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 151: What happens (6)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello\\nWorld`, `12` **Explanation:** Raw strings (`r\"\"`) treat backslashes as literal characters, not escape sequences."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = r\"Hello\\nWorld\"\nprint(s)\nprint(len(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello\\nWorld`, `12` **Explanation:** Raw strings (`r\"\"`) treat backslashes as literal characters, not escape sequences."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -349,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 152: What is the output of `s.expandtabs(4)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello World`, `11`, `13` **Explanation:** `expandtabs()` replaces tabs with spaces (default 8, here 4). Tab stops are at every 4th column."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello\\tWorld\"\nprint(s.expandtabs(4))\nprint(len(s))\nprint(len(s.expandtabs(4)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello World`, `11`, `13` **Explanation:** `expandtabs()` replaces tabs with spaces (default 8, here 4). Tab stops are at every 4th column."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -366,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 153: What is the output of `s.islower()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `False`, `True` **Explanation:** `islower()` returns `True` if all cased characters are lowercase. `isupper()` checks for uppercase."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"python\"\nprint(s.islower())\nprint(s.isupper())\nprint(\"Python\".islower())\nprint(\"PYTHON\".isupper())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `False`, `True` **Explanation:** `islower()` returns `True` if all cased characters are lowercase. `isupper()` checks for uppercase."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -383,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 154: What is the output of `\" \".isspace()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False` **Explanation:** `isspace()` returns `True` if string contains only whitespace and is non-empty. Empty string returns `False`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(\"   \".isspace())\nprint(\"\\t\\n\\r\".isspace())\nprint(\"\".isspace())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False` **Explanation:** `isspace()` returns `True` if string contains only whitespace and is non-empty. Empty string returns `False`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -400,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 155: What is the output of `s.removeprefix(\"hel\")`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `lo`, `he` (Python 3.9+) **Explanation:** `removeprefix()` and `removesuffix()` remove specified prefix/suffix if present."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello\"\nprint(s.removeprefix(\"hel\"))\nprint(s.removesuffix(\"llo\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `lo`, `he` (Python 3.9+) **Explanation:** `removeprefix()` and `removesuffix()` remove specified prefix/suffix if present."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -417,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 156: What is the output of `text.isnumeric()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True`, `True`, `True` **Explanation:** `isnumeric()` returns `True` for digits, fractions, subscripts, superscripts, and other numeric characters (Unicode)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "text = \"Price: $100\"\nprint(text.isnumeric())\nprint(\"100\".isnumeric())\nprint(\"½\".isnumeric())\nprint(\"²\".isnumeric())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True`, `True`, `True` **Explanation:** `isnumeric()` returns `True` for digits, fractions, subscripts, superscripts, and other numeric characters (Unicode)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -434,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 157: A caught TypeError — output of `except TypeError as e:`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `'str' object does not support item assignment` **Explanation:** Strings are immutable in Python. You cannot change individual characters."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello\"\ntry:\n    s[0] = \"H\"\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `'str' object does not support item assignment` **Explanation:** Strings are immutable in Python. You cannot change individual characters."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -451,16 +517,19 @@ EC.receiveLesson({
    "q": "Program 158: A generator expression — output of `new_s = \"\".join(c for c in s if c.lower() not…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hll` **Explanation:** Generator expression filters out vowels. Only consonants remain."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello\"\nnew_s = \"\".join(c for c in s if c.lower() not in \"aeiou\")\nprint(new_s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hll` **Explanation:** Generator expression filters out vowels. Only consonants remain."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -468,16 +537,19 @@ EC.receiveLesson({
    "q": "Program 159: What is the output of `chr(65)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `A`, `a`, `65`, `97` **Explanation:** `chr()` converts Unicode code point to character. `ord()` converts character to code point."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(chr(65))\nprint(chr(97))\nprint(ord('A'))\nprint(ord('a'))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `A`, `a`, `65`, `97` **Explanation:** `chr()` converts Unicode code point to character. `ord()` converts character to code point."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -485,28 +557,25 @@ EC.receiveLesson({
    "q": "Program 160: What is the output of `s.rfind(\"o\")`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `7`, `4` **Explanation:** `find()` searches from left, `rfind()` from right. Both return index of the found character."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello world\"\nprint(s.rfind(\"o\"))\nprint(s.find(\"o\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `7`, `4` **Explanation:** `find()` searches from left, `rfind()` from right. Both return index of the found character."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "161",
    "q": "Program 161: str.format — output of `template.format(name=\"Alice\", age=30)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "template = \"My name is {name} and I am {age}\"\nprint(template.format(name=\"Alice\", age=30))\nprint(template.format_map({\"name\": \"Bob\", \"age\": 25}))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -521,7 +590,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `format_map()` takes a dictionary directly instead of keyword arguments."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "template = \"My name is {name} and I am {age}\"\nprint(template.format(name=\"Alice\", age=30))\nprint(template.format_map({\"name\": \"Bob\", \"age\": 25}))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -529,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 162: enumerate() — output of `list(enumerate(s))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(0, 'a'), (1, 'b'), (2, 'c')]`, `[(1, 'a'), (2, 'b'), (3, 'c')]` **Explanation:** `enumerate()` yields index-value pairs. `start` parameter changes the starting index."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"abc\"\nprint(list(enumerate(s)))\nprint(list(enumerate(s, start=1)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(0, 'a'), (1, 'b'), (2, 'c')]`, `[(1, 'a'), (2, 'b'), (3, 'c')]` **Explanation:** `enumerate()` yields index-value pairs. `start` parameter changes the starting index."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -546,16 +627,19 @@ EC.receiveLesson({
    "q": "Program 163: A Counter — output of `Counter(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Counter({'a': 3, 'b': 3, 'c': 3})`, `[('a', 3)]` **Explanation:** `Counter` counts character frequencies. `most_common(1)` returns the most frequent element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"aaabbbccc\"\nfrom collections import Counter\nprint(Counter(s))\nprint(Counter(s).most_common(1))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Counter({'a': 3, 'b': 3, 'c': 3})`, `[('a', 3)]` **Explanation:** `Counter` counts character frequencies. `most_common(1)` returns the most frequent element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -563,16 +647,19 @@ EC.receiveLesson({
    "q": "Program 164: map() and filter() — output of `result = list(map(len, words))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[5, 5]` **Explanation:** `map(len, words)` applies `len()` to each word. \"Hello\" has 5 chars, \"World\" has 5 chars."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello World\"\nwords = s.split()\nresult = list(map(len, words))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[5, 5]` **Explanation:** `map(len, words)` applies `len()` to each word. \"Hello\" has 5 chars, \"World\" has 5 chars."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -580,21 +667,24 @@ EC.receiveLesson({
    "q": "Program 165: Slicing — output of `s[10:]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `\"\"` (empty), `abcdef` **Explanation:** Slicing beyond string length returns empty string. Negative index beyond length starts from the beginning."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"abcdef\"\nprint(s[10:])\nprint(s[-100:])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `\"\"` (empty), `abcdef` **Explanation:** Slicing beyond string length returns empty string. Negative index beyond length starts from the beginning."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

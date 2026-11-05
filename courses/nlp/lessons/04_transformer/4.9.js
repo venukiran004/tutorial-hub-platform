@@ -3,7 +3,7 @@
    Permutation equivariance is proved numerically, RoPE's relative property
    verified to 6 decimals, the ALiBi slopes and PI/NTK arithmetic
    reproduced. RoPE's "long-range decay" holds only for aligned q,k (§06) —
-   scratchpad/nlp/n49.py.
+   n49.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "4.9",

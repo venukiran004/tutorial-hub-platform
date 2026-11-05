@@ -94,12 +94,12 @@ def bootstrap(data, statistic, B=10_000, seed=0):
 data = rng.lognormal(3, 1, 200)
 
 boots = bootstrap(data, np.median)
-np.percentile(boots, [2.5, 97.5])          # (16.8, 23.4)
+np.percentile(boots, [2.5, 97.5])          # (17.4, 25.3)
 
 # CHECK IT AGAINST THE KNOWN CASE -- the mean, where a formula exists:
 boots_mean = bootstrap(data, np.mean)
-boots_mean.std()                            # 2.51
-data.std(ddof=1)/np.sqrt(len(data))         # 2.52 -- the analytic SE
+boots_mean.std()                            # 2.09
+data.std(ddof=1)/np.sqrt(len(data))         # 2.09 -- the analytic SE
 #
 # THE BOOTSTRAP STANDARD ERROR MATCHES THE FORMULA to two decimal
 # places. That is the reassurance: on the case you can check, it is
@@ -133,10 +133,10 @@ for B in (100, 1_000, 10_000, 100_000):
     reps = [np.percentile(bootstrap(data, np.median, B, seed=s), 2.5)
             for s in range(20)]
     print(f"B={B:>7,}: spread of the CI endpoint = {np.std(reps):.4f}")
-# B=    100: spread of the CI endpoint = 0.4013
-# B=  1,000: spread of the CI endpoint = 0.1266
-# B= 10,000: spread of the CI endpoint = 0.0421
-# B=100,000: spread of the CI endpoint = 0.0132
+# B=    100: spread of the CI endpoint = 0.2340
+# B=  1,000: spread of the CI endpoint = 0.1164
+# B= 10,000: spread of the CI endpoint = 0.0234
+# B=100,000: spread of the CI endpoint = 0.0129
 #
 # B = 2,000 IS ENOUGH FOR A STANDARD ERROR, 10,000 FOR A 95% INTERVAL,
 # and more for extreme quantiles. Monte Carlo noise scales as
@@ -275,7 +275,7 @@ p = ((np.abs(null) >= abs(obs)).sum() + 1) / 10_001      # 0.0063
 # difference would vary -- and CANNOT test a null it never imposed.
 diffs = np.array([rng.choice(b, 60, True).mean() -
                   rng.choice(a, 60, True).mean() for _ in range(10_000)])
-np.percentile(diffs, [2.5, 97.5])                        # (0.16, 0.86)
+np.percentile(diffs, [2.5, 97.5])                        # (0.16, 0.84)
 
 # THE TWO ARE CONSISTENT: the interval excludes zero and the p-value
 # is small. THEY ARE NOT INTERCHANGEABLE:
@@ -283,7 +283,7 @@ np.percentile(diffs, [2.5, 97.5])                        # (0.16, 0.86)
 #   "bootstrap p-value" -- what people usually mean is the fraction of
 #   bootstrap differences below zero. That is NOT a p-value; it is a
 #   rough posterior probability, and it does not control type I error.
-(diffs < 0).mean()                                       # 0.0032
+(diffs < 0).mean()                                       # 0.0024
 #
 #   Compare with the permutation's 0.0063 -- roughly a factor of two,
 #   which is the usual relationship (one is a one-sided posterior-like
@@ -317,14 +317,14 @@ np.percentile(diffs, [2.5, 97.5])                        # (0.16, 0.86)
           code: `x = rng.uniform(0, 100, 200)
 boots = bootstrap(x, np.max, 10_000)
 
-x.max()                          # 99.6
-boots.max()                      # 99.6 -- it CANNOT exceed this
-np.percentile(boots, [2.5, 97.5])# (97.1, 99.6)
+x.max()                          # 99.9
+boots.max()                      # 99.9 -- it CANNOT exceed this
+np.percentile(boots, [2.5, 97.5])# (98.2, 99.9)
 
 # The true maximum is 100, and the interval's upper end is the sample
 # max. Coverage of the true value is near zero, and the output looks
 # perfectly ordinary.
-(boots == x.max()).mean()        # 0.63 -- 63% of resamples are identical` },
+(boots == x.max()).mean()        # 0.64 -- 63% of resamples are identical` },
         { level: "ok", label: "Recognise the failure class and avoid it",
           why: "The bootstrap requires the statistic to be a smooth function of the distribution. Extremes, boundaries and anything with a non-normal limiting distribution violate that, and the failure is silent.",
           code: `# THE FAILURE CLASS:
@@ -347,7 +347,7 @@ def smoothness_warning(boots, threshold=0.05):
     top = counts.max() / len(boots)
     return top > threshold, top
 
-smoothness_warning(bootstrap(x, np.max, 10_000))     # (True, 0.63)
+smoothness_warning(bootstrap(x, np.max, 10_000))     # (True, 0.64)
 smoothness_warning(bootstrap(x, np.mean, 10_000))    # (False, 0.0002)` },
         { level: "best", label: "Resample the right unit, and validate the coverage",
           why: "Most real bootstrap failures are not exotic statistics — they are the wrong resampling unit. Independent observations are what the method assumes, and clustered or time-ordered data must be resampled in blocks.",
@@ -373,8 +373,8 @@ user = np.repeat(np.arange(100), 40)
 effect = rng.normal(0, 2.0, 100)
 vals = effect[user] + rng.normal(0, 1.0, 4000)
 
-bootstrap(vals, np.mean, 5000).std()                     # 0.0347
-cluster_bootstrap(vals, user, np.mean, 5000).std()       # 0.2011
+bootstrap(vals, np.mean, 5000).std()                     # 0.0362
+cluster_bootstrap(vals, user, np.mean, 5000).std()       # 0.2123
 #
 # THE NAIVE BOOTSTRAP UNDERSTATES THE STANDARD ERROR 5.8-FOLD, so
 # every interval is nearly six times too narrow.
@@ -400,8 +400,8 @@ series = np.zeros(2000)
 for t in range(1, 2000):
     series[t] = 0.9*series[t-1] + rng.normal(0, 1)
 
-bootstrap(series, np.mean, 4000).std()                   # 0.051
-block_bootstrap(series, np.mean, 30, 4000).std()         # 0.196
+bootstrap(series, np.mean, 4000).std()                   # 0.055
+block_bootstrap(series, np.mean, 30, 4000).std()         # 0.221
 #
 # ALMOST FOUR TIMES WIDER, and the block version is the correct one.
 # The naive bootstrap destroys the autocorrelation, so it estimates
@@ -540,7 +540,7 @@ def atomicity(boots):
     return float(counts.max() / len(boots))
 
 atomicity(b1)                                   # ~0.0002 -- smooth
-atomicity(bootstrap_stat(q1, np.max, 2000))     # ~0.63 -- NOT smooth
+atomicity(bootstrap_stat(q1, np.max, 2000))     # ~0.64 -- NOT smooth
 #
 # The top-share statistic passes; the maximum fails badly. Good.
 #
@@ -718,7 +718,7 @@ def test_gini_is_more_stable_than_top_share():
             { t: "p", text: "The paired bootstrap gives an interval roughly half as wide, and it excludes zero where the unpaired one does not. Same data, different conclusion, and the paired version is correct." }
           ]},
           { t: "p", text: "**Validating coverage on simulated data is the whole justification.** 93% at this sample size makes the interval a measurement; without it, \"the bootstrap gave an interval\" is an assertion. At `n = 500` it drops to 86%, which is the asymptotic assumption showing." },
-          { t: "p", text: "**The atomicity check separates the safe case from the unsafe one.** Top-share scores 0.0002 and the maximum scores 0.63 — the second means 63% of resamples return exactly the same value, which is the bootstrap failing silently." },
+          { t: "p", text: "**The atomicity check separates the safe case from the unsafe one.** Top-share scores 0.0002 and the maximum scores 0.64 — the second means 64% of resamples return exactly the same value, which is the bootstrap failing silently." },
           { t: "p", text: "**Report a more robust alternative alongside.** If the Gini and the top-1% share move together the finding is real; if only the top share moves, it is a story about a handful of sellers — a different and probably more actionable finding." },
           { t: "p", text: "**Two quarters is not a trend.** Concentration metrics are noisy and mean-revert, so three or four points are needed before drawing a line through them." }
         ]

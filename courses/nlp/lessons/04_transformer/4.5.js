@@ -2,7 +2,7 @@
    LESSON 4.5 — Masked and Cross-Attention
    The masked-softmax example is verified, the training/inference asymmetry
    is measured at 74.2x, and exposure bias is shown on GPT-2
-   (scratchpad/nlp/n44.py).
+   (n44.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.5",
@@ -34,7 +34,7 @@ EC.receiveLesson({
 
     { t: "p", text: "A decoder must not see the future. Position `i` may attend only to positions up to and including `i`, which is a lower-triangular pattern." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n44.py — the mask", code:
+    { t: "code", lang: "python", title: "the mask", code:
 "def create_causal_mask(seq_len):\n    \"\"\"Lower triangular mask for autoregressive decoding.\"\"\"\n    return torch.tril(torch.ones(seq_len, seq_len)).unsqueeze(0).unsqueeze(0)\n\n# applied inside attention, before the softmax\nscores = scores.masked_fill(mask == 0, float('-inf'))",
       caption: "The two `unsqueeze` calls add batch and head dimensions so the mask broadcasts across both." },
 

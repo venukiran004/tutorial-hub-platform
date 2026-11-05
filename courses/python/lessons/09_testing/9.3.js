@@ -691,10 +691,10 @@ def test_client_releases_the_connection_when_auth_fails(monkeypatch) -> None:
       {
         stem: "A suite passes locally and fails intermittently in CI. The database fixture is `scope=\"session\"` and tests commit. What is happening?",
         options: [
-          "CI has a slower database, so queries time out",
-          "Tests share one database across the run, so one test's committed rows are visible to another — and the outcome depends on execution order",
-          "Session-scoped fixtures are not supported with parallel execution",
-          "The schema is created after the first test runs"
+          "CI has a slower database, so queries in the later tests time out under load",
+          "Tests share one database, so committed rows leak and results depend on order",
+          "Session-scoped fixtures are not supported with parallel execution, which CI enables",
+          "The schema is created after the first test runs, so whichever test runs first fails"
         ],
         answer: 1,
         why: "Session scope means one shared object for the whole run, so committed data persists between tests. Local collection order happens to work; CI's does not. The fix is the split: session scope for the container and schema, which nothing mutates, and a function-scoped transaction that is rolled back. Running with `pytest-randomly` turns the intermittent failure into a reproducible one."
@@ -702,34 +702,34 @@ def test_client_releases_the_connection_when_auth_fails(monkeypatch) -> None:
       {
         stem: "A fixture opens a connection, then calls `authenticate()` which raises, then yields. What happens to the connection?",
         options: [
-          "pytest closes it automatically at the end of the test",
-          "It leaks — code after `yield` runs only if execution reached the `yield`",
-          "It is closed when the fixture is garbage collected, promptly",
-          "The test is skipped, so no resource was acquired"
+          "pytest closes it automatically at the end of the test, whether or not the fixture yielded",
+          "It is closed promptly when the fixture's generator is garbage collected",
+          "The test is skipped, so pytest treats the resource as never having been acquired",
+          "It leaks — code after `yield` runs only if execution reached the `yield`"
         ],
-        answer: 1,
+        answer: 3,
         why: "Teardown after `yield` is unreachable when the failure occurs before it, so every test hitting that path leaks a connection — enough of them exhausts the pool. Wrap the acquisition in a `with` (or `contextlib.closing`) inside the fixture, or use `request.addfinalizer`, which registers cleanup immediately rather than after the yield."
       },
       {
         stem: "Why is `@pytest.fixture(autouse=True)` that patches `time.sleep` risky?",
         options: [
-          "`monkeypatch` cannot patch standard library functions",
-          "It applies invisibly to every test in scope, so a test written to verify retry backoff or a timeout passes without ever exercising the delay",
-          "Autouse fixtures run after the test rather than before",
-          "It prevents other fixtures from using `monkeypatch`"
+          "`monkeypatch` cannot patch standard library functions, so the fixture silently does nothing",
+          "Autouse fixtures run after the test rather than before, so the patch arrives too late",
+          "It prevents any other fixture from using `monkeypatch` in the same test",
+          "It applies invisibly, so a test of retry backoff passes without any delay"
         ],
-        answer: 1,
+        answer: 3,
         why: "Nothing in a test's signature reveals that an autouse fixture applied, so a test measuring elapsed time silently verifies nothing and its author has no way to see why. Making it opt-in — the test names it as a parameter — keeps the capability and puts it where a reader will find it. Better still, inject the sleep function into the code under test so no patching is needed."
       },
       {
         stem: "You need a database fixture that is fast and isolated. What is the right structure?",
         options: [
-          "Function scope, recreating the schema per test",
-          "Session-scoped engine and schema, with a function-scoped transaction that is rolled back after each test",
-          "Session scope, with tests responsible for cleaning up after themselves",
-          "Module scope, with truncation between files"
+          "Function scope, recreating the schema for every test so nothing can leak between them",
+          "Session scope, with each test responsible for deleting whatever rows it created",
+          "Module scope, with every table truncated between test files",
+          "Session-scoped schema, plus a per-test transaction that is rolled back"
         ],
-        answer: 1,
+        answer: 3,
         why: "Schema creation is expensive and immutable, so it belongs in the widest scope; isolation is cheap when it comes from a transaction rollback rather than truncation or recreation. Binding the session to an explicit connection with an open transaction means even a test that calls `commit()` is rolled back — so isolation does not depend on the code under test behaving well."
       }
     ]

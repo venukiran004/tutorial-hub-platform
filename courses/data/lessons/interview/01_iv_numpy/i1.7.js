@@ -27,7 +27,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Boolean indexing: select elements where condition is True\narr = np.array([1, -2, 3, -4, 5])\npositive = arr[arr > 0]           # [1, 3, 5]\narr[arr < 0] = 0                  # In-place modification: [1, 0, 3, 0, 5]\n\n# Integer indexing: select specific elements by index\narr[[0, 2, 4]]                    # [1, 3, 5]\n# Integer indexing returns a COPY; boolean indexing returns a COPY when result is 1D/non-contiguous"
+     "code": "# Boolean indexing: select elements where condition is True\narr = np.array([1, -2, 3, -4, 5])\npositive = arr[arr > 0]           # [1, 3, 5]\narr[arr < 0] = 0                  # In-place modification: [1, 0, 3, 0, 5]\n\n# Integer indexing: select specific elements by index\narr[[0, 2, 4]]                    # [1, 3, 5]\n# Integer and boolean indexing both return a COPY"
     }
    ],
    "kind": ""
@@ -131,7 +131,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "sorted_arr = np.array([1, 3, 5, 7, 9])\n\nnp.searchsorted(sorted_arr, 4)        # 2 (insert at index 2 to maintain order)\nnp.searchsorted(sorted_arr, [2, 6])   # [1, 3]\nnp.searchsorted(sorted_arr, 3, side=\"right\")   # 2 (right-side insertion)\n\n# Use case: bucket assignment (faster than pd.cut for NumPy arrays)\nbins = np.array([0, 18, 35, 65])\nnp.searchsorted(bins, ages)   # 0=under 18, 1=18-35, 2=35-65, 3=65+"
+     "code": "sorted_arr = np.array([1, 3, 5, 7, 9])\n\nnp.searchsorted(sorted_arr, 4)        # 2 (insert at index 2 to maintain order)\nnp.searchsorted(sorted_arr, [2, 6])   # [1, 3]\nnp.searchsorted(sorted_arr, 3, side=\"right\")   # 2 (right-side insertion)\n\n# Use case: bucket assignment (faster than pd.cut for NumPy arrays)\nbins = np.array([0, 18, 35, 65])\nnp.searchsorted(bins, ages, side=\"right\")   # 1=under 18, 2=18-35, 3=35-65, 4=65+"
     }
    ],
    "kind": ""
@@ -139,12 +139,12 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "110",
-   "q": "What is `np.in1d` and `np.isin`?",
+   "q": "What is `np.isin`, and what happened to `np.in1d`?",
    "body": [
     {
      "t": "code",
      "lang": "python",
-     "code": "arr = np.array([1, 2, 3, 4, 5])\n\nnp.isin(arr, [2, 4])          # [F, T, F, T, F] - preferred (N-D support)\nnp.in1d(arr, [2, 4])          # [F, T, F, T, F] - 1D only, slightly faster\n\n# Filter elements present in another array\narr[np.isin(arr, [2, 4])]     # [2, 4]\narr[~np.isin(arr, [2, 4])]    # [1, 3, 5] (NOT in)"
+     "code": "arr = np.array([1, 2, 3, 4, 5])\n\nnp.isin(arr, [2, 4])          # [F, T, F, T, F] - preferred (N-D support)\n# np.in1d was the 1D-only form: deprecated in NumPy 2.0 and later removed, so use np.isin\n\n# Filter elements present in another array\narr[np.isin(arr, [2, 4])]     # [2, 4]\narr[~np.isin(arr, [2, 4])]    # [1, 3, 5] (NOT in)"
     }
    ],
    "kind": ""
@@ -261,7 +261,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Assign each element to a bin (like pd.cut but returns integer bin codes)\nages = np.array([5, 15, 25, 45, 75])\nbins = np.array([0, 18, 35, 65])\n\nnp.digitize(ages, bins)   # [1, 1, 2, 2, 3] — bin 1 = 0-18, 2 = 18-35, 3 = 65+\n\n# right=True: bins are open on right (x <= bins) instead of left (x < bins)\nnp.digitize(ages, bins, right=True)"
+     "code": "# Assign each element to a bin (like pd.cut but returns integer bin codes)\nages = np.array([5, 15, 25, 45, 75])\nbins = np.array([0, 18, 35, 65])\n\nnp.digitize(ages, bins)   # [1, 1, 2, 3, 4] — bin 1 = 0-18, 2 = 18-35, 3 = 35-65, 4 = 65+\n\n# right=True: bins are open on right (x <= bins) instead of left (x < bins)\nnp.digitize(ages, bins, right=True)"
     }
    ],
    "kind": ""

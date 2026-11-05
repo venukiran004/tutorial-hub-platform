@@ -372,7 +372,8 @@ class FakeGateway:
       solution: {
         lang: "python",
         title: "export.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 def export(writer, rows):
     if isinstance(writer, CsvWriter):
@@ -390,7 +391,6 @@ def export(writer, rows):
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 import json
 from collections.abc import Sequence
@@ -557,10 +557,10 @@ if __name__ == "__main__":
       {
         stem: "A function iterates `recipients` and calls `send(r)` on each. A caller passes a single email string. What happens?",
         options: [
-          "`TypeError`, because a string is not a list of recipients",
-          "It sends one message per character, silently — `str` is iterable, so the shape is right and the meaning is wrong",
-          "It sends one message, treating the string as a single recipient",
-          "It raises `ValueError` on the first character"
+          "`TypeError`, because a string is not a list of recipients and cannot be iterated that way",
+          "It sends one message per character, silently — `str` is iterable",
+          "It sends one message, because Python treats a lone string as a single-element iterable",
+          "It raises `ValueError` on the first character, since one letter is not a valid email address"
         ],
         answer: 1,
         why: "This is the canonical duck-typing failure. `str` genuinely satisfies the iterable protocol, so nothing raises — iteration just yields characters instead of recipients. No structural check helps, because the structure is correct. The defences are a `list[str]` hint so mypy catches literal cases, an explicit `isinstance(x, str)` guard at public boundaries, and a `*recipients` signature that makes a bare string impossible to pass."
@@ -568,34 +568,34 @@ if __name__ == "__main__":
       {
         stem: "What is the main advantage of `Protocol` over an abstract base class for defining an interface?",
         options: [
+          "Classes conform structurally, so third-party and existing classes need no changes",
           "Protocols are checked at runtime, ABCs only at type-check time",
-          "Providers satisfy a protocol structurally — no inheritance, no import — so third-party and existing classes conform without modification",
           "Protocols can define concrete method implementations that ABCs cannot",
           "Protocols are faster because they skip the MRO"
         ],
-        answer: 1,
+        answer: 0,
         why: "The decoupling is the point. An ABC requires providers to inherit from it, which means importing it and accepting real coupling — impossible for a vendor SDK class. A protocol is declared by the *consumer* describing what it needs, can be written after the classes exist, and lets a ten-line test fake conform by shape alone. ABCs, by contrast, can share implementation and enforce at instantiation, which protocols cannot."
       },
       {
         stem: "A test suite passes using `Mock()` for a cache, but production fails on a method the real client lacks. Why did the test not catch it?",
         options: [
+          "A `Mock` invents any attribute you touch, so calls to methods that do not exist succeed",
           "The mock was not configured with the right return values",
-          "A `Mock` grows any attribute you access, so every method call succeeds — the test verified the code runs, not that it runs against a real interface",
-          "Mocks only work with classes that inherit from a common base",
+          "Mocks only work with classes that inherit from a common base, and the real client does not",
           "The test ran against a cached bytecode version of the mock"
         ],
-        answer: 1,
+        answer: 0,
         why: "`Mock` satisfies every protocol by construction: touching any attribute creates it and returns another `Mock`. So a typo or a method that does not exist on the real class passes silently. It is also typed as `Any`, so the type checker cannot help either. A small hand-written fake fails loudly on an unknown method, and `create_autospec` builds the mock from the real class's signature."
       },
       {
         stem: "When does an explicit `isinstance` check belong in otherwise duck-typed code?",
         options: [
-          "At the top of every public function, for safety",
-          "At trust boundaries, and where an object has the right shape but the wrong meaning — the `str`-as-iterable case",
-          "Whenever the function has more than one caller",
-          "Never — `isinstance` defeats the purpose of duck typing"
+          "At the top of every public function, so a wrong type fails early with a clear message",
+          "Whenever the function has more than one caller, since the callers may pass different types",
+          "At trust boundaries, and where the shape is right but the meaning is wrong",
+          "Never — `isinstance` defeats the purpose of duck typing and should always be avoided"
         ],
-        answer: 1,
+        answer: 2,
         why: "Blanket checks reject valid inputs and add no protection against the errors that actually occur. The two justified cases are narrow: untrusted data arriving from outside, where failing early with a precise message beats failing deep inside; and the situation where the structure is genuinely correct but means something else, which no structural check can detect. `str` is the archetype of the second."
       }
     ]

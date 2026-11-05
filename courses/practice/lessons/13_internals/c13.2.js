@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c13.2",
  "lede": "**30 snippets to read**, on types and class creation. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on types and class creation before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c13.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 1520–1549.** What this set asks you to predict, counted from its own problems — 13 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["classes", "functions", "numbers", "dicts and sets", "exceptions", "patterns"], "cells": [[{"text": "7", "tone": "accent"}, "__new__ versus __init__"], [{"text": "2", "tone": "good"}, "A mutable default argument"], [{"text": "1", "tone": "violet"}, "Floating"], [{"text": "1", "tone": "teal"}, "Iterating a dict's views"], [{"text": "1", "tone": "warn"}, "A metaclass"], [{"text": "1", "tone": "crit"}, "Attribute lookup hooks"]], "t": "diagram", "id": "dg-c13_2-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 1520: What is the output of `type(x)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'tuple'>`, `<class 'int'>` **Explanation:** Single-element tuple needs trailing comma. Without comma, parentheses are just grouping."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = (1,)\ny = (1)\nprint(type(x))\nprint(type(y))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'tuple'>`, `<class 'int'>` **Explanation:** Single-element tuple needs trailing comma. Without comma, parentheses are just grouping."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 1521: Floating-point representation — output of `0.1 + 0.2 == 0.3` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True`, `True` **Explanation:** Float precision issue. Use `round()` or epsilon comparison for reliable comparisons."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(0.1 + 0.2 == 0.3)\nprint(round(0.1 + 0.2, 1) == 0.3)\nprint(abs(0.1 + 0.2 - 0.3) < 1e-9)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True`, `True` **Explanation:** Float precision issue. Use `round()` or epsilon comparison for reliable comparisons."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 1522: Identity (is) versus equality (==) — output of `a = [1, 2, 3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4]`, `[1, 2, 3]`, `False` **Explanation:** `a + [4]` creates new list, rebinds `a`. `b` still references original."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a\na = a + [4]\nprint(a)\nprint(b)\nprint(a is b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4]`, `[1, 2, 3]`, `False` **Explanation:** `a + [4]` creates new list, rebinds `a`. `b` still references original."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 1523: Identity (is) versus equality (==) — output of `a = [1, 2, 3]` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4]`, `[1, 2, 3, 4]`, `True` **Explanation:** `+=` calls `__iadd__` which mutates list in-place. Both `a` and `b` see the change."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a\na += [4]\nprint(a)\nprint(b)\nprint(a is b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4]`, `[1, 2, 3, 4]`, `True` **Explanation:** `+=` calls `__iadd__` which mutates list in-place. Both `a` and `b` see the change."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 1524: Identity (is) versus equality (==) — output of `a = (1, 2, 3)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, 3, 4)`, `(1, 2, 3)`, `False` **Explanation:** Tuples are immutable. `+=` creates new tuple and rebinds `a`. `b` unchanged."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = (1, 2, 3)\nb = a\na += (4,)\nprint(a)\nprint(b)\nprint(a is b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, 3, 4)`, `(1, 2, 3)`, `False` **Explanation:** Tuples are immutable. `+=` creates new tuple and rebinds `a`. `b` unchanged."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 1525: What is the output of `True + True`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `10`, `3`, `True` **Explanation:** `bool` is subclass of `int`. `True` is 1, `False` is 0."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(True + True)\nprint(True * 10)\nprint(sum([True, False, True, True]))\nprint(isinstance(True, int))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `10`, `3`, `True` **Explanation:** `bool` is subclass of `int`. `True` is 1, `False` is 0."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 1526: What is the output of `[] == False`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True`, `True` **Explanation:** `[] == False` compares different types (list vs bool). `bool([])` converts to bool first."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print([] == False)\nprint(bool([]) == False)\nprint(not [])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True`, `True` **Explanation:** `[] == False` compares different types (list vs bool). `bool([])` converts to bool first."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 1527: Identity (is) versus equality (==) — output of `x == y == z`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `False`, `False` **Explanation:** `[:]` and `list()` create shallow copies. Equal values but different objects."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = [1, 2, 3]\ny = x[:]\nz = list(x)\n\nprint(x == y == z)\nprint(x is y)\nprint(x is z)\nprint(y is z)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `False`, `False` **Explanation:** `[:]` and `list()` create shallow copies. Equal values but different objects."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 1528: Iterating a dict's views — output of `len(keys)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `4` **Explanation:** `dict.keys()` returns a view, not a copy. View reflects changes to the dict."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nkeys = d.keys()\nd['d'] = 4\nprint(len(keys))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `4` **Explanation:** `dict.keys()` returns a view, not a copy. View reflects changes to the dict."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 1529: Identity (is) versus equality (==) — output of `type(None)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'NoneType'>`, `True`, `True`, `True` **Explanation:** `None` is a singleton. There's only one `None` object in Python."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(type(None))\nprint(None is None)\nprint(None == None)\nprint(id(None) == id(None))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'NoneType'>`, `True`, `True`, `True` **Explanation:** `None` is a singleton. There's only one `None` object in Python."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 1530: A mutable default argument — output of `f()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1]`, `[1, 1]`, `[1, 1, 1]` **Explanation:** Default mutable argument is shared across calls. Classic Python gotcha."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def f(x=[]):\n    x.append(1)\n    return x\n\nprint(f())\nprint(f())\nprint(f())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1]`, `[1, 1]`, `[1, 1, 1]` **Explanation:** Default mutable argument is shared across calls. Classic Python gotcha."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,16 +257,19 @@ EC.receiveLesson({
    "q": "Program 1531: Slicing — output of `x[::2]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `hlo`, `olleh`, `el` **Explanation:** `[::2]` every 2nd char. `[::-1]` reverses. `[1:4:2]` = indices 1, 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 'hello'\nprint(x[::2])\nprint(x[::-1])\nprint(x[1:4:2])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `hlo`, `olleh`, `el` **Explanation:** `[::2]` every 2nd char. `[::-1]` reverses. `[1:4:2]` = indices 1, 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -241,16 +277,19 @@ EC.receiveLesson({
    "q": "Program 1532: What is the output of `a` (8)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1: 'b'}`, `1` **Explanation:** `True == 1` and `hash(True) == hash(1)`, so `True` overwrites key `1`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1: 'a', True: 'b'}\nprint(a)\nprint(len(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1: 'b'}`, `1` **Explanation:** `True == 1` and `hash(True) == hash(1)`, so `True` overwrites key `1`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -258,16 +297,19 @@ EC.receiveLesson({
    "q": "Program 1533: A sequence built with the * operator — output of `'abc' * 0`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `` (empty string),`[]`,`(0, 0, 0)` **Explanation:** Multiplying by 0 gives empty container. Multiplying repeats elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print('abc' * 0)\nprint([] * 5)\nprint((0,) * 3)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `` (empty string),`[]`,`(0, 0, 0)` **Explanation:** Multiplying by 0 gives empty container. Multiplying repeats elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -275,16 +317,19 @@ EC.receiveLesson({
    "q": "Program 1534: A sequence built with the * operator — output of `a = [[0] * 3] * 3`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1, 0, 0], [1, 0, 0], [1, 0, 0]]` **Explanation:** `* 3` creates 3 references to same inner list. Modifying one affects all."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [[0] * 3] * 3\na[0][0] = 1\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1, 0, 0], [1, 0, 0], [1, 0, 0]]` **Explanation:** `* 3` creates 3 references to same inner list. Modifying one affects all."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -292,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 1535: A sequence built with the * operator — output of `a = [[0] * 3 for _ in range(3)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1, 0, 0], [0, 0, 0], [0, 0, 0]]` **Explanation:** List comprehension creates independent inner lists. Only first row is affected."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [[0] * 3 for _ in range(3)]\na[0][0] = 1\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1, 0, 0], [0, 0, 0], [0, 0, 0]]` **Explanation:** List comprehension creates independent inner lists. Only first row is affected."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -309,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 1536: A function call — output of `def outer():`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `20`, `10` **Explanation:** `inner()` accesses enclosing scope's `x` (20). Global `x` is 10 — unaffected."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ndef outer():\n    x = 20\n    def inner():\n        print(x)\n    inner()\n\nouter()\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `20`, `10` **Explanation:** `inner()` accesses enclosing scope's `x` (20). Global `x` is 10 — unaffected."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -326,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 1537: A caught TypeError — output of `t = (1, 2, [3, 4])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** Tuple's list reference is immutable, but the list itself is mutable. No error."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    t = (1, 2, [3, 4])\n    t[2].append(5)\n    print(t)\nexcept TypeError:\n    print(\"Error\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** Tuple's list reference is immutable, but the list itself is mutable. No error."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -343,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 1538: A caught TypeError — output of `f\"Error: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Error: 'tuple' object does not support item assignment`, `(1, 2, [3, 4, 5])` **Explanation:** `+=` on list first mutates (succeeds), then tries assignment back to tuple (fails). List IS modified despite error!"
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "try:\n    t = (1, 2, [3, 4])\n    t[2] += [5]\nexcept TypeError as e:\n    print(f\"Error: {e}\")\nprint(t)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Error: 'tuple' object does not support item assignment`, `(1, 2, [3, 4, 5])` **Explanation:** `+=` on list first mutates (succeeds), then tries assignment back to tuple (fails). List IS modified despite error!"
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -360,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 1539: Identity (is) versus equality (==) — output of `{} is {}`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `False`, `True`, `True` **Explanation:** Mutable objects always get new instances. Immutable may be interned/cached."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print({} is {})\nprint([] is [])\nprint(\"hello\" is \"hello\")\nprint(42 is 42)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `False`, `True`, `True` **Explanation:** Mutable objects always get new instances. Immutable may be interned/cached."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -377,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 1540: __new__ versus __init__ — output of `MyClass.created_by`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Meta`, `<class '__main__.Meta'>` **Explanation:** Metaclass modifies class creation. `__new__` adds attribute before class is created."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Meta(type):\n    def __new__(mcs, name, bases, namespace):\n        namespace['created_by'] = 'Meta'\n        return super().__new__(mcs, name, bases, namespace)\n\nclass MyClass(metaclass=Meta):\n    pass\n\nprint(MyClass.created_by)\nprint(type(MyClass))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Meta`, `<class '__main__.Meta'>` **Explanation:** Metaclass modifies class creation. `__new__` adds attribute before class is created."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -394,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 1541: A class-creation hook — output of `c.port`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `8080`, `unset`, `port must be int` **Explanation:** Data descriptor validates types on assignment. `__set_name__` auto-captures attribute name."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Descriptor:\n    def __set_name__(self, owner, name):\n        self.name = name\n    \n    def __get__(self, obj, objtype=None):\n        if obj is None:\n            return self\n        return obj.__dict__.get(self.name, 'unset')\n    \n    def __set__(self, obj, value):\n        if not isinstance(value, int):\n            raise TypeError(f\"{self.name} must be int\")\n        obj.__dict__[self.name] = value\n\nclass Config:\n    port = Descriptor()\n    timeout = Descriptor()\n\nc = Config()\nc.port = 8080\nprint(c.port)\nprint(c.timeout)\n\ntry:\n    c.port = \"invalid\"\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `8080`, `unset`, `port must be int` **Explanation:** Data descriptor validates types on assignment. `__set_name__` auto-captures attribute name."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -411,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 1542: A function call — output of `simple_add.__code__.co_varnames`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `('a', 'b')`, `(None,)`, `2` **Explanation:** Code object contains bytecode metadata: variable names, constants, stack requirements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import dis\n\ndef simple_add(a, b):\n    return a + b\n\nprint(simple_add.__code__.co_varnames)\nprint(simple_add.__code__.co_consts)\nprint(simple_add.__code__.co_stacksize)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `('a', 'b')`, `(None,)`, `2` **Explanation:** Code object contains bytecode metadata: variable names, constants, stack requirements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -428,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 1543: A metaclass — output of `list(AutoRegister.registry.keys())`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['PluginA', 'PluginB']`, `True` **Explanation:** Metaclass automatically registers all subclasses on creation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class AutoRegister(type):\n    registry = {}\n    \n    def __init__(cls, name, bases, namespace):\n        super().__init__(name, bases, namespace)\n        if bases:  # Don't register base class\n            AutoRegister.registry[name] = cls\n\nclass Plugin(metaclass=AutoRegister):\n    pass\n\nclass PluginA(Plugin):\n    pass\n\nclass PluginB(Plugin):\n    pass\n\nprint(list(AutoRegister.registry.keys()))\nprint(AutoRegister.registry['PluginA'] is PluginA)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['PluginA', 'PluginB']`, `True` **Explanation:** Metaclass automatically registers all subclasses on creation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -445,16 +517,19 @@ EC.receiveLesson({
    "q": "Program 1544: Attribute lookup hooks — output of `proxy.value`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `42`, `Hello, value=42`, `100` **Explanation:** Proxy delegates all attribute access to wrapped object transparently."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Proxy:\n    def __init__(self, obj):\n        object.__setattr__(self, '_obj', obj)\n    \n    def __getattr__(self, name):\n        return getattr(self._obj, name)\n    \n    def __setattr__(self, name, value):\n        setattr(self._obj, name, value)\n\nclass Target:\n    def __init__(self):\n        self.value = 42\n    \n    def greet(self):\n        return f\"Hello, value={self.value}\"\n\nproxy = Proxy(Target())\nprint(proxy.value)\nprint(proxy.greet())\nproxy.value = 100\nprint(proxy.value)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `42`, `Hello, value=42`, `100` **Explanation:** Proxy delegates all attribute access to wrapped object transparently."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -462,16 +537,19 @@ EC.receiveLesson({
    "q": "Program 1545: Inheritance — output of `Dog().speak()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `I say woof`, `I say meow`, `type` **Explanation:** `type()` dynamically creates classes. Subclasses override `sound` attribute."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def make_class(name, **attrs):\n    return type(name, (object,), attrs)\n\nAnimal = make_class('Animal', \n    sound='unknown',\n    speak=lambda self: f\"I say {self.sound}\")\n\nclass Dog(Animal):\n    sound = 'woof'\n\nclass Cat(Animal):\n    sound = 'meow'\n\nprint(Dog().speak())\nprint(Cat().speak())\nprint(type(Dog).__name__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `I say woof`, `I say meow`, `type` **Explanation:** `type()` dynamically creates classes. Subclasses override `sound` attribute."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -479,16 +557,19 @@ EC.receiveLesson({
    "q": "Program 1546: __repr__ versus __str__ — output of `d.x`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `ChainDict({'x': 1, 'y': 2, 'z': 3})` **Explanation:** Dot-access dict. `__getattr__` and `__setattr__` redirect to internal dict."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class ChainDict:\n    def __init__(self, **kwargs):\n        self._data = kwargs\n    \n    def __getattr__(self, name):\n        if name.startswith('_'):\n            raise AttributeError(name)\n        try:\n            return self._data[name]\n        except KeyError:\n            raise AttributeError(f\"No attribute '{name}'\")\n    \n    def __setattr__(self, name, value):\n        if name.startswith('_'):\n            super().__setattr__(name, value)\n        else:\n            self._data[name] = value\n    \n    def __repr__(self):\n        return f\"ChainDict({self._data})\"\n\nd = ChainDict(x=1, y=2)\nprint(d.x)\nd.z = 3\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `ChainDict({'x': 1, 'y': 2, 'z': 3})` **Explanation:** Dot-access dict. `__getattr__` and `__setattr__` redirect to internal dict."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -496,16 +577,19 @@ EC.receiveLesson({
    "q": "Program 1547: A class definition — output of `from contextlib import contextmanager`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['4', '8']` **Explanation:** Pipeline: [1,2,3,4,5] → [2,4,6,8,10] → [4,8] → ['4','8']"
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from contextlib import contextmanager\n\nclass Pipeline:\n    def __init__(self):\n        self.steps = []\n    \n    def step(self, func):\n        self.steps.append(func)\n        return func\n    \n    def run(self, data):\n        for step in self.steps:\n            data = step(data)\n        return data\n\npipe = Pipeline()\n\n@pipe.step\ndef double(x):\n    return [i * 2 for i in x]\n\n@pipe.step\ndef filter_even(x):\n    return [i for i in x if i % 4 == 0]\n\n@pipe.step\ndef to_string(x):\n    return [str(i) for i in x]\n\nresult = pipe.run([1, 2, 3, 4, 5])\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['4', '8']` **Explanation:** Pipeline: [1,2,3,4,5] → [2,4,6,8,10] → [4,8] → ['4','8']"
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -513,16 +597,19 @@ EC.receiveLesson({
    "q": "Program 1548: A generator driven with .send() — output of `acc.send(10)` — yield, unpacking",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10`, `30`, `35` **Explanation:** Coroutine receives values via `send()`. Running total accumulates sent values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def coroutine(func):\n    def wrapper(*args, **kwargs):\n        gen = func(*args, **kwargs)\n        next(gen)  # prime the coroutine\n        return gen\n    return wrapper\n\n@coroutine\ndef accumulator():\n    total = 0\n    while True:\n        value = yield total\n        total += value\n\nacc = accumulator()\nprint(acc.send(10))\nprint(acc.send(20))\nprint(acc.send(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10`, `30`, `35` **Explanation:** Coroutine receives values via `send()`. Running total accumulates sent values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -530,21 +617,24 @@ EC.receiveLesson({
    "q": "Program 1549: A class-creation hook — output of `p.validate(50)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `True`, `False` **Explanation:** `__init_subclass__` customizes subclass creation with parameters."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Validated:\n    def __init_subclass__(cls, min_val=0, max_val=100, **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.min_val = min_val\n        cls.max_val = max_val\n    \n    def validate(self, value):\n        return self.min_val <= value <= self.max_val\n\nclass Percentage(Validated, min_val=0, max_val=100):\n    pass\n\nclass Temperature(Validated, min_val=-273, max_val=1000):\n    pass\n\np = Percentage()\nt = Temperature()\nprint(p.validate(50))\nprint(p.validate(150))\nprint(t.validate(-100))\nprint(t.validate(-300))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `True`, `False` **Explanation:** `__init_subclass__` customizes subclass creation with parameters."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

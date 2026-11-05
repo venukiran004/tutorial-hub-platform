@@ -2,7 +2,7 @@
    LESSON 6.5 — The Encoder, Traced
    The encoder half of a translation model, computed on real numbers; its
    output becomes the memory every decoder step reads
-   (scratchpad/nlp/n65.py).
+   (n65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.5",

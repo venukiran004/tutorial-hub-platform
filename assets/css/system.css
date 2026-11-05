@@ -132,7 +132,7 @@ html[data-theme="light"] {
 /* ------------------------------------------------------------------ base -- */
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar) + 22px); background: var(--bg); }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--topbar) + 22px); background: var(--bg); overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
@@ -147,6 +147,10 @@ body {
   line-height: 1.68;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Hero glows deliberately bleed past the column (inset -40vw); without this
+     they widen the document and the whole page scrolls sideways on a phone.
+     clip, not hidden, so no scroll container is created and sticky survives. */
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4 { font-weight: 640; letter-spacing: -.021em; line-height: 1.24; margin: 0; }

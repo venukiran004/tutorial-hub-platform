@@ -52,7 +52,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**IO complexity:** \\(O(N^2 d / M)\\) vs \\(O(N^2)\\) HBM accesses (where \\(M\\) = SRAM size)",
+      "**IO complexity:** \\(O(N^2 d^2 / M)\\) vs \\(O(N^2)\\) HBM accesses (where \\(M\\) = SRAM size)",
       "**Result:** 2-4× faster, exact (not approximate), enables longer sequences",
       "**Flash Attention 2:** Better parallelism across sequence length dimension",
       "**Flash Attention 3:** FP8 support, async prefetching"
@@ -370,8 +370,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Post-Norm (original): \\(x + \\text{Sublayer}(\\text{LN}(x))\\) — harder to train deep models",
-      "Pre-Norm (GPT-2+): \\(\\text{LN}(x + \\text{Sublayer}(x))\\) — more stable, used in all modern LLMs"
+      "Post-Norm (original): \\(\\text{LN}(x + \\text{Sublayer}(x))\\) — harder to train deep models",
+      "Pre-Norm (GPT-2+): \\(x + \\text{Sublayer}(\\text{LN}(x))\\) — more stable, used in all modern LLMs"
      ]
     }
    ],

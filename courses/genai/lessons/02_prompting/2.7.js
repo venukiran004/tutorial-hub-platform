@@ -218,7 +218,7 @@ def parse(raw, model_cls):
 
 
     { t: "dl", items: [
-      ["A provider with no schema mode", "Anthropic, and most local serving stacks. Use a forced tool call (1.8), which is equivalent and available wherever function calling is. For a local model with neither, grammar-constrained decoding (3.13) is the same guarantee at the sampler level."],
+      ["A provider with no schema mode", "Most local serving stacks and older APIs. Use a forced tool call (1.8), which is equivalent and available wherever function calling is. For a local model with neither, grammar-constrained decoding (3.13) is the same guarantee at the sampler level."],
       ["A genuinely open-ended extraction", "You do not know the fields until you see the document. A schema requires knowing them, so here JSON mode plus your own validation is the honest answer — and the validation has to be stricter, because the model is free to name things."],
       ["Output that is not JSON", "Markdown, a table, a diff, a specific report layout. Schemas do not help; a literal example does, and so does a post-condition check that the structure is present before the output is used."]
     ] },
@@ -368,7 +368,7 @@ the schema replaces 8 of 14 clauses (57%)`,
         q: "How do you get a model to return a specific format?",
         strong: "A strong answer prefers a schema, and knows what the prompt still has to carry.",
         answer: [
-          { t: "p", text: "A schema where one is available — structured output on OpenAI, a forced tool call on Anthropic, grammar-constrained decoding on a local stack. That makes the shape a guarantee rather than a request." },
+          { t: "p", text: "A schema where one is available — structured output on OpenAI or Anthropic, a forced tool call where there is no schema mode, grammar-constrained decoding on a local stack. That makes the shape a guarantee rather than a request." },
           { t: "p", text: "Where it is not available, show the literal output in the prompt rather than describing it, enumerate permitted values inline, say explicitly what to do when a value is absent, and forbid the preamble and markdown fences." },
           { t: "p", text: "The part I would make sure to say is that the schema does not replace the prompt. I took a realistic extraction prompt apart once: the schema covered eight of fourteen clauses and cost 84 more tokens than the whole prompt had. Everything about what the fields *mean* survives, and the most important survivor is \"use null rather than inferring\"." }
         ] },

@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "The same six growth rates, counted out at three input sizes", "caption": "**This table is the reason complexity is taught before anything else.** At n = 10 every row is instant and the distinction looks academic. At a million, O(n log n) is still a fraction of a second and O(n squared) is a million million steps — **hours of work for the same answer.** The last row is the one to remember by shape rather than by number: **O(2^n) at n = 1,000,000 is not slow, it is impossible**, and no faster machine changes that.", "left": "growth", "codeW": 120, "vars": ["n = 10", "n = 1,000", "n = 1,000,000"], "steps": [{"code": "O(1)", "state": ["1", "1", "1"], "tone": "good"}, {"code": "O(log n)", "state": ["3", "10", "20"], "changed": [0, 1, 2], "tone": "good"}, {"code": "O(n)", "state": ["10", "1,000", "1,000,000"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "O(n log n)", "state": ["33", "10,000", "20,000,000"], "changed": [0, 1, 2], "tone": "accent"}, {"code": "O(n squared)", "state": ["100", "1,000,000", "a million million"], "changed": [0, 1, 2], "tone": "warn"}, {"code": "O(2 to the n)", "state": ["1,024", "a 302-digit number", "impossible, not slow"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-3_2-01-3"},
 
-    { t: "p", text: "An algorithm is a finite, unambiguous procedure that turns an input into an output. It is judged on correctness first and then on cost — time and memory — expressed as growth with input size: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ) (lesson 10.1). The paradigms below are strategies for *designing* one; the families in section 08 are the well-known results of applying them." },
+    { t: "p", text: "An algorithm is a finite, unambiguous procedure that turns an input into an output. It is judged on correctness first and then on cost — time and memory — expressed as growth with input size: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ) ([Python course, Lesson 10.1](../python/lesson.html?id=10.1)). The paradigms below are strategies for *designing* one; the families in section 08 are the well-known results of applying them." },
 
     { t: "h2", n: "02", text: "Brute force", id: "brute" },
 
@@ -39,7 +39,7 @@ EC.receiveLesson({
 def two_sum_brute(nums, target):                 # O(n²): every pair
     return [pair for pair in combinations(range(len(nums)), 2) if nums[pair[0]] + nums[pair[1]] == target]
 
-def two_sum_fast(nums, target):                  # O(n): the hash-map version from lesson 1.2
+def two_sum_fast(nums, target):                  # O(n): the hash-map version from Lesson 1.2
     seen = {}
     for i, x in enumerate(nums):
         if target - x in seen:
@@ -94,11 +94,11 @@ for _ in range(1000):                            # the brute-force answer checks
 
 print(coins_greedy(63, [1, 5, 10, 25]))         # 6  (25+25+10+1+1+1) — optimal
 print(coins_greedy(6, [1, 3, 4]))               # 3  (4+1+1) — but 3+3 is 2 coins`,
-      caption: "With 1, 5, 10, 25 every larger coin is a multiple of the structure below it and greedy is optimal. With 1, 3, 4 it is not: taking the 4 first leaves a remainder that costs two coins. Nothing in the greedy rule can see that." },
+      caption: "With 1, 5, 10, 25 greedy is provably optimal, which is a property of that particular set. With 1, 3, 4 it is not: taking the 4 first leaves a remainder that costs two coins. Nothing in the greedy rule can see that." },
 
     { t: "h2", n: "05", text: "Dynamic programming", id: "dp" },
 
-    { t: "p", text: "When a problem asks for an optimum and its subproblems overlap — the same smaller question is asked many times — remember each answer and reuse it. Top-down with memoisation (lesson 3.8's `lru_cache`) or bottom-up with a table; either way exponential becomes polynomial. DP is what to reach for when greedy gives the wrong answer." },
+    { t: "p", text: "When a problem asks for an optimum and its subproblems overlap — the same smaller question is asked many times — remember each answer and reuse it. Top-down with memoisation (`lru_cache`, from [Python course, Lesson 3.8](../python/lesson.html?id=3.8)) or bottom-up with a table; either way exponential becomes polynomial. DP is what to reach for when greedy gives the wrong answer." },
 
     { t: "code", lang: "python", title: "The coin problem, bottom-up",
       code: `import math
@@ -140,7 +140,7 @@ print(coins_dp(6, [1, 3, 4]))         # 2 — 3 + 3, which greedy could not find
     return count
 
 print(nqueens(8))     # 92 solutions, 2 ms here — against 16,777,216 boards for brute force`,
-      caption: "Choose, explore, un-choose — the shape of every backtracking solution (lesson 3.1). The three sets make the attack check O(1); the un-choose step is what lets the same sets serve every branch." },
+      caption: "Choose, explore, un-choose — the shape of every backtracking solution (Lesson 3.1). The three sets make the attack check O(1); the un-choose step is what lets the same sets serve every branch." },
 
     { t: "h2", n: "07", text: "Randomised algorithms", id: "random" },
 
@@ -210,20 +210,20 @@ print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))   # 6`,
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "For coins {1, 3, 4} and amount 6, greedy returns 3 and DP returns 2. Why does greedy fail?",
-      options: ["Greedy cannot handle amounts above 5", "Taking the largest coin first leaves a remainder whose best solution is worse than a different first choice — the local best is not the global best", "DP uses more coins", "The coins are not sorted"],
+      options: ["Greedy cannot handle amounts above 5, because the largest coin here is only 4", "Taking the largest coin first leaves a remainder that costs more than another first choice would", "DP uses more coins in total, which gives it more combinations to try", "The coins are not sorted, and greedy depends on seeing them in descending order"],
       answer: 1,
-      why: "Greedy commits to the 4 because it is locally best, leaving 2 that costs two 1-coins. The optimum, 3 + 3, never takes the largest coin. With {1, 5, 10, 25} every coin divides the structure above it and the greedy choice is provably safe; with {1, 3, 4} it is not, and only a method that compares subproblem answers finds 2." },
+      why: "Greedy commits to the 4 because it is locally best, leaving 2 that costs two 1-coins. The optimum, 3 + 3, never takes the largest coin. With {1, 5, 10, 25} the greedy choice is provably safe; with {1, 3, 4} it is not, and only a method that compares subproblem answers finds 2." },
     { stem: "What does backtracking add to brute force?",
-      options: ["Randomness", "Pruning: a partial solution that already violates a constraint is abandoned before it is extended", "Memoisation", "Sorting"],
+      options: ["Randomness: candidates are tried in a random order until one of them works", "Pruning: an invalid partial solution is abandoned before it is extended", "Memoisation: each partial solution is cached so it is never built twice", "Sorting: the candidates are ordered, so a valid solution is found first"],
       answer: 1,
-      why: "Brute force enumerates complete candidates and checks each; backtracking builds candidates incrementally and stops extending any prefix that is already invalid. For 8-Queens that is the difference between 3.2 million boards and a search that finds all 92 solutions in milliseconds." },
+      why: "Brute force enumerates complete candidates and checks each; backtracking builds candidates incrementally and stops extending any prefix that is already invalid. For 8-Queens that is the difference between 16.7 million boards and a search that finds all 92 solutions in milliseconds." },
     { stem: "Why is quicksort given a random pivot?",
-      options: ["To make it stable", "So that no fixed input order can force the O(n²) worst case — the expected time is O(n log n) on every input", "To use less memory", "Because Python requires it"],
-      answer: 1,
+      options: ["So that no input order can force the O(n²) worst case", "To use less memory, because a random pivot makes the partitions smaller", "To make it stable, so that equal elements keep their original relative order", "Because Python's `random` module is faster than computing a median of three values"],
+      answer: 0,
       why: "With a fixed pivot choice, an adversary (or an already-sorted input) produces maximally unbalanced partitions and quadratic time. A random pivot makes the partition balance a matter of chance independent of the input, so the expected cost is O(n log n) for any input." },
     { stem: "A problem asks for the maximum value achievable under constraints, and a small example shows the greedy answer is not optimal. What is the next paradigm to try?",
-      options: ["Randomised", "Divide and conquer", "Dynamic programming", "Linear search"],
-      answer: 2,
+      options: ["A randomised algorithm", "Dynamic programming", "Divide and conquer", "Linear search"],
+      answer: 1,
       why: "An optimisation problem where greedy fails is the signature of overlapping subproblems: the best answer depends on comparing the best answers to smaller versions. Define the state, write the recurrence, memoise or tabulate — the decision guide sends you there directly." }
   ] },
 

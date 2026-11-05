@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Convert duplicated tests into a table-driven test",
     "Write `ids` that make a failure report readable without opening the file",
     "Mark individual cases as expected failures without excluding them",
-    "Parametrise a fixture, and know when that beats parametrising the test",
+    "Parameterise a fixture, and know when that beats parameterising the test",
     "Recognise when parameterisation is the wrong shape"
   ],
 
@@ -139,7 +139,7 @@ def test_discount(quantity, expected): ...
     },
 
     { t: "callout", kind: "insight", title: "The id is what a CI failure gives you", body: [
-      { t: "code", lang: "python", title: "the difference at 3 a.m.", numbered: false, code: `
+      { t: "code", lang: "text", title: "the difference at 3 a.m.", numbered: false, code: `
 FAILED test_pricing.py::test_discount[quantity2-expected2]
 
 FAILED test_pricing.py::test_discount[at-threshold-no-discount]`},
@@ -204,7 +204,7 @@ def test_parse_decimal(value: str, expected: Decimal) -> None:
 
     { t: "h2", n: "04", text: "Stacking and fixtures", id: "stacking" },
 
-    {"kind": "matrix", "title": "Stacked parametrize is a product", "caption": "Two @parametrize decorators multiply: three inputs by two modes is six test cases, each reported with its own id.", "rows": ["x=1", "x=2", "x=3"], "cols": ["mode='fast'", "mode='safe'"], "cells": [[{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}]], "t": "diagram", "id": "dg-9_4-04-2"},
+    {"kind": "matrix", "title": "Stacked parameterise is a product", "caption": "Two @parameterise decorators multiply: three inputs by two modes is six test cases, each reported with its own id.", "rows": ["x=1", "x=2", "x=3"], "cols": ["mode='fast'", "mode='safe'"], "cells": [[{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}], [{"text": "case", "tone": "good"}, {"text": "case", "tone": "good"}]], "t": "diagram", "id": "dg-9_4-04-2"},
 
 
 
@@ -252,7 +252,7 @@ def db(request):
 def test_insert(db): ...           # runs for sqlite AND postgres
 def test_query(db): ...            # so does this one
 `,
-      caption: "**A parametrised fixture multiplies every test that uses it**, which is exactly right for \"this behaviour must hold on both backends\" and disastrous when applied to something incidental."
+      caption: "**A parameterised fixture multiplies every test that uses it**, which is exactly right for \"this behaviour must hold on both backends\" and disastrous when applied to something incidental."
     },
 
     { t: "callout", kind: "trap", title: "The combinatorial explosion", body: [
@@ -273,7 +273,7 @@ def test_format(currency, locale, tier, rounding): ...
       rungs: [
         { level: "bad", label: "Fix the code, no test",
           why: "Nothing stops it recurring, and the next person to touch that branch has no idea the case exists. Six months later the same ticket is filed again.",
-          code: `# ISSUE-4821: totals wrong for orders with a 100% discount
+          lang: "text", code: `# ISSUE-4821: totals wrong for orders with a 100% discount
 - return subtotal * (1 - rate)
 + return max(Decimal(0), subtotal * (1 - rate))` },
         { level: "ok", label: "A dedicated regression test",
@@ -298,9 +298,9 @@ def test_total_after_discount(subtotal, rate, expected):
       ]
     },
 
-    { t: "callout", kind: "tradeoff", title: "When not to parametrise", body: [
+    { t: "callout", kind: "tradeoff", title: "When not to parameterise", body: [
       { t: "table",
-        head: ["Situation", "Parametrise?"],
+        head: ["Situation", "Parameterise?"],
         rows: [
           ["Same logic, different inputs and expected outputs", "**Yes** — this is exactly the case"],
           ["Same inputs, different assertions per case", "**No** — separate tests; the assertions are the point"],
@@ -356,7 +356,7 @@ ISSUE-914: a password of exactly 128 characters is rejected`},
         { t: "p", text: "Fix the code and produce the table." }
       ],
       requirements: [
-        "Convert the four tests into one parametrised test with meaningful ids.",
+        "Convert the four tests into one parameterised test with meaningful ids.",
         "Add a row for each bug report, with the issue number in the id.",
         "For each bug, add the neighbouring boundary case it implies.",
         "Fix the validator so every row passes.",
@@ -557,10 +557,10 @@ def test_a_valid_password_returns_an_empty_list_not_none() -> None:
     "**`xfail(strict=True)` fails the suite on an unexpected pass**, which forces the marker to be removed when the bug is fixed.",
     "**Stacked `parametrize` decorators produce the cartesian product** — four dimensions of five values is 500 tests exercising perhaps a dozen distinct paths.",
     "**Test dimensions separately and add the specific combinations that interact**, rather than enumerating a product.",
-    "**A parametrised fixture multiplies every test that uses it** — right for \"must work on both backends\", wrong for anything incidental.",
+    "**A parameterised fixture multiplies every test that uses it** — right for \"must work on both backends\", wrong for anything incidental.",
     "**A bug report becomes a row in the existing table**, not a separate `test_issue_4821` function, so the bug joins the specification.",
     "**A boundary bug needs two rows**: the reported case and its neighbour. One row alone is satisfied by an off-by-one in the other direction.",
-    "**Stop parametrising the moment the body branches on the parameter** — that is two tests wearing one coat."
+    "**Stop parameterising the moment the body branches on the parameter** — that is two tests wearing one coat."
   ],
 
   quiz: {
@@ -569,43 +569,43 @@ def test_a_valid_password_returns_an_empty_list_not_none() -> None:
       {
         stem: "A CI run reports `FAILED test_pricing.py::test_discount[quantity2-expected2]`. What is the problem?",
         options: [
-          "The test is flaky and needs a rerun",
-          "The auto-generated id says nothing — you must open the file and count rows from zero to learn which case failed",
-          "Parametrised tests cannot be rerun individually",
-          "The parameters were passed in the wrong order"
+          "The test is flaky and needs a rerun before anyone investigates it",
+          "Parameterised tests cannot be rerun individually, so the whole set must run again",
+          "The id is meaningless — you must count rows to know which case failed",
+          "The parameters were passed in the wrong order, so the id names the wrong argument"
         ],
-        answer: 1,
+        answer: 2,
         why: "Automatic ids are positional and meaningless for anything but simple scalars. `pytest.param(50, \"0\", id=\"at-threshold-no-discount\")` makes the CI summary self-explanatory, and it survives someone inserting a row above it — which a parallel `ids` list does not."
       },
       {
         stem: "A bug report says a 12-character password is wrongly rejected. Which test rows do you add?",
         options: [
-          "One row: 12 characters is valid",
-          "Two rows: 12 characters valid, and 11 characters rejected",
-          "One row per length from 1 to 20",
+          "Two rows: 12 characters valid, 11 rejected",
+          "One row: a 12-character password is valid",
+          "One row for every length from 1 to 20",
           "None — fix the code and rely on the existing tests"
         ],
-        answer: 1,
+        answer: 0,
         why: "A single row is satisfied by changing `< 12` to `< 11`, which is a different off-by-one rather than a fix. The neighbouring row pins the boundary from the other side, so only a correct rule passes both. A bug at a boundary is evidence the boundary was never tested — and the fix should leave the boundary tested from both directions."
       },
       {
         stem: "Why prefer `xfail` over `skip` for a known bug?",
         options: [
+          "It still runs, so the gap stays visible, and `strict=True` flags the fix",
           "`skip` is deprecated",
-          "The case still runs, so it appears as a known gap in every run and reports when it starts passing — with `strict=True`, it fails the suite until the marker is removed",
           "`xfail` runs faster",
-          "`skip` cannot take a reason"
+          "`skip` cannot take a reason, so nobody can tell later why the case was disabled"
         ],
-        answer: 1,
+        answer: 0,
         why: "A skipped case is invisible: nothing tells you when the bug is fixed, and the marker outlives the problem. An xfailing case documents the expectation, runs on every push, and `strict=True` makes an unexpected pass a failure — so the person who fixes the bug is forced to remove the marker as part of the same change."
       },
       {
-        stem: "When should you stop parametrising and write separate tests?",
+        stem: "When should you stop parameterising and write separate tests?",
         options: [
           "When there are more than ten cases",
-          "When the test body needs an `if` on the parameter — at that point the assertions differ, not just the inputs",
-          "When the parameters are objects rather than scalars",
-          "When the cases need different fixtures"
+          "When the test body needs an `if` on the parameter",
+          "When the parameters are objects rather than scalars, which make poor test ids",
+          "When the cases need different fixtures, which parameterise cannot vary"
         ],
         answer: 1,
         why: "Parameterisation removes duplication when only the inputs and expected output vary. A body that branches has merged two tests, and a reader must now execute the branch mentally to know what each row asserts. Tests that assert a *property* — ordering stability, a side effect, a return type — belong on their own, however similar their setup looks."
@@ -639,7 +639,7 @@ def test_a_valid_password_returns_an_empty_list_not_none() -> None:
       },
       {
         level: "advanced",
-        q: "How do you decide what to parametrise when there are several dimensions?",
+        q: "How do you decide what to parameterise when there are several dimensions?",
         strong: "Test each dimension separately, then add the specific combinations that genuinely interact. Stacking decorators gives the cartesian product, which for four dimensions of five values is 500 tests exercising a dozen distinct paths.",
         answer: [
           { t: "p", text: "The point that most combinations verify the same code repeatedly is what makes this a real trade-off rather than a preference." },

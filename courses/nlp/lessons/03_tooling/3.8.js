@@ -2,7 +2,7 @@
    LESSON 3.8 — Natural Language Inference and Text Augmentation
    roberta-large-mnli is run as a task, as a faithfulness checker, and as a
    validator for augmented data — where it caught two of three corrupted
-   sentences (scratchpad/nlp/n38.py).
+   sentences (n38.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.8",
@@ -43,7 +43,7 @@ EC.receiveLesson({
       ["Datasets", "SNLI (570k pairs, image captions) and MultiNLI (433k, multiple genres). MNLI's genre diversity is why MNLI-trained models transfer better."]
     ] },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n38.py — running NLI", code:
+    { t: "code", lang: "python", title: "running NLI", code:
 "import torch\nfrom transformers import AutoTokenizer, AutoModelForSequenceClassification\n\nname = \"roberta-large-mnli\"\ntok = AutoTokenizer.from_pretrained(name)\nmod = AutoModelForSequenceClassification.from_pretrained(name).eval()\n\ndef nli(premise, hypothesis):\n    enc = tok(premise, hypothesis, return_tensors=\"pt\", truncation=True)\n    with torch.no_grad():\n        probs = torch.softmax(mod(**enc).logits, -1)[0]\n    return {mod.config.id2label[i]: probs[i].item()\n            for i in range(len(probs))}",
       caption: "The premise and hypothesis go in as a sentence *pair* — this is where `token_type_ids` earns its keep, marking which segment is which." },
 

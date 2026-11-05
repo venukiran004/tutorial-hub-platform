@@ -262,7 +262,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Standard: predict noise ε\nv-prediction: predict v = ᾱ_t × ε - √(1-ᾱ_t) × x₀\n\nv represents the \"velocity\" of the diffusion process"
+     "code": "Standard: predict noise ε\nv-prediction: predict v = √ᾱ_t × ε - √(1-ᾱ_t) × x₀\n\nv represents the \"velocity\" of the diffusion process"
     },
     {
      "t": "p",

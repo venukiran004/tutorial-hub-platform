@@ -27,7 +27,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Create multi-level columns\nresult = df.groupby(\"store\").agg(\n    {\"sales\": [\"sum\", \"mean\", \"std\"], \"transactions\": [\"count\"]}\n)\n# result.columns = MultiIndex([(\"sales\", \"sum\"), (\"sales\", \"mean\"), ...])\n\nresult.columns = [\"_\".join(c) for c in result.columns]  # Flatten\nresult[(\"sales\", \"sum\")]   # Access level-0 then level-1\nresult[\"sales\"][\"sum\"]     # Equivalent\nresult[\"sales\"]            # All aggregations of sales"
+     "code": "# Create multi-level columns\nresult = df.groupby(\"store\").agg(\n    {\"sales\": [\"sum\", \"mean\", \"std\"], \"transactions\": [\"count\"]}\n)\n# result.columns = MultiIndex([(\"sales\", \"sum\"), (\"sales\", \"mean\"), ...])\n\nresult[(\"sales\", \"sum\")]   # Access level-0 then level-1\nresult[\"sales\"][\"sum\"]     # Equivalent\nresult[\"sales\"]            # All aggregations of sales\n\nresult.columns = [\"_\".join(c) for c in result.columns]  # Flatten: sales_sum, sales_mean, ..."
     }
    ],
    "kind": ""
@@ -134,7 +134,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Categorical columns are compared by their code values (integers) rather than strings — much faster for high-cardinality columns when detecting duplicates."
+     "text": "Categorical columns are compared by their integer codes rather than strings — faster when detecting duplicates, especially for low-cardinality columns, where categoricals pay off."
     }
    ],
    "kind": ""
@@ -209,7 +209,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df[\"name\"] = df[\"name\"].astype(\"string\")  # pd.StringDtype()\n\n# Benefits:\n# - NA represented by pd.NA (not np.nan — avoids NaN is float confusion)\n# - String methods work the same\n# - Better memory usage than object dtype\n# - Arrow-backed string (string[pyarrow]) is even faster for large string data"
+     "code": "df[\"name\"] = df[\"name\"].astype(\"string\")  # pd.StringDtype()\n\n# Benefits:\n# - NA represented by pd.NA (not np.nan — avoids NaN is float confusion)\n# - String methods work the same\n# - A dedicated dtype, so a column cannot silently hold non-strings\n# - Arrow-backed string (string[pyarrow]) is far smaller and faster for large string data"
     }
    ],
    "kind": ""
@@ -313,7 +313,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Random sample without replacement\nsample = df.sample(n=1000, random_state=42)\n\n# Stratified sampling by column\nstratified = df.groupby(\"category\", group_keys=False).apply(\n    lambda g: g.sample(frac=0.1)\n)\n\n# Weighted sampling\ndf.sample(n=500, weights=\"probability_col\")"
+     "code": "# Random sample without replacement\nsample = df.sample(n=1000, random_state=42)\n\n# Stratified sampling by column\nstratified = df.groupby(\"category\").sample(frac=0.1, random_state=42)\n\n# Weighted sampling\ndf.sample(n=500, weights=\"probability_col\")"
     }
    ],
    "kind": ""

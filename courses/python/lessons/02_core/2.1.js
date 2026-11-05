@@ -314,6 +314,8 @@ print(grid)`,
       { t: "p", text: "Note that the *inner* `[0] * 3` is fine: integers are immutable, so sharing them is harmless. The rule is that `*` is safe for immutable elements and wrong for mutable ones." }
     ]},
 
+    {"t": "diagram", "kind": "flow", "title": "[[]] * 3 is three names for one list", "caption": "**`*` repeats the reference, not the object.** All three slots point at the same inner list, so appending through `grid[0]` changes what `grid[1]` and `grid[2]` show. `[[] for _ in range(3)]` evaluates `[]` three times and builds three independent lists.", "cols": 3, "nodes": [{"id": "a", "label": "grid[0]", "tone": "accent"}, {"id": "b", "label": "grid[1]", "tone": "accent"}, {"id": "c", "label": "grid[2]", "tone": "accent"}, {"id": "l", "label": "one list object", "sub": "shared by all three", "tone": "crit"}], "edges": [["a", "l"], ["b", "l"], ["c", "l"]]},
+
     /* ================================================================== */
     { t: "h2", n: "05", text: "When a list is the wrong choice", id: "wrong-choice" },
 
@@ -531,11 +533,11 @@ if __name__ == "__main__":
         stem: "A worker dequeues with `jobs.pop(0)` and slows down as its backlog grows. Why?",
         options: [
           "`pop(0)` triggers a reallocation of the underlying array on every call",
+          "Python re-hashes the list after each removal from the front, and the hashing cost grows with its length",
           "`pop(0)` shifts every remaining pointer one slot left, so its cost grows with queue depth",
-          "Python re-hashes the list after each removal from the front",
-          "The garbage collector runs more often as the list grows"
+          "The garbage collector runs more often as the list grows, and each pass walks every element in it"
         ],
-        answer: 1,
+        answer: 2,
         why: "A list stores its pointers contiguously, so removing the first one requires moving all the rest — O(n) in the current length. As the backlog grows, each dequeue gets more expensive, which slows the worker and grows the backlog further. `collections.deque` is O(1) at both ends and is a two-line change. Lists do reallocate on growth, but that is amortised and not what is happening here."
       },
       {
@@ -545,31 +547,31 @@ if __name__ == "__main__":
 grid[0][0] = 9
 print(grid)`,
         options: [
-          "`[[9, 0], [0, 0]]` — only the first inner list is modified",
-          "`[[9, 0], [9, 0]]` — `*` copied the reference, so both rows are the same list",
+          "`[[9, 0], [0, 0]]` — only the first inner list is modified, since each row was built separately",
           "`[[9, 9], [9, 9]]` — the assignment propagates to every element",
-          "A `TypeError`, because nested lists cannot be multiplied"
+          "A `TypeError`, because a list containing other lists cannot be multiplied by an integer",
+          "`[[9, 0], [9, 0]]` — `*` copied the reference, so both rows are the same list"
         ],
-        answer: 1,
+        answer: 3,
         why: "`*` on a list copies references, not objects. The outer multiplication produced two pointers to one inner list, so writing through either is visible through both. The inner `[0] * 2` is harmless because integers are immutable and sharing them cannot be observed. Use `[[0] * 2 for _ in range(2)]`, where the comprehension evaluates the inner expression separately each iteration."
       },
       {
         stem: "`items = items.sort()` leaves `items` as `None`. Why does `sort()` behave this way?",
         options: [
-          "It is a historical inconsistency that `sorted()` was added to correct",
-          "Methods that mutate in place return `None` by convention, to signal that they changed the object rather than produced a new one",
+          "Methods that mutate in place return `None` by convention, so nobody mistakes them for copies",
+          "It is a historical inconsistency from Python 2 that `sorted()` was later added to work around",
           "`sort()` returns `None` only when the list is already sorted",
-          "Sorting happens lazily, and `None` is a placeholder until the result is needed"
+          "Sorting happens lazily, and `None` is a placeholder until the sorted result is first needed by the caller"
         ],
-        answer: 1,
+        answer: 0,
         why: "It is a deliberate and consistent convention across `sort`, `reverse`, `append`, `extend`, `insert`, `remove` and `clear`. Returning `None` makes it impossible to write `new = old.sort()` believing you left `old` untouched — the immediate `None` is a much louder failure than silently sharing a mutated list. When you want a new list, `sorted()` and `reversed()` are the non-mutating counterparts."
       },
       {
         stem: "A loop does `if record_id not in seen:` where `seen` is a list that grows to 50,000 entries. What is the total complexity, and the fix?",
         options: [
-          "O(n) — membership testing is constant time; no fix needed",
+          "O(n) — membership testing on a list is constant time, so there is nothing here worth fixing",
           "O(n²) — each test scans the whole list; making `seen` a set makes each test O(1)",
-          "O(n log n) — Python keeps lists sorted internally for faster searching",
+          "O(n log n) — Python keeps lists sorted internally, so each membership test is a binary search",
           "O(n²), and the fix is to sort `seen` and use `bisect` for binary search"
         ],
         answer: 1,

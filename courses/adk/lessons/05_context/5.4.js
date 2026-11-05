@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.4 — Memory: Recall Across Sessions
    The ingest, the search and the miss on "allergy" vs "allergic" are executed
-   output from scratchpad/adk/s4.py; the scoring rule is read from the source
+   output from s4.py; the scoring rule is read from the source
    of InMemoryMemoryService in google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
@@ -60,7 +60,7 @@ print(inspect.signature(BaseMemoryService.search_memory))`,
 
     {"kind": "trace", "title": "The recall missed, and the agent answered anyway", "caption": "**That last pair of rows is the whole warning.** The search for “allergy” returned zero memories even though the fact was sitting in the store under “penicillin”, and the model then replied *“you are allergic to penicillin”* having received an empty list. With a real model that is precisely what a confident hallucination looks like: **the retrieval failed silently, the tool returned an empty result, and nothing in the conversation marks the answer as unsupported.** Ingestion being an explicit call is the other thing to carry — a conversation nobody ingests is never recalled.", "left": "step", "codeW": 190, "vars": ["result", "what it tells you"], "steps": [{"code": "Monday: ingest the session", "state": ["2 events ingested", "nothing is automatic"], "tone": "accent"}, {"code": "Friday: a new session", "state": ["0 events, state {}", "a clean start by design"], "changed": [0, 1], "tone": "good"}, {"code": "search_memory('penicillin')", "state": ["2 entries", "exact overlap works"], "changed": [0, 1], "tone": "good"}, {"code": "the agent's load_memory('allergy')", "state": ["memories=[] - EMPTY", "keyword overlap missed it"], "changed": [0, 1], "tone": "crit"}, {"code": "the model's reply", "state": ["'You are allergic to penicillin.'", "unsupported, and indistinguishable"], "changed": [0, 1], "tone": "crit"}, {"code": "the same query as user u2", "state": ["nothing", "the key includes the user"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-5_4-03-2"},
 
-    { t: "code", lang: "python", title: "s4.py — two sessions, one memory",
+    { t: "code", lang: "python", title: "two sessions, one memory",
       code: `sessions, memory = InMemorySessionService(), InMemoryMemoryService()
 
 # Monday, in its own session.

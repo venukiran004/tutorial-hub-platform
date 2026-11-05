@@ -139,7 +139,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Greedy** (default): Matches as much text as possible.",
-      "**Non-greedy/Lazy**Matches as little text as possible. Add `?` after the quantifier."
+      "**Non-greedy/Lazy:** Matches as little text as possible. Add `?` after the quantifier."
      ]
     },
     {
@@ -319,10 +319,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Performance**Pattern is compiled once, not on every call. Significant for loops.",
-      "**Readability**Name the pattern object descriptively (`email_re`, `phone_re`).",
-      "**Separation of concerns**Define patterns at module level, use them anywhere.",
-      "**Method access**Pattern objects have `.search()`, `.findall()`, `.sub()`, etc."
+      "**Performance:** Pattern is compiled once, not on every call. Significant for loops.",
+      "**Readability:** Name the pattern object descriptively (`email_re`, `phone_re`).",
+      "**Separation of concerns:** Define patterns at module level, use them anywhere.",
+      "**Method access:** Pattern objects have `.search()`, `.findall()`, `.sub()`, etc."
      ]
     },
     {
@@ -621,7 +621,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Two flags control multiline behavior:"
+     "text": "Two flags control multiline behaviour:"
     },
     {
      "t": "h4",
@@ -725,7 +725,7 @@ EC.receiveLesson({
        "`[^\\w\\s]`"
       ],
       [
-       "Normalize whitespace",
+       "Normalise whitespace",
        "`\\s+` → `\" \"`"
       ],
       [

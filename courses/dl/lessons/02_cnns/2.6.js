@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 2.6 — Data Augmentation
    Transform behaviour, MixUp/CutMix arithmetic and TTA are all executed in
-   scratchpad/dl/d26.py.
+   d26.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.6",

@@ -171,7 +171,7 @@ pd.cut([0], [0, 10], include_lowest=True)          # [0,10] -- else 0 falls OUT
 kb = KBinsDiscretizer(n_bins=5, encode="ordinal", strategy="quantile")
 kb.fit(df[["amount"]])
 kb.bin_edges_                                               # learned on fit
-kb.transform(df[["amount"]])[:5].ravel()                   # [1., 3., 0., 4., 2.]
+kb.transform(df[["amount"]])[:5].ravel()                   # [2., 2., 3., 2., 1.]
 #
 # strategy: "uniform" (equal-width), "quantile" (equal-frequency),
 #           "kmeans" (edges from 1-D k-means -- clusters of values)
@@ -182,7 +182,7 @@ kb.transform(df[["amount"]])[:5].ravel()                   # [1., 3., 0., 4., 2.
 tree = DecisionTreeClassifier(max_leaf_nodes=4, min_samples_leaf=200, random_state=0)
 tree.fit(df[["amount"]], df["y"])
 thresholds = sorted(t for t in tree.tree_.threshold if t > 0)
-thresholds                                                  # [13.1, 28.4, 61.7]
+thresholds                                                  # [13.4, 22.8, 37.7]
 df["bin_s"] = pd.cut(df["amount"], [-np.inf] + thresholds + [np.inf])
 df.groupby("bin_s", observed=True)["y"].agg(["size", "mean"])
 #                    size   mean
@@ -238,7 +238,7 @@ cv(LogisticRegression(), A, y_age)                          # 0.51 -- a coin fli
 
 # LOGISTIC ON ONE-HOT BINS: one coefficient per bin, any shape.
 A_bins = pd.get_dummies(pd.cut(A["age"], [17, 25, 35, 45, 55, 65, 80]), dtype=float)
-cv(LogisticRegression(), A_bins, y_age)                     # 0.68
+cv(LogisticRegression(), A_bins, y_age)                     # 0.67
 #
 # Six bins, six coefficients: high, lower, low, low, higher, high.
 # The step function follows the U. The linear model now has a
@@ -249,7 +249,7 @@ cv(LogisticRegression(), A_bins, y_age)                     # 0.68
 # shape. Bins assume nothing about the shape and pay with edges.
 
 # GRADIENT BOOSTING ON THE RAW FEATURE:
-cv(GradientBoostingClassifier(random_state=0), A, y_age)    # 0.70
+cv(GradientBoostingClassifier(random_state=0), A, y_age)    # 0.67
 #
 # The tree found the U on its own, with splits wherever it liked.
 
@@ -283,7 +283,7 @@ cv(GradientBoostingClassifier(random_state=0), A_bins, y_age)    # 0.67
 for k in (3, 5, 8, 12, 20):
     bins_k = pd.get_dummies(pd.qcut(A["age"], k), dtype=float)
     print(k, cv(LogisticRegression(max_iter=1000), bins_k, y_age))
-# 3 0.62 / 5 0.67 / 8 0.68 / 12 0.68 / 20 0.66   <- plateau, then noise
+# 3 0.62 / 5 0.65 / 8 0.67 / 12 0.68 / 20 0.68   <- plateau
 `,
       hl: [14, 19, 33, 39],
       caption: "**The gradient-booster scores 0.70 on the raw feature and 0.67 on the bins.** It wanted to split at 31 and 63; the nearest edges were 35 and 65. For a tree, binning is a coarser version of a feature it already reads."
@@ -327,7 +327,7 @@ has_spend = (spend > 0).astype(int)
 #   - the data, unsupervised: the median (splits the population in
 #     half; says nothing about the target)
 stump = DecisionTreeClassifier(max_depth=1).fit(df[["amount"]], df["y"])
-stump.tree_.threshold[0]                                    # 28.4 -- the best single cut
+stump.tree_.threshold[0]                                    # 22.8 -- the best single cut
 #
 # The stump's threshold is the best binarisation FOR THIS TARGET,
 # and it is a fit on y -- train only.

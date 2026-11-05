@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c6.2",
  "lede": "**20 programs to write**, on argument packing and signatures. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on argument packing and signatures without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c6.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 687–706.** What this set actually drills, counted from its own problems — 12 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["functions", "classes", "decorators", "generators"], "cells": [[{"text": "9", "tone": "accent"}, "*args and **kwargs, Packing an"], [{"text": "1", "tone": "good"}, "First"], [{"text": "1", "tone": "violet"}, "functools.partial Freezes Argu"], [{"text": "1", "tone": "teal"}, "Generators as a Pipeline"]], "t": "diagram", "id": "dg-c6_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

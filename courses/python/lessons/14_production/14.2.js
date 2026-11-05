@@ -161,14 +161,14 @@ LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
 # And in tests:
 def test_something():
-    s = Settings(environment="development", database_url=TEST_DB, ...)`,
+    s = Settings(environment="development", database_url=TEST_DB, jwt_secret="x" * 32)`,
           note: "**Listing every error at once matters more than it sounds.** Fixing one variable per deploy cycle is how a five-minute configuration problem becomes an hour." }
       ]
     },
 
     { t: "h2", n: "03", text: "Environments", id: "environments" },
 
-    {"kind": "flow", "title": "One artefact, many environments", "caption": "The same container image runs in dev, staging and production; only the configuration injected at start-up differs. Anything that differs by environment is configuration; anything that does not is code.", "cols": 4, "nodes": [{"id": "img", "label": "one image", "sub": "built once", "tone": "accent"}, {"id": "dev", "label": "dev", "sub": "DATABASE_URL=… DEBUG=1", "tone": "good"}, {"id": "stg", "label": "staging", "sub": "real-shaped data", "tone": "warn"}, {"id": "prod", "label": "production", "sub": "secrets from a vault", "tone": "crit"}], "edges": [["img", "dev"], ["img", "stg"], ["img", "prod"]], "t": "diagram", "id": "dg-14_2-03-2"},
+    {"kind": "flow", "title": "One artefact, many environments", "caption": "The same container image runs in dev, staging and production; only the configuration injected at startup differs. Anything that differs by environment is configuration; anything that does not is code.", "cols": 4, "nodes": [{"id": "img", "label": "one image", "sub": "built once", "tone": "accent"}, {"id": "dev", "label": "dev", "sub": "DATABASE_URL=… DEBUG=1", "tone": "good"}, {"id": "stg", "label": "staging", "sub": "real-shaped data", "tone": "warn"}, {"id": "prod", "label": "production", "sub": "secrets from a vault", "tone": "crit"}], "edges": [["img", "dev"], ["img", "stg"], ["img", "prod"]], "t": "diagram", "id": "dg-14_2-03-2"},
 
 
 
@@ -756,10 +756,10 @@ def test_no_secrets_are_committed():
       {
         stem: "`DEBUG = os.environ.get(\"DEBUG\", \"False\")` followed by `if DEBUG:`. What happens?",
         options: [
-          "Debug is off unless the variable is set to true",
+          "Debug is off unless the variable is set to a true value such as `True` or `1`",
           "Debug is always on — `\"False\"` is a non-empty string and therefore truthy",
-          "It raises a TypeError",
-          "It depends on the shell"
+          "It raises a `TypeError`, because `if` cannot test a string for truth",
+          "It depends on the shell, which decides how the string is interpreted"
         ],
         answer: 1,
         why: "Every environment variable is a string, and the only falsy string is the empty one — so `\"False\"`, `\"0\"` and `\"no\"` all enable the feature. A typed `debug: bool = False` field parses these correctly and fails loudly on a value it cannot interpret."
@@ -768,33 +768,33 @@ def test_no_secrets_are_committed():
         stem: "Why should a missing `STRIPE_KEY` prevent startup rather than defaulting to an empty string?",
         options: [
           "Empty strings are invalid Python",
-          "The service otherwise starts, passes its readiness probe, and fails on the first checkout — turning a configuration error into a customer-facing incident",
           "Stripe rejects empty keys with a 500",
-          "It makes local development harder"
+          "It makes local development harder",
+          "Otherwise the service starts, passes readiness, and fails on the first real checkout"
         ],
-        answer: 1,
+        answer: 3,
         why: "The whole point of validating configuration at startup is to move the failure to a moment when nobody is affected and the cause is obvious. A default for a required value converts a deploy-time error into a production incident with a customer attached."
       },
       {
         stem: "`PORT = os.environ.get(\"PORT\", 8000)` works locally but breaks in deployment. Why?",
         options: [
-          "The deployment platform reserves port 8000",
-          "The default is an int, but `os.environ.get` returns a string when the variable is set — so it is typed correctly only when nobody configures it",
-          "Ports below 1024 need privileges",
-          "The variable name collides with a platform variable"
+          "The deployment platform reserves port 8000 for its own health checks, so the service cannot bind to it",
+          "Ports below 1024 need root privileges, and the platform assigns the service a low port by default",
+          "The variable name `PORT` collides with a platform variable, so the service reads someone else's value",
+          "When the variable is set, `os.environ.get` returns a string, not the int default"
         ],
-        answer: 1,
+        answer: 3,
         why: "The failure runs the opposite way to the usual pattern, which is what makes it confusing: it works where the variable is absent and breaks where it is present. Reproducing it locally requires setting a variable you would have no reason to set."
       },
       {
         stem: "What does `SecretStr` actually buy you?",
         options: [
-          "Encryption of the value at rest",
-          "Masking in reprs, logs and tracebacks, and an explicit `.get_secret_value()` call that makes every unwrap visible and greppable",
-          "Prevention of the value being sent over the network",
-          "Automatic rotation"
+          "Encryption of the value at rest, so a memory dump of the process cannot reveal the secret",
+          "Prevention of the value being sent over the network in outgoing requests or responses",
+          "Automatic rotation of the secret whenever the settings object is reloaded",
+          "Masking in reprs and logs, and an explicit, greppable unwrap"
         ],
-        answer: 1,
+        answer: 3,
         why: "It is not encryption — the value is in memory in plain text. What it changes is that leaking becomes a deliberate act rather than an accident: a log line that serialises the settings object shows a mask, and `grep -r get_secret_value` enumerates every place a secret is unwrapped."
       }
     ]

@@ -235,11 +235,12 @@ np.allclose(C, vecs @ np.diag(vals) @ vecs.T)     # True`,
 rot = np.array([[0.0, -1.0], [1.0, 0.0]])
 np.linalg.eigvals(rot)          # [0.+1.j, 0.-1.j]
 
-# 2. eig ON A SYMMETRIC MATRIX RETURNS FLOATING-POINT JUNK.
+# 2. eig IGNORES SYMMETRY.
 C = np.array([[4.0, 2.0], [2.0, 3.0]])
-np.linalg.eigvals(C)            # [5.56155281+0.j, 1.43844719+0.j]
-# Complex dtype for a matrix whose eigenvalues are provably real. Any
-# downstream comparison or plot now has to strip the imaginary part.
+np.linalg.eigvals(C)            # [5.56155281, 1.43844719]
+# Real here, but in no promised order, and on a matrix that is symmetric
+# only up to rounding it can come back complex. Any downstream comparison
+# then has to sort, or strip an imaginary part.
 np.linalg.eigvalsh(C)           # [1.43844719, 5.56155281]  -- real
 
 # 3. THE ORDER IS NOT GUARANTEED BY eig. Code that assumes "the first
@@ -261,7 +262,7 @@ for i in range(vecs.shape[1]):
 
     { t: "h2", n: "04", text: "Eigenvalues of a covariance matrix", id: "covariance" },
 
-    {"kind": "trace", "title": "Four numbers from one covariance matrix, and PCA is already finished", "caption": "**Every quantity PCA reports is in this table, computed before PCA is mentioned.** The eigenvalues *are* the variances along their own directions, so dividing them by their sum gives the explained-variance ratio — not a separate idea bolted on, just arithmetic. **And the trace is conserved: 1.785 before, 1.785 after.** The eigendecomposition redistributes the total spread into independent directions; it never creates or destroys any. Here one direction holds 96% of it, which is what “the data is really one-dimensional” means.", "left": "what you compute", "codeW": 190, "vars": ["value", "what it is"], "steps": [{"code": "the covariance matrix", "state": ["[[1.033, 0.826], [0.826, 0.752]]", "symmetric, always"], "tone": "accent"}, {"code": "its eigenvalues", "state": ["1.706 and 0.079", "variance along each direction"], "changed": [0, 1], "tone": "good"}, {"code": "each over their sum", "state": ["0.956 and 0.044", "the explained-variance ratio"], "changed": [0, 1], "tone": "violet"}, {"code": "trace vs sum of eigenvalues", "state": ["1.785 = 1.785", "total spread is conserved"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_4-04-1"},
+    {"kind": "trace", "title": "Four numbers from one covariance matrix, and PCA is already finished", "caption": "**Every quantity PCA reports is in this table, computed before PCA is mentioned.** The eigenvalues *are* the variances along their own directions, so dividing them by their sum gives the explained-variance ratio — not a separate idea bolted on, just arithmetic. **And the trace is conserved: 1.689 before, 1.689 after.** The eigendecomposition redistributes the total spread into independent directions; it never creates or destroys any. Here one direction holds 96% of it, which is what “the data is really one-dimensional” means.", "left": "what you compute", "codeW": 190, "vars": ["value", "what it is"], "steps": [{"code": "the covariance matrix", "state": ["[[1.033, 0.826], [0.826, 0.752]]", "symmetric, always"], "tone": "accent"}, {"code": "its eigenvalues", "state": ["1.634 and 0.055", "variance along each direction"], "changed": [0, 1], "tone": "good"}, {"code": "each over their sum", "state": ["0.967 and 0.033", "the explained-variance ratio"], "changed": [0, 1], "tone": "violet"}, {"code": "trace vs sum of eigenvalues", "state": ["1.689 = 1.689", "total spread is conserved"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_4-04-1"},
 
     { t: "p", text: "The **covariance matrix** records how every pair of variables move together, and its eigendecomposition is the bridge to PCA. Its eigenvectors are the directions of independent variation in the data, and its eigenvalues are how much variance each direction carries." },
 
@@ -286,17 +287,17 @@ vals, vecs = np.linalg.eigh(C)
 order = np.argsort(vals)[::-1]
 vals, vecs = vals[order], vecs[:, order]
 
-vals.round(3)                # [1.706, 0.079]
+vals.round(3)                # [1.634, 0.055]
 
 # WHAT THOSE NUMBERS MEAN:
 #   Each eigenvalue IS the variance of the data along its eigenvector.
-#   1.706 of variance lies along the first direction, 0.079 along the
+#   1.634 of variance lies along the first direction, 0.055 along the
 #   second -- so one direction holds 96% of the spread.
-vals / vals.sum()            # [0.956, 0.044]
+vals / vals.sum()            # [0.967, 0.033]
 
 # AND THE TRACE IS CONSERVED: the eigenvalues redistribute the total
 # variance, they do not create or destroy it.
-np.trace(C), vals.sum()      # 1.785, 1.785
+np.trace(C), vals.sum()      # 1.689, 1.689
 
 # So "explained variance ratio" is not a separate concept bolted onto
 # PCA -- it is the eigenvalues divided by their sum, and PCA is this

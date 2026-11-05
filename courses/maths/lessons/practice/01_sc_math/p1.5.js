@@ -425,7 +425,7 @@ EC.receiveLesson({
       "**Surrogate model (GP):** Predicts mean and uncertainty of \\(f\\) at any point",
       "**Acquisition function:** Balances exploration vs exploitation",
       "— **EI (Expected Improvement):** \\(EI(\\mathbf{x}) = E[\\max(f^* - f(\\mathbf{x}), 0)]\\)",
-      "— **UCB:** \\(\\alpha(\\mathbf{x}) = \\mu(\\mathbf{x}) - \\kappa \\sigma(\\mathbf{x})\\) (for minimization)",
+      "— **UCB:** \\(\\alpha(\\mathbf{x}) = -\\mu(\\mathbf{x}) + \\kappa \\sigma(\\mathbf{x})\\) (for minimization: low mean or high uncertainty scores well)",
       "**Next point:** \\(\\mathbf{x}_{\\text{next}} = \\arg\\max \\alpha(\\mathbf{x})\\)",
       "**Evaluate** \\(f(\\mathbf{x}_{\\text{next}})\\), update GP, repeat"
      ]
@@ -437,7 +437,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from optuna import create_study\nstudy = create_study(direction='minimize', sampler=optuna.samplers.TPESampler())\nstudy.optimize(objective, n_trials=50)"
+     "code": "import optuna\n\n# TPE is a density-based alternative to the GP above\nstudy = optuna.create_study(direction='minimize', sampler=optuna.samplers.TPESampler())\nstudy.optimize(objective, n_trials=50)"
     }
    ],
    "kind": ""

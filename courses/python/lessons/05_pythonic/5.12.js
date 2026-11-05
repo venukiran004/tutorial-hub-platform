@@ -272,7 +272,7 @@ def run():
 
     { t: "dl", items: [
       ["`Decimal(r[2])`, not `float(r[2])`",
-       "`0.1 + 0.2` is not `0.3` in binary floating point, and eighteen months of accumulating those errors is why the report never quite reconciles. Construct from the **string**, never from a float — `Decimal(0.1)` faithfully reproduces the error you were trying to avoid (Lesson 2.6)."],
+       "`0.1 + 0.2` is not `0.3` in binary floating point, and eighteen months of accumulating those errors is why the report never quite reconciles. Construct from the **string**, never from a float — `Decimal(0.1)` faithfully reproduces the error you were trying to avoid (Lesson 1.5)."],
       ["`with open(...)`",
        "The original leaked a handle on every exception and never closed the writer at all if a row raised. On CPython refcounting hides this; on PyPy or under an exception it does not (Lesson 5.8)."],
       ["`try/except` around the row parse",
@@ -415,7 +415,7 @@ def test_report_is_stable_regardless_of_row_order():
           ["A strategy object for discounts", "Rules vary per customer or need runtime configuration", "No — a tuple of thresholds is the whole rule"]
         ]
       },
-      { t: "p", text: "**The test for an abstraction is whether it has a second implementation or a second caller.** One of each means you have added a layer of indirection and called it design (Lesson 4.9)." }
+      { t: "p", text: "**The test for an abstraction is whether it has a second implementation or a second caller.** One of each means you have added a layer of indirection and called it design (Lesson 4.8)." }
     ]},
 
     { t: "h2", n: "05", text: "Pass 3 — production", id: "pass3" },
@@ -572,7 +572,8 @@ reconcile()`},
       solution: {
         lang: "python",
         title: "reconcile.py",
-        code: `# =========================================================================
+        code: `from __future__ import annotations
+# =========================================================================
 # PASS 1 -- CORRECTNESS. Behaviour CHANGES, deliberately. Still one function.
 # =========================================================================
 #
@@ -642,7 +643,6 @@ def reconcile():
 # PASS 2 -- SEAMS. Behaviour IDENTICAL. If a test result moves, I erred.
 # =========================================================================
 
-from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -885,45 +885,45 @@ if __name__ == "__main__":
       {
         stem: "Why write a characterisation test that asserts existing buggy output before refactoring?",
         options: [
-          "To document the bug for the issue tracker",
-          "So any behaviour change during restructuring shows up as a diff — you cannot preserve behaviour you never measured",
+          "To document the bug in a form the issue tracker can link to and close later",
           "Because test coverage targets require it",
-          "To prove the bug is not caused by the refactor"
+          "To prove that the existing bug was not introduced by the refactor that follows",
+          "So any behaviour change while restructuring shows up as a failing diff"
         ],
-        answer: 1,
+        answer: 3,
         why: "The test is a tripwire, not a specification. Its value is that the restructuring pass must leave it passing, so an accidental change is caught immediately and localised to the commit that caused it. When the correctness pass deliberately changes behaviour, you update the test and its diff shows exactly which outputs moved — which is a review artefact rather than a guess."
       },
       {
         stem: "You have inherited an untested 400-line script. What do you do first?",
         options: [
           "Split the long function into smaller ones",
-          "Pin the current behaviour with a test around the outside, then fix correctness bugs — structure comes after you can tell whether you broke something",
           "Add type hints throughout so a checker can find the bugs",
-          "Rewrite it from scratch against the current requirements"
+          "Rewrite it from scratch against the current requirements",
+          "Pin current behaviour with an outside-in test, fix correctness, then restructure"
         ],
-        answer: 1,
+        answer: 3,
         why: "Splitting first is the most common mistake: it changes structure in code where no test can tell you whether the split preserved meaning, and a rewritten condition or a moved side effect will not surface until month-end. Types help but find a different class of bug. Pin behaviour, fix what produces wrong answers, then restructure under the protection of the test you now have."
       },
       {
         stem: "In the restructuring pass, a previously untestable pricing rule becomes a three-line pure function. What is the primary benefit?",
         options: [
-          "It runs faster because there is less indirection",
-          "Boundary conditions can be verified exhaustively — the discount thresholds had never been checked because checking them required a CSV file and an SMTP server",
-          "It reduces the total line count",
-          "Pure functions are automatically thread-safe"
+          "Its boundary cases can finally be checked exhaustively, without a CSV file or SMTP",
+          "It runs faster, because the rule no longer goes through layers of indirection and I/O",
+          "It reduces the total line count, which makes the module easier to review",
+          "Pure functions are automatically thread-safe, so the pricing rule can now run in parallel"
         ],
-        answer: 1,
+        answer: 0,
         why: "The seam converts a whole-program integration test into a table of assertions. The discount boundaries — 50 gets nothing, 51 gets 5%, 100 still gets 5%, 101 gets 10% — are exactly the kind of off-by-one that survives for years, because nobody writes a CSV file and starts a mail server to check them. Speed and line count are incidental; testability is the reason."
       },
       {
         stem: "Why write the report to a `.tmp` file and then call `replace()`?",
         options: [
-          "It is faster than writing directly",
-          "It makes publishing atomic — a crash mid-write leaves the previous report intact rather than a truncated file that looks complete",
-          "It avoids needing a `with` block",
-          "It prevents concurrent writers from corrupting the file"
+          "It makes publishing atomic, so a crash never leaves a truncated report behind",
+          "It is faster than writing directly, because the temporary file is buffered differently",
+          "It avoids needing a `with` block, since `replace()` closes the file itself",
+          "It prevents two concurrent writers from interleaving their output in the same file"
         ],
-        answer: 1,
+        answer: 0,
         why: "A truncated report is worse than a missing one because it looks finished — a downstream reader consumes it and produces plausible, wrong numbers. `replace()` within a filesystem is atomic, so a reader sees either the old complete file or the new complete file. It is a two-line change that removes an entire class of partial-failure bug, and it belongs on any file another process reads."
       }
     ]

@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 8.2 — A2A: The Agent-to-Agent Protocol
-   The agent card is the real one served by scratchpad/adk/a2a_server.py, and
+   The agent card is the real one served by a2a_server.py, and
    the origin error is the actual message RemoteA2aAgent raised when the card's
    RPC origin did not match where it was fetched from (google-adk 2.9.2,
    a2a-sdk 1.1.5).

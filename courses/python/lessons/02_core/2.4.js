@@ -183,7 +183,7 @@ print(items)
 items[:] = [9, 9]                # replace ALL contents, same object
 print(items)
 
-items[::2] = [0, 0]              # extended slices MUST match in length
+items[::2] = [0]                 # extended slices MUST match: [::2] of [9, 9] is one slot
 print(items)
 
 del items[0:1]
@@ -191,8 +191,8 @@ print(items)
 `,
       out: `[1, 'x', 'y', 'z', 4, 5]
 [9, 9]
-[0, 0]
-[0]`
+[0, 9]
+[9]`
     },
 
     { t: "callout", kind: "insight", title: "`lst[:] = ...` versus `lst = ...`", body: [
@@ -322,7 +322,9 @@ b = template.copy()
 a["tags"].append("urgent")
 print(b["tags"])                 # ['urgent'] -- b was never touched
 
-# Deep: fully independent
+# Deep: fully independent. Start from a clean template -- the shallow copies
+# above appended to template's OWN tags list, which is the bug in miniature.
+template = {"name": "", "tags": [], "meta": {"version": 1}}
 a = copy.deepcopy(template)
 b = copy.deepcopy(template)
 a["tags"].append("urgent")
@@ -589,9 +591,9 @@ if __name__ == "__main__":
       {
         stem: "After `b = a[:]` where `a = [[1], [2]]`, what does `b[0].append(9)` do to `a`?",
         options: [
-          "Nothing — `[:]` creates an independent copy",
+          "Nothing — `[:]` creates an independent copy of the list, including the lists inside it",
           "`a` becomes `[[1, 9], [2]]` — the slice copied the outer list but both share the same inner lists",
-          "It raises, because `b` is a read-only view of `a`",
+          "It raises, because a slice of a list is a read-only view of the original rather than a new list",
           "`a` becomes `[[1, 9], [2, 9]]` — the mutation propagates to every element"
         ],
         answer: 1,
@@ -600,10 +602,10 @@ if __name__ == "__main__":
       {
         stem: "What is the difference between `lst = [1, 2]` and `lst[:] = [1, 2]` when another name `alias` refers to the same list?",
         options: [
-          "They are equivalent; `[:]` is just more explicit",
-          "The first rebinds `lst` and leaves `alias` unchanged; the second replaces the contents of the shared object, so `alias` sees it",
-          "The second raises unless the lengths match",
-          "The first mutates in place and the second creates a new list"
+          "They are equivalent; `[:]` is just a more explicit way to say the whole list is being replaced",
+          "The first rebinds only `lst`; the second replaces the shared object's contents, so `alias` sees it",
+          "The second raises `ValueError` unless the new list has the same length as the one it replaces",
+          "The first mutates the existing list in place and the second creates a new list and rebinds the name"
         ],
         answer: 1,
         why: "This is the rebind-versus-mutate distinction with slice syntax. Plain assignment points the name `lst` at a new list, leaving the object `alias` refers to untouched. Slice assignment replaces the contents of the existing object, so every name bound to it observes the change. Extended slices like `lst[::2] = ...` do require matching lengths, but a full `[:]` does not."
@@ -612,22 +614,22 @@ if __name__ == "__main__":
         stem: "A profile factory is written as `def create(self, perms=[\"read\"])`. After hours of production traffic, new profiles have dozens of permissions. Why did unit tests not catch this?",
         options: [
           "The tests mocked the factory rather than calling it",
-          "The bug requires repeated calls in one process to accumulate — a test creates one or two objects in a fresh process and asserts immediately",
           "Default arguments behave differently under pytest",
+          "The list only grows across many calls in one process; a test makes one or two objects and asserts",
           "The list is only shared when the function is called concurrently"
         ],
-        answer: 1,
+        answer: 2,
         why: "The default list is created once at `def` time and shared by every call that omits the argument. Mutations accumulate across calls, so the symptom needs many calls in one long-lived process. A unit test creates a couple of objects and asserts straight away, so the list never grows enough to be visible. The reproduction that does catch it is: create object A, mutate it, then create object B and assert B is clean."
       },
       {
         stem: "Which is the best first fix for a shared nested-mutable-state bug?",
         options: [
           "`copy.deepcopy` at every boundary where the object is handed out",
-          "Make the shared object immutable — a tuple, frozenset or frozen dataclass — so mutation raises instead of corrupting",
-          "Add a lock around every mutation site",
-          "Convert the structure to JSON and parse it back to force a copy"
+          "Add a lock around every mutation site, so concurrent writers cannot interleave and corrupt the shared state",
+          "Make the shared object immutable — tuple, frozenset, frozen dataclass — so mutation raises",
+          "Convert the structure to JSON and parse it back at each boundary, which forces a full and independent copy"
         ],
-        answer: 1,
+        answer: 2,
         why: "Immutability removes the failure mode rather than defending against it: there is nothing to copy and no way for a future change to undo the protection. `deepcopy` works but is slow, copies things you did not intend (connections, locks, file handles), and leaves the shared-mutable design in place with a defensive copy that a maintainer might remove. A lock serialises access to state that should not be shared at all, trading a correctness bug for a throughput problem."
       }
     ]

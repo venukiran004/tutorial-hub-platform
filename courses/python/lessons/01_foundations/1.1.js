@@ -463,7 +463,7 @@ def normalise(values: list[float]) -> list[float]:
 
     { t: "callout", kind: "tradeoff", title: "Do not turn this into a habit of micro-optimising", body: [
       { t: "p", text: "The lesson here is *not* \"hoist every global into a local\". Written as a rule, that produces cluttered code for gains you cannot measure. The lesson is that **the pipeline is real and observable**, so when performance genuinely matters you have a way to reason about it instead of guessing." },
-      { t: "p", text: "The honest ordering: get it correct, get it readable, measure, then fix what the measurement points at. Level 10 of this course covers profiling properly. Until then, treat `dis` as an explanation tool, not an optimisation tool." }
+      { t: "p", text: "The honest ordering: get it correct, get it readable, measure, then fix what the measurement points at. Module 10 of this course covers profiling properly. Until then, treat `dis` as an explanation tool, not an optimisation tool." }
     ]},
 
     /* ================================================================== */
@@ -572,23 +572,38 @@ RUN python -m compileall --invalidation-mode checked-hash /app`,
 
     { t: "disclose", summary: "Why is Python slower than C for tight numeric loops?", tag: "performance", body: [
       { t: "p", text: "Because of what `BINARY_OP` has to do. In C, `a + b` on two integers compiles to a single machine instruction, because the compiler knew the types. In Python, the same expression compiles to an opcode that at runtime must: read both operands off the stack, inspect their types, look up the appropriate addition implementation for that type pair, call it, allocate a **new** object for the result, and manage reference counts on everything involved." },
-      { t: "p", text: "That is dozens of machine instructions where C used one — and none of it is waste, it is the price of not having to declare types. This is also why NumPy is fast: it does not make Python's loop faster, it moves the loop out of Python entirely into compiled code that already knows the types (Level 15.1)." },
+      { t: "p", text: "That is dozens of machine instructions where C used one — and none of it is waste, it is the price of not having to declare types. This is also why NumPy is fast: it does not make Python's loop faster, it moves the loop out of Python entirely into compiled code that already knows the types (Lesson 15.1)." },
       { t: "p", text: "Modern CPython narrows the gap. Since 3.11 the interpreter is *adaptive*: it observes that a given `BINARY_OP` keeps seeing two ints and rewrites that instruction in place to a specialised int-only version, skipping the type dispatch. It is a real speedup and it is still not C." }
     ]},
 
     { t: "disclose", summary: "Why does a typo in a rarely-taken branch reach production?", tag: "correctness", body: [
       { t: "p", text: "Because the compiler validated your **grammar**, not your **names**. `if user.is_admin: delete_evrything()` is a grammatically perfect function call. The compiler emits an instruction to load a global named `delete_evrything`. Nothing checks whether it exists until that branch actually runs — possibly months later, in front of a customer." },
-      { t: "p", text: "This is the strongest practical argument for the two things Level 9 and Level 14 spend real time on: **tests that execute your branches**, and a **static type checker** that reads your code without running it. Neither is optional discipline in a language that defers this much to runtime — they are how you buy back the safety a compiler would have given you." }
+      { t: "p", text: "This is the strongest practical argument for the two things Modules 9 and 14 spend real time on: **tests that execute your branches**, and a **static type checker** that reads your code without running it. Neither is optional discipline in a language that defers this much to runtime — they are how you buy back the safety a compiler would have given you." }
     ]},
 
     { t: "disclose", summary: "Why do threads not speed up pure-Python computation?", tag: "concurrency", body: [
       { t: "p", text: "Because the evaluation loop and the memory it touches are not safe for two threads to run at once, so CPython guards them with a single lock — the Global Interpreter Lock. Only one thread may be executing bytecode at any instant. Two threads running a numeric loop take turns; they do not run in parallel." },
       { t: "p", text: "The lock is released around I/O — while a thread waits on a socket, a file or a database, another thread runs. That is precisely why threads help enormously for network-bound work and not at all for computation." },
-      { t: "p", text: "Level 11 covers this properly, including the free-threaded builds that remove the GIL and what they cost. The point for now is that this is not an arbitrary limitation — it is a consequence of the same eval loop you just disassembled." }
+      { t: "p", text: "Module 11 covers this properly, including the free-threaded builds that remove the GIL and what they cost. The point for now is that this is not an arbitrary limitation — it is a consequence of the same eval loop you just disassembled." }
     ]},
 
     /* ================================================================== */
-    { t: "h2", n: "08", text: "Practice", id: "practice" },
+    { t: "h2", n: "08", text: "Version awareness", id: "versions" },
+
+    {"kind": "trace", "title": "Two of these four are guaranteed and two are not", "caption": "**Bytecode is an implementation detail with no stability guarantee — opcodes are added, removed and renamed between minor versions, 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again.** So the line to hold is between **what `for` and `+` mean, which is stable across versions *and* implementations**, and **the specific opcode names, which are never safe in shipped code.** The `.pyc` format makes the point for you: **it is versioned in the filename for exactly this reason.**", "left": "what you depend on", "codeW": 190, "vars": ["stable?", "safe to rely on"], "steps": [{"code": "language semantics", "state": ["yes, across versions and impls", "always"], "tone": "good"}, {"code": "that dis exists at all", "state": ["yes", "always"], "changed": [0, 1], "tone": "good"}, {"code": "specific opcode names and numbers", "state": ["NO - changes between minors", "never in shipped code"], "changed": [0, 1], "tone": "crit"}, {"code": ".pyc file format", "state": ["NO - versioned in the filename", "never"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_1-09-5"},
+    { t: "table",
+      head: ["Depends on", "Stable?", "Safe to rely on"],
+      rows: [
+        ["Language semantics — what `for` and `+` mean", "Yes, across versions and implementations", "Always"],
+        ["The existence of the pipeline and of `dis`", "Yes", "Always"],
+        ["Specific opcode names and numbers", "**No** — changes between minor versions", "Never in shipped code"],
+        [".pyc file format", "**No** — versioned in the filename for exactly this reason", "Never"]
+      ],
+      caption: "Use `dis` to understand and to explain. Never write production code whose correctness depends on a particular opcode existing."
+    },
+
+    /* ================================================================== */
+    { t: "h2", n: "09", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",
@@ -666,44 +681,7 @@ print(f"join is {concat / join:.1f}x faster")
       { t: "p", text: "A teammate reports that a deployed job \"ignores\" a bug fix. The fix is definitely in the container image — they have checked the file with `cat`. Logs still show the old behaviour. They are about to rebuild the base image from scratch." },
       { t: "p", text: "**What is the fastest thing to check first, and why?** Whether the image contains `.pyc` files that are newer than the sources they were built from. A `COPY` in a Dockerfile can preserve or reset timestamps in ways that defeat mtime-based cache validation, and Python will then load stale bytecode that does not match the source you just `cat`-ed." },
       { t: "p", text: "One command distinguishes the two hypotheses in seconds: run the entrypoint with `python -B`. If the bug disappears, it was the cache — and the durable fix is `compileall --invalidation-mode checked-hash` at build time, not a base-image rebuild." }
-    ]},
-
-    /* ================================================================== */
-    { t: "h2", n: "09", text: "Version awareness", id: "versions" },
-
-    {"kind": "trace", "title": "Two of these four are guaranteed and two are not", "caption": "**Bytecode is an implementation detail with no stability guarantee — opcodes are added, removed and renamed between minor versions, 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again.** So the line to hold is between **what `for` and `+` mean, which is stable across versions *and* implementations**, and **the specific opcode names, which are never safe in shipped code.** The `.pyc` format makes the point for you: **it is versioned in the filename for exactly this reason.**", "left": "what you depend on", "codeW": 190, "vars": ["stable?", "safe to rely on"], "steps": [{"code": "language semantics", "state": ["yes, across versions and impls", "always"], "tone": "good"}, {"code": "that dis exists at all", "state": ["yes", "always"], "changed": [0, 1], "tone": "good"}, {"code": "specific opcode names and numbers", "state": ["NO - changes between minors", "never in shipped code"], "changed": [0, 1], "tone": "crit"}, {"code": ".pyc file format", "state": ["NO - versioned in the filename", "never"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_1-09-5"},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    { t: "p", text: "One caution before you go and disassemble everything. **Bytecode is an implementation detail with no stability guarantee.** Opcodes are added, removed and renamed between minor versions — 3.11 rewrote large parts of the interpreter, and 3.12 and 3.13 changed opcodes again." },
-
-    { t: "table",
-      head: ["Depends on", "Stable?", "Safe to rely on"],
-      rows: [
-        ["Language semantics — what `for` and `+` mean", "Yes, across versions and implementations", "Always"],
-        ["The existence of the pipeline and of `dis`", "Yes", "Always"],
-        ["Specific opcode names and numbers", "**No** — changes between minor versions", "Never in shipped code"],
-        [".pyc file format", "**No** — versioned in the filename for exactly this reason", "Never"]
-      ],
-      caption: "Use `dis` to understand and to explain. Never write production code whose correctness depends on a particular opcode existing."
-    }
+    ]}
   ],
 
   /* ==================================================================== */
@@ -731,21 +709,21 @@ def f():
 
 print("B")`,
         options: [
+          "`A`, then a `NameError` — the compiler resolves every name in a function body when the file loads",
           "`A` then `B` — the function body is never executed, so the name is never looked up",
-          "`A`, then a `NameError`",
-          "A `NameError` before anything prints",
+          "A `NameError` before anything prints — the whole file is checked for undefined names before it runs",
           "`A` then `B`, then a `NameError` when the file finishes"
         ],
-        answer: 0,
+        answer: 1,
         why: "Compilation only checks grammar, and `return undefined_name` is grammatically valid — so the file compiles cleanly and both prints run. The lookup instruction for `undefined_name` exists in `f`'s bytecode, but nothing executes it because `f` is never called. Define a function that references a nonexistent name and Python will not complain until you call it."
       },
       {
         stem: "You add a `print()` to a helper module, redeploy, and the new output does not appear — but the source in the container is definitely updated. Which explanation should you check first?",
         options: [
-          "The module was imported before your change and Python caches imports in memory",
+          "The module was imported before your change, and Python keeps imported modules cached in memory across deploys",
           "A stale `.pyc` in `__pycache__` is being loaded because its recorded timestamp still looks current",
           "The bytecode compiler optimised the `print` away because its result is unused",
-          "`print` output is buffered and will appear when the process exits"
+          "`print` output is buffered inside the container and only appears once the process exits cleanly"
         ],
         answer: 1,
         why: "Timestamp-based cache invalidation is defeated when a build step produces `.pyc` files that look newer than their sources, so Python loads bytecode that no longer matches the code you can see. `python -B` confirms it in one run. Option D is a real phenomenon in some setups but would not survive a redeploy, and option C is not something CPython does — it never removes a call, because any call may have side effects."
@@ -753,21 +731,21 @@ print("B")`,
       {
         stem: "In `LOAD_FAST 0 (price)`, what is the `0`?",
         options: [
-          "The line number the instruction came from",
           "A slot index into the frame's array of local variables, assigned by the compiler",
+          "The source line number the instruction was compiled from, used when printing tracebacks",
           "The number of arguments the instruction consumes from the stack",
-          "A key into the module's global namespace dictionary"
+          "A key into the module's global namespace dictionary, looked up when the instruction runs"
         ],
-        answer: 1,
+        answer: 0,
         why: "The compiler knows every local name in a function at compile time, so it assigns each one a numbered slot. At runtime the interpreter indexes an array — no name lookup at all. `LOAD_GLOBAL` is the contrasting case: the name genuinely has to be looked up in a dictionary, and possibly a second one for builtins, every time."
       },
       {
         stem: "Which statement about Python bytecode is safe to rely on in production code?",
         options: [
           "The opcode names emitted for a given construct stay the same across minor versions",
-          "A `.pyc` compiled by one Python version can be executed by the next",
+          "A `.pyc` compiled by one Python version can be executed by the next, because the bytecode format is versioned",
           "Nothing about specific bytecode is guaranteed — it is an implementation detail that changes between releases",
-          "Bytecode is portable across implementations, so PyPy runs CPython `.pyc` files"
+          "Bytecode is portable across implementations, which is why PyPy can execute the `.pyc` files CPython writes"
         ],
         answer: 2,
         why: "Bytecode carries no stability guarantee. Opcodes changed substantially in 3.11, 3.12 and 3.13, and `.pyc` filenames embed the interpreter version precisely because the format is not portable across them — or across implementations. `dis` is a tool for understanding and explaining; correctness must never depend on a particular opcode existing."

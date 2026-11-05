@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.4",
  "lede": "**30 snippets to read**, on list comprehensions. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on list comprehensions before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 319–348.** What this set asks you to predict, counted from its own problems — 16 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["lists", "generators", "dicts and sets", "exceptions", "numbers", "strings"], "cells": [[{"text": "9", "tone": "accent"}, "A filtered list comprehension"], [{"text": "3", "tone": "good"}, "A generator expression"], [{"text": "1", "tone": "violet"}, "A dict comprehension"], [{"text": "1", "tone": "teal"}, "try / except / else / finally "], [{"text": "1", "tone": "warn"}, "What is the output of `isinsta"], [{"text": "1", "tone": "crit"}, "Slicing"]], "t": "diagram", "id": "dg-c3_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 319: A filtered list comprehension — output of `positive, negative`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3, 5] [-2, -4]` **Explanation:** Filtering with list comprehensions — separate positive and negative numbers."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "numbers = [1, -2, 3, -4, 5]\npositive = [n for n in numbers if n > 0]\nnegative = [n for n in numbers if n < 0]\nprint(positive, negative)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3, 5] [-2, -4]` **Explanation:** Filtering with list comprehensions — separate positive and negative numbers."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 320: range() — output of `i, end=' '` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5 4 3 2 1` **Explanation:** `range(5, 0, -1)` counts down from 5 to 1 (exclusive of 0)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(5, 0, -1):\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5 4 3 2 1` **Explanation:** `range(5, 0, -1)` counts down from 5 to 1 (exclusive of 0)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,28 +77,25 @@ EC.receiveLesson({
    "q": "Program 321: What is the output of `x, y` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `20 10` **Explanation:** Simultaneous swap using tuple packing/unpacking."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ny = 20\nx, y = y, x\nprint(x, y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `20 10` **Explanation:** Simultaneous swap using tuple packing/unpacking."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "322",
    "q": "Program 322: enumerate() — output of `f\"{index}. {item}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "items = ['a', 'b', 'c']\nfor index, item in enumerate(items, start=1):\n    print(f\"{index}. {item}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -109,7 +112,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `enumerate()` with `start=1` provides 1-based counting."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "items = ['a', 'b', 'c']\nfor index, item in enumerate(items, start=1):\n    print(f\"{index}. {item}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -117,16 +129,19 @@ EC.receiveLesson({
    "q": "Program 323: What is the output of `\"big\" if x > 10 else \"medium\" if x > 3 else…`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `medium` **Explanation:** Chained ternary: `x > 10` is False, `x > 3` is True, so \"medium\"."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 5\nprint(\"big\" if x > 10 else \"medium\" if x > 3 else \"small\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `medium` **Explanation:** Chained ternary: `x > 10` is False, `x > 3` is True, so \"medium\"."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -134,16 +149,19 @@ EC.receiveLesson({
    "q": "Program 324: A generator expression — output of `result = sum(i for i in range(1, n+1) if i %…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `30` **Explanation:** Sum of even numbers from 1-10: 2+4+6+8+10 = 30. Generator expression used."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "n = 10\nresult = sum(i for i in range(1, n+1) if i % 2 == 0)\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `30` **Explanation:** Sum of even numbers from 1-10: 2+4+6+8+10 = 30. Generator expression used."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -151,16 +169,19 @@ EC.receiveLesson({
    "q": "Program 325: range() — output of `diagonal = [matrix[i][i] for i in range(len(m…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 5, 9]` **Explanation:** Extracting main diagonal elements where row index equals column index."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\ndiagonal = [matrix[i][i] for i in range(len(matrix))]\nprint(diagonal)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 5, 9]` **Explanation:** Extracting main diagonal elements where row index equals column index."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -168,16 +189,19 @@ EC.receiveLesson({
    "q": "Program 326: A dict comprehension — output of `result = {k: v for k, v in d.items() if v % 2…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': 1, 'c': 3}` **Explanation:** Dict comprehension with condition filters to odd values only."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nresult = {k: v for k, v in d.items() if v % 2 != 0}\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': 1, 'c': 3}` **Explanation:** Dict comprehension with condition filters to odd values only."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -185,28 +209,25 @@ EC.receiveLesson({
    "q": "Program 327: A generator expression — output of `vowels = sum(1 for c in text.lower() if c in…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3` **Explanation:** Generator expression counts vowels: e, o, o = 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "text = \"Hello World\"\nvowels = sum(1 for c in text.lower() if c in 'aeiou')\nprint(vowels)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3` **Explanation:** Generator expression counts vowels: e, o, o = 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "328",
    "q": "Program 328: try / except / else / finally in order — output of `\"no error\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "try:\n    pass\nexcept:\n    pass\nelse:\n    print(\"no error\")\nfinally:\n    print(\"always\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -221,7 +242,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `else` runs when no exception occurs. `finally` always runs."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "try:\n    pass\nexcept:\n    pass\nelse:\n    print(\"no error\")\nfinally:\n    print(\"always\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -229,16 +259,19 @@ EC.receiveLesson({
    "q": "Program 329: What is the output of `\"FizzBuzz\"`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `FizzBuzz` **Explanation:** Classic FizzBuzz. 15 is divisible by both 3 and 5, first condition matches."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "n = 15\nif n % 15 == 0:\n    print(\"FizzBuzz\")\nelif n % 3 == 0:\n    print(\"Fizz\")\nelif n % 5 == 0:\n    print(\"Buzz\")\nelse:\n    print(n)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `FizzBuzz` **Explanation:** Classic FizzBuzz. 15 is divisible by both 3 and 5, first condition matches."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -246,16 +279,19 @@ EC.receiveLesson({
    "q": "Program 330: A list comprehension — output of `b = [x if x % 2 == 0 else x * 10 for x in a]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 2, 30, 4, 50]` **Explanation:** Conditional expression in comprehension: even numbers stay, odd ones get multiplied by 10."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nb = [x if x % 2 == 0 else x * 10 for x in a]\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 2, 30, 4, 50]` **Explanation:** Conditional expression in comprehension: even numbers stay, odd ones get multiplied by 10."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -263,16 +299,19 @@ EC.receiveLesson({
    "q": "Program 331: An itertools recipe — output of `f\"({a},{b})\", end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(0,0) (0,1) (1,0) (1,1)` **Explanation:** `product` computes Cartesian product — equivalent to nested loops."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import product\nfor a, b in product(range(2), repeat=2):\n    print(f\"({a},{b})\", end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(0,0) (0,1) (1,0) (1,1)` **Explanation:** `product` computes Cartesian product — equivalent to nested loops."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -280,16 +319,19 @@ EC.receiveLesson({
    "q": "Program 332: What is the output of `isinstance(x, int) and x > 0 and x < 100`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True` **Explanation:** Both are equivalent ways to range-check. Chained comparison is more Pythonic."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 42\nprint(isinstance(x, int) and x > 0 and x < 100)\nprint(0 < x < 100)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True` **Explanation:** Both are equivalent ways to range-check. Chained comparison is more Pythonic."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -297,16 +339,19 @@ EC.receiveLesson({
    "q": "Program 333: A filtered list comprehension — output of `words = [\"hello\", \"\", \"world\", None, \"python\"]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['hello', 'world', 'python']` **Explanation:** Empty strings and `None` are falsy, filtered out by `if w`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "words = [\"hello\", \"\", \"world\", None, \"python\"]\nnon_empty = [w for w in words if w]\nprint(non_empty)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['hello', 'world', 'python']` **Explanation:** Empty strings and `None` are falsy, filtered out by `if w`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -314,16 +359,19 @@ EC.receiveLesson({
    "q": "Program 334: Slicing — output of `nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 4, 6, 8, 10]`, `[1, 3, 5, 7, 9]` **Explanation:** Slicing with step 2. Start at index 1 for evens, index 0 for odds."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nevens = nums[1::2]\nodds = nums[::2]\nprint(evens)\nprint(odds)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 4, 6, 8, 10]`, `[1, 3, 5, 7, 9]` **Explanation:** Slicing with step 2. Start at index 1 for evens, index 0 for odds."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -331,16 +379,19 @@ EC.receiveLesson({
    "q": "Program 335: A filtered list comprehension — output of `passed = [(name, score) for name, score in da…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('Alice', 85), ('Bob', 92)]` **Explanation:** List comprehension with tuple unpacking and filtering."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "data = [('Alice', 85), ('Bob', 92), ('Charlie', 78)]\npassed = [(name, score) for name, score in data if score >= 80]\nprint(passed)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('Alice', 85), ('Bob', 92)]` **Explanation:** List comprehension with tuple unpacking and filtering."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -348,16 +399,19 @@ EC.receiveLesson({
    "q": "Program 336: What is the output of `a and b or c`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True` **Explanation:** `and` has higher precedence than `or`. `a and b or c` = `(False) or True = True`. `a or b and c` = `True or (False) = True`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = True\nb = False\nc = True\nprint(a and b or c)\nprint(a or b and c)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True` **Explanation:** `and` has higher precedence than `or`. `a and b or c` = `(False) or True = True`. `a or b and c` = `True or (False) = True`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -365,16 +419,19 @@ EC.receiveLesson({
    "q": "Program 337: list.append — output of `while x or not x:`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 2]` **Explanation:** `x or not x` is always True (tautology). Loop adds elements until length reaches 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = []\nwhile x or not x:\n    if len(x) >= 3:\n        break\n    x.append(len(x))\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 2]` **Explanation:** `x or not x` is always True (tautology). Loop adds elements until length reaches 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -382,16 +439,19 @@ EC.receiveLesson({
    "q": "Program 338: any() and all() — output of `result, result2, result3`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `True` **Explanation:** `all()` returns True if all elements are truthy. Empty iterable returns True (vacuous truth)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "result = all([True, True, True])\nresult2 = all([True, False, True])\nresult3 = all([])\nprint(result, result2, result3)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `True` **Explanation:** `all()` returns True if all elements are truthy. Empty iterable returns True (vacuous truth)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -399,16 +459,19 @@ EC.receiveLesson({
    "q": "Program 339: any() and all() — output of `result, result2, result3` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True`, `False` **Explanation:** `any()` returns True if any element is truthy. Empty iterable returns False."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "result = any([False, False, False])\nresult2 = any([False, True, False])\nresult3 = any([])\nprint(result, result2, result3)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True`, `False` **Explanation:** `any()` returns True if any element is truthy. Empty iterable returns False."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -416,16 +479,19 @@ EC.receiveLesson({
    "q": "Program 340: What is the output of `\"origin\"`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `at (3, 4)` (Python 3.10+) **Explanation:** Structural pattern matching with destructuring. Variables capture values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "point = (3, 4)\nmatch point:\n    case (0, 0):\n        print(\"origin\")\n    case (x, 0):\n        print(f\"on x-axis at {x}\")\n    case (0, y):\n        print(f\"on y-axis at {y}\")\n    case (x, y):\n        print(f\"at ({x}, {y})\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `at (3, 4)` (Python 3.10+) **Explanation:** Structural pattern matching with destructuring. Variables capture values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -433,16 +499,19 @@ EC.receiveLesson({
    "q": "Program 341: A while loop — output of `i, end=' '` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `7 4 1` **Explanation:** Subtracts 3 each iteration. When `i` becomes ≤0 (after 1-3=-2), breaks."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "i = 10\nwhile i > 0:\n    i -= 3\n    if i <= 0:\n        break\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `7 4 1` **Explanation:** Subtracts 3 each iteration. When `i` becomes ≤0 (after 1-3=-2), breaks."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -450,16 +519,19 @@ EC.receiveLesson({
    "q": "Program 342: range() — output of `\"inner done\", end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `inner done inner done inner done outer done` **Explanation:** Inner `else` runs each time inner loop completes normally. Outer `else` runs once."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for _ in range(3):\n    for _ in range(3):\n        pass\n    else:\n        print(\"inner done\", end=' ')\nelse:\n    print(\"outer done\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `inner done inner done inner done outer done` **Explanation:** Inner `else` runs each time inner loop completes normally. Outer `else` runs once."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -467,16 +539,19 @@ EC.receiveLesson({
    "q": "Program 343: map() and filter() — output of `result = list(filter(None, [0, 1, '', 'hello'…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 'hello', [1], True]` **Explanation:** `filter(None, ...)` removes falsy values (0, '', [], None, False)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = list(filter(None, [0, 1, '', 'hello', [], [1], None, True, False]))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 'hello', [1], True]` **Explanation:** `filter(None, ...)` removes falsy values (0, '', [], None, False)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -484,16 +559,19 @@ EC.receiveLesson({
    "q": "Program 344: range() — output of `for i in range(1, n + 1):`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `120` **Explanation:** 5! = 1 × 2 × 3 × 4 × 5 = 120."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "n = 5\nfactorial = 1\nfor i in range(1, n + 1):\n    factorial *= i\nprint(factorial)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `120` **Explanation:** 5! = 1 × 2 × 3 × 4 × 5 = 120."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -501,16 +579,19 @@ EC.receiveLesson({
    "q": "Program 345: What is the output of `x if x > 0 else 0`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5`, `0` **Explanation:** Clamping negative values to 0 using ternary expression."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 5\ny = -3\nprint(x if x > 0 else 0)\nprint(y if y > 0 else 0)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5`, `0` **Explanation:** Clamping negative values to 0 using ternary expression."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -518,16 +599,19 @@ EC.receiveLesson({
    "q": "Program 346: Slicing — output of `is_palindrome = text == text[::-1]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True` **Explanation:** Checking palindrome by comparing string with its reverse."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "text = \"racecar\"\nis_palindrome = text == text[::-1]\nprint(is_palindrome)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True` **Explanation:** Checking palindrome by comparing string with its reverse."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -535,16 +619,19 @@ EC.receiveLesson({
    "q": "Program 347: range() — output of `transposed = [[row[i] for row in matrix] for…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1, 4, 7], [2, 5, 8], [3, 6, 9]]` **Explanation:** Nested comprehension transposes the matrix."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\ntransposed = [[row[i] for row in matrix] for i in range(3)]\nprint(transposed)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1, 4, 7], [2, 5, 8], [3, 6, 9]]` **Explanation:** Nested comprehension transposes the matrix."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -552,21 +639,24 @@ EC.receiveLesson({
    "q": "Program 348: A list comprehension — output of `result = [x + y + z for x, y, z in zip(a, b,…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[12, 15, 18]` **Explanation:** `zip` groups elements by position. Comprehension adds triplets."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5, 6]\nc = [7, 8, 9]\nresult = [x + y + z for x, y, z in zip(a, b, c)]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[12, 15, 18]` **Explanation:** `zip` groups elements by position. Comprehension adds triplets."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

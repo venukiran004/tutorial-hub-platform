@@ -445,12 +445,12 @@ if __name__ == "__main__":
       {
         stem: "You run `pip install httpx`, it reports success, and then `python -c \"import httpx\"` raises `ModuleNotFoundError`. What is the most likely cause?",
         options: [
-          "The package installed but needs the shell restarted before it can be imported",
           "`pip` and `python` resolve to two different interpreters, so the install went to a different site-packages directory",
-          "`httpx` is not compatible with your Python version and pip silently skipped it",
+          "The package installed correctly, but the shell must be restarted before newly installed modules can be imported",
+          "`httpx` is not compatible with your Python version, and pip skipped it with a warning that scrolled past",
           "The package needs to be added to `sys.path` manually after installation"
         ],
-        answer: 1,
+        answer: 0,
         why: "Each interpreter has its own site-packages. When the `pip` on your PATH belongs to a different installation than the `python` on your PATH, the install genuinely succeeds — into somewhere your interpreter never looks. `python -m pip install` eliminates this permanently by running pip inside the interpreter you just named. Incompatibility would produce a loud error, not a silent skip."
       },
       {
@@ -471,25 +471,25 @@ sys.version_info.minor >= 10`,
           "D — checking the minor number directly is the most precise"
         ],
         answer: 1,
-        why: "Only B is correct. A compares strings, so `\"3.9\" > \"3.10\"` — the bug that shipped widely during the 3.9→3.10 transition. C is worse: `float(\"3.10\")` is `3.1`, which is less than `3.10` as a number. D ignores the major version, so it would wrongly pass on a hypothetical Python 4.0.9 and wrongly *fail* nothing — but it is still an incomplete test. Tuple comparison handles every element in the right order."
+        why: "Only B is correct. A compares strings, so `\"3.9\" > \"3.10\"` — the bug that shipped widely during the 3.9→3.10 transition. C is worse: `float(\"3.10\")` is `3.1`, so 3.10 looks older than 3.9 — and on 3.9 the slice is `\"3.9.\"`, which `float` rejects with a `ValueError`. D ignores the major version, so it would wrongly fail on a future Python 4.0. Tuple comparison handles every element in the right order."
       },
       {
         stem: "Your Linux system refuses `pip install requests` with `error: externally-managed-environment`. What is the correct response?",
         options: [
           "Re-run with `--break-system-packages`, which is what the flag is for",
           "Use `sudo` so pip has permission to write to the system directory",
-          "Create a virtual environment and install into that",
-          "Uninstall the system Python and install a clean one from python.org"
+          "Uninstall the system Python and install a clean one from python.org",
+          "Create a virtual environment and install into that"
         ],
-        answer: 2,
+        answer: 3,
         why: "The error is a safety feature (PEP 668), not an obstacle. The system interpreter is a dependency of the operating system, and upgrading a library inside it can break package managers and system tools in ways that look unrelated. `--break-system-packages` is named honestly. `sudo` makes the damage possible rather than preventing it. Removing the system Python would break the OS outright. A virtual environment is the intended answer."
       },
       {
         stem: "A team is starting a new service the week Python 3.14 is released. What is the sensible default choice of version, and why?",
         options: [
-          "3.14 — start on the newest so the project stays current for longest",
+          "3.14 — start on the newest release, so the project stays on a supported interpreter for the longest time",
           "3.13 — one behind, because compiled dependencies need time to publish wheels for a new interpreter",
-          "The oldest version still receiving security fixes, for maximum stability",
+          "The oldest version still receiving security fixes, because it has had the most time for its bugs to be found",
           "Whatever version is already installed on the deployment host"
         ],
         answer: 1,

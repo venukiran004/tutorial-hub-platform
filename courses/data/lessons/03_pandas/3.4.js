@@ -131,7 +131,7 @@ obj.isna().tolist()                      # [False, True, False] -- ...but use th
 # An object column can hold BOTH None and NaN, and == None finds only
 # one of them. isna finds both.
 mixed = pd.Series(["a", None, np.nan], dtype=object)
-(mixed == None).sum()                    # 1
+(mixed == None).sum()                    # 0
 mixed.isna().sum()                       # 2
 
 # pd.NA IS THE ODD ONE: it PROPAGATES through comparison.

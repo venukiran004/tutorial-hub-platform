@@ -211,8 +211,11 @@ print(id(items), type(items), items)   # DIFFERENT id -- new object
       { t: "code", lang: "python", title: "the surprise", numbered: false, code: `
 config = ("prod", ["us-east", "us-west"])
 
-config[0] = "dev"          # TypeError -- as expected
-config[1].append("eu-central")   # works, and changes the tuple's contents
+try:
+    config[0] = "dev"      # the tuple refuses...
+except TypeError as exc:
+    print(f"TypeError: {exc}")
+config[1].append("eu-central")   # ...but the list inside it does not
 
 print(config)`,
         out: `TypeError: 'tuple' object does not support item assignment
@@ -667,44 +670,44 @@ d = d + [3]
 print(a, c)`,
         options: [
           "`[1, 2, 3] [1, 2, 3]` — both use the same operation",
-          "`[1, 2, 3] [1, 2]` — `+=` mutates in place, `+` builds a new list",
           "`[1, 2] [1, 2]` — neither affects the original name",
-          "`[1, 2] [1, 2, 3]` — `+` mutates, `+=` rebinds"
+          "`[1, 2, 3] [1, 2]` — `+=` mutates in place, `+` builds a new list",
+          "`[1, 2] [1, 2, 3]` — `+` mutates the shared list, while `+=` rebinds the name"
         ],
-        answer: 1,
+        answer: 2,
         why: "On a mutable type, `+=` calls `__iadd__`, which modifies the object in place — so `a`, sharing that object with `b`, sees the change. `d + [3]` calls `__add__`, which builds a brand-new list, and the assignment rebinds only `d`. Identical-looking syntax, opposite outcomes. Note that on an immutable type like `str` the first case behaves like the second, because there is no in-place option."
       },
       {
         stem: "A function is defined as `def log(msg, history=[])`. It is called 1,000 times in a long-running server, always without the second argument. What happens?",
         options: [
           "Each call gets a fresh empty list, since defaults are re-evaluated per call",
-          "One list is created at `def` time and shared by all 1,000 calls, growing without bound",
           "Python raises a `SyntaxError` because mutable defaults are not permitted",
-          "The list is reset whenever the garbage collector runs"
+          "One list is created at `def` time and shared by all 1,000 calls, growing without bound",
+          "The list is reset whenever the garbage collector runs, so it only grows between collections"
         ],
-        answer: 1,
+        answer: 2,
         why: "Default arguments are evaluated once, when the `def` statement runs, and stored on the function object — you can see it in `log.__defaults__`. In a script this is a curiosity; in a server the function object lives for the process lifetime, so the list grows across every request. That is both a memory leak and a data-leak between requests. Use `history=None` and build the list in the body."
       },
       {
         stem: "Why is `if value is None:` preferred over `if value == None:`?",
         options: [
-          "`is` is faster because it compares memory addresses rather than contents",
-          "`==` can be overridden by a class, and some types return a non-boolean that makes `if` raise",
+          "`==` can be overridden, and some types return a non-boolean that makes `if` raise",
+          "`is` is faster because it compares memory addresses, and `None` checks sit in hot paths",
           "`== None` is deprecated and will be removed in a future Python version",
-          "They are equivalent; `is None` is purely a style convention"
+          "They are equivalent for every type; `is None` is purely a style convention from PEP 8"
         ],
-        answer: 1,
+        answer: 0,
         why: "Correctness, not speed. `==` dispatches to `__eq__`, which any class may define. NumPy arrays and pandas objects return an element-wise result rather than a bool, so `if value == None:` raises `ValueError: truth value ... is ambiguous`. `is` compares identity directly and cannot be intercepted, so it behaves identically for every type. `is` is also marginally faster, but that is not the reason the idiom exists."
       },
       {
         stem: "`config = (\"prod\", [\"a\"])`. Which statement is true?",
         options: [
           "`config[1].append(\"b\")` raises `TypeError` because the tuple is immutable",
-          "`config[1].append(\"b\")` succeeds, and `config` cannot be used as a dict key",
           "Both `config[0] = \"dev\"` and `config[1].append(\"b\")` succeed",
-          "`config` can be used as a dict key because tuples are always hashable"
+          "`config` can be used as a dict key because tuples are always hashable",
+          "`config[1].append(\"b\")` succeeds, and `config` cannot be used as a dict key"
         ],
-        answer: 1,
+        answer: 3,
         why: "Immutability in Python is shallow. The tuple guarantees which objects it references will not change; it says nothing about those objects, so appending to the contained list works. The consequence is hashability: `hash()` on a tuple hashes its contents, and a list is unhashable, so this tuple cannot be a dict key or set member. `config[0] = \"dev\"` does raise `TypeError` — that part of the tuple's guarantee holds."
       }
     ]

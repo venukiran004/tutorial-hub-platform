@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c10.2",
  "lede": "**28 programs to write**, on pattern matching and data structures. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on pattern matching and data structures without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c10.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1201–1228.** What this set actually drills, counted from its own problems — 15 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["async", "exceptions", "dicts and sets", "generators", "classes", "regex"], "cells": [[{"text": "4", "tone": "accent"}, "Semaphore for Rate Limiting"], [{"text": "3", "tone": "good"}, "Custom Exception Hierarchy"], [{"text": "3", "tone": "violet"}, "Counter Advanced Usage"], [{"text": "2", "tone": "teal"}, "Async Iterator"], [{"text": "2", "tone": "warn"}, "Generic Class"], [{"text": "1", "tone": "crit"}, "Structural Pattern Matching (P"]], "t": "diagram", "id": "dg-c10_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

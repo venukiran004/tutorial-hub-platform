@@ -447,6 +447,11 @@
     var drills = $$(".drill", root);
     if (!drills.length) return;
 
+    // Clicking a visible snippet selects text; only the title row reveals.
+    root.addEventListener("click", function (e) {
+      if (e.target.closest && e.target.closest(".drill-prompt")) e.preventDefault();
+    });
+
     var bar = document.createElement("div");
     bar.className = "drill-bar";
     bar.innerHTML =

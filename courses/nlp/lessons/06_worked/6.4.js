@@ -2,7 +2,7 @@
    LESSON 6.4 — The Whole Stack: What, When-Why, How
    Its §15 worked example is a SECOND independent trace with different
    weights — it reproduces to every digit (§06), and the antisymmetry found
-   in 6.3 reappears, confirming it is structural (scratchpad/nlp/n61.py).
+   in 6.3 reappears, confirming it is structural (n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.4",

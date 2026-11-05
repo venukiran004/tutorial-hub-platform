@@ -94,7 +94,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Standard attention materialises the full `N × N` score matrix so softmax can find each row's max and sum. FlashAttention never does — it processes each row in blocks, carrying a running maximum and denominator, and retroactively rescales what it has already accumulated whenever a larger value appears." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n52.py — online softmax attention", code:
+    { t: "code", lang: "python", title: "online softmax attention", code:
 "def online_softmax_attention(q, K, V, block=8):\n    \"\"\"Flash-style: the full score row is never materialised.\"\"\"\n    m = torch.tensor(float(\"-inf\"))   # running max\n    l = torch.tensor(0.0)             # running denominator\n    O = torch.zeros(V.shape[1])       # running weighted sum\n\n    for i in range(0, K.shape[0], block):\n        Kb, Vb = K[i:i+block], V[i:i+block]\n        s = (q @ Kb.T) / math.sqrt(q.shape[0])\n\n        m_new = torch.maximum(m, s.max())\n        corr  = torch.exp(m - m_new)            # retroactive correction\n        p     = torch.exp(s - m_new)\n\n        l = corr * l + p.sum()\n        O = corr * O + p @ Vb\n        m = m_new\n\n    return O / l",
       caption: "Subtracting the running max keeps every exponent at most 0, so nothing overflows. The `corr` factor is what makes earlier blocks retroactively correct." },
 

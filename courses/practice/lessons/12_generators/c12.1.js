@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c12.1",
  "lede": "**30 snippets to read**, on yield from and generator pipelines. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on yield from and generator pipelines before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c11.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 1380–1409.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["generators", "lists"], "cells": [[{"text": "29", "tone": "accent"}, "yield from"], [{"text": "1", "tone": "good"}, "A lambda"]], "t": "diagram", "id": "dg-c12_1-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 1380: yield from — output of `result = list(chain([1, 2], [3, 4], [5, 6]))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** `yield from` delegates to another iterable, yielding each element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def chain(*iterables):\n    for it in iterables:\n        yield from it\n\nresult = list(chain([1, 2], [3, 4], [5, 6]))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** `yield from` delegates to another iterable, yielding each element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 1381: yield from — output of `list(flatten(data))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7]` **Explanation:** Recursive generator with `yield from` flattens arbitrarily nested lists."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def flatten(nested):\n    for item in nested:\n        if isinstance(item, list):\n            yield from flatten(item)\n        else:\n            yield item\n\ndata = [1, [2, 3], [4, [5, 6]], 7]\nprint(list(flatten(data)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7]` **Explanation:** Recursive generator with `yield from` flattens arbitrarily nested lists."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 1382: A generator — output of `next(g)` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `2`, `done` **Explanation:** Generator's `return` value is stored in `StopIteration.value`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen_with_return():\n    yield 1\n    yield 2\n    return \"done\"\n\ng = gen_with_return()\nprint(next(g))\nprint(next(g))\ntry:\n    next(g)\nexcept StopIteration as e:\n    print(e.value)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `2`, `done` **Explanation:** Generator's `return` value is stored in `StopIteration.value`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 1383: An itertools recipe — output of `first_10 = list(islice(naturals(), 10))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]` **Explanation:** `islice` takes a slice from an iterator without consuming the whole thing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import islice\n\ndef naturals():\n    n = 1\n    while True:\n        yield n\n        n += 1\n\nfirst_10 = list(islice(naturals(), 10))\nprint(first_10)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]` **Explanation:** `islice` takes a slice from an iterator without consuming the whole thing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 1384: An itertools recipe — output of `result = list(takewhile(lambda x: x < 10, eve…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 2, 4, 6, 8]` **Explanation:** `count(0, 2)` generates 0, 2, 4, ... `takewhile` stops when condition fails."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import count, takewhile\n\nevens = (x for x in count(0, 2))\nresult = list(takewhile(lambda x: x < 10, evens))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 2, 4, 6, 8]` **Explanation:** `count(0, 2)` generates 0, 2, 4, ... `takewhile` stops when condition fails."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 1385: An itertools recipe — output of `result = [next(colors) for _ in range(7)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['red', 'green', 'blue', 'red', 'green', 'blue', 'red']` **Explanation:** `cycle` infinitely repeats the iterable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import cycle\n\ncolors = cycle(['red', 'green', 'blue'])\nresult = [next(colors) for _ in range(7)]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['red', 'green', 'blue', 'red', 'green', 'blue', 'red']` **Explanation:** `cycle` infinitely repeats the iterable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 1386: An itertools recipe — output of `from itertools import repeat`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[42, 42, 42, 42, 42]` **Explanation:** `repeat(42, 5)` yields 42 five times."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import repeat\n\nresult = list(repeat(42, 5))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[42, 42, 42, 42, 42]` **Explanation:** `repeat(42, 5)` yields 42 five times."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 1387: An itertools recipe — output of `c = list(zip_longest(a, b, fillvalue=0))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(1, 4), (2, 5), (3, 0)]` **Explanation:** `zip_longest` pads shorter iterables with `fillvalue`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import zip_longest\n\na = [1, 2, 3]\nb = [4, 5]\nc = list(zip_longest(a, b, fillvalue=0))\nprint(c)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(1, 4), (2, 5), (3, 0)]` **Explanation:** `zip_longest` pads shorter iterables with `fillvalue`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,28 +197,25 @@ EC.receiveLesson({
    "q": "Program 1388: An itertools recipe — output of `result = list(product('AB', repeat=2))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('A', 'A'), ('A', 'B'), ('B', 'A'), ('B', 'B')]` **Explanation:** Cartesian product of 'AB' with itself."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import product\n\nresult = list(product('AB', repeat=2))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('A', 'A'), ('A', 'B'), ('B', 'A'), ('B', 'B')]` **Explanation:** Cartesian product of 'AB' with itself."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1389",
    "q": "Program 1389: An itertools recipe — output of `list(permutations('ABC', 2))`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from itertools import permutations, combinations\n\nprint(list(permutations('ABC', 2)))\nprint(list(combinations('ABC', 2)))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -209,19 +230,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Permutations are ordered (AB ≠ BA). Combinations are unordered (AB = BA)."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from itertools import permutations, combinations\n\nprint(list(permutations('ABC', 2)))\nprint(list(combinations('ABC', 2)))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1390",
    "q": "Program 1390: An itertools recipe — output of `key, list(group)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from itertools import groupby\n\ndata = [('A', 1), ('A', 2), ('B', 3), ('B', 4), ('A', 5)]\nfor key, group in groupby(data, key=lambda x: x[0]):\n    print(key, list(group))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -236,7 +260,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `groupby` groups consecutive elements. Data must be sorted by key for full grouping."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from itertools import groupby\n\ndata = [('A', 1), ('A', 2), ('B', 3), ('B', 4), ('A', 5)]\nfor key, group in groupby(data, key=lambda x: x[0]):\n    print(key, list(group))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -244,28 +277,25 @@ EC.receiveLesson({
    "q": "Program 1391: An itertools recipe — output of `list(a)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 2, 3, 4]`, `[0, 1, 2, 3, 4]` **Explanation:** `tee` creates independent iterators from a single iterable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import tee\n\nnums = iter(range(5))\na, b = tee(nums)\nprint(list(a))\nprint(list(b))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 2, 3, 4]`, `[0, 1, 2, 3, 4]` **Explanation:** `tee` creates independent iterators from a single iterable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1392",
    "q": "Program 1392: A generator — output of `for i in range(0, len(data), chunk_size):`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def read_chunks(data, chunk_size):\n    for i in range(0, len(data), chunk_size):\n        yield data[i:i + chunk_size]\n\ndata = list(range(10))\nfor chunk in read_chunks(data, 3):\n    print(chunk)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -280,7 +310,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Generator yielding fixed-size chunks. Last chunk may be smaller."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def read_chunks(data, chunk_size):\n    for i in range(0, len(data), chunk_size):\n        yield data[i:i + chunk_size]\n\ndata = list(range(10))\nfor chunk in read_chunks(data, 3):\n    print(chunk)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -288,28 +327,25 @@ EC.receiveLesson({
    "q": "Program 1393: A lambda — output of `list(result)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 256, 6561, 65536]` **Explanation:** Late binding. Each generator expression looks `func` up when it runs, not when it is created, and by then the loop has finished, so all three stages use the last function, `x ** 2`. Every value is squared three times: `2` becomes `256`. `data = map(func, data)` binds each stage at once and gives the intended `[1, 9, 25, 49, 81]`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def pipeline(data, *functions):\n    for func in functions:\n        data = (func(x) for x in data)\n    return data\n\nresult = pipeline(\n    range(5),\n    lambda x: x * 2,\n    lambda x: x + 1,\n    lambda x: x ** 2\n)\nprint(list(result))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 9, 25, 49, 81]` **Explanation:** Lazy pipeline: 0→0→1→1, 1→2→3→9, 2→4→5→25, etc."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1394",
    "q": "Program 1394: A generator driven with .send() — output of `f\"Got: {value}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def gen_close_example():\n    try:\n        while True:\n            value = yield\n            print(f\"Got: {value}\")\n    except GeneratorExit:\n        print(\"Generator closed\")\n\ng = gen_close_example()\nnext(g)  # prime\ng.send(1)\ng.send(2)\ng.close()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -324,7 +360,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `close()` throws `GeneratorExit` into the generator, allowing cleanup."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def gen_close_example():\n    try:\n        while True:\n            value = yield\n            print(f\"Got: {value}\")\n    except GeneratorExit:\n        print(\"Generator closed\")\n\ng = gen_close_example()\nnext(g)  # prime\ng.send(1)\ng.send(2)\ng.close()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -332,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 1395: A generator — output of `next(g)` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `error handled`, `3` **Explanation:** `throw()` throws an exception into the generator at the yield point."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen_throw_example():\n    try:\n        yield 1\n        yield 2\n    except ValueError:\n        yield \"error handled\"\n        yield 3\n\ng = gen_throw_example()\nprint(next(g))\nprint(g.throw(ValueError, \"test\"))\nprint(next(g))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `error handled`, `3` **Explanation:** `throw()` throws an exception into the generator at the yield point."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -349,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 1396: An itertools recipe — output of `result = list(interleave([1, 2, 3], ['a', 'b'…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 'a', 2, 'b', 3, 'c']` **Explanation:** `zip` pairs elements, then `chain.from_iterable` flattens the pairs."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import chain\n\ndef interleave(*iterables):\n    return chain.from_iterable(zip(*iterables))\n\nresult = list(interleave([1, 2, 3], ['a', 'b', 'c']))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 'a', 2, 'b', 3, 'c']` **Explanation:** `zip` pairs elements, then `chain.from_iterable` flattens the pairs."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -366,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 1397: The iterator protocol — output of `result = list(islice(InfiniteRange(10), 5))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 11, 12, 13, 14]` **Explanation:** Custom infinite iterator. `islice` takes first 5 elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class InfiniteRange:\n    def __init__(self, start=0):\n        self.current = start\n    \n    def __iter__(self):\n        return self\n    \n    def __next__(self):\n        value = self.current\n        self.current += 1\n        return value\n\nfrom itertools import islice\nresult = list(islice(InfiniteRange(10), 5))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 11, 12, 13, 14]` **Explanation:** Custom infinite iterator. `islice` takes first 5 elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -383,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 1398: A generator — output of `result = list(window(range(6), 3))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(0, 1, 2), (1, 2, 3), (2, 3, 4), (3, 4, 5)]` **Explanation:** Sliding window generator using deque with maxlen."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def window(iterable, size=3):\n    from collections import deque\n    it = iter(iterable)\n    win = deque(maxlen=size)\n    for _ in range(size):\n        win.append(next(it))\n    yield tuple(win)\n    for item in it:\n        win.append(item)\n        yield tuple(win)\n\nresult = list(window(range(6), 3))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(0, 1, 2), (1, 2, 3), (2, 3, 4), (3, 4, 5)]` **Explanation:** Sliding window generator using deque with maxlen."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -400,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 1399: An itertools recipe — output of `result = list(starmap(pow, pairs))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[32, 9, 1000]` **Explanation:** `starmap` unpacks each tuple as arguments: `pow(2,5)=32`, `pow(3,2)=9`, `pow(10,3)=1000`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import starmap\n\npairs = [(2, 5), (3, 2), (10, 3)]\nresult = list(starmap(pow, pairs))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[32, 9, 1000]` **Explanation:** `starmap` unpacks each tuple as arguments: `pow(2,5)=32`, `pow(3,2)=9`, `pow(10,3)=1000`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -417,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 1400: A generator — output of `1 in g`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `[3]` **Explanation:** `in` consumes the generator until it finds the element. After finding 1 and 2, only 3 remains."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen():\n    yield 1\n    yield 2\n    yield 3\n\ng = gen()\nprint(1 in g)\nprint(2 in g)\nprint(list(g))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `[3]` **Explanation:** `in` consumes the generator until it finds the element. After finding 1 and 2, only 3 remains."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -434,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 1401: An itertools recipe — output of `result = list(compress(data, selectors))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['a', 'c', 'e']` **Explanation:** `compress` selects elements where corresponding selector is truthy."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import compress\n\ndata = ['a', 'b', 'c', 'd', 'e']\nselectors = [1, 0, 1, 0, 1]\nresult = list(compress(data, selectors))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['a', 'c', 'e']` **Explanation:** `compress` selects elements where corresponding selector is truthy."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -451,28 +517,25 @@ EC.receiveLesson({
    "q": "Program 1402: A generator — output of `list(batch(range(7), 3))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[0, 1, 2], [3, 4, 5], [6]]` **Explanation:** Batching generator splits iterable into groups of size n."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def batch(iterable, n):\n    it = iter(iterable)\n    while True:\n        batch_list = []\n        try:\n            for _ in range(n):\n                batch_list.append(next(it))\n        except StopIteration:\n            if batch_list:\n                yield batch_list\n            return\n        yield batch_list\n\nprint(list(batch(range(7), 3)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[0, 1, 2], [3, 4, 5], [6]]` **Explanation:** Batching generator splits iterable into groups of size n."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1403",
    "q": "Program 1403: An itertools recipe — output of `list(accumulate(nums))`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from itertools import accumulate\nimport operator\n\nnums = [1, 2, 3, 4, 5]\nprint(list(accumulate(nums)))\nprint(list(accumulate(nums, operator.mul)))\nprint(list(accumulate(nums, max)))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -487,7 +550,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Running sum, running product, running maximum."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from itertools import accumulate\nimport operator\n\nnums = [1, 2, 3, 4, 5]\nprint(list(accumulate(nums)))\nprint(list(accumulate(nums, operator.mul)))\nprint(list(accumulate(nums, max)))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -495,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 1404: A generator — output of `list(unique(data))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3, 2, 4, 5]` **Explanation:** Generator preserving order while removing duplicates."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def unique(iterable):\n    seen = set()\n    for item in iterable:\n        if item not in seen:\n            seen.add(item)\n            yield item\n\ndata = [1, 3, 2, 3, 1, 4, 2, 5]\nprint(list(unique(data)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3, 2, 4, 5]` **Explanation:** Generator preserving order while removing duplicates."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -512,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 1405: An itertools recipe — output of `result = list(combinations_with_replacement('…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('A', 'A'), ('A', 'B'), ('B', 'B')]` **Explanation:** Like combinations but allows repeated elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import combinations_with_replacement\n\nresult = list(combinations_with_replacement('AB', 2))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('A', 'A'), ('A', 'B'), ('B', 'B')]` **Explanation:** Like combinations but allows repeated elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -529,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 1406: A generator — output of `list(gen_range(5))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 2, 3, 4]`, `[2, 3, 4]`, `[0, 3, 6, 9]` **Explanation:** Custom generator reimplementing `range()`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen_range(*args):\n    if len(args) == 1:\n        start, stop, step = 0, args[0], 1\n    elif len(args) == 2:\n        start, stop, step = args[0], args[1], 1\n    else:\n        start, stop, step = args\n    \n    current = start\n    while current < stop:\n        yield current\n        current += step\n\nprint(list(gen_range(5)))\nprint(list(gen_range(2, 5)))\nprint(list(gen_range(0, 10, 3)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 2, 3, 4]`, `[2, 3, 4]`, `[0, 3, 6, 9]` **Explanation:** Custom generator reimplementing `range()`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -546,16 +627,19 @@ EC.receiveLesson({
    "q": "Program 1407: An itertools recipe — output of `result = list(takewhile(lambda x: x <= 128, p…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 4, 8, 16, 32, 64, 128]` **Explanation:** Infinite generator of powers of 2, limited by `takewhile`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def powers_of_two():\n    n = 1\n    while True:\n        yield n\n        n *= 2\n\nfrom itertools import takewhile\nresult = list(takewhile(lambda x: x <= 128, powers_of_two()))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 4, 8, 16, 32, 64, 128]` **Explanation:** Infinite generator of powers of 2, limited by `takewhile`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -563,16 +647,19 @@ EC.receiveLesson({
    "q": "Program 1408: The iterator protocol — output of `p.peek()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `1`, `1`, `2` **Explanation:** `peek()` looks ahead without consuming. Multiple peeks return same value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def peekable(iterable):\n    it = iter(iterable)\n    sentinel = object()\n    peeked = sentinel\n    \n    class PeekableIterator:\n        def __iter__(self):\n            return self\n        \n        def __next__(self):\n            nonlocal peeked\n            if peeked is not sentinel:\n                val = peeked\n                peeked = sentinel\n                return val\n            return next(it)\n        \n        def peek(self):\n            nonlocal peeked\n            if peeked is sentinel:\n                peeked = next(it)\n            return peeked\n    \n    return PeekableIterator()\n\np = peekable([1, 2, 3])\nprint(p.peek())\nprint(p.peek())\nprint(next(p))\nprint(next(p))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `1`, `1`, `2` **Explanation:** `peek()` looks ahead without consuming. Multiple peeks return same value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -580,21 +667,24 @@ EC.receiveLesson({
    "q": "Program 1409: A generator expression — output of `evens = (x for x in data if x % 2 == 0)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[16, 36, 64]` **Explanation:** Lazy pipeline: filter evens (2,4,6,8) → square (4,16,36,64) → filter >10 (16,36,64)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen_pipeline(data):\n    # Stage 1: filter evens\n    evens = (x for x in data if x % 2 == 0)\n    # Stage 2: square\n    squared = (x ** 2 for x in evens)\n    # Stage 3: filter > 10\n    large = (x for x in squared if x > 10)\n    return large\n\nresult = list(gen_pipeline(range(10)))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[16, 36, 64]` **Explanation:** Lazy pipeline: filter evens (2,4,6,8) → square (4,16,36,64) → filter >10 (16,36,64)."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

@@ -257,7 +257,7 @@ def create_charge(
 
     { t: "h2", n: "04", text: "Caching and connections", id: "caching" },
 
-    { t: "code", lang: "python", title: "the headers, and what each one does", code: `
+    { t: "code", lang: "text", title: "the headers, and what each one does", code: `
 # Tell caches the answer is per-user and must never be shared
 Cache-Control: private, no-store
 
@@ -288,7 +288,7 @@ def my_orders(user: User = Depends(current_user)) -> list[Order]:
 #   Cache-Control: public, max-age=60
 #   (no Vary header)`},
       { t: "p", text: "A shared cache keys on the URL. Two users request `/me/orders`, the URL is identical, and the second one is served the first one's orders — for the full sixty seconds." },
-      { t: "code", lang: "python", title: "either fix works; pick deliberately", numbered: false, code: `
+      { t: "code", lang: "text", title: "either fix works; pick deliberately", numbered: false, code: `
 # 1. Say what the response varies on
 Cache-Control: private, max-age=60
 Vary: Authorization
@@ -368,7 +368,7 @@ def create(order: OrderIn):
 @app.get("/me/orders")
 def mine(user=Depends(current_user)):
     return Response(
-        content=json.dumps([o.dict() for o in orders.for_user(user.id)]),
+        content=json.dumps([o.model_dump(mode="json") for o in orders.for_user(user.id)]),
         headers={"Cache-Control": "public, max-age=300"},
     )
 
@@ -739,41 +739,41 @@ def test_creation_returns_201_and_a_location(client):
       {
         stem: "An endpoint is `GET /orders/{id}/cancel`. What goes wrong beyond style?",
         options: [
-          "Nothing — the method is a convention",
-          "Browsers prefetch it, crawlers follow it, proxies cache it and clients auto-retry it, because `GET` is defined as safe and everything acts on that",
-          "GET requests cannot carry path parameters reliably",
-          "It will be rejected by most web servers"
+          "Prefetchers, crawlers, caches and retries all treat `GET` as safe and will trigger it",
+          "Nothing — the HTTP method is a naming convention, and clients call whatever the documentation tells them to",
+          "GET requests cannot carry path parameters reliably, because proxies are allowed to rewrite the URL path",
+          "It will be rejected by most web servers and gateways, which refuse state-changing requests sent with GET"
         ],
-        answer: 1,
+        answer: 0,
         why: "The method is a contract other systems enforce. Link prefetching, search-engine crawling, proxy caching and automatic retry on connection errors are all built on the guarantee that a `GET` has no side effects. Breaking it means orders get cancelled by a hover, by an indexer, or by a client library doing exactly what the specification permits."
       },
       {
         stem: "A payment API returns `HTTP 200` with `{\"success\": false, \"error\": \"declined\"}`. What does that cost callers?",
         options: [
           "Nothing, as long as the body is documented",
-          "`raise_for_status()` passes, so no retry policy fires, error-rate dashboards read zero, and every client must write a second bespoke check",
           "The response cannot be cached",
-          "Clients must parse the body twice"
+          "Clients must parse the body twice",
+          "`raise_for_status()` passes, so retries, alerts and dashboards all miss the failure"
         ],
-        answer: 1,
+        answer: 3,
         why: "The status code is what infrastructure and client libraries act on. A 200 tells proxies, load balancers, monitoring and every HTTP library that the call succeeded. Each consumer then needs custom handling, one of them forgets, and failures are invisible on dashboards while they are happening."
       },
       {
         stem: "A `POST /charges` times out after the server has charged the card. The client retries and the customer is charged twice. What was missing?",
         options: [
           "A longer client timeout",
-          "An idempotency key generated once per logical operation, so the server recognises the retry and replays the original result",
-          "A 409 response on the second attempt",
-          "Retries should have been disabled entirely"
+          "A 409 response on the second attempt, telling the client that the charge already exists",
+          "An idempotency key, created once, so the server can replay the original result",
+          "Retries should have been disabled entirely for payments, since any retry risks charging the customer twice"
         ],
-        answer: 1,
+        answer: 2,
         why: "A read timeout means the response did not arrive; it says nothing about whether the work happened. `POST` is not idempotent, so the client has no safe move — retrying may double-charge, not retrying may leave the customer unpaid. A key generated outside the retry loop lets the server return the original result, and makes retrying correct."
       },
       {
         stem: "`GET /me/orders` returns `Cache-Control: public, max-age=300` with no `Vary`. What happens?",
         options: [
           "The response is cached per user by their browser only",
-          "A shared cache keys on the URL, which is identical for all users, so the second user is served the first user's orders",
+          "A shared cache keys on the URL alone, so the next user gets the first user's orders",
           "The cache is bypassed because the response requires authentication",
           "Only the response headers are shared, not the body"
         ],

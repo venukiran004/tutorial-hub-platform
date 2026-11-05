@@ -93,6 +93,26 @@ def new(limit: Annotated[int, Query(ge=1, le=100)] = 20): ...`},
       { t: "p", text: "**Being able to call the handler as an ordinary function is the practical win** — it means a unit test needs no HTTP client at all (Lesson 9.6)." }
     ]},
 
+    { t: "callout", kind: "trap", title: "`| None` does not make a parameter optional. The default does.", body: [
+      { t: "p", text: "FastAPI reads requiredness from whether the parameter has a default, not from its type. **`status: str | None` says \"this may be null\" and, with no default, still says \"the client must send it\".** Every request that omits it is rejected with a 422 before your handler runs, so the endpoint works in the demo that always passes the filter and fails for the client that does not." },
+      { t: "code", lang: "python", title: "nullable is not optional", code: `from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+app = FastAPI()
+
+
+@app.get("/orders")
+def list_orders(status: str | None):          # no default, so REQUIRED
+    return {"status": status}
+
+
+client = TestClient(app)
+r = client.get("/orders")
+print(r.status_code, r.json())`,
+        out: `422 {'detail': [{'type': 'missing', 'loc': ['query', 'status'], 'msg': 'Field required', 'input': None}]}` },
+      { t: "p", text: "**Write `status: str | None = None`, or `Annotated[str | None, Query()] = None`.** The type answers \"what values are legal\"; the default answers \"may it be left out\". They are separate questions, and the generated OpenAPI schema shows which one you answered." }
+    ]},
+
     { t: "h2", n: "02", text: "response_model earns its place", id: "response" },
 
     { t: "viz",
@@ -184,7 +204,7 @@ def create_order(payload: OrderCreate, response: Response) -> OrderPublic:
 
 
 
-    { t: "code", lang: "python", title: "OpenAPI is an artefact, not a website", code: `
+    { t: "code", lang: "bash", title: "OpenAPI is an artefact, not a website", code: `
 # The interactive pages are the least interesting use:
 #   /docs      Swagger UI
 #   /redoc     ReDoc
@@ -767,10 +787,10 @@ def test_the_schema_describes_the_responses(client):
       {
         stem: "A FastAPI service handles 6 requests per second in production despite large hardware. Every handler is `async def` and the driver is `psycopg2`. Why?",
         options: [
-          "The thread pool is too small",
-          "`async def` makes FastAPI run the handler on the event loop, so each synchronous query blocks all concurrency in the process",
-          "`psycopg2` holds the GIL for the duration of a query",
-          "The connection pool is exhausted"
+          "The thread pool that runs handlers is too small for the traffic, so requests queue for a free thread",
+          "`async def` runs it on the event loop, so each sync query blocks every request",
+          "`psycopg2` holds the GIL for the duration of each query, so no other Python code can run meanwhile",
+          "The database connection pool is exhausted, so every request waits for a connection to come free"
         ],
         answer: 1,
         why: "`async def` is a claim that the body never blocks, and FastAPI schedules accordingly. A plain `def` handler runs in a thread pool where blocking costs one thread out of forty. Deleting the word `async` from handlers that await nothing typically restores throughput immediately — and is the single most common FastAPI performance bug."
@@ -779,33 +799,33 @@ def test_the_schema_describes_the_responses(client):
         stem: "An endpoint returns an ORM object with no `response_model`. What is the risk?",
         options: [
           "The response will not be valid JSON",
-          "Every attribute the entity carries is serialised — including columns added later, with nothing in a migration diff to signal it",
-          "FastAPI raises because the type is not a Pydantic model",
+          "FastAPI raises at startup, because the return type is not a Pydantic model it can document",
+          "Every attribute is serialised, including columns added later without review",
           "The response cannot be cached"
         ],
-        answer: 1,
+        answer: 2,
         why: "The API surface becomes whatever the entity happens to have, so a column added for an internal report appears publicly the same afternoon. A response model filters to declared fields, which makes exposure a deliberate act visible in a diff — and keeps the OpenAPI schema accurate at the same time."
       },
       {
         stem: "`def list_orders(limit=20)` with no annotation. Why is this more than a typing gap?",
         options: [
-          "FastAPI will reject the route at startup",
-          "No validation is applied, so `?limit=1000000` is unbounded work driven by an untrusted input — a denial of service requiring one request",
-          "The default will be ignored",
-          "The parameter becomes part of the request body"
+          "FastAPI will reject the route at startup, because every parameter needs a type annotation",
+          "The default will be ignored, so `limit` is required on every request",
+          "Nothing validates it, so `?limit=1000000` makes one request a denial of service",
+          "The parameter becomes part of the request body instead of the query string, so GET requests cannot set it"
         ],
-        answer: 1,
+        answer: 2,
         why: "Without an annotation FastAPI passes the value through unchecked. A large number produces a million-row query and response; a negative one is driver-dependent; a non-numeric one raises inside the query builder and returns a 500 for a bad client request. `Annotated[int, Query(ge=1, le=100)]` makes all three a 422 before any database work."
       },
       {
         stem: "Why prefer `Annotated[int, Query(ge=1)]` over `limit: int = Query(20, ge=1)`?",
         options: [
+          "The handler stays callable as a plain function, and mypy sees an `int`",
           "The legacy form is deprecated and will be removed",
-          "The constraint lives in the type rather than the default slot, so the handler stays callable as a plain function and the type checker sees an `int`",
           "`Annotated` supports more constraints",
           "It generates a better OpenAPI schema"
         ],
-        answer: 1,
+        answer: 0,
         why: "With the legacy form, calling the handler directly passes a `Query` object as the value, so a unit test needs an HTTP client. `Annotated` keeps the default a real default, makes the constrained type reusable across endpoints, and lets `mypy` see the declared type rather than a `Query` instance."
       }
     ]

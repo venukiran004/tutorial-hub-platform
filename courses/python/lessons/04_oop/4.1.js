@@ -371,7 +371,8 @@ def price_with_tax(amount: Decimal, tax_rate: Decimal) -> Decimal:
       solution: {
         lang: "python",
         title: "user_service.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 class UserService:
     def __init__(self, db_url, cache_url, config_path):
@@ -397,7 +398,6 @@ class UserService:
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 import json
 from collections.abc import Mapping
@@ -575,43 +575,43 @@ if __name__ == "__main__":
       {
         stem: "Why must `__init__` return `None`?",
         options: [
-          "Because Python discards its return value, so returning anything is pointless",
-          "Because it is an initialiser, not a constructor — `__new__` already created and returned the object, and returning anything else raises `TypeError`",
-          "Because returning a value would create a second instance",
-          "It does not have to; returning `self` is a common idiom"
+          "Because Python discards whatever `__init__` returns, so returning anything is pointless but harmless",
+          "Because returning a value from `__init__` would make Python allocate a second instance to hold it",
+          "It does not have to; returning `self` from `__init__` is a common idiom that enables method chaining",
+          "It initialises an object `__new__` already created, and Python raises if it returns anything"
         ],
-        answer: 1,
+        answer: 3,
         why: "Calling a class runs `__new__` to allocate the object and then `__init__` to populate it. By the time `__init__` runs, the object exists and has been chosen — its job is to make it valid, not to decide what to return. Returning anything other than `None` raises `TypeError: __init__() should return None`. To control which object comes back, you need `__new__`."
       },
       {
         stem: "A module contains `client = ApiClient(URL)` at module level, and `ApiClient.__init__` authenticates over the network. What breaks in CI?",
         options: [
-          "Nothing — module-level code is lazy and runs on first attribute access",
-          "Every test file importing that module fails at import time, before any test runs, because construction performs I/O",
+          "Nothing — module-level code is lazy and only runs on first attribute access, so CI never connects",
           "Only tests that use the client directly fail",
+          "Every test module importing it fails at import time, because construction does network I/O",
           "The client is created but its methods raise on first use"
         ],
-        answer: 1,
+        answer: 2,
         why: "Module-level statements execute when the module is imported, in every process that imports it — including the test collector. Since `__init__` does network I/O, the import itself fails and the traceback points at an import line rather than at a test. Two fixes apply: make construction cheap by moving I/O into a `connect()` classmethod, and build shared clients in a startup factory rather than by import side effect."
       },
       {
         stem: "A singleton is implemented by caching an instance in `__new__`. What is the subtle bug?",
         options: [
-          "`__new__` cannot access class attributes, so the cache never persists",
+          "`__new__` cannot access class attributes, so the cached instance is never actually stored",
+          "The cached instance is garbage-collected between calls, so each call quietly builds a new one",
           "`__init__` still runs on every call, re-initialising the cached instance and wiping its state",
-          "The instance is garbage-collected between calls",
-          "Subclasses share the parent's instance, which is always correct"
+          "Subclasses share the parent's cached instance, which is the intended singleton behaviour"
         ],
-        answer: 1,
+        answer: 2,
         why: "When `__new__` returns an instance of `cls`, Python calls `__init__` on it afterwards — regardless of whether it was freshly allocated. So `Config(debug=True)` then `Config()` runs `__init__` twice and the second call resets the settings. In Python a module is already a singleton, cached in `sys.modules`, so a module-level object or an `lru_cache`-wrapped factory avoids both this trap and the testability problems of global state."
       },
       {
         stem: "Which is the clearest signal that something should be a class rather than a function?",
         options: [
-          "It takes more than three arguments",
+          "It takes more than three arguments that always travel together",
           "It has state plus several methods that operate on that state",
-          "It belongs to a domain concept with a noun name",
-          "It needs to be mocked in tests"
+          "It belongs to a domain concept that has a noun for a name",
+          "It needs to be replaced by a mock in the test suite"
         ],
         answer: 1,
         why: "State and behaviour together is what a class is for. A class with a single method is a function — often with `functools.partial` for the pre-bound arguments. A class with only data is a dataclass. A class with only classmethods is a module. Argument count suggests grouping parameters into an object, not that the caller should be one, and anything can be substituted in tests via a protocol."

@@ -133,9 +133,9 @@ EC.receiveLesson({
         note: "In-memory sessions and artifacts, the default service account, no tracing, no retention policy." },
       { level: "ok", label: "It survives traffic",
         why: "Shared state, a real identity, and turns that cannot run away.",
-        code: `adk deploy cloud_run --project=p --region=r \
-  --session_service_uri="postgresql+asyncpg://…" \
-  --artifact_service_uri="gs://agent-artifacts" \
+        code: `adk deploy cloud_run --project=p --region=r \\
+  --session_service_uri="postgresql+asyncpg://…" \\
+  --artifact_service_uri="gs://agent-artifacts" \\
   --trace_to_cloud my_agent`,
         lang: "bash",
         note: "Plus a dedicated service account, secrets from a manager, `max_llm_calls` lowered, and timeouts on every tool's HTTP client." },

@@ -36,7 +36,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "h_{t+1} = h_t + f(h_t, \\theta) \\qquad\\Longleftrightarrow\\qquad \\frac{dh}{dt} = f(h(t), \\theta), \\quad \\Delta t = 1" },
 
-    { t: "code", lang: "python", title: "d114.py — eight blocks against the solver",
+    { t: "code", lang: "python", title: "eight blocks against the solver",
       code: `h = h0.clone()
 for _ in range(8):                        # eight residual blocks sharing one f
     h = h + f(0.0, h)                     # h_{t+1} = h_t + f(h_t)

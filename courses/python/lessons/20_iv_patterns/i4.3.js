@@ -78,7 +78,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Structural Decorator (GoF):** an object that **wraps another object** with the same interface, adding behavior — and can be stacked.",
+      "**Structural Decorator (GoF):** an object that **wraps another object** with the same interface, adding behaviour — and can be stacked.",
       "**`@` decorator:** syntactic sugar for a function that **wraps a function/class**."
      ]
     },
@@ -104,7 +104,7 @@ EC.receiveLesson({
     "interface",
     "Decorator",
     "same interface",
-    "behavior"
+    "behaviour"
    ],
    "body": [
     {
@@ -113,7 +113,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "All three wrap an object, but with different goals: - **Adapter:** changes the **interface** to match what a client expects. - **Decorator:** keeps the **same interface**, adds **behavior** (and stacks). - **Proxy:** keeps the same interface, **controls access** (lazy load, cache, permissions)."
+     "text": "All three wrap an object, but with different goals: - **Adapter:** changes the **interface** to match what a client expects. - **Decorator:** keeps the **same interface**, adds **behaviour** (and stacks). - **Proxy:** keeps the same interface, **controls access** (lazy load, cache, permissions)."
     },
     {
      "t": "p",
@@ -212,7 +212,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use it for part-whole hierarchies — file systems, UI trees, org charts."
+     "text": "**Key takeaway:** Use it for part-whole hierarchies — filesystems, UI trees, org charts."
     }
    ]
   },

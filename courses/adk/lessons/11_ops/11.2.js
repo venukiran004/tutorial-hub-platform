@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 11.2 — Evaluation
    Both evaluation runs below were executed with AgentEvaluator against a real
-   agent module on google-adk 2.9.2 (scratchpad/adk/e1.py + evaldemo/), one
+   agent module on google-adk 2.9.2 (e1.py + evaldemo/), one
    passing and one failing.
    ========================================================================= */
 EC.receiveLesson({

@@ -443,7 +443,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "How does Python handle recursion? (No tail call optimization)",
+   "q": "How does Python handle recursion? (No tail call optimisation)",
    "body": [
     {
      "t": "p",
@@ -454,7 +454,7 @@ EC.receiveLesson({
      "items": [
       "Python supports recursion but has a **default recursion limit of 1000** (`sys.getrecursionlimit()`).",
       "Exceeding it raises `RecursionError`.",
-      "Python **does not optimize tail recursion** (by design — Guido chose to preserve readable tracebacks)."
+      "Python **does not optimise tail recursion** (by design — Guido chose to preserve readable tracebacks)."
      ]
     },
     {
@@ -860,7 +860,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**When to prefer `map()`/`filter()`:** - When applying a **named function** (not lambda): `map(str.upper, words)` is cleaner than `[w.upper() for w in words]` (debatable). - When you need **lazy evaluation** and don't want to materialize the full list."
+     "text": "**When to prefer `map()`/`filter()`:** - When applying a **named function** (not lambda): `map(str.upper, words)` is cleaner than `[w.upper() for w in words]` (debatable). - When you need **lazy evaluation** and don't want to materialise the full list."
     },
     {
      "t": "p",
@@ -891,7 +891,7 @@ EC.receiveLesson({
        "Generator function"
       ],
       [
-       "Behavior",
+       "Behaviour",
        "Exits function, returns value",
        "Pauses function, yields value"
       ],

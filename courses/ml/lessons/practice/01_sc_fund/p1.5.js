@@ -433,7 +433,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df['timestamp'] = pd.to_datetime(df['timestamp'])\ndf = df.set_index('timestamp').sort_index()\n\n# Create complete time range\nfull_range = pd.date_range(df.index.min(), df.index.max(), freq='5min')\n\n# Reindex to reveal gaps\ndf = df.reindex(full_range)\n\n# Find gaps\ngaps = df[df['sensor_value'].isnull()]\nprint(f\"Missing readings: {len(gaps)}\")\n\n# Fill strategies\ndf['value_ffill'] = df['sensor_value'].fillna(method='ffill')  # Forward fill\ndf['value_interp'] = df['sensor_value'].interpolate(method='time')  # Interpolate"
+     "code": "df['timestamp'] = pd.to_datetime(df['timestamp'])\ndf = df.set_index('timestamp').sort_index()\n\n# Create complete time range\nfull_range = pd.date_range(df.index.min(), df.index.max(), freq='5min')\n\n# Reindex to reveal gaps\ndf = df.reindex(full_range)\n\n# Find gaps\ngaps = df[df['sensor_value'].isnull()]\nprint(f\"Missing readings: {len(gaps)}\")\n\n# Fill strategies\ndf['value_ffill'] = df['sensor_value'].ffill()  # Forward fill\ndf['value_interp'] = df['sensor_value'].interpolate(method='time')  # Interpolate"
     }
    ],
    "kind": ""

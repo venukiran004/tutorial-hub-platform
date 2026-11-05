@@ -227,7 +227,7 @@ EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE account_id = 'a-1';
       rungs: [
         { level: "bad", label: "One index per column",
           why: "The planner can combine them with a bitmap scan, but it must then sort the result to satisfy the `ORDER BY` — and it reads every matching row before discarding all but twenty. Three indexes, three write costs, and the sort remains.",
-          code: `CREATE INDEX ON orders (account_id);
+          lang: "sql", code: `CREATE INDEX ON orders (account_id);
 CREATE INDEX ON orders (status);
 CREATE INDEX ON orders (created_at);
 
@@ -235,13 +235,13 @@ CREATE INDEX ON orders (created_at);
 -- reading thousands of rows to return twenty.` },
         { level: "ok", label: "A composite index on the filters",
           why: "One index scan finds the matching rows directly. The `ORDER BY` still needs a sort, because `created_at` is not in the index — so the whole matching set is read and sorted before the limit applies.",
-          code: `CREATE INDEX ON orders (account_id, status);
+          lang: "sql", code: `CREATE INDEX ON orders (account_id, status);
 
 -- Index Scan, then Sort, then Limit.
 -- Fast when few rows match. Slow for an account with 50,000 orders. ` },
         { level: "best", label: "Filters, then the sort column",
           why: "The index provides the order, so the planner walks it and stops after twenty rows. Nothing is sorted and nothing extra is read — the cost stops depending on how many orders the account has.",
-          code: `CREATE INDEX ON orders (account_id, status, created_at DESC);
+          lang: "sql", code: `CREATE INDEX ON orders (account_id, status, created_at DESC);
 
 -- Index Scan Backward (or forward, given DESC in the index) -> Limit.
 -- 20 rows read. No Sort node at all.
@@ -283,7 +283,7 @@ ANALYZE orders;`},
 
     { t: "h2", n: "04", text: "Fixing the N+1", id: "fixing" },
 
-    {"kind": "trace", "title": "The third pattern works even when the ORM cannot help", "caption": "**Collect the keys, fetch them in one query, index them by key, then attach** — four steps, no eager-loading configuration, and it works across an HTTP boundary or a second data store where `selectinload` cannot reach. Which is why it is the general one: **the first two fixes are the ORM telling the database to do the work, and this one is you doing it.** The measured shape is the same in all three: **1 + N queries become 2**, and the second is a single `IN` over a de-duplicated key list.", "left": "fix", "codeW": 170, "vars": ["queries", "works when"], "steps": [{"code": "selectinload / joinedload", "state": ["2 or 1", "one database, one session"], "tone": "good"}, {"code": "a JOIN written by hand", "state": ["1", "you are writing SQL anyway"], "changed": [0, 1], "tone": "good"}, {"code": "collect keys, fetch, index, attach", "state": ["2", "ALWAYS - including across HTTP"], "changed": [0, 1], "tone": "violet"}, {"code": "all three replace", "state": ["1 + N", "-"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-13_6-04-0"},
+    {"kind": "trace", "title": "The third pattern works even when the ORM cannot help", "caption": "**Collect the keys, fetch them in one query, index them by key, then attach** — four steps, no eager-loading configuration, and it works across an HTTP boundary or a second data store where `selectinload` cannot reach. Which is why it is the general one: **the first two fixes are the ORM telling the database to do the work, and this one is you doing it.** The measured shape is the same in all three: **1 + N queries become 2**, and the second is a single `IN` over a deduplicated key list.", "left": "fix", "codeW": 170, "vars": ["queries", "works when"], "steps": [{"code": "selectinload / joinedload", "state": ["2 or 1", "one database, one session"], "tone": "good"}, {"code": "a JOIN written by hand", "state": ["1", "you are writing SQL anyway"], "changed": [0, 1], "tone": "good"}, {"code": "collect keys, fetch, index, attach", "state": ["2", "ALWAYS - including across HTTP"], "changed": [0, 1], "tone": "violet"}, {"code": "all three replace", "state": ["1 + N", "-"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-13_6-04-0"},
 
 
     { t: "code", lang: "python", title: "the same problem in three frameworks", code: `
@@ -372,7 +372,7 @@ select(Order.id, Order.total, Order.created_at)`},
         { t: "p", text: "This endpoint takes eight seconds for large accounts. You have the code, the query count and an `EXPLAIN` from production." },
         { t: "code", lang: "python", numbered: false, title: "app/api.py", code: `
 @app.get("/accounts/{account_id}/activity")
-def activity(account_id: str, page: int = 1, db: DB):
+def activity(account_id: str, db: DB, page: int = 1):
     offset = (page - 1) * 50
 
     orders = db.scalars(
@@ -504,27 +504,27 @@ Limit  (cost=284913.22..284913.35 rows=50) (actual time=3821.4..3821.5 rows=50 l
 # =========================================================================
 # THE INDEX
 # =========================================================================
---
--- CREATE INDEX CONCURRENTLY orders_account_created_idx
---     ON orders (account_id, created_at DESC, id DESC);
---
--- COLUMN ORDER:
---   account_id     equality predicate -> first. It is also highly
---                  selective: 98k rows out of 8M.
---   created_at DESC  the sort column -> second, so the index SUPPLIES
---                  the order and no Sort node is needed.
---   id DESC        the tiebreak, so the keyset comparison is a clean
---                  composite and rows never repeat across pages.
---
--- DESC in the index is not strictly required -- PostgreSQL can scan a
--- B-tree backwards -- but it matters for the composite: a mixed
--- ASC/DESC sort cannot be served by an all-ASC index.
---
--- CONCURRENTLY, always: a plain CREATE INDEX takes ACCESS EXCLUSIVE
--- and blocks the table for the duration on 8M rows.
---
--- AFTER: Index Scan -> Limit. 50 rows read. No Seq Scan, no Sort, no
--- disk spill. ~2ms.
+#
+# CREATE INDEX CONCURRENTLY orders_account_created_idx
+#     ON orders (account_id, created_at DESC, id DESC);
+#
+# COLUMN ORDER:
+#   account_id     equality predicate -> first. It is also highly
+#                  selective: 98k rows out of 8M.
+#   created_at DESC  the sort column -> second, so the index SUPPLIES
+#                  the order and no Sort node is needed.
+#   id DESC        the tiebreak, so the keyset comparison is a clean
+#                  composite and rows never repeat across pages.
+#
+# DESC in the index is not strictly required -- PostgreSQL can scan a
+# B-tree backwards -- but it matters for the composite: a mixed
+# ASC/DESC sort cannot be served by an all-ASC index.
+#
+# CONCURRENTLY, always: a plain CREATE INDEX takes ACCESS EXCLUSIVE
+# and blocks the table for the duration on 8M rows.
+#
+# AFTER: Index Scan -> Limit. 50 rows read. No Seq Scan, no Sort, no
+# disk spill. ~2ms.
 
 
 # =========================================================================
@@ -757,10 +757,10 @@ def test_the_plan_uses_the_index(db):
       {
         stem: "`EXPLAIN ANALYZE` shows `Seq Scan` with `Rows Removed by Filter: 7901588` returning 50 rows. What does this tell you?",
         options: [
-          "The table needs vacuuming",
-          "No usable index exists for the filter — eight million rows were read and discarded to return fifty",
-          "The statistics are stale",
-          "`work_mem` is too small"
+          "The table needs vacuuming, since dead rows are being scanned and discarded",
+          "No usable index — 8 million rows read to return 50",
+          "The planner's statistics are stale, so it underestimated the matching rows",
+          "`work_mem` is too small, so the filter spilled to disk"
         ],
         answer: 1,
         why: "`Rows Removed by Filter` far exceeding rows returned is the clearest missing-index signal there is. The `BUFFERS` line quantifies the damage — it is not only this query that suffers, because a large sequential scan evicts other queries' pages from the shared buffer cache."
@@ -769,20 +769,20 @@ def test_the_plan_uses_the_index(db):
         stem: "For `WHERE account_id = ? ORDER BY created_at DESC LIMIT 20`, why is `(account_id, created_at DESC)` better than `(account_id)`?",
         options: [
           "It is smaller",
-          "The index supplies the sort order, so the planner reads 20 rows and stops instead of reading every match and sorting it",
           "It allows an index-only scan",
-          "Two-column indexes are always faster"
+          "The index supplies the order, so 20 rows suffice",
+          "Two-column indexes are always faster than one-column ones"
         ],
-        answer: 1,
+        answer: 2,
         why: "With only `account_id` indexed, all 98,000 matching rows are read and sorted before the limit applies — and the sort may spill to disk. The absence of a `Sort` node in the plan is the confirmation that the index matches the `ORDER BY`."
       },
       {
         stem: "You add the right index, but page 200 is still much slower than page 1. Why?",
         options: [
-          "The index is not being used for deep pages",
-          "`OFFSET` requires producing and discarding every skipped row, so the work grows with page number regardless of the access path",
-          "The planner switches to a sequential scan",
-          "Deep pages exceed `work_mem`"
+          "The index is not used for deep pages, because the planner caps index scans at a fixed offset",
+          "`OFFSET` still produces and discards every skipped row, whatever the index",
+          "The planner switches to a sequential scan once the offset passes a threshold",
+          "Deep pages exceed `work_mem`, so the sort spills to disk on every request"
         ],
         answer: 1,
         why: "The index makes each row cheap to produce; it does not remove the need to produce them. Keyset pagination — comparing `(created_at, id)` against the last row seen — is O(limit) at any depth, and it also fixes the correctness bug where a concurrent insert makes a row repeat on the next page."
@@ -791,11 +791,11 @@ def test_the_plan_uses_the_index(db):
         stem: "The planner ignores your index on `status` where 60% of rows are `'active'`. Is this a bug?",
         options: [
           "Yes — force it with a planner hint",
-          "No — an index scan touching most of the table means random heap reads, which are slower than a sequential scan; a partial index on a rare value is the fix",
           "Yes — run `ANALYZE` to correct it",
-          "No — indexes never work on text columns"
+          "No — at 60% a sequential scan is cheaper; use a partial index",
+          "No — B-tree indexes never work on text columns, only on numbers and dates"
         ],
-        answer: 1,
+        answer: 2,
         why: "Low selectivity is the one case where the planner declining your index is the right call. Random I/O costs far more per page than sequential, so reading 60% of the heap in index order loses. `CREATE INDEX ... WHERE status = 'pending'` gives a small index for the query that actually needs one."
       }
     ]

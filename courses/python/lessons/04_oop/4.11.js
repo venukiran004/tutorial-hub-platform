@@ -126,9 +126,14 @@ class Invoice:
 def invoice_total(lines: Sequence[Line]) -> Decimal: ...
 
 # I/O -- each with one owner, each substitutable
-class InvoiceRepository:  def save(self, invoice: Invoice) -> None: ...
-class PdfRenderer:        def render(self, invoice: Invoice) -> bytes: ...
-class InvoiceMailer:      def send(self, to: str, pdf: bytes) -> None: ...`},
+class InvoiceRepository:
+    def save(self, invoice: Invoice) -> None: ...
+
+class PdfRenderer:
+    def render(self, invoice: Invoice) -> bytes: ...
+
+class InvoiceMailer:
+    def send(self, to: str, pdf: bytes) -> None: ...`},
       { t: "p", text: "Note that three of the four became small classes and one became a function. **SRP does not say \"make everything a class\"** — it says separate the reasons to change, and a function is a perfectly good unit of separation." }
     ]},
 
@@ -254,6 +259,22 @@ class StrictCache(Cache):
         "**Do not change side effects, timing or idempotency.** This is the `RetryingHttpClient` case from Lesson 4.7 — the signature is identical and the contract is not."
       ]},
       { t: "p", text: "Only the first two are about types, and only they are partially checkable by mypy. The last two are behavioural, invisible to every tool, and are where Python's violations concentrate — which is why the **docstring is part of the contract**, not documentation of it." }
+    ]},
+
+    { t: "callout", kind: "trap", title: "Subclassing `dict` overrides one path in four", body: [
+      { t: "p", text: "Built-in types are implemented in C, and their methods call each other's C code directly rather than going through your override. **So a `dict` subclass that normalises keys in `__setitem__` keeps its promise for `d[k] = v` and breaks it for the constructor, `update` and `setdefault`.** That is a substitution failure inside your own class: the subclass does not honour the invariant it advertises." },
+      { t: "code", lang: "python", title: "three of four writes skip the override", code: `class LowerDict(dict):
+    def __setitem__(self, key: str, value: object) -> None:
+        super().__setitem__(key.lower(), value)
+
+
+d = LowerDict({"Region": "eu"})
+d["Owner"] = "payments"
+d.update({"Tier": "gold"})
+d.setdefault("Env", "prod")
+print(d)`,
+        out: `{'Region': 'eu', 'owner': 'payments', 'Tier': 'gold', 'Env': 'prod'}` },
+      { t: "p", text: "**Subclass `collections.UserDict` instead.** It is written in Python and routes every write through `__setitem__`, so the same four lines print `{'region': 'eu', 'owner': 'payments', 'tier': 'gold', 'env': 'prod'}`. The same applies to `UserList` and `UserString`." }
     ]},
 
     { t: "h2", n: "05", text: "I — segregation happens naturally", id: "isp" },
@@ -385,7 +406,8 @@ class OrderService:
       solution: {
         lang: "python",
         title: "order_service.py",
-        code: `# ---- the original -------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original -------------------------------------------------------
 
 class OrderProcessor:
     def __init__(self):
@@ -434,7 +456,6 @@ class UrgentOrderProcessor(OrderProcessor):
 
 # ---- the redesign -------------------------------------------------------
 
-from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from decimal import Decimal
@@ -661,45 +682,45 @@ if __name__ == "__main__":
       {
         stem: "Which SOLID principle is hardest to enforce in Python, and why?",
         options: [
-          "Single responsibility — Python encourages large modules",
-          "Liskov substitution — nothing checks it, and duck typing means a wrong substitution often runs successfully and produces wrong behaviour",
-          "Open/closed — Python classes are always open to modification",
-          "Interface segregation — Python has no interface keyword"
+          "Liskov substitution — nothing checks it, and a bad substitute usually runs anyway",
+          "Single responsibility — Python encourages large modules that mix several concerns together",
+          "Open/closed — Python classes are always open to modification, even after they are defined",
+          "Interface segregation — Python has no interface keyword, so interfaces cannot be split up"
         ],
-        answer: 1,
+        answer: 0,
         why: "In a statically typed language a compiler catches signature-level violations. Python has none, and the violations that matter most are behavioural — a subclass raising a new exception type, or changing idempotency — which no tool can detect. The signature is identical, mypy is satisfied, and callers break at runtime. Interface segregation is actually *easier* in Python, because a `Protocol` is declared by the consumer."
       },
       {
         stem: "A tax calculation branches on country, and each branch is one multiplication by a constant. What is the right open/closed fix?",
         options: [
           "An abstract `TaxStrategy` with a subclass per country, injected into the service",
-          "A dict mapping country to rate — the 'strategies' differ only by a number, so they are data, not classes",
-          "A `Protocol` with a registry of strategy classes",
-          "Leave the `if/elif` chain; open/closed does not apply to simple values"
+          "A `Protocol` with a registry of strategy classes, so a new country is added without editing anything",
+          "Leave the `if/elif` chain in place; open/closed does not apply to simple constant values",
+          "A dict mapping country to rate — the 'strategies' differ only by a number, so they are data, not classes"
         ],
-        answer: 1,
+        answer: 3,
         why: "The principle — adding a country must not edit existing logic — is satisfied by the dict, and a class per country would make extension *harder*: a new class, a new file and a registry entry instead of one line. That inverts the principle it was meant to serve. A strategy hierarchy becomes correct once each country carries real behaviour — thresholds, exemptions, a service lookup — because then it absorbs genuine variation."
       },
       {
         stem: "A `StrictCache` subclass raises `KeyError` on a miss where the base returns `None`. What is wrong, and what catches it?",
         options: [
+          "It breaks Liskov substitution with an exception callers never expected, and no tool notices",
           "Nothing — raising is more explicit than returning `None`",
-          "It violates Liskov substitution by introducing an exception callers were not told about, and no tool catches it: the signature satisfies mypy and every structural check",
           "It breaks the interface segregation principle",
           "mypy catches it because the return types differ"
         ],
-        answer: 1,
-        why: "Every caller written against the base handles `None` and none handles `KeyError`, so substituting the subclass breaks them at runtime. mypy would flag the narrowed return type in this specific case, but the general class of violation — a new exception type, changed idempotency, different timing — is invisible to every tool. That is why behavioural contracts belong in the docstring and why substitutability must be checked by reasoning."
+        answer: 0,
+        why: "Every caller written against the base handles `None` and none handles `KeyError`, so substituting the subclass breaks them at runtime. Even if the subclass narrows its return type to drop `None`, mypy accepts that, because a narrower return type is a legal override. The whole class of violation — a new exception type, changed idempotency, different timing — is invisible to every tool. That is why behavioural contracts belong in the docstring and why substitutability must be checked by reasoning."
       },
       {
         stem: "How is dependency inversion normally implemented in Python?",
         options: [
-          "A DI container that wires the object graph at startup",
-          "Constructor parameters typed with a `Protocol`, with concrete types chosen in one composition root such as a `from_settings` classmethod",
-          "An abstract base class per dependency, with implementations registered by name",
-          "Module-level singletons imported where needed"
+          "A dependency injection container that wires the whole object graph from configuration at startup",
+          "An abstract base class per dependency, with implementations registered by name and looked up at runtime",
+          "Constructor parameters typed with a `Protocol`, wired up in one composition root",
+          "Module-level singletons, imported wherever they are needed and replaced with patches in tests"
         ],
-        answer: 1,
+        answer: 2,
         why: "Injection is just a parameter — no container or framework is needed. Typing it with a `Protocol` gives mypy checking without forcing implementations to inherit anything, which an ABC would. Concrete types are chosen once, at a composition root. A container is warranted only for very large graphs or where a framework supplies one; module-level singletons reintroduce the global-state problems from Lesson 3.3."
       }
     ]
@@ -735,7 +756,7 @@ if __name__ == "__main__":
         q: "How would you catch a Liskov violation in a Python codebase?",
         strong: "Run the base class's test suite against every subclass. If a subclass is genuinely substitutable, tests written against the base must pass unchanged — and a violation shows up as a failure rather than as a code review opinion.",
         answer: [
-          { t: "p", text: "This is the technique that turns an abstract principle into something executable, and it is worth describing concretely: a parametrised test module taking the class under test as a fixture, run once per implementation." },
+          { t: "p", text: "This is the technique that turns an abstract principle into something executable, and it is worth describing concretely: a parameterised test module taking the class under test as a fixture, run once per implementation." },
           { t: "p", text: "It is the standard-library idea behind `collections.abc` conformance tests, and the same shape as the compliance suites database drivers ship — so it is an established practice rather than an invention." },
           { t: "p", text: "The honest limit is worth stating: this catches what the tests cover. Behavioural contracts the base's tests do not exercise — timing, idempotency, side-effect ordering — stay invisible, which is why they belong in the docstring and why substitutability is ultimately a reasoning obligation, not a tooling one." }
         ]

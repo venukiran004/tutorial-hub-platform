@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c2.4",
  "lede": "**30 snippets to read**, on string methods and identity. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on string methods and identity before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c2.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 166–195.** What this set asks you to predict, counted from its own problems — 5 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["strings", "regex", "lists"], "cells": [[{"text": "3", "tone": "accent"}, "str.split"], [{"text": "1", "tone": "good"}, "A regular expression"], [{"text": "1", "tone": "violet"}, "A filtered list comprehension"]], "t": "diagram", "id": "dg-c2_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,12 +37,6 @@ EC.receiveLesson({
    "q": "Program 166: What is the output of `s.ljust(10) + \"|\"`?",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"hello\"\nprint(s.ljust(10) + \"|\")\nprint(f\"{s:<10}|\")\nprint(f\"{s:>10}|\")\nprint(f\"{s:^10}|\")",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:**"
     },
@@ -56,7 +50,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `<` left-aligns, `>` right-aligns, `^` centers within the specified width."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"hello\"\nprint(s.ljust(10) + \"|\")\nprint(f\"{s:<10}|\")\nprint(f\"{s:>10}|\")\nprint(f\"{s:^10}|\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -64,16 +67,19 @@ EC.receiveLesson({
    "q": "Program 167: What is the output of `b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `b'hello'`, `[104, 101, 108, 108, 111]` **Explanation:** Encoding converts each character to its ASCII byte value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello\"\nb = s.encode('ascii')\nprint(b)\nprint(list(b))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `b'hello'`, `[104, 101, 108, 108, 111]` **Explanation:** Encoding converts each character to its ASCII byte value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -81,16 +87,19 @@ EC.receiveLesson({
    "q": "Program 168: What is the output of `s1 == s2`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `4 5`, `True` **Explanation:** `é` can be represented as one character or as `e` + combining accent. Normalization makes them comparable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s1 = \"café\"\ns2 = \"cafe\\u0301\"\nprint(s1 == s2)\nprint(len(s1), len(s2))\n\nimport unicodedata\ns1_norm = unicodedata.normalize('NFC', s1)\ns2_norm = unicodedata.normalize('NFC', s2)\nprint(s1_norm == s2_norm)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `4 5`, `True` **Explanation:** `é` can be represented as one character or as `e` + combining accent. Normalization makes them comparable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -98,16 +107,19 @@ EC.receiveLesson({
    "q": "Program 169: str.split — output of `s = \"Hello\\x00World\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `HelloWorld` (may display differently), `11`, `['Hello', 'World']` **Explanation:** `\\x00` is the null character. It's a valid character in Python strings but may not display visibly."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello\\x00World\"\nprint(s)\nprint(len(s))\nprint(s.split('\\x00'))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `HelloWorld` (may display differently), `11`, `['Hello', 'World']` **Explanation:** `\\x00` is the null character. It's a valid character in Python strings but may not display visibly."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -115,16 +127,19 @@ EC.receiveLesson({
    "q": "Program 170: A sequence built with the * operator — output of `len(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3000`, `abc` **Explanation:** String repetition creates a long string. Slicing is efficient."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"abc\" * 1000\nprint(len(s))\nprint(s[:3])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3000`, `abc` **Explanation:** String repetition creates a long string. Slicing is efficient."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -132,16 +147,19 @@ EC.receiveLesson({
    "q": "Program 171: Identity (is) versus equality (==) — output of `a == b` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` (usually, though interning may apply) **Explanation:** `==` checks value equality. `is` checks identity. Dynamically constructed strings are usually not interned."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = \"hello\"\nb = \"\".join(['h', 'e', 'l', 'l', 'o'])\nprint(a == b)\nprint(a is b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` (usually, though interning may apply) **Explanation:** `==` checks value equality. `is` checks identity. Dynamically constructed strings are usually not interned."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -149,16 +167,19 @@ EC.receiveLesson({
    "q": "Program 172: A regular expression — output of `words = re.findall(r'[a-zA-Z]+', s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['123', '456']`, `['Hello', 'World']` **Explanation:** `\\d+` matches digit sequences. `[a-zA-Z]+` matches word sequences."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import re\ns = \"Hello 123 World 456\"\nnumbers = re.findall(r'\\d+', s)\nprint(numbers)\nwords = re.findall(r'[a-zA-Z]+', s)\nprint(words)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['123', '456']`, `['Hello', 'World']` **Explanation:** `\\d+` matches digit sequences. `[a-zA-Z]+` matches word sequences."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -166,16 +187,19 @@ EC.receiveLesson({
    "q": "Program 173: What is the output of `s.isidentifier()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False`, `True` **Explanation:** `isidentifier()` checks if the string is a valid Python identifier. Note: it doesn't check for reserved keywords."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello\"\nprint(s.isidentifier())\nprint(\"_private\".isidentifier())\nprint(\"2fast\".isidentifier())\nprint(\"class\".isidentifier())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False`, `True` **Explanation:** `isidentifier()` checks if the string is a valid Python identifier. Note: it doesn't check for reserved keywords."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -183,28 +207,25 @@ EC.receiveLesson({
    "q": "Program 174: What is the output of `iskeyword(\"class\")`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` **Explanation:** `iskeyword()` checks if a string is a Python keyword. Use with `isidentifier()` for complete validation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from keyword import iskeyword\nprint(iskeyword(\"class\"))\nprint(iskeyword(\"hello\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` **Explanation:** `iskeyword()` checks if a string is a Python keyword. Use with `isidentifier()` for complete validation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "175",
    "q": "Program 175: enumerate() — output of `f\"{i}: {line}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"line1\\nline2\\nline3\"\nfor i, line in enumerate(s.splitlines(), 1):\n    print(f\"{i}: {line}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -219,7 +240,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `splitlines()` splits on line boundaries. `enumerate()` with `start=1` provides line numbers."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"line1\\nline2\\nline3\"\nfor i, line in enumerate(s.splitlines(), 1):\n    print(f\"{i}: {line}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -227,28 +257,25 @@ EC.receiveLesson({
    "q": "Program 176: Stripping whitespace — output of `len(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3`, `True`, `True` **Explanation:** A string of spaces has length 3 and is truthy. Stripping removes all whitespace leaving an empty string."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"   \"\nprint(len(s))\nprint(bool(s))\nprint(s.strip() == \"\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3`, `True`, `True` **Explanation:** A string of spaces has length 3 and is truthy. Stripping removes all whitespace leaving an empty string."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "177",
    "q": "Program 177: What is the output of `textwrap.fill(s, width=30)`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import textwrap\ns = \"This is a very long string that needs to be wrapped to fit within a certain width\"\nprint(textwrap.fill(s, width=30))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -263,19 +290,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `textwrap.fill()` wraps text to the specified width."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import textwrap\ns = \"This is a very long string that needs to be wrapped to fit within a certain width\"\nprint(textwrap.fill(s, width=30))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "178",
    "q": "Program 178: What is the output of `f\"{s!r}\"`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"Hello\"\nprint(f\"{s!r}\")\nprint(f\"{s!s}\")\nprint(f\"{s!a}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -290,7 +320,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `!r` uses `repr()`, `!s` uses `str()`, `!a` uses `ascii()`. For ASCII strings, `!r` and `!a` are similar."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"Hello\"\nprint(f\"{s!r}\")\nprint(f\"{s!s}\")\nprint(f\"{s!a}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -298,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 179: What is the output of `\"A\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `A` **Explanation:** First matching condition is executed. `elif` is not checked after `if` matches."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 5\nif x > 3:\n    print(\"A\")\nelif x > 4:\n    print(\"B\")\nelse:\n    print(\"C\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `A` **Explanation:** First matching condition is executed. `elif` is not checked after `if` matches."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -315,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 180: What is the output of `\"truthy\"`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `falsy` **Explanation:** `0` is falsy in Python. Non-zero numbers are truthy."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 0\nif x:\n    print(\"truthy\")\nelse:\n    print(\"falsy\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `falsy` **Explanation:** `0` is falsy in Python. Non-zero numbers are truthy."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -332,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 181: range() — output of `i, end=' '` — equality, range",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0 1 2` **Explanation:** `break` exits the loop when `i == 3`. Value 3 is never printed."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(5):\n    if i == 3:\n        break\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0 1 2` **Explanation:** `break` exits the loop when `i == 3`. Value 3 is never printed."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -349,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 182: range() — output of `i, end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0 1 2 4` **Explanation:** `continue` skips the current iteration. `3` is skipped but loop continues."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(5):\n    if i == 3:\n        continue\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0 1 2 4` **Explanation:** `continue` skips the current iteration. `3` is skipped but loop continues."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -366,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 183: range() — output of `i, end=' '` — range",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0 1 2 done` **Explanation:** `else` clause of `for` executes when loop completes normally (no `break`)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(3):\n    print(i, end=' ')\nelse:\n    print(\"done\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0 1 2 done` **Explanation:** `else` clause of `for` executes when loop completes normally (no `break`)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -383,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 184: range() — output of `\"completed\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `after loop` **Explanation:** `else` clause does NOT execute when loop exits via `break`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(5):\n    if i == 3:\n        break\nelse:\n    print(\"completed\")\nprint(\"after loop\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `after loop` **Explanation:** `else` clause does NOT execute when loop exits via `break`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -400,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 185: What is the output of `result`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `even` **Explanation:** Ternary expression: `value_if_true if condition else value_if_false`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\nresult = \"even\" if x % 2 == 0 else \"odd\"\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `even` **Explanation:** Ternary expression: `value_if_true if condition else value_if_false`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -417,28 +477,25 @@ EC.receiveLesson({
    "q": "Program 186: A while loop — output of `i, end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0 1 2 3 4 done` **Explanation:** `while...else` — `else` executes when condition becomes `False` (no `break`)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "i = 0\nwhile i < 5:\n    print(i, end=' ')\n    i += 1\nelse:\n    print(\"done\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0 1 2 3 4 done` **Explanation:** `while...else` — `else` executes when condition becomes `False` (no `break`)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "187",
    "q": "Program 187: range() — output of `f\"({i},{j})\", end=' '`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "for i in range(3):\n    for j in range(3):\n        if i == j == 1:\n            break\n        print(f\"({i},{j})\", end=' ')\n    print()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -453,7 +510,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `break` only exits the inner loop. Outer loop continues."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "for i in range(3):\n    for j in range(3):\n        if i == j == 1:\n            break\n        print(f\"({i},{j})\", end=' ')\n    print()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -461,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 188: What is the output of `\"one\"`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `five` (Python 3.10+) **Explanation:** Structural pattern matching. `_` is the wildcard/default case."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 5\nmatch x:\n    case 1:\n        print(\"one\")\n    case 5:\n        print(\"five\")\n    case _:\n        print(\"other\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `five` (Python 3.10+) **Explanation:** Structural pattern matching. `_` is the wildcard/default case."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -478,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 189: A filtered list comprehension — output of `result = [x for x in nums if x > 2]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[3, 4, 5]` **Explanation:** List comprehension with filter condition."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = [x for x in nums if x > 2]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[3, 4, 5]` **Explanation:** List comprehension with filter condition."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -495,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 190: Identity (is) versus equality (==) — output of `\"None!\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `None!` **Explanation:** Use `is None` (identity check) rather than `== None` for None comparisons."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = None\nif x is None:\n    print(\"None!\")\nif x is not None:\n    print(\"Not None!\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `None!` **Explanation:** Use `is None` (identity check) rather than `== None` for None comparisons."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -512,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 191: What is the output of `a > 3 and b > 5`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Logical operators: `and` (both true), `or` (either true), `not` (negation)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = 5\nb = 10\nprint(a > 3 and b > 5)\nprint(a > 3 or b > 20)\nprint(not (a > 3))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Logical operators: `and` (both true), `or` (either true), `not` (negation)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -529,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 192: What is the output of `0 and 5`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0`, `5`, `5`, `3` **Explanation:** `and` returns first falsy or last value. `or` returns first truthy or last value. Short-circuit evaluation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(0 and 5)\nprint(0 or 5)\nprint(3 and 5)\nprint(3 or 5)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0`, `5`, `5`, `3` **Explanation:** `and` returns first falsy or last value. `or` returns first truthy or last value. Short-circuit evaluation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -546,16 +627,19 @@ EC.receiveLesson({
    "q": "Program 193: What is the output of `1 < 2 < 3`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Python supports chained comparisons: `1 < 2 < 3` means `1 < 2 and 2 < 3`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "print(1 < 2 < 3)\nprint(1 < 2 > 0)\nprint(1 < 2 < 0)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Python supports chained comparisons: `1 < 2 < 3` means `1 < 2 and 2 < 3`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -563,16 +647,19 @@ EC.receiveLesson({
    "q": "Program 194: range() — output of `i, end=' '` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 3 5 7` **Explanation:** `continue` skips evens. `break` stops when `i > 7`. So odd numbers 1-7 are printed."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "for i in range(10):\n    if i % 2 == 0:\n        continue\n    if i > 7:\n        break\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 3 5 7` **Explanation:** `continue` skips evens. `break` stops when `i > 7`. So odd numbers 1-7 are printed."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -580,21 +667,24 @@ EC.receiveLesson({
    "q": "Program 195: Identity (is) versus equality (==) — output of `x == y` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` **Explanation:** `==` checks equality (values). `is` checks identity (same object)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = [1, 2, 3]\ny = [1, 2, 3]\nprint(x == y)\nprint(x is y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` **Explanation:** `==` checks equality (values). `is` checks identity (same object)."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

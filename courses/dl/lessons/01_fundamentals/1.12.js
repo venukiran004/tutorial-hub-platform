@@ -50,7 +50,7 @@ EC.receiveLesson({
 
     { t: "p", text: "An untrained classifier has no preference, so it spreads probability evenly and the loss is the entropy of a uniform guess. That gives you a number to check against **before a single step**, and it is the cheapest bug detector in deep learning." },
 
-    { t: "code", lang: "python", title: "d112.py — measured against the formula",
+    { t: "code", lang: "python", title: "measured against the formula",
       code: `for k in (2, 10, 1000):
     logits = torch.zeros(4096, k)              # an untrained head: no preference
     target = torch.randint(0, k, (4096,))

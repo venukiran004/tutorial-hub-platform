@@ -344,7 +344,7 @@ b = fit(PAIRS, len(true_r), init=np.full(len(true_r), 100.0))
 D = lambda r: r[:, None] - r[None, :]
 print("corr(true, fitted)      : %.4f" % np.corrcoef(true_r, a)[0, 1])
 print("spread true / fitted    : %.3f / %.3f"
-      % (true_r.ptp(), a.ptp()))
+      % (np.ptp(true_r), np.ptp(a)))
 print("max |diff change|       : %.6f" % np.abs(D(a) - D(b)).max())
 
 acc = lambda r: np.mean([r[w] > r[l] for w, l in PAIRS])

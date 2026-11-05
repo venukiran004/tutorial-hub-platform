@@ -163,7 +163,7 @@ gunicorn app.main:app \\
     },
 
     { t: "callout", kind: "trap", title: "Preload saves memory and breaks things", body: [
-      { t: "code", lang: "python", title: "what --preload actually does", numbered: false, code: `
+      { t: "code", lang: "bash", title: "what --preload actually does", numbered: false, code: `
 gunicorn --preload --workers 8 app:app
 
 # The app is imported ONCE in the master, then fork() copies it.
@@ -830,45 +830,45 @@ CMD ["gunicorn", "app.main:app", \\
       {
         stem: "A container limited to 2 CPUs runs `(2 * multiprocessing.cpu_count()) + 1` workers and is OOM-killed. Why?",
         options: [
-          "The formula is correct but memory limits are too low",
-          "`cpu_count()` reports the host's core count, not the cgroup limit — so on an 8-core node it asks for 17 workers in a 2-CPU container",
-          "Gunicorn ignores the workers flag",
-          "Each worker reserves a full core of memory"
+          "`cpu_count()` sees the host's 8 cores, not the 2-CPU limit, so 17 workers start",
+          "The formula is correct, but the container's memory limit is too low for the number of workers it produces",
+          "Gunicorn ignores the workers flag inside containers and starts one worker per detected core instead",
+          "Each gunicorn worker reserves a full core's worth of memory up front, whether or not it uses it"
         ],
-        answer: 1,
+        answer: 0,
         why: "The formula also assumes a synchronous CPU-bound workload with no memory constraint. Sizing must come from measured memory per worker, the actual CPU limit, and — usually the binding constraint — the total connection demand against the database's `max_connections`."
       },
       {
         stem: "17 workers × pool_size 20 + overflow 10 × 6 pods, against `max_connections = 100`. What happens?",
         options: [
           "SQLAlchemy caps the total automatically",
-          "Up to 3,060 connections are demanded, so under load pools fill and Postgres refuses connections — including for migrations and operators",
           "Connections are shared between workers",
-          "The pool silently reduces its size"
+          "The pool silently reduces its size",
+          "Up to 3,060 connections are demanded, so under load Postgres refuses them"
         ],
-        answer: 1,
+        answer: 3,
         why: "It works while traffic is low enough that pools stay mostly empty, which is why it survives testing. Adding workers makes it worse; the correct responses are smaller pools, fewer workers, and PgBouncer in transaction mode if genuine concurrency is needed."
       },
       {
         stem: "`async def report(): data = requests.get(url).json()`. What are the two problems?",
         options: [
-          "It needs a try/except, and the URL should be configurable",
-          "The blocking call runs on the event loop so the worker serves nothing else, and with no timeout it can hold that worker indefinitely",
-          "`requests` cannot parse JSON asynchronously",
-          "The handler should return a Response object"
+          "It needs a `try/except` around the request, and the URL should come from configuration",
+          "`requests` cannot parse JSON inside an async function, so `.json()` returns a coroutine",
+          "It blocks the event loop, and with no timeout it can block it indefinitely",
+          "The handler should return a `Response` object rather than the parsed data"
         ],
-        answer: 1,
+        answer: 2,
         why: "FastAPI trusts the `async def` declaration and runs the handler on the loop, so one slow call stalls every other request on that worker including the health probe. A shared `httpx.AsyncClient` with explicit connect and read timeouts fixes both."
       },
       {
         stem: "Why must gunicorn's `--keep-alive` exceed the load balancer's idle timeout?",
         options: [
-          "To reduce TLS handshakes",
           "Otherwise the server closes an idle connection the balancer is about to reuse, and the balancer reports a 502",
-          "Because keep-alive controls the graceful drain",
-          "To allow WebSocket upgrades"
+          "To reduce TLS handshakes between the balancer and the server, which cost CPU on every new connection",
+          "Because `--keep-alive` also controls how long gunicorn waits to drain requests during a graceful shutdown",
+          "To allow WebSocket upgrades, which need the underlying connection to stay open after the response"
         ],
-        answer: 1,
+        answer: 0,
         why: "The race is between the two sides deciding a connection is idle. If the server closes first, the balancer's next request lands on a socket that is already closing — an intermittent 502 that correlates with traffic troughs, when connections sit idle long enough to hit the boundary."
       }
     ]

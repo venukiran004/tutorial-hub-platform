@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c14.2",
  "lede": "**29 programs to write**, on file I/O and exception chaining. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on file I/O and exception chaining without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c14.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1631–1659.** What this set actually drills, counted from its own problems — 24 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["files and paths", "exceptions", "decorators", "databases"], "cells": [[{"text": "17", "tone": "accent"}, "Read File Line by Line"], [{"text": "5", "tone": "good"}, "Catch a Specific Exception, No"], [{"text": "1", "tone": "violet"}, "Memory"], [{"text": "1", "tone": "teal"}, "SQLite Database Operations"]], "t": "diagram", "id": "dg-c14_2-top-0"},
   {
    "t": "viz",
    "title": "The order of try, except, else and finally",
@@ -147,7 +147,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import mmap\nimport os\n\n# Create file\nwith open(\"mmap_test.txt\", \"wb\") as f:\n    f.write(b\"Hello, Memory Mapped File!\")\n\n# Read with mmap\nwith open(\"mmap_test.txt\", \"r+b\") as f:\n    mm = mmap.mmap(f.fileno(), 0)\n    print(mm[:5].decode())  # Output: Hello\n    \n    # Search\n    pos = mm.find(b\"Mapped\")\n    print(f\"'Mapped' found at position: {pos}\")  # Output: 15\n    \n    # Modify in place\n    mm[0:5] = b\"HELLO\"\n    mm.close()\n\nwith open(\"mmap_test.txt\", \"r\") as f:\n    print(f.read())  # Output: HELLO, Memory Mapped File!",
+     "code": "import mmap\nimport os\n\n# Create file\nwith open(\"mmap_test.txt\", \"wb\") as f:\n    f.write(b\"Hello, Memory Mapped File!\")\n\n# Read with mmap\nwith open(\"mmap_test.txt\", \"r+b\") as f:\n    mm = mmap.mmap(f.fileno(), 0)\n    print(mm[:5].decode())  # Output: Hello\n    \n    # Search\n    pos = mm.find(b\"Mapped\")\n    print(f\"'Mapped' found at position: {pos}\")  # Output: 14\n    \n    # Modify in place\n    mm[0:5] = b\"HELLO\"\n    mm.close()\n\nwith open(\"mmap_test.txt\", \"r\") as f:\n    print(f.read())  # Output: HELLO, Memory Mapped File!",
      "numbered": false
     }
    ]

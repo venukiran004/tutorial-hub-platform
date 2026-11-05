@@ -2,7 +2,7 @@
    LESSON 6.2 — Self-Attention on Real Numbers
    Both versions are recomputed: with identity projections "sat" attends to
    itself at 0.510; with genuine W_Q, W_K it attends to "cat" at 0.5149
-   (scratchpad/nlp/n61.py).
+   (n61.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.2",

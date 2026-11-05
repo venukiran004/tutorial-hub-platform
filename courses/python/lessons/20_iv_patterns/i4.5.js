@@ -222,7 +222,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** CQRS optimizes reads and writes independently; Event Sourcing gives a full audit trail and time-travel. Both introduce eventual consistency between write and read."
+     "text": "**Key takeaway:** CQRS optimises reads and writes independently; Event Sourcing gives a full audit trail and time-travel. Both introduce eventual consistency between write and read."
     }
    ]
   },
@@ -253,7 +253,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** It's the Factory/registry idea applied to extensibility — the core fires hooks; third parties add behavior without editing the core (Open/Closed)."
+     "text": "**Key takeaway:** It's the Factory/registry idea applied to extensibility — the core fires hooks; third parties add behaviour without editing the core (Open/Closed)."
     }
    ]
   },
@@ -348,9 +348,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Closed**calls flow normally; failures are counted.",
-      "**Open**after too many failures it \"trips\" — calls fail fast immediately (no network call) for a cooldown period.",
-      "**Half-open**after cooldown it lets a few trial calls through; success closes the circuit, failure re-opens it."
+      "**Closed:** calls flow normally; failures are counted.",
+      "**Open:** after too many failures it \"trips\" — calls fail fast immediately (no network call) for a cooldown period.",
+      "**Half-open:** after cooldown it lets a few trial calls through; success closes the circuit, failure re-opens it."
      ]
     },
     {

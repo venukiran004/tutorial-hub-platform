@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.4 — Structured Output
    The response_schema, the mime type, the parsed dict in state and the
-   generated JSON schema are executed output from scratchpad/adk/c3.py on
+   generated JSON schema are executed output from c3.py on
    google-adk 2.9.2. The output_schema docstring is quoted from the field.
    ========================================================================= */
 EC.receiveLesson({
@@ -29,7 +29,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "c3.py — a parsing agent",
+    { t: "code", lang: "python", title: "a parsing agent",
       code: `from pydantic import BaseModel, Field
 
 class Invoice(BaseModel):

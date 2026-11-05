@@ -126,6 +126,7 @@
         if (!b || typeof b !== "object") return;
         fn(b);
         if (b.rungs) b.rungs.forEach(function (r) { fn({ t: "code" }); });
+        walk(b.prompt, fn);
         walk(b.body, fn);
         walk(b.blocks, fn);
         if (Array.isArray(b.items)) b.items.forEach(function (i) { if (i && i.blocks) walk(i.blocks, fn); });

@@ -2,7 +2,7 @@
    LESSON 3.5 — Production NLP Pipelines
    Latency percentiles, batching, ragged padding, dynamic quantisation,
    caching and train-serve skew are all measured on distilbert
-   (scratchpad/nlp/n35.py).
+   (n35.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.5",
@@ -109,7 +109,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n35.py — dynamic quantisation", code:
+    { t: "code", lang: "python", title: "dynamic quantisation", code:
 "import torch\n\nquantized = torch.quantization.quantize_dynamic(\n    model, {torch.nn.Linear}, dtype=torch.qint8)\nquantized.eval()",
       caption: "Dynamic quantisation stores Linear weights as int8 and quantises activations on the fly. One line, no calibration data, CPU only." },
 

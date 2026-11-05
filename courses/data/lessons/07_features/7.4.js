@@ -104,7 +104,7 @@ def score(model, a, b):
     return round(accuracy_score(yte, model.fit(a, ytr).predict(b)), 3)
 
 # KNN -- distance-based. Raw: every distance is income.
-score(KNeighborsClassifier(15), Xtr, Xte)                 # 0.71
+score(KNeighborsClassifier(15), Xtr, Xte)                 # 0.66
 score(KNeighborsClassifier(15), Xtr_s, Xte_s)             # 0.84
 #
 # On raw data, age's contribution to the distance is ~50 out of a
@@ -114,8 +114,8 @@ score(KNeighborsClassifier(15), Xtr_s, Xte_s)             # 0.84
 
 # LOGISTIC REGRESSION with L2 penalty -- scale-sensitive through
 # the REGULARISER and the optimiser.
-score(LogisticRegression(C=1.0, max_iter=2000), Xtr, Xte)       # 0.79
-score(LogisticRegression(C=1.0, max_iter=2000), Xtr_s, Xte_s)   # 0.84
+score(LogisticRegression(C=1.0, max_iter=2000), Xtr, Xte)       # 0.85
+score(LogisticRegression(C=1.0, max_iter=2000), Xtr_s, Xte_s)   # 0.85
 #
 # Unregularised OLS is scale-invariant in its PREDICTIONS (the
 # coefficient just rescales). But: (1) the L2 penalty shrinks all
@@ -176,7 +176,7 @@ from sklearn.preprocessing import (StandardScaler, MinMaxScaler, RobustScaler,
                                    MaxAbsScaler, QuantileTransformer, PowerTransformer)
 
 x = np.append(rng.lognormal(3, 0.5, 999), 5000.0).reshape(-1, 1)     # one huge value
-np.percentile(x, [50, 99, 100])                                       # [20, 65, 5000]
+np.percentile(x, [50, 99, 100])                                       # [20, 57 5000]
 
 def describe(name, xt):
     v = xt.ravel()
@@ -184,7 +184,7 @@ def describe(name, xt):
           f"max {v.max():8.2f}  outlier-z {v[-1]:8.2f}")
 
 describe("standard", StandardScaler().fit_transform(x))
-# standard     median  -0.026  p99   0.259  max    31.42  outlier-z  31.42
+# standard     median  -0.048  p99   0.187  max    31.53  outlier-z    31.53
 #
 # Mean and sigma are inflated by the 5,000 (sigma ~160 instead of
 # ~11). The bulk of the data -- median 20, p99 65 -- lands in
@@ -193,7 +193,7 @@ describe("standard", StandardScaler().fit_transform(x))
 # else has been squashed.
 
 describe("minmax", MinMaxScaler().fit_transform(x))
-# minmax       median   0.003  p99   0.012  max     1.00  outlier-z     1.00
+# minmax       median   0.003  p99   0.011  max     1.00  outlier-z     1.00
 #
 # WORSE: 99% of the data is in [0, 0.012]. The outlier defines the
 # range and everything real lives in the bottom 1% of it. For a
@@ -201,7 +201,7 @@ describe("minmax", MinMaxScaler().fit_transform(x))
 # effectively zero for every normal row.
 
 describe("robust", RobustScaler().fit_transform(x))
-# robust       median   0.000  p99   3.170  max   350.00  outlier-z   350.00
+# robust       median   0.000  p99   2.758  max   369.76  outlier-z   369.76
 #
 # Median 0, IQR 1. The bulk is spread across a sensible range --
 # p99 at 3.2 IQRs -- and the outlier is at 350. It is STILL an
@@ -217,7 +217,7 @@ describe("maxabs", MaxAbsScaler().fit_transform(x))
 # mean) makes it dense; max-abs does not. Same outlier weakness.
 
 describe("quantile-n", QuantileTransformer(output_distribution="normal", random_state=0).fit_transform(x))
-# quantile-n   median   0.000  p99   2.33  max     5.20  outlier-z     5.20
+# quantile-n   median  -0.000  p99   2.326  max     5.20  outlier-z     5.20
 #
 # Rank-based: every value becomes its quantile, mapped to a normal.
 # The outlier is at 5.2 because it is the top rank, not because it
@@ -228,7 +228,7 @@ describe("quantile-n", QuantileTransformer(output_distribution="normal", random_
 # information.
 
 describe("power (YJ)", PowerTransformer(method="yeo-johnson").fit_transform(x))
-# power (YJ)   median  -0.02   p99   2.4   max     3.9
+# power (YJ)   median   0.02   p99   1.9   max     6.3
 #
 # A parametric transform toward normality (see 7.5). Keeps the
 # shape's ORDER and smooths its skew; the outlier compresses to 3.9

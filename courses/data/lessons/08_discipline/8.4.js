@@ -123,11 +123,11 @@ print(y.mean().round(3))                        # 0.055  -- 33 positives in 600 
 
 for seed in range(4):
     _, X_te, _, y_te = train_test_split(X, y, test_size=0.2, random_state=seed)
-    print(int(y_te.sum()), end=" ")             # 3 9 5 11   <- the test set has between 3 and 11 positives
+    print(int(y_te.sum()), end=" ")             # 6 11 8 7   <- the test set has between 6 and 11 positives
 print()
 for seed in range(4):
     _, X_te, _, y_te = train_test_split(X, y, test_size=0.2, random_state=seed, stratify=y)
-    print(int(y_te.sum()), end=" ")             # 7 7 6 7
+    print(int(y_te.sum()), end=" ")             # 7 7 7 7
 print()
 
 # one split is one draw: the same model, eight stratified holdouts
@@ -136,9 +136,9 @@ for seed in range(8):
     X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=seed, stratify=y)
     m = LogisticRegression(max_iter=1000).fit(X_tr, y_tr)
     scores.append(roc_auc_score(y_te, m.predict_proba(X_te)[:, 1]))
-print(np.round(scores, 2))          # [0.81 0.9  0.74 0.87 0.79 0.93 0.83 0.77]
-# with seven positives in the test set, the AUC moves by 0.19 between seeds. One holdout is a rumour.`,
-      caption: "**Same data, same model, eight seeds: AUC from 0.74 to 0.93.** The stratification fixed the class count; nothing fixes the fact that seven positives cannot pin down a rank statistic. Report the spread, or use every row through cross-validation."
+print(np.round(scores, 2))          # [0.8  0.66 0.38 0.47 0.85 0.44 0.55 0.61]
+# with seven positives in the test set, the AUC moves by 0.47 between seeds. One holdout is a rumour.`,
+      caption: "**Same data, same model, eight seeds: AUC from 0.38 to 0.85.** The stratification fixed the class count; nothing fixes the fact that seven positives cannot pin down a rank statistic. Report the spread, or use every row through cross-validation."
     },
 
     { t: "table",
@@ -182,14 +182,14 @@ fp = pd.DataFrame({"age": rng.integers(18, 80, 300), "region": rng.integers(0, 4
 Xg = pd.concat([pd.DataFrame(Z, columns=list("abcde")), fp], axis=1)
 
 rf = RandomForestClassifier(300, random_state=0, n_jobs=-1)
-print(cross_val_score(rf, Xg, yg, cv=KFold(5, shuffle=True, random_state=0), scoring="roc_auc").mean().round(3))   # 0.83
-print(cross_val_score(rf, Xg, yg, cv=GroupKFold(5), groups=cust, scoring="roc_auc").mean().round(3))                # 0.74
+print(cross_val_score(rf, Xg, yg, cv=KFold(5, shuffle=True, random_state=0), scoring="roc_auc").mean().round(3))   # 0.71
+print(cross_val_score(rf, Xg, yg, cv=GroupKFold(5), groups=cust, scoring="roc_auc").mean().round(3))                # 0.67
 
 # the random split answered: how well do we predict for customers we have already seen?
 # the group split answered:  how well do we predict for a customer we have never seen?
 # if the deployment scores existing customers, the random number is the right one --
 # provided each customer's rows are split by time, not shuffled (next section).`,
-      caption: "**0.83 shuffled, 0.74 by customer.** The forest read the fingerprint columns, learnt each customer's latent effect, and was marked correct on that customer's other rows. Neither number is wrong; they answer different questions, and the deployment decides which was asked."
+      caption: "**0.71 shuffled, 0.67 by customer.** The forest read the fingerprint columns, learnt each customer's latent effect, and was marked correct on that customer's other rows. Neither number is wrong; they answer different questions, and the deployment decides which was asked."
     },
 
     { t: "callout", kind: "tradeoff", title: "Group split or not is a deployment question", body: [
@@ -222,13 +222,13 @@ Xt = rng.normal(0, 1, (n, 4))
 beta = 1.0 - 1.5 * t / n
 yt = (beta * Xt[:, 0] + 0.6 * Xt[:, 1] + rng.logistic(0, 1, n) > 0).astype(int)
 lr = LogisticRegression()
-print(cross_val_score(lr, Xt, yt, cv=KFold(5, shuffle=True, random_state=0), scoring="roc_auc").mean().round(3))  # 0.66
-print(cross_val_score(lr, Xt, yt, cv=TimeSeriesSplit(5), scoring="roc_auc").mean().round(3))                     # 0.58
-print(cross_val_score(lr, Xt, yt, cv=TimeSeriesSplit(5, max_train_size=800), scoring="roc_auc").mean().round(3)) # 0.63
+print(cross_val_score(lr, Xt, yt, cv=KFold(5, shuffle=True, random_state=0), scoring="roc_auc").mean().round(3))  # 0.67
+print(cross_val_score(lr, Xt, yt, cv=TimeSeriesSplit(5), scoring="roc_auc").mean().round(3))                     # 0.64
+print(cross_val_score(lr, Xt, yt, cv=TimeSeriesSplit(5, max_train_size=800), scoring="roc_auc").mean().round(3)) # 0.67
 # shuffled:  future rows taught the model where the relationship was heading -- not available live
 # expanding: honest, and the oldest rows drag the fit towards a relationship that no longer holds
 # sliding:   honest and recent; the window length is a hyperparameter, tuned on earlier folds`,
-      caption: "**Shuffled 0.66, expanding 0.58, sliding 0.63.** The shuffled number is unreachable in production — it needed rows from after each test row. Between the two honest numbers, the sliding window wins because the relationship moved; how far back to look is a choice to tune, on folds before the one you report."
+      caption: "**Shuffled 0.67, expanding 0.64, sliding 0.67.** The shuffled number is unreachable in production — it needed rows from after each test row. Between the two honest numbers, the sliding window wins because the relationship moved; how far back to look is a choice to tune, on folds before the one you report."
     },
 
     { t: "p", text: "The final report comes from the last fold, or from the mean over folds with the spread — never from a shuffled split on time-ordered data. And **the very last block of time is a holdout the tuning never touches**: choose the window, the features and the hyperparameters on earlier folds, then score once on the end." },
@@ -283,15 +283,15 @@ inner = StratifiedKFold(5, shuffle=True, random_state=1)
 outer = StratifiedKFold(5, shuffle=True, random_state=2)
 
 search = GridSearchCV(SVC(probability=True), grid, cv=inner, scoring="roc_auc")
-print(search.fit(X, y).best_score_.round(3))                                      # 0.89
-print(cross_val_score(search, X, y, cv=outer, scoring="roc_auc").mean().round(3))   # 0.85
-# 0.89 is the best of twenty tries on the folds that chose it. 0.85 is what choosing-then-fitting
+print(search.fit(X, y).best_score_.round(3))                                      # 0.94
+print(cross_val_score(search, X, y, cv=outer, scoring="roc_auc").mean().round(3))   # 0.88
+# 0.94 is the best of twenty tries on the folds that chose it. 0.88 is what choosing-then-fitting
 # delivers on rows that took no part in the choice -- the number to report.
 
 final = search.fit(X, y).best_estimator_     # the model to ship: the search rerun on everything
-# report the nested 0.85 alongside it. The setting may differ between outer folds; that is
+# report the nested 0.88 alongside it. The setting may differ between outer folds; that is
 # information about how stable the choice is, not a problem to hide.`,
-      caption: "**Best-of-grid 0.89, nested 0.85.** With 33 positives, four points of optimism from twenty tries is unremarkable. The nested number is an estimate of the procedure, and the procedure — not one lucky setting — is what gets rerun on all the data and shipped."
+      caption: "**Best-of-grid 0.94, nested 0.88.** With 33 positives, six points of optimism from twenty tries is unremarkable. The nested number is an estimate of the procedure, and the procedure — not one lucky setting — is what gets rerun on all the data and shipped."
     },
 
     { t: "callout", kind: "production", title: "Which rows are the test set, and who has looked at them", body: [
@@ -453,7 +453,7 @@ print("report the estimate from the split that matches the deployment; the shuff
     title: "Knowledge check",
     questions: [
       {
-        stem: "A random forest scores 0.83 under shuffled 5-fold and 0.74 under GroupKFold by customer. The features include age, region and plan, constant per customer. What explains the gap?",
+        stem: "A random forest scores 0.71 under shuffled 5-fold and 0.67 under GroupKFold by customer. The features include age, region and plan, constant per customer. What explains the gap?",
         options: [
           "GroupKFold uses less training data",
           "The customer-level columns act as a fingerprint; the forest learnt each customer's effect and was scored on that customer's other rows under the shuffled split",
@@ -475,29 +475,29 @@ print("report the estimate from the split that matches the deployment; the shuff
         why: "Labels computed over a forward window reach into the future by that window's length. Training rows whose window overlaps the test period carry test-period information; the gap excludes them. Feature windows that look backwards add to the required gap in the other direction."
       },
       {
-        stem: "A grid search over twenty settings reports `best_score_` 0.89. Nested CV over the same search reports 0.85. Which number do you report and why?",
+        stem: "A grid search over twenty settings reports `best_score_` 0.94. Nested CV over the same search reports 0.88. Which number do you report and why?",
         options: [
-          "0.89 — it is the model's score",
-          "0.85 — the best of twenty noisy numbers is biased upwards, and 0.85 is what the choose-then-fit procedure delivers on rows that took no part in the choice",
+          "0.94 — it is the model's score",
+          "0.88 — the best of twenty noisy numbers is biased upwards, and 0.88 is what the choose-then-fit procedure delivers on rows that took no part in the choice",
           "The average of the two",
-          "0.89, with 0.85 as a footnote"
+          "0.94, with 0.88 as a footnote"
         ],
         answer: 1,
         why: "Selecting the maximum of noisy estimates selects noise as well as signal. The outer loop scores each chosen setting on a fold the search never saw, and that mean is the honest estimate of the procedure you are going to rerun on all the data."
       },
       {
-        stem: "Under drift, an expanding-window walk-forward scores 0.58 and a sliding window of 800 rows scores 0.63. What does that tell you?",
+        stem: "Under drift, an expanding-window walk-forward scores 0.64 and a sliding window of 800 rows scores 0.67. What does that tell you?",
         options: [
           "The sliding window is leaking",
           "Old rows describe a relationship that no longer holds and drag the expanding fit towards it; recency helps, and the window length is a hyperparameter to tune on earlier folds",
-          "Use a shuffled split instead — it scores 0.66",
+          "Use a shuffled split instead — it scores 0.67",
           "The model needs more features"
         ],
         answer: 1,
-        why: "Both are honest — each trains only on the past. The difference is how much past. The shuffled 0.66 is not a candidate: it used rows from after each test row. Choose the window on validation folds and confirm on the last block."
+        why: "Both are honest — each trains only on the past. The difference is how much past. The shuffled 0.67 is not a candidate: it used rows from after each test row. Choose the window on validation folds and confirm on the last block."
       },
       {
-        stem: "With 5 % positives and 600 rows, eight stratified holdouts give AUCs from 0.74 to 0.93 for the same model. What is the correct conclusion?",
+        stem: "With 5 % positives and 600 rows, eight stratified holdouts give AUCs from 0.38 to 0.85 for the same model. What is the correct conclusion?",
         options: [
           "The model is unstable",
           "The estimate is: seven positives in a test set cannot pin down a rank statistic, so a single holdout is uninformative — use cross-validation and report the spread",

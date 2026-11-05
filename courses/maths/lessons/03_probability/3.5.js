@@ -71,10 +71,10 @@ additive = rng.uniform(0.9, 1.1, size=(n, k)).sum(axis=1)
 multiplicative = rng.uniform(0.9, 1.1, size=(n, k)).prod(axis=1)
 
 stats.skew(additive)                # 0.003  -- symmetric
-stats.skew(multiplicative)          # 0.286  -- right-skewed
+stats.skew(multiplicative)          # 0.753  -- right-skewed
 
 # THE MULTIPLICATIVE CASE IS NORMAL IN THE LOG:
-stats.skew(np.log(multiplicative))  # 0.001  -- symmetric again
+stats.skew(np.log(multiplicative))  # -0.016  -- symmetric again
 #
 # Which is the definition of a lognormal, and it follows from the CLT
 # applied to log(prod) = sum(log). The central limit theorem never
@@ -98,7 +98,7 @@ ln.ppf(0.99) / ln.median()          # 10.24 -- the p99 is 10x the median
 
 ln2 = stats.lognorm(s=2.0, scale=np.exp(0))
 ln2.mean(), ln2.median()            # 7.389, 1.000
-ln2.ppf(0.99) / ln2.median()        # 104.8
+ln2.ppf(0.99) / ln2.median()        # 104.9
 `,
       hl: [16, 20, 40],
       caption: "**A lognormal is a normal in the logs**, because the CLT applies to `log(∏x) = ∑log x`. The theorem never stopped working — it was working on a different quantity."
@@ -188,7 +188,7 @@ heavy = stats.lognorm(s=1.2, scale=50).rvs(100_000, random_state=0)
 # DIAGNOSTIC 1 -- MEAN AGAINST MEDIAN. For a symmetric distribution
 # they coincide; a large gap means skew.
 normal.mean() / np.median(normal)     # 1.001
-heavy.mean() / np.median(heavy)       # 2.045
+heavy.mean() / np.median(heavy)       # 2.046
 
 # DIAGNOSTIC 2 -- THE RUNNING MAXIMUM'S SHARE OF THE TOTAL. Under a
 # light tail the largest observation is a vanishing fraction of the
@@ -221,10 +221,10 @@ def running_mean_jumps(x, tol=0.02):
     return int((rel > tol).sum())
 
 running_mean_jumps(normal)            # 0
-running_mean_jumps(heavy)             # 7
+running_mean_jumps(heavy)             # 1
 #
-# SEVEN VISIBLE JUMPS IN 100,000 SAMPLES. Each one is a single
-# observation moving the estimate of a population parameter by 2%,
+# A VISIBLE JUMP AFTER 1,000 SAMPLES HAVE ALREADY BEEN AVERAGED. It is a
+# single observation moving the estimate of a population parameter by 2%,
 # which is what "the mean is not a stable summary" looks like in
 # practice.
 

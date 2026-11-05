@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c22.1",
  "lede": "**29 programs to write**, on trees, sorting and string matching. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on trees, sorting and string matching without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c21.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2568–2596.** What this set actually drills, counted from its own problems — 19 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["graphs & trees", "lists", "strings", "numbers", "files and paths", "algorithms"], "cells": [[{"text": "5", "tone": "accent"}, "AVL Tree (Self"], [{"text": "5", "tone": "good"}, "Counting Sort"], [{"text": "5", "tone": "violet"}, "Longest Palindromic Substring"], [{"text": "2", "tone": "teal"}, "Binary Search Tree (Full Imple"], [{"text": "1", "tone": "warn"}, "Floyd"], [{"text": "1", "tone": "crit"}, "Traveling Salesman (DP with Bi"]], "t": "diagram", "id": "dg-c22_1-top-0"},
   {
    "t": "viz",
    "title": "What each complexity class costs at scale",
@@ -108,7 +108,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "class KruskalMST:\n    def __init__(self, vertices):\n        self.vertices = vertices\n        self.parent = {v: v for v in vertices}\n        self.rank = {v: 0 for v in vertices}\n    \n    def find(self, x):\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n    \n    def union(self, x, y):\n        px, py = self.find(x), self.find(y)\n        if px == py:\n            return False\n        if self.rank[px] < self.rank[py]:\n            px, py = py, px\n        self.parent[py] = px\n        if self.rank[px] == self.rank[py]:\n            self.rank[px] += 1\n        return True\n    \n    def mst(self, edges):\n        edges.sort(key=lambda x: x[2])\n        result = []\n        total_weight = 0\n        for u, v, w in edges:\n            if self.union(u, v):\n                result.append((u, v, w))\n                total_weight += w\n        return result, total_weight\n\nedges = [('A','B',4), ('A','C',2), ('B','C',1), ('B','D',5), ('C','D',8), ('C','E',10), ('D','E',2)]\nk = KruskalMST(['A', 'B', 'C', 'D', 'E'])\nmst_edges, total = k.mst(edges)\nprint(f\"MST edges: {mst_edges}\")\nprint(f\"Total weight: {total}\")  # 9",
+     "code": "class KruskalMST:\n    def __init__(self, vertices):\n        self.vertices = vertices\n        self.parent = {v: v for v in vertices}\n        self.rank = {v: 0 for v in vertices}\n    \n    def find(self, x):\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n    \n    def union(self, x, y):\n        px, py = self.find(x), self.find(y)\n        if px == py:\n            return False\n        if self.rank[px] < self.rank[py]:\n            px, py = py, px\n        self.parent[py] = px\n        if self.rank[px] == self.rank[py]:\n            self.rank[px] += 1\n        return True\n    \n    def mst(self, edges):\n        edges.sort(key=lambda x: x[2])\n        result = []\n        total_weight = 0\n        for u, v, w in edges:\n            if self.union(u, v):\n                result.append((u, v, w))\n                total_weight += w\n        return result, total_weight\n\nedges = [('A','B',4), ('A','C',2), ('B','C',1), ('B','D',5), ('C','D',8), ('C','E',10), ('D','E',2)]\nk = KruskalMST(['A', 'B', 'C', 'D', 'E'])\nmst_edges, total = k.mst(edges)\nprint(f\"MST edges: {mst_edges}\")\nprint(f\"Total weight: {total}\")  # 10",
      "numbered": false
     }
    ]
@@ -121,7 +121,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import heapq\n\ndef prim_mst(graph, start):\n    visited = set()\n    mst = []\n    edges = [(0, start, None)]  # (weight, node, from)\n    total = 0\n    \n    while edges and len(visited) < len(graph):\n        weight, node, from_node = heapq.heappop(edges)\n        if node in visited:\n            continue\n        visited.add(node)\n        if from_node is not None:\n            mst.append((from_node, node, weight))\n            total += weight\n        for neighbor, w in graph[node]:\n            if neighbor not in visited:\n                heapq.heappush(edges, (w, neighbor, node))\n    \n    return mst, total\n\ngraph = {\n    'A': [('B', 4), ('C', 2)],\n    'B': [('A', 4), ('C', 1), ('D', 5)],\n    'C': [('A', 2), ('B', 1), ('D', 8), ('E', 10)],\n    'D': [('B', 5), ('C', 8), ('E', 2)],\n    'E': [('C', 10), ('D', 2)]\n}\n\nmst, total = prim_mst(graph, 'A')\nprint(f\"MST: {mst}\")\nprint(f\"Total: {total}\")  # 9",
+     "code": "import heapq\n\ndef prim_mst(graph, start):\n    visited = set()\n    mst = []\n    edges = [(0, start, None)]  # (weight, node, from)\n    total = 0\n    \n    while edges and len(visited) < len(graph):\n        weight, node, from_node = heapq.heappop(edges)\n        if node in visited:\n            continue\n        visited.add(node)\n        if from_node is not None:\n            mst.append((from_node, node, weight))\n            total += weight\n        for neighbor, w in graph[node]:\n            if neighbor not in visited:\n                heapq.heappush(edges, (w, neighbor, node))\n    \n    return mst, total\n\ngraph = {\n    'A': [('B', 4), ('C', 2)],\n    'B': [('A', 4), ('C', 1), ('D', 5)],\n    'C': [('A', 2), ('B', 1), ('D', 8), ('E', 10)],\n    'D': [('B', 5), ('C', 8), ('E', 2)],\n    'E': [('C', 10), ('D', 2)]\n}\n\nmst, total = prim_mst(graph, 'A')\nprint(f\"MST: {mst}\")\nprint(f\"Total: {total}\")  # 10",
      "numbered": false
     },
     {
@@ -372,7 +372,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def tarjan_scc(graph, n):\n    index_counter = [0]\n    stack = []\n    lowlink = [0] * n\n    index = [0] * n\n    on_stack = [False] * n\n    visited = [False] * n\n    sccs = []\n    \n    def strongconnect(v):\n        index[v] = index_counter[0]\n        lowlink[v] = index_counter[0]\n        index_counter[0] += 1\n        visited[v] = True\n        stack.append(v)\n        on_stack[v] = True\n        \n        for w in graph.get(v, []):\n            if not visited[w]:\n                strongconnect(w)\n                lowlink[v] = min(lowlink[v], lowlink[w])\n            elif on_stack[w]:\n                lowlink[v] = min(lowlink[v], index[w])\n        \n        if lowlink[v] == index[v]:\n            scc = []\n            while True:\n                w = stack.pop()\n                on_stack[w] = False\n                scc.append(w)\n                if w == v:\n                    break\n            sccs.append(scc)\n    \n    for v in range(n):\n        if not visited[v]:\n            strongconnect(v)\n    \n    return sccs\n\ngraph = {0: [1], 1: [2], 2: [0, 3], 3: [4], 4: [5], 5: [3]}\nprint(tarjan_scc(graph, 6))\n# Output: [[4, 5, 3], [0, 2, 1]] — two SCCs",
+     "code": "def tarjan_scc(graph, n):\n    index_counter = [0]\n    stack = []\n    lowlink = [0] * n\n    index = [0] * n\n    on_stack = [False] * n\n    visited = [False] * n\n    sccs = []\n    \n    def strongconnect(v):\n        index[v] = index_counter[0]\n        lowlink[v] = index_counter[0]\n        index_counter[0] += 1\n        visited[v] = True\n        stack.append(v)\n        on_stack[v] = True\n        \n        for w in graph.get(v, []):\n            if not visited[w]:\n                strongconnect(w)\n                lowlink[v] = min(lowlink[v], lowlink[w])\n            elif on_stack[w]:\n                lowlink[v] = min(lowlink[v], index[w])\n        \n        if lowlink[v] == index[v]:\n            scc = []\n            while True:\n                w = stack.pop()\n                on_stack[w] = False\n                scc.append(w)\n                if w == v:\n                    break\n            sccs.append(scc)\n    \n    for v in range(n):\n        if not visited[v]:\n            strongconnect(v)\n    \n    return sccs\n\ngraph = {0: [1], 1: [2], 2: [0, 3], 3: [4], 4: [5], 5: [3]}\nprint(tarjan_scc(graph, 6))\n# Output: [[5, 4, 3], [2, 1, 0]] — two SCCs",
      "numbered": false
     }
    ]

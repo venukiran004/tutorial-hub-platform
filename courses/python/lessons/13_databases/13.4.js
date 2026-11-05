@@ -104,7 +104,7 @@ def checkout(order_id):
       caption: "*PostgreSQL has no dirty reads at any level — `READ UNCOMMITTED` behaves as `READ COMMITTED`. †PostgreSQL's `REPEATABLE READ` uses snapshot isolation, which prevents phantoms; the SQL standard permits them. **Write skew is the one that survives `REPEATABLE READ` and surprises people.**"
     },
 
-    { t: "code", lang: "python", title: "the anomalies, concretely", code: `
+    { t: "code", lang: "sql", title: "the anomalies, concretely", code: `
 # NON-REPEATABLE READ -- READ COMMITTED only.
 # The same query returns different values within one transaction,
 # because each statement takes a fresh snapshot.
@@ -292,7 +292,7 @@ def transfer(from_id, to_id, amount):
     },
 
     { t: "callout", kind: "trap", title: "Three more deadlock sources", body: [
-      { t: "code", lang: "python", title: "less obvious than the classic", numbered: false, code: `
+      { t: "code", lang: "sql", title: "less obvious than the classic", numbered: false, code: `
 # 1. A BULK UPDATE WITHOUT AN ORDER.
 UPDATE accounts SET rate = rate * 1.1 WHERE region = 'EU';
 # Two concurrent runs may reach rows in different orders. Add a
@@ -747,10 +747,10 @@ def test_a_double_booking_cannot_be_committed(db):
       {
         stem: "Two transactions each check that at least one doctor is on call, see two, and each takes a different doctor off call. Both commit. Which isolation level prevents this?",
         options: [
-          "`READ COMMITTED`",
-          "`SERIALIZABLE` — the transactions write different rows, so no lock conflicts and only read-dependency tracking catches it",
-          "`REPEATABLE READ`",
-          "Any level, with `FOR UPDATE` on the row being changed"
+          "`READ COMMITTED`, which re-reads the latest committed data on each statement",
+          "`SERIALIZABLE` — only it tracks read dependencies",
+          "`REPEATABLE READ`, which gives each transaction a consistent snapshot",
+          "Any level, provided each transaction uses `FOR UPDATE` on the row it changes"
         ],
         answer: 1,
         why: "This is write skew. Because the two transactions never touch the same row, no amount of row locking on the rows they write helps — the conflict is between what one read and what the other wrote. `SERIALIZABLE` tracks those read dependencies; nothing below it does."
@@ -758,10 +758,10 @@ def test_a_double_booking_cannot_be_committed(db):
       {
         stem: "A booking system checks seat availability, calls a payment provider taking two seconds, then writes the booking. Why does it double-book?",
         options: [
-          "The isolation level is too low",
-          "Nothing holds the seats during the two-second payment call, so a second request passes the same availability check",
-          "The commit is not atomic",
-          "The payment provider retries"
+          "The isolation level is too low, so the second transaction cannot see the first one's check",
+          "Nothing holds the seats during the payment call",
+          "The commit is not atomic, so the booking is written before the seat is marked as taken",
+          "The payment provider retries the callback, which writes the booking a second time"
         ],
         answer: 1,
         why: "No isolation level helps when the transaction is not open across the gap. The fix is structural: reserve under a lock, charge with no locks held, confirm under a lock — so the longest transaction is milliseconds and no external call ever holds a row."
@@ -769,23 +769,23 @@ def test_a_double_booking_cannot_be_committed(db):
       {
         stem: "You sort seat ids in Python before a `SELECT ... IN (...) FOR UPDATE`. Does this prevent deadlocks?",
         options: [
-          "Yes — the locks are acquired in list order",
-          "No — the database decides the row order and therefore the lock order; an explicit `ORDER BY` on the query is required",
-          "Yes, provided the list is unique",
-          "Only under `SERIALIZABLE`"
+          "No — the query needs `ORDER BY` to fix lock order",
+          "Yes — rows are locked in the order the ids appear in the `IN` list",
+          "Yes, provided the list has no duplicate ids in it",
+          "Only under `SERIALIZABLE`, which orders lock acquisition"
         ],
-        answer: 1,
+        answer: 0,
         why: "The planner is free to return rows in any order, and it may choose differently for two concurrent statements with different plans. `ORDER BY id` alongside `with_for_update()` is what imposes a total order, and it must be the same order everywhere the rows are locked."
       },
       {
         stem: "A job retries on `deadlock detected`, and the retry rate has grown steadily for six months. What does that indicate?",
         options: [
           "The retry limit is too low",
-          "Lock ordering is inconsistent somewhere — the retry handles the event but the rising rate is a signal that the cause was never removed",
           "The database needs more memory",
+          "Inconsistent lock ordering that was never fixed",
           "Deadlocks are normal at scale"
         ],
-        answer: 1,
+        answer: 2,
         why: "A retry is the correct response to an individual deadlock and the wrong response to a deadlock rate. A bulk `UPDATE` with no `ORDER BY` is the usual cause: two concurrent runs reach rows in different orders, and the frequency grows with data volume until the job spends more time retrying than working."
       }
     ]

@@ -400,21 +400,21 @@ if __name__ == "__main__":
       {
         stem: "A pipeline uses `filter(None, readings)` to drop missing values. What else does it remove?",
         options: [
-          "Nothing — `None` as the predicate filters only `None` values",
+          "Nothing — passing `None` as the predicate filters out exactly the `None` values and nothing else",
+          "It raises `TypeError`, because `None` is not callable and `filter` needs a function",
           "Every falsy value, so a legitimate reading of `0` or `0.0` is silently discarded too",
-          "It raises `TypeError`, since `None` is not callable",
-          "Only values that are `None` or `False`"
+          "Only values that are `None` or `False`, since those are the two singletons Python treats as empty"
         ],
-        answer: 1,
+        answer: 2,
         why: "`filter(None, xs)` keeps every element that is truthy, so `0`, `0.0`, `\"\"`, `[]` and `False` are all removed alongside `None`. For sensor data a reading of exactly zero is often the most interesting one, and its absence reconciles to plausible-looking output. The correct form is `[r for r in readings if r is not None]` — the same falsy-versus-absent distinction as `if not limit:` and `value or default`."
       },
       {
         stem: "Which of these is the case where `map` is genuinely preferable to a comprehension?",
         options: [
-          "`map(lambda o: o[\"total\"], orders)`",
-          "`map(str.strip, raw_names)` — an existing function applied unchanged, with no lambda and no loop variable",
-          "`map(lambda x: x * 2, numbers)`",
-          "Any case, since `map` is implemented in C and always faster"
+          "`map(lambda o: o[\"total\"], orders)` — it avoids naming a loop variable for each order",
+          "`map(str.strip, raw_names)` — an existing function, with no lambda and no loop variable",
+          "`map(lambda x: x * 2, numbers)` — it is lazy, where a comprehension builds a list",
+          "Any case, since `map` is implemented in C and is therefore always faster than a comprehension"
         ],
         answer: 1,
         why: "`map` earns its place when you pass an existing named function with no adaptation — the comprehension would add `for name in raw_names` purely as ceremony. As soon as a lambda appears, `map` is strictly more machinery than the comprehension for the same result, and the lambda reintroduces the per-element Python call that would otherwise make `map` faster."
@@ -422,23 +422,23 @@ if __name__ == "__main__":
       {
         stem: "Why does PEP 8 advise against `double = lambda x: x * 2`?",
         options: [
-          "Lambdas are slower than functions defined with `def`",
-          "If it deserves a name it deserves `def` — which gives a real `__name__` in tracebacks, a docstring, annotations, and room to grow",
-          "Assigning a lambda creates a memory leak",
-          "Lambdas cannot be type-annotated at all"
+          "Lambdas are slower than functions defined with `def`, because they are compiled again on every call",
+          "Assigning a lambda to a name creates a reference cycle that the garbage collector cannot free",
+          "Lambdas cannot be type-annotated at all, so mypy treats the name as returning `Any`",
+          "If it deserves a name it deserves `def`: a real `__name__`, a docstring and room to grow"
         ],
-        answer: 1,
+        answer: 3,
         why: "The two forms behave identically at runtime; the difference is everything around them. A `def` shows its name in tracebacks and profiler output rather than `<lambda>`, can carry a docstring and annotations, and can grow to two statements without being rewritten. `ruff` flags the assignment form as `E731`. A lambda earns its place only when it stays anonymous."
       },
       {
         stem: "When is `functools.reduce` the right tool?",
         options: [
+          "For a custom combine with no built-in, such as intersecting a list of sets",
           "For summing or multiplying a sequence",
-          "For a custom associative combine with no built-in equivalent, such as intersecting a list of sets",
-          "Whenever a loop accumulates into a single value",
+          "Whenever a loop accumulates into a single value, since `reduce` states that intent directly",
           "Never — it was removed from Python 3"
         ],
-        answer: 1,
+        answer: 0,
         why: "`sum`, `max`, `min` and `math.prod` already cover the common folds, so reaching for `reduce` there is the canonical misuse. It survives for custom combines like `reduce(set.intersection, permission_sets)`. Even then an explicit loop is often clearer and easier to debug — and the functional form frequently rebuilds the accumulator each step, as `reduce(lambda a, d: {**a, **d}, dicts)` does, turning a linear operation quadratic."
       }
     ]

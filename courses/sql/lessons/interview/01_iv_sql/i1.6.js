@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.6",
- "lede": "**11 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**11 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -21,7 +21,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "151",
+   "n": "76",
    "q": "How to identify slow queries?",
    "body": [
     {
@@ -33,7 +33,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "152",
+   "n": "77",
    "q": "Index best practices for ML data pipelines.",
    "body": [
     {
@@ -45,7 +45,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "153",
+   "n": "78",
    "q": "When does an index NOT help?",
    "body": [
     {
@@ -57,7 +57,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "154",
+   "n": "79",
    "q": "Explain query optimization techniques.",
    "body": [
     {
@@ -70,7 +70,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "155",
+   "n": "80",
    "q": "What is query plan caching?",
    "body": [
     {
@@ -82,23 +82,19 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "156",
+   "n": "81",
    "q": "Explain table partitioning strategies.",
    "body": [
     {
      "t": "p",
      "text": "Range: by date ranges (most common for time-series). List: by category values. Hash: distributed by hash of column. Improves query performance through partition pruning."
-    },
-    {
-     "t": "p",
-     "text": "**Q157-170.** Additional optimization: connection pooling, batch inserts, VACUUM/ANALYZE, covering indexes (include columns), index-only scans, join algorithms, materialized views for expensive aggregations, and database-specific tuning."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "171",
+   "n": "82",
    "q": "What is normalization? Explain 1NF through 3NF.",
    "body": [
     {
@@ -110,7 +106,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "172",
+   "n": "83",
    "q": "When is denormalization appropriate?",
    "body": [
     {
@@ -122,19 +118,19 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "173",
+   "n": "84",
    "q": "Explain primary key, foreign key, and unique constraints.",
    "body": [
     {
      "t": "p",
-     "text": "Primary key: unique + not null, identifies each row. Foreign key: references primary key in another table, enforces referential integrity. Unique: ensures no duplicates (allows one NULL)."
+     "text": "Primary key: unique + not null, identifies each row. Foreign key: references primary key in another table, enforces referential integrity. Unique: ensures no duplicates among non-NULL values (PostgreSQL, MySQL and SQLite allow many NULLs; SQL Server allows one)."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "174",
+   "n": "85",
    "q": "What is an ERD (Entity Relationship Diagram)?",
    "body": [
     {
@@ -146,16 +142,12 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "175",
+   "n": "86",
    "q": "CAP theorem — explain with examples.",
    "body": [
     {
      "t": "p",
-     "text": "Consistency: all nodes see same data. Availability: every request gets a response. Partition tolerance: system works despite network failures. Can only guarantee 2 of 3: CP (MongoDB), AP (Cassandra), CA (traditional RDBMS)."
-    },
-    {
-     "t": "p",
-     "text": "**Q176-185.** SQL vs NoSQL trade-offs, OLTP vs OLAP, data modeling for different use cases (e-commerce, social network, IoT), surrogate vs natural keys, and database migration strategies."
+     "text": "Consistency: all nodes see same data. Availability: every request gets a response. Partition tolerance: system works despite network failures. Partitions happen, so when one does a distributed system must give up either consistency or availability: CP (MongoDB), AP (Cassandra). A single-node RDBMS is called CA only because it has no network to partition."
     }
    ],
    "kind": ""

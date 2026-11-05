@@ -193,7 +193,7 @@ False
       { t: "code", lang: "python", title: "redacting with logic", numbered: false, code: `
 import re
 
-CARD = re.compile(r"\\b(?:\\d[ -]?){13,19}\\b")
+CARD = re.compile(r"\\b\\d(?:[ -]?\\d){12,18}\\b")   # starts and ends on a digit
 
 def mask(m: re.Match) -> str:
     digits = re.sub(r"\\D", "", m.group())
@@ -551,19 +551,19 @@ if __name__ == "__main__":
         stem: "Why does `^(a+)+$` take seconds against `\"a\" * 24 + \"!\"` but microseconds against `\"a\" * 24`?",
         options: [
           "Failure triggers a slower fallback engine",
-          "The `!` makes the match fail, and only then must the engine try all 2^n ways the nested quantifiers could split the a's",
-          "The `$` anchor forces a scan from every position",
-          "The pattern is recompiled when a match fails"
+          "The `$` anchor forces the engine to rescan the whole string from every starting position",
+          "The pattern is recompiled when a match fails",
+          "The `!` forces a failure, and only then must the engine try every way to split the a's"
         ],
-        answer: 1,
+        answer: 3,
         why: "A successful match stops at the first way that works, so the ambiguity costs nothing. A failure requires the engine to prove **no** way works — and with a quantifier over a quantified group there are exponentially many. This is why catastrophic backtracking survives testing: it appears only on input you did not intend to match. The fix is to remove the ambiguity: `^a+$` accepts the same strings with one way to match each."
       },
       {
         stem: "Which is the better pattern for the contents of an HTML-ish tag, and why?",
         options: [
           "`<(.*)>` — greedy is faster because it matches in one pass",
-          "`<([^>]*)>` — a negated class cannot overrun, so the engine never backtracks; `.*?` retries at every position",
-          "`<(.*?)>` — lazy quantifiers are always preferable to negated classes",
+          "`<([^>]*)>` — a negated class cannot overrun, so the engine never has to backtrack",
+          "`<(.*?)>` — a lazy quantifier is always preferable to a negated class, since it stops at the first `>`",
           "They are equivalent; the choice is stylistic"
         ],
         answer: 1,
@@ -573,22 +573,22 @@ if __name__ == "__main__":
         stem: "You are validating that a whole string is a postcode. Which entry point is correct?",
         options: [
           "`re.match(pattern, s)`",
-          "`re.fullmatch(pattern, s)`",
           "`re.search(pattern, s)`",
-          "`re.findall(pattern, s)`"
+          "`re.findall(pattern, s)`",
+          "`re.fullmatch(pattern, s)`"
         ],
-        answer: 1,
+        answer: 3,
         why: "`re.match` anchors at position 0 but not at the end, so it happily accepts `\"SW1A 1AA; DROP TABLE\"` — the trailing text is simply not examined. `search` is unanchored at both ends and worse. `fullmatch` requires the pattern to consume the entire string, which is what validation means. If you are stuck on an older idiom, `re.match(pattern + r\"$\", s)` is the equivalent."
       },
       {
         stem: "A WAF rule with `.*` inside another unbounded quantifier took a global CDN offline. What made it pass review and testing?",
         options: [
-          "The pattern was syntactically invalid on some engines",
-          "It was correct — it matched what it was meant to match; the explosion only occurs on input that fails to match, which nobody tested",
-          "The deployment tool corrupted the pattern",
-          "It only misbehaved under high concurrency"
+          "The pattern was syntactically invalid on some regex engines, which rejected it at load time",
+          "The deployment tool corrupted the pattern while escaping it, so a different rule went live",
+          "It was correct; the blow-up only happens on input that fails to match",
+          "It only misbehaved under high concurrency, which no test environment reproduces"
         ],
-        answer: 1,
+        answer: 2,
         why: "Correctness tests exercise inputs the pattern should match, and those terminate at the first success. Backtracking blows up on the complement — input that ALMOST matches and then fails — so a pattern can be fully correct and still be a denial-of-service vector. Treat regexes in a hot path as needing a performance test with hostile input, cap the input length, and stage deployments so one push cannot reach an entire fleet."
       }
     ]

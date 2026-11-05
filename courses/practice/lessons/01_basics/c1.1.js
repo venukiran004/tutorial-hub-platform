@@ -7,15 +7,13 @@ EC.receiveLesson({
  "id": "c1.1",
  "lede": "**20 programs to write**, on first programs: numbers, loops and strings. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on first programs: numbers, loops and strings without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
  "prerequisites": [],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1–20.** What this set actually drills, counted from its own problems — 15 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["numbers", "lists", "strings", "functions"], "cells": [[{"text": "7", "tone": "accent"}, "Calculate Factorial"], [{"text": "4", "tone": "good"}, "Sum of List Elements"], [{"text": "3", "tone": "violet"}, "Count Vowels in a String"], [{"text": "1", "tone": "teal"}, "Power of a Number (Recursive)"]], "t": "diagram", "id": "dg-c1_1-top-0"},
   {
    "t": "viz",
    "title": "The four questions behind most basics problems",

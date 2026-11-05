@@ -2,7 +2,7 @@
    LESSON 7.3 — Vision-Language Models
    A real VLM is run: unconditional captioning hallucinates, and the prefix
    "there are" produces exactly "there are two squares" (§05)
-   (scratchpad/nlp/n73.py).
+   (n73.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.3",

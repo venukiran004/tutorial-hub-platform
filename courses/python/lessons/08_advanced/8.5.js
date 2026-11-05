@@ -253,8 +253,8 @@ class WithSlots:
 
 WithSlots(2).area
 `,
-      out: `TypeError: No '__dict__' attribute on 'WithSlots' instance to cache 'area'.`,
-      caption: "The caching mechanism *is* the instance dictionary, and `__slots__` removes it. Add `\"__dict__\"` to the slots — which defeats most of the point — or use a plain `property` (Lesson 4.10)."
+      out: `TypeError: No '__dict__' attribute on 'WithSlots' instance to cache 'area' property.`,
+      caption: "The caching mechanism *is* the instance dictionary, and `__slots__` removes it. Add `\"__dict__\"` to the slots — which defeats most of the point — or use a plain `property` (Lesson 4.4)."
     },
 
     { t: "h2", n: "04", text: "When to use one", id: "when" },
@@ -603,7 +603,7 @@ def test_no_leak_when_instances_are_collected() -> None:
             { t: "p", text: "`__slots__ = (\"price\",)` alongside `price = Field(...)` raises `ValueError: 'price' in __slots__ conflicts with class variable` at class creation — the slot descriptor and your descriptor want the same name." },
             { t: "p", text: "Declaring `_field_price` instead works, because that is where the value actually lives. It is a small detail that turns a confusing class-creation error into a working combination." }
           ]},
-          { t: "p", text: "**The `bool` check is not pedantry.** `isinstance(True, int)` is `True`, so without it `product.stock = True` sets a quantity of 1 and passes every validator — a class of bug that survives review because the code looks obviously fine (Lesson 2.4)." }
+          { t: "p", text: "**The `bool` check is not pedantry.** `isinstance(True, int)` is `True`, so without it `product.stock = True` sets a quantity of 1 and passes every validator — a class of bug that survives review because the code looks obviously fine (Lesson 1.8)." }
         ]
       }
     },
@@ -637,43 +637,43 @@ def test_no_leak_when_instances_are_collected() -> None:
       {
         stem: "Why can you not shadow a `property` by writing to an instance's `__dict__`?",
         options: [
-          "Properties are stored in a separate namespace",
-          "A `property` defines `__set__`, making it a data descriptor — and data descriptors are consulted before the instance dictionary",
-          "The instance dictionary is read-only when a property exists",
-          "Properties are resolved at class creation and cached"
+          "Properties are stored in a separate namespace from instance attributes, so the two never collide",
+          "The instance dictionary becomes read-only for any name that a property defines",
+          "Properties are resolved once at class creation and cached, so later writes are ignored",
+          "`property` is a data descriptor, and those take priority over the instance dict"
         ],
-        answer: 1,
+        answer: 3,
         why: "Attribute lookup checks data descriptors on the type first, then the instance dictionary, then non-data descriptors. Because `property` defines `__set__`, an entry in `obj.__dict__` under the same name is simply never reached. That precedence is what makes property validation a guarantee rather than something a stray assignment can bypass."
       },
       {
         stem: "`functools.cached_property` fails on a class with `__slots__`. Why?",
         options: [
-          "`__slots__` disables all descriptors",
-          "It caches by writing the computed value into the instance's `__dict__`, which `__slots__` removes",
-          "`cached_property` requires the class to be hashable",
-          "Slotted classes cannot define properties"
+          "`__slots__` disables all descriptors on the class, including `cached_property`",
+          "`cached_property` requires the class to be hashable, and slotted classes are not",
+          "It stores the value in the instance `__dict__`, which `__slots__` removes",
+          "Slotted classes cannot define properties of any kind, cached or not"
         ],
-        answer: 1,
+        answer: 2,
         why: "`cached_property` is a *non-data* descriptor on purpose: after computing, it stores the result in `obj.__dict__`, so the next lookup finds it at step 2 and never reaches the descriptor again — caching with zero ongoing cost. `__slots__` eliminates the instance dictionary, so there is nowhere to write. Use a plain `property`, or add `\"__dict__\"` to the slots and lose most of the benefit."
       },
       {
         stem: "A descriptor stores values in `self._value`. Two instances of the owning class interfere with each other. Why?",
         options: [
+          "The descriptor is one shared class attribute, so every instance writes to it",
           "`__set_name__` was not called",
-          "The descriptor is a class attribute — one object shared by every instance — so all of them write to the same `_value`",
           "`__get__` is missing the `objtype` parameter",
           "The class needs `__slots__`"
         ],
-        answer: 1,
+        answer: 0,
         why: "A descriptor is created once, when the class body executes, exactly like any other class attribute. State on `self` is therefore state shared by every instance, which is the same failure mode as a mutable class attribute. Store the value on the instance under a private name; a dict keyed by instance also works but holds strong references and leaks."
       },
       {
         stem: "When is a descriptor the right tool rather than a `property`?",
         options: [
           "Whenever an attribute needs validation",
-          "When the same rule applies to several attributes or across classes, so a `property` per field would be real duplication",
+          "When the same rule applies to several attributes or classes",
           "Whenever the class has `__slots__`",
-          "When the attribute is computed rather than stored"
+          "When the attribute is computed rather than stored, which properties cannot express"
         ],
         answer: 1,
         why: "One or two validated fields are clearer as properties — every Python programmer reads them without effort. The descriptor earns its cost around the third field, or when the rule should be reusable across classes: the constraint is then declared in one line per field and defined once. Below that threshold it adds indirection a reader must chase into another file."

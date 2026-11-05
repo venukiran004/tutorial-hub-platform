@@ -190,7 +190,7 @@ for (const id of published) {
     p("drills >= 5", drills.length >= 5, `${drills.length}`);
     p("every drill has a question", drills.every(d => d.q && d.q.length > 3));
     if (COURSE === "practice") {
-      p("every drill has code", drills.every(d => (d.body || []).some(x => x.t === "code")),
+      p("every drill has code", drills.every(d => (d.prompt || []).concat(d.body || []).some(x => x.t === "code")),
         drills.filter(d => !(d.body || []).some(x => x.t === "code")).map(d => d.q).slice(0, 2).join(" | "));
     } else {
       p("every drill has an answer", drills.every(d => (d.body || []).length > 0));

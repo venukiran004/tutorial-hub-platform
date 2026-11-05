@@ -182,7 +182,7 @@ np.linalg.inv(singular)       # LinAlgError too -- but only exactly singular
 #
 # THE DANGEROUS CASE IS NEARLY SINGULAR, where nothing raises:
 almost = np.array([[1.0, 2.0], [2.0, 4.0 + 1e-12]])
-np.linalg.cond(almost)        # ~1.6e13 -- enormous
+np.linalg.cond(almost)        # ~2.5e13 -- enormous
 x = np.linalg.solve(almost, b)          # returns numbers, no warning
 np.allclose(almost @ x, b)              # True -- it "solved" it
 #
@@ -216,7 +216,7 @@ np.linalg.cond(X.T @ X)       # enormous -- two features are collinear
 
 # lstsq HANDLES IT, and reports the rank:
 coef, residuals, rank, sv = np.linalg.lstsq(X, rng.normal(size=1000),
-                                            rcond=None)
+                                            rcond=1e-6)
 rank                          # 2, not 3 -- it detected the dependency
 #
 # lstsq uses SVD and truncates tiny singular values, which gives the
@@ -343,7 +343,7 @@ U.shape, s.shape, Vt.shape        # (200,10), (10,), (10,10)
 
 # SINGULAR VALUES ARE SORTED DESCENDING and reveal the true rank:
 s.round(3)                        # the fourth is ~1e-8, the rest are not
-np.linalg.matrix_rank(X)          # 9, not 10 -- the dependency is found
+np.linalg.matrix_rank(X, tol=1e-6)   # 9, not 10 -- the dependency is found
 
 # PCA IS SVD ON CENTRED DATA. That is the whole algorithm:
 def pca(X, n_components):

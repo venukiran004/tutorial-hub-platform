@@ -173,7 +173,7 @@ False
       rungs: [
         { level: "bad", label: "Float", why: "silently wrong at scale",
           code: `total = 0.0
-for price in [19.99, 5.01, 0.10]:
+for price in [19.99, 5.02, 0.09]:
     total += price
 
 print(total)              # 25.099999999999998
@@ -183,7 +183,7 @@ print(total == 25.10)     # False`,
         { level: "ok", label: "Integer minor units", why: "exact, but you own the scaling",
           code: `# Store cents as int. Exact arithmetic, no float anywhere.
 total_cents = 0
-for price_cents in [1999, 501, 10]:
+for price_cents in [1999, 502, 9]:
     total_cents += price_cents
 
 print(total_cents)                     # 2510
@@ -194,7 +194,7 @@ print(f"\${total_cents / 100:.2f}")     # format only at the edge`,
           code: `from decimal import Decimal, ROUND_HALF_UP
 
 # Construct from str, never from float -- Decimal(0.1) inherits the error.
-prices = [Decimal("19.99"), Decimal("5.01"), Decimal("0.10")]
+prices = [Decimal("19.99"), Decimal("5.02"), Decimal("0.09")]
 total = sum(prices)
 
 print(total)                                   # 25.10
@@ -542,45 +542,45 @@ if __name__ == "__main__":
       {
         stem: "A function is written as `def paginate(size=None):` with a body starting `if not size: size = 50`. A caller passes `size=0`. What happens, and is it correct?",
         options: [
-          "`size` stays `0` — only `None` triggers the default",
-          "`size` becomes `50`, because `0` is falsy — the caller's explicit request is silently discarded",
-          "A `TypeError` is raised because `0` is not a valid page size",
+          "`size` stays `0` — a default only replaces the value when the argument is `None`",
+          "A `TypeError` is raised, because `0` is not a valid value for the page-size parameter",
+          "`size` becomes `50`, because `0` is falsy — the caller's explicit choice is lost",
           "`size` becomes `50`, which is correct behaviour since a page size of zero is meaningless"
         ],
-        answer: 1,
+        answer: 2,
         why: "`0` is falsy, so `not size` is `True` and the default overrides the caller. Whether zero is *meaningful* is a separate design question — the bug is that the code cannot tell the difference between \"caller said zero\" and \"caller said nothing\". If zero should be rejected, reject it explicitly with a clear error. If it is valid, test `if size is None:`. Either way, truthiness has erased the information needed to decide."
       },
       {
-        stem: "Which expression is guaranteed to be exactly `Decimal(\"0.30\")`?",
+        stem: "Which expression is guaranteed to equal exactly three tenths?",
         options: [
           "`Decimal(0.1) + Decimal(0.2)`",
-          "`Decimal(\"0.1\") + Decimal(\"0.2\")`",
           "`Decimal(0.1 + 0.2)`",
-          "`Decimal(round(0.1 + 0.2, 2))`"
+          "`Decimal(round(0.1 + 0.2, 2))`",
+          "`Decimal(\"0.1\") + Decimal(\"0.2\")`"
         ],
-        answer: 1,
-        why: "Only B never touches a float. `Decimal(0.1)` converts a float that is already slightly wrong, and reproduces that error exactly — Decimal does not repair binary approximation, it faithfully represents whatever it was given. C is worse, converting the already-incorrect sum. D looks plausible but `round` operates on a float first, so the error exists before Decimal sees it. Construct from strings, and the arithmetic that follows is exact. (Strictly, B yields `Decimal(\"0.3\")`, which compares equal to `Decimal(\"0.30\")`.)"
+        answer: 3,
+        why: "Only the string-built version never touches a float. `Decimal(0.1)` converts a float that is already slightly wrong, and reproduces that error exactly — Decimal does not repair binary approximation, it faithfully represents whatever it was given. `Decimal(0.1 + 0.2)` is worse, converting the already-incorrect sum. The `round` version looks plausible but `round` operates on a float first, so the error exists before Decimal sees it. Construct from strings, and the arithmetic that follows is exact."
       },
       {
         stem: "What does `print(round(2.5), round(3.5), round(-0.5))` output?",
         options: [
           "`3 4 -1` — standard rounding, halves away from zero",
-          "`2 4 0` — banker's rounding, halves to the nearest even number",
           "`2 3 0` — halves always round down",
+          "`2 4 0` — banker's rounding, halves to the nearest even number",
           "`3 4 0` — halves round up, except negatives which round toward zero"
         ],
-        answer: 1,
+        answer: 2,
         why: "Python implements round-half-to-even, the IEEE-754 default. 2.5 goes to 2, 3.5 goes to 4, and -0.5 goes to -0 (which prints as 0) — in each case the even neighbour. It exists because always rounding halves away from zero introduces an upward statistical bias that accumulates across large datasets. It is the right default and the wrong behaviour for many financial rules, which is why money uses `Decimal.quantize` with an explicit mode."
       },
       {
         stem: "A PATCH endpoint receives `{\"nickname\": \"\"}`, meaning the user wants to clear their nickname. The handler contains `if nickname: user.nickname = nickname`. What is the result?",
         options: [
-          "The nickname is cleared correctly, since an empty string is assigned",
           "The nickname is left unchanged, because `\"\"` is falsy — the user cannot clear the field",
-          "A validation error is raised for the empty string",
-          "The nickname is set to `None`"
+          "The nickname is cleared correctly, since an empty string is assigned",
+          "A validation error is raised, because an empty string does not satisfy the field's type",
+          "The nickname is set to `None`, which is how an empty JSON string is decoded"
         ],
-        answer: 1,
+        answer: 0,
         why: "`\"\"` is falsy, so the branch never runs and the update is silently dropped. This is the archetypal partial-update bug: the entire semantics of PATCH rest on distinguishing *field not sent* from *field sent as empty*, and a truthiness test collapses them. The correct test is `if nickname is not None:`. Pydantic models this explicitly with `model_fields_set` or a sentinel type, covered in Lesson 12.3."
       }
     ]

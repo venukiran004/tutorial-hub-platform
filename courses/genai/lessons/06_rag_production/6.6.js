@@ -140,13 +140,13 @@ for node in ast.walk(tree):
 
     { t: "code", lang: "python", title: "AST chunking, as the usual advice prescribes it", code: `def chunk_python_file(file_content: str, file_path: str) -> list[dict]:
     tree = ast.parse(file_content)
-    lines = file_content.split("\n")
+    lines = file_content.split("\\n")
     chunks = []
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             s, e = node.lineno - 1, node.end_lineno
             chunks.append({
-                "content": "\n".join(lines[s:e]),
+                "content": "\\n".join(lines[s:e]),
                 "metadata": {
                     "type": type(node).__name__, "name": node.name,
                     "file": file_path, "start_line": s + 1, "end_line": e,
@@ -384,7 +384,7 @@ for path in glob.glob("src/**/*.py", recursive=True):
         continue
 
     offs, acc = [], 0                       # char offset of each line start
-    for ln in src.split("\n"):
+    for ln in src.split("\\n"):
         offs.append(acc); acc += len(ln) + 1
     offs.append(acc)
 

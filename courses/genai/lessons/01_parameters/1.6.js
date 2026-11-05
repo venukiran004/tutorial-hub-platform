@@ -167,8 +167,8 @@ for bias in (-100.0, -5.0, 0.0, 5.0, 10.0, 100.0):
 
     { t: "callout", kind: "insight", title: "Why −100 is documented as a ban",
       body: [
-        { t: "p", text: "It is not a special value in the implementation — it is a subtraction like any other. But `exp(-100)` is about 4×10⁻⁴⁴, and multiplying a probability of 5% by that gives a number far below the smallest positive float32, which is about 1.2×10⁻³⁸. The result rounds to exactly zero." },
-        { t: "p", text: "So −100 is a ban in the same sense that top-p truncation is a deletion: the token's probability is not small, it is representably zero, and it cannot be sampled. The measurement confirms it — rank 50,257, the last position in the vocabulary." },
+        { t: "p", text: "It is not a special value in the implementation — it is a subtraction like any other. But `exp(-100)` is about 4×10⁻⁴⁴, and multiplying a probability of 5% by that gives about 2×10⁻⁴⁵, far below the smallest normal float32 and down at the last representable step above zero. Measured, it came out at 1.4×10⁻⁴⁵." },
+        { t: "p", text: "So −100 is a ban in practice, as top-p truncation is a deletion: the probability is one float32 step from zero, and 200,000 draws never produced the token. The measurement confirms it — rank 50,257, the last position in the vocabulary." },
         { t: "p", text: "This also means the ban is only as reliable as the arithmetic. On a hypothetical distribution where the token held almost all the mass, −100 would leave it merely very unlikely rather than impossible. In practice this never happens, but it is the reason the documentation says \"effectively\" rather than \"always\"." }
       ] },
 
@@ -317,7 +317,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
       body: [
         { t: "p", text: "**Symptom.** A support-reply generator began producing sentences with words missing — \"we have shipped your\" with nothing after it, or replies that referred to \"the item\" where the product name should have been. It affected roughly one account in forty, and nobody could reproduce it on demand." },
         { t: "p", text: "**Configuration.** A 600-entry `logit_bias` map at −100, assembled a year earlier from a list of words the brand did not want to appear, built by tokenising each word and taking the first id." },
-        { t: "p", text: "**Mechanism.** Two of the banned words shared a first token with a legitimate product name — the tokenizer split the product name so that its opening subword was the same id as an unrelated banned word. At −100 that id was representably zero, so the model could not begin the product name at all. It did what a model does when the token it wants is unavailable: it produced the most likely alternative, which was sometimes a pronoun and sometimes nothing coherent at all." },
+        { t: "p", text: "**Mechanism.** Two of the banned words shared a first token with a legitimate product name — the tokenizer split the product name so that its opening subword was the same id as an unrelated banned word. At −100 that id was effectively zero, so the model could not begin the product name at all. It did what a model does when the token it wants is unavailable: it produced the most likely alternative, which was sometimes a pronoun and sometimes nothing coherent at all." },
         { t: "p", text: "**Fix.** The bias map was reduced to the thirty tokens that were unambiguous, and the rest moved to an output guardrail that checks the finished text (11.14) — where a word is a word rather than an id. Two durable lessons. First, a bias map is a list of *token ids*, and ids are shared between words in ways no one reviewing the word list will notice. Second, the map had been built once and never re-derived; when the team later moved from `cl100k_base` to `o200k_base`, every id in it meant something different. 12.4 is about that class of breakage." }
       ] }
   ],
@@ -378,7 +378,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
         answer: [
           { t: "p", text: "It adds a number to one token's logit, before temperature and before truncation. Because a softmax ratio is `exp(gap)`, adding `b` multiplies that token's odds against every other token by `exp(b)`. That conversion is the whole thing: +5 is a factor of 148, +10 is 22,000." },
           { t: "p", text: "I measured a token at 5.1% of the mass going to 88.9% at +5 and 99.9% at +10. Which also means anything past about +12 is indistinguishable from certainty, so most of the documented ±100 range is unusable resolution." },
-          { t: "p", text: "−100 is a ban for the same reason, not because of a special case: `exp(-100)` is about 4×10⁻⁴⁴, which drives the probability below the smallest positive float32 and it rounds to exactly zero. In the measurement the token went to rank 50,257 — last in the vocabulary." }
+          { t: "p", text: "−100 is a ban for the same reason, not because of a special case: `exp(-100)` is about 4×10⁻⁴⁴, which drives the probability to the last float32 step above zero, 1.4×10⁻⁴⁵, so 200,000 draws never produced it. In the measurement the token went to rank 50,257 — last in the vocabulary." }
         ] },
 
       { level: "advanced",
@@ -386,7 +386,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
         strong: "A strong answer identifies that ids are not words, gives the specific ways that breaks, and proposes the layer where the constraint actually belongs.",
         answer: [
           { t: "p", text: "The first concern is that a bias map is a list of token ids and they were almost certainly derived from words. A word is not a token: `\"refund\"` and `\" refund\"` are different ids, casing and plurals are different ids again, and some forms split into multiple tokens so no single id blocks them. So the map is very likely both incomplete and larger than it needs to be." },
-          { t: "p", text: "The second is collisions, and this is the one that causes incidents. A banned word's first subword can be shared with a legitimate word — a product name, a customer name — and at −100 that id is representably zero, so the model cannot begin the legitimate word either. What comes out is a sentence with a hole in it, on a small fraction of requests, which is very hard to attribute back to a config file." },
+          { t: "p", text: "The second is collisions, and this is the one that causes incidents. A banned word's first subword can be shared with a legitimate word — a product name, a customer name — and at −100 that id is effectively zero, so the model cannot begin the legitimate word either. What comes out is a sentence with a hole in it, on a small fraction of requests, which is very hard to attribute back to a config file." },
           { t: "p", text: "The third is that the map is tied to a tokenizer. Move from `cl100k_base` to `o200k_base` and every id in it means something different — silently, with no error." },
           { t: "p", text: "What I would propose: keep `logit_bias` only for the small set of unambiguous single tokens where it is genuinely the right instrument, and move the rest to an output guardrail that checks the finished text, where a word is a word. That is 11.14, and it also gives you a place to log what fired." }
         ] },

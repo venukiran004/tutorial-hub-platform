@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c10.4",
  "lede": "**17 programs to write**, on architectural patterns and plugins. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 17 programs on architectural patterns and plugins without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c10.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1245–1261.** What this set actually drills, counted from its own problems — 7 of the 17 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["patterns", "databases", "production", "generators"], "cells": [[{"text": "4", "tone": "accent"}, "Abstract Factory"], [{"text": "1", "tone": "good"}, "Saga Pattern (Distributed Tran"], [{"text": "1", "tone": "violet"}, "Dependency Injection Container"], [{"text": "1", "tone": "teal"}, "Iterator Pattern"]], "t": "diagram", "id": "dg-c10_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -89,7 +89,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "\"\"\"\nCOMMAND PATTERN\n================\n\nEncapsulates a request as an object, allowing you to parameterize\nclients with different requests, queue requests, and support undo.\n\"\"\"\n\n\nclass Command(ABC):\n    @abstractmethod\n    def execute(self): pass\n\n    @abstractmethod\n    def undo(self): pass\n\n\nclass TextEditor:\n    def __init__(self):\n        self.text = \"\"\n\n    def __repr__(self):\n        return f\"TextEditor('{self.text}')\"\n\n\nclass InsertCommand(Command):\n    def __init__(self, editor, text):\n        self.editor = editor\n        self.text = text\n\n    def execute(self):\n        self.editor.text += self.text\n\n    def undo(self):\n        self.editor.text = self.editor.text[:-len(self.text)]\n\n\nclass DeleteCommand(Command):\n    def __init__(self, editor, count):\n        self.editor = editor\n        self.count = count\n        self.deleted = \"\"\n\n    def execute(self):\n        self.deleted = self.editor.text[-self.count:]\n        self.editor.text = self.editor.text[:-self.count]\n\n    def undo(self):\n        self.editor.text += self.deleted\n\n\nclass CommandHistory:\n    def __init__(self):\n        self.history = []\n\n    def execute(self, command):\n        command.execute()\n        self.history.append(command)\n\n    def undo(self):\n        if self.history:\n            command = self.history.pop()\n            command.undo()\n\n\ndef demo_command():\n    editor = TextEditor()\n    history = CommandHistory()\n\n    history.execute(InsertCommand(editor, \"Hello\"))\n    print(f\"  After insert 'Hello': {editor}\")\n\n    history.execute(InsertCommand(editor, \" World\"))\n    print(f\"  After insert ' World': {editor}\")\n\n    history.execute(DeleteCommand(editor, 5))\n    print(f\"  After delete 5: {editor}\")\n\n    history.undo()\n    print(f\"  After undo: {editor}\")\n\n    history.undo()\n    print(f\"  After undo: {editor}\")\n\n\nprint(\"Q179: Command Pattern\")\ndemo_command()\nprint()\nQ179: Command Pattern\n  After insert 'Hello': TextEditor('Hello')\n  After insert ' World': TextEditor('Hello World')\n  After delete 5: TextEditor('Hello ')\n  After undo: TextEditor('Hello World')\n  After undo: TextEditor('Hello')",
+     "code": "\"\"\"\nCOMMAND PATTERN\n================\n\nEncapsulates a request as an object, allowing you to parameterize\nclients with different requests, queue requests, and support undo.\n\"\"\"\n\n\nfrom abc import ABC, abstractmethod\n\nclass Command(ABC):\n    @abstractmethod\n    def execute(self): pass\n\n    @abstractmethod\n    def undo(self): pass\n\n\nclass TextEditor:\n    def __init__(self):\n        self.text = \"\"\n\n    def __repr__(self):\n        return f\"TextEditor('{self.text}')\"\n\n\nclass InsertCommand(Command):\n    def __init__(self, editor, text):\n        self.editor = editor\n        self.text = text\n\n    def execute(self):\n        self.editor.text += self.text\n\n    def undo(self):\n        self.editor.text = self.editor.text[:-len(self.text)]\n\n\nclass DeleteCommand(Command):\n    def __init__(self, editor, count):\n        self.editor = editor\n        self.count = count\n        self.deleted = \"\"\n\n    def execute(self):\n        self.deleted = self.editor.text[-self.count:]\n        self.editor.text = self.editor.text[:-self.count]\n\n    def undo(self):\n        self.editor.text += self.deleted\n\n\nclass CommandHistory:\n    def __init__(self):\n        self.history = []\n\n    def execute(self, command):\n        command.execute()\n        self.history.append(command)\n\n    def undo(self):\n        if self.history:\n            command = self.history.pop()\n            command.undo()\n\n\ndef demo_command():\n    editor = TextEditor()\n    history = CommandHistory()\n\n    history.execute(InsertCommand(editor, \"Hello\"))\n    print(f\"  After insert 'Hello': {editor}\")\n\n    history.execute(InsertCommand(editor, \" World\"))\n    print(f\"  After insert ' World': {editor}\")\n\n    history.execute(DeleteCommand(editor, 5))\n    print(f\"  After delete 5: {editor}\")\n\n    history.undo()\n    print(f\"  After undo: {editor}\")\n\n    history.undo()\n    print(f\"  After undo: {editor}\")\n\n\nprint(\"Command Pattern\")\ndemo_command()\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "Command Pattern\n  After insert 'Hello': TextEditor('Hello')\n  After insert ' World': TextEditor('Hello World')\n  After delete 5: TextEditor('Hello ')\n  After undo: TextEditor('Hello World')\n  After undo: TextEditor('Hello')",
      "numbered": false
     },
     {
@@ -258,7 +268,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import copy\n\nclass Prototype:\n    def clone(self):\n        return copy.deepcopy(self)\n\nclass ServerConfig(Prototype):\n    def __init__(self, name, cpu, memory, disk, os_type, packages=None):\n        self.name = name\n        self.cpu = cpu\n        self.memory = memory\n        self.disk = disk\n        self.os_type = os_type\n        self.packages = packages or []\n    \n    def __str__(self):\n        return f\"{self.name}: {self.cpu}CPU, {self.memory}GB RAM, {self.disk}GB, {self.os_type}\"\n\nclass ConfigRegistry:\n    def __init__(self):\n        self._prototypes = {}\n    \n    def register(self, name, prototype):\n        self._prototypes[name] = prototype\n    \n    def create(self, name, **overrides):\n        prototype = self._prototypes.get(name)\n        if not prototype:\n            raise ValueError(f\"Unknown template: {name}\")\n        clone = prototype.clone()\n        for key, value in overrides.items():\n            setattr(clone, key, value)\n        return clone\n\nregistry = ConfigRegistry()\nregistry.register(\"web\", ServerConfig(\"web-template\", 2, 4, 50, \"Ubuntu\", [\"nginx\", \"python\"]))\nregistry.register(\"db\", ServerConfig(\"db-template\", 4, 16, 500, \"Ubuntu\", [\"postgresql\"]))\n\nweb1 = registry.create(\"web\", name=\"web-prod-1\")\nweb2 = registry.create(\"web\", name=\"web-prod-2\", memory=8)\ndb1 = registry.create(\"db\", name=\"db-primary\", disk=1000)\n\nfor server in [web1, web2, db1]:\n    print(f\"  {server}\")",
+     "code": "import copy\n\nclass Prototype:\n    def clone(self):\n        return copy.deepcopy(self)\n\nclass ServerConfig(Prototype):\n    def __init__(self, name, cpu, memory, disk, os_type, packages=None):\n        self.name = name\n        self.cpu = cpu\n        self.memory = memory\n        self.disk = disk\n        self.os_type = os_type\n        self.packages = packages or []\n    \n    def __str__(self):\n        return f\"{self.name}: {self.cpu}CPU, {self.memory}GB RAM, {self.disk}GB, {self.os_type}\"\n\nclass ConfigRegistry:\n    def __init__(self):\n        self._prototypes = {}\n    \n    def register(self, name, prototype):\n        self._prototypes[name] = prototype\n    \n    def create(self, template, **overrides):\n        prototype = self._prototypes.get(template)\n        if not prototype:\n            raise ValueError(f\"Unknown template: {template}\")\n        clone = prototype.clone()\n        for key, value in overrides.items():\n            setattr(clone, key, value)\n        return clone\n\nregistry = ConfigRegistry()\nregistry.register(\"web\", ServerConfig(\"web-template\", 2, 4, 50, \"Ubuntu\", [\"nginx\", \"python\"]))\nregistry.register(\"db\", ServerConfig(\"db-template\", 4, 16, 500, \"Ubuntu\", [\"postgresql\"]))\n\nweb1 = registry.create(\"web\", name=\"web-prod-1\")\nweb2 = registry.create(\"web\", name=\"web-prod-2\", memory=8)\ndb1 = registry.create(\"db\", name=\"db-primary\", disk=1000)\n\nfor server in [web1, web2, db1]:\n    print(f\"  {server}\")",
      "numbered": false
     },
     {
@@ -269,7 +279,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "\"\"\"\nPROTOTYPE PATTERN\n==================\n\nCreates new objects by cloning an existing object (prototype).\nUseful when object creation is expensive.\n\"\"\"\n\n\nclass Prototype:\n    def clone(self):\n        return copy.deepcopy(self)\n\n\nclass Document(Prototype):\n    def __init__(self, title, content, formatting=None):\n        self.title = title\n        self.content = content\n        self.formatting = formatting or {\"font\": \"Arial\", \"size\": 12}\n\n    def __repr__(self):\n        return f\"Document('{self.title}', formatting={self.formatting})\"\n\n\ndef demo_prototype():\n    template = Document(\"Template\", \"Default content\", {\"font\": \"Times\", \"size\": 14})\n    doc1 = template.clone()\n    doc1.title = \"Report\"\n    doc1.content = \"Report content\"\n\n    doc2 = template.clone()\n    doc2.title = \"Letter\"\n\n    print(f\"  Template: {template}\")\n    print(f\"  Doc1: {doc1}\")\n    print(f\"  Doc2: {doc2}\")\n    print(f\"  Independent? {template.formatting is not doc1.formatting}\")\n\n\nprint(\"Q173: Prototype Pattern\")\ndemo_prototype()\nprint()\nQ173: Prototype Pattern\n  Template: Document('Template', formatting={'font': 'Times', 'size': 14})\n  Doc1: Document('Report', formatting={'font': 'Times', 'size': 14})\n  Doc2: Document('Letter', formatting={'font': 'Times', 'size': 14})\n  Independent? True",
+     "code": "\"\"\"\nPROTOTYPE PATTERN\n==================\n\nCreates new objects by cloning an existing object (prototype).\nUseful when object creation is expensive.\n\"\"\"\n\n\nimport copy\n\nclass Prototype:\n    def clone(self):\n        return copy.deepcopy(self)\n\n\nclass Document(Prototype):\n    def __init__(self, title, content, formatting=None):\n        self.title = title\n        self.content = content\n        self.formatting = formatting or {\"font\": \"Arial\", \"size\": 12}\n\n    def __repr__(self):\n        return f\"Document('{self.title}', formatting={self.formatting})\"\n\n\ndef demo_prototype():\n    template = Document(\"Template\", \"Default content\", {\"font\": \"Times\", \"size\": 14})\n    doc1 = template.clone()\n    doc1.title = \"Report\"\n    doc1.content = \"Report content\"\n\n    doc2 = template.clone()\n    doc2.title = \"Letter\"\n\n    print(f\"  Template: {template}\")\n    print(f\"  Doc1: {doc1}\")\n    print(f\"  Doc2: {doc2}\")\n    print(f\"  Independent? {template.formatting is not doc1.formatting}\")\n\n\nprint(\"Prototype Pattern\")\ndemo_prototype()\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "Prototype Pattern\n  Template: Document('Template', formatting={'font': 'Times', 'size': 14})\n  Doc1: Document('Report', formatting={'font': 'Times', 'size': 14})\n  Doc2: Document('Letter', formatting={'font': 'Times', 'size': 14})\n  Independent? True",
      "numbered": false
     }
    ]

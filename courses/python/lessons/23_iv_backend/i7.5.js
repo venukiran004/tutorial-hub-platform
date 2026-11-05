@@ -110,7 +110,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Reuses connections** via an underlying `urllib3` connection pool — big latency win when hitting the same host repeatedly.",
-      "**Persists state**headers, cookies, and auth across requests.",
+      "**Persists state:** headers, cookies, and auth across requests.",
       "Lets you set defaults once (base headers, timeouts via adapters)."
      ]
     },
@@ -291,7 +291,7 @@ EC.receiveLesson({
       [
        "429",
        "Too Many Requests",
-       "Back off, honor `Retry-After`"
+       "Back off, honour `Retry-After`"
       ],
       [
        "5xx",
@@ -333,7 +333,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Exponential backoff + jitter avoids overwhelming a recovering service and prevents synchronized retry storms."
+     "text": "**Key takeaway:** Exponential backoff + jitter avoids overwhelming a recovering service and prevents synchronised retry storms."
     }
    ]
   },
@@ -356,8 +356,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Polling**the client repeatedly asks the server \"is it done yet?\" on a schedule. Simple but wasteful — most calls return \"no change,\" and you trade latency (poll interval) for load.",
-      "**Webhooks**the client registers a callback URL once; the server **pushes** an HTTP POST to that URL when an event happens. Near-real-time and far fewer wasted calls."
+      "**Polling:** the client repeatedly asks the server \"is it done yet?\" on a schedule. Simple but wasteful — most calls return \"no change,\" and you trade latency (poll interval) for load.",
+      "**Webhooks:** the client registers a callback URL once; the server **pushes** an HTTP POST to that URL when an event happens. Near-real-time and far fewer wasted calls."
      ]
     },
     {
@@ -471,9 +471,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Offset/limit**`?limit=100&offset=200` — simple but slow and inconsistent on changing data.",
-      "**Page number**`?page=3` — convenient, same drawbacks as offset.",
-      "**Cursor / keyset**response returns a `next_cursor` token you pass back — stable and efficient for large/streaming data."
+      "**Offset/limit:** `?limit=100&offset=200` — simple but slow and inconsistent on changing data.",
+      "**Page number:** `?page=3` — convenient, same drawbacks as offset.",
+      "**Cursor / keyset:** response returns a `next_cursor` token you pass back — stable and efficient for large/streaming data."
      ]
     },
     {
@@ -515,7 +515,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Read rate-limit headers (`X-RateLimit-Remaining`, `X-RateLimit-Reset`).",
-      "On a 429, honor the **`Retry-After`** header instead of guessing.",
+      "On a 429, honour the **`Retry-After`** header instead of guessing.",
       "Throttle proactively (token-bucket / leaky-bucket) so you stay under the limit."
      ]
     },
@@ -642,8 +642,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Connect timeout**max time to establish the TCP/TLS connection to the server. A short value (2–3s) catches unreachable hosts quickly.",
-      "**Read timeout**max time to wait *between bytes* of the response once connected. Set higher for slow but valid endpoints."
+      "**Connect timeout:** max time to establish the TCP/TLS connection to the server. A short value (2–3s) catches unreachable hosts quickly.",
+      "**Read timeout:** max time to wait *between bytes* of the response once connected. Set higher for slow but valid endpoints."
      ]
     },
     {

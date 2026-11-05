@@ -725,45 +725,45 @@ def test_the_lint_baseline_does_not_grow():
       {
         stem: "`def process(items=[])` — why is this a bug rather than a style issue?",
         options: [
-          "Lists are slower than tuples as defaults",
-          "The list is created once at function definition and shared by every call that omits the argument, so state leaks between calls",
-          "It prevents type checking",
-          "Python raises a warning at runtime"
+          "One list, created at definition time, is shared by every call that omits it",
+          "Lists are slower than tuples as default values, because a list is copied on every call",
+          "A mutable default prevents type checking, because mypy cannot infer the element type",
+          "Python raises a warning at runtime the first time the function is called without the argument"
         ],
-        answer: 1,
+        answer: 0,
         why: "The default is evaluated once, when the `def` executes. The failure appears only on the second call, which is why it survives in codebases for years — every test that calls the function once passes, and the resulting stack trace points nowhere useful."
       },
       {
         stem: "You run a formatter over a 60,000-line codebase. What must you do the same day?",
         options: [
+          "Add the commit to `.git-blame-ignore-revs`, or blame points at it everywhere",
           "Tag a release",
-          "Record the commit hash in `.git-blame-ignore-revs`, or every line in the codebase blames the formatting commit and history becomes useless",
           "Squash the commit into the previous one",
-          "Disable the formatter for existing files"
+          "Disable the formatter for existing files, so only new code is reformatted from now on"
         ],
-        answer: 1,
+        answer: 0,
         why: "`git blame` is the main tool for understanding why code is the way it is, and a bulk-formatting commit destroys it for the whole repository. GitHub reads the file automatically once committed. Everyone also needs to rebase that day, or they face 60,000-line conflicts."
       },
       {
         stem: "How should mypy be introduced to a large untyped codebase?",
         options: [
-          "Strict mode everywhere, fixing errors over several sprints",
-          "Strict by default with an explicit per-module exemption list for legacy code, so new modules are checked automatically and the list only shrinks",
-          "Globally lenient settings, tightened later",
-          "Only in CI, never locally"
+          "Strict mode everywhere from day one, fixing the resulting errors over several sprints",
+          "Globally lenient settings at first, tightened gradually once the team is used to them",
+          "Strict by default, with a shrinking per-module list of legacy exemptions",
+          "Only in CI, never locally, so developers are not slowed down by type errors"
         ],
-        answer: 1,
+        answer: 2,
         why: "Strict everywhere produces thousands of errors that nobody reads, and the check gets disabled permanently. Globally lenient settings hide the debt with no mechanism forcing improvement; a visible list of exempted module names measures it and makes removing entries a normal task."
       },
       {
         stem: "Why run mypy as a `local` pre-commit hook rather than from the hook repository?",
         options: [
-          "It is faster",
-          "The hook repository's isolated environment lacks your project's dependencies, so mypy cannot resolve imports and reports hundreds of false positives",
-          "Local hooks can modify files",
-          "The published hook is unmaintained"
+          "It is faster, because a local hook skips creating an isolated environment for mypy",
+          "Local hooks are allowed to modify files, which mypy needs to add missing annotations",
+          "The hook's isolated environment lacks your dependencies, so imports fail",
+          "The published mypy hook is unmaintained and pins an old version of mypy"
         ],
-        answer: 1,
+        answer: 2,
         why: "pre-commit creates an isolated environment per hook repository. Type checking needs your actual installed dependencies to resolve third-party types, so `language: system` with the project's environment is the only configuration that produces meaningful results."
       }
     ]

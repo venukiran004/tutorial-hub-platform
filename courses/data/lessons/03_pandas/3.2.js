@@ -276,7 +276,7 @@ df.sort_values("amount", ascending=False).head(5)      # same result
 # SAMPLING:
 df.sample(10, random_state=0)
 df.sample(frac=0.1, random_state=0)
-df.sample(10, weights="amount", random_state=0)
+df.sample(10, weights=df["amount"].clip(lower=0), random_state=0)
 
 # CONDITIONAL ASSIGNMENT -- three forms for three situations:
 df.loc[df.amount < 0, "amount"] = 0                      # a mask

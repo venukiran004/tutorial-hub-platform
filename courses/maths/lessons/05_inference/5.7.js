@@ -89,9 +89,9 @@ null.mean(), null.std()                               # ~0.000, 0.0627
 # A p-value asks where your observation sits in THAT distribution.
 
 # SANITY CHECK AGAINST THE NAMED TEST:
-stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0479
+stats.fisher_exact([[66, 54], [51, 69]])[1]           # 0.0704
 #
-# Close, and the small gap is a real thing: the permutation conditions
+# Not the same number, and the gap is a real thing: the permutation conditions
 # on the pooled total while Fisher conditions on both margins. Neither
 # is wrong -- they answer marginally different questions, which is a
 # useful reminder that "the" p-value is not unique.
@@ -194,9 +194,9 @@ for n in (400, 100, 25):
     pw = stats.norm.sf(stats.norm.ppf(0.975) - 0.2*np.sqrt(n))
     print(f"n={n:<5} power {pw:.2f}  significant results overstate by "
           f"{exaggeration(0.2, n):.2f}x")
-# n=400   power 0.98  significant results overstate by 1.02x
-# n=100   power 0.52  significant results overstate by 1.31x
-# n=25    power 0.18  significant results overstate by 2.36x
+# n=400   power 0.98  significant results overstate by 1.01x
+# n=100   power 0.52  significant results overstate by 1.39x
+# n=25    power 0.17  significant results overstate by 2.49x
 #
 # AT 18% POWER, THE PUBLISHED EFFECTS ARE MORE THAN TWICE THE TRUTH.
 # That is the type M error, and it is why small significant studies
@@ -234,7 +234,7 @@ np.percentile(ps, [5, 25, 50, 75, 95])
 # a replication give?
 sig = ps[np.abs(ps - 0.05) < 0.005]      # studies that landed near 0.05
 ps2 = replicate(0.3, 100, seed=99)
-np.percentile(ps2, [10, 50, 90])          # [0.003, 0.051, 0.372]
+np.percentile(ps2, [10, 50, 90])          # [0.001, 0.036, 0.390]
 #
 # A replication of a p = 0.05 finding has roughly a 50% chance of
 # coming back above 0.05 -- because that is what 50% power means.
@@ -318,7 +318,7 @@ def flexible_analysis(seed, n=60):
     return min(ps)
 
 rate = np.mean([flexible_analysis(s) < 0.05 for s in range(4000)])
-rate                                     # 0.229
+rate                                     # 0.194
 #
 # 23% FALSE POSITIVE RATE ON PURE NOISE, from six choices any of which
 # would pass review individually. Nobody lied; nobody even looked at
@@ -345,7 +345,7 @@ def peeking(seed, max_n=500, check_every=25):
             return True
     return False
 
-np.mean([peeking(s) for s in range(4000)])          # 0.279
+np.mean([peeking(s) for s in range(4000)])          # 0.248
 #
 # 28% FROM PEEKING ALONE. And with unlimited data and unlimited
 # patience it converges to 100%: the p-value random-walks, and it will

@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.4",
- "lede": "**12 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**12 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -21,7 +21,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "61",
+   "n": "46",
    "q": "What is a window function? How does it differ from GROUP BY?",
    "body": [
     {
@@ -33,7 +33,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "62",
+   "n": "47",
    "q": "Explain the syntax: func() OVER (PARTITION BY ... ORDER BY ... ROWS/RANGE ...)",
    "body": [
     {
@@ -45,7 +45,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "63",
+   "n": "48",
    "q": "List the main window functions.",
    "body": [
     {
@@ -57,7 +57,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "64",
+   "n": "49",
    "q": "Difference between ROW_NUMBER, RANK, and DENSE_RANK?",
    "body": [
     {
@@ -70,7 +70,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "65",
+   "n": "50",
    "q": "How do LAG and LEAD work?",
    "body": [
     {
@@ -87,7 +87,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "66",
+   "n": "51",
    "q": "Calculate running average of last 7 days.",
    "body": [
     {
@@ -100,7 +100,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "67",
+   "n": "52",
    "q": "Explain ROWS vs RANGE in window frames.",
    "body": [
     {
@@ -112,7 +112,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "68",
+   "n": "53",
    "q": "Find top 3 salaries per department.",
    "body": [
     {
@@ -125,7 +125,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "69",
+   "n": "54",
    "q": "Calculate cumulative distribution.",
    "body": [
     {
@@ -138,7 +138,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "70",
+   "n": "55",
    "q": "Calculate month-over-month growth rate.",
    "body": [
     {
@@ -151,7 +151,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "71",
+   "n": "56",
    "q": "What is NTILE and how is it used?",
    "body": [
     {
@@ -163,17 +163,13 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "72",
+   "n": "57",
    "q": "Find consecutive days with sales above threshold.",
    "body": [
     {
      "t": "code",
      "lang": "sql",
      "code": "WITH flagged AS (\n    SELECT date, sales,\n           date - ROW_NUMBER() OVER (ORDER BY date)::int AS grp\n    FROM daily_sales WHERE sales > 1000\n)\nSELECT MIN(date) AS start_date, MAX(date) AS end_date, COUNT(*) AS streak_days\nFROM flagged GROUP BY grp ORDER BY streak_days DESC;"
-    },
-    {
-     "t": "p",
-     "text": "**Q73-85.** Additional window patterns: first/last value per partition, moving sums, gap-and-island problems, sessionization, computing ratios within groups, year-over-year comparisons, and combining multiple window specs."
     }
    ],
    "kind": ""

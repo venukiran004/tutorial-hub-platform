@@ -139,7 +139,7 @@ def audited(fn):
 
     { t: "h2", n: "03", text: "Annotations, resolved", id: "annotations" },
 
-    {"kind": "trace", "title": "`__annotations__` gives you strings; `get_type_hints` gives you the types", "caption": "**With `from __future__ import annotations`, or on Python 3.14 by default, annotations are stored as strings — `{'user': 'User', 'limit': 'int'}` — so reading `__annotations__` directly gives you text that happens to look like a type.** `typing.get_type_hints(fn)` resolves them against the defining module's namespace and returns real objects: **`{'user': <class 'User'>, ...}`.** Which is the difference between a framework that works and one that fails on a forward reference — **and the resolution can itself raise `NameError` if the name is only available under `TYPE_CHECKING`.**", "left": "how you read them", "codeW": 170, "vars": ["result"], "steps": [{"code": "fn.__annotations__", "state": ["{'user': 'User', 'limit': 'int'}"], "tone": "warn", "note": "strings"}, {"code": "get_type_hints(fn)", "state": ["{'user': <class 'User'>, ...}"], "changed": [0], "tone": "violet"}, {"code": "a TYPE_CHECKING-only import", "state": ["NameError during resolution"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-8_7-03-1"},
+    {"kind": "trace", "title": "`__annotations__` gives you strings; `get_type_hints` gives you the types", "caption": "**With `from __future__ import annotations`, annotations are stored as strings — `{'user': 'User', 'limit': 'int'}` — so reading `__annotations__` directly gives you text that happens to look like a type.** `typing.get_type_hints(fn)` resolves them against the defining module's namespace and returns real objects: **`{'user': <class 'User'>, ...}`.** Which is the difference between a framework that works and one that fails on a forward reference — **and the resolution can itself raise `NameError` if the name is only available under `TYPE_CHECKING`.**", "left": "how you read them", "codeW": 170, "vars": ["result"], "steps": [{"code": "fn.__annotations__", "state": ["{'user': 'User', 'limit': 'int'}"], "tone": "warn", "note": "strings"}, {"code": "get_type_hints(fn)", "state": ["{'user': <class 'User'>, ...}"], "changed": [0], "tone": "violet"}, {"code": "a TYPE_CHECKING-only import", "state": ["NameError during resolution"], "changed": [0], "tone": "crit"}], "t": "diagram", "id": "dg-8_7-03-1"},
 
 
 
@@ -155,6 +155,10 @@ import inspect
 import typing
 
 
+class User: ...
+class Response: ...
+
+
 def handler(user: User, limit: int = 10) -> Response: ...
 
 
@@ -162,7 +166,7 @@ print(handler.__annotations__)
 print(typing.get_type_hints(handler))
 `,
       out: `{'user': 'User', 'limit': 'int', 'return': 'Response'}
-{'user': <class 'User'>, 'limit': <class 'int'>, 'return': <class 'Response'>}`,
+{'user': <class '__main__.User'>, 'limit': <class 'int'>, 'return': <class '__main__.Response'>}`,
       caption: "**Anything reading annotations at runtime must call `get_type_hints`**, which resolves the strings against the function's own globals. Reading `__annotations__` directly gives you strings under `from __future__ import annotations` and objects without it — so the same code works in one module and not another (Lesson 8.3)."
     },
 
@@ -646,21 +650,21 @@ def test_overrides_take_precedence() -> None:
       {
         stem: "A framework reads handler parameters with `inspect.signature`. After a team adds a decorator, every handler resolves to nothing. Why?",
         options: [
-          "`inspect.signature` cannot be used on decorated functions",
-          "The decorator lacks `functools.wraps`, so there is no `__wrapped__` for `signature` to follow and it reports the wrapper's `(*args, **kwargs)`",
+          "`inspect.signature` cannot be used on decorated functions, so it returns an empty signature",
           "Decorators strip annotations from the wrapped function",
-          "The framework must call `inspect.unwrap` first"
+          "The framework must call `inspect.unwrap` first",
+          "Without `functools.wraps` there is no `__wrapped__`, so `signature` sees the wrapper"
         ],
-        answer: 1,
+        answer: 3,
         why: "`inspect.signature` follows the `__wrapped__` chain by default, and `functools.wraps` is what sets it. Without that, the framework sees the wrapper's own parameters — which is why an undecorated-looking `(*args, **kwargs)` breaks pytest fixtures, FastAPI models and generated documentation all at once, and always silently."
       },
       {
         stem: "Why call `typing.get_type_hints(fn)` rather than reading `fn.__annotations__`?",
         options: [
-          "`__annotations__` is private",
-          "Under `from __future__ import annotations` the values are strings, so a lookup by type never matches — `get_type_hints` resolves them against the function's globals",
-          "`__annotations__` omits the return type",
-          "`get_type_hints` is faster"
+          "`__annotations__` is a private attribute that may be removed in a future version",
+          "Under the `__future__` import they are strings; `get_type_hints` resolves them",
+          "`__annotations__` omits the return type, which `get_type_hints` adds back",
+          "`get_type_hints` is faster, because it reads a cached copy of the annotations"
         ],
         answer: 1,
         why: "The same code then behaves differently depending on whether a module has the `__future__` import, which is a maddening bug to track down. `get_type_hints` always returns objects. Pass the *unwrapped* function, since resolution uses that function's own globals and a wrapper's module may not import the annotated types."
@@ -668,21 +672,21 @@ def test_overrides_take_precedence() -> None:
       {
         stem: "What is the main risk of `inspect.currentframe().f_back` to find the caller's module?",
         options: [
+          "A decorator above you adds a frame, so `f_back` finds the wrapper",
           "It is not available in CPython",
-          "Any decorator applied above you adds a frame, so `f_back` points at the wrapper rather than the caller",
           "It raises when called from a coroutine",
           "It returns the module where the function was defined"
         ],
-        answer: 1,
+        answer: 0,
         why: "The frame count is not a stable contract: decorators, comprehensions and generators all shift it, and the answer changes when someone adds one anywhere above. `inspect.stack()` is worse still because it reads source files for context lines. The robust alternative is asking the caller — which is exactly what `logging.getLogger(__name__)` does."
       },
       {
         stem: "A framework registers every function named `handle_*` found by `inspect.getmembers`. What goes wrong?",
         options: [
-          "`getmembers` is too slow at import time",
-          "A naming convention cannot express intent — a local helper or a test double matching the pattern gets registered as a production route",
-          "`getmembers` cannot see functions defined inside classes",
-          "It fails for decorated functions"
+          "`getmembers` is too slow to run at import time on a large module",
+          "A name pattern cannot express intent, so helpers and doubles get registered",
+          "`getmembers` cannot see functions defined inside classes, so method handlers are missed",
+          "It fails for decorated functions, whose names no longer start with `handle_`"
         ],
         answer: 1,
         why: "Discovery by scanning matches everything that fits the pattern: helpers, half-written functions, re-exported names, test doubles. An explicit `@route(\"/orders\")` decorator states intent in writing and is impossible to trigger by accident. Introspection is for reading the shape of something you were given, not for deciding what exists."

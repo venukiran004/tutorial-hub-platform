@@ -30,7 +30,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You run an A/B test on a checkout button color. With 2 million users, you get p = 0.01 and a conversion rate increase from 4.50% to 4.53%."
+     "text": "**Situation:** You run an A/B test on a checkout button color. With 13 million users, you get p = 0.01 and a conversion rate increase from 4.50% to 4.53%."
     },
     {
      "t": "p",
@@ -48,7 +48,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Compute Cohen's h: \\(h = 2\\arcsin(\\sqrt{0.0453}) - 2\\arcsin(\\sqrt{0.0450}) \\approx 0.0014\\) — negligible",
-      "Estimate business impact: 0.03% × estimated annual revenue. If revenue = $100M, impact = $30K/year",
+      "Estimate business impact: conversion is up 0.67% relative, so about 0.67% × annual revenue from this flow. If that revenue = $5M, impact ≈ $33K/year",
       "Weigh against engineering cost of shipping, maintaining, and testing",
       "Check guardrail metrics (latency, engagement, error rates)"
      ]
@@ -88,7 +88,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "After Benjamini-Hochberg correction at FDR = 0.05, likely only the p = 0.01 result survives. Report adjusted p-values to the PM."
+     "text": "After Benjamini-Hochberg correction at FDR = 0.05, none of these survive: with 20 tests the smallest p-value must be at most 0.05/20 = 0.0025, and p = 0.01 is not. Report adjusted p-values to the PM."
     }
    ],
    "kind": ""
@@ -162,7 +162,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You ran a test for 2 weeks with 5,000 users per group. The observed lift is +3% but p = 0.15."
+     "text": "**Situation:** You ran a test for 2 weeks with 90,000 users per group. The observed lift is +3% but p = 0.15."
     },
     {
      "t": "p",
@@ -179,8 +179,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Compute achieved power: With n = 5000 and baseline conversion 5%, power to detect 3% relative lift ≈ 35% — severely underpowered",
-      "Required sample: ~50,000 per group for 80% power at this effect size",
+      "Compute achieved power: With n = 90,000 per group and baseline conversion 5%, power to detect a 3% relative lift ≈ 30% — severely underpowered",
+      "Required sample: ~336,000 per group for 80% power at this effect size",
       "Report confidence interval: if CI = [-1%, +7%], the data is consistent with both no effect AND a meaningful +7% effect"
      ]
     },
@@ -253,7 +253,7 @@ EC.receiveLesson({
       "**Log-transform:** Compare geometric means (more robust to outliers)",
       "**Bootstrap:** Get CI for the difference in means with proper uncertainty",
       "**Report multiple metrics:** Mean, median, P75, P95 — full picture",
-      "**Delta method:** Properly estimate variance of revenue-per-user ratio"
+      "**Delta method:** Only needed for a true ratio metric, such as revenue per session"
      ]
     },
     {

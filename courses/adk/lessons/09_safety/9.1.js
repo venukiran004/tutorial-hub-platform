@@ -2,7 +2,7 @@
    LESSON 9.1 — Authentication, Secrets and Least Privilege
    The auth exports, the credential service contract and the shipped
    implementations are introspected from google-adk 2.9.2
-   (scratchpad/adk/g1.py).
+   (g1.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "9.1",

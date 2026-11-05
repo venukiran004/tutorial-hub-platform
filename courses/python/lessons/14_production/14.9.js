@@ -740,45 +740,45 @@ def test_latency_does_not_degrade_with_tenant_count():
       {
         stem: "Latency is rising, CPU shows 12%, and `py-spy dump` shows every thread executing a Python function. What does this mean?",
         options: [
+          "It is CPU-bound — one saturated core of eight reads as 12%",
           "The process is waiting on I/O",
-          "It is CPU-bound — a single-threaded process saturating one core of eight averages to ~12% at the container level",
           "py-spy is sampling incorrectly",
           "The metric scrape interval is too long"
         ],
-        answer: 1,
+        answer: 0,
         why: "Container CPU percentage is averaged across cores, so it is the wrong aggregation for a single-threaded event loop. The stack dump is direct evidence of what the process is doing and beats an inference from an aggregate metric — which is why running it early is worth the ten seconds."
       },
       {
         stem: "`pg_stat_activity` shows 94 connections \"idle in transaction\", some for 41 minutes. What does that indicate?",
         options: [
-          "The connection pool is too small",
-          "Transactions are being held open across something slow — typically an external call inside the transaction",
-          "The database needs vacuuming",
-          "Queries are missing indexes"
+          "Transactions are held open across slow work, typically an external call",
+          "The connection pool is too small, so connections queue in the database waiting to be used",
+          "The database needs vacuuming, which is holding transactions open on the busy tables",
+          "Queries are missing indexes, so each transaction takes minutes to finish its work"
         ],
-        answer: 1,
+        answer: 0,
         why: "Idle in transaction means a transaction is open and doing nothing, so its connection is unavailable. An HTTP call inside a transaction is the usual cause: at 400ms nobody notices, and when the provider degrades to 45 seconds the pool empties and every database-using endpoint fails, not just the affected one."
       },
       {
         stem: "Raising a cache TTL from 5 minutes to 24 hours causes memory and latency to climb. What is the root cause?",
         options: [
-          "The TTL change — revert it and add a review process for config",
           "The cache has no `maxsize` and the lookup is a linear scan; the short TTL was accidentally hiding both",
-          "24 hours is too long for any cache",
-          "Memory pressure is triggering garbage collection"
+          "The TTL change itself — revert it, and add a review process so config changes cannot ship unchecked",
+          "24 hours is too long for any cache, because entries go stale and are re-fetched in bursts",
+          "Memory pressure is triggering the garbage collector far more often, which is what slows the lookups"
         ],
-        answer: 1,
+        answer: 0,
         why: "A TTL bounds how stale an entry gets; only `maxsize` bounds how many there are. The change was the trigger, not the cause — with a bounded cache and an O(1) lookup the 24-hour TTL would have been entirely safe, and stopping at \"revert the config\" produces an action item that prevents nothing."
       },
       {
         stem: "An incident's timeline shows impact starting at 02:10 and the alert firing at 03:47. Which finding generalises furthest?",
         options: [
-          "The root cause in the application code",
-          "The 97-minute detection gap — the code bug is one line, but the monitoring gap applies to every future incident",
-          "The config change process",
-          "The mitigation took too long"
+          "The 97-minute detection gap, which affects every future incident",
+          "The root cause in the application code, since fixing it prevents this incident from recurring",
+          "The config change process, which let the triggering change ship without review",
+          "The mitigation took too long once the team was paged"
         ],
-        answer: 1,
+        answer: 0,
         why: "A specific bug gets fixed today. A service that can be up and unusable for an hour and a half without paging anyone will be again — usually because the team alerts on errors and saturation but not on latency, so a slow-but-working service triggers nothing."
       }
     ]

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.6 — Context Window: Compaction, Caching and Long Conversations
    The growth numbers and the compaction sawtooth are executed output from
-   scratchpad/adk/s6.py on google-adk 2.9.2; the configs are introspected.
+   s6.py on google-adk 2.9.2; the configs are introspected.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.6",
@@ -24,7 +24,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Five turns of pure conversation — no tools — against a scripted model, printing how many `contents` the framework put in each request." },
 
-    { t: "code", lang: "python", title: "s6.py — counting what gets sent",
+    { t: "code", lang: "python", title: "counting what gets sent",
       code: `for i in range(1, 6):
     await talk(runner, s.id, f"message {i}")
 print("contents sent per request:", [len(r.contents) for r in llm.seen])` },

@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.3",
- "lede": "**10 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**10 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -21,7 +21,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "41",
+   "n": "36",
    "q": "List all aggregate functions in SQL.",
    "body": [
     {
@@ -33,19 +33,19 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "42",
+   "n": "37",
    "q": "Can you SELECT a non-aggregated column without grouping by it?",
    "body": [
     {
      "t": "p",
-     "text": "No (in standard SQL). Every column in SELECT must be in GROUP BY or inside an aggregate function. MySQL allows it with default settings but gives unpredictable results."
+     "text": "Only if it is functionally dependent on the grouped columns, such as grouping by a primary key (standard SQL, PostgreSQL). Otherwise every column in SELECT must be in GROUP BY or inside an aggregate function. MySQL rejects it by default since 5.7 (ONLY_FULL_GROUP_BY); with that mode off it returns an arbitrary value."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "43",
+   "n": "38",
    "q": "Explain GROUPING SETS, CUBE, and ROLLUP.",
    "body": [
     {
@@ -62,7 +62,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "44",
+   "n": "39",
    "q": "Write a query to find the second highest salary.",
    "body": [
     {
@@ -75,7 +75,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "45",
+   "n": "40",
    "q": "How to count occurrences and filter groups?",
    "body": [
     {
@@ -88,7 +88,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "46",
+   "n": "41",
    "q": "Find duplicates in a table.",
    "body": [
     {
@@ -101,7 +101,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "47",
+   "n": "42",
    "q": "What is the difference between SUM(CASE WHEN...) and COUNT(CASE WHEN...)?",
    "body": [
     {
@@ -113,7 +113,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "48",
+   "n": "43",
    "q": "How to calculate a running total without window functions?",
    "body": [
     {
@@ -130,7 +130,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "49",
+   "n": "44",
    "q": "Compute median in SQL.",
    "body": [
     {
@@ -143,17 +143,13 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "50",
+   "n": "45",
    "q": "How to pivot rows to columns?",
    "body": [
     {
      "t": "code",
      "lang": "sql",
      "code": "SELECT customer_id,\n       SUM(CASE WHEN product = 'A' THEN amount ELSE 0 END) AS product_a,\n       SUM(CASE WHEN product = 'B' THEN amount ELSE 0 END) AS product_b,\n       SUM(CASE WHEN product = 'C' THEN amount ELSE 0 END) AS product_c\nFROM orders GROUP BY customer_id;"
-    },
-    {
-     "t": "p",
-     "text": "**Q51-60.** Additional aggregation patterns: conditional counting, string aggregation (GROUP_CONCAT/STRING_AGG), computing percentages within groups, top N per group, rolling averages with GROUP BY, and computing statistics (variance, standard deviation) directly in SQL."
     }
    ],
    "kind": ""

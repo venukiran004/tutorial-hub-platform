@@ -103,11 +103,11 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Indexing is O(1)**Direct pointer arithmetic (`ob_item[i]`)",
-      "**Append is amortized O(1)**Occasional O(n) resize",
-      "**Insert/Delete at position is O(n)**Must shift elements",
-      "**Memory overhead**Each element costs 8 bytes (pointer) + the object itself",
-      "**Heterogeneous**Any Python object can be stored (all pointers are the same size)"
+      "**Indexing is O(1):** Direct pointer arithmetic (`ob_item[i]`)",
+      "**Append is amortized O(1):** Occasional O(n) resize",
+      "**Insert/Delete at position is O(n):** Must shift elements",
+      "**Memory overhead:** Each element costs 8 bytes (pointer) + the object itself",
+      "**Heterogeneous:** Any Python object can be stored (all pointers are the same size)"
      ]
     }
    ]
@@ -354,9 +354,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Find natural runs**Scans the array for pre-existing sorted subsequences (\"runs\")",
-      "**Minimum run length**If runs are too short, extends them to a minimum length (typically 32–64) using **binary insertion sort**",
-      "**Merge runs**Merges runs using a modified **merge sort** with a **merge stack** that maintains invariants similar to a Fibonacci sequence"
+      "**Find natural runs:** Scans the array for pre-existing sorted subsequences (\"runs\")",
+      "**Minimum run length:** If runs are too short, extends them to a minimum length (typically 32–64) using **binary insertion sort**",
+      "**Merge runs:** Merges runs using a modified **merge sort** with a **merge stack** that maintains invariants similar to a Fibonacci sequence"
      ]
     },
     {
@@ -368,7 +368,7 @@ EC.receiveLesson({
      "items": [
       "Exploits **partially sorted data** (common in real-world data)",
       "On already-sorted data: O(n) — just one pass to confirm",
-      "**Stable**crucial for multi-key sorting",
+      "**Stable:** crucial for multi-key sorting",
       "Used by: Python, Java (for objects), Android, Swift"
      ]
     },
@@ -778,11 +778,11 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Time**O(k) where k = slice length (number of pointers copied)",
-      "**Space**O(k) — new list + new pointer array (but objects themselves are shared)",
-      "**Shallow**Only pointers are copied, not the objects. Mutable objects are shared.",
-      "**Independent**The new list is a separate object — appending to `b` doesn't affect `a`",
-      "**But**Modifying a mutable element (e.g., `b[0].append(...)`) affects both (shared reference)"
+      "**Time:** O(k) where k = slice length (number of pointers copied)",
+      "**Space:** O(k) — new list + new pointer array (but objects themselves are shared)",
+      "**Shallow:** Only pointers are copied, not the objects. Mutable objects are shared.",
+      "**Independent:** The new list is a separate object — appending to `b` doesn't affect `a`",
+      "**But:** Modifying a mutable element (e.g., `b[0].append(...)`) affects both (shared reference)"
      ]
     },
     {
@@ -863,9 +863,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Empty list**Allocates 0 slots initially",
-      "**First append**Allocates for ~4 elements",
-      "**When full**Allocates a new, larger array and copies all pointers"
+      "**Empty list:** Allocates 0 slots initially",
+      "**First append:** Allocates for ~4 elements",
+      "**When full:** Allocates a new, larger array and copies all pointers"
      ]
     },
     {

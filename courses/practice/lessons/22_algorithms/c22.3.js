@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c22.3",
  "lede": "**28 programs to write**, on grids, parsing and number theory. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 46 programs on grids, parsing and number theory without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c22.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 72–2667.** What this set actually drills, counted from its own problems — 23 of the 47 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "strings", "dicts and sets", "databases", "files and paths", "algorithms"], "cells": [[{"text": "7", "tone": "accent"}, "Merge K Sorted Lists"], [{"text": "5", "tone": "good"}, "Reverse Words in String"], [{"text": "5", "tone": "violet"}, "Alien Dictionary (Topological "], [{"text": "2", "tone": "teal"}, "Stock Buy/Sell (Multiple Trans"], [{"text": "2", "tone": "warn"}, "Minimum Path Sum"], [{"text": "2", "tone": "crit"}, "Caesar Cipher with Frequency A"]], "t": "diagram", "id": "dg-c22_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -551,7 +551,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def least_interval(tasks, n):\n    counter = Counter(tasks)\n    max_freq = max(counter.values())\n    max_count = sum(1 for v in counter.values() if v == max_freq)\n    return max(len(tasks), (max_freq - 1) * (n + 1) + max_count)\n\nprint(least_interval([\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], 2))  # 8",
+     "code": "from collections import Counter\n\ndef least_interval(tasks, n):\n    counter = Counter(tasks)\n    max_freq = max(counter.values())\n    max_count = sum(1 for v in counter.values() if v == max_freq)\n    return max(len(tasks), (max_freq - 1) * (n + 1) + max_count)\n\nprint(least_interval([\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], 2))  # 8",
      "numbered": false
     }
    ]

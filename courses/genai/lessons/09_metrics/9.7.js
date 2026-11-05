@@ -110,7 +110,7 @@ Report both, and say which one the product actually experiences.`,
       body: [
         { t: "p", text: "A single agent run is a **sample**, not a measurement. Temperature, tool latency and model non-determinism mean the same input produces different trajectories \u2014 so a one-shot success figure on an agent is reporting one draw from a distribution." },
         { t: "p", text: "8.9 made the case for trajectory-level evaluation and this is its statistical companion: run the task k times and report both pass@1 and the spread. An agent at pass@1 of 0.70 and pass@5 of 0.95 is a very different engineering problem from one at 0.70 and 0.72." },
-        { t: "p", text: "And it interacts with 8.9\u2019s cost metric. Retries multiply cost per resolved task, so a product that gets to 0.93 via one retry is paying roughly twice per success \u2014 which is the right trade only if the resolved task is worth it." }
+        { t: "p", text: "And it interacts with 8.9\u2019s cost metric. One retry on failure at 0.70 costs 1.3 calls per request and resolves about 0.91 of them if attempts are independent, so cost per resolved task holds at 1.43 calls while cost per request rises 30%. That flat figure depends on the independence: where the same tasks keep failing, the retry buys little and cost per success climbs." }
       ] },
 
     { t: "callout", kind: "note", title: "Report k, n and temperature together",
@@ -224,7 +224,7 @@ print("gap is %s" % ("FLAKINESS -- retries will help"
         { t: "p", text: "On n, the estimator has a boundary that catches people. If you have fewer failures than k, the formula returns exactly 1.0 \u2014 not because the model is reliable but because you cannot choose k failures from fewer than k. At n = 10 with one correct sample, pass@10 is 1.0 by arithmetic and tells you nothing. I made exactly that misreading once and called it \u2018solves it essentially always\u2019." },
         { t: "p", text: "So n has to substantially exceed k, which is why standard harnesses sample 100 or 200 to report pass@10. The cheap correctness test is to compute at two sample sizes: at a 5% success rate I got pass@10 of 0.4162 from 100 samples and 0.4150 from 200, and that stability is the estimator working." },
         { t: "p", text: "I would also want temperature reported, because it moves the two numbers oppositely \u2014 more diversity raises pass@k at large k and usually lowers pass@1. A bare pass@k figure hides k, n and temperature, which is why these numbers are so often incomparable across papers." },
-        { t: "p", text: "And if the product does retry, I would price it. Retries multiply cost per resolved task, so reaching 0.95 via retries means paying roughly twice per success \u2014 worth it or not depending on what a resolved task is worth, which is a product judgement rather than a metric one." }
+        { t: "p", text: "And if the product does retry, I would price it. Retrying on failure adds cost per request, and it holds cost per resolved task flat only while a second attempt is as likely to succeed as the first. Where the same tasks keep failing the retries are spent on nothing, so I would measure second-attempt success rather than assume it. Whether that spend is worth it depends on what a resolved task is worth, which is a product judgement rather than a metric one." }
       ] }
   ],
 
@@ -319,7 +319,7 @@ print("gap is %s" % ("FLAKINESS -- retries will help"
           { t: "p", text: "By reading the gap between pass@1 and pass@5 as an instability budget. A large gap means the model can do the task and sometimes does not, so the failure is non-determinism. A small gap means it cannot do the task, and the failure is capability." },
           { t: "p", text: "Those point at completely different work. Flakiness is addressed by retries, a lower temperature, or a verifier-and-resample loop. Incapability is addressed by a better model, better prompting, better retrieval \u2014 and no amount of retrying touches it." },
           { t: "p", text: "It is especially important for agents, because a single agent run is a sample rather than a measurement. Temperature, tool latency and model non-determinism mean the same input gives different trajectories, so a one-shot success figure is one draw from a distribution." },
-          { t: "p", text: "And if the answer is \u2018add retries\u2019, I would price it before shipping. Retries multiply cost per resolved task, so getting from 0.70 to 0.93 with one retry costs roughly twice per success. That is the right trade only if a resolved task is worth it, which is a product judgement the metric cannot make." }
+          { t: "p", text: "And if the answer is \u2018add retries\u2019, I would price it before shipping. One retry on failure at 0.70 adds 30% per request, and it holds cost per resolved task flat only if failures are independent. If the same tasks keep failing the retry is wasted, so I would measure second-attempt success first. Whether the spend is right depends on what a resolved task is worth, which is a product judgement the metric cannot make." }
         ] }
     ]
   }

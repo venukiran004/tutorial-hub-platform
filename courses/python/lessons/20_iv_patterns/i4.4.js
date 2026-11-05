@@ -240,7 +240,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Each state is an object that defines behavior and valid transitions; the context delegates to its current state object."
+     "text": "Each state is an object that defines behaviour and valid transitions; the context delegates to its current state object."
     },
     {
      "t": "code",
@@ -254,7 +254,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use State for well-defined lifecycles (orders, connections, parsers) where behavior depends on a changing internal state."
+     "text": "**Key takeaway:** Use State for well-defined lifecycles (orders, connections, parsers) where behaviour depends on a changing internal state."
     }
    ]
   },

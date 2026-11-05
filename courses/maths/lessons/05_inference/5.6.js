@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Chi-square: comparing counts against a model", id: "chi-square" },
 
-    {"kind": "flow", "title": "Why the discrepancy is divided by what was expected", "caption": "**A gap of 10 is enormous where 12 were expected and invisible where 10,000 were** — dividing by the expected count is what makes those two comparable, and it is the whole design of the statistic. The output worth reporting is not the total: **the standardised residual per cell, anything beyond plus or minus 2, names the cell that drove the result**, which is the actionable part. And the approximation needs expected counts of roughly 5 or more; below that, use Fisher's exact test or a permutation instead of trusting the table.", "cols": 3, "nodes": [{"id": "o", "label": "Observed counts per cell", "sub": "43, 52, 61, 48, 55, 41", "tone": "accent"}, {"id": "e", "label": "Expected under the model", "sub": "50 each, if the die is fair", "tone": "good"}, {"id": "d", "label": "Square the gap, divide by expected", "sub": "so a gap of 10 scales with the cell", "tone": "violet"}, {"id": "s", "label": "Sum over cells: chi-square 5.28", "sub": "5 degrees of freedom - no evidence", "tone": "good"}, {"id": "r", "label": "Report the per-cell residual", "sub": "beyond plus or minus 2 names the cell", "tone": "violet"}, {"id": "f", "label": "Expected below about 5?", "sub": "use Fisher exact, or a permutation", "tone": "crit"}], "edges": [["o", "d"], ["e", "d"], ["d", "s"], ["s", "r"], ["d", "f"]], "t": "diagram", "id": "dg-5_6-01-0"},
+    {"kind": "flow", "title": "Why the discrepancy is divided by what was expected", "caption": "**A gap of 10 is enormous where 12 were expected and invisible where 10,000 were** — dividing by the expected count is what makes those two comparable, and it is the whole design of the statistic. The output worth reporting is not the total: **the standardised residual per cell, anything beyond plus or minus 2, names the cell that drove the result**, which is the actionable part. And the approximation needs expected counts of roughly 5 or more; below that, use Fisher's exact test or a permutation instead of trusting the table.", "cols": 3, "nodes": [{"id": "o", "label": "Observed counts per cell", "sub": "43, 52, 61, 48, 55, 41", "tone": "accent"}, {"id": "e", "label": "Expected under the model", "sub": "50 each, if the die is fair", "tone": "good"}, {"id": "d", "label": "Square the gap, divide by expected", "sub": "so a gap of 10 scales with the cell", "tone": "violet"}, {"id": "s", "label": "Sum over cells: chi-square 5.68", "sub": "5 degrees of freedom - no evidence", "tone": "good"}, {"id": "r", "label": "Report the per-cell residual", "sub": "beyond plus or minus 2 names the cell", "tone": "violet"}, {"id": "f", "label": "Expected below about 5?", "sub": "use Fisher exact, or a permutation", "tone": "crit"}], "edges": [["o", "d"], ["e", "d"], ["d", "s"], ["s", "r"], ["d", "f"]], "t": "diagram", "id": "dg-5_6-01-0"},
 
 
 
@@ -56,11 +56,11 @@ observed = np.array([43, 52, 61, 48, 55, 41])
 expected = np.full(6, observed.sum() / 6)             # 50 each
 
 chi2 = (((observed - expected)**2) / expected).sum()
-chi2                                                  # 5.28
+chi2                                                  # 5.68
 df = len(observed) - 1                                # 5
-stats.chi2.sf(chi2, df)                               # 0.383
+stats.chi2.sf(chi2, df)                               # 0.339
 
-stats.chisquare(observed)                             # same, 0.383
+stats.chisquare(observed)                             # same, 0.339
 #
 # NO EVIDENCE OF BIAS. And note what the test does NOT say: it does not
 # say the die is fair, only that 300 rolls cannot distinguish it from
@@ -74,7 +74,7 @@ table = np.array([[120, 380],     # free:    churned, stayed
                   [ 15, 485]])    # premium
 
 chi2, p, dof, expected = stats.chi2_contingency(table)
-chi2, p, dof                                          # 108.6, 3e-24, 2
+chi2, p, dof                                          # 110.8, 9e-25, 2
 #
 # THE EXPECTED COUNTS ASSUME INDEPENDENCE -- each cell is
 # row_total x col_total / grand_total, which is exactly the "product of
@@ -85,7 +85,7 @@ np.round(expected, 1)
 #  [ 60. 440.]
 #  [ 60. 440.]]
 
-# THE p-VALUE IS 3e-24 AND TELLS YOU NOTHING USEFUL. With n = 1,500 it
+# THE p-VALUE IS 9e-25 AND TELLS YOU NOTHING USEFUL. With n = 1,500 it
 # was always going to be tiny. THE EFFECT SIZE IS THE FINDING:
 def cramers_v(table):
     """Chi-square rescaled to [0,1], so it is comparable across table
@@ -95,7 +95,7 @@ def cramers_v(table):
     n = table.sum()
     return float(np.sqrt(chi2 / (n * (min(table.shape) - 1))))
 
-cramers_v(table)                                      # 0.269
+cramers_v(table)                                      # 0.272
 #
 #   ~0.1   small
 #   ~0.3   moderate
@@ -154,7 +154,7 @@ for total in (20, 40, 100, 400):
 # THE FIX IS FISHER'S EXACT TEST, which computes the null distribution
 # by enumeration rather than approximating it:
 small = np.array([[8, 2], [1, 9]])
-stats.chi2_contingency(small)[1]              # 0.0088  (approximation)
+stats.chi2_contingency(small)[1]              # 0.0070  (approximation)
 stats.fisher_exact(small)[1]                  # 0.0055  (exact)
 
 # FOR LARGER TABLES, a Monte Carlo permutation:
@@ -179,7 +179,7 @@ def chi2_permutation(table, n_perm=10_000, seed=0):
             pass
     return (count + 1) / (n_perm + 1)
 
-chi2_permutation(np.array([[8, 2], [1, 9]]))   # ~0.006, matching Fisher
+chi2_permutation(np.array([[8, 2], [1, 9]]))   # ~0.004, matching Fisher
 #
 # NEVER COMBINE CATEGORIES TO SATISFY THE RULE AFTER SEEING THE DATA.
 # Collapsing the cells that look interesting is p-hacking with a
@@ -269,7 +269,7 @@ stats.f_oneway(*groups)                               # same F and p
 # differ. MS_BETWEEN estimates sigma^2 ONLY IF THE MEANS ARE EQUAL --
 # otherwise it is inflated. So their ratio is near 1 under the null and
 # large otherwise, which is the whole logic of the F test.
-ms_within, 12**2                                      # 138.4 vs 144
+ms_within, 12**2                                      # 133.9 vs 144
 
 # EFFECT SIZE, because F and p say nothing about magnitude:
 eta_squared = ss_between / ss_total                   # 0.038
@@ -280,8 +280,8 @@ eta_squared = ss_between / ss_total                   # 0.038
 
 # THE ONE-WAY ANOVA WITH TWO GROUPS IS EXACTLY A t-TEST:
 a, b = rng.normal(0, 1, 40), rng.normal(0.6, 1, 40)
-stats.f_oneway(a, b).statistic                        # 7.31
-stats.ttest_ind(a, b).statistic**2                    # 7.31 -- F = t^2
+stats.f_oneway(a, b).statistic                        # 12.28
+stats.ttest_ind(a, b).statistic**2                    # 12.28 -- F = t^2
 #
 # ANOVA IS NOT A DIFFERENT IDEA. It is the two-group comparison
 # generalised, which is why it inherits the equal-variance assumption
@@ -343,7 +343,7 @@ def any_significant(seed):
     return any(stats.ttest_ind(g[i], g[j]).pvalue < 0.05
                for i, j in pairs)
 
-np.mean([any_significant(s) for s in range(5000)])   # 0.286
+np.mean([any_significant(s) for s in range(5000)])   # 0.280
 # Lower than 0.401 because the tests share data and are correlated --
 # but still six times the nominal rate.` },
         { level: "ok", label: "Run ANOVA first, then pairwise tests",
@@ -356,7 +356,7 @@ np.mean([any_significant(s) for s in range(5000)])   # 0.286
     return any(stats.ttest_ind(g[i], g[j]).pvalue < 0.05
                for i, j in pairs)
 
-np.mean([anova_then_pairwise(s) for s in range(5000)])   # 0.049
+np.mean([anova_then_pairwise(s) for s in range(5000)])   # 0.051
 # The nominal rate restored -- Fisher's LSD procedure. It works for
 # k = 3 and leaks for larger k, because ANOVA can fire on one extreme
 # pair while the others remain uncontrolled.` },
@@ -426,10 +426,10 @@ def anova_error_rate(sizes, sds, trials=10_000, seed=0):
         hits += stats.f_oneway(*g).pvalue < 0.05
     return hits / trials
 
-anova_error_rate([30, 30, 30], [1, 1, 1])         # 0.050
-anova_error_rate([30, 30, 30], [1, 1, 4])         # 0.052  equal n: fine
-anova_error_rate([60, 60, 10], [1, 1, 4])         # 0.008  underpowered
-anova_error_rate([10, 10, 60], [1, 1, 4])         # 0.156  3x too liberal
+anova_error_rate([30, 30, 30], [1, 1, 1])         # 0.048
+anova_error_rate([30, 30, 30], [1, 1, 4])         # 0.078  equal n: close
+anova_error_rate([60, 60, 10], [1, 1, 4])         # 0.383  small group, large variance: far too liberal
+anova_error_rate([10, 10, 60], [1, 1, 4])         # 0.000  large group, large variance: conservative
 
 # THE FIX IS WELCH'S ANOVA, the same fix as before:
 def welch_anova(groups):

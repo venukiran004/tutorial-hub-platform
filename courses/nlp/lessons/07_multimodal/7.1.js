@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.1 — Multimodal Fundamentals
    The four fusion strategies, placed against the models built in Module 5,
-   with CLIP run as the late-fusion case (scratchpad/nlp/n71.py).
+   with CLIP run as the late-fusion case (n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.1",

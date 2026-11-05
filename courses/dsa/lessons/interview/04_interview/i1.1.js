@@ -6,17 +6,115 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.1",
- "lede": "**29 interview questions on data structures & algorithms**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**25 interview questions on data structures & algorithms**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 29 questions on data structures & algorithms without prompting",
+  "Answer 25 questions on data structures & algorithms without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
  ],
  "prerequisites": [],
  "blocks": [
-
-    {"kind": "matrix", "title": "The complexity table every answer is checked against", "caption": "Most follow-up questions are *“and the complexity?”*. Having this table cold means the follow-up costs nothing — and the amortised row is the one worth being able to explain rather than recite.", "cols": ["average", "worst", "the thing to say"], "rows": ["list index", "list append", "list insert(0)", "dict / set lookup", "heap push or pop", "binary search", "sort"], "cells": [[{"text": "O(1)", "tone": "good"}, {"text": "O(1)", "tone": "good"}, "contiguous memory"], [{"text": "O(1)", "tone": "good"}, {"text": "O(n)", "tone": "warn"}, "amortised — it over-allocates"], [{"text": "O(n)", "tone": "crit"}, {"text": "O(n)", "tone": "crit"}, "every element shifts"], [{"text": "O(1)", "tone": "good"}, {"text": "O(n)", "tone": "warn"}, "worst only on collisions"], [{"text": "O(log n)", "tone": "accent"}, {"text": "O(log n)", "tone": "accent"}, "height of a complete tree"], [{"text": "O(log n)", "tone": "accent"}, {"text": "O(log n)", "tone": "accent"}, "needs sorted input"], [{"text": "O(n log n)", "tone": "accent"}, {"text": "O(n log n)", "tone": "accent"}, "Timsort, and stable"]], "t": "diagram", "id": "dg-i1_1-top-0"},
+  {
+   "kind": "matrix",
+   "title": "The complexity table every answer is checked against",
+   "caption": "Most follow-up questions are *“and the complexity?”*. Having this table cold means the follow-up costs nothing — and the amortised row is the one worth being able to explain rather than recite.",
+   "cols": [
+    "average",
+    "worst",
+    "the thing to say"
+   ],
+   "rows": [
+    "list index",
+    "list append",
+    "list insert(0)",
+    "dict / set lookup",
+    "heap push or pop",
+    "binary search",
+    "sort"
+   ],
+   "cells": [
+    [
+     {
+      "text": "O(1)",
+      "tone": "good"
+     },
+     {
+      "text": "O(1)",
+      "tone": "good"
+     },
+     "contiguous memory"
+    ],
+    [
+     {
+      "text": "O(1)",
+      "tone": "good"
+     },
+     {
+      "text": "O(n)",
+      "tone": "warn"
+     },
+     "amortised — it over-allocates"
+    ],
+    [
+     {
+      "text": "O(n)",
+      "tone": "crit"
+     },
+     {
+      "text": "O(n)",
+      "tone": "crit"
+     },
+     "every element shifts"
+    ],
+    [
+     {
+      "text": "O(1)",
+      "tone": "good"
+     },
+     {
+      "text": "O(n)",
+      "tone": "warn"
+     },
+     "worst only on collisions"
+    ],
+    [
+     {
+      "text": "O(log n)",
+      "tone": "accent"
+     },
+     {
+      "text": "O(log n)",
+      "tone": "accent"
+     },
+     "height of a complete tree"
+    ],
+    [
+     {
+      "text": "O(log n)",
+      "tone": "accent"
+     },
+     {
+      "text": "O(log n)",
+      "tone": "accent"
+     },
+     "needs sorted input"
+    ],
+    [
+     {
+      "text": "O(n log n)",
+      "tone": "accent"
+     },
+     {
+      "text": "O(n log n)",
+      "tone": "accent"
+     },
+     "Timsort, and stable"
+    ]
+   ],
+   "t": "diagram",
+   "id": "dg-i1_1-top-0"
+  },
   {
    "t": "viz",
    "title": "Recognising which technique a problem wants",
@@ -162,7 +260,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Always say \"O(1) average, O(n) worst case.\" The amortized O(1) is what makes hashing the go-to for converting O(n²) brute force into O(n)."
+     "text": "**Key takeaway:** Always say \"O(1) average, O(n) worst case.\" The amortised O(1) is what makes hashing the go-to for converting O(n²) brute force into O(n)."
     }
    ]
   },
@@ -196,7 +294,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Approach: define the state, write the recurrence, then either **memoize** (top-down) or **tabulate** (bottom-up). Bottom-up avoids recursion overhead."
+     "text": "Approach: define the state, write the recurrence, then either **memoise** (top-down) or **tabulate** (bottom-up). Bottom-up avoids recursion overhead."
     },
     {
      "t": "p",
@@ -204,14 +302,14 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** DP = recursion + memoization. If a recursive solution recomputes the same inputs, cache them. If there's no overlap, it's plain divide-and-conquer, not DP."
+     "text": "**Key takeaway:** DP = recursion + memoisation. If a recursive solution recomputes the same inputs, cache them. If there's no overlap, it's plain divide-and-conquer, not DP."
     }
    ]
   },
   {
    "t": "drill",
    "n": "6",
-   "q": "What's the difference between memoization and tabulation?",
+   "q": "What's the difference between memoisation and tabulation?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -253,7 +351,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Memoization is easier to write from a recurrence; tabulation is usually faster and avoids recursion limits. Both have the same time complexity."
+     "text": "**Key takeaway:** Memoisation is easier to write from a recurrence; tabulation is usually faster and avoids recursion limits. Both have the same time complexity."
     }
    ]
   },
@@ -273,7 +371,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A monotonic stack keeps elements in strictly increasing or decreasing order. It solves \"next/previous greater or smaller element\" problems in **O(n)**. Pattern: iterate the array; while the stack is non-empty and the current element violates the monotonic property, pop and process the popped element; then push the current index."
+     "text": "A monotonic stack keeps its elements in sorted order, never rising or never falling from bottom to top. It solves \"next/previous greater or smaller element\" problems in **O(n)**. Pattern: iterate the array; while the stack is non-empty and the current element violates the monotonic property, pop and process the popped element; then push the current index."
     },
     {
      "t": "p",
@@ -311,7 +409,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Directed cycles need the Gray/recursion-path distinction (a finished node isn't a cycle). Undirected cycles just need \"visited and not parent,\" or Union-Find."
+     "text": "**Key takeaway:** Directed cycles need the Grey/recursion-path distinction (a finished node isn't a cycle). Undirected cycles just need \"visited and not parent,\" or Union-Find."
     }
    ]
   },
@@ -348,7 +446,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Explain Union-Find and the two optimizations.",
+   "q": "Explain Union-Find and the two optimisations.",
    "terms": [
     "Answer",
     "Path compression",
@@ -363,7 +461,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Union-Find (Disjoint Set Union) maintains disjoint sets with `find(x)` (representative of x's set) and `union(x, y)` (merge two sets). Two optimizations make it nearly O(1) amortized — O(α(n)), inverse Ackermann:"
+     "text": "Union-Find (Disjoint Set Union) maintains disjoint sets with `find(x)` (representative of x's set) and `union(x, y)` (merge two sets). Two optimisations make it nearly O(1) amortised — O(α(n)), inverse Ackermann:"
     },
     {
      "t": "ol",
@@ -407,7 +505,7 @@ EC.receiveLesson({
      "rows": [
       [
        "Dijkstra",
-       "O(E log V)",
+       "O((V + E) log V)",
        "No",
        "single source",
        "non-negative weights (most common)"
@@ -451,7 +549,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Python's `heapq` only implements a **min-heap** (smallest element at the root, `heap[0]`). To get max-heap behaviour, **negate values** on push and negate again on pop:"
+     "text": "Python's `heapq` is a **min-heap** (smallest element at the root, `heap[0]`). Python 3.14 added `heappush_max()` and friends; on any older version, **negate values** on push and negate again on pop:"
     },
     {
      "t": "code",
@@ -465,7 +563,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** No built-in max-heap — negate the keys. `heapq` gives O(1) peek, O(log n) push/pop, O(n) heapify."
+     "text": "**Key takeaway:** Before 3.14 there is no built-in max-heap, so negate the keys. `heapq` gives O(1) peek, O(log n) push/pop, O(n) heapify."
     }
    ]
   },
@@ -565,7 +663,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Timsort is stable and adaptive, optimized for real-world (partially ordered) data. In interviews, know merge sort (stable, O(n log n)) and quicksort (in-place, O(n log n) average / O(n²) worst)."
+     "text": "**Key takeaway:** Timsort is stable and adaptive, optimised for real-world (partially ordered) data. In interviews, know merge sort (stable, O(n log n)) and quicksort (in-place, O(n log n) average / O(n²) worst)."
     }
    ]
   },
@@ -710,7 +808,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "What is amortized time complexity? Give an example.",
+   "q": "What is amortised time complexity? Give an example.",
    "terms": [
     "Answer",
     "O(1) amortized",
@@ -723,11 +821,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Amortized complexity is the average cost per operation over a sequence, even if individual operations occasionally cost more. Example: `list.append()` is **O(1) amortized** — most appends are O(1), but when the underlying array is full, Python allocates a larger array and copies everything (O(n)). Since the array doubles, those expensive resizes are rare enough that the average stays O(1)."
+     "text": "Amortised complexity is the average cost per operation over a sequence, even if individual operations occasionally cost more. Example: `list.append()` is **O(1) amortised** — most appends are O(1), but when the underlying array is full, Python allocates a larger array and copies everything (O(n)). Since capacity grows by a proportion (about an eighth in CPython), those expensive resizes are rare enough that the average stays O(1)."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Amortized ≠ average over random inputs; it's the guaranteed average over any sequence of operations. Dynamic arrays and Union-Find use amortized analysis."
+     "text": "**Key takeaway:** Amortised ≠ average over random inputs; it's the guaranteed average over any sequence of operations. Dynamic arrays and Union-Find use amortised analysis."
     }
    ]
   },
@@ -777,10 +875,10 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "`x & 1` — test odd/even.",
-      "`x & (x - 1)` — clear the lowest set bit; equals 0 iff x is a power of two.",
+      "`x & (x - 1)` — clear the lowest set bit; for x > 0, the result is 0 exactly when x is a power of two.",
       "`x ^ x = 0`, `x ^ 0 = x` — XOR finds the unique element when all others pair up (Single Number).",
       "`x | (1 << i)`, `x & ~(1 << i)`, `x ^ (1 << i)` — set / clear / toggle bit i.",
-      "`bin(x).count('1')` — popcount.",
+      "`x.bit_count()` — popcount, from Python 3.10; `bin(x).count('1')` before that.",
       "Bitmasks represent subsets compactly (`1 << n` total subsets) — used in bitmask DP (TSP)."
      ]
     },
@@ -846,435 +944,6 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key takeaway:** Negative weights → Bellman-Ford (single source) or Floyd-Warshall (all pairs). Dijkstra only works with non-negative edges."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "26",
-   "q": "Coverage matrix",
-   "terms": [
-    "25 FastAPI",
-    "Scikit-learn",
-    "04_Machine_Learning"
-   ],
-   "body": [
-    {
-     "t": "table",
-     "head": [
-      "#",
-      "Topic",
-      "🐍 Backend",
-      "🤖 AI Eng",
-      "📈 ML Eng",
-      "📊 Data Sci"
-     ],
-     "rows": [
-      [
-       "01",
-       "Data Types & Variables",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "02",
-       "Strings",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "03",
-       "Lists",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "04",
-       "Tuples/Sets/Frozensets",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "05",
-       "Dictionaries",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "06",
-       "Control Flow",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "07",
-       "Functions & Scope",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "08",
-       "Lambda/Map/Filter/Reduce",
-       "●",
-       "◐",
-       "◐",
-       "●"
-      ],
-      [
-       "09",
-       "Decorators & Closures",
-       "●",
-       "●",
-       "◐",
-       "◐"
-      ],
-      [
-       "10",
-       "Generators & Iterators",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "11",
-       "OOP",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "12",
-       "Exception Handling",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "13",
-       "File I/O & Context Managers",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "14",
-       "Modules & Packages",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "15",
-       "Regular Expressions",
-       "●",
-       "◐",
-       "◐",
-       "●"
-      ],
-      [
-       "16",
-       "Collections Module",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "17",
-       "Concurrency (async/threads/MP)",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "18",
-       "Memory & PVM (GC, internals)",
-       "●",
-       "◐",
-       "◐",
-       "○"
-      ],
-      [
-       "19",
-       "Best Practices (PEP8, typing, security)",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "20",
-       "Modern Features (match, walrus)",
-       "●",
-       "●",
-       "◐",
-       "◐"
-      ],
-      [
-       "21",
-       "Design Patterns",
-       "●",
-       "●",
-       "◐",
-       "○"
-      ],
-      [
-       "22",
-       "Testing & Debugging",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "23",
-       "NumPy",
-       "◐",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "24",
-       "Pandas",
-       "◐",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "25",
-       "FastAPI",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "26",
-       "Pydantic",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "27",
-       "DSA",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "28",
-       "Coding Practice — moved to `../13_Coding_Practice/`",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "29",
-       "Backend Web Concepts",
-       "●",
-       "●",
-       "◐",
-       "○"
-      ],
-      [
-       "30",
-       "Database & ORM (+ Transactions, Prisma)",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "31",
-       "Standard Library (logging, datetime, pathlib…)",
-       "●",
-       "●",
-       "●",
-       "●"
-      ],
-      [
-       "32",
-       "Python Tooling (uv, ruff, mypy, poetry)",
-       "●",
-       "●",
-       "●",
-       "◐"
-      ],
-      [
-       "33",
-       "API Consumption & Webhooks",
-       "●",
-       "●",
-       "◐",
-       "◐"
-      ],
-      [
-       "34",
-       "Auth & Security (hashing, JWT/OAuth2, RBAC, OWASP)",
-       "●",
-       "●",
-       "◐",
-       "○"
-      ]
-     ]
-    },
-    {
-     "t": "p",
-     "text": "Task Queues & Background Jobs (Celery/RQ) are covered inside **25 FastAPI** (§11)."
-    },
-    {
-     "t": "p",
-     "text": "**Scikit-learn** is no longer a core Python topic — it's an ML library, so it belongs to the machine-learning track: the model-building lessons and the ML interview bank."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "27",
-   "q": "Per-role study tracks (through 01_Python)",
-   "terms": [
-    "Core path",
-    "Signature skills",
-    "Then",
-    "scikit-learn"
-   ],
-   "body": [
-    {
-     "t": "p",
-     "text": "🐍 Python Backend Engineer"
-    },
-    {
-     "t": "p",
-     "text": "**Core path:** 01–16 (language) → 17 Concurrency → 18 Memory → 19 Best Practices → 21 Design Patterns → 22 Testing → 25 FastAPI → 26 Pydantic → 34 Auth & Security → 29 Backend Concepts → 30 Database/ORM (+ Transactions) → 33 API Consumption → 31/32 stdlib & tooling → 27/28 DSA. (Task queues are folded into 25 FastAPI §11.) **Signature skills:** async vs threads vs processes, FastAPI + Pydantic, ORM/transactions/locking, auth (password hashing, JWT/OAuth2, RBAC), idempotency, retries/circuit breakers, task queues. The cross-cutting incident scenarios are covered in the backend and concurrency scenario sets."
-    },
-    {
-     "t": "p",
-     "text": "🤖 AI Engineer (LLM apps / RAG / agents)"
-    },
-    {
-     "t": "p",
-     "text": "**Core path:** 01–16 → 17 Concurrency (async for concurrent LLM calls) → 22 Testing → 25 FastAPI (serving) → 26 Pydantic (structured LLM output / tool schemas) → 33 API Consumption (calling LLM APIs, retries, streaming) → 34 Auth & Security (API keys, securing endpoints, secrets) → 30 Database/ORM (app state, dual-write with vector DBs) → 23/24 NumPy/Pandas. (Task queues / async pipelines are folded into 25 FastAPI §11.) **Then leave 01_Python for the domain:** `06`→`07`→`08`→`09`. Embeddings/vector stores/RAG are in `07`."
-    },
-    {
-     "t": "p",
-     "text": "📈 ML Engineer (pipelines / training / serving)"
-    },
-    {
-     "t": "p",
-     "text": "**Core path:** 01–16 → 10 Generators (data streaming) → 13 File I/O → 17 Concurrency (multiprocessing for data prep) → 22 Testing → 23 NumPy → 24 Pandas → 26 Pydantic (config/validation) → 25 FastAPI (model serving) → 30 Database/ORM (feature/metadata stores) → 32 Tooling. **Then:** `04_Machine_Learning` (incl. **scikit-learn** — the reference / the reference), `05_Deep_Learning`, and `10_MLOps_and_Deployment` for the rest."
-    },
-    {
-     "t": "p",
-     "text": "📊 Data Scientist / Analyst"
-    },
-    {
-     "t": "p",
-     "text": "**Core path:** 01–16 → 08 Lambda/Map/Filter → 10 Generators → 15 Regex (text cleaning) → 16 Collections → 23 NumPy → 24 Pandas → 30 Database/ORM (reading data, parameterized SQL) → 31 Standard Library. (scikit-learn is in `04_Machine_Learning`.) **Then:** `02_Mathematics_and_Statistics`, `03_Data_Handling` (SQL, EDA, feature engineering), `04_Machine_Learning`."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "28",
-   "q": "Coverage verdict",
-   "terms": [
-    "Auth & Security",
-    "Transactions",
-    "Prisma/ORM",
-    "Caching / Redis (Python client)",
-    "Auth & security in Python",
-    "Resolved"
-   ],
-   "body": [
-    {
-     "t": "p",
-     "text": "**For the Python-skills scope of these four roles, 01_Python is comprehensively covered.** All language fundamentals, advanced internals, concurrency, the data-science stack, the web/back-end stack, databases, DSA, tooling, and practice sets are present — including the API Consumption & Webhooks guide (33), the consolidated **Auth & Security** topic (34), task queues folded into FastAPI (25 §11), and the Database **Transactions** and **Prisma/ORM** deep-dives folded into the Database & ORM notes (30)."
-    },
-    {
-     "t": "p",
-     "text": "Minor thin spots (largely covered in sibling folders — listed for transparency)"
-    },
-    {
-     "t": "table",
-     "head": [
-      "Possible gap",
-      "Status",
-      "Where it's covered"
-     ],
-     "rows": [
-      [
-       "**Caching / Redis (Python client)**",
-       "Pattern-level only",
-       "Patterns appear in `29` backend scenarios; Redis-as-infra & cache design in `11_System_Design`. A dedicated `redis-py` how-to is the one clear candidate if you want it inside 01_Python."
-      ],
-      [
-       "~~**Auth & security in Python** (bcrypt/passlib, JWT, OAuth2)~~",
-       "✅ **Resolved**",
-       "Now consolidated in **`34_Auth_and_Security`** (hashing, JWT/OAuth2/OIDC, refresh-token rotation, RBAC/ABAC, CORS/CSRF, injection defenses, secrets, OWASP). Architecture-level security still in `11_System_Design` (08 Security)."
-      ],
-      [
-       "**WebSockets / SSE / streaming** (LLM token streaming, realtime)",
-       "Scenario-level",
-       "`29` backend scenarios; consider a short section in `25_FastAPI` if you want depth."
-      ],
-      [
-       "**Data visualization** (Matplotlib/Seaborn/Plotly)",
-       "Out of 01_Python scope",
-       "`03_Data_Handling` (EDA). Not a Python-language topic."
-      ],
-      [
-       "**Model serialization/serving formats** (joblib/ONNX)",
-       "Partial",
-       "the machine-learning track (persistence) and the MLOps track."
-      ]
-     ]
-    },
-    {
-     "t": "p",
-     "text": "**Recommendation:** none of these are blocking. The consolidated **Auth & Security** topic (34) has now been added. The one remaining high-value addition *within* 01_Python is a **Caching/Redis (`redis-py`)** topic — common in Backend and AI-Engineer interviews. Say the word and I'll add it."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "29",
-   "q": "How 01_Python connects to the rest of the hub",
-   "body": [
-    {
-     "t": "code",
-     "lang": "text",
-     "code": "01_Python  ──►  the language & ecosystem you build everything with\n   │\n   ├─ Backend  ─► 11_System_Design, 10_MLOps (deploy), 03 (SQL)\n   ├─ AI Eng   ─► 06 NLP, 07 GenAI/RAG, 08 LangChain, 09 Agents\n   ├─ ML Eng   ─► 04 ML, 05 DL, 10 MLOps, 03 Data/Feature Eng\n   └─ Data Sci ─► 02 Stats, 03 Data Handling/EDA, 04 ML",
-     "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "Master 01_Python first; it's the shared foundation every role builds on."
     }
    ]
   }

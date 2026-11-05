@@ -54,10 +54,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Encapsulation**bundling data and methods together, restricting direct access to internal state.",
-      "**Abstraction**hiding complex implementation details and exposing only the interface.",
-      "**Inheritance**creating new classes from existing ones, reusing and extending behaviour.",
-      "**Polymorphism**the same interface behaving differently depending on the underlying type."
+      "**Encapsulation:** bundling data and methods together, restricting direct access to internal state.",
+      "**Abstraction:** hiding complex implementation details and exposing only the interface.",
+      "**Inheritance:** creating new classes from existing ones, reusing and extending behaviour.",
+      "**Polymorphism:** the same interface behaving differently depending on the underlying type."
      ]
     },
     {
@@ -1002,7 +1002,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Trade-offs:** - Cannot add attributes dynamically (unless you include `\"__dict__\"` in `__slots__`). - Cannot use `__dict__`-based serialization (e.g., `vars(obj)`). - Subclasses must also define `__slots__`, or they'll get `__dict__` back. - Multiple inheritance with different `__slots__` can be tricky. - Cannot use default values in `__slots__` (use `__init__`)."
+     "text": "**Trade-offs:** - Cannot add attributes dynamically (unless you include `\"__dict__\"` in `__slots__`). - Cannot use `__dict__`-based serialisation (e.g., `vars(obj)`). - Subclasses must also define `__slots__`, or they'll get `__dict__` back. - Multiple inheritance with different `__slots__` can be tricky. - Cannot use default values in `__slots__` (use `__init__`)."
     },
     {
      "t": "code",

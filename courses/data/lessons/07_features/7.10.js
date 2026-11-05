@@ -89,7 +89,7 @@ docs = pd.Series([
 # keeping tokens of 2+ characters:
 cv = CountVectorizer()
 X = cv.fit_transform(docs)                          # scipy sparse, (4, n_terms)
-X.shape                                             # (4, 17)
+X.shape                                             # (4, 16)
 cv.get_feature_names_out()
 # ['again' 'arrival' 'arrived' 'damaged' 'early' 'great' 'late' 'not'
 #  'on' 'order' 'refund' 'requested' 'service' 'the' 'very' 'was' ...]
@@ -336,9 +336,9 @@ fh.transform(crosses).shape                          # (3, 65536)
 # THE SIMPLER MIDDLE GROUND -- SVD on a co-occurrence or TF-IDF
 # matrix gives dense vectors without a neural net:
 from sklearn.decomposition import TruncatedSVD
-svd = TruncatedSVD(n_components=50, random_state=0)
+svd = TruncatedSVD(n_components=3, random_state=0)      # 50+ on a real corpus
 Xt_full = TfidfVectorizer(min_df=1).fit_transform(docs)
-E_svd = svd.fit_transform(Xt_full)                    # (4, 50) dense
+E_svd = svd.fit_transform(Xt_full)                    # (4, 3) dense
 #
 # Latent semantic analysis: 50 dense features from a 50k-column
 # sparse matrix. Fit on train. Loses interpretability, gains

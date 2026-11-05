@@ -58,7 +58,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "What's the difference between authentication and authorization?",
+   "q": "What's the difference between authentication and authorisation?",
    "terms": [
     "Answer",
     "Authentication (AuthN)",
@@ -81,7 +81,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "They run in order: authenticate first, then authorize. `401` means \"I don't know you, log in\"; `403` means \"I know you, but you can't do this.\""
+     "text": "They run in order: authenticate first, then authorise. `401` means \"I don't know you, log in\"; `403` means \"I know you, but you can't do this.\""
     },
     {
      "t": "p",
@@ -141,8 +141,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Salt**a unique random value per password, mixed in before hashing. Defeats rainbow tables and ensures two identical passwords hash differently. bcrypt/argon2 generate and store it *inside* the hash automatically.",
-      "**Pepper**an app-wide secret kept **outside** the database (env/HSM), HMAC'd in before hashing. If only the DB leaks, the hashes are still useless without the pepper. Defense in depth."
+      "**Salt:** a unique random value per password, mixed in before hashing. Defeats rainbow tables and ensures two identical passwords hash differently. bcrypt/argon2 generate and store it *inside* the hash automatically.",
+      "**Pepper:** an app-wide secret kept **outside** the database (env/HSM), HMAC'd in before hashing. If only the DB leaks, the hashes are still useless without the pepper. Defence in depth."
      ]
     },
     {
@@ -175,9 +175,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Header**`{\"alg\": \"HS256\", \"typ\": \"JWT\"}`",
-      "**Payload**claims like `sub`, `exp`, `iat`, `iss`, `aud`, `role` (readable — only base64, **not encrypted**).",
-      "**Signature**`HMAC-SHA256(header.payload, SECRET)`; only the key-holder can forge it."
+      "**Header:** `{\"alg\": \"HS256\", \"typ\": \"JWT\"}`",
+      "**Payload:** claims like `sub`, `exp`, `iat`, `iss`, `aud`, `role` (readable — only base64, **not encrypted**).",
+      "**Signature:** `HMAC-SHA256(header.payload, SECRET)`; only the key-holder can forge it."
      ]
     },
     {
@@ -209,8 +209,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`alg=none`**the attacker sets the header's `alg` to `none` and strips the signature; a naive verifier that \"trusts the header\" accepts an unsigned token.",
-      "**alg confusion (RS256→HS256)**the attacker switches an asymmetric token to HS256 and signs it using the *public* key as the HMAC secret."
+      "**`alg=none`:** the attacker sets the header's `alg` to `none` and strips the signature; a naive verifier that \"trusts the header\" accepts an unsigned token.",
+      "**alg confusion (RS256→HS256):** the attacker switches an asymmetric token to HS256 and signs it using the *public* key as the HMAC secret."
      ]
     },
     {
@@ -249,8 +249,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**HS256 (symmetric)**one shared secret both signs and verifies. Simple; ideal for a **single service** that issues and checks its own tokens.",
-      "**RS256 (asymmetric)**a **private** key signs, the **public** key verifies. Use across **microservices** or with a third-party identity provider, so verifiers never hold the signing key. ES256 is the same idea with smaller elliptic-curve keys."
+      "**HS256 (symmetric):** one shared secret both signs and verifies. Simple; ideal for a **single service** that issues and checks its own tokens.",
+      "**RS256 (asymmetric):** a **private** key signs, the **public** key verifies. Use across **microservices** or with a third-party identity provider, so verifiers never hold the signing key. ES256 is the same idea with smaller elliptic-curve keys."
      ]
     },
     {
@@ -370,7 +370,7 @@ EC.receiveLesson({
    "terms": [
     "Answer",
     "OAuth2",
-    "authorization",
+    "authorisation",
     "OpenID Connect (OIDC)",
     "authentication",
     "ID token"
@@ -383,7 +383,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**OAuth2** is an **authorization** framework — it grants an app limited, delegated access to a resource on a user's behalf (without sharing the password).",
+      "**OAuth2** is an **authorisation** framework — it grants an app limited, delegated access to a resource on a user's behalf (without sharing the password).",
       "**OpenID Connect (OIDC)** sits on top of OAuth2 and adds **authentication** via an **ID token** (a JWT identifying the user)."
      ]
     },
@@ -393,7 +393,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** OAuth2 authorizes access; OIDC adds who-the-user-is on top."
+     "text": "**Key takeaway:** OAuth2 authorises access; OIDC adds who-the-user-is on top."
     }
    ]
   },
@@ -417,9 +417,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Authorization Code + PKCE**for user login from a public client (SPA/mobile/web). PKCE prevents auth-code interception and is mandatory for public clients.",
-      "**Client Credentials**for machine-to-machine (no user); the service authenticates with its own id/secret.",
-      "**Refresh Token**to renew access tokens.",
+      "**Authorization Code + PKCE:** for user login from a public client (SPA/mobile/web). PKCE prevents auth-code interception and is mandatory for public clients.",
+      "**Client Credentials:** for machine-to-machine (no user); the service authenticates with its own id/secret.",
+      "**Refresh Token:** to renew access tokens.",
       "Avoid **Implicit** (deprecated) and **Password/ROPC** (legacy; first-party only)."
      ]
     },
@@ -432,7 +432,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "RBAC vs ABAC, and what's the most commonly forgotten authorization check?",
+   "q": "RBAC vs ABAC, and what's the most commonly forgotten authorisation check?",
    "terms": [
     "Answer",
     "RBAC",
@@ -447,13 +447,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**RBAC**permissions attach to roles; users get roles (admin/editor/viewer). Coarse and simple.",
-      "**ABAC**decisions from attributes of user + resource + context (\"editors may edit docs in their own department\")."
+      "**RBAC:** permissions attach to roles; users get roles (admin/editor/viewer). Coarse and simple.",
+      "**ABAC:** decisions from attributes of user + resource + context (\"editors may edit docs in their own department\")."
      ]
     },
     {
      "t": "p",
-     "text": "The most-forgotten check is **object-level (ownership) authorization** — confirming the user owns *this specific* record, not just that their role can read \"some\" records. It's OWASP's #1 (\"Broken Object Level Authorization\")."
+     "text": "The most-forgotten check is **object-level (ownership) authorisation** — confirming the user owns *this specific* record, not just that their role can read \"some\" records. It's OWASP's #1 (\"Broken Object Level Authorization\")."
     },
     {
      "t": "code",
@@ -463,7 +463,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Beyond role checks, always verify the user is authorized for the *specific object* being accessed."
+     "text": "**Key takeaway:** Beyond role checks, always verify the user is authorised for the *specific object* being accessed."
     }
    ]
   },
@@ -539,8 +539,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**XSS**injected JavaScript runs in *your* page and can steal tokens or act as the user. Defend with output encoding/escaping, a **Content-Security-Policy**, and `HttpOnly` cookies; never render untrusted HTML.",
-      "**CSRF**a malicious site tricks the victim's browser into sending an authenticated request using its cookie. Defend with **SameSite** cookies plus a **CSRF token** on state-changing requests. Bearer-token (header) APIs are largely immune because a cross-origin site can't set the `Authorization` header."
+      "**XSS:** injected JavaScript runs in *your* page and can steal tokens or act as the user. Defend with output encoding/escaping, a **Content-Security-Policy**, and `HttpOnly` cookies; never render untrusted HTML.",
+      "**CSRF:** a malicious site tricks the victim's browser into sending an authenticated request using its cookie. Defend with **SameSite** cookies plus a **CSRF token** on state-changing requests. Bearer-token (header) APIs are largely immune because a cross-origin site can't set the `Authorization` header."
      ]
     },
     {
@@ -653,9 +653,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Signature**with an explicit `algorithms=[...]` allow-list (defeats `alg=none`/confusion).",
-      "**`exp`**reject expired tokens (and `nbf`/`iat` if present).",
-      "**`iss` / `aud`**confirm the token was issued by you and intended for your service.",
+      "**Signature:** with an explicit `algorithms=[...]` allow-list (defeats `alg=none`/confusion).",
+      "**`exp`:** reject expired tokens (and `nbf`/`iat` if present).",
+      "**`iss` / `aud`:** confirm the token was issued by you and intended for your service.",
       "**Required claims present** (e.g. `sub`) and the user still exists/active.",
       "(If revocable) **`jti` not in the denylist**."
      ]
@@ -715,9 +715,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**bandit** (or `ruff --select S`) — SAST that flags `eval`, `shell=True`, weak hashes, hardcoded passwords.",
-      "**pip-audit** / **safety**scan dependencies for known CVEs; **Dependabot/Renovate** for auto-upgrade PRs.",
-      "**detect-secrets** / **gitleaks**secret scanning, ideally also as a pre-commit hook."
+      "**bandit** (or `ruff --select S`) — SAST that flags `eval`, `shell=True`, weak hashes, hard-coded passwords.",
+      "**pip-audit** / **safety:** scan dependencies for known CVEs; **Dependabot/Renovate** for auto-upgrade PRs.",
+      "**detect-secrets** / **gitleaks:** secret scanning, ideally also as a pre-commit hook."
      ]
     },
     {
@@ -729,7 +729,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Revision tip:** the whole topic reduces to three questions at every trust boundary — *who are you?* (hash passwords, validate tokens), *what may you do?* (per-object authz), and *is this input safe?* (parameterize, allow-list, never deserialize untrusted data) — with secrets kept out of code and crypto left to vetted libraries."
+     "text": "**Revision tip:** the whole topic reduces to three questions at every trust boundary — *who are you?* (hash passwords, validate tokens), *what may you do?* (per-object authz), and *is this input safe?* (parameterise, allow-list, never deserialize untrusted data) — with secrets kept out of code and crypto left to vetted libraries."
     }
    ]
   }

@@ -173,18 +173,24 @@ class Report:
     def empty(cls):
         return cls()            # correct: builds whatever class was called
 
-class Report:
+class BrokenReport:
     @classmethod
     def empty(cls):
-        return Report()         # WRONG: always builds a Report
+        return BrokenReport()   # WRONG: always builds a BrokenReport
 
 
 class AuditReport(Report):
     pass
 
 
-print(type(AuditReport.empty()))`,
-        out: `<class '__main__.AuditReport'>`},
+class BrokenAuditReport(BrokenReport):
+    pass
+
+
+print(type(AuditReport.empty()))
+print(type(BrokenAuditReport.empty()))`,
+        out: `<class '__main__.AuditReport'>
+<class '__main__.BrokenReport'>`},
       { t: "p", text: "With `cls()`, `AuditReport.empty()` returns an `AuditReport`. With the hard-coded name it returns a plain `Report`, silently — every subclass's alternative constructors give back the wrong type, and the failure surfaces later as a missing method or a failed `isinstance` check." },
       { t: "p", text: "**Always use `cls` inside a classmethod.** It costs nothing and it is what makes the method inheritable." }
     ]},
@@ -469,7 +475,8 @@ ValueError: no exporter for 'xml'; have ['csv', 'json']`
       solution: {
         lang: "python",
         title: "credentials.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 class Credentials:
     def __init__(self, source):
@@ -497,7 +504,6 @@ class Credentials:
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 import json
 import os
@@ -668,20 +674,20 @@ if __name__ == "__main__":
         stem: "A base class has `@classmethod def from_json(cls, text): return Client(json.loads(text))`. What happens when a subclass calls it?",
         options: [
           "It returns an instance of the subclass, because `classmethod` binds to the calling class",
-          "It returns a base `Client`, silently — the hard-coded name ignores which class was called",
-          "It raises `TypeError` because `cls` is unused",
-          "It returns the subclass only if the subclass overrides `__init__`"
+          "It raises `TypeError`, because `cls` is accepted but never used by the method body",
+          "It returns the subclass only if the subclass overrides `__init__`; otherwise it returns the base",
+          "It returns a base `Client`, silently — the hard-coded name ignores which class was called"
         ],
-        answer: 1,
+        answer: 3,
         why: "`cls` is bound to the calling class, but the body ignores it and constructs `Client` explicitly. So `Subclass.from_json(...)` returns a base instance with none of the subclass behaviour — and nothing raises, because the result still satisfies `isinstance(obj, Client)`. Using `cls(...)` makes the method correctly inheritable. Test it with `type(obj) is Subclass`, since `isinstance` would pass either way."
       },
       {
         stem: "When is a `staticmethod` genuinely the right choice over a module-level function?",
         options: [
-          "Whenever the function is only used by one class",
-          "When it is part of the type's public API as a check callers make without an instance, or an override point for subclasses",
-          "Whenever the function does not need `self`",
-          "Never — `staticmethod` exists only for backwards compatibility"
+          "Whenever the function is only used by one class, so it belongs with that class rather than in the module",
+          "When it is a public check on the type made without an instance, or an override point",
+          "Whenever the function does not need `self`, since that is exactly what `staticmethod` declares",
+          "Never — `staticmethod` exists only for backwards compatibility with Python 2 code"
         ],
         answer: 1,
         why: "\"Does not need self\" describes every module function too, and \"only used by one class\" is satisfied by a module-level `_helper` with less coupling. The real cases are narrower: a validator callers invoke as `Order.is_valid_amount(x)` because it reads as part of that concept, an override point for subclasses, or an interface constraint you inherited. A class made entirely of staticmethods is a module with extra syntax."
@@ -689,10 +695,10 @@ if __name__ == "__main__":
       {
         stem: "An event bus holds `session.on_event` for a thousand sessions. Memory grows and never falls. Why?",
         options: [
-          "The event bus copies each session when subscribing",
-          "A bound method holds a strong reference to its instance via `__self__`, so the registry keeps every session and everything it references alive",
-          "Bound methods create a reference cycle that the garbage collector cannot break",
-          "Each subscription creates a new closure over the whole module namespace"
+          "The event bus copies each session when it subscribes, so a thousand copies stay in memory",
+          "A bound method holds its instance through `__self__`, so the bus keeps every session alive",
+          "Bound methods create a reference cycle with their instance that the garbage collector cannot break",
+          "Each subscription creates a new closure over the whole module namespace, which is never freed"
         ],
         answer: 1,
         why: "`session.on_event` is a bound method object whose `__self__` is a strong reference to the session. As long as the bus holds the callback, the session and its data cannot be collected — even after every other name for it is gone. The fixes are unsubscribing when the object's life ends, or storing `weakref.WeakMethod`, which is what most event frameworks do internally. It is the same lifetime property as a closure capturing a large object."
@@ -701,11 +707,11 @@ if __name__ == "__main__":
         stem: "What does `__init_subclass__` let you do that previously needed a metaclass?",
         options: [
           "Change what a class call returns",
-          "Run validation or registration code once per subclass definition — enforcing required attributes, or adding the subclass to a registry",
-          "Add methods to a class after it is defined",
+          "Add new methods to a class after it is defined, without editing the class body itself",
+          "Run validation or registration once for each subclass as it is defined",
           "Control attribute lookup order"
         ],
-        answer: 1,
+        answer: 2,
         why: "`__init_subclass__` is called on the parent whenever a subclass is defined, which covers registration and convention enforcement — the great majority of what metaclasses were used for. Crucially it can raise, so a subclass missing a required attribute fails at class-definition time rather than at first use. Changing what a class call returns is `__new__` or a metaclass `__call__`; controlling attribute lookup is `__getattr__` and descriptors."
       }
     ]

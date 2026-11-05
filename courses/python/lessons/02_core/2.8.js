@@ -172,6 +172,17 @@ ratio: 12,687x`,
       caption: "Four orders of magnitude, for one word. The conversion itself costs O(n) once, so it pays for itself after roughly two lookups."
     },
 
+    { t: "callout", kind: "trap", title: "`list(set(items))` deduplicates and shuffles", body: [
+      { t: "p", text: "Converting through a `set` is the reflex for removing duplicates, and it is correct only when order does not matter. **A set has no order, and for strings the iteration order depends on hash randomisation, so it changes between processes.** The test that compared against a fixed list passes on your machine and fails intermittently in CI." },
+      { t: "code", lang: "python", title: "two ways to deduplicate", code: `events = ["login", "view", "login", "checkout", "view"]
+
+print(list(set(events)))            # order depends on string hashes
+print(list(dict.fromkeys(events)))  # first occurrence wins, in order`,
+        out: `['view', 'login', 'checkout']
+['login', 'view', 'checkout']` },
+      { t: "p", text: "**`dict.fromkeys` keeps first-seen order** because dicts preserve insertion order, and it costs the same O(n) as the set. Use the set when you only need membership; use `dict.fromkeys` when the result is shown to a person or compared in a test." }
+    ]},
+
     /* ================================================================== */
     { t: "h2", n: "03", text: "Two structures, one dataset", id: "two-structures" },
 
@@ -474,11 +485,11 @@ if __name__ == "__main__":
         stem: "A nightly job compares 500,000 records against a reference collection using `if rid in reference`. The reference grew from 20,000 to 300,000 rows and the job went from minutes to hours. What is the fix?",
         options: [
           "Sort `reference` and use `bisect` for binary search",
-          "Convert `reference` to a `set` after loading — membership becomes O(1) instead of a linear scan",
           "Process the records in parallel across multiple processes",
-          "Load the reference data in chunks to reduce memory pressure"
+          "Load the reference data in chunks to reduce memory pressure",
+          "Convert `reference` to a `set` after loading — membership becomes O(1) instead of a linear scan"
         ],
-        answer: 1,
+        answer: 3,
         why: "Each membership test scans the whole list, so the work is records × reference size. Growing the reference fifteen times multiplied the cost fifteen times. A set hashes and looks in one slot, making each test O(1) and the job linear in the number of records. Bisect would work at O(log n) but needs the list kept sorted and is strictly worse than a set for pure membership. Parallelism buys a constant factor against quadratic growth."
       },
       {
@@ -486,8 +497,8 @@ if __name__ == "__main__":
         options: [
           "Random access to elements in the middle by index",
           "Adding and removing at both ends, or keeping a bounded \"last N\" buffer",
-          "Testing whether a value is present",
-          "Sorting the contents frequently"
+          "Testing whether a value is present, which a deque does in constant time where a list scans",
+          "Sorting the contents frequently, since a deque keeps its elements in a linked structure that sorts in place"
         ],
         answer: 1,
         why: "A deque is O(1) at both ends where a list is O(n) at the front, which makes it right for queues and sliding windows — and `maxlen` gives a self-trimming buffer. Its trade-off is that indexing into the middle is O(n), so it is a poor random-access structure. Membership is O(n) on both, so a set is the answer for option C."
@@ -495,23 +506,23 @@ if __name__ == "__main__":
       {
         stem: "When is holding the same data in both a list and a set justified?",
         options: [
-          "Whenever the collection exceeds 100 elements",
-          "When both ordered access and fast membership are needed in the hot path, and the synchronisation can be confined to one class",
-          "Never — duplicated state is always a design flaw",
-          "Only when the data is immutable"
+          "When both ordered access and fast membership are hot, and one class keeps them in sync",
+          "Whenever the collection exceeds 100 elements, which is roughly where a list's linear membership test starts to cost",
+          "Never — duplicated state is always a design flaw, and one of the two copies will eventually drift out of step",
+          "Only when the data is immutable, because otherwise the list and the set cannot be kept consistent at all"
         ],
-        answer: 1,
+        answer: 0,
         why: "It is a real trade: memory and a consistency invariant, in exchange for removing an order of complexity. It is justified when both patterns are genuinely in the hot path and the two views can be kept in step inside a single small class. It is not justified when the data is small, when membership is tested rarely, when the synchronisation would be spread across many call sites — or, most commonly, when a single `dict` would provide both lookup and insertion order."
       },
       {
         stem: "Why do complexity bugs like this survive code review and a full test suite?",
         options: [
-          "Reviewers rarely read loop bodies carefully",
-          "At fixture scale a quadratic algorithm is indistinguishable from a linear one — the bug is latent and only surfaces as the data grows",
-          "Test suites do not execute the same code paths as production",
-          "Python's timing behaviour differs between development and production interpreters"
+          "Reviewers rarely read loop bodies carefully, so a membership test inside a loop is easy to miss",
+          "Test suites do not execute the same code paths as production, so the slow branch is never run",
+          "Python's timing behaviour differs between development and production interpreters, so slowness only shows when deployed",
+          "At fixture scale quadratic and linear look identical — the cost only appears as data grows"
         ],
-        answer: 1,
+        answer: 3,
         why: "The code is correct, so it passes every functional test, and on a few hundred fixture rows the difference between O(n) and O(n²) is microseconds. The bug is present from the day it is written and only becomes visible when the data crosses a threshold — often in production, often long after the author has moved on. That is the argument for reasoning about access patterns when the container is chosen rather than when the job is already slow."
       }
     ]

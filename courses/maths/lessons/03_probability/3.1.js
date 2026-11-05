@@ -297,15 +297,15 @@ np.sqrt(365) * 1.177                     # 22.5  -- matches the 23
 #   32-BIT HASH.  N = 4.3e9, so a collision is even money at ~77,000
 #   items -- not two billion. A hash table keyed on a 32-bit hash of a
 #   million records is almost certain to collide.
-1.177 * np.sqrt(2**32)                   # 77,163
+1.177 * np.sqrt(2**32)                   # 77,136
 
 #   RANDOM 8-CHAR IDS from 62 characters. N = 62^8 = 2.2e14, even money
 #   at ~17 million ids. Fine for a small service, not for event logging.
-1.177 * np.sqrt(62**8)                   # 17.5 million
+1.177 * np.sqrt(62**8)                   # 17.4 million
 
 #   UUID4.  122 random bits, N = 5.3e36, even money at 2.7e18 -- which
 #   is why UUIDs are treated as collision-free in practice.
-1.177 * np.sqrt(2**122)                  # 2.7e18
+1.177 * np.sqrt(2.0**122)                  # 2.7e18
 
 # THE PRACTICAL FORM: to keep collision probability below q for n
 # items, you need roughly N > n^2 / (2q) possibilities.

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 9.2 — Guardrails and Responsible AI
    The injected tool result arriving in the request — with role=user — is
-   executed output from scratchpad/adk/g1.py on google-adk 2.9.2.
+   executed output from g1.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "9.2",
@@ -27,7 +27,7 @@ EC.receiveLesson({
 
     { t: "p", text: "A tool reads a support ticket. The ticket body is text a member of the public typed into a form. Here is what the model's final request actually contained." },
 
-    { t: "code", lang: "python", title: "g1.py — the tool, and the ticket in it",
+    { t: "code", lang: "python", title: "the tool, and the ticket in it",
       code: `def read_ticket(ticket_id: str) -> dict:
     """Reads a support ticket."""
     # This text was typed by a member of the public into a web form.

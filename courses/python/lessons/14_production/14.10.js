@@ -163,12 +163,12 @@ def retry_with_backoff(...): ...
 # Nothing connects these except that nobody knew where to put them.` },
         { level: "ok", label: "Grouped by kind",
           why: "Better than `utils`, and it is grouping by what things *are* rather than what they are *for*. A change to tax rules still touches several modules, because the tax logic is spread across `calculations`, `formatting` and `validation`.",
-          code: `app/calculations.py    tax, discounts, shipping
+          lang: "text", code: `app/calculations.py    tax, discounts, shipping
 app/formatting.py      currency, dates, addresses
 app/validation.py      all validators` },
         { level: "best", label: "Grouped by what changes together",
           why: "A change to tax rules touches one module. The test for cohesion is not \"are these similar?\" but \"do these change for the same reason?\" — that is what makes a change local.",
-          code: `app/pricing/
+          lang: "text", code: `app/pricing/
 ├── tax.py           rates, rules, exemptions, and their formatting
 ├── discounts.py     promotion logic and eligibility
 └── shipping.py      zones, weights, carriers
@@ -846,45 +846,45 @@ def test_no_test_specific_branch_exists_in_production_code():
       {
         stem: "A function takes `is_test: bool` and skips the payment call when true. Why is this the most dangerous parameter in the module?",
         options: [
-          "It adds an untested branch",
-          "The tested behaviour is not the production behaviour, and a wrong value silently either charges real cards from CI or completes orders with no charge",
-          "Booleans should always be enums",
-          "It prevents type checking"
+          "Tests no longer run production behaviour, and a wrong value charges or skips silently",
+          "It adds a branch that is never exercised by the test suite, so coverage of the module drops",
+          "Booleans should always be enums, because `True` and `False` say nothing about what they control",
+          "A boolean flag prevents type checking of the payment call, which mypy can no longer see"
         ],
-        answer: 1,
+        answer: 0,
         why: "Both failure directions are one keystroke away and neither raises. The fix is not a safer flag but a seam: injecting the gateway means the production path has no test-specific branch, so the thing under test is the thing that runs."
       },
       {
         stem: "A function has seven reasons to change and has caused a regression on eight of its last eleven edits. What is the connection?",
         options: [
-          "The team needs more code review",
-          "Every concern lives in one place, so a change to any one of them risks the other six",
-          "The function is too long to read",
-          "It lacks type annotations"
+          "The team needs more code review on that function before changes merge",
+          "The function is too long to read, so reviewers miss the regressions",
+          "It lacks type annotations, so the checker cannot catch the regressions",
+          "Every concern lives in one place, so any change risks the rest"
         ],
-        answer: 1,
+        answer: 3,
         why: "Cohesion is about reasons to change, not similarity or length. Splitting by reason makes a change local — after the split, a VAT change touches the tax function and its tests, and nothing else can break."
       },
       {
         stem: "`def is_overdue(invoice): return invoice.due_date < datetime.now(tz=UTC)`. What is the maintainability problem?",
         options: [
-          "It should use a naive datetime for speed",
-          "There is no seam for the clock, so boundary cases cannot be tested and the test will eventually fail on a real date",
-          "The comparison operator is wrong",
-          "It should be a method on Invoice"
+          "It should compare naive datetimes, which are faster than aware ones",
+          "The comparison operator is wrong, so invoices due today count as overdue",
+          "There is no seam for the clock, so its boundaries are untestable",
+          "It should be a method on `Invoice` rather than a free function"
         ],
-        answer: 1,
+        answer: 2,
         why: "Anything that makes the same input produce different outputs — the clock, `uuid4()`, `random()` — needs a seam. An optional `now` parameter with a sensible default costs nothing at the call site and turns every boundary case into a one-line test."
       },
       {
         stem: "You inherit a service where changes are slow and regressions frequent. When is a rewrite the right answer?",
         options: [
-          "When the design is more than three years old",
-          "Rarely — a rewrite discards undocumented edge cases; adding characterisation tests and extracting seams usually delivers what the rewrite was asked for",
-          "Whenever the framework is out of date",
-          "When more than half the team is new"
+          "Rarely — characterisation tests and seams usually deliver what a rewrite promises",
+          "When the design is more than three years old and predates the team's current practices",
+          "Whenever the framework is out of date, since upgrading in place costs as much as rewriting",
+          "When more than half the team is new and nobody understands the original design"
         ],
-        answer: 1,
+        answer: 0,
         why: "The working behaviour includes years of accumulated edge cases nobody wrote down, and a rewrite loses all of them while delivering nothing until it is finished. Characterisation tests plus extracted seams make the next change cheap, which is the actual goal."
       }
     ]

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.1 — NaN, Inf, and the Gradient Norm
    The depth arithmetic is verified and the three-way init comparison
-   measured across 30 layers (scratchpad/dl/d71.py).
+   measured across 30 layers (d71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.1",

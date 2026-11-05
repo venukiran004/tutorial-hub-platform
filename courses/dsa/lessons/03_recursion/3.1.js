@@ -114,7 +114,7 @@ def climb(n: int) -> int:
       title: "The coin change problem: fewest coins summing to an amount",
       rungs: [
         { level: "bad", label: "A state that is not enough",
-          why: "\"Ways to make `amount`\" ignores which coins remain available. For unlimited coins that happens to be sufficient; the moment each coin can be used once, this state cannot distinguish two situations that need different answers.",
+          why: "\"Fewest coins for `amount`\" ignores which coins remain available. For unlimited coins that happens to be sufficient; the moment each coin can be used once, this state cannot distinguish two situations that need different answers.",
           code: `@cache
 def fewest(amount):
     # What if each coin may be used only once? This state cannot
@@ -122,7 +122,7 @@ def fewest(amount):
     # unlimited-coins answer to a limited-coins question.
     ...` },
         { level: "ok", label: "A state that is too much",
-          why: "Adding the remaining coins as a frozenset makes it correct and explodes the state space to 2ⁿ — the memo now has more entries than the brute force had calls, and the cache helps nothing.",
+          why: "Adding the remaining coins as a frozenset makes it correct and explodes the state space to 2ⁿ — almost every call is a new state, so the cache helps nothing.",
           code: `@cache
 def fewest(amount, remaining: frozenset[int]):
     ...
@@ -173,7 +173,7 @@ def f(i):
 #    evicts, so a web handler using it leaks memory for the life of
 #    the process.
 @lru_cache(maxsize=10_000)        # bounded
-def f(...): ...
+def f(x): ...
 
 # 4. TOO MANY DISTINCT STATES. If nearly every call has a unique
 #    state, the cache adds overhead and saves nothing. Count the
@@ -332,7 +332,11 @@ def edit_distance_recursive(a: str, b: str) -> int:
 # STEP 2 -- MEMOISE
 # =========================================================================
 
+import random
 from functools import cache
+
+import pytest
+
 
 def edit_distance_memo(a: str, b: str) -> int:
     """O(m * n) time, O(m * n) space.
@@ -353,13 +357,13 @@ def edit_distance_memo(a: str, b: str) -> int:
                        solve(i + 1, j + 1))
 
     result = solve(0, 0)
-    solve.cache_clear()      # the closure holds a and b; without this
-    return result            # they are retained for the process's life
+    solve.cache_clear()      # frees the table now, rather than whenever
+    return result            # the cycle collector reaches this closure
 
 # NOTE the cache is on an INNER function, recreated per call. A
 # module-level @cache on a function taking (a, b, i, j) would key on
-# the full strings at every level -- correct, but the keys are then
-# O(m + n) to hash, which changes the complexity.
+# the full strings and keep every one of them alive for the life of
+# the process -- correct, and a memory leak.
 
 
 # =========================================================================
@@ -371,7 +375,8 @@ def edit_distance_table(a: str, b: str) -> int:
 
     Same recurrence, filled bottom-up. Worth doing when the strings
     can be long: the memoised version recurses to depth m + n, so
-    two 10,000-character strings raise RecursionError (Lesson 2.1).
+    two 1,000-character strings raise RecursionError (Lesson 2.1),
+    and raising the limit does not rescue it: @cache recurses through C.
     """
     m, n = len(a), len(b)
     # dp[i][j] = edit distance between a[:i] and b[:j]
@@ -503,9 +508,10 @@ def edit_operations(a: str, b: str) -> list[str]:
 #   with edits      O(m*n)      O(m*n)          none       most useful
 #
 # At m = n = 1,000:
-#   recursive   ~10^900 operations        (never finishes)
-#   memoised    ~10^6 operations, 8 MB
-#   compressed  ~10^6 operations, 8 KB
+#   recursive   ~10^950 operations        (never finishes)
+#   memoised    RecursionError under @cache; ~100 MB if it could run
+#   tabulated   ~10^6 operations, ~40 MB
+#   compressed  ~10^6 operations, tens of KB
 #
 # WHAT I WOULD SHIP:
 #
@@ -518,7 +524,7 @@ def edit_operations(a: str, b: str) -> list[str]:
 #   by reading.
 #
 #   The COMPRESSED version only when memory is measured and binding.
-#   8 MB is nothing on a server and everything in a tight loop over
+#   40 MB is nothing on a server and everything in a tight loop over
 #   millions of string pairs -- but it forecloses reconstruction,
 #   which is usually what a caller actually wants.
 #
@@ -533,6 +539,24 @@ def edit_operations(a: str, b: str) -> list[str]:
 # =========================================================================
 # TESTS
 # =========================================================================
+
+def random_string() -> str:
+    return "".join(random.choices("abcd", k=random.randint(0, 10)))
+
+
+def apply_operations(a: str, ops: list[str]) -> str:
+    """Positions refer to the original string, so apply right to left."""
+    chars = list(a)
+    for op in reversed(ops):
+        position = int(op.rsplit(" ", 1)[1])
+        if op.startswith("delete"):
+            del chars[position]
+        elif op.startswith("insert"):
+            chars.insert(position, op.split("'")[1])
+        else:
+            chars[position] = op.split("'")[3]
+    return "".join(chars)
+
 
 @pytest.mark.parametrize("a,b,expected", [
     ("horse", "ros",           3),
@@ -634,7 +658,7 @@ def test_no_recursion_error_on_long_strings():
     "**`@cache` requires hashable arguments and no hidden mutable state** — everything affecting the result must be an argument.",
     "**Bound the cache in a long-lived process.** `@cache` never evicts, so a request handler using it leaks for the process's lifetime.",
     "**Stop at memoisation unless there is a reason not to.** It has the same time complexity as tabulation and is far harder to get wrong.",
-    "**Tabulate when recursion depth is a risk** — two 10,000-character strings will exceed the limit.",
+    "**Tabulate when recursion depth is a risk** — two 1,000-character strings exceed the limit.",
     "**Tabulation flips suffixes to prefixes**, which is why the base cases land in row 0 and column 0, and why the `- 1` indexing appears.",
     "**Leaving the base row and column as zeros is the classic tabulation bug**, and it makes every empty-input case return 0.",
     "**Compress only when memory is measured and binding** — it obscures the recurrence and forecloses reconstructing the actual answer.",
@@ -649,45 +673,45 @@ def test_no_recursion_error_on_long_strings():
       {
         stem: "What is the first step when facing an unfamiliar DP problem?",
         options: [
-          "Identify which classic problem it resembles",
-          "Write the brute-force recursion, defining the state precisely — memoisation is then one decorator away",
-          "Draw the DP table and derive the recurrence",
-          "Determine the time complexity target"
+          "Write the brute-force recursion, defining the state precisely",
+          "Identify which classic problem it resembles, then adapt that known solution",
+          "Draw the DP table first, then derive the recurrence from the pattern in the cells",
+          "Determine the target time complexity from the input limits, then work backwards"
         ],
-        answer: 1,
+        answer: 0,
         why: "Deriving a recurrence from the shape of the answer is guessing; a recursion can be verified by reading and tested on small inputs. Once it is correct, `@cache` takes it from exponential to states × work-per-state with no change to the logic."
       },
       {
         stem: "You memoise a function on `(amount, frozenset(remaining_coins))` and it is no faster. Why?",
         options: [
-          "frozensets are slow to hash",
-          "The state space is 2ⁿ, so almost every call has a unique state and nothing is ever reused",
-          "The cache needs a larger maxsize",
-          "Sets cannot be used as cache keys"
+          "frozensets are slow to hash, so the key costs more than the work it saves",
+          "The cache needs a larger `maxsize`, because old entries are being evicted",
+          "The state space is 2ⁿ, so almost every state is new and nothing is reused",
+          "Sets cannot be used as cache keys, so `@cache` silently skips those calls"
         ],
-        answer: 1,
+        answer: 2,
         why: "Memoisation only pays when subproblems overlap. The state must be the smallest thing that determines the answer — here an index plus an amount, giving n × amount states, each reached many times."
       },
       {
         stem: "A tabulated edit-distance solution returns 0 for `(\"abc\", \"\")`. What is wrong?",
         options: [
-          "The loop bounds are off by one",
-          "The base row and column were left as zeros — `dp[i][0]` must be `i` and `dp[0][j]` must be `j`",
-          "Empty strings need a special case before the loop",
-          "The minimum should be a maximum"
+          "The loop bounds are off by one, so the last row is never computed",
+          "Empty strings need a special case before the loop, because the table has no rows",
+          "The `min` in the recurrence should be a `max`, because edits accumulate",
+          "The base row and column were left as zeros — `dp[i][0]` must be `i` and `dp[0][j]` must be `j`"
         ],
-        answer: 1,
+        answer: 3,
         why: "The base row and column are the recursion's base cases, and leaving them zero silently makes every empty-input case free. It is the most common tabulation bug, and it passes any test that never involves an empty string."
       },
       {
         stem: "In backtracking, why must you append `path.copy()` rather than `path`?",
         options: [
-          "To avoid a memory leak",
-          "`path` is mutated by the subsequent `pop()`, so storing a reference means every recorded result changes as the search continues",
-          "Lists cannot be nested",
-          "Copying is required for the recursion to unwind"
+          "To avoid a memory leak, because each recursive call keeps a reference to `path`",
+          "Lists cannot be nested inside another list without being copied first",
+          "`path` keeps being mutated, so every stored reference changes with it",
+          "Copying is required for the recursion to unwind cleanly after each branch"
         ],
-        answer: 1,
+        answer: 2,
         why: "All the appended references point at the same list object, so by the time the search finishes they are all identical — usually all empty. It is the single most common backtracking bug and it produces a result that looks structurally right and is entirely wrong."
       }
     ]

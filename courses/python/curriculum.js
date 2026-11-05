@@ -36,7 +36,7 @@
        "soon" in the rail and the curriculum, so the roadmap is visible in full
        without ever promising content that is not there yet. Add an id here the
        moment its lesson file lands — this is the single switch. */
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "13.9", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.2", "i8.3", "i8.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8", "2.9", "2.10", "2.11", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "3.7", "3.8", "3.9", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12", "4.13", "5.1", "5.2", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9", "5.10", "5.11", "5.12", "6.1", "6.2", "6.3", "6.4", "6.5", "6.6", "7.1", "7.2", "7.3", "7.4", "7.5", "7.6", "7.7", "7.8", "7.9", "7.10", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.8", "8.9", "9.1", "9.2", "9.3", "9.4", "9.5", "9.6", "9.7", "9.8", "9.9", "10.1", "10.2", "10.3", "10.4", "10.5", "10.6", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.7", "11.8", "12.1", "12.2", "12.3", "12.4", "12.5", "12.6", "12.7", "12.8", "12.9", "12.10", "13.1", "13.2", "13.3", "13.4", "13.5", "13.6", "13.7", "13.8", "13.9", "14.1", "14.2", "14.3", "14.4", "14.5", "14.6", "14.7", "14.8", "14.9", "14.10", "15.1", "15.2", "15.3", "15.4", "15.5", "15.6", "15.7", "15.8", "15.9", "16.1", "16.2", "16.3", "16.4", "16.5", "i1.1", "i1.2", "i1.3", "i1.4", "i1.5", "i1.6", "i1.7", "i1.8", "i2.1", "i2.2", "i2.3", "i2.4", "i2.5", "i2.6", "i2.7", "i3.1", "i3.2", "i3.3", "i3.4", "i4.1", "i4.2", "i4.3", "i4.4", "i4.5", "i5.1", "i5.2", "i5.3", "i6.1", "i6.2", "i7.1", "i7.2", "i7.3", "i7.4", "i7.5", "i7.6", "i8.2", "i8.3", "i8.4"],
 
     modules: [
 
@@ -206,7 +206,10 @@
             keywords: ["solid", "srp", "open closed", "liskov", "dependency inversion"] },
           { id: "4.12", title: "Design Patterns That Survive in Python", difficulty: "advanced", minutes: 38, tier: "adv",
             summary: "Strategy is a function. Singleton is a module. The patterns that remain useful, and the ones the language already solved.",
-            keywords: ["design pattern", "strategy", "factory", "singleton", "observer", "adapter"] }
+            keywords: ["design pattern", "strategy", "factory", "singleton", "observer", "adapter"] },
+          { id: "4.13", title: "Enums: Named Constants That Carry Behaviour", difficulty: "core", minutes: 30, tier: "should",
+            summary: "Closing an open set of strings, the Enum-versus-value boundary trap, StrEnum, a transition table on the enum, Flag, and surviving values from the future with _missing_.",
+            keywords: ["enum", "strenum", "intenum", "flag", "auto", "unique", "_missing_", "state machine"] }
         ]
       },
 
@@ -305,7 +308,7 @@
             keywords: ["csv", "json", "serialise", "dictreader", "streaming", "datetime"] },
           { id: "7.3", title: "Pickle and Why It Is a Security Boundary", difficulty: "core", minutes: 24, tier: "should",
             summary: "What pickle is for, what it costs, and why 'never unpickle untrusted data' is a hard rule.",
-            keywords: ["pickle", "serialisation", "security", "rce", "joblib", "model artifact"] },
+            keywords: ["pickle", "serialisation", "security", "rce", "joblib", "model artefact"] },
           { id: "7.4", title: "Modules and the Import System", difficulty: "core", minutes: 36, tier: "must",
             summary: "How import resolves, sys.path, absolute vs relative, circular imports, and the module cache.",
             keywords: ["import", "module", "sys.path", "circular import", "namespace", "cache"] },
@@ -319,8 +322,14 @@
             summary: "The modern project file, src layout, extras, entry points, and building a wheel.",
             keywords: ["pyproject", "build", "wheel", "src layout", "extras", "setuptools", "hatch"] },
           { id: "7.8", title: "A Standard Library Tour Worth Taking", difficulty: "core", minutes: 34, tier: "should",
-            summary: "datetime and timezones, uuid, secrets, subprocess, tempfile, argparse — the modules that stop you adding a dependency.",
-            keywords: ["stdlib", "datetime", "timezone", "uuid", "secrets", "subprocess", "argparse", "tempfile"] }
+            summary: "datetime and time zones, uuid, secrets, subprocess, tempfile, argparse — the modules that stop you adding a dependency.",
+            keywords: ["stdlib", "datetime", "time zone", "uuid", "secrets", "subprocess", "argparse", "tempfile"] },
+          { id: "7.9", title: "Dates, Times and Time Zones in Depth", difficulty: "core", minutes: 34, tier: "should",
+            summary: "Instants against wall-clock times and dates, parsing with an offset, the DST gap and fold, same-zone comparison, monotonic clocks, and injecting the clock for tests.",
+            keywords: ["datetime", "zoneinfo", "tzdata", "dst", "fold", "iso 8601", "monotonic", "utc"] },
+          { id: "7.10", title: "Building Command-Line Tools", difficulty: "core", minutes: 32, tier: "should",
+            summary: "The three-channel contract — stdout, stderr, exit code — argparse with subcommands, main(argv) -> int, broken pipes and Ctrl-C, testing with capsys, and shipping an entry point.",
+            keywords: ["cli", "argparse", "exit code", "stdout", "stderr", "stdin", "click", "typer", "entry point"] }
         ]
       },
 
@@ -340,7 +349,7 @@
             keywords: ["generator", "pipeline", "send", "coroutine", "streaming", "backpressure"] },
           { id: "8.2", title: "Advanced Decorators", difficulty: "advanced", minutes: 38, tier: "should",
             summary: "Class decorators, decorators with optional arguments, decorating methods, and preserving signatures properly.",
-            keywords: ["decorator", "class decorator", "signature", "wraps", "parametrised"] },
+            keywords: ["decorator", "class decorator", "signature", "wraps", "parameterised"] },
           { id: "8.3", title: "Type Hints in Depth", difficulty: "advanced", minutes: 40, tier: "must",
             summary: "Beyond int and str: Optional, Union, literals, aliases, and hints that catch real bugs instead of decorating code.",
             keywords: ["typing", "optional", "union", "literal", "alias", "mypy", "annotations"] },
@@ -384,7 +393,7 @@
             keywords: ["fixture", "scope", "conftest", "yield fixture", "factory"] },
           { id: "9.4", title: "Parameterisation", difficulty: "core", minutes: 28, tier: "must",
             summary: "Table-driven tests, ids that make failures readable, and turning a bug report into a regression case.",
-            keywords: ["parametrize", "table driven", "regression", "ids", "edge case"] },
+            keywords: ["parameterise", "table driven", "regression", "ids", "edge case"] },
           { id: "9.5", title: "Mocking and Monkeypatching", difficulty: "advanced", minutes: 38, tier: "must",
             summary: "Patch where it is looked up, not where it is defined; fakes vs mocks; and the over-mocked test that verifies nothing.",
             keywords: ["mock", "patch", "monkeypatch", "fake", "stub", "autospec"] },
@@ -396,7 +405,10 @@
             keywords: ["integration", "testcontainers", "database", "httpx", "responses", "fixtures"] },
           { id: "9.8", title: "Coverage and Testing in CI", difficulty: "core", minutes: 28, tier: "should",
             summary: "Running the suite on every push, matrix builds, flaky-test policy, and coverage gates that are not theatre.",
-            keywords: ["coverage", "ci", "github actions", "matrix", "flaky", "gate"] }
+            keywords: ["coverage", "ci", "github actions", "matrix", "flaky", "gate"] },
+          { id: "9.9", title: "Property-Based Testing with Hypothesis", difficulty: "advanced", minutes: 32, tier: "should",
+            summary: "Properties instead of examples, generation and shrinking, strategies and st.builds, the five property patterns, @example for regressions, and reproducible CI profiles.",
+            keywords: ["hypothesis", "property-based", "given", "strategies", "shrinking", "round-trip", "invariant"] }
         ]
       },
 
@@ -571,7 +583,7 @@
             keywords: ["docker", "container", "multi-stage", "image", "entrypoint", "sigterm", "healthcheck"] },
           { id: "14.6", title: "CI/CD for Python Services", difficulty: "advanced", minutes: 36, tier: "must",
             summary: "A pipeline worth having: lint, type-check, test, build, scan, deploy — with the gates that catch real problems.",
-            keywords: ["ci", "cd", "github actions", "pipeline", "artifact", "deploy", "rollback"] },
+            keywords: ["ci", "cd", "github actions", "pipeline", "artefact", "deploy", "rollback"] },
           { id: "14.7", title: "Dependency and Supply-Chain Security", difficulty: "advanced", minutes: 32, tier: "should",
             summary: "Pinning, hashes, vulnerability scanning, typosquatting, and evaluating whether to add a dependency at all.",
             keywords: ["security", "cve", "pip-audit", "sbom", "pinning", "typosquat", "supply chain"] },
@@ -613,9 +625,9 @@
           { id: "15.5", title: "scikit-learn as an Engineering API", difficulty: "core", minutes: 38, tier: "should",
             summary: "The estimator contract, Pipeline and ColumnTransformer, leakage-free cross-validation, and custom transformers.",
             keywords: ["sklearn", "estimator", "pipeline", "columntransformer", "leakage", "cross validation"] },
-          { id: "15.6", title: "Model Artifacts and Reproducibility", difficulty: "advanced", minutes: 34, tier: "should",
+          { id: "15.6", title: "Model Artefacts and Reproducibility", difficulty: "advanced", minutes: 34, tier: "should",
             summary: "Serialising models safely, versioning data and code together, seeds, and making a result reproducible six months later.",
-            keywords: ["artifact", "joblib", "onnx", "versioning", "reproducibility", "seed", "mlflow"] },
+            keywords: ["artefact", "joblib", "onnx", "versioning", "reproducibility", "seed", "mlflow"] },
           { id: "15.7", title: "Serving a Model with FastAPI", difficulty: "advanced", minutes: 40, tier: "must",
             summary: "Loading at startup, input validation, batching, latency budgets, warm-up and the failure modes unique to inference.",
             keywords: ["serving", "inference", "fastapi", "batching", "latency", "warmup", "gpu"] },
@@ -668,8 +680,8 @@
           { id: "i1.1", title: "Data Types & Variables", difficulty: "advanced", minutes: 48, tier: "should",
             summary: "30 interview questions, answers hidden until you ask for them.",
             keywords: ["types", "variables", "mutability"] },
-          { id: "i1.2", title: "Strings", difficulty: "core", minutes: 19, tier: "should",
-            summary: "12 interview questions, answers hidden until you ask for them.",
+          { id: "i1.2", title: "Strings", difficulty: "core", minutes: 42, tier: "should",
+            summary: "26 interview questions, answers hidden until you ask for them.",
             keywords: ["strings", "formatting", "unicode"] },
           { id: "i1.3", title: "Lists", difficulty: "core", minutes: 40, tier: "should",
             summary: "25 interview questions, answers hidden until you ask for them.",
@@ -680,8 +692,8 @@
           { id: "i1.5", title: "Dictionaries", difficulty: "core", minutes: 32, tier: "should",
             summary: "20 interview questions, answers hidden until you ask for them.",
             keywords: ["dict", "hashing", "mapping"] },
-          { id: "i1.6", title: "Control Flow", difficulty: "advanced", minutes: 51, tier: "should",
-            summary: "32 interview questions, answers hidden until you ask for them.",
+          { id: "i1.6", title: "Control Flow", difficulty: "advanced", minutes: 24, tier: "should",
+            summary: "15 interview questions, answers hidden until you ask for them.",
             keywords: ["control flow", "loops", "match"] },
           { id: "i1.7", title: "Functions & Scope", difficulty: "core", minutes: 32, tier: "should",
             summary: "20 interview questions, answers hidden until you ask for them.",
@@ -711,11 +723,11 @@
           { id: "i2.3", title: "Exception Handling", difficulty: "advanced", minutes: 48, tier: "should",
             summary: "30 interview questions, answers hidden until you ask for them.",
             keywords: ["exceptions", "errors", "traceback"] },
-          { id: "i2.4", title: "File I/O & Context Managers", difficulty: "core", minutes: 35, tier: "should",
-            summary: "22 interview questions, answers hidden until you ask for them.",
+          { id: "i2.4", title: "File I/O & Context Managers", difficulty: "core", minutes: 45, tier: "should",
+            summary: "28 interview questions, answers hidden until you ask for them.",
             keywords: ["file io", "context manager", "with"] },
-          { id: "i2.5", title: "Modules & Packages", difficulty: "core", minutes: 12, tier: "should",
-            summary: "6 interview questions, answers hidden until you ask for them.",
+          { id: "i2.5", title: "Modules & Packages", difficulty: "core", minutes: 38, tier: "should",
+            summary: "24 interview questions, answers hidden until you ask for them.",
             keywords: ["modules", "packages", "imports"] },
           { id: "i2.6", title: "Regular Expressions", difficulty: "core", minutes: 32, tier: "should",
             summary: "20 interview questions, answers hidden until you ask for them.",
@@ -767,14 +779,14 @@
           { id: "i4.2", title: "Creational Patterns", difficulty: "core", minutes: 26, tier: "should",
             summary: "16 interview questions, answers hidden until you ask for them.",
             keywords: ["factory", "builder", "singleton", "prototype", "object pool"] },
-          { id: "i4.3", title: "Structural Patterns", difficulty: "core", minutes: 12, tier: "should",
-            summary: "7 interview questions, answers hidden until you ask for them.",
+          { id: "i4.3", title: "Structural Patterns", difficulty: "core", minutes: 13, tier: "should",
+            summary: "8 interview questions, answers hidden until you ask for them.",
             keywords: ["decorator", "adapter", "facade", "proxy", "composite", "bridge"] },
-          { id: "i4.4", title: "Behavioural Patterns", difficulty: "core", minutes: 26, tier: "should",
-            summary: "16 interview questions, answers hidden until you ask for them.",
+          { id: "i4.4", title: "Behavioural Patterns", difficulty: "core", minutes: 30, tier: "should",
+            summary: "19 interview questions, answers hidden until you ask for them.",
             keywords: ["observer", "strategy", "command", "iterator", "state", "mediator"] },
-          { id: "i4.5", title: "Architectural Patterns", difficulty: "core", minutes: 14, tier: "should",
-            summary: "9 interview questions, answers hidden until you ask for them.",
+          { id: "i4.5", title: "Architectural Patterns", difficulty: "core", minutes: 16, tier: "should",
+            summary: "10 interview questions, answers hidden until you ask for them.",
             keywords: ["dependency injection", "repository", "circuit breaker", "saga", "cqrs", "plugin"] }
         ]
       },
@@ -857,8 +869,8 @@
         phase: "Interview Preparation",
         numFrom: 8,
         dir: "24_iv_banks",
-        title: "Interview: Algorithms & Question Banks",
-        blurb: "Algorithms, a mixed rapid-fire bank, and the senior-level set.",
+        title: "Interview: Question Banks",
+        blurb: "Two mixed rapid-fire banks and the senior-level set.",
         outcome: "You can revise broadly at speed, and handle the questions that have no single right answer.",
         lessons: [
           { id: "i8.2", title: "Question Bank · Questions 1–100", difficulty: "advanced", minutes: 60, tier: "should",

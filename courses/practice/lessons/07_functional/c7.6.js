@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c7.6",
  "lede": "**30 snippets to read**, on reduce and functional composition. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on reduce and functional composition before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c7.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 890–919.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["functions", "lists", "generators", "strings", "decorators", "dicts and sets"], "cells": [[{"text": "14", "tone": "accent"}, "A lambda"], [{"text": "7", "tone": "good"}, "A lambda"], [{"text": "4", "tone": "violet"}, "An itertools recipe"], [{"text": "2", "tone": "teal"}, "A lambda"], [{"text": "2", "tone": "warn"}, "functools.reduce"], [{"text": "1", "tone": "crit"}, "A lambda"]], "t": "diagram", "id": "dg-c7_6-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 890: A lambda — output of `sentence = reduce(lambda a, b: a + b, words)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello World!` **Explanation:** Reduce concatenates strings. Same as `''.join(words)` but less efficient."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nwords = ['Hello', ' ', 'World', '!']\nsentence = reduce(lambda a, b: a + b, words)\nprint(sentence)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello World!` **Explanation:** Reduce concatenates strings. Same as `''.join(words)` but less efficient."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 891: A lambda — output of `sorted_pairs = sorted(pairs, key=lambda x: x[…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(3, 'a'), (1, 'b'), (2, 'c')]` **Explanation:** Sorting by second element using lambda as key function."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "pairs = [(1, 'b'), (3, 'a'), (2, 'c')]\nsorted_pairs = sorted(pairs, key=lambda x: x[1])\nprint(sorted_pairs)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(3, 'a'), (1, 'b'), (2, 'c')]` **Explanation:** Sorting by second element using lambda as key function."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 892: A lambda — output of `top['name']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Bob` **Explanation:** `max()` with key function finds student with highest grade."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "students = [\n    {'name': 'Alice', 'grade': 85},\n    {'name': 'Bob', 'grade': 92},\n    {'name': 'Charlie', 'grade': 78}\n]\ntop = max(students, key=lambda s: s['grade'])\nprint(top['name'])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Bob` **Explanation:** `max()` with key function finds student with highest grade."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 893: A lambda — output of `product = reduce(lambda a, b: a * b, nums)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `24` **Explanation:** Reduce computes product: `2 * 3 * 4 = 24`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnums = [2, 3, 4]\nproduct = reduce(lambda a, b: a * b, nums)\nprint(product)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `24` **Explanation:** Reduce computes product: `2 * 3 * 4 = 24`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 894: A lambda — output of `result = reduce(lambda a, b: a * 10 + b, nums)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `12345` **Explanation:** Builds a number digit by digit: `1→12→123→1234→12345`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnums = [1, 2, 3, 4, 5]\nresult = reduce(lambda a, b: a * 10 + b, nums)\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `12345` **Explanation:** Builds a number digit by digit: `1→12→123→1234→12345`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 895: A lambda — output of `flattened = list(reduce(lambda a, b: a + b, m…`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflattened = list(reduce(lambda a, b: a + b, matrix))\nprint(flattened)",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7, 8, 9]` **Explanation:** Reduce concatenates sublists. More efficient to use `itertools.chain.from_iterable`."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from functools import reduce\n\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflattened = list(reduce(lambda a, b: a + b, matrix))\nprint(flattened)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 896: A lambda — output of `positive = list(filter(lambda x: x > 0, data))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[3, 4, 5, 2]`, `[5, 4, 3, 2]` **Explanation:** Filter positives, then sort descending using negated key."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "data = [3, -1, 4, -1, 5, -9, 2, -6]\npositive = list(filter(lambda x: x > 0, data))\nprint(positive)\nprint(sorted(positive, key=lambda x: -x))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[3, 4, 5, 2]`, `[5, 4, 3, 2]` **Explanation:** Filter positives, then sort descending using negated key."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 897: A list comprehension — output of `funcs = [lambda x: x + 1, lambda x: x * 2, la…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[4, 6, 9]` **Explanation:** Applying multiple lambda functions to the same value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "funcs = [lambda x: x + 1, lambda x: x * 2, lambda x: x ** 2]\nx = 3\nresults = [f(x) for f in funcs]\nprint(results)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[4, 6, 9]` **Explanation:** Applying multiple lambda functions to the same value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 898: A lambda — output of `flat = reduce(lambda a, b: a + b, nested, [])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** `reduce` with initial value `[]` flattens the list by concatenation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnested = [[1, 2], [3, 4], [5, 6]]\nflat = reduce(lambda a, b: a + b, nested, [])\nprint(flat)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** `reduce` with initial value `[]` flattens the list by concatenation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 899: A lambda — output of `add(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `15`, `25` **Explanation:** Lambdas support default parameter values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "add = lambda x, y=10: x + y\nprint(add(5))\nprint(add(5, 20))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `15`, `25` **Explanation:** Lambdas support default parameter values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 900: A lambda — output of `items = [('apple', 3), ('banana', 1), ('cherr…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('banana', 1), ('cherry', 2), ('apple', 3)]` **Explanation:** Sort tuples by second element (count)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "items = [('apple', 3), ('banana', 1), ('cherry', 2)]\nsorted_items = sorted(items, key=lambda x: x[1])\nprint(sorted_items)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('banana', 1), ('cherry', 2), ('apple', 3)]` **Explanation:** Sort tuples by second element (count)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,16 +257,19 @@ EC.receiveLesson({
    "q": "Program 901: functools.reduce — output of `reduce(add, [1, 2, 3, 4, 5])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `15`, `120` **Explanation:** `operator.add` and `operator.mul` are cleaner than lambdas for basic operations."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from operator import add, mul\nfrom functools import reduce\nprint(reduce(add, [1, 2, 3, 4, 5]))\nprint(reduce(mul, [1, 2, 3, 4, 5]))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `15`, `120` **Explanation:** `operator.add` and `operator.mul` are cleaner than lambdas for basic operations."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -241,16 +277,19 @@ EC.receiveLesson({
    "q": "Program 902: map() and filter() — output of `texts = [' Hello ', ' WORLD ', ' Python ']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['hello', 'world', 'python']` **Explanation:** Chained maps — first strip whitespace, then lowercase."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "texts = ['  Hello  ', '  WORLD  ', '  Python  ']\ncleaned = list(map(str.strip, texts))\nlowered = list(map(str.lower, cleaned))\nprint(lowered)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['hello', 'world', 'python']` **Explanation:** Chained maps — first strip whitespace, then lowercase."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -258,16 +297,19 @@ EC.receiveLesson({
    "q": "Program 903: An itertools recipe — output of `result = list(starmap(lambda x, y: x * y, pai…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[6, 20, 42]` **Explanation:** `starmap` unpacks each tuple as arguments to the function. `map` passes the whole tuple."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import starmap\npairs = [(2, 3), (4, 5), (6, 7)]\nresult = list(starmap(lambda x, y: x * y, pairs))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[6, 20, 42]` **Explanation:** `starmap` unpacks each tuple as arguments to the function. `map` passes the whole tuple."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -275,16 +317,19 @@ EC.receiveLesson({
    "q": "Program 904: An itertools recipe — output of `odds = list(filterfalse(lambda x: x % 2 == 0,…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3, 5]` **Explanation:** `filterfalse` keeps elements where function returns `False` — opposite of `filter`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import filterfalse\nnums = [1, 2, 3, 4, 5, 6]\nodds = list(filterfalse(lambda x: x % 2 == 0, nums))\nprint(odds)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3, 5]` **Explanation:** `filterfalse` keeps elements where function returns `False` — opposite of `filter`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -292,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 905: A filtered list comprehension — output of `doubled_evens = list(map(lambda x: x * 2, fil…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** Both: `[4, 8]` **Explanation:** Map + filter combo vs list comprehension — same result, comprehension is more readable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\ndoubled_evens = list(map(lambda x: x * 2, filter(lambda x: x % 2 == 0, nums)))\n# Equivalent list comprehension:\nresult = [x * 2 for x in nums if x % 2 == 0]\nprint(doubled_evens)\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** Both: `[4, 8]` **Explanation:** Map + filter combo vs list comprehension — same result, comprehension is more readable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -309,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 906: A lambda — output of `f(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `12` **Explanation:** `f(5)` = `double(add1(5))` = `double(6)` = `12`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "compose = lambda f, g: lambda x: f(g(x))\ndouble = lambda x: x * 2\nadd1 = lambda x: x + 1\n\nf = compose(double, add1)\nprint(f(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `12` **Explanation:** `f(5)` = `double(add1(5))` = `double(6)` = `12`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -326,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 907: A lambda — output of `all_true, any_true`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False True` **Explanation:** Reduce with `and` checks if all are True. With `or` checks if any is True."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\ndata = [True, True, False, True]\nall_true = reduce(lambda a, b: a and b, data)\nany_true = reduce(lambda a, b: a or b, data)\nprint(all_true, any_true)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False True` **Explanation:** Reduce with `and` checks if all are True. With `or` checks if any is True."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -343,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 908: A generator expression — output of `adults = list(filter(lambda p: p['age'] >= 30…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['Alice', 'Bob', 'Charlie']`, `['Alice', 'Charlie']` **Explanation:** Map extracts names. Filter selects adults (age >= 30)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "people = [\n    {'name': 'Alice', 'age': 30},\n    {'name': 'Bob', 'age': 25},\n    {'name': 'Charlie', 'age': 35}\n]\nnames = list(map(lambda p: p['name'], people))\nadults = list(filter(lambda p: p['age'] >= 30, people))\nprint(names)\nprint([p['name'] for p in adults])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['Alice', 'Bob', 'Charlie']`, `['Alice', 'Charlie']` **Explanation:** Map extracts names. Filter selects adults (age >= 30)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -360,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 909: A lambda — output of `is_even(4)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `<lambda>` **Explanation:** Lambdas have the name `<lambda>` — they're anonymous functions."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "is_even = lambda x: x % 2 == 0\nprint(is_even(4))\nprint(is_even(7))\nprint(is_even.__name__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `<lambda>` **Explanation:** Lambdas have the name `<lambda>` — they're anonymous functions."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -377,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 910: A lambda — output of `operations['add'](10, 5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `15`, `12` **Explanation:** Using dict of lambdas as a dispatch table — alternative to if/else chains."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "operations = {\n    'add': lambda x, y: x + y,\n    'sub': lambda x, y: x - y,\n    'mul': lambda x, y: x * y,\n    'div': lambda x, y: x / y\n}\nprint(operations['add'](10, 5))\nprint(operations['mul'](3, 4))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `15`, `12` **Explanation:** Using dict of lambdas as a dispatch table — alternative to if/else chains."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -394,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 911: A lambda — output of `result = list(map(lambda x: (x, x**2, x**3),…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(1, 1, 1), (2, 4, 8), (3, 9, 27), (4, 16, 64), (5, 25, 125)]` **Explanation:** Lambda returning tuple with value, square, and cube."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = list(map(lambda x: (x, x**2, x**3), nums))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(1, 1, 1), (2, 4, 8), (3, 9, 27), (4, 16, 64), (5, 25, 125)]` **Explanation:** Lambda returning tuple with value, square, and cube."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -411,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 912: A lambda — output of `flat = reduce(lambda acc, x: acc + x, data)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** Reduce flattens by concatenating lists."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\ndata = [[1, 2], [3, 4], [5, 6]]\nflat = reduce(lambda acc, x: acc + x, data)\nprint(flat)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6]` **Explanation:** Reduce flattens by concatenating lists."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -428,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 913: A lambda — output of `pipeline(nums)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[4, 16, 36, 64, 100]` **Explanation:** Pipeline: filter evens (2,4,6,8,10), then square each."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = range(1, 11)\npipeline = lambda x: list(\n    map(lambda n: n ** 2,\n        filter(lambda n: n % 2 == 0, x))\n)\nprint(pipeline(nums))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[4, 16, 36, 64, 100]` **Explanation:** Pipeline: filter evens (2,4,6,8,10), then square each."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -445,16 +517,19 @@ EC.receiveLesson({
    "q": "Program 914: A lambda — output of `transform(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `400` **Explanation:** `5 * 2 = 10`, `10 + 10 = 20`, `20 ** 2 = 400`. Functions applied left to right."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\n\ndef pipe(*funcs):\n    return lambda x: reduce(lambda acc, f: f(acc), funcs, x)\n\ntransform = pipe(\n    lambda x: x * 2,\n    lambda x: x + 10,\n    lambda x: x ** 2\n)\nprint(transform(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `400` **Explanation:** `5 * 2 = 10`, `10 + 10 = 20`, `20 ** 2 = 400`. Functions applied left to right."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -462,16 +537,19 @@ EC.receiveLesson({
    "q": "Program 915: A lambda — output of `result = list(map(lambda w: w.lower().capital…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['Hello', 'World', 'Python']` **Explanation:** Chain methods in lambda: lowercase then capitalize."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "words = ['hello', 'WORLD', 'Python']\nresult = list(map(lambda w: w.lower().capitalize(), words))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['Hello', 'World', 'Python']` **Explanation:** Chain methods in lambda: lowercase then capitalize."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -479,16 +557,19 @@ EC.receiveLesson({
    "q": "Program 916: A lambda — output of `col_sums = list(map(lambda col: sum(col), zip…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[12, 15, 18]` **Explanation:** `zip(*matrix)` transposes. Then sum each column."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\ncol_sums = list(map(lambda col: sum(col), zip(*matrix)))\nprint(col_sums)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[12, 15, 18]` **Explanation:** `zip(*matrix)` transposes. Then sum each column."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -496,16 +577,19 @@ EC.receiveLesson({
    "q": "Program 917: An itertools recipe — output of `running_product = list(accumulate(nums, lambd…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3, 6, 10, 15]`, `[1, 2, 6, 24, 120]` **Explanation:** `accumulate` provides running/cumulative results. Default is sum."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import accumulate\nnums = [1, 2, 3, 4, 5]\nrunning_sum = list(accumulate(nums))\nprint(running_sum)\nrunning_product = list(accumulate(nums, lambda a, b: a * b))\nprint(running_product)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3, 6, 10, 15]`, `[1, 2, 6, 24, 120]` **Explanation:** `accumulate` provides running/cumulative results. Default is sum."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -513,16 +597,19 @@ EC.receiveLesson({
    "q": "Program 918: A lambda — output of `grade = lambda s: 'A' if s >= 90 else 'B' if…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['B', 'A', 'C', 'A', 'B', 'C', 'F']`, `{85: 'B', 92: 'A', 78: 'C', 95: 'A', 88: 'B', 70: 'C', 60: 'F'}` **Explanation:** Chained ternary in lambda for grading. Map applies to all scores."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "scores = [85, 92, 78, 95, 88, 70, 60]\ngrade = lambda s: 'A' if s >= 90 else 'B' if s >= 80 else 'C' if s >= 70 else 'F'\ngrades = list(map(grade, scores))\nprint(grades)\nprint(dict(zip(scores, grades)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['B', 'A', 'C', 'A', 'B', 'C', 'F']`, `{85: 'B', 92: 'A', 78: 'C', 95: 'A', 88: 'B', 70: 'C', 60: 'F'}` **Explanation:** Chained ternary in lambda for grading. Map applies to all scores."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -530,21 +617,24 @@ EC.receiveLesson({
    "q": "Program 919: functools.reduce — output of `sets = [{1, 2}, {2, 3}, {3, 4}]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1, 2, 3, 4}` **Explanation:** `operator.or_` performs set union. Reduce applies it cumulatively."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nfrom operator import or_\nsets = [{1, 2}, {2, 3}, {3, 4}]\nunion = reduce(or_, sets)\nprint(union)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1, 2, 3, 4}` **Explanation:** `operator.or_` performs set union. Reduce applies it cumulatively."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

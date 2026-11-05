@@ -151,8 +151,9 @@ import asyncio
 
 # Warns whenever a single callback occupies the loop for over 100ms.
 # Set it in a development-only startup hook and read the warnings.
-asyncio.get_event_loop().set_debug(True)
-asyncio.get_event_loop().slow_callback_duration = 0.1
+loop = asyncio.get_running_loop()
+loop.set_debug(True)
+loop.slow_callback_duration = 0.1
 
 # Then a blocking call prints:
 #   Executing <Handle ...> took 0.812 seconds`},
@@ -332,7 +333,7 @@ idempotency_key=f"order-{order.id}-charge"      # yes: deterministic
 #    filling the log. After max_retries it must go somewhere a human
 #    looks -- not into the void.
 @celery.task(bind=True, max_retries=5)
-def f(self, ...):
+def f(self, *args):
     try:
         ...
     except PermanentError:
@@ -883,7 +884,7 @@ def test_csv_values_are_escaped_and_defused():
         stem: "An `async def` handler calls `psycopg2` directly. What happens?",
         options: [
           "FastAPI detects the blocking call and moves it to a thread",
-          "The blocking call runs on the event loop, so every other request on that process waits for it, with no error raised",
+          "It blocks the event loop, so every request on that process waits",
           "The request fails with a RuntimeError",
           "Only that request is slow"
         ],
@@ -893,34 +894,34 @@ def test_csv_values_are_escaped_and_defused():
       {
         stem: "Why must you commit the job row before enqueueing the task, rather than the reverse?",
         options: [
-          "Because Celery requires an active transaction",
-          "Because a worker can pick up the message before the transaction commits, and then reads a row that does not yet exist",
+          "A worker can run before the commit and find no row",
+          "Because Celery requires an active database transaction to be open when a task is enqueued",
           "Because the queue needs the primary key",
           "Because commits are slower than enqueues"
         ],
-        answer: 1,
+        answer: 0,
         why: "Workers are fast and transactions are not instantaneous. Enqueue-then-commit produces an intermittent \"job not found\" that appears only under load, and worse, a rolled-back transaction leaves a message referring to a row that will never exist."
       },
       {
         stem: "A team enables `acks_late=True` on a task that charges cards, without making it idempotent. What is the result?",
         options: [
           "Messages are lost more often",
-          "A worker killed mid-task has its message redelivered, so the retry charges the customer a second time",
-          "Nothing changes until max_retries is reached",
-          "The broker rejects the configuration"
+          "Nothing changes until `max_retries` is reached, after which the task is acknowledged anyway",
+          "The broker rejects the configuration",
+          "A killed worker's message is redelivered and the card is charged again"
         ],
-        answer: 1,
+        answer: 3,
         why: "`acks_late` is what makes retries durable, so it converts a visible failure into an automatic duplicate. Idempotency is a prerequisite for it, not a follow-up — a deterministic idempotency key plus a status check under a row lock is the minimum before turning it on."
       },
       {
         stem: "Why pass `order.id` to a background task rather than the `order` object?",
         options: [
-          "Objects cannot be serialised at all",
-          "The object is serialised at enqueue time, so the worker acts on a stale snapshot rather than the current row",
+          "The object is a snapshot from enqueue time; the row may have changed",
+          "Objects cannot be serialised by the task queue at all, so passing one raises at enqueue time",
           "Ids are faster to transmit",
           "Celery only accepts strings"
         ],
-        answer: 1,
+        answer: 0,
         why: "The gap between enqueue and execution can be seconds or hours, and the row may have changed in that window — cancelled, refunded, updated. Re-reading inside the task under a lock is the only way the task sees current state, and it is also what allows the status guard that makes retries safe."
       }
     ]

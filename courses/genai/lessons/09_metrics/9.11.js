@@ -177,7 +177,7 @@ def both_orders(judge, pairs):
 
 def strip_formatting(s):
     s = re.sub(r"[*_#>]+", "", s)        # also strip backticks in practice
-    return re.sub(r"\s+", " ", s).strip()
+    return re.sub(r"\\s+", " ", s).strip()
 
 m = both_orders(JUDGE, PAIRS)
 print("A first %.3f   B first %.3f   averaged %.3f"

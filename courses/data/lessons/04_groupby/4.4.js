@@ -53,7 +53,7 @@ pd.to_datetime("01/03/2026", dayfirst=True)     # the same, less precise
 # errors= DECIDES WHAT A BAD VALUE DOES:
 pd.to_datetime(["2026-01-01", "not a date"], errors="coerce")
 # [2026-01-01, NaT]  -- silent, and then isna() finds it
-pd.to_datetime(["2026-01-01", "not a date"], errors="raise")   # default
+pd.to_datetime(["2026-01-01", "not a date"], errors="raise")   # default: raises ValueError
 
 # THE INDEX:
 idx = pd.date_range("2026-03-01", periods=5, freq="D")
@@ -70,8 +70,8 @@ df = pd.DataFrame({"v": range(31)},
                   index=pd.date_range("2026-03-01", periods=31, freq="D"))
 
 # PARTIAL STRING SLICING -- the reason to keep dates in the index:
-df["2026-03"]                       # the whole month
-df["2026-03-10":"2026-03-15"]       # inclusive on both ends
+df.loc["2026-03"]                   # the whole month
+df.loc["2026-03-10":"2026-03-15"]   # inclusive on both ends
 df.loc["2026-03-10"]                # one day
 #
 # This works only on a DatetimeIndex. On a datetime COLUMN you write
@@ -335,7 +335,7 @@ daily.reindex(target, method="nearest", tolerance=pd.Timedelta("12h"))
 # NAIVE vs AWARE:
 naive = pd.Timestamp("2026-03-29 01:30")
 naive.tz                                  # None -- no zone at all
-aware = pd.Timestamp("2026-03-29 01:30", tz="Europe/London")
+aware = pd.Timestamp("2026-03-29 02:30", tz="Europe/London")
 aware.tz                                  # <DstTzInfo 'Europe/London'>
 
 # TWO OPERATIONS, OFTEN CONFUSED:

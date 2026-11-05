@@ -2,7 +2,7 @@
    LESSON 5.7 — Vision Transformers
    The patch arithmetic is verified, a real ViT-Base is run (86,389,248
    params, 197 tokens), and its embeddings turn out to be 0.9% of the model
-   against a language model's 31.2% (scratchpad/nlp/n57.py).
+   against a language model's 31.2% (n57.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.7",

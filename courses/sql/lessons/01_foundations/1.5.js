@@ -48,8 +48,8 @@ SELECT 0.1::DOUBLE + 0.2::DOUBLE = 0.3::DOUBLE AS float_eq,                 -- f
        0.1::DOUBLE + 0.2::DOUBLE                AS float_sum;               -- 0.30000000000000004
 
 SELECT 7 / 2 AS div, 7 % 2 AS modulo, 7.0 / 2 AS dec_div;
--- PostgreSQL, SQL Server: 3 | 1 | 3.5       integer / integer truncates
--- DuckDB, MySQL, SQLite: 3.5 | 1 | 3.5      DuckDB spells integer division as 7 // 2`,
+-- PostgreSQL, SQL Server, SQLite: 3 | 1 | 3.5       integer / integer truncates
+-- DuckDB, MySQL: 3.5 | 1 | 3.5                      DuckDB spells integer division as 7 // 2`,
       caption: "Money is NUMERIC, never FLOAT: a sum of ten thousand floats drifts, and an equality test on one fails. Ratios and rates are where integer division bites — write `7.0 / 2`, `x * 1.0 / y`, or a CAST, and the query means the same thing on every engine (1.4)."
     },
 

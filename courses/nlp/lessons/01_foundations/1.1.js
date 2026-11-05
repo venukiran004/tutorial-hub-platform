@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 1.1 — The NLP Pipeline
    Every pipeline stage is run on one sentence and its cost measured
-   (scratchpad/nlp/n11.py).
+   (n11.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.1",

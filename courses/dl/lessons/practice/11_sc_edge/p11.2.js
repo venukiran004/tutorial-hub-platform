@@ -235,11 +235,11 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Early stopping: Save model at best validation metric, stop training\n   → One model, risk of early termination\n\nModel averaging: Average weights from multiple checkpoints\n   Stochastic Weight Averaging (SWA):\n   w_avg = (w₁ + w₂ + ... + wₙ) / n (from last N checkpoints)\n   \n   Exponential Moving Average (EMA):\n   w_ema = α × w_ema + (1-α) × w_current (α = 0.999 typically)\n\nEMA advantages:\n1. Smoother: Averages out SGD noise\n2. Better generalization: Tends to flat minima\n3. Always improving (no need to time early stopping)\n4. Used in: DALL-E, Stable Diffusion, modern classifiers"
+     "code": "Early stopping: Save model at best validation metric, stop training\n   → One model, risk of early termination\n\nModel averaging: Average weights from multiple checkpoints\n   Stochastic Weight Averaging (SWA):\n   w_avg = (w₁ + w₂ + ... + wₙ) / n (from last N checkpoints)\n   \n   Exponential Moving Average (EMA):\n   w_ema = α × w_ema + (1-α) × w_current (α = 0.999 typically)\n\nEMA advantages:\n1. Smoother: Averages out SGD noise\n2. Better generalization: Tends to flat minima\n3. Less sensitive to the exact stopping point\n4. Used in: DALL-E, Stable Diffusion, modern classifiers"
     },
     {
      "t": "p",
-     "text": "**Explanation:** EMA is strictly better than early stopping — it's like an ensemble of models across training time. Always use EMA for competitive models."
+     "text": "**Explanation:** EMA often generalises better, because it acts like an ensemble of models across training time. It complements early stopping rather than replacing it."
     }
    ],
    "kind": ""

@@ -209,7 +209,7 @@ for customer_id, revenue in rows:
     print(customer.name, revenue)` },
         { level: "best", label: "One query, one round trip",
           why: "The database does the join, the aggregation, the filtering and the ordering — all of which it is better at than any Python loop — and returns exactly the rows you display. Nothing else crosses the network.",
-          code: `SELECT   c.id,
+          lang: "sql", code: `SELECT   c.id,
          c.name,
          count(o.id)              AS order_count,
          sum(o.total)             AS revenue,
@@ -226,7 +226,7 @@ LIMIT    50;`,
     },
 
     { t: "callout", kind: "insight", title: "The signal that a loop should be a query", body: [
-      { t: "code", lang: "python", title: "each of these has a direct SQL translation", numbered: false, code: `
+      { t: "code", lang: "text", title: "each of these has a direct SQL translation", numbered: false, code: `
 for row in rows: total += row.x            ->  SUM(x)
 for row in rows: counts[row.k] += 1        ->  GROUP BY k, COUNT(*)
 if row.x > threshold: keep.append(row)     ->  WHERE x > :threshold
@@ -646,10 +646,10 @@ CREATE INDEX CONCURRENTLY order_items_order_id_idx
       {
         stem: "A `LEFT JOIN orders` with `WHERE orders.created_at >= '2026-01-01'` returns fewer customers than expected. Why?",
         options: [
-          "The join key is wrong",
-          "The `LEFT JOIN` supplies NULL for unmatched customers, and `NULL >= date` is not true, so `WHERE` discards them — making it an INNER JOIN",
-          "`LEFT JOIN` cannot be combined with `WHERE`",
-          "The dates need casting"
+          "The join key is wrong, so customers without a matching order id are dropped",
+          "`WHERE` discards the NULL rows the `LEFT JOIN` added, making it an inner join",
+          "`LEFT JOIN` cannot be combined with `WHERE`, so PostgreSQL silently converts it",
+          "The date literal needs casting, or the comparison is done as text and filters rows out"
         ],
         answer: 1,
         why: "`WHERE` runs after the join and tests the NULLs the `LEFT JOIN` just produced. The rule is that conditions on the optional side belong in `ON`, where they filter what to match rather than what to keep. The same mistake makes `count(*)` report 1 instead of 0 for a customer with no orders."
@@ -657,34 +657,34 @@ CREATE INDEX CONCURRENTLY order_items_order_id_idx
       {
         stem: "Why can a window function not be used in `WHERE`?",
         options: [
-          "It is a syntax restriction with no reason behind it",
-          "`WHERE` runs before `SELECT`, and window functions are computed during `SELECT` — so the value does not exist yet",
+          "It is a syntax restriction with no reason behind it, kept for compatibility with older SQL standards",
           "Window functions are always slower",
-          "It works in PostgreSQL but not elsewhere"
+          "It works in PostgreSQL but not elsewhere",
+          "`WHERE` runs before window functions are computed"
         ],
-        answer: 1,
+        answer: 3,
         why: "The logical execution order explains it directly, which is why top-N-per-group needs a CTE or subquery to compute the rank first and filter in an outer query. `LATERAL` is often the faster alternative because it can stop after N rows per group instead of ranking the whole table."
       },
       {
         stem: "A job fetches 8 million rows, aggregates in Python and slices the top 100. Why does adding `LIMIT 100` to the SQL not fix it on its own?",
         options: [
-          "`LIMIT` does not work with aggregates",
-          "The limit must be applied after the aggregation and ordering in the database — limiting the raw rows returns an arbitrary 100 rows, not the top 100",
+          "`LIMIT` does not work with aggregate queries, so the database ignores it",
           "`LIMIT` is only a hint",
-          "The ORM ignores `LIMIT`"
+          "The ORM ignores `LIMIT`",
+          "It limits raw rows, not the aggregated top 100"
         ],
-        answer: 1,
+        answer: 3,
         why: "Placement matters: `LIMIT` on the unaggregated rows discards data before it has been summed. The fix is to move the whole computation — group, order, then limit — into the database, so the cost scales with the answer rather than the table."
       },
       {
         stem: "`WHERE date_trunc('month', created_at) = '2026-03-01'` is slow despite an index on `created_at`. Why?",
         options: [
-          "`date_trunc` is an expensive function",
-          "Applying a function to the column means a plain index on it cannot be used — a half-open range on the raw column can",
-          "The index is on the wrong table",
-          "`date_trunc` returns a timestamp, not a date"
+          "A function on the column defeats the index; a raw-column range uses it",
+          "`date_trunc` is an expensive function, and it is evaluated once for every row in the table",
+          "The index was created on the wrong table, so the planner has nothing to use for this query",
+          "`date_trunc` returns a timestamp, not a date, so the comparison never matches the index's type"
         ],
-        answer: 1,
+        answer: 0,
         why: "A B-tree index stores the column's values, not the values of functions applied to them, so the planner must compute the function for every row. `created_at >= :start AND created_at < :start + interval '1 month'` is a range predicate the index answers directly. An expression index is the alternative when the function form is unavoidable."
       }
     ]

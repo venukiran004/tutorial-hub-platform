@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.1",
- "lede": "**20 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**20 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NULL represents missing/unknown data. It is not zero or empty string. NULL = NULL is FALSE (use IS NULL). Any arithmetic with NULL returns NULL. Use COALESCE() or IFNULL() to handle NULLs."
+     "text": "NULL represents missing/unknown data. It is not zero or empty string. NULL = NULL is NULL (unknown), not TRUE, so WHERE drops the row (use IS NULL). Any arithmetic with NULL returns NULL. Use COALESCE() or IFNULL() to handle NULLs."
     }
    ],
    "kind": ""
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "IN checks a value against a list (materializes subquery). EXISTS checks if subquery returns any row (stops at first match). EXISTS is generally faster for large subqueries."
+     "text": "IN checks a value against a list or subquery result. EXISTS checks whether a correlated subquery returns any row. Modern planners often run both as the same semi-join, so test before assuming a speedup. The difference that always matters is the negated form: NOT IN returns nothing if the subquery contains a NULL, and NOT EXISTS does not."
     }
    ],
    "kind": ""

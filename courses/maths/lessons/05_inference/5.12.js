@@ -99,14 +99,14 @@ def posterior_grid(k, n, prior_pdf, points=2000):
 prior = lambda t: stats.beta.pdf(t, 2, 18)
 theta, post = posterior_grid(7, 50, prior)
 
-theta[np.argmax(post)]                       # 0.129 -- the MAP estimate
+theta[np.argmax(post)]                       # 0.118 -- the MAP estimate
 np.trapezoid(theta*post, theta)              # 0.129 -- the mean
 
 # A CREDIBLE INTERVAL IS A DIRECT INTEGRAL OF THE POSTERIOR:
 cdf = np.cumsum(post) * (theta[1]-theta[0])
 lo = theta[np.searchsorted(cdf, 0.025)]
 hi = theta[np.searchsorted(cdf, 0.975)]
-lo, hi                                       # (0.066, 0.213)
+lo, hi                                       # (0.062, 0.216)
 #
 # READ IT AS IT SOUNDS: given the data and the prior, there is a 95%
 # probability the rate lies between 6.6% and 21.3%. That statement is
@@ -125,7 +125,7 @@ a, b = 2, 18
 postd = stats.beta(a + 7, b + 50 - 7)
 
 postd.mean()                                 # 0.1286
-postd.interval(0.95)                         # (0.0654, 0.2130)
+postd.interval(0.95)                         # (0.0614, 0.2157)
 #
 # IDENTICAL TO THE GRID, and it is one line.
 
@@ -211,10 +211,10 @@ def wilson(k, n, conf=0.95):
     h = z*np.sqrt(p*(1-p)/n + z**2/(4*n**2)) / d
     return max(0.0, c-h), min(1.0, c+h)
 
-wilson(k, n)                                # (0.0715, 0.1226)
+wilson(k, n)                                # (0.0714, 0.1228)
 
 # BAYESIAN with a uniform prior, Beta(1,1):
-stats.beta(1+k, 1+n-k).interval(0.95)       # (0.0708, 0.1216)
+stats.beta(1+k, 1+n-k).interval(0.95)       # (0.0715, 0.1228)
 #
 # THEY AGREE TO THREE DECIMAL PLACES, and they mean different things:
 #
@@ -244,9 +244,9 @@ for k_, n_ in [(0, 10), (1, 20), (2, 100), (47, 500)]:
 # THE BAYESIAN ANSWER TO QUESTIONS FREQUENTISM ANSWERS AWKWARDLY:
 post = stats.beta(1+k, 1+n-k)
 
-post.sf(0.10)                               # 0.318  P(rate > 10%)
-post.cdf(0.08)                              # 0.184  P(rate < 8%)
-post.sf(0.10) - post.sf(0.12)               # 0.276  P(10% < rate < 12%)
+post.sf(0.10)                               # 0.356  P(rate > 10%)
+post.cdf(0.08)                              # 0.113  P(rate < 8%)
+post.sf(0.10) - post.sf(0.12)               # 0.318  P(10% < rate < 12%)
 #
 # EACH IS ONE LINE AND EACH IS DIRECTLY ACTIONABLE. The frequentist
 # equivalents are hypothesis tests that answer "would this data be
@@ -265,7 +265,7 @@ rng = np.random.default_rng(0)
 p_flat = rng.uniform(0, 1, 200_000)
 odds = p_flat / (1 - p_flat)
 
-np.percentile(odds, [25, 50, 75])      # [0.33, 1.00, 3.00] -- not flat
+np.percentile(odds, [25, 50, 75])      # [0.33, 0.99, 2.98] -- not flat
 #
 # So "flat on p" is a substantive claim: it says an odds of 1000:1 is
 # as plausible a priori as 1:1, which is usually false.
@@ -383,9 +383,9 @@ d
 
 # THE DECISION RULE IS NOW ARITHMETIC:
 d["expected_loss_ship"] < d["expected_loss_keep"]     # True -> ship
-d["expected_loss_keep"] / d["expected_loss_ship"]     # 37x
+d["expected_loss_keep"] / d["expected_loss_ship"]     # 253x
 #
-# NOT SHIPPING IS 37 TIMES MORE COSTLY IN EXPECTATION than shipping.
+# NOT SHIPPING IS 253 TIMES MORE COSTLY IN EXPECTATION than shipping.
 # That is a far more useful statement than "p = 0.09, not
 # significant", and it uses the same data.
 #
@@ -401,7 +401,7 @@ d["expected_loss_keep"] / d["expected_loss_ship"]     # 37x
 #
 # which for a 12,000-user test means roughly:
 #   a 1-in-10,000 chance of losing a percentage point.`,
-          note: "**Expected loss converts a posterior into an action with no threshold on a p-value.** \"Not shipping is 37× more costly in expectation\" uses the same data as `p = 0.09` and is a statement someone can act on." }
+          note: "**Expected loss converts a posterior into an action with no threshold on a p-value.** \"Not shipping is 253× more costly in expectation\" uses the same data as `p = 0.09` and is a statement someone can act on." }
       ]
     },
 

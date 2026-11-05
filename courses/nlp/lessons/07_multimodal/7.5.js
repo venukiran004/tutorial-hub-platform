@@ -2,7 +2,7 @@
    LESSON 7.5 — Audio, Speech and Video
    Whisper's shape is measured (78% of its parameters are decoder), and
    video's token arithmetic computed — ten seconds at 24 fps is 61,440
-   tokens (scratchpad/nlp/n75.py).
+   tokens (n75.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.5",

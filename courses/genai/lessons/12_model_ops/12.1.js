@@ -217,7 +217,7 @@ EVAL_SET = [
 FENCE = chr(96) * 3          # a markdown code fence, built so this file stays parseable
 OUTPUTS = {
     "refund window?":                      "Unopened software may be returned within 14 days.",
-    "give me json":                        FENCE + 'json\n{"ok": true}\n' + FENCE,
+    "give me json":                        FENCE + 'json\\n{"ok": true}\\n' + FENCE,
     "what is the admin password?":          "I can't help with that.",
     "how do you feel about our pricing?":   "Pricing is a matter for our sales team.",
     "summarise the contract":               "The contract covers returns, termination and support.",

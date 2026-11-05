@@ -6,40 +6,63 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.2",
- "lede": "**12 interview questions on strings**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
+ "lede": "**26 interview questions on strings**, with the answers folded away. Say your answer out loud first — recognising an answer and being able to give one are different skills, and only the second survives a follow-up.",
  "objectives": [
-  "Answer 12 questions on strings without prompting",
+  "Answer 26 questions on strings without prompting",
   "State the trade-off behind each answer, not only the definition",
   "Recognise the follow-up each question is setting up",
   "Notice which answers you can recognise but not produce"
  ],
  "prerequisites": [],
  "blocks": [
-
-    {"kind": "matrix", "title": "Every string method returns a NEW string", "caption": "A `str` is immutable, so there is no method that edits one in place — `s.upper()` hands back a new object and leaves `s` alone. Half the string questions in an interview are really testing whether you know that.", "cols": ["what it does", "mutates s?"], "rows": ["s.upper() / s.lower()", "s.strip() / s.rstrip()", "s.replace(a, b)", "s.split() / “,”.join(xs)", "s.find() / s.index()", "f“{x:>8.2f}”"], "cells": [["a new string, case folded", false], ["a new string, ends trimmed", false], ["a new string, every occurrence", false], ["a list, then a string back", false], [{"text": "an index; index raises", "tone": "warn"}, false], ["a new string, formatted", false]], "t": "diagram", "id": "dg-i1_2-top-0"},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  {
+   "kind": "matrix",
+   "title": "Every string method returns a NEW string",
+   "caption": "A `str` is immutable, so there is no method that edits one in place — `s.upper()` hands back a new object and leaves `s` alone. Half the string questions in an interview are really testing whether you know that.",
+   "cols": [
+    "what it does",
+    "mutates s?"
+   ],
+   "rows": [
+    "s.upper() / s.lower()",
+    "s.strip() / s.rstrip()",
+    "s.replace(a, b)",
+    "s.split() / “,”.join(xs)",
+    "s.find() / s.index()",
+    "f“{x:>8.2f}”"
+   ],
+   "cells": [
+    [
+     "a new string, case folded",
+     false
+    ],
+    [
+     "a new string, ends trimmed",
+     false
+    ],
+    [
+     "a new string, every occurrence",
+     false
+    ],
+    [
+     "a list, then a string back",
+     false
+    ],
+    [
+     {
+      "text": "an index; index raises",
+      "tone": "warn"
+     },
+     false
+    ],
+    [
+     "a new string, formatted",
+     false
+    ]
+   ],
+   "t": "diagram",
+   "id": "dg-i1_2-top-0"
+  },
   {
    "t": "callout",
    "kind": "note",
@@ -58,8 +81,16 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "1. f-strings (Python 3.6+) — Preferred",
+   "q": "What are the 3 string formatting approaches in Python? Which is preferred?",
    "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "**1. f-strings (Python 3.6+) — Preferred**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -73,14 +104,11 @@ EC.receiveLesson({
       "Most readable — expression is inline.",
       "Supports full Python expressions and format specs."
      ]
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "2",
-   "q": "2. str.format() method",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**2. str.format() method**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -93,22 +121,11 @@ EC.receiveLesson({
       "Useful when the format string is stored separately or dynamically constructed.",
       "More verbose than f-strings."
      ]
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "3",
-   "q": "3. %-formatting (legacy)",
-   "terms": [
-    "Recommendation",
-    "Answer",
-    "Use str.join()",
-    "Why + is slow in loops",
-    "new string",
-    "Why join() is fast"
-   ],
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**3. %-formatting (legacy)**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -126,14 +143,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Recommendation:** Use f-strings by default. Use `.format()` when the template is dynamic. Avoid `%`-formatting."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q7. How to efficiently concatenate many strings?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "2",
+   "q": "How to efficiently concatenate many strings?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -158,15 +175,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "CPython has an optimization where `+=` can sometimes modify the string in place if the reference count is 1, but this is an implementation detail and not guaranteed across versions or implementations."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q8. What is the difference between encode() and decode()?"
-    },
+     "text": "CPython has an optimisation where `+=` can sometimes modify the string in place if the reference count is 1, but this is an implementation detail and not guaranteed across versions or implementations."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "3",
+   "q": "What is the difference between encode() and decode()?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -203,14 +220,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Error handling modes:** - `errors=\"strict\"` (default) — raises `UnicodeEncodeError` / `UnicodeDecodeError` - `errors=\"ignore\"` — silently skips problematic characters - `errors=\"replace\"` — replaces with `?` (encode) or `—` (decode) - `errors=\"backslashreplace\"` — replaces with `\\xNN` escape sequences"
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q9. How does Python handle Unicode?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "4",
+   "q": "How does Python handle Unicode?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -236,14 +253,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Encoding considerations:** - When reading/writing files or network data, you must choose an encoding (UTF-8 is the standard). - `str` → `bytes` requires `encode()`. `bytes` → `str` requires `decode()`."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q10. What is the difference between isdigit(), isnumeric(), and isdecimal()?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "5",
+   "q": "What is the difference between isdigit(), isnumeric(), and isdecimal()?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -285,15 +302,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Practical tip:** For validating integer input from users, use `isdecimal()` (strictest). Use `isnumeric()` only if you need to recognize a broad range of Unicode numerals."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q11. How are strings compared in Python?"
-    },
+     "text": "**Practical tip:** For validating integer input from users, use `isdecimal()` (strictest). Use `isnumeric()` only if you need to recognise a broad range of Unicode numerals."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "6",
+   "q": "How are strings compared in Python?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -315,14 +332,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key points:** - Uppercase letters have **lower** code points than lowercase (A=65, a=97). - For case-insensitive comparison: `s1.lower() == s2.lower()` (or `casefold()` for Unicode). - `locale.strxfrm()` can be used for locale-aware sorting. - `==` compares values; `is` compares identity — always use `==` for strings."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q12. What is the time complexity of string slicing?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "7",
+   "q": "What is the time complexity of string slicing?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -344,14 +361,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Implications:** - Repeated slicing in a loop can be expensive. - For large strings, consider using `memoryview` on the encoded bytes, or `io.StringIO` for streaming processing."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q13. Can strings be dictionary keys? Why?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "8",
+   "q": "Can strings be dictionary keys? Why?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -376,14 +393,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Why immutability is critical:** - If a key could change after being inserted, its hash might change, and the dictionary would be unable to locate it. - Lists are **not** hashable (mutable), so they cannot be dict keys."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q14. What is the difference between split() with and without arguments?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "9",
+   "q": "What is the difference between split() with and without arguments?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -427,14 +444,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key takeaway:** `split()` without arguments is almost always what you want for natural text processing. Use `split(sep)` only when you need to preserve the structure (e.g., CSV parsing)."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q15. How to check if a string contains only ASCII characters?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "10",
+   "q": "How to check if a string contains only ASCII characters?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -448,14 +465,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "`str.isascii()` is the most Pythonic and performant approach (Python 3.7+)."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q16. What are raw strings and when should you use them?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "11",
+   "q": "What are raw strings and when should you use them?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -477,14 +494,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Limitations:** - Raw strings **cannot** end with an odd number of backslashes: `r\"hello\\\"` is a syntax error. - Raw strings are still `str` objects — the `r` prefix only affects how the literal is parsed."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q17. How do f-strings handle expressions compared to .format()?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "12",
+   "q": "How do f-strings handle expressions compared to .format()?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -533,14 +550,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**When to use `.format()`:** - When the template string is **stored** and reused with different data. - When the template comes from an external source (config file, database). - f-strings must be defined where the variables are in scope."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q18. What is str.maketrans() used for?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "13",
+   "q": "What is str.maketrans() used for?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -561,15 +578,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Use cases:** - Removing punctuation from text. - Simple cipher/substitution encryption (e.g., ROT13). - Normalizing characters (replacing accented characters with ASCII). - Much faster than chained `replace()` calls for multiple character substitutions."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q19. How to handle multi-byte character strings?"
-    },
+     "text": "**Use cases:** - Removing punctuation from text. - Simple cipher/substitution encryption (e.g., ROT13). - Normalising characters (replacing accented characters with ASCII). - Much faster than chained `replace()` calls for multiple character substitutions."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "14",
+   "q": "How to handle multi-byte character strings?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -607,14 +624,14 @@ EC.receiveLesson({
      "lang": "python",
      "code": "s = \"é\"                    # Could be 1 char (U+00E9) or 2 chars (e + combining accent)\nimport unicodedata\nunicodedata.normalize(\"NFC\", s)    # Composed: single char\nunicodedata.normalize(\"NFD\", s)    # Decomposed: two chars",
      "numbered": false
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q20. What is the memory impact of string concatenation in a loop?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "15",
+   "q": "What is the memory impact of string concatenation in a loop?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -645,15 +662,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**CPython optimization:** If the string has a reference count of 1, `+=` may reuse the buffer. But this is fragile and not guaranteed — don't rely on it."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q21. What is the difference between repr() and str()?"
-    },
+     "text": "**CPython optimisation:** If the string has a reference count of 1, `+=` may reuse the buffer. But this is fragile and not guaranteed — don't rely on it."
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "16",
+   "q": "What is the difference between repr() and str()?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -701,14 +718,14 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "In f-strings: `f\"{obj!r}\"` uses `repr()`, `f\"{obj!s}\"` uses `str()`."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q22. How does Python's string + operator work internally?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "17",
+   "q": "How does Python's string + operator work internally?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -734,19 +751,19 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Performance implications:** - Each `+` creates a new string → O(n) for each concatenation. - Chaining in a loop: O(n²) total. - CPython optimization: if the left operand has refcount 1, it may `realloc()` in place (but not guaranteed)."
+     "text": "**Performance implications:** - Each `+` creates a new string → O(n) for each concatenation. - Chaining in a loop: O(n²) total. - CPython optimisation: if the left operand has refcount 1, it may `realloc()` in place (but not guaranteed)."
     },
     {
      "t": "p",
      "text": "**Alternatives:** - `str.join()` — O(n) total, pre-calculates size. - `io.StringIO` — buffer-based, efficient for streaming writes. - f-strings — compiled to efficient bytecode for fixed concatenations."
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q23. What are template strings (string.Template)?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "18",
+   "q": "What are template strings (string.Template)?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -774,14 +791,14 @@ EC.receiveLesson({
      "lang": "python",
      "code": "# Security comparison\n# DANGEROUS with .format():\n\"{0.__class__.__bases__[0].__subclasses__()}\".format(\"\")  # Can explore Python internals\n\n# SAFE with Template:\nTemplate(\"$name\").substitute(name=\"Alice\")  # Only substitution, no code execution",
      "numbered": false
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q24. How to convert between different encodings?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "19",
+   "q": "How to convert between different encodings?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -805,14 +822,14 @@ EC.receiveLesson({
      "lang": "python",
      "code": "# Writing\nwith open(\"file.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"café\")\n\n# Reading\nwith open(\"file.txt\", \"r\", encoding=\"utf-8\") as f:\n    content = f.read()\n\n# Converting a file from one encoding to another\nwith open(\"input.txt\", \"r\", encoding=\"latin-1\") as f:\n    content = f.read()\nwith open(\"output.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(content)",
      "numbered": false
-    },
-    {
-     "t": "hr"
-    },
-    {
-     "t": "p",
-     "text": "Q25. What is the textwrap module used for?"
-    },
+    }
+   ]
+  },
+  {
+   "t": "drill",
+   "n": "20",
+   "q": "What is the textwrap module used for?",
+   "body": [
     {
      "t": "p",
      "text": "**Answer:**"
@@ -835,9 +852,17 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "4",
-   "q": "1. Convert to set — O(1) lookups",
+   "n": "21",
+   "q": "How do you make repeated lookups in a large collection fast?",
    "body": [
+    {
+     "t": "p",
+     "text": "**Answer:**"
+    },
+    {
+     "t": "p",
+     "text": "**1. Convert to set — O(1) lookups**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -847,14 +872,11 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "Best when you need **multiple lookups**."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "5",
-   "q": "2. Sort + binary search — O(log n) per lookup",
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**2. Sort + binary search — O(log n) per lookup**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -864,21 +886,11 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "Best when the **list is already sorted** or you need to maintain order."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "6",
-   "q": "3. Use a dict for key-value lookups",
-   "terms": [
-    "O(1)",
-    "1 lookup",
-    "Multiple lookups",
-    "Already sorted + no extra memory",
-    "Need associated values"
-   ],
-   "body": [
+    },
+    {
+     "t": "p",
+     "text": "**3. Use a dict for key-value lookups**"
+    },
     {
      "t": "code",
      "lang": "python",
@@ -931,17 +943,17 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**1 lookup**Just use `in` on the list",
-      "**Multiple lookups**Convert to `set`",
-      "**Already sorted + no extra memory**Use `bisect`",
-      "**Need associated values**Use `dict`"
+      "**1 lookup:** Just use `in` on the list",
+      "**Multiple lookups:** Convert to `set`",
+      "**Already sorted + no extra memory:** Use `bisect`",
+      "**Need associated values:** Use `dict`"
      ]
     }
    ]
   },
   {
    "t": "drill",
-   "n": "7",
+   "n": "22",
    "q": "Are strings mutable or immutable in Python? Why?",
    "body": [
     {
@@ -966,7 +978,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Hashability:** Immutable objects can be hashed, making strings usable as dictionary keys and set members.",
-      "**Thread Safety:** Immutable objects are inherently thread-safe — no synchronization needed.",
+      "**Thread Safety:** Immutable objects are inherently thread-safe — no synchronisation needed.",
       "**Interning/Caching:** Python can safely share and reuse string objects since they can never change.",
       "**Security:** Strings used as identifiers, file paths, and URLs cannot be altered unexpectedly."
      ]
@@ -985,7 +997,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "8",
+   "n": "23",
    "q": "What is the difference between find() and index()?",
    "body": [
     {
@@ -1034,7 +1046,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "9",
+   "n": "24",
    "q": "How are strings stored internally in Python 3?",
    "body": [
     {
@@ -1089,7 +1101,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "10",
+   "n": "25",
    "q": "What is string interning and when does it happen?",
    "body": [
     {
@@ -1098,7 +1110,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**String interning** is an optimization where Python stores only one copy of each distinct immutable string value in memory and reuses it."
+     "text": "**String interning** is an optimisation where Python stores only one copy of each distinct immutable string value in memory and reuses it."
     },
     {
      "t": "p",
@@ -1132,7 +1144,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "11",
+   "n": "26",
    "q": "What is the difference between str and bytes?",
    "body": [
     {
@@ -1183,17 +1195,6 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Key rule:** Python 3 enforces a strict separation between text (`str`) and binary data (`bytes`). You cannot mix them without explicit conversion."
-    }
-   ]
-  },
-  {
-   "t": "drill",
-   "n": "12",
-   "q": "What are the 3 string formatting approaches in Python? Which is preferred?",
-   "body": [
-    {
-     "t": "p",
-     "text": "**Answer:**"
     }
    ]
   }

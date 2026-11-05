@@ -30,7 +30,7 @@ EC.receiveLesson({
         ["**1 Ingestion**", "Raw data in a landing zone", "The upstream export runs but is partial, or reruns yesterday", "**Silent** — row counts look plausible"],
         ["**2 Features**", "A feature table, offline and online", "A transform changes, or the two halves drift apart", "**Silent** — training-serving skew"],
         ["**3 Training**", "A candidate model plus metrics", "Non-determinism, a leaked column, or a label window not yet closed", "**Silent** — the loss curve looks fine"],
-        ["**4 Registry**", "A versioned, immutable artifact", "The artifact is overwritten, or its lineage is unrecorded", "Loud on restore, silent until then"],
+        ["**4 Registry**", "A versioned, immutable artefact", "The artefact is overwritten, or its lineage is unrecorded", "Loud on restore, silent until then"],
         ["**5 Serving**", "Predictions", "The wrong version is loaded, or preprocessing differs from training", "**Silent** — every response is a plausible number"],
         ["**6 Monitoring**", "Drift and quality signals", "It watches liveness and not quality, so it reports green", "Silent by construction"]
       ],
@@ -90,9 +90,9 @@ assert len(rejects) / len(raw) < 0.02, "reject rate above 2%"`,
 
     { t: "h2", n: "03", text: "Stage 3: training", id: "training" },
 
-    {"kind": "trace", "title": "What has to be recorded for a training run to be rebuildable", "caption": "**Two of these fields are the ones that turn provenance from a formality into a guarantee.** A commit sha recorded from a working tree with uncommitted changes describes code that exists nowhere, so the artifact claims a reproducibility it does not have — which is why `git_dirty` belongs beside it. **And the label cutoff is the ML-specific one:** a 90-day outcome cannot be observed for a row extracted 30 days ago, so the most recent rows carry systematically wrong labels, and they are the rows most like production.", "left": "field", "codeW": 160, "vars": ["why it is needed", "if omitted"], "steps": [{"code": "git_sha", "state": ["which code produced this", "cannot rebuild"], "tone": "good"}, {"code": "git_dirty", "state": ["was the tree clean?", "the sha describes code that does not exist"], "changed": [0, 1], "tone": "crit"}, {"code": "data_version + hash", "state": ["which snapshot, and proof", "'latest' is not a version"], "changed": [0, 1], "tone": "good"}, {"code": "seed", "state": ["reproducible initialisation", "a different model each rebuild"], "changed": [0, 1], "tone": "good"}, {"code": "package versions", "state": ["exact, not a range", "a silent behaviour change"], "changed": [0, 1], "tone": "accent"}, {"code": "label cutoff", "state": ["the outcome window had closed", "recent rows are labelled wrong"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_2-03-2"},
+    {"kind": "trace", "title": "What has to be recorded for a training run to be rebuildable", "caption": "**Two of these fields are the ones that turn provenance from a formality into a guarantee.** A commit sha recorded from a working tree with uncommitted changes describes code that exists nowhere, so the artefact claims a reproducibility it does not have — which is why `git_dirty` belongs beside it. **And the label cutoff is the ML-specific one:** a 90-day outcome cannot be observed for a row extracted 30 days ago, so the most recent rows carry systematically wrong labels, and they are the rows most like production.", "left": "field", "codeW": 160, "vars": ["why it is needed", "if omitted"], "steps": [{"code": "git_sha", "state": ["which code produced this", "cannot rebuild"], "tone": "good"}, {"code": "git_dirty", "state": ["was the tree clean?", "the sha describes code that does not exist"], "changed": [0, 1], "tone": "crit"}, {"code": "data_version + hash", "state": ["which snapshot, and proof", "'latest' is not a version"], "changed": [0, 1], "tone": "good"}, {"code": "seed", "state": ["reproducible initialisation", "a different model each rebuild"], "changed": [0, 1], "tone": "good"}, {"code": "package versions", "state": ["exact, not a range", "a silent behaviour change"], "changed": [0, 1], "tone": "accent"}, {"code": "label cutoff", "state": ["the outcome window had closed", "recent rows are labelled wrong"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_2-03-2"},
 
-    { t: "p", text: "Training is the stage where recovery is most expensive and prevention is cheapest. **A training run you cannot reproduce is an artifact you cannot rebuild**, which converts a derived asset into a source one — and the four things that make it reproducible cost one commit." },
+    { t: "p", text: "Training is the stage where recovery is most expensive and prevention is cheapest. **A training run you cannot reproduce is an artefact you cannot rebuild**, which converts a derived asset into a source one — and the four things that make it reproducible cost one commit." },
 
     { t: "code", lang: "python", title: "What has to be recorded for a run to be rebuildable at all",
       code: `import json, subprocess, sys
@@ -134,9 +134,9 @@ train = train[train["extracted_at"] <= date.today() - timedelta(days=90)]`,
 
     { t: "h2", n: "04", text: "Stages 4 and 5: registry and serving", id: "registry-serving" },
 
-    {"kind": "trace", "title": "Four restore checks, and only the last one catches a wrong version", "caption": "**Every row above the last passes on an older artifact of the same model.** It loads, it serves, the latency is normal and the health check is green — because none of those checks is about identity. **Golden predictions are a few dozen input rows and their expected outputs, committed to git**, and they fail immediately on a wrong version. It is the cheapest verification in ML recovery and almost nobody has it; reporting the version and schema hash from the health endpoint is the other half, because it makes the identity visible from outside.", "left": "check", "codeW": 190, "vars": ["passes on a wrong version?", "catches"], "steps": [{"code": "the artifact loads", "state": ["YES", "a corrupt file only"], "tone": "crit"}, {"code": "it returns a prediction", "state": ["YES", "a crash only"], "changed": [1], "tone": "crit"}, {"code": "latency within budget", "state": ["YES", "nothing about correctness"], "changed": [1], "tone": "crit"}, {"code": "health check 200", "state": ["YES", "liveness"], "changed": [1], "tone": "crit"}, {"code": "golden predictions", "state": ["NO - it fails", "the wrong version, immediately"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-16_2-04-3"},
+    {"kind": "trace", "title": "Four restore checks, and only the last one catches a wrong version", "caption": "**Every row above the last passes on an older artefact of the same model.** It loads, it serves, the latency is normal and the health check is green — because none of those checks is about identity. **Golden predictions are a few dozen input rows and their expected outputs, committed to git**, and they fail immediately on a wrong version. It is the cheapest verification in ML recovery and almost nobody has it; reporting the version and schema hash from the health endpoint is the other half, because it makes the identity visible from outside.", "left": "check", "codeW": 190, "vars": ["passes on a wrong version?", "catches"], "steps": [{"code": "the artefact loads", "state": ["YES", "a corrupt file only"], "tone": "crit"}, {"code": "it returns a prediction", "state": ["YES", "a crash only"], "changed": [1], "tone": "crit"}, {"code": "latency within budget", "state": ["YES", "nothing about correctness"], "changed": [1], "tone": "crit"}, {"code": "health check 200", "state": ["YES", "liveness"], "changed": [1], "tone": "crit"}, {"code": "golden predictions", "state": ["NO - it fails", "the wrong version, immediately"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-16_2-04-3"},
 
-    { t: "p", text: "These two stages are where the recovery is easy and the verification is hard. **An artifact restored from object storage is a few minutes' work; proving the restored system behaves like the one you lost is the part that gets skipped.**" },
+    { t: "p", text: "These two stages are where the recovery is easy and the verification is hard. **An artefact restored from object storage is a few minutes' work; proving the restored system behaves like the one you lost is the part that gets skipped.**" },
 
     { t: "code", lang: "python", title: "Immutability, and the version check that belongs in the health endpoint",
       code: `# PREVENT: write-once paths. An artifact that cannot be overwritten cannot be
@@ -174,8 +174,8 @@ for row, expected in GOLDEN:
     { t: "table",
       head: ["Stage", "Prevent", "Detect", "Contain", "Recover", "Verify"],
       rows: [
-        ["**4 Registry**", "Write-once keys including the sha; bucket versioning with a checked lifecycle rule; provenance stored beside the artifact", "A nightly job that loads the current artifact in a scratch process", "Keep the previous two versions warm and routable", "Restore from object storage — **minutes**", "Load it and run the golden predictions"],
-        ["**5 Serving**", "The preprocessing travels with the model, as one fitted object, not reimplemented", "Health endpoint reports the loaded version; output-distribution drift", "Roll back to the previous version; shadow the new one first", "Redeploy the previous artifact — minutes", "**Golden predictions, then the eval suite against a dated baseline**"]
+        ["**4 Registry**", "Write-once keys including the sha; bucket versioning with a checked lifecycle rule; provenance stored beside the artefact", "A nightly job that loads the current artefact in a scratch process", "Keep the previous two versions warm and routable", "Restore from object storage — **minutes**", "Load it and run the golden predictions"],
+        ["**5 Serving**", "The preprocessing travels with the model, as one fitted object, not reimplemented", "Health endpoint reports the loaded version; output-distribution drift", "Roll back to the previous version; shadow the new one first", "Redeploy the previous artefact — minutes", "**Golden predictions, then the eval suite against a dated baseline**"]
       ],
       caption: "**The prevention in stage 5 removes the most common serving failure outright.** When the scaler and the encoder are part of the saved pipeline, there is no second implementation to drift; when the serving code reimplements them, training-serving skew is a matter of time rather than of chance." },
 
@@ -227,14 +227,14 @@ alarm_if(live[col].isna().mean() > train_null_rate[col] + 0.05, f"{col} nulls")
 # 1. re-run the training DAG
 # 2. deploy the output
 # 3. confirm /healthz returns 200` },
-        { level: "ok", label: "Restore the artifact, redeploy, health check",
-          why: "**Ten minutes instead of six hours, and the artifact is exactly the one that was lost.** What is missing is any check that the restored system predicts what it used to — the feature store is still rebuilding, so it may well not.",
+        { level: "ok", label: "Restore the artefact, redeploy, health check",
+          why: "**Ten minutes instead of six hours, and the artefact is exactly the one that was lost.** What is missing is any check that the restored system predicts what it used to — the feature store is still rebuilding, so it may well not.",
           code: `# runbook
 # 1. restore models/churn/v41/<sha>/model.joblib from object storage
 # 2. rebuild the online feature store from the offline store
 # 3. deploy, confirm /healthz reports model_version == v41` },
         { level: "best", label: "Restore, verify with goldens, hold traffic until features are warm",
-          why: "**The golden predictions prove it is the right artifact, and the feature-store check prevents the window where the model scores a mixture of two feature distributions.** The eval suite proves the whole path, not just the model object.",
+          why: "**The golden predictions prove it is the right artefact, and the feature-store check prevents the window where the model scores a mixture of two feature distributions.** The eval suite proves the whole path, not just the model object.",
           code: `# runbook
 # 1. restore models/churn/v41/<sha>/model.joblib  (expect v41, sha a3f9c21)
 # 2. load in a scratch process; run tests/golden_predictions.json  -- MUST pass
@@ -329,7 +329,7 @@ which is why the stage comes before the mitigation.`,
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A fraud team restored a model artifact after a storage incident, verified it loaded, confirmed the health endpoint returned 200, and resumed scoring within fifteen minutes. The restore was clean and the artifact was the right version." },
+      { t: "p", text: "A fraud team restored a model artefact after a storage incident, verified it loaded, confirmed the health endpoint returned 200, and resumed scoring within fifteen minutes. The restore was clean and the artefact was the right version." },
       { t: "p", text: "**What they had not restored was the feature store, which was still rebuilding.** For two hours the model scored transactions using default values for six of its nineteen features, approving a population it would normally have flagged. The predictions were plausible, the latency was normal and the dashboards were green." },
       { t: "p", text: "**The model was never the problem; the stage boundary was.** Recovery had been planned per asset and executed per asset, with nothing asserting that the stages were consistent with each other before traffic resumed." },
       { t: "p", text: "**The fix was a traffic gate rather than a faster rebuild:** serving blocks until feature coverage exceeds a threshold, and the health endpoint reports coverage alongside the model version — so the inconsistency is visible from outside instead of inferable from outcomes." }
@@ -342,12 +342,12 @@ which is why the stage comes before the mitigation.`,
     "**Validate volume against the recent norm, not against zero** — a truncated export is a plausible row count, and a doubled one is too.",
     "**One transform definition, used by both training and serving.** Two implementations of the same logic drift; one cannot drift from itself.",
     "**Rebuilding the online feature store creates skew while it runs**, so decide in advance whether wrong answers or no answers is worse — and write it in the runbook.",
-    "**Record provenance with the artifact, including `git_dirty`.** A sha from a dirty tree describes code that exists nowhere.",
+    "**Record provenance with the artefact, including `git_dirty`.** A sha from a dirty tree describes code that exists nowhere.",
     "**Censor the label window.** Rows whose outcome window has not closed carry systematically wrong labels, and they are the rows most like production.",
     "**Alarm on an improvement as well as a regression.** A sharp jump in validation score is leakage far more often than it is a better model.",
     "**Training is the stage to snapshot rather than rebuild** — hours to days against minutes from object storage.",
-    "**Write artifacts to write-once paths that include the sha**, and check the lifecycle rule before trusting bucket versioning as a backup.",
-    "**Ship the preprocessing inside the fitted artifact.** It removes training-serving skew by construction rather than by discipline.",
+    "**Write artefacts to write-once paths that include the sha**, and check the lifecycle rule before trusting bucket versioning as a backup.",
+    "**Ship the preprocessing inside the fitted artefact.** It removes training-serving skew by construction rather than by discipline.",
     "**Golden predictions are the cheapest ML verification there is:** a few dozen rows and their outputs, in git. A wrong-version restore passes everything else.",
     "**Output drift is the first signal to add** — no labels, and it moves within hours. Per-feature input drift is what makes it actionable.",
     "**Alarm on the absence of a signal.** A drift job that stopped running reports no drift, which looks healthy and is not."
@@ -359,32 +359,32 @@ which is why the stage comes before the mitigation.`,
       {
         stem: "A model's predictions degrade over three weeks with no change to code, data pipeline or deployment. Which stage, and which mitigation?",
         options: [
+          "Stage 1 or 2 — the inputs drifted, so the fix is per-feature drift alarms",
           "Stage 3 training — retrain on fresh data",
-          "Stage 1 or 2, ingestion or features — the inputs changed, so the mitigation is detection: per-feature drift alarmed against the training distribution",
-          "Stage 4 registry — the artifact was corrupted in storage",
+          "Stage 4 registry — the artefact was corrupted in storage",
           "Stage 5 serving — the preprocessing diverged"
         ],
-        answer: 1,
+        answer: 0,
         why: "Nothing you control changed, so the world did — that is input drift, and it is allowed to happen. Prevention is not available; detection is, and three weeks of silent decay is a detection gap rather than a model fault. Retraining may be the eventual response, but only after the drifted feature is identified."
       },
       {
         stem: "Overnight training produces a model whose AUC jumps from 0.88 to 0.97. What is the most likely explanation and the right gate?",
         options: [
-          "A genuinely better model — promote it and monitor",
-          "Leakage. Alarm on improvements as well as regressions, and never promote automatically",
-          "A smaller validation set, which raises variance",
-          "A random seed that happened to help"
+          "A genuinely better model — promote it, then monitor the live metrics closely",
+          "Leakage — alarm on jumps up too, and never auto-promote",
+          "A smaller validation set than usual, which raises the variance of the score",
+          "A random seed that happened to help, which the next run will undo"
         ],
         answer: 1,
         why: "A sharp unexplained improvement is the clearest leakage signature there is, and a threshold-based promotion gate passes it enthusiastically because the number went up. The prevention is a CI check that recomputes features as-of each row's timestamp and fails if any feature changes."
       },
       {
-        stem: "You restore the model artifact in ten minutes, but the online feature store is still rebuilding. What should serving do?",
+        stem: "You restore the model artefact in ten minutes, but the online feature store is still rebuilding. What should serving do?",
         options: [
-          "Serve, using default values for missing features — availability matters most",
-          "Serve, and flag the affected predictions for later review",
-          "Block traffic until feature coverage passes a threshold, because a prediction built on defaults is a prediction on values the model never saw in training",
-          "Fall back to a simpler model that needs fewer features"
+          "Serve, filling missing features with their training defaults — availability matters most during recovery",
+          "Serve, and flag the affected predictions so they can be reviewed once the store has rebuilt",
+          "Block traffic until features are back — defaults are inputs the model never saw",
+          "Fall back to a simpler model that needs fewer features until the store is ready"
         ],
         answer: 2,
         why: "A default-filled feature vector is outside the distribution the model was fitted on, so the predictions are wrong in a way that is not uniform across users and not visible in any latency or error metric. For anything consequential the honest outage beats the silent error — and that choice belongs in the runbook, not in the incident."
@@ -393,22 +393,22 @@ which is why the stage comes before the mitigation.`,
         stem: "A restored model loads cleanly, serves plausible numbers and reports 200 from /healthz. What has not been verified?",
         options: [
           "That the process is running",
-          "That it is the right model version, producing the same outputs for the same inputs",
+          "That it is the right model version",
           "That the latency budget is met",
-          "That the container image is signed"
+          "That the container image was signed by the release pipeline"
         ],
         answer: 1,
-        why: "An older artifact of the same model loads and serves perfectly plausible numbers. Golden predictions — a few dozen inputs with expected outputs, committed to git — are what fail in that case, and the health endpoint reporting the loaded version and schema hash makes the mismatch visible from outside."
+        why: "An older artefact of the same model loads and serves perfectly plausible numbers. Golden predictions — a few dozen inputs with expected outputs, committed to git — are what fail in that case, and the health endpoint reporting the loaded version and schema hash makes the mismatch visible from outside."
       },
       {
         stem: "A drift dashboard shows nothing unusual for five weeks because the drift job had been failing. Which stage failed, and what prevents it?",
         options: [
-          "Stage 2 features — the feature pipeline stopped",
-          "Stage 6 monitoring — and the prevention is a dead-man's switch, so silence is a failure state rather than a healthy one",
-          "Stage 5 serving — predictions were not being logged",
-          "Nothing failed; five weeks without drift is plausible"
+          "Stage 2 features — the feature pipeline stopped producing new data",
+          "Stage 5 serving — predictions were not being logged for the drift job",
+          "Stage 6 monitoring — fix it with a dead-man's switch",
+          "Nothing failed; five weeks without drift is entirely plausible"
         ],
-        answer: 1,
+        answer: 2,
         why: "The monitor failed, not the thing monitored — and a job that stops reporting is indistinguishable on a dashboard from a model with no drift. An alarm that fires on a bad value cannot fire on no value, so the monitor needs a staleness check on itself."
       }
     ]
@@ -421,7 +421,7 @@ which is why the stage comes before the mitigation.`,
       {
         level: "expert",
         q: "How would you make an ML pipeline recoverable?",
-        strong: "Per stage, because the mitigations differ. Ingestion: a schema contract plus freshness, volume and null-rate assertions, writing to immutable dated paths so a re-run is possible. Features: one transform definition shared by training and serving, and a skew check that scores the same rows through both paths. Training: provenance including git_dirty and the label cutoff, seeds pinned, and snapshot rather than rebuild because it is hours. Registry: write-once keys including the sha. Serving: preprocessing inside the artifact, the version in the health endpoint, golden predictions as the restore gate. Monitoring: output drift first because it needs no labels, and a dead-man's switch so silence is a failure.",
+        strong: "Per stage, because the mitigations differ. Ingestion: a schema contract plus freshness, volume and null-rate assertions, writing to immutable dated paths so a re-run is possible. Features: one transform definition shared by training and serving, and a skew check that scores the same rows through both paths. Training: provenance including git_dirty and the label cutoff, seeds pinned, and snapshot rather than rebuild because it is hours. Registry: write-once keys including the sha. Serving: preprocessing inside the artefact, the version in the health endpoint, golden predictions as the restore gate. Monitoring: output drift first because it needs no labels, and a dead-man's switch so silence is a failure.",
         answer: [
           { t: "p", text: "Answering per stage rather than as a list of tools is what makes this sound like operating experience rather than reading." },
           { t: "p", text: "Freshness and the label cutoff are the two specifics that are hard to know without having been burned by them." },
@@ -441,7 +441,7 @@ which is why the stage comes before the mitigation.`,
       {
         level: "advanced",
         q: "How do you know a restored ML system is correct?",
-        strong: "Not from a health check, because every silent failure returns 200. Golden predictions first — a few dozen inputs with expected outputs in git — which catches a wrong artifact version immediately. Then the evaluation suite against a dated baseline, with a tolerance rather than a floor, which catches a feature or preprocessing difference. And the health endpoint should report the model version, the sha and the feature schema hash so the identity of what is loaded is externally visible.",
+        strong: "Not from a health check, because every silent failure returns 200. Golden predictions first — a few dozen inputs with expected outputs in git — which catches a wrong artefact version immediately. Then the evaluation suite against a dated baseline, with a tolerance rather than a floor, which catches a feature or preprocessing difference. And the health endpoint should report the model version, the sha and the feature schema hash so the identity of what is loaded is externally visible.",
         answer: [
           { t: "p", text: "The distinction between liveness and correctness is the whole question, and leading with it is the right move." },
           { t: "p", text: "A tolerance against a dated baseline, rather than an absolute floor, shows you have watched a metric drift slowly past a static gate." },

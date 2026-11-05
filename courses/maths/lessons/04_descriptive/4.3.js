@@ -220,12 +220,12 @@ def box_stats(x):
 s = rng.normal(100, 15, 1000)
 b = box_stats(np.append(s, [200, 210]))
 
-b["iqr"]                     # 20.1
-b["upper_whisker"]           # 143.8  -- a real observation
-b["q3"] + 1.5*b["iqr"]       # 140.4  -- the fence, which is LOWER
-len(b["outliers"])           # 9
+b["iqr"]                     # 19.6
+b["upper_whisker"]           # 140.3  -- a real observation
+b["q3"] + 1.5*b["iqr"]       # 140.3  -- the fence, which is LOWER
+len(b["outliers"])           # 8
 #
-# NOTE THE WHISKER (143.8) EXCEEDS THE FENCE (140.4)? No -- it cannot,
+# NOTE THE WHISKER (140.3) EXCEEDS THE FENCE (140.3)? No -- it cannot,
 # and if it appears to, the percentile method differs from the one the
 # plotting library used. That mismatch is a real source of confusion
 # when comparing a hand-computed table against a chart.
@@ -251,7 +251,7 @@ len(box_stats(rng.normal(0, 1, 10_000))["outliers"])       # ~70
 #
 # AND FOR SKEWED DATA IT IS FAR WORSE, because the rule assumes
 # symmetry:
-len(box_stats(np.exp(rng.normal(0, 1, 10_000)))["outliers"])  # ~450
+len(box_stats(np.exp(rng.normal(0, 1, 10_000)))["outliers"])  # ~803
 #
 # 4.5% FLAGGED ON PERFECTLY WELL-BEHAVED LOGNORMAL DATA. The box plot
 # is not detecting anomalies there -- it is detecting skew, and calling
@@ -343,12 +343,12 @@ fleet = MergeableHistogram()
 for h in hosts:
     fleet.merge(h)
 
-np.mean([h.quantile(0.99) for h in hosts])   # 926 ms  -- averaging: wrong
-max(h.quantile(0.99) for h in hosts)         # 12,400 ms -- the bound
-fleet.quantile(0.99)                         # 168 ms  -- the truth
+np.mean([h.quantile(0.99) for h in hosts])   # 1431 ms  -- averaging: wrong
+max(h.quantile(0.99) for h in hosts)         # 12,852 ms -- the bound
+fleet.quantile(0.99)                         # 1368 ms  -- the truth
 
-# THE TRUE FLEET p99 IS 168 ms. The average of per-host p99s says 926
-# and the max says 12,400. Only the merged histogram answers the
+# THE TRUE FLEET p99 IS 1368 ms. The average of per-host p99s says 1431
+# and the max says 12,852. Only the merged histogram answers the
 # question a user's experience corresponds to.`,
           note: "**Counts add; percentiles do not.** Any aggregation scheme that works must merge distributions, which is why every serious metrics backend stores histograms or sketches rather than pre-computed quantiles." }
       ]
@@ -659,10 +659,10 @@ def test_interpolation_is_irrelevant_at_this_scale():
           "Weight each by its request count and average"
         ],
         answer: 1,
-        why: "Percentiles are not linear. In the worked example the average of per-host p99s gives 926 ms and the max gives 12,400 ms, while the true merged p99 is 168 ms — the averaging error has no bound and no consistent sign."
+        why: "Percentiles are not linear. In the worked example the average of per-host p99s gives 1431 ms and the max gives 12,852 ms, while the true merged p99 is 1368 ms — the averaging error has no bound and no consistent sign."
       },
       {
-        stem: "A box plot of 10,000 clean lognormal observations shows about 450 outlier points. What does that mean?",
+        stem: "A box plot of 10,000 clean lognormal observations shows about 800 outlier points. What does that mean?",
         options: [
           "The data has serious quality problems",
           "The 1.5 × IQR rule assumes symmetry, so on skewed data it flags skew rather than anomalies",

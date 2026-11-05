@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.6 — Contextual Embeddings and ELMo
    The static-versus-contextual claim is measured layer by layer inside
-   BERT, where layer 0 IS the static table (scratchpad/nlp/n36.py).
+   BERT, where layer 0 IS the static table (n36.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.6",
@@ -52,7 +52,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Four sentences: two using *bank* financially, two using it geographically. Extract the contextual vector for the token `bank` in each and compare same-sense pairs against cross-sense pairs." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n36.py — extracting a token's vector at a chosen layer", code:
+    { t: "code", lang: "python", title: "extracting a token's vector at a chosen layer", code:
 "from transformers import AutoTokenizer, AutoModel\nimport torch\n\ntok = AutoTokenizer.from_pretrained(\"bert-base-uncased\")\nmod = AutoModel.from_pretrained(\"bert-base-uncased\",\n                                output_hidden_states=True).eval()\n\ndef vec(sentence, word, layer=-1):\n    enc = tok(sentence, return_tensors=\"pt\")\n    ids = enc[\"input_ids\"][0]\n    pos = (ids == tok.convert_tokens_to_ids(word)).nonzero()[0].item()\n    with torch.no_grad():\n        out = mod(**enc)\n    return out.hidden_states[layer][0, pos]",
       caption: "`output_hidden_states=True` returns all 13 tensors — the embedding output plus one per transformer layer. `hidden_states[0]` is the embedding layer." },
 

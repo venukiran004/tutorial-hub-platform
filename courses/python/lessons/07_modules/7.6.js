@@ -262,7 +262,7 @@ fastapi==0.115.0 \\
       rungs: [
         { level: "bad", label: "pip install, then pip freeze",
           why: "Records the state of one machine at one moment — including packages installed for an experiment months ago. Direct and transitive dependencies are indistinguishable, so nobody can tell what is safe to remove, and a fresh resolve on another platform produces a different set.",
-          code: `pip install fastapi httpx
+          lang: "bash", code: `pip install fastapi httpx
 pip freeze > requirements.txt
 
 # requirements.txt
@@ -272,7 +272,7 @@ pip freeze > requirements.txt
 #   ... 40 lines, no structure` },
         { level: "ok", label: "Hand-written ranges",
           why: "Readable, and the intent is clear. But nothing is pinned, so two installs a week apart give different builds — and a transitive package can release a broken version that reaches production without a single commit in your repository.",
-          code: `# requirements.txt
+          lang: "text", code: `# requirements.txt
 fastapi>=0.110,<0.120
 httpx~=0.27
 pydantic>=2.6,<3
@@ -597,21 +597,21 @@ CMD ["billing"]                            # the entry point, not a path
       {
         stem: "What does `source .venv/bin/activate` actually do?",
         options: [
+          "Puts `.venv/bin` first on `PATH` and sets `VIRTUAL_ENV`; nothing more",
           "Rewrites `sys.path` inside the interpreter",
-          "Prepends `.venv/bin` to `PATH` and sets `VIRTUAL_ENV` — the interpreter finds its environment from `pyvenv.cfg` next to the executable",
           "Copies the standard library into the environment",
           "Starts a subshell isolated from the parent"
         ],
-        answer: 1,
+        answer: 0,
         why: "Activation is a shell convenience, nothing more. The isolation comes from the interpreter reading `pyvenv.cfg` beside its own executable, which is why `.venv/bin/python script.py` behaves identically without activating. In CI, Makefiles and service units, use the explicit path — activation does not persist between separate shell invocations, which is a common source of steps silently running outside the environment."
       },
       {
         stem: "Two builds of the identical commit produce different images. `requirements.txt` pins `pandas==1.5.3`. What is the most likely cause?",
         options: [
-          "The pin is being ignored by pip",
-          "Unpinned transitive dependencies and a floating base image — `FROM python:3` and packages like numpy that nothing constrains",
-          "Docker layer caching corrupted the image",
-          "`pandas` publishes different wheels per build"
+          "The pin is being ignored by pip, which installs the newest compatible pandas regardless",
+          "Unpinned transitive dependencies and a floating `FROM python:3` base",
+          "Docker layer caching corrupted the image, so one build reused a stale dependency layer",
+          "`pandas` publishes different wheels per build, so the same version contains different code"
         ],
         answer: 1,
         why: "Pinning direct dependencies leaves the rest of the graph to the resolver, so a release from a package three levels down lands with no commit in your repository. `FROM python:3` compounds it by floating across minor Python versions and base OS changes. A lockfile with hashes plus a digest-pinned base image makes the same commit produce the same image whenever it is built."
@@ -620,7 +620,7 @@ CMD ["billing"]                            # the entry point, not a path
         stem: "Why should a library declare `requests>=2.31,<3` rather than `requests==2.31.0`?",
         options: [
           "Exact pins are not supported in `pyproject.toml`",
-          "An exact pin makes the library uninstallable alongside anything requiring a different patch — libraries declare compatibility, applications decide installations",
+          "An exact pin conflicts with anything needing another version — libraries declare ranges",
           "Ranges install faster",
           "`==` prevents security updates from being applied at all"
         ],
@@ -630,12 +630,12 @@ CMD ["billing"]                            # the entry point, not a path
       {
         stem: "What does `--require-hashes` add over pinning every version with `==`?",
         options: [
-          "It makes installs faster by skipping metadata checks",
-          "It verifies the downloaded bytes, so a re-uploaded or substituted artefact under the same version number is rejected — and it fails on any unpinned requirement",
-          "It resolves conflicts automatically",
-          "It records which direct dependency pulled in each package"
+          "It makes installs faster, because pip can skip downloading metadata for packages it already has hashes for",
+          "It resolves dependency conflicts automatically, by choosing the versions whose hashes are listed",
+          "It records which direct dependency pulled in each transitive package, so the tree can be audited",
+          "It checks the downloaded bytes, so a substituted file under the same version is rejected"
         ],
-        answer: 1,
+        answer: 3,
         why: "A version number names a release; a hash names a file. Indexes can serve different bytes under the same version through compromise, mirroring or re-upload, and a dependency-confusion attack relies on exactly that. Hash checking also fails closed: every requirement must carry a hash, so adding a dependency without regenerating the file is an error rather than a silent install."
       }
     ]

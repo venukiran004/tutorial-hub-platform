@@ -27,7 +27,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Catastrophic cancellation\na = 1e15 + 1 - 1e15   # Python float: 0.0 — loses 1\nnp.float64(1e15) + np.float64(1) - np.float64(1e15)   # 0.0 — same issue\n\n# Solutions:\n# Use np.log1p(x) instead of np.log(1+x) for small x\n# Use np.expm1(x) instead of np.exp(x)-1\n# Use compensated summation: np.sum(...) uses pairwise summation, more stable than sequential"
+     "code": "# Catastrophic cancellation\na = 1e16 + 1 - 1e16   # Python float: 0.0 — the 1 is lost (above 2**53, doubles are spaced 2 apart)\nnp.float64(1e16) + np.float64(1) - np.float64(1e16)   # 0.0 — same issue\n\n# Solutions:\n# Use np.log1p(x) instead of np.log(1+x) for small x\n# Use np.expm1(x) instead of np.exp(x)-1\n# Use compensated summation: np.sum(...) uses pairwise summation, more stable than sequential"
     }
    ],
    "kind": ""
@@ -66,7 +66,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# eig: General square matrix (complex eigenvalues/vectors possible)\neigenvalues, eigenvectors = np.linalg.eig(A)\n\n# eigh: Symmetric/Hermitian (guarantees real eigenvalues, more stable, faster)\n# For covariance matrices, Gram matrices — always use eigh\neigenvalues, eigenvectors = np.linalg.eigh(A_symmetric)\n# Eigenvalues returned in ascending order (opposite to eig)"
+     "code": "# eig: General square matrix (complex eigenvalues/vectors possible)\neigenvalues, eigenvectors = np.linalg.eig(A)\n\n# eigh: Symmetric/Hermitian (guarantees real eigenvalues, more stable, faster)\n# For covariance matrices, Gram matrices — always use eigh\neigenvalues, eigenvectors = np.linalg.eigh(A_symmetric)\n# Eigenvalues returned in ascending order (eig guarantees no order)"
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Cholesky: A = LLᵀ (L is lower triangular) — only for positive definite A\nL = np.linalg.cholesky(covariance_matrix)\n\n# Applications:\n# 1. Efficient solving of positive-definite systems (2x faster than LU)\n# 2. Sampling from multivariate Gaussian: X = μ + L @ z, z ~ N(0,I)\nz = np.random.randn(n_dim, n_samples)\nsamples = mean + L @ z"
+     "code": "# Cholesky: A = LLᵀ (L is lower triangular) — only for positive definite A\nL = np.linalg.cholesky(covariance_matrix)\n\n# Applications:\n# 1. Efficient solving of positive-definite systems (2x faster than LU)\n# 2. Sampling from multivariate Gaussian: X = μ + L @ z, z ~ N(0,I)\nz = np.random.randn(n_dim, n_samples)\nsamples = mean[:, None] + L @ z"
     }
    ],
    "kind": ""
@@ -178,12 +178,12 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "153",
-   "q": "What is `np.trapz` and `np.cumtrapz` for numerical integration?",
+   "q": "What is `np.trapezoid` for numerical integration?",
    "body": [
     {
      "t": "code",
      "lang": "python",
-     "code": "# Trapezoidal rule integration\nx = np.linspace(0, np.pi, 1000)\ny = np.sin(x)\n\narea = np.trapz(y, x)   # ≈ 2.0 (integral of sin from 0 to π)\n\n# Cumulative trapz\nfrom scipy.integrate import cumulative_trapezoid as cumtrapz\ncum_area = cumtrapz(y, x, initial=0)  # Running integral"
+     "code": "# Trapezoidal rule integration\nx = np.linspace(0, np.pi, 1000)\ny = np.sin(x)\n\narea = np.trapezoid(y, x)   # ≈ 2.0 (integral of sin from 0 to π); np.trapz before NumPy 2.0\n\n# Cumulative trapz\nfrom scipy.integrate import cumulative_trapezoid as cumtrapz\ncum_area = cumtrapz(y, x, initial=0)  # Running integral"
     }
    ],
    "kind": ""
@@ -209,7 +209,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Legacy (deprecated): module-level functions with global state\nnp.random.seed(42)\nnp.random.randn(5)\n\n# Modern: Generator with explicit seeding\nrng = np.random.default_rng(seed=42)    # PCG64 generator\nrng.standard_normal(5)\nrng.integers(0, 100, size=(3, 3))\nrng.choice(arr, size=10, replace=False)\n\n# Benefits: reproducible, no global state, faster PCG64 algorithm"
+     "code": "# Legacy (kept for compatibility): module-level functions with global state\nnp.random.seed(42)\nnp.random.randn(5)\n\n# Modern: Generator with explicit seeding\nrng = np.random.default_rng(seed=42)    # PCG64 generator\nrng.standard_normal(5)\nrng.integers(0, 100, size=(3, 3))\nrng.choice(arr, size=10, replace=False)\n\n# Benefits: reproducible, no global state, faster PCG64 algorithm"
     }
    ],
    "kind": ""

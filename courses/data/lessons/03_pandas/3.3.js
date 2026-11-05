@@ -109,7 +109,7 @@ df = pd.DataFrame({
 })
 
 # THE DEFAULT REPORT UNDERSTATES BADLY:
-df.memory_usage().sum() / 1e6            # ~40 MB -- pointers only
+df.memory_usage().sum() / 1e6            # ~33 MB -- pointers only
 df.memory_usage(deep=True).sum() / 1e6   # ~155 MB -- the truth
 
 # PER COLUMN, deep, is where the decisions get made:
@@ -140,7 +140,7 @@ small.memory_usage(deep=True).sum() / 1e6     # ~11 MB
 c = small["region"]
 c.cat.categories                # Index(['central','east',...]) -- 10
 c.cat.codes.dtype               # int8 -- ONE BYTE per row
-c.cat.codes.head().tolist()     # [3, 0, 7, 1, 5]
+c.cat.codes.head().tolist()     # [3, 5 9 7 6]
 #
 # The codes dtype scales with cardinality: int8 up to 127 categories,
 # then int16, then int32. Memory is n_rows x code_size, plus the
@@ -163,7 +163,7 @@ category_worthwhile(df["region"])          # (True, '64.8 MB -> 1.0 MB')
 # WHEN CATEGORY MAKES IT WORSE -- a genuinely unique column:
 ids = pd.Series([f"order-{i}" for i in range(n)])
 ids.memory_usage(deep=True) / 1e6                   # ~63 MB
-ids.astype("category").memory_usage(deep=True) / 1e6  # ~71 MB -- BIGGER
+ids.astype("category").memory_usage(deep=True) / 1e6  # ~107 MB -- BIGGER
 #
 # Every value is distinct, so the categories array holds all n strings
 # AND you now pay for a 4-byte code per row on top. Categorical is a
@@ -204,7 +204,7 @@ arrow = text.astype("string[pyarrow]")
 cat = text.astype("category")
 
 obj.memory_usage(deep=True) / 1e6         # ~33 MB
-arrow.memory_usage(deep=True) / 1e6       # ~3 MB
+arrow.memory_usage(deep=True) / 1e6       # ~6 MB
 cat.memory_usage(deep=True) / 1e6         # ~0.5 MB
 
 # STRING OPERATIONS -- the gap is large:

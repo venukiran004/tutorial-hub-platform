@@ -219,6 +219,8 @@ class Transaction:
       ]}
     ]},
 
+    {"t": "diagram", "kind": "steps", "title": "What @contextmanager does with your generator", "caption": "**The `yield` splits the generator into setup and teardown.** Everything before it is `__enter__`, the yielded value is what `as` binds, and everything after it is `__exit__`. If the body raises, the exception is thrown into the generator at the `yield` — which is why teardown belongs in `finally`, or it is skipped exactly when it matters.", "items": [{"label": "with cm() as x:", "desc": "the generator runs up to its yield", "tone": "accent"}, {"label": "x = the yielded value", "desc": "setup is done; the body starts", "tone": "accent"}, {"label": "the body runs", "desc": "and may raise", "tone": "warn"}, {"label": "the generator resumes", "desc": "an exception is re-raised at the yield", "tone": "warn"}, {"label": "finally: teardown", "desc": "runs on success and on failure", "tone": "good"}]},
+
     { t: "h2", n: "03", text: "Suppressing, and why not to", id: "suppressing" },
 
     {"kind": "trace", "title": "A bare `return True` swallows KeyboardInterrupt and your own bugs", "caption": "**Returning `True` from `__exit__` suppresses *every* exception — including `KeyboardInterrupt` and bugs in your own code — and the measured output is the whole problem: `execution continues, and nothing was logged`.** So if suppression is genuinely wanted, **name what you are ignoring: `contextlib.suppress(FileNotFoundError)` is fine precisely because it says which exception.** Which is 5.1's Zen row doing real work: **errors should never pass silently, unless *explicitly* silenced** — and the explicitness is the exception type.", "left": "form", "codeW": 190, "vars": ["what it suppresses", "verdict"], "steps": [{"code": "__exit__ returning True", "state": ["everything", "execution continues, nothing logged"], "tone": "crit"}, {"code": "...including KeyboardInterrupt", "state": ["and your own bugs", "unkillable, undiagnosable"], "changed": [0, 1], "tone": "crit"}, {"code": "suppress(FileNotFoundError)", "state": ["one named exception", "fine - it says which"], "changed": [0, 1], "tone": "good"}, {"code": "except Exception: pass", "state": ["everything but exits", "the same bug, spelled differently"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-5_8-03-0"},
@@ -395,7 +397,7 @@ def timeout(seconds: float) -> Iterator[None]:
 
 with timeout(5):
     result = fetch()`,
-          note: "The restore logic exists in one place and cannot be forgotten. The call site is now two lines that state the intent, and adding a second setting to save means editing one function rather than every caller. **Note this manager is not thread-safe** — it mutates a global, so concurrent requests would interfere; `contextvars` is the answer there (Lesson 11.6)." }
+          note: "The restore logic exists in one place and cannot be forgotten. The call site is now two lines that state the intent, and adding a second setting to save means editing one function rather than every caller. **Note this manager is not thread-safe** — it mutates a global, so concurrent requests would interfere; `contextvars` is the answer there (Lesson 11.7)." }
       ]
     },
 
@@ -664,43 +666,43 @@ if __name__ == "__main__":
       {
         stem: "A `with` block contains a `return` statement. When does `__exit__` run?",
         options: [
-          "It does not — `return` exits before cleanup",
-          "Before the function returns — `with` compiles to a `try/finally`, so every exit path goes through `__exit__`",
-          "Only if the function is inside another `with`",
-          "After the caller receives the return value"
+          "Before the function returns — `with` is a `try/finally`, so every exit runs it",
+          "It does not — `return` leaves the function before the `with` block can run its cleanup",
+          "Only if the function is itself inside another `with` block that catches the return",
+          "After the caller receives the return value, as part of tearing down the frame"
         ],
-        answer: 1,
+        answer: 0,
         why: "`with` expands to a `try/finally` around the block, so `__exit__` runs on completion, on an exception, and on `return`, `break` or `continue`. The return value is computed, then cleanup runs, then the function returns. That unconditional guarantee is exactly why paired operations belong in a context manager rather than in two statements with code between them."
       },
       {
         stem: "A `@contextmanager` function has no `try/finally` around its `yield`. What breaks?",
         options: [
           "Nothing — the code after `yield` always runs",
-          "An exception in the `with` block is re-raised at the `yield`, so the cleanup lines after it never execute",
           "The manager can only be used once",
-          "`as` binds `None` instead of the yielded value"
+          "`as` binds `None` instead of the yielded value",
+          "An exception in the block is raised at the `yield`, so the cleanup after it is skipped"
         ],
-        answer: 1,
+        answer: 3,
         why: "When the block raises, the exception is thrown into the generator at the `yield`. Without a `try/finally` it propagates straight out and everything after the `yield` is skipped — so the manager silently stops guaranteeing cleanup, which was the only reason it existed. The failure is invisible on the happy path, which is what makes it dangerous."
       },
       {
         stem: "A transaction manager's rollback fails inside `__exit__` while handling a `ValueError`. What does the caller see if `__exit__` lets that error propagate?",
         options: [
           "Both exceptions, chained automatically",
-          "Only the rollback error — it replaces the original `ValueError`, hiding the bug that caused the failure",
           "Only the original `ValueError`",
-          "A `RuntimeError` about an exception during cleanup"
+          "Only the rollback error, which hides the `ValueError` that caused the failure",
+          "A `RuntimeError` reporting that an exception occurred during cleanup, wrapping both"
         ],
-        answer: 1,
+        answer: 2,
         why: "An exception raised inside `__exit__` supersedes the one being handled. A caller debugging a business-logic failure would see `ConnectionError: cannot execute 'ROLLBACK'` and never learn the real cause. The correct handling is to catch the cleanup failure, log it, and return `False` so the original propagates with its traceback intact. Python does set `__context__`, but the visible exception is still the wrong one."
       },
       {
         stem: "When is `contextlib.ExitStack` the right tool?",
         options: [
-          "Whenever more than one resource is used",
-          "When the number of resources varies at runtime, acquisition is conditional, or ownership of the cleanup must be transferred out",
-          "Only for file handles",
-          "When context managers need to be entered in a specific order"
+          "Whenever more than one resource is used, since nested `with` statements are hard to read",
+          "When the number of resources varies, acquisition is conditional, or cleanup is handed off",
+          "Only for file handles, which are the one resource type it knows how to close",
+          "When context managers must be entered in a specific order that `with a, b:` cannot guarantee"
         ],
         answer: 1,
         why: "`with a, b, c:` handles a known set perfectly well. `ExitStack` earns its place when the count is dynamic — opening one handle per path in a list — because it also gets partial failure right: if the fourth `open()` raises, the first three still close. It additionally supports conditional `enter_context`, plain `callback` cleanups, and `pop_all()` to hand ownership to a caller."

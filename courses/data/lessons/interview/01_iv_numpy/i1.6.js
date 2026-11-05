@@ -384,7 +384,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "corr_matrix = np.corrcoef(X.T)  # Shape (n_features, n_features)\n# Values range [-1, 1]\n# corr > 0.8 → potential multicollinearity\n# corr ≈ 0 → features are independent"
+     "code": "corr_matrix = np.corrcoef(X.T)  # Shape (n_features, n_features)\n# Values range [-1, 1]\n# corr > 0.8 → potential multicollinearity\n# corr ≈ 0 → no linear relationship (not the same as independent)"
     }
    ],
    "kind": ""

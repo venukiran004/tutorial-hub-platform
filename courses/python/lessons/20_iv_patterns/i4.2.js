@@ -174,9 +174,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Module**import-time caching makes a module a natural singleton (best/simplest).",
-      "**Metaclass**`__call__` returns a cached instance; reusable across classes.",
-      "**`__new__` override**class returns its one `_instance`."
+      "**Module:** import-time caching makes a module a natural singleton (best/simplest).",
+      "**Metaclass:** `__call__` returns a cached instance; reusable across classes.",
+      "**`__new__` override:** class returns its one `_instance`."
      ]
     },
     {

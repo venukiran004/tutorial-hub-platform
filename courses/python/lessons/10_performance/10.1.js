@@ -599,45 +599,45 @@ n= 64,000    0.1329s   x 2.13`,
       {
         stem: "You time a function at n = 5,000 (0.4 s), n = 10,000 (1.6 s) and n = 20,000 (6.5 s). What do you do next?",
         options: [
-          "Profile the function and optimise whichever line has the highest self time",
-          "Find the operation whose cost grows with the data inside a loop — the ratio of about 4.0 per doubling means the growth class must change",
-          "Run it across four processes, since the work is clearly CPU-bound",
-          "Add a cache, because repeated work is the usual cause of super-linear timing"
+          "Profile the function and optimise whichever line has the highest self time, since that is where the seconds are going",
+          "Run it across four processes, since the work is clearly CPU-bound and each process takes a quarter of the rows",
+          "Find the operation whose cost grows with the data — ~4× per doubling means O(n²)",
+          "Add a cache, because repeated work on the same inputs is the usual cause of super-linear timing like this"
         ],
-        answer: 1,
+        answer: 2,
         why: "Four times the time for twice the data is the signature of `O(n²)`, so the fix has to change the exponent: a `set` instead of a list membership test, a `dict` index instead of a nested scan, `append` instead of `+`. Profiling first will faithfully report the hottest line *inside* the quadratic algorithm and lead you to optimise a constant factor for a few percent. Parallelism buys a fixed divisor against growth that squares, so the next data increase erases it. A cache only helps if the same work repeats with the same inputs, which a quadratic scan over distinct rows does not."
       },
       {
         stem: "Which of these is `O(1)`?",
         options: [
+          "`key in my_dict`",
           "`value in my_dict.values()`",
           "`my_list.insert(0, item)`",
-          "`key in my_dict`",
           "`sorted(rows)[0]`"
         ],
-        answer: 2,
+        answer: 0,
         why: "`key in my_dict` hashes the key and probes one slot, independent of size. A values view has no index, so scanning it for a value is `O(n)`. `insert(0, item)` shifts every existing element one slot, which is `O(n)`. And `sorted(rows)[0]` sorts the entire sequence to read one element — `O(n log n)` where `min(rows)` would be `O(n)`."
       },
       {
         stem: "A report function loops over 14 report columns with a nested loop over the same 14 columns. A reviewer asks you to make it linear. What is the right response?",
         options: [
           "Agree — quadratic code should never be merged, regardless of input size",
+          "Point out that n is fixed at 14, so it will never matter; keep the clearer version",
           "Rewrite it with a dict index, since the fix is cheap and removes a future risk",
-          "Point out that n is bounded at 14, so this runs 196 times and will never matter; keep whichever version reads better",
           "Add a comment recording the complexity and merge the quadratic version"
         ],
-        answer: 2,
-        why: "Growth only matters when the input can grow. Fourteen columns is a fixed, small bound, so 196 iterations of cheap work is irrelevant at every scale the code will ever see, and the readable version wins. Options A and B treat a growth rate as a rule rather than as a property of the data — that is how you end up with a dict index over a list of ten items, which is slower in practice as well as harder to read. A comment alone (option D) documents a non-problem and does not answer the reviewer."
+        answer: 1,
+        why: "Growth only matters when the input can grow. Fourteen columns is a fixed, small bound, so 196 iterations of cheap work is irrelevant at every scale the code will ever see, and the readable version wins. Options A and C treat a growth rate as a rule rather than as a property of the data — that is how you end up with a dict index over a list of ten items, which is slower in practice as well as harder to read. A comment alone (option D) documents a non-problem and does not answer the reviewer."
       },
       {
         stem: "Why is `list.append` described as `O(1)` *amortised* rather than simply `O(1)`?",
         options: [
-          "Because appending to a list is only constant time when the list holds fewer than 1,000 elements",
-          "Because a full list reallocates a larger block and copies every element, an `O(n)` operation whose cost averages to a constant because capacity grows geometrically",
+          "Because appending is only constant time while the list holds fewer than about 1,000 elements, after which each append costs more",
           "Because CPython defers the append until the list is next read, so the cost is charged later",
-          "Because the cost depends on the type of the elements being appended"
+          "Because the cost depends on the type of the elements being appended",
+          "Because a full list reallocates and copies everything, but geometric growth averages that out"
         ],
-        answer: 1,
+        answer: 3,
         why: "A list owns a block of slots; when it fills, CPython allocates a bigger block — roughly an eighth larger — and copies the contents. That single append is linear, but because capacity grows by a proportion rather than a fixed amount, the total copying over n appends is proportional to n, giving a constant average. This matters in two real ways the word 'amortised' hides: the occasional copy is a tail-latency spike, and it briefly holds two blocks, which is a peak-memory event. Nothing is deferred, and element type is irrelevant since a list stores pointers."
       }
     ]

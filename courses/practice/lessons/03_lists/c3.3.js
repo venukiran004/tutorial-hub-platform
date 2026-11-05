@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.3",
  "lede": "**30 programs to write**, on list gotchas and late binding. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on more list programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 30 programs on list gotchas and late binding without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 289–318.** What this set actually drills, counted from its own problems — 19 of the 30 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "generators", "databases", "threads", "algorithms", "dicts and sets"], "cells": [[{"text": "14", "tone": "accent"}, "sorted() returns a new list, l"], [{"text": "1", "tone": "good"}, "Grouping consecutive runs with"], [{"text": "1", "tone": "violet"}, "Every index of a value, not ju"], [{"text": "1", "tone": "teal"}, "A list is a fine stack and a p"], [{"text": "1", "tone": "warn"}, "Sliding windows and a running "], [{"text": "1", "tone": "crit"}, "Counting and ranking with Coun"]], "t": "diagram", "id": "dg-c3_3-top-0"},
   {
    "t": "callout",
    "kind": "note",

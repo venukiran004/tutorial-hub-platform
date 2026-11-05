@@ -138,7 +138,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import hashlib\nimport re\n\ndef mask_email(email):\n    parts = email.split('@')\n    name = parts[0]\n    masked_name = name[0] + '*' * (len(name) - 2) + name[-1]\n    return f\"{masked_name}@{parts[1]}\"\n\ndef mask_phone(phone):\n    digits = re.sub(r'\\D', '', phone)\n    return f\"***-***-{digits[-4:]}\"\n\ndef mask_ssn(ssn):\n    return f\"***-**-{ssn[-4:]}\"\n\ndef hash_pii(value, salt='secret'):\n    return hashlib.sha256(f\"{salt}{value}\".encode()).hexdigest()[:16]\n\nprint(mask_email(\"alice.smith@example.com\"))  # a*********h@example.com\nprint(mask_phone(\"555-123-4567\"))             # ***-***-4567\nprint(mask_ssn(\"123-45-6789\"))                # ***-**-6789\nprint(hash_pii(\"alice@example.com\"))          # 16-char hash"
+     "code": "import hashlib\nimport re\n\ndef mask_email(email):\n    parts = email.split('@')\n    name = parts[0]\n    masked_name = name[0] + '*' * (len(name) - 2) + name[-1]\n    return f\"{masked_name}@{parts[1]}\"\n\ndef mask_phone(phone):\n    digits = re.sub(r'\\D', '', phone)\n    return f\"***-***-{digits[-4:]}\"\n\ndef mask_ssn(ssn):\n    return f\"***-**-{ssn[-4:]}\"\n\ndef hash_pii(value, salt='secret'):\n    return hashlib.sha256(f\"{salt}{value}\".encode()).hexdigest()[:16]\n\nprint(mask_email(\"alice.smith@example.com\"))  # a*********h@example.com\nprint(mask_phone(\"555-123-4567\"))             # ***-***-4567\nprint(mask_ssn(\"123-45-6789\"))                # ***-**-6789\nprint(hash_pii(\"alice@example.com\"))          # 18-char hash"
     }
    ],
    "kind": "program"

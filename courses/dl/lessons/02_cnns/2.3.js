@@ -2,7 +2,7 @@
    LESSON 2.3 — Famous Architectures: LeNet to ConvNeXt
    Parameter counts are read from torchvision rather than copied from the
    table, and the residual gradient claim is measured on a 20-block stack
-   (scratchpad/dl/d23.py, torch 2.10 + torchvision).
+   (d23.py, torch 2.10 + torchvision).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.3",

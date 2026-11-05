@@ -233,3 +233,9 @@ html[data-theme="light"] .hero::after  { opacity: .34; }
   .mcard:hover { transform: none; }
   .cta.primary:hover::after { transform: translateX(-120%); }
 }
+
+/* Print has no viewport to scroll into, so an unrevealed card would print
+   blank. */
+@media print {
+  .cp-reveal { opacity: 1; transform: none; transition: none; }
+}

@@ -562,21 +562,21 @@ elif score >= 80:
 elif score >= 95:
     grade = "honours"`,
         options: [
-          "Nothing — the conditions are checked in order and all are reachable",
           "The last two branches are unreachable: any score of 80 or 95 already matched the first condition",
-          "`elif` cannot be used more than once in a chain",
+          "Nothing — Python checks every condition in order and runs each branch whose condition is true",
+          "`elif` cannot be used more than once in a chain; the later branches need to be nested `if` statements",
           "The comparisons should use `>` rather than `>=`"
         ],
-        answer: 1,
+        answer: 0,
         why: "A chain stops at the first true condition, so `score >= 50` swallows every score that would have matched the later branches. A score of 95 is `\"pass\"`. Overlapping conditions must be ordered most specific first — here, 95, then 80, then 50. When conditions genuinely do not overlap, that is a signal they should be separate `if` statements rather than a chain."
       },
       {
         stem: "Why do guard clauses improve a function with four preconditions?",
         options: [
-          "They execute faster because the interpreter skips the remaining checks",
-          "They remove nesting: each condition sits next to its own outcome, the happy path is unindented, and adding a fifth check does not re-indent the body",
-          "They allow the checks to be evaluated in parallel",
-          "They are required by PEP 8 for functions with more than three branches"
+          "They execute faster, because once a guard returns the interpreter can skip evaluating the remaining conditions",
+          "They remove nesting: each check sits beside its outcome and the happy path stays unindented",
+          "They allow the four checks to be evaluated in parallel, since each guard is independent of the others",
+          "They are required by PEP 8 for any function with more than three branches, and linters enforce the rule"
         ],
         answer: 1,
         why: "The benefit is structural, not performance — an early `return` skips the rest either way, and so does a nested `if` that fails. What changes is readability and cost of change: the deeply nested version buries the real work at maximum depth, separates each error message from its check, and forces a re-indentation of everything when a precondition is added."
@@ -584,21 +584,21 @@ elif score >= 95:
       {
         stem: "When should a chain of `if/elif` comparing one variable against constants become a dict?",
         options: [
-          "Always — dicts are faster and dict lookup is O(1)",
-          "When the branches are numerous, or the same set of branches appears elsewhere in the codebase, or the values should be configurable",
-          "Never — control flow and data should stay separate",
-          "Only when there are more than ten branches"
+          "Always — a dict lookup is O(1) while an `if/elif` chain is O(n), so the dict is faster at any size",
+          "Never — control flow and data should stay separate, and a dict of behaviours hides the branching from readers",
+          "Only when there are more than ten branches, which is the point at which the chain becomes measurably slower",
+          "When branches are many, repeated elsewhere in the code, or should be configurable"
         ],
-        answer: 1,
+        answer: 3,
         why: "For two or three branches in one place, a dict is indirection without benefit. It earns its place when the list grows (the mapping becomes inspectable, iterable and configurable), when the same branching is duplicated elsewhere (a signal for polymorphism or a shared table), or when the values belong in configuration rather than code. Speed is a real but usually irrelevant secondary benefit."
       },
       {
         stem: "Why is raising an exception often better than returning `(False, \"reason\")` from a permission check?",
         options: [
-          "Exceptions are faster than constructing a tuple",
-          "A caller can silently ignore a returned `False` and proceed as though access was granted; an exception cannot be ignored",
-          "Tuples cannot carry enough information about the failure",
-          "Returning a tuple prevents the function from being type-annotated"
+          "Exceptions are faster than constructing and unpacking a tuple on every call to the permission check",
+          "A caller can ignore a returned `False` and carry on as if allowed; an exception cannot be ignored",
+          "Tuples cannot carry enough information about the failure, such as which permission was missing",
+          "Returning a tuple prevents the function from being type-annotated, so mypy cannot check its callers"
         ],
         answer: 1,
         why: "A boolean-returning permission check has a well-known failure mode: a caller writes `check_access(user, file)` without inspecting the result, and execution continues as if access were granted. Nothing in the code signals the mistake. An exception forces the caller either to handle it or to propagate it, and it gives the success path a single unambiguous meaning."

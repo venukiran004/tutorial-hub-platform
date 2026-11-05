@@ -143,7 +143,7 @@ f(2.001) - f(2.0)          # 0.004001  -- the prediction was 0.004
 
 def y(x): return (3*x + 1)**2
 
-(y(2.0001) - y(2.0)) / 0.0001        # 42.0003  -- confirms 42
+(y(2.0001) - y(2.0)) / 0.0001        # 42.0009  -- confirms 42
 
 # A LONGER CHAIN IS THE SAME RULE APPLIED REPEATEDLY. For
 # x -> a -> b -> c -> L:
@@ -211,7 +211,7 @@ dL_dx = delta * w             # -0.0528   <- what flows to the layer below
 
 # Check against finite differences:
 h = 1e-6
-(( (sigmoid((w+h)*x + b) - y)**2 - L ) / h)      # -0.2113  agreed`,
+(( (sigmoid((w+h)*x + b) - y)**2 - L ) / h)      # -0.2115  agreed`,
           note: "**`delta` is computed once and used three times.** In a deep network it is passed to the layer below and the same pattern repeats — which is the entire algorithm, not a summary of it." }
       ]
     },

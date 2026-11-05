@@ -330,7 +330,7 @@ print(error)                   # works -- your own name, not the clause's`,
 Traceback (most recent call last):
   File "/app/x.py", line 8, in <module>
     print(exc)
-NameError: name 'exc' is not defined`},
+NameError: name 'exc' is not defined. Did you mean: 'exec'?`},
       { t: "p", text: "**Why it works this way:** the exception references its traceback, the traceback references every frame, and each frame references its locals — including `exc`. That is a reference cycle keeping whole call stacks alive. Deleting the name at the end of the block breaks it. Assigning to your own variable opts you back into holding that memory, which is fine for the few lines it takes to log or re-raise." }
     ]},
 
@@ -340,13 +340,13 @@ try:
 except KeyError as exc:
     print(type(exc).__name__)     # the class -- often the most useful fact
     print(exc.args)               # the constructor arguments, as a tuple
-    print(str(exc))               # the message; for KeyError, just the key
+    print(str(exc))               # the message; for KeyError, the key's repr -- quotes included
     print(repr(exc))
     print(exc.__traceback__ is not None)
 `,
       out: `KeyError
 ('customer',)
-customer
+'customer'
 KeyError('customer')
 True`,
       caption: "`str(exc)` on a `KeyError` is the bare key with no explanation — one reason a log line must include the class name and your own context, never only `str(exc)` (Lesson 6.4)."
@@ -648,44 +648,44 @@ def main() -> None:
         stem: "A worker loop uses `except:` with no exception class. What is the practical consequence?",
         options: [
           "It behaves identically to `except Exception:` but is less readable",
+          "It catches only the exceptions defined in the standard library, so errors from your own classes escape the loop",
           "It catches `BaseException`, so Ctrl-C and `sys.exit()` are swallowed and the loop cannot be stopped",
-          "It catches only exceptions defined in the standard library",
-          "It re-raises anything it cannot handle"
+          "It re-raises anything it cannot handle, so a bare `except:` is safe as long as the body logs the error"
         ],
-        answer: 1,
+        answer: 2,
         why: "A bare `except:` matches `BaseException`, which includes `KeyboardInterrupt` and `SystemExit`. Those derive from `BaseException` rather than `Exception` precisely so error handling does not intercept them, so the bare form defeats the design: Ctrl-C is discarded locally, and a `SIGTERM` handler calling `sys.exit()` is discarded in production, costing you the graceful-shutdown window. It is therefore not equivalent to `except Exception:` — that difference is the whole point — and nothing about it re-raises or limits itself to stdlib types."
       },
       {
         stem: "Which single `except` clause catches both a missing dictionary key and an out-of-range list index?",
         options: [
           "`except ValueError:`",
-          "`except LookupError:`",
           "`except IndexError:`",
-          "`except RuntimeError:`"
+          "`except RuntimeError:`",
+          "`except LookupError:`"
         ],
-        answer: 1,
+        answer: 3,
         why: "`KeyError` and `IndexError` both derive from `LookupError`, and an `except` clause is an `isinstance` check against the named class and all its descendants. `IndexError` alone misses the `KeyError`; `ValueError` is the base for parsing and conversion failures such as `UnicodeDecodeError`, not for lookups; `RuntimeError` is an unrelated branch whose main descendant is `RecursionError`. Knowing the intermediate bases is what lets you write one clause instead of a tuple of two."
       },
       {
         stem: "A `try` statement lists `except Exception:` first and `except ValueError:` second. What happens when a `ValueError` is raised?",
         options: [
-          "Both handlers run, in order",
+          "Both handlers run in order, the general one first and then the specific one",
           "The `ValueError` handler runs, because it is more specific",
-          "The `Exception` handler runs, and the `ValueError` clause can never execute",
-          "Python raises a `SyntaxError` for the unreachable clause"
+          "Python raises a `SyntaxError` at compile time, because the second clause is unreachable",
+          "The `Exception` handler runs, and the `ValueError` clause can never execute"
         ],
-        answer: 2,
+        answer: 3,
         why: "Clauses are tested top to bottom and the first match wins — there is no specificity ranking as in some other languages — so the broad clause claims the `ValueError` and the clause below it is dead code for every exception. Only one clause ever runs per exception, so \"both\" is wrong (that is `except*` behaviour with exception groups). Python does not diagnose the unreachable clause either: it is valid syntax and raises nothing, which is why linters check clause ordering for you."
       },
       {
         stem: "Why does `except ValueError as exc:` leave `exc` undefined after the block ends?",
         options: [
           "Because `as` bindings are block-scoped, like a variable in a comprehension",
-          "Because the exception object is garbage-collected the moment the block exits",
-          "Because Python compiles in an implicit `del exc` to break the exception → traceback → frame → locals reference cycle",
+          "Python adds an implicit `del exc` to break the exception–traceback–frame cycle",
+          "Because the exception object is garbage-collected the moment the `except` block exits",
           "Because only the last raised exception is kept, in `sys.last_value`"
         ],
-        answer: 2,
+        answer: 1,
         why: "The exception references its traceback, the traceback references every frame, and each frame references its locals — which include `exc` itself. That cycle would keep whole call stacks alive, so the clause is compiled with an implicit `del exc` in a `finally`. The name is an ordinary function-scoped local, not a block-scoped one, which is exactly why the deletion has to be explicit; and the object is not collected at all if you bound it to another name first, which is the standard workaround. `sys.last_value` is set only for unhandled exceptions in the REPL."
       }
     ]

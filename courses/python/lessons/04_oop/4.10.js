@@ -240,11 +240,15 @@ class Config:
 
 
 c = Config(["a", "b"])
-c.hosts = []           # FrozenInstanceError, as expected
-c.hosts.append("c")    # works -- the LIST is not frozen
+try:
+    c.hosts = []       # the attribute is frozen...
+except FrozenInstanceError as exc:
+    print(f"FrozenInstanceError: {exc}")
+c.hosts.append("c")    # ...the LIST is not
 print(c)
 hash(c)`,
-        out: `Config(hosts=['a', 'b', 'c'])
+        out: `FrozenInstanceError: cannot assign to field 'hosts'
+Config(hosts=['a', 'b', 'c'])
 TypeError: unhashable type: 'list'`},
       { t: "p", text: "`frozen` blocks assignment to the *field*, not mutation of what the field points at — the same shallow-immutability limit as a tuple (Lesson 1.4). And because `__hash__` hashes the fields, a mutable field makes the whole object unhashable, defeating the main reason to freeze it." },
       { t: "p", text: "**Use immutable field types in a frozen dataclass:** `tuple[str, ...]` rather than `list[str]`, `frozenset` rather than `set`, and a nested frozen dataclass rather than a dict." }
@@ -439,7 +443,8 @@ order = Order.model_validate(response.json())`,
       solution: {
         lang: "python",
         title: "deployment.py",
-        code: `# ---- the original: 80 lines, 3 bugs -------------------------------------
+        code: `from __future__ import annotations
+# ---- the original: 80 lines, 3 bugs -------------------------------------
 
 class Deployment:
     def __init__(self, service, version, regions=[], api_token="",
@@ -491,7 +496,6 @@ class Deployment:
 
 # ---- the redesign -------------------------------------------------------
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
@@ -666,43 +670,43 @@ if __name__ == "__main__":
       {
         stem: "In a dataclass body, `host: str = \"localhost\"` and `port = 8080`. What is the difference?",
         options: [
-          "None — both become fields with defaults",
-          "`host` is a field (in `__init__`, `__repr__`, `__eq__`); `port` has no annotation so it is a plain class attribute, excluded from all three",
-          "`port` becomes a field but cannot be overridden per instance",
-          "`port` raises a `ValueError` for missing type information"
+          "None — both become fields with defaults, because a dataclass collects every assignment in its body",
+          "`port` becomes a field in `__init__` but cannot be overridden per instance, so it is always 8080",
+          "`port` raises a `ValueError` when the class is defined, because every dataclass field needs a type",
+          "`host` is a field; `port` has no annotation, so it is a plain class attribute"
         ],
-        answer: 1,
+        answer: 3,
         why: "Dataclasses read annotations, not assignments. Without one, `port` is an ordinary class attribute shared by every instance — absent from `__init__`, `__repr__` and `__eq__`. It is a quiet bug: the value works when read, but it cannot be set per instance and silently disappears from equality. If a field is missing from the generated `repr`, check its annotation first."
       },
       {
         stem: "Why does `@dataclass(frozen=True)` with a `list` field defeat its own purpose?",
         options: [
           "Frozen dataclasses cannot have collection fields at all",
-          "`frozen` blocks assignment to the field but not mutation of the list, and a list field makes the object unhashable — removing the main reason to freeze it",
           "The list is shared between instances",
-          "`__post_init__` cannot validate list contents"
+          "`__post_init__` cannot validate list contents",
+          "`frozen` cannot stop the list being mutated, and the list makes the object unhashable"
         ],
-        answer: 1,
+        answer: 3,
         why: "`frozen` is shallow, exactly like a tuple containing a list (Lesson 1.4): `c.hosts = []` raises, but `c.hosts.append(\"x\")` succeeds. Worse, `__hash__` hashes the fields, so an unhashable list makes the whole object unhashable — losing dict-key and set-member use, which is usually why you froze it. Use `tuple[str, ...]`, `frozenset` or a nested frozen dataclass."
       },
       {
         stem: "What does `field(repr=False)` accomplish for an API token, beyond tidier output?",
         options: [
-          "It encrypts the value in memory",
-          "It keeps the value out of tracebacks, structured log serialisation and error-tracking payloads — `repr` is rendered by code you did not write",
-          "It prevents the field from being read by other modules",
-          "It excludes the field from `asdict()` and JSON output"
+          "It encrypts the value in memory, so the token cannot be read from a heap dump",
+          "It prevents the field from being read by other modules, which can only see the masked value",
+          "It keeps the token out of tracebacks, logs and error reports that render `repr`",
+          "It excludes the field from `asdict()` and JSON output, so the token never leaves the process"
         ],
-        answer: 1,
+        answer: 2,
         why: "`repr` reaches far more places than a `print`: exception messages, debugger output, most structured loggers, and error-tracking services that serialise local variables. An application that never logs tokens can still leak them through an exception carrying a config object. It does not encrypt anything or restrict access, and `asdict()` still includes the field — for that, a `SecretStr`-style wrapper is stronger."
       },
       {
         stem: "You are parsing an external API response. Dataclass or Pydantic model?",
         options: [
-          "Dataclass — it is standard library and faster",
-          "Pydantic — annotations are not enforced at runtime, so untrusted data needs real validation with field-level error messages",
-          "Either; both validate types at construction",
-          "Dataclass with `__post_init__` doing manual `isinstance` checks"
+          "Dataclass — it is in the standard library, faster to construct, and type-checked by mypy",
+          "Pydantic — annotations are not enforced at runtime, so untrusted data needs real validation",
+          "Either; both validate the annotated types at construction, so the choice is about dependencies",
+          "Dataclass with `__post_init__` doing manual `isinstance` checks, which avoids a third-party dependency"
         ],
         answer: 1,
         why: "A dataclass constructs happily from `Order(\"o-1\", \"not a number\")` because annotations are never checked at runtime (Lesson 1.8). At a trust boundary you need parsing plus validation plus coercion plus errors naming the field path — which is Pydantic's job. Option D works and reimplements a library badly. The rule: dataclass for data you construct, Pydantic for data that arrives."

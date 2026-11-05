@@ -318,12 +318,12 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "There are three generations (0, 1, 2). New objects start in **Gen 0**, which is collected most frequently (default threshold ~700 allocations). Objects that survive a collection are **promoted** to the next generation, which is scanned less often. This rests on the **generational hypothesis**: most objects die young, so focusing effort on young objects catches most garbage cheaply."
+     "text": "There are three generations (0, 1, 2). New objects start in **Gen 0**, which is collected most frequently (default threshold 700 allocations, 2,000 from Python 3.13). Objects that survive a collection are **promoted** to the next generation, which is scanned less often. This rests on the **generational hypothesis**: most objects die young, so focusing effort on young objects catches most garbage cheaply."
     },
     {
      "t": "code",
      "lang": "python",
-     "code": "import gc\nprint(gc.get_threshold())   # (700, 10, 10)\nprint(gc.get_count())       # current per-generation counts",
+     "code": "import gc\nprint(gc.get_threshold())   # (700, 10, 10); (2000, 10, 10) from 3.13\nprint(gc.get_count())       # current per-generation counts",
      "numbered": false
     },
     {
@@ -374,7 +374,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Bulk loading with no cycles**refcounting suffices, and skipping GC scans is faster.",
+      "**Bulk loading with no cycles:** refcounting suffices, and skipping GC scans is faster.",
       "**After `fork()`** in pre-fork servers — GC touching refcounts triggers copy-on-write page faults, bloating memory (Instagram's famous tweak).",
       "**Latency-critical paths** where GC pauses are unacceptable."
      ]
@@ -535,12 +535,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "a = 256; b = 256; print(a is b)   # True\na = 257; b = 257; print(a is b)   # False (in a script)\nimport sys\nprint(sys.intern(\"a b\") is sys.intern(\"a b\"))  # True",
+     "code": "a = 256; b = 256; print(a is b)   # True\na = 257; b = 257; print(a is b)   # True in a script (one shared constant); False on separate REPL lines\nimport sys\nprint(sys.intern(\"a b\") is sys.intern(\"a b\"))  # True",
      "numbered": false
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Caching/interning are optimizations — never use `is` to compare values; use `==`."
+     "text": "**Key takeaway:** Caching/interning are optimisations — never use `is` to compare values; use `==`."
     }
    ]
   },
@@ -560,7 +560,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "For objects ≤ 512 bytes CPython uses **pymalloc**, organized as **arenas (256 KB) → pools (4 KB pages, one size class) → blocks (the object slots)**. Larger objects go to the raw C allocator. This batches small allocations and reduces syscalls/fragmentation, but freed memory is often kept in pools for reuse rather than returned to the OS — so process RSS can stay high after a memory spike."
+     "text": "For objects ≤ 512 bytes CPython uses **pymalloc**, organised as **arenas (1 MiB since Python 3.10) → pools (16 KiB, one size class) → blocks (the object slots)**. Larger objects go to the raw C allocator. This batches small allocations and reduces syscalls/fragmentation, but freed memory is often kept in pools for reuse rather than returned to the OS — so process RSS can stay high after a memory spike."
     },
     {
      "t": "p",
@@ -611,11 +611,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The **Global Interpreter Lock** ensures only one thread executes Python bytecode at a time. A major reason it exists is to make **reference-count updates thread-safe** without per-object locking. The side effect is that CPU-bound threads don't run in parallel — use `multiprocessing`, async, or native extensions that release the GIL."
+     "text": "The **Global Interpreter Lock** ensures only one thread executes Python bytecode at a time. A major reason it exists is to make **reference-count updates thread-safe** without per-object locking. The side effect is that CPU-bound threads don't run in parallel — use `multiprocessing` or native extensions that release the GIL."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** The GIL keeps refcounting safe and simple but serializes bytecode execution."
+     "text": "**Key takeaway:** The GIL keeps refcounting safe and simple but serialises bytecode execution."
     }
    ]
   },
@@ -695,7 +695,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A list comprehension materializes **all** elements at once — O(n) memory. A generator expression yields items lazily, holding only its current state — O(1) memory regardless of length. For one-pass consumers like `sum()` the result is identical but the generator never builds the intermediate list."
+     "text": "A list comprehension materialises **all** elements at once — O(n) memory. A generator expression yields items lazily, holding only its current state — O(1) memory regardless of length. For one-pass consumers like `sum()` the result is identical but the generator never builds the intermediate list."
     },
     {
      "t": "code",
@@ -754,7 +754,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Locals are stored in a per-frame array and accessed by index via `LOAD_FAST` (O(1), no hashing). Globals and builtins are looked up by name in dictionaries via `LOAD_GLOBAL`. In tight loops, binding a global or builtin to a local (`_len = len`) is a real micro-optimization."
+     "text": "Locals are stored in a per-frame array and accessed by index via `LOAD_FAST` (O(1), no hashing). Globals and builtins are looked up by name in dictionaries via `LOAD_GLOBAL`. In tight loops, binding a global or built-in to a local (`_len = len`) is a real micro-optimization."
     },
     {
      "t": "code",
@@ -808,7 +808,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The rule: **profile first, optimize the measured hotspot second** — never guess. Use `timeit` for micro-benchmarks, `cProfile` for function-level CPU profiling, and `line_profiler` to drill into a specific function line by line."
+     "text": "The rule: **profile first, optimise the measured hotspot second** — never guess. Use `timeit` for micro-benchmarks, `cProfile` for function-level CPU profiling, and `line_profiler` to drill into a specific function line by line."
     },
     {
      "t": "code",
@@ -906,7 +906,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "PyPy drops refcounting for a tracing GC and adds a JIT, so identity timing and `__del__` behavior differ from CPython."
+     "text": "PyPy drops refcounting for a tracing GC and adds a JIT, so identity timing and `__del__` behaviour differ from CPython."
     },
     {
      "t": "p",
@@ -1028,7 +1028,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Choose the right data structure, stream instead of materialize, and bound object overhead with slots/arrays."
+     "text": "**Key takeaway:** Choose the right data structure, stream instead of materialise, and bound object overhead with slots/arrays."
     }
    ]
   }

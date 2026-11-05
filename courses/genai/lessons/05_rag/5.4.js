@@ -180,13 +180,13 @@ EC.receiveLesson({
     { t: "p", text: "Fixed-size splitting cuts every N characters regardless of what is there \u2014 mid-sentence, mid-table, mid-code-block. Recursive splitting tries a list of separators in order, preferring paragraph breaks over line breaks over spaces, so it cuts at the largest natural boundary that fits. Structure-aware splitting goes further and uses the document\u2019s own markup." },
 
     { t: "code", lang: "python", title: "g54.py \u2014 markdown-aware chunking with heading context", code: `def chunk_markdown(text, size=500, overlap=50):
-    parts = re.split(r"\n(?=#{1,4} )", text)          # split at headings
+    parts = re.split(r"\\n(?=#{1,4} )", text)          # split at headings
     out = []
     for p in parts:
-        head = p.split("\n", 1)[0][:90] if p.startswith("#") else ""
+        head = p.split("\\n", 1)[0][:90] if p.startswith("#") else ""
         for c in H.chunk_recursive(p, size=size, overlap=overlap):
             # prepend the section heading so the chunk knows where it came from
-            out.append((head + "\n" + c) if head and not c.startswith("#") else c)
+            out.append((head + "\\n" + c) if head and not c.startswith("#") else c)
     return out`,
       out: `  strategy                     chunks   mean len      r@1      r@3      r@5    doc r@5
   fixed                           804        496      65%      85%      90%       100%
@@ -304,12 +304,12 @@ for ov in (0, 25, 50, 100, 200, 250):
 
 # strategy, holding size and overlap fixed
 def chunk_markdown(text, size=500, overlap=50):
-    parts = re.split(r"\n(?=#{1,4} )", text)
+    parts = re.split(r"\\n(?=#{1,4} )", text)
     out = []
     for p in parts:
-        head = p.split("\n", 1)[0][:90] if p.startswith("#") else ""
+        head = p.split("\\n", 1)[0][:90] if p.startswith("#") else ""
         for c in H.chunk_recursive(p, size=size, overlap=overlap):
-            out.append((head + "\n" + c) if head and not c.startswith("#") else c)
+            out.append((head + "\\n" + c) if head and not c.startswith("#") else c)
     return out
 
 for fn in (H.chunk_fixed, H.chunk_recursive, chunk_markdown):

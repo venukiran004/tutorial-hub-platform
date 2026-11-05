@@ -61,7 +61,7 @@ EC.receiveLesson({
      "items": [
       "Prior: Beta(1, 1) (uniform) or Beta(2, 8) if similar products convert ~20%",
       "Posterior: Beta(1+3, 1+7) = Beta(4, 8)",
-      "Mean: 4/12 = 33%, 95% credible interval ≈ [12%, 58%]",
+      "Mean: 4/12 = 33%, 95% credible interval ≈ [11%, 61%]",
       "With informative prior Beta(2,8): Posterior = Beta(5, 15), mean = 25%"
      ]
     },

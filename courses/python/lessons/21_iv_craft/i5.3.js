@@ -92,7 +92,7 @@ EC.receiveLesson({
        "fixtures via dependency injection"
       ],
       [
-       "Parametrization",
+       "Parameterisation",
        "`subTest` (manual loop)",
        "`@pytest.mark.parametrize` (first-class)"
       ],
@@ -203,11 +203,11 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Dummy**passed to satisfy a signature but never used.",
-      "**Stub**returns canned values for the calls the test makes.",
-      "**Spy**a stub that also records how it was called.",
-      "**Mock**pre-programmed with expectations and *verifies* interactions (e.g. `assert_called_once_with`).",
-      "**Fake**a real, working, lightweight implementation (in-memory DB/cache)."
+      "**Dummy:** passed to satisfy a signature but never used.",
+      "**Stub:** returns canned values for the calls the test makes.",
+      "**Spy:** a stub that also records how it was called.",
+      "**Mock:** pre-programmed with expectations and *verifies* interactions (e.g. `assert_called_once_with`).",
+      "**Fake:** a real, working, lightweight implementation (in-memory DB/cache)."
      ]
     },
     {
@@ -322,7 +322,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "What is parametrized testing and why use it?",
+   "q": "What is parameterised testing and why use it?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -334,7 +334,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Parametrization runs the same test logic against multiple input/expected pairs, each reported as a separate test case — so one failure doesn't mask the others and you avoid copy-pasting test bodies."
+     "text": "Parameterisation runs the same test logic against multiple input/expected pairs, each reported as a separate test case — so one failure doesn't mask the others and you avoid copy-pasting test bodies."
     },
     {
      "t": "code",
@@ -348,7 +348,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Parametrization keeps tests DRY and gives precise per-case failure reporting. Stack multiple `parametrize` decorators for a Cartesian product of inputs."
+     "text": "**Key takeaway:** Parameterisation keeps tests DRY and gives precise per-case failure reporting. Stack multiple `parametrize` decorators for a Cartesian product of inputs."
     }
    ]
   },
@@ -623,16 +623,16 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`timeit`**micro-benchmark a small snippet.",
-      "**`cProfile`**function-level CPU profile (`ncalls`, `tottime`, `cumtime`). `python -m cProfile -s cumulative script.py`.",
-      "**`line_profiler`**per-line timing of a hot function.",
-      "**`memory_profiler` / `tracemalloc`**memory usage and allocation sites.",
-      "**`py-spy`**sampling profiler that attaches to a running process with no code change (great for production, produces flamegraphs)."
+      "**`timeit`:** micro-benchmark a small snippet.",
+      "**`cProfile`:** function-level CPU profile (`ncalls`, `tottime`, `cumtime`). `python -m cProfile -s cumulative script.py`.",
+      "**`line_profiler`:** per-line timing of a hot function.",
+      "**`memory_profiler` / `tracemalloc`:** memory usage and allocation sites.",
+      "**`py-spy`:** sampling profiler that attaches to a running process with no code change (great for production, produces flamegraphs)."
      ]
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** \"Profile first, optimize second.\" Find the proven hotspot, then apply the right fix (better data structure, vectorization, caching). Optimizing un-profiled code wastes effort and adds complexity."
+     "text": "**Key takeaway:** \"Profile first, optimise second.\" Find the proven hotspot, then apply the right fix (better data structure, vectorization, caching). Optimising un-profiled code wastes effort and adds complexity."
     }
    ]
   },
@@ -692,7 +692,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**SQL injection:** use parameterized queries — pass values as parameters so the driver escapes them; never build queries with f-strings/concatenation of user input."
+      "**SQL injection:** use parameterised queries — pass values as parameters so the driver escapes them; never build queries with f-strings/concatenation of user input."
      ]
     },
     {
@@ -721,7 +721,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Keep untrusted data out of the *structure* of a command/query. Parameterize SQL, pass argument lists to subprocess, and avoid dynamic code execution entirely."
+     "text": "**Key takeaway:** Keep untrusted data out of the *structure* of a command/query. Parameterise SQL, pass argument lists to subprocess, and avoid dynamic code execution entirely."
     },
     {
      "t": "disclose",
@@ -734,7 +734,7 @@ EC.receiveLesson({
       {
        "t": "ul",
        "items": [
-        "**SQL**never build queries with f-strings; pass parameters and let the driver bind/escape them:"
+        "**SQL:** never build queries with f-strings; pass parameters and let the driver bind/escape them:"
        ]
       },
       {
@@ -746,7 +746,7 @@ EC.receiveLesson({
       {
        "t": "ul",
        "items": [
-        "**Command**never `shell=True` with user input (or `os.system`/`eval`/`exec`); pass a list of args:"
+        "**Command:** never `shell=True` with user input (or `os.system`/`eval`/`exec`); pass a list of args:"
        ]
       },
       {
@@ -761,7 +761,7 @@ EC.receiveLesson({
       },
       {
        "t": "p",
-       "text": "**Key takeaway:** Parameterize SQL and use list-form subprocess (no shell); never interpolate user input into an interpreter."
+       "text": "**Key takeaway:** Parameterise SQL and use list-form subprocess (no shell); never interpolate user input into an interpreter."
       }
      ]
     }
@@ -786,11 +786,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The OWASP Top 10 is the industry list of the most critical web-application security risks. In Python terms: **injection** (SQL/command/`eval`), **insecure deserialization** (`pickle.load`), **broken authentication** (weak JWT, hardcoded creds), **sensitive data exposure** (logging secrets), **SSRF** (unvalidated URLs in `requests`), **security misconfiguration** (`DEBUG=True` in prod), **XSS** (disabled Jinja2 auto-escaping), and **broken access control** (missing auth checks)."
+     "text": "The OWASP Top 10 is the industry list of the most critical web-application security risks. In Python terms: **injection** (SQL/command/`eval`), **insecure deserialization** (`pickle.load`), **broken authentication** (weak JWT, hard-coded creds), **sensitive data exposure** (logging secrets), **SSRF** (unvalidated URLs in `requests`), **security misconfiguration** (`DEBUG=True` in prod), **XSS** (disabled Jinja2 auto-escaping), and **broken access control** (missing auth checks)."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Most categories map to concrete Python anti-patterns. Defences: parameterize queries, never unpickle untrusted data, store secrets in env vars/secret managers, validate all external input, disable debug mode in production, and scan dependencies with `pip-audit`."
+     "text": "**Key takeaway:** Most categories map to concrete Python anti-patterns. Defences: parameterise queries, never unpickle untrusted data, store secrets in env vars/secret managers, validate all external input, disable debug mode in production, and scan dependencies with `pip-audit`."
     }
    ]
   },
@@ -800,7 +800,7 @@ EC.receiveLesson({
    "q": "How do you manage secrets securely in a Python application?",
    "terms": [
     "Answer",
-    "Never hardcode",
+    "Never hard-code",
     "Environment variables",
     "env + python-dotenv",
     "pydantic-settings",
@@ -814,7 +814,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Never hardcode** secrets in source or committed config.",
+      "**Never hard-code** secrets in source or committed config.",
       "**Environment variables** for simple cases (`os.environ[\"API_KEY\"]` — fails fast if absent).",
       "**`.env` + python-dotenv** for local dev, with `.env` in `.gitignore`.",
       "**`pydantic-settings`** for typed, validated config loading.",
@@ -919,10 +919,10 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Add structured logging** with correlation IDs to capture the state leading up to the failure across runs.",
-      "**Increase observability**log inputs, key branch decisions, and timing.",
+      "**Increase observability:** log inputs, key branch decisions, and timing.",
       "**Install a global post-mortem hook** (`sys.excepthook` → `pdb.post_mortem`) or capture full tracebacks to a file.",
-      "**Check for non-determinism**threading/async race conditions, unseeded randomness, dict ordering, time dependence, uninitialized state.",
-      "**Reproduce under stress**run the test many times (`pytest -p no:randomly --count=100` with `pytest-repeat`), enable asyncio debug mode, or run under `faulthandler`.",
+      "**Check for non-determinism:** threading/async race conditions, unseeded randomness, dict ordering, time dependence, uninitialized state.",
+      "**Reproduce under stress:** run the test many times (`pytest -p no:randomly --count=100` with `pytest-repeat`), enable asyncio debug mode, or run under `faulthandler`.",
       "**Use `py-spy`** to sample a hung/slow production process without stopping it."
      ]
     },

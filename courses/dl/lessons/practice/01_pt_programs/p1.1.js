@@ -309,12 +309,12 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import torch\nimport torch.nn as nn\n\nmodel = nn.Linear(10, 1)\nx = torch.randn(5, 10) * 100  # Large inputs\ny = torch.randn(5, 1)\nloss = nn.MSELoss()(model(x), y)\nloss.backward()\n\n# Before clipping\ngrad_norm_before = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=float('inf'))\n\n# Apply clipping\nloss = nn.MSELoss()(model(x), y)\nmodel.zero_grad()\nloss.backward()\ngrad_norm_after = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)\n\nprint(f\"Grad norm before clip: {grad_norm_before:.4f}\")\nprint(f\"Grad norm after clip: {grad_norm_after:.4f}\")"
+     "code": "import torch\nimport torch.nn as nn\n\nmodel = nn.Linear(10, 1)\nx = torch.randn(5, 10) * 100  # Large inputs\ny = torch.randn(5, 1)\nloss = nn.MSELoss()(model(x), y)\nloss.backward()\n\n# Before clipping\ngrad_norm_before = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=float('inf'))\n\n# Apply clipping\nloss = nn.MSELoss()(model(x), y)\nmodel.zero_grad()\nloss.backward()\ntorch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)   # returns the norm BEFORE clipping\ngrad_norm_after = torch.cat([p.grad.flatten() for p in model.parameters()]).norm()\n\nprint(f\"Grad norm before clip: {grad_norm_before:.4f}\")\nprint(f\"Grad norm after clip: {grad_norm_after:.4f}\")"
     },
     {
      "t": "out",
      "label": "Output when run",
-     "text": "Grad norm before clip: 16486.7617\nGrad norm after clip: 16486.7617"
+     "text": "Grad norm before clip: 16486.7617\nGrad norm after clip: 1.0000"
     }
    ],
    "kind": "program"

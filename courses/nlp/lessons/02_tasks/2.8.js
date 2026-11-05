@@ -2,7 +2,7 @@
    LESSON 2.8 — Question Answering
    deepset/roberta-base-squad2 is run on answerable and unanswerable
    questions, with the span search and the no-answer slot both computed
-   explicitly (scratchpad/nlp/n28.py).
+   explicitly (n28.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.8",
@@ -58,7 +58,7 @@ EC.receiveLesson({
 
     { t: "p", text: "A span QA model is an encoder with two linear heads. Feed it `[CLS] question [SEP] passage [SEP]`; one head scores each token as a possible start, the other as a possible end. The answer is the span maximising the product of the two probabilities, subject to the end not preceding the start." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n28.py — the span search, written out", code:
+    { t: "code", lang: "python", title: "the span search, written out", code:
 "import torch\nfrom transformers import AutoTokenizer, AutoModelForQuestionAnswering\n\nname = \"deepset/roberta-base-squad2\"\ntok = AutoTokenizer.from_pretrained(name)\nmod = AutoModelForQuestionAnswering.from_pretrained(name).eval()\n\ndef ask(question, context, max_span=30):\n    enc = tok(question, context, return_tensors=\"pt\",\n              return_offsets_mapping=True)\n    offsets = enc.pop(\"offset_mapping\")[0]\n    with torch.no_grad():\n        out = mod(**enc)\n\n    start = torch.softmax(out.start_logits, -1)[0]\n    end   = torch.softmax(out.end_logits,   -1)[0]\n\n    best, span = -1, (0, 0)\n    for i in range(len(start)):\n        for j in range(i, min(i + max_span, len(end))):   # end >= start\n            p = (start[i] * end[j]).item()\n            if p > best:\n                best, span = p, (i, j)\n\n    a, b = offsets[span[0]][0].item(), offsets[span[1]][1].item()\n    null = (start[0] * end[0]).item()      # index 0 is <s>: the no-answer slot\n    return context[a:b], best, null",
       caption: "It is commonly called `pipeline(\"question-answering\", ...)`, removed in transformers 5.x. This is what it did — including the `max_span` cap, without which the model will happily return half the passage." },
 

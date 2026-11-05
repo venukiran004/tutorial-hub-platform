@@ -430,9 +430,9 @@ POLICY["refund"] = Policy.REPLAY
       {
         stem: "A run crashed after its tool charged a card and before the checkpoint was written. Why does writing the checkpoint first not fix this?",
         options: [
-          "It does fix it — the graph then knows the node completed",
-          "Because a crash between the checkpoint and the call then loses the action entirely: record-then-act drops actions, act-then-record duplicates them, and neither is atomic",
-          "Because checkpoints are written asynchronously",
+          "It does fix it — once the checkpoint is written first, the graph knows the node completed and skips it",
+          "A crash between checkpoint and call then loses the action — neither order is atomic",
+          "Because checkpoints are written asynchronously, so the write may not have landed when the call runs",
           "Because the provider may be slow to confirm"
         ],
         answer: 1,
@@ -441,10 +441,10 @@ POLICY["refund"] = Policy.REPLAY
       {
         stem: "A charge node passes `idempotency_key=str(uuid4())`. What happens on replay?",
         options: [
-          "The provider deduplicates it, because the amount and charge id match",
+          "The provider deduplicates it, because the amount and the charge id are the same",
           "A new key means a new request, so the customer is charged a second time",
-          "The call fails because the key was already used",
-          "The graph skips the node, since the key is present"
+          "The call fails, because the provider has already seen that key",
+          "The graph skips the node on replay, since a key is present"
         ],
         answer: 1,
         why: "An idempotency key only deduplicates attempts that share it, so a key generated per attempt is indistinguishable from a genuinely new request. The key must be derived from something stable — the run id plus the node name — and this defect passes review and every test, because retries only happen when a process dies."
@@ -452,20 +452,20 @@ POLICY["refund"] = Policy.REPLAY
       {
         stem: "Your internal ticket API returns 409 when closing an already-closed ticket. What is that?",
         options: [
-          "An error to retry with backoff",
-          "An error to log and escalate to the owning team",
-          "An idempotency signal: catching it and treating it as success makes the node safe to replay, at no cost",
-          "A reason to dead-letter the run"
+          "An error to retry with backoff until the ticket API accepts the close",
+          "An error to log and escalate to the team that owns the ticket API",
+          "A reason to dead-letter the run so a person can inspect it",
+          "An idempotency signal — treat it as success"
         ],
-        answer: 2,
+        answer: 3,
         why: "The API is telling you the action was unnecessary because it already happened, which is exactly what an idempotency check would have told you. Treating the 409 as a failure is what makes the workflow unreplayable; a `try/except` is the whole fix and needs nobody else's cooperation."
       },
       {
         stem: "Which in-flight work must never be dropped during an agentic recovery?",
         options: [
           "Interactive chat turns, because a user is waiting",
-          "Read-only workflows, because they are cheap to finish",
-          "Runs awaiting human approval, because the state is a request that exists nowhere else and may be days old",
+          "Read-only workflows, because they are cheap to finish once recovery is done",
+          "Runs awaiting human approval, which exist nowhere else",
           "Scheduled batch runs, because they have a deadline"
         ],
         answer: 2,
@@ -476,7 +476,7 @@ POLICY["refund"] = Policy.REPLAY
         options: [
           "The step cap, at 25",
           "The budget cap, once spend accumulates",
-          "A progress check comparing a state hash between iterations, which catches it on the second iteration",
+          "A progress check comparing state hashes",
           "The handoff-depth cap"
         ],
         answer: 2,

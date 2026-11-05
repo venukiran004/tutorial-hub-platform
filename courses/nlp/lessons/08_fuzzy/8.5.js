@@ -3,7 +3,7 @@
    Every scorer is run and broken: token_set_ratio gives 100 for "Smith" vs
    "Smith Smith Smith", partial_ratio gives 100 for "cat" vs "category".
    Blocking arithmetic computed at 5e11 pairs for 1M records
-   (scratchpad/nlp/n83.py).
+   (n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.5",

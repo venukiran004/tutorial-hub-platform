@@ -146,7 +146,7 @@ np.allclose(truncate(100), A)        # True -- all terms is exact
 # HOW MUCH DID k TERMS CAPTURE? The energy is the sum of SQUARED
 # singular values (Frobenius norm squared), so:
 energy = np.cumsum(s**2) / np.sum(s**2)
-energy[9], energy[49]                # 0.146, 0.632
+energy[9], energy[49]                # 0.237, 0.787
 
 # On random noise the spectrum is flat, so truncation captures little --
 # which is the point: SVD tells you honestly when there is no structure
@@ -175,10 +175,10 @@ truth = rng.normal(size=(200, 3)) @ rng.normal(size=(3, 100))
 A = truth + 0.1 * rng.normal(size=(200, 100))
 U, s, Vt = np.linalg.svd(A, full_matrices=False)
 
-s[:6].round(2)          # [163.9, 118.4, 79.2, 3.1, 3.0, 2.9]
+s[:6].round(2)          # [153.2, 131.6, 120.5, 2.4, 2.3, 2.2]
 #                          |------ signal ------| |-- noise --|
 
-# The drop from 79 to 3.1 is a factor of 25. Everything after it sits on
+# The drop from 120.5 to 2.4 is a factor of 50. Everything after it sits on
 # a flat noise floor, which is the signature of "these components are
 # measuring nothing".
 ratios = s[:-1] / s[1:]
@@ -186,7 +186,7 @@ k = int(np.argmax(ratios)) + 1          # 3 -- found, not chosen
 
 approx = (U[:, :k] * s[:k]) @ Vt[:k, :]
 err = np.linalg.norm(A - approx) / np.linalg.norm(A)
-err.round(4)            # 0.0186 -- and 98% of it is the noise we WANTED
+err.round(4)            # 0.0591 -- and 98% of it is the noise we WANTED
                         # to discard`,
           note: "**Truncating below the noise floor denoises rather than degrades.** The discarded components were fitting randomness, so the approximation can be closer to the truth than the original data was." }
       ]
@@ -249,11 +249,11 @@ B = np.array([[1.0, 1.0],
               [0.0, 1e-8]])
 
 np.linalg.cond(B)              # 1.4e8
-np.linalg.cond(B.T @ B)        # 2.0e16  -- squared, now at float64's limit
+np.linalg.cond(B.T @ B)        # 6.0e16  -- squared, now at float64's limit
 
 # Direct SVD of B is fine; going via B.T @ B is not:
 np.linalg.svd(B, compute_uv=False)                    # [1.414e0, 1.0e-8]
-np.sqrt(np.abs(np.linalg.eigvalsh(B.T @ B)))[::-1]    # [1.414e0, 1.05e-8]
+np.sqrt(np.abs(np.linalg.eigvalsh(B.T @ B)))[::-1]    # [1.414e0, 0.00e0]
 #                                                        ^ error in the
 #                                                          3rd digit
 # THIS IS WHY lstsq USES SVD and not the normal equations. The textbook
@@ -295,12 +295,12 @@ Ap = np.linalg.pinv(A)           # works, despite no inverse existing
 # many that tie, the one with the smallest norm.
 b = np.array([1.0, 2.0, 3.0])
 x = Ap @ b
-x.round(4)                       # [0.0714, 0.1429]
+x.round(4)                       # [0.2000, 0.4000]
 
 # It genuinely solves the system here (b is in the column space):
 np.allclose(A @ x, b)            # True
 # ...and of all the exact solutions, this is the shortest:
-np.linalg.norm(x).round(4)       # 0.1597
+np.linalg.norm(x).round(4)       # 0.4472
 
 # THE TOLERANCE MATTERS. pinv treats singular values below rcond * s[0]
 # as zero. Too small and you divide by noise, amplifying it enormously.

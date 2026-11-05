@@ -265,9 +265,9 @@ for d in (2, 10, 100, 1000):
     cos = np.abs(np.einsum("ij,ij->i", x[::2], x[1::2]))
     print(d, round(cos.mean(), 3))
 #    2    0.637
-#    10   0.246
-#    100  0.080
-#    1000 0.025      <- effectively perpendicular
+#    10   0.264
+#    100  0.079
+#    1000 0.024      <- effectively perpendicular
 
 # 2. DISTANCES CONCENTRATE. The nearest and furthest points become
 #    almost equally far away, so "nearest neighbour" loses its meaning
@@ -276,9 +276,9 @@ for d in (2, 100, 1000):
     x = rng.normal(size=(1000, d))
     dist = np.linalg.norm(x - x[0], axis=1)[1:]
     print(d, round(dist.max() / dist.min(), 2))
-#    2    38.51
-#    100  2.06
-#    1000 1.30       <- furthest is only 30% further than nearest
+#    2    125.86
+#    100  1.49
+#    1000 1.12       <- furthest is only 12% further than nearest
 
 # 3. THE VOLUME IS ALL IN THE SHELL. Nearly every point of a
 #    high-dimensional ball is near its surface, so "the centre" is not

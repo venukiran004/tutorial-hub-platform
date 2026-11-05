@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 5.1 — Sessions: App, User, Session, Event
-   Every trace below is printed by scratchpad/adk/s1.py running on google-adk
+   Every trace below is printed by s1.py running on google-adk
    2.9.2 against a scripted model.
    ========================================================================= */
 EC.receiveLesson({
@@ -62,7 +62,7 @@ print(list(Session.model_fields))`,
 
     { t: "p", text: "The script below creates a session with some starting state, runs two turns through a scripted model, then fetches the session back from the service and prints what was recorded. The model is fake so the output is reproducible; everything around it — the events, the ordering, the deltas — is the real runner." },
 
-    { t: "code", lang: "python", title: "s1.py — two turns, then read the log back",
+    { t: "code", lang: "python", title: "two turns, then read the log back",
       code: `def remember(fact: str, tool_context) -> dict:
     """Stores a fact about the user."""
     tool_context.state["fact"] = fact

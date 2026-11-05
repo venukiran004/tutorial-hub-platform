@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c22.5",
  "lede": "**29 programs to write**, on security primitives and edit distance. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on security primitives and edit distance without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c22.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2691–2719.** What this set actually drills, counted from its own problems — 15 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "strings", "graphs & trees", "numbers", "files and paths", "dicts and sets"], "cells": [[{"text": "4", "tone": "accent"}, "Two Pointers on a Sorted Array"], [{"text": "3", "tone": "good"}, "Password Strength Checker"], [{"text": "3", "tone": "violet"}, "Dijkstra with a Heap"], [{"text": "2", "tone": "teal"}, "Binary Search, and the Off"], [{"text": "2", "tone": "warn"}, "Breadth"], [{"text": "1", "tone": "crit"}, "Encryption Key Derivation"]], "t": "diagram", "id": "dg-c22_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -372,7 +372,7 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — a comprehension",
-     "code": "def lcs(a, b):\n    m, n = len(a), len(b)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i-1] == b[j-1]:\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]\n\nprint(lcs([1,3,4,1,2,1,3], [3,4,1,2,1,3,1]))  # Output: 5",
+     "code": "def lcs(a, b):\n    m, n = len(a), len(b)\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i-1] == b[j-1]:\n                dp[i][j] = dp[i-1][j-1] + 1\n            else:\n                dp[i][j] = max(dp[i-1][j], dp[i][j-1])\n    return dp[m][n]\n\nprint(lcs([1,3,4,1,2,1,3], [3,4,1,2,1,3,1]))  # Output: 6",
      "numbered": false
     }
    ]

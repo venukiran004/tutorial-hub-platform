@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.7 — Inference, and the Complete Trace
    The inference loop is run for real and never terminates — it emits
-   "liebe" forever and never reaches <eos> (§02) (scratchpad/nlp/n65.py).
+   "liebe" forever and never reaches <eos> (§02) (n65.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "6.7",

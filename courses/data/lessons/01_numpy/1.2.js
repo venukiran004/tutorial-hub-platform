@@ -205,10 +205,11 @@ errors = actual - predicted
 errors.shape                                 # (4, 4)  NOT (4,)
 #
 # NO ERROR IS RAISED. (4,1) and (4,) broadcast to (4,4): every actual
-# minus every prediction. The mean of that is meaningless, and it looks
-# like a perfectly plausible number:
-errors.mean()                                # 0.375 -- garbage
-(actual - predicted.ravel()).mean()          # 0.075 -- correct
+# minus every prediction. The plain mean survives by luck, because the
+# mean of all pairs equals mean(actual) - mean(predicted). Anything
+# else is meaningless, and it looks like a perfectly plausible number:
+np.abs(errors).mean()                        # 1.163 -- garbage
+np.abs(actual - predicted.ravel()).mean()    # 0.475 -- correct
 #
 # THIS IS THE MOST COMMON SILENT BROADCASTING BUG. A (n,1) array from
 # a reshape or a sklearn predict() meeting a (n,) array from a

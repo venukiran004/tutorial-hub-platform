@@ -767,43 +767,43 @@ def test_peak_memory_is_bounded():
       {
         stem: "`df[df[\"total\"] > 1000][\"segment\"] = \"high_value\"` produces a warning and no change. Why?",
         options: [
-          "The mask is evaluated lazily",
-          "It is two indexing operations — the first returns a new object and the assignment writes to that temporary, which is then discarded",
-          "String assignment requires `.astype`",
-          "The column does not exist yet"
+          "The first indexing returns a temporary, and the assignment changes only that copy",
+          "The boolean mask is evaluated lazily, so the assignment runs before any rows are selected",
+          "Assigning a string to a column requires `.astype(str)` first, or pandas rejects the value",
+          "The `segment` column does not exist yet, so the assignment is discarded with a warning"
         ],
-        answer: 1,
+        answer: 0,
         why: "Whether the intermediate shares memory with the original depends on dtypes and pandas' internal block layout, so the same line can work in development and silently do nothing in production. `df.loc[mask, \"segment\"] = ...` is one operation with an unambiguous target."
       },
       {
         stem: "Country totals sum to less than the overall total. What is the most likely cause?",
         options: [
           "Floating-point accumulation error",
-          "`groupby` silently drops rows whose key is NaN, while the overall sum includes them",
           "The index is not unique",
-          "The category dtype excludes unused values"
+          "The category dtype excludes countries with no rows",
+          "`groupby` drops rows whose key is NaN"
         ],
-        answer: 1,
+        answer: 3,
         why: "The discrepancy equals the value of the rows with a missing key, so it is stable and looks like a rounding problem. `dropna=False` plus an explicit \"unknown\" bucket makes those rows visible, and an assertion that the parts sum to the whole turns it into a failed job."
       },
       {
         stem: "You merge orders with customers and the row count increases. What happened, and what prevents it?",
         options: [
-          "An outer join added unmatched rows — use an inner join",
-          "The right side has duplicate keys, so matching rows fan out; `validate=\"many_to_one\"` raises instead",
+          "Duplicate keys on the right fan rows out; `validate=\"many_to_one\"` raises",
+          "An outer join added unmatched rows from both sides — switching to an inner join prevents it",
           "The index was reset during the merge",
           "Suffixes created extra rows"
         ],
-        answer: 1,
+        answer: 0,
         why: "A fan-out inflates every subsequent sum with no error, and it is the most common silent data bug in pandas. `validate=` costs one keyword argument, and asserting the row count after any join that should preserve it costs one line."
       },
       {
         stem: "A string column of 5 million rows with 20 distinct values uses 320MB. What is the fix?",
         options: [
-          "Downcast with `pd.to_numeric`",
+          "Downcast the column with `pd.to_numeric`, which stores the strings as compact integers",
           "`astype(\"category\")` — stores int8 codes plus a 20-entry dictionary, around 5MB",
-          "Use `dtype=\"string\"` instead of object",
-          "Chunk the read"
+          "Use `dtype=\"string\"` instead of object, which stores each value once",
+          "Chunk the read, so only part of the column is in memory at a time"
         ],
         answer: 1,
         why: "An object column stores a pointer to a full Python string per row. Categories store small integer codes plus one copy of each distinct value, so the saving grows with row count and shrinks with cardinality — it is the largest single memory win on most real data."

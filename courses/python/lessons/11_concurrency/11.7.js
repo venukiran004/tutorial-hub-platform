@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "gather and TaskGroup", id: "grouping" },
 
-    {"kind": "compare", "title": "gather versus TaskGroup", "caption": "gather runs coroutines concurrently and returns their results in order; if one fails the others keep running unless you cancel them. A TaskGroup cancels the siblings on the first failure and raises an ExceptionGroup — structured concurrency.", "columns": [{"title": "asyncio.gather", "tone": "warn", "items": ["results in submission order", "one failure: others continue", "return_exceptions=True to collect", "fire-and-collect"]}, {"title": "asyncio.TaskGroup", "tone": "good", "items": ["async with tg: tg.create_task(...)", "one failure cancels the rest", "raises ExceptionGroup", "the default since 3.11"]}], "t": "diagram", "id": "dg-11_7-01-1"},
+    {"kind": "compare", "title": "gather versus TaskGroup", "caption": "gather runs coroutines concurrently and returns their results in order; if one fails the others keep running unless you cancel them. A TaskGroup cancels the siblings on the first failure and raises an ExceptionGroup — structured concurrency.", "columns": [{"title": "asyncio.gather", "tone": "warn", "items": ["results in submission order", "one failure: others continue", "return_exceptions=True to collect", "fire-and-collect"]}, {"title": "asyncio.TaskGroup", "tone": "good", "items": ["async with tg: tg.create_task(...)", "one failure cancels the rest", "raises ExceptionGroup", "available since 3.11"]}], "t": "diagram", "id": "dg-11_7-01-1"},
 
 
 
@@ -166,6 +166,8 @@ def _log_if_failed(task: asyncio.Task) -> None:
       { t: "p", text: "**Two separate problems, both silent.** The task may vanish, and if it fails, nothing surfaces the exception until the object is finalised — at which point Python prints \"Task exception was never retrieved\" to stderr, often long after the request that caused it." },
       { t: "p", text: "**Prefer a `TaskGroup` where the work is part of the request**, and this pattern only for genuinely detached work — analytics, cache warming — where the caller must not wait." }
     ]},
+
+    {"t": "diagram", "kind": "flow", "title": "Why an unreferenced task can vanish", "caption": "**The event loop keeps only a weak reference to each task.** If your code drops the object `create_task` returned, nothing strong refers to the task, and the garbage collector may destroy it before it finishes — no error, the work just never completes. A module-level set holds the strong reference, and the done-callback removes it, so the set does not grow forever.", "cols": 3, "nodes": [{"id": "c", "label": "create_task(coro)", "sub": "result not stored", "tone": "warn"}, {"id": "l", "label": "event loop", "sub": "weak reference only", "tone": "accent"}, {"id": "g", "label": "garbage collected", "sub": "mid-flight, silently", "tone": "crit"}, {"id": "s", "label": "tasks.add(task)", "sub": "a strong reference", "tone": "good"}, {"id": "d", "label": "add_done_callback", "sub": "tasks.discard", "tone": "good"}], "edges": [["c", "l"], ["l", "g"], ["s", "d"]]},
 
     { t: "h2", n: "03", text: "Cancellation", id: "cancellation" },
 
@@ -354,7 +356,107 @@ result = await loop.run_in_executor(pool, vendor_sdk.charge, amount)`},
       { t: "p", text: "**It does not make the call cancellable.** `asyncio.timeout` around a `to_thread` stops you waiting; the thread runs to completion regardless (Lesson 11.5)." }
     ]},
 
-    { t: "h2", n: "06", text: "Practice", id: "practice" },
+    /* ================================================================== */
+    { t: "h2", n: "06", text: "Context that follows the task", id: "contextvars" },
+
+    { t: "p", text: "Request-scoped values — the request ID in every log line, the authenticated user, a tenant, a trace span — need to reach code that does not take them as arguments. In threaded code that was a `threading.local`. **In asyncio, many requests share one thread, so anything stored per thread, or in a global, is shared by every request in flight:**" },
+
+    { t: "code", lang: "python", title: "a global is shared by every task", code: `
+import asyncio
+
+current_request = None                      # one value for the whole process
+
+
+async def handle(request_id: str, delay: float) -> str:
+    global current_request
+    current_request = request_id
+    await asyncio.sleep(delay)              # another request runs here
+    return f"{request_id} logged as {current_request}"
+
+
+async def main() -> None:
+    print(await asyncio.gather(handle("req-A", 0.02), handle("req-B", 0.01)))
+
+
+asyncio.run(main())
+`,
+      out: `['req-A logged as req-B', 'req-B logged as req-B']`,
+      caption: "Request A's log lines carry request B's ID, because B set the global while A was suspended at its `await`. The logs look plausible and are wrong, which is the worst kind of observability bug." },
+
+    { t: "p", text: "`contextvars.ContextVar` is the fix, and it is what asyncio itself uses. **Every task runs in its own copy of the context**, so a value set in one task is invisible to another, while still being readable by everything that task calls. Combined with a logging filter, the request ID appears on every line without being passed anywhere:" },
+
+    { t: "code", lang: "python", title: "a request ID in every log line, passed nowhere", code: `
+import asyncio
+import logging
+from contextvars import ContextVar
+
+request_id: ContextVar[str] = ContextVar("request_id", default="-")
+
+
+class RequestIdFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        record.request_id = request_id.get()    # read from the current task's context
+        return True
+
+
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter("%(request_id)s %(message)s"))
+handler.addFilter(RequestIdFilter())
+log = logging.getLogger("orders")
+log.addHandler(handler)
+log.setLevel(logging.INFO)
+
+
+async def charge(amount: int) -> None:
+    await asyncio.sleep(0.01)
+    log.info("charged %d", amount)              # no request_id argument anywhere
+
+
+async def handle(rid: str, amount: int, delay: float) -> None:
+    request_id.set(rid)                         # set once, at the edge
+    await asyncio.sleep(delay)
+    await charge(amount)
+
+
+async def main() -> None:
+    await asyncio.gather(handle("req-A", 50, 0.02), handle("req-B", 20, 0.0))
+    log.info("outside any request")
+
+
+asyncio.run(main())
+`,
+      out: `req-B charged 20
+req-A charged 50
+- outside any request`,
+      caption: "In a FastAPI service the `set` lives in a middleware (Lesson 12.5) and the filter in the logging configuration (Lesson 14.3); no handler or service function ever sees the ID as a parameter." },
+
+    { t: "callout", kind: "trap", title: "A task copies the context when it is created", body: [
+      { t: "p", text: "`asyncio.create_task` snapshots the current context at that moment. Later changes in the parent are not seen by the child, and the child's changes never flow back:" },
+      { t: "code", lang: "python", title: "the snapshot is taken at create_task", code: `
+import asyncio
+from contextvars import ContextVar
+
+user: ContextVar[str] = ContextVar("user", default="anonymous")
+
+
+async def child() -> str:
+    return user.get()
+
+
+async def main() -> None:
+    user.set("alice")
+    task = asyncio.create_task(child())          # the task copies the context NOW
+    user.set("bob")
+    print(await task, user.get())
+
+
+asyncio.run(main())
+`,
+        out: `alice bob` },
+      { t: "p", text: "**Set context values before spawning work that needs them, and return results instead of setting variables in a child.** The isolation is the feature — it is exactly what stops one request's value leaking into another — so design for it rather than around it." }
+    ]},
+
+    { t: "h2", n: "07", text: "Practice", id: "practice" },
 
     { t: "exercise",
       kind: "Challenge",
@@ -717,45 +819,45 @@ async def test_timeout_is_inside_the_semaphore():
       {
         stem: "`await asyncio.gather(a(), b(), c())` and `a()` raises. What happens to `b()` and `c()`?",
         options: [
-          "Both are cancelled automatically",
-          "Both keep running — holding connections and consuming rate limit for a call that has already failed",
-          "Both are paused until the exception is handled",
-          "Their results are returned alongside the exception"
+          "Both are cancelled automatically as soon as `a()` raises",
+          "Both are paused until the exception has been handled by the caller",
+          "Both keep running, though the call has already failed",
+          "Their results are returned in a list alongside the exception from `a()`"
         ],
-        answer: 1,
+        answer: 2,
         why: "`gather` propagates the first exception and does nothing about the siblings. Nothing awaits them, so their own failures surface later as \"Task exception was never retrieved\", out of context. `TaskGroup` cancels the siblings and raises an `ExceptionGroup` with everything that failed, which is why it is the better default for new code."
       },
       {
         stem: "A handler calls `asyncio.create_task(send_analytics(req))` and keeps no reference. What can go wrong?",
         options: [
           "Nothing — the loop owns the task",
-          "The loop holds only a weak reference, so the task can be garbage collected mid-execution and the work happens only sometimes",
           "The task runs twice",
+          "The loop holds only a weak reference, so it may be collected mid-run",
           "It blocks the handler until it completes"
         ],
-        answer: 1,
+        answer: 2,
         why: "The failure rate looks like a flaky upstream rather than a bug in your code, which makes it very hard to find. Keep the task in a module-level set and discard it in a done-callback. Add a second callback that logs the exception, because a background task's failure otherwise surfaces only when the object is finalised — possibly never."
       },
       {
         stem: "Deployments start taking the full grace period after `except Exception` was changed to `except BaseException`. Why?",
         options: [
-          "`BaseException` catches `SystemExit`, preventing the process from exiting",
-          "`CancelledError` inherits from `BaseException`, so shutdown cancellations are swallowed and tasks keep running until SIGKILL",
-          "The broader clause slows exception handling",
-          "`BaseException` disables the signal handlers"
+          "`CancelledError` is a `BaseException`, so cancellations are swallowed",
+          "`BaseException` catches `SystemExit`, so the process can no longer exit when the deploy asks it to",
+          "The broader clause slows exception handling, so shutdown takes longer on every request in flight",
+          "Catching `BaseException` disables the process's signal handlers, so SIGTERM is never delivered"
         ],
-        answer: 1,
+        answer: 0,
         why: "It was moved out of `Exception` in 3.8 precisely so ordinary error handling cannot defeat cancellation. Catching it and continuing means the task never finishes, the graceful shutdown waits, and the orchestrator eventually kills the container — losing in-flight work. Always re-raise after cleanup; cancellation is an obligation, not an error you may decline."
       },
       {
         stem: "Why should a per-call timeout go inside the semaphore rather than outside it?",
         options: [
-          "Outside, the timeout applies to the whole batch",
-          "Outside, the clock runs while the task queues for a slot, so it can time out having never sent a request — blaming the upstream for your own backlog",
-          "`asyncio.timeout` cannot be nested inside a context manager",
-          "The semaphore resets the timeout on acquisition"
+          "Outside, the timeout applies to the whole batch of calls rather than to each one",
+          "`asyncio.timeout` cannot be nested inside another context manager such as a semaphore",
+          "Outside, it counts time spent queuing, so a task can time out before sending",
+          "The semaphore resets the timeout when the slot is acquired, so outside it has no effect"
         ],
-        answer: 1,
+        answer: 2,
         why: "With a concurrency of two and twenty queued calls, a task at the back waits for nineteen others before it starts. If its timeout began at creation, it fails without having done anything, and the error names the partner rather than your queue. Starting the clock when the slot is acquired measures what the call actually took."
       }
     ]

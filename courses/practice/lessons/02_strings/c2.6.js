@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c2.6",
  "lede": "**20 programs to write**, on text processing and dictionary views. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on text processing and dictionary views without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c2.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 225–244.** What this set actually drills, counted from its own problems — 12 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["dicts and sets", "strings", "lists", "testing", "generators"], "cells": [[{"text": "6", "tone": "accent"}, "Dicts Keep Insertion Order"], [{"text": "2", "tone": "good"}, "Find the longest word in a sen"], [{"text": "2", "tone": "violet"}, "Sorting Records by Several Key"], [{"text": "1", "tone": "teal"}, "Membership Testing: list Versu"], [{"text": "1", "tone": "warn"}, "Grouping with itertools.groupb"]], "t": "diagram", "id": "dg-c2_6-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -44,7 +44,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "\"\"\"\nSplit by spaces and find the word with maximum length.\nTime Complexity: O(n)\n\"\"\"\n\n\ndef longest_word(sentence):\n    \"\"\"Find the longest word in a sentence.\"\"\"\n    words = sentence.split()\n    if not words:\n        return \"\"\n    return max(words, key=len)\n\n\n# Examples\nprint(\"Q28: Longest Word\")\nprint(longest_word(\"The quick brown fox jumped over the lazy dog\"))  # jumped\nprint(longest_word(\"I love programming\"))  # programming\nprint()",
+     "code": "\"\"\"\nSplit by spaces and find the word with maximum length.\nTime Complexity: O(n)\n\"\"\"\n\n\ndef longest_word(sentence):\n    \"\"\"Find the longest word in a sentence.\"\"\"\n    words = sentence.split()\n    if not words:\n        return \"\"\n    return max(words, key=len)\n\n\n# Examples\nprint(\"Longest Word\")\nprint(longest_word(\"The quick brown fox jumped over the lazy dog\"))  # jumped\nprint(longest_word(\"I love programming\"))  # programming\nprint()",
      "numbered": false
     },
     {
@@ -54,7 +54,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q28: Longest Word\njumped\nprogramming",
+     "code": "Longest Word\njumped\nprogramming",
      "numbered": false
     }
    ]
@@ -67,7 +67,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "\"\"\"\nTwo strings differ by exactly one character if they have the same length\nand differ at exactly one position.\nTime Complexity: O(n)\n\"\"\"\n\n\ndef differ_by_one(s1, s2):\n    \"\"\"Check if strings differ at exactly one position.\"\"\"\n    if len(s1) != len(s2):\n        return False\n    diff_count = 0\n    for c1, c2 in zip(s1, s2):\n        if c1 != c2:\n            diff_count += 1\n            if diff_count > 1:\n                return False\n    return diff_count == 1\n\n\n# Examples\nprint(\"Q29: Differ By One Character\")\nprint(differ_by_one(\"abc\", \"adc\"))  # True\nprint(differ_by_one(\"abc\", \"abc\"))  # False (same)\nprint(differ_by_one(\"abc\", \"axx\"))  # False (differ by 2)\nprint()",
+     "code": "\"\"\"\nTwo strings differ by exactly one character if they have the same length\nand differ at exactly one position.\nTime Complexity: O(n)\n\"\"\"\n\n\ndef differ_by_one(s1, s2):\n    \"\"\"Check if strings differ at exactly one position.\"\"\"\n    if len(s1) != len(s2):\n        return False\n    diff_count = 0\n    for c1, c2 in zip(s1, s2):\n        if c1 != c2:\n            diff_count += 1\n            if diff_count > 1:\n                return False\n    return diff_count == 1\n\n\n# Examples\nprint(\"Differ By One Character\")\nprint(differ_by_one(\"abc\", \"adc\"))  # True\nprint(differ_by_one(\"abc\", \"abc\"))  # False (same)\nprint(differ_by_one(\"abc\", \"axx\"))  # False (differ by 2)\nprint()",
      "numbered": false
     },
     {
@@ -77,7 +77,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q29: Differ By One Character\nTrue\nFalse\nFalse",
+     "code": "Differ By One Character\nTrue\nFalse\nFalse",
      "numbered": false
     }
    ]
@@ -90,7 +90,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "\"\"\"\nURL encoding of spaces. Similar to what encodeURI does.\nTime Complexity: O(n)\nSpace Complexity: O(n)\n\"\"\"\n\n\ndef replace_spaces(s):\n    \"\"\"Replace all spaces with %20.\"\"\"\n    result = []\n    for char in s:\n        if char == ' ':\n            result.append('%20')\n        else:\n            result.append(char)\n    return \"\".join(result)\n\n\ndef replace_spaces_pythonic(s):\n    \"\"\"Using replace method.\"\"\"\n    return s.replace(' ', '%20')\n\n\n# Examples\nprint(\"Q30: Replace Spaces with %20\")\nprint(replace_spaces(\"Hello World Python\"))  # Hello%20World%20Python\nprint(replace_spaces(\"Mr John Smith\"))  # Mr%20John%20Smith\nprint()",
+     "code": "\"\"\"\nURL encoding of spaces. Similar to what encodeURI does.\nTime Complexity: O(n)\nSpace Complexity: O(n)\n\"\"\"\n\n\ndef replace_spaces(s):\n    \"\"\"Replace all spaces with %20.\"\"\"\n    result = []\n    for char in s:\n        if char == ' ':\n            result.append('%20')\n        else:\n            result.append(char)\n    return \"\".join(result)\n\n\ndef replace_spaces_pythonic(s):\n    \"\"\"Using replace method.\"\"\"\n    return s.replace(' ', '%20')\n\n\n# Examples\nprint(\"Replace Spaces with %20\")\nprint(replace_spaces(\"Hello World Python\"))  # Hello%20World%20Python\nprint(replace_spaces(\"Mr John Smith\"))  # Mr%20John%20Smith\nprint()",
      "numbered": false
     },
     {
@@ -100,7 +100,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q30: Replace Spaces with %20\nHello%20World%20Python\nMr%20John%20Smith",
+     "code": "Replace Spaces with %20\nHello%20World%20Python\nMr%20John%20Smith",
      "numbered": false
     }
    ]

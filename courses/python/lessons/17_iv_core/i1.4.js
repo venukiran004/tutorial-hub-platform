@@ -121,7 +121,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import sys\nt = (1, 2, 3, 4, 5)\nl = [1, 2, 3, 4, 5]\nprint(sys.getsizeof(t))  # 80\nprint(sys.getsizeof(l))  # 120",
+     "code": "import sys\nt = (1, 2, 3, 4, 5)\nl = [1, 2, 3, 4, 5]\nprint(sys.getsizeof(t))  # 80\nprint(sys.getsizeof(l))  # 104",
      "numbered": false
     },
     {
@@ -146,12 +146,12 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Hashability**Tuples can be used as dict keys and set elements.",
-      "**Thread safety**Immutable objects are inherently thread-safe (no locks needed).",
-      "**Memory efficiency**Python can optimize storage; tuples use less memory than lists.",
-      "**Semantic clarity**Signals to other developers that the data is fixed.",
-      "**Performance**Tuple creation is faster. Python caches small tuples for reuse.",
-      "**Security**Prevents accidental modification of data that should remain constant."
+      "**Hashability:** Tuples can be used as dict keys and set elements.",
+      "**Thread safety:** Immutable objects are inherently thread-safe (no locks needed).",
+      "**Memory efficiency:** Python can optimise storage; tuples use less memory than lists.",
+      "**Semantic clarity:** Signals to other developers that the data is fixed.",
+      "**Performance:** Tuple creation is faster. Python caches small tuples for reuse.",
+      "**Security:** Prevents accidental modification of data that should remain constant."
      ]
     },
     {
@@ -381,7 +381,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Dict keys**Sets are unhashable, but frozensets are hashable."
+      "**Dict keys:** Sets are unhashable, but frozensets are hashable."
      ]
     },
     {
@@ -393,7 +393,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Set of sets**You can't put sets inside sets, but you can use frozensets."
+      "**Set of sets:** You can't put sets inside sets, but you can use frozensets."
      ]
     },
     {
@@ -405,7 +405,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Immutable default parameters**Avoid mutable default argument pitfall."
+      "**Immutable default parameters:** Avoid mutable default argument pitfall."
      ]
     },
     {
@@ -533,17 +533,17 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Lightweight data containers**When a full class is overkill but plain tuples lack clarity.",
-      "**Replacing magic index access**`employee.name` is clearer than `employee[0]`.",
-      "**Return values**Functions returning multiple values with meaning.",
-      "**CSV/database rows**Representing records with named fields.",
-      "**Immutable data objects**When you want a simple, immutable data holder.",
-      "**Dict key**Named tuples are hashable and work as dict keys."
+      "**Lightweight data containers:** When a full class is overkill but plain tuples lack clarity.",
+      "**Replacing magic index access:** `employee.name` is clearer than `employee[0]`.",
+      "**Return values:** Functions returning multiple values with meaning.",
+      "**CSV/database rows:** Representing records with named fields.",
+      "**Immutable data objects:** When you want a simple, immutable data holder.",
+      "**Dict key:** Named tuples are hashable and work as dict keys."
      ]
     },
     {
      "t": "p",
-     "text": "**vs dataclass:** Use `dataclass` when you need mutability, methods, or complex behavior. Use `NamedTuple` for simple immutable records."
+     "text": "**vs dataclass:** Use `dataclass` when you need mutability, methods, or complex behaviour. Use `NamedTuple` for simple immutable records."
     }
    ]
   },
@@ -1020,7 +1020,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import sys\nimport timeit\n\n# Memory comparison\nt = (1, 2, 3, 4, 5)\nl = [1, 2, 3, 4, 5]\nprint(f\"Tuple: {sys.getsizeof(t)} bytes\")   # 80\nprint(f\"List:  {sys.getsizeof(l)} bytes\")   # 120\n\n# Creation speed\ntuple_time = timeit.timeit(\"(1, 2, 3, 4, 5)\", number=10_000_000)\nlist_time = timeit.timeit(\"[1, 2, 3, 4, 5]\", number=10_000_000)\nprint(f\"Tuple creation: {tuple_time:.3f}s\")\nprint(f\"List creation:  {list_time:.3f}s\")\n\n# Tuple caching — Python reuses small constant tuples\na = (1, 2, 3)\nb = (1, 2, 3)\nprint(a is b)  # May be True (CPython optimization)\n\na = [1, 2, 3]\nb = [1, 2, 3]\nprint(a is b)  # Always False — lists are never cached",
+     "code": "import sys\nimport timeit\n\n# Memory comparison\nt = (1, 2, 3, 4, 5)\nl = [1, 2, 3, 4, 5]\nprint(f\"Tuple: {sys.getsizeof(t)} bytes\")   # 80\nprint(f\"List:  {sys.getsizeof(l)} bytes\")   # 104\n\n# Creation speed\ntuple_time = timeit.timeit(\"(1, 2, 3, 4, 5)\", number=10_000_000)\nlist_time = timeit.timeit(\"[1, 2, 3, 4, 5]\", number=10_000_000)\nprint(f\"Tuple creation: {tuple_time:.3f}s\")\nprint(f\"List creation:  {list_time:.3f}s\")\n\n# Tuple caching — Python reuses small constant tuples\na = (1, 2, 3)\nb = (1, 2, 3)\nprint(a is b)  # May be True (CPython optimization)\n\na = [1, 2, 3]\nb = [1, 2, 3]\nprint(a is b)  # Always False — lists are never cached",
      "numbered": false
     },
     {

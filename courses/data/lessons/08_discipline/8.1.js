@@ -157,10 +157,10 @@ VarianceThreshold(threshold=0.01).fit(X).get_support()
 def cv(model, cols):
     return round(cross_val_score(model, X[cols], y, cv=5, scoring="roc_auc").mean(), 3)
 gb = GradientBoostingClassifier(random_state=0)
-cv(gb, list(X.columns))                                        # 0.87  all
-cv(gb, f_scores.head(3).index.tolist())                        # 0.71  F-test top 3
-cv(gb, mi.head(3).index.tolist())                              # 0.79  MI top 3
-cv(gb, ["linear", "u_shape", "inter_a", "inter_b"])            # 0.87  the truth
+cv(gb, list(X.columns))                                        # 0.92  all
+cv(gb, f_scores.head(3).index.tolist())                        # 0.62  F-test top 3
+cv(gb, mi.head(3).index.tolist())                              # 0.91  MI top 3
+cv(gb, ["linear", "u_shape", "inter_a", "inter_b"])            # 0.92  the truth
 #
 # The F-test's top three lose 16 points. MI's lose 8. Neither can
 # find inter_a and inter_b, which together are worth the difference.
@@ -203,7 +203,7 @@ pd.Series(rfe.ranking_, index=X.columns).sort_values()
 rfecv = RFECV(GradientBoostingClassifier(random_state=0), step=1,
               cv=StratifiedKFold(5, shuffle=True, random_state=0), scoring="roc_auc")
 rfecv.fit(X, y)
-rfecv.n_features_                                   # 4
+rfecv.n_features_                                   # 5
 #
 # The CV inside RFECV scores each subset SIZE honestly -- but the
 # ranking within each fold used that fold's training labels only, so

@@ -128,7 +128,7 @@ print(pd.Series(raw.components_[0], index=df.columns).round(3))
 # PC1 is income. The column with the biggest units won before any pattern was considered.
 
 Z = StandardScaler().fit_transform(df)
-print(PCA().fit(Z).explained_variance_ratio_.round(2))   # [0.26 0.25 0.25 0.24]
+print(PCA().fit(Z).explained_variance_ratio_.round(2))   # [0.26 0.25 0.24 0.24]
 # four independent columns: nothing to compress, every component is worth a quarter
 
 df["age_at_join"] = df["age"] - df["tenure_years"] + rng.normal(0, 0.5, n)
@@ -160,14 +160,14 @@ X = np.column_stack([noise, quiet])
 def auc(model):
     return cross_val_score(model, X, y, cv=5, scoring="roc_auc").mean().round(2)
 
-print(auc(LogisticRegression()))                                            # 0.92
-print(auc(make_pipeline(PCA(n_components=0.95), LogisticRegression())))     # 0.50
-print(auc(make_pipeline(StandardScaler(), PCA(4), LogisticRegression())))   # 0.89
+print(auc(LogisticRegression()))                                            # 0.94
+print(auc(make_pipeline(PCA(n_components=0.95), LogisticRegression())))     # 0.51
+print(auc(make_pipeline(StandardScaler(), PCA(4), LogisticRegression())))   # 0.91
 
 pca = PCA(n_components=0.95).fit(X)
 print(pca.n_components_)                              # 4  -- the four noise columns
-print(np.abs(pca.components_[:, 4]).max().round(4))   # 0.001 -- the quiet column is in none of them`,
-      caption: "**The 95 % rule kept the four noise columns and dropped the one that predicts the label: AUC 0.92 to 0.50.** Scaled, the five columns have equal variance and PCA(4) drops an arbitrary direction — which takes a random share of the signal with it. Neither is a choice about the target, because PCA cannot make one."
+print(np.abs(pca.components_[:, 4]).max().round(4))   # 0.004 -- the quiet column is in none of them`,
+      caption: "**The 95 % rule kept the four noise columns and dropped the one that predicts the label: AUC 0.94 to 0.51.** Scaled, the five columns have equal variance and PCA(4) drops an arbitrary direction — which takes a random share of the signal with it. Neither is a choice about the target, because PCA cannot make one."
     },
 
     { t: "viz",
@@ -241,11 +241,11 @@ grid = GridSearchCV(pipe, {"pca": ["passthrough", PCA(2), PCA(3), PCA(5), PCA(10
                     cv=StratifiedKFold(5, shuffle=True, random_state=0), scoring="roc_auc").fit(X30, y30)
 for p, m, s in zip(grid.cv_results_["param_pca"], grid.cv_results_["mean_test_score"], grid.cv_results_["std_test_score"]):
     print(f"{str(p):22s} {m:.3f} ± {s:.3f}")
-# passthrough            0.851 ± 0.012
-# PCA(n_components=2)    0.849 ± 0.011
-# PCA(n_components=3)    0.852 ± 0.012
-# PCA(n_components=5)    0.851 ± 0.012
-# PCA(n_components=10)   0.851 ± 0.013`,
+# passthrough            0.758 ± 0.023
+# PCA(n_components=2)    0.768 ± 0.026
+# PCA(n_components=3)    0.768 ± 0.024
+# PCA(n_components=5)    0.768 ± 0.024
+# PCA(n_components=10)   0.766 ± 0.024`,
       caption: "**Parallel analysis says three components carry shared structure; the CV says the model scores the same with three, ten, or none.** Reduction here costs nothing and buys a 10× smaller feature matrix — that is the trade, stated in the metric that matters, with no-reduction on the grid as the control."
     },
 
@@ -268,7 +268,7 @@ load = pd.DataFrame(pca.components_.T, columns=["PC1", "PC2", "PC3"],
 for c in load:
     top = load[c].abs().sort_values(ascending=False).head(4)
     print(c, "<-", ", ".join(f"{i} ({load.loc[i, c]:+.2f})" for i in top.index))
-# PC1 <- c17 (+0.27), c04 (-0.26), c22 (+0.25), c09 (+0.25)   ... spread over thirty columns
+# PC1 <- c27 (+0.27), c02 (-0.27), c18 (-0.27), c14 (-0.26)   ... spread over thirty columns
 
 # whiten=True rescales every kept score to unit variance -- ICA and some kernels need it;
 # it multiplies the smallest components by the largest factors, so it amplifies noise most
@@ -455,7 +455,7 @@ print("report: parallel analysis counts components shared across columns; the qu
       "with nothing, so it is counted by neither the variance rule nor the null comparison. Only the",
       "downstream score can say the model needs it.")`,
         notes: [
-          { t: "p", text: "**Raw PCA at 95 % keeps exactly nine components — the nine loud columns, whose variance of 625 each dwarfs everything — and the quiet column's loading on all of them is a rounding error.** AUC 0.50: the model was handed nine columns of noise in a new basis." },
+          { t: "p", text: "**Raw PCA at 95 % keeps exactly nine components — the nine loud columns, whose variance of 625 each dwarfs everything — and the quiet column's loading on all of them is a rounding error.** AUC 0.51: the model was handed nine columns of noise in a new basis." },
           { t: "p", text: "**Parallel analysis returns 3 and is right about what it measures**: three directions carry variance that independent columns could not produce. The quiet column is one independent column with unit variance after scaling, indistinguishable to any unsupervised count from the nine loud columns, which are also one independent column each after scaling." },
           { t: "p", text: "**PCA(3) scores 0.72 — the first factor's share of the signal — and only PCA(20) or higher recovers the quiet column**, because where it lands among the ten unit-variance independent directions is decided by sampling noise. The grid with passthrough as the control turns the whole question into one comparison in the metric that matters." },
           { t: "p", text: "**The assertions are the audit trail**: reduction collapsed when done naively, the chosen configuration ties the baseline, and the *k* an unsupervised rule would have picked loses by five points." }
@@ -502,7 +502,7 @@ print("report: parallel analysis counts components shared across columns; the qu
     title: "Knowledge check",
     questions: [
       {
-        stem: "On raw columns, `PCA(n_components=0.95)` keeps four of five components and a logistic regression on them scores AUC 0.50; on the original columns it scores 0.92. What happened?",
+        stem: "On raw columns, `PCA(n_components=0.95)` keeps four of five components and a logistic regression on them scores AUC 0.51; on the original columns it scores 0.94. What happened?",
         options: [
           "PCA introduced noise",
           "The fifth column — the only one related to the target — had the smallest variance, so it was the direction PCA ranked last and the variance rule discarded; PCA never looks at y",

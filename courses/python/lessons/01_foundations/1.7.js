@@ -19,7 +19,7 @@ EC.receiveLesson({
   blocks: [
 
     /* ================================================================== */
-    { t: "h2", n: "01", text: "and and or return operands, not booleans", id: "and-or" },
+    { t: "h2", n: "01", text: "`and` and `or` return operands, not booleans", id: "and-or" },
 
     {"kind": "trace", "title": "and / or return an operand, not a bool", "caption": "or returns the first truthy operand (or the last one); and returns the first falsy operand (or the last one). That is why name or 'anon' works as a default, and why it fails when the empty string is a valid value.", "vars": ["expression", "result"], "steps": [{"code": "'' or 'anon'", "state": ["", "'anon'"], "changed": [1], "note": "first truthy"}, {"code": "'bob' or 'anon'", "state": ["", "'bob'"], "changed": [1]}, {"code": "0 and 5", "state": ["", "0"], "changed": [1], "note": "first falsy"}, {"code": "3 and 5", "state": ["", "5"], "changed": [1], "note": "last operand"}, {"code": "x = count or 1  # count == 0", "state": ["", "1"], "changed": [1], "tone": "warn", "note": "0 was a valid value"}], "t": "diagram", "id": "dg-1_7-01-2"},
 
@@ -544,30 +544,30 @@ if __name__ == "__main__":
       {
         stem: "What is the value and type of `0 or \"\" or [] or \"last\"`?",
         options: [
-          "`True`, a bool — `or` always produces a boolean",
           "`\"last\"`, a str — `or` returns the first truthy operand, or the last one if none are truthy",
+          "`True`, a bool — `or` evaluates its operands for truthiness and always produces a boolean",
           "`[]`, a list — evaluation stops at the last falsy value",
-          "`0`, an int — `or` returns its first operand"
+          "`0`, an int — `or` returns its first operand when it is falsy, to signal that the chain failed"
         ],
-        answer: 1,
+        answer: 0,
         why: "`or` evaluates left to right, returning the first truthy operand. `0`, `\"\"` and `[]` are all falsy, so it continues to `\"last\"`, which is truthy and is returned as a `str` — not converted to a bool. This is exactly the mechanism behind the `value or default` idiom, and exactly why that idiom discards a deliberate `0`."
       },
       {
         stem: "A service reads `DEBUG = bool(os.environ.get(\"DEBUG\", \"false\"))`. The operator sets `DEBUG=false`. What is `DEBUG`?",
         options: [
-          "`False` — the string is parsed as a boolean",
-          "`True` — `bool()` on a string tests whether it is non-empty, and `\"false\"` has five characters",
-          "`None` — `bool()` cannot convert an arbitrary string",
-          "A `ValueError` is raised for an unrecognised boolean string"
+          "`False` — `bool()` recognises the strings `\"true\"` and `\"false\"` and parses them",
+          "`None` — `bool()` cannot convert an arbitrary string, so the lookup falls back to `None`",
+          "A `ValueError` is raised for an unrecognised boolean string",
+          "`True` — `bool()` on a string only checks that it is non-empty"
         ],
-        answer: 1,
+        answer: 3,
         why: "`bool()` on a string asks only whether it is empty. `\"false\"`, `\"0\"`, `\"no\"` and `\"False\"` are all non-empty and therefore `True`; the only falsy string is `\"\"`. The flag has never been capable of turning anything off, and it passes review because it reads correctly in English and works for the enabled case. Parse the content explicitly, or use a settings library that fails loudly on unrecognised values."
       },
       {
         stem: "What does `print(-2 ** 2, 2 ** 3 ** 2)` output?",
         options: [
           "`4 64` — left to right in both cases",
-          "`-4 512` — `**` binds tighter than unary minus, and is right-associative",
+          "`-4 512` — `**` beats unary minus and is right-associative",
           "`-4 64` — `**` binds tighter than minus but associates left",
           "`4 512` — unary minus binds tighter, `**` associates right"
         ],
@@ -577,12 +577,12 @@ if __name__ == "__main__":
       {
         stem: "Why must pandas boolean filters be written `df[(df.a == 1) & (df.b == 2)]` with parentheses?",
         options: [
-          "pandas requires parentheses around every filter expression by convention",
           "`&` binds tighter than `==`, so without them the expression parses as `df.a == (1 & df.b) == 2`",
-          "`&` and `==` have equal precedence, making the expression ambiguous",
+          "pandas requires parentheses around every filter expression by convention",
+          "`&` and `==` have equal precedence, so without parentheses the expression is ambiguous to the parser",
           "The parentheses force evaluation order so the Series comparison returns a bool"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is plain Python grammar, not a pandas rule. Bitwise operators sit above comparisons in the precedence table, so `df.a == 1 & df.b == 2` groups as a chained comparison around `1 & df.b`. pandas is forced to overload `&` rather than use `and`, because `and` calls `__bool__` and the truth value of a whole Series is ambiguous — and overloading `&` means inheriting its precedence."
       }
     ]

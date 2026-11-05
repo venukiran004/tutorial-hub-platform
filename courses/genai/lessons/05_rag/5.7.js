@@ -66,8 +66,8 @@ E = enc.encode(chunks, normalize_embeddings=True, batch_size=64)   # 5.3, 5.6`,
 
 def answer(question, k=5):
     hits = retrieve(question, k)
-    context = "\n\n".join(
-        "[%d] (%s)\n%s" % (n + 1, src, text) for n, (text, src, _) in enumerate(hits))
+    context = "\\n\\n".join(
+        "[%d] (%s)\\n%s" % (n + 1, src, text) for n, (text, src, _) in enumerate(hits))
     prompt = PROMPT.format(context=context, question=question)
     return generate(prompt), hits`,
       hl: [3, 4],
@@ -341,12 +341,12 @@ def answer(question, k=5):
     sources = [{"n": n + 1, "text": chunks[i], "doc": meta[i],
                 "score": float(scores[i]), "idx": int(i)}
                for n, i in enumerate(top)]
-    context = "\n\n".join("[%d] (%s)\n%s" % (s["n"], s["doc"], s["text"])
+    context = "\\n\\n".join("[%d] (%s)\\n%s" % (s["n"], s["doc"], s["text"])
                           for s in sources)
     out = generate(PROMPT.format(context=context, question=question))
 
     # every citation must resolve to a source we actually supplied
-    cited = set(int(m) for m in re.findall(r"\[(\d+)\]", out))
+    cited = set(int(m) for m in re.findall(r"\\[(\\d+)\\]", out))
     dangling = cited - {s["n"] for s in sources}
     return out, sources, dangling`,
         out: `  index: 1241 chunks, 13.2 s, 1.82 MB

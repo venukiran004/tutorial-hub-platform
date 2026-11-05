@@ -504,20 +504,20 @@ class Config:
       {
         stem: "A traceback shows five frames. Which one most likely contains the bug?",
         options: [
-          "The first frame, since it is where execution began",
-          "The last frame before the error line — that is where execution actually was when it failed",
+          "The first frame, since that is where execution began and where the bad value entered",
           "The frame with the longest file path, which indicates third-party code",
-          "Whichever frame appears most often"
+          "The last frame before the error line — that is where execution actually was when it failed",
+          "Whichever frame appears most often, since a repeated frame points at the loop that failed"
         ],
-        answer: 1,
+        answer: 2,
         why: "Frames print oldest-call-first, so the deepest — nearest the error — is where the failing line ran. The refinement worth adding: when the last frames are inside site-packages, the library is usually reporting your mistake rather than making one, so the deepest file *you wrote* is where the fix belongs. The first frame is just your entry point."
       },
       {
         stem: "A traceback contains \"During handling of the above exception, another exception occurred\". What does this tell you?",
         options: [
-          "The first exception was deliberately wrapped with `raise ... from`",
+          "The first exception was deliberately wrapped with `raise ... from`, so both are shown for context",
           "A second exception was raised inside an `except` block — the error handler is itself broken",
-          "Two threads failed at the same time",
+          "Two threads failed at the same moment, and Python printed both tracebacks one after the other",
           "The exception was re-raised after being logged, which is normal"
         ],
         answer: 1,
@@ -528,7 +528,7 @@ class Config:
         options: [
           "`SIGKILL` causes Python to discard log records before writing them",
           "`stdout` is block-buffered when piped, and the buffered output died with the process",
-          "The container's log driver drops messages under memory pressure",
+          "The container's log driver drops messages under memory pressure, so the lines were never stored",
           "`print()` is disabled once the container exceeds its memory limit"
         ],
         answer: 1,
@@ -537,12 +537,12 @@ class Config:
       {
         stem: "`TypeError: 'NoneType' object is not subscriptable` on the line `settings[\"timeout\"]`. Where is the bug?",
         options: [
-          "On that line — the key `\"timeout\"` does not exist",
-          "In whatever produced `settings`, which returned `None` on the path taken",
+          "On that line — the key `\"timeout\"` does not exist in the settings dictionary",
           "In the dictionary's type annotation, which is missing",
-          "It is a `TypeError`, so the wrong type of key was used"
+          "It is a `TypeError`, so the wrong type of key was used",
+          "In whatever produced `settings`, which returned `None` on the path taken"
         ],
-        answer: 1,
+        answer: 3,
         why: "The line reporting the error is where the problem surfaced, not where it was created — `settings` is `None`, so subscripting it is impossible. Something upstream returned `None`, most often a function with a bare `return` in a guard clause or a search loop that fell off the end without finding anything. A missing key would raise `KeyError`, and the error type distinguishes the two immediately."
       }
     ]

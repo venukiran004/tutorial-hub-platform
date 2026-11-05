@@ -27,16 +27,16 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "High Bias (Underfitting)          Balanced          High Variance (Overfitting)\nâ”œâ”€ Simple model                   â”œâ”€ Right          â”œâ”€ Complex model\nâ”œâ”€ High training error            â”‚  complexity     â”œâ”€ Low training error\nâ”œâ”€ High test error                â”œâ”€ Low train err  â”œâ”€ High test error\nâ””â”€ Example: Linear Regression     â””â”€ Regularized    â””â”€ Example: Deep tree\n   on non-linear data                               â””â”€ Memorizes noise"
+     "code": "High Bias (Underfitting)          Balanced          High Variance (Overfitting)\n├─ Simple model                   ├─ Right          ├─ Complex model\n├─ High training error            │  complexity     ├─ Low training error\n├─ High test error                ├─ Low train err  ├─ High test error\n└─ Example: Linear Regression     └─ Regularized    └─ Example: Deep tree\n   on non-linear data                               └─ Memorizes noise"
     },
     {
      "t": "p",
-     "text": "**Total Error = BiasÂ² + Variance + Irreducible Noise**"
+     "text": "**Total Error = Bias² + Variance + Irreducible Noise**"
     },
     {
      "t": "code",
      "lang": "python",
-     "code": "from sklearn.model_selection import cross_val_score\nfrom sklearn.tree import DecisionTreeClassifier\nimport numpy as np\n\n# Demonstrate bias-variance with tree depth\nfor depth in [1, 3, 5, 10, None]:\n    model = DecisionTreeClassifier(max_depth=depth, random_state=42)\n    scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')\n    print(f\"Depth={depth}: Mean={scores.mean():.4f}, Std={scores.std():.4f}\")\n    # Low depth â†’ high bias, low variance\n    # High depth â†’ low bias, high variance"
+     "code": "from sklearn.model_selection import cross_val_score\nfrom sklearn.tree import DecisionTreeClassifier\nimport numpy as np\n\n# Demonstrate bias-variance with tree depth\nfor depth in [1, 3, 5, 10, None]:\n    model = DecisionTreeClassifier(max_depth=depth, random_state=42)\n    scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')\n    print(f\"Depth={depth}: Mean={scores.mean():.4f}, Std={scores.std():.4f}\")\n    # Low depth → high bias, low variance\n    # High depth → low bias, high variance"
     }
    ],
    "kind": ""
@@ -66,8 +66,8 @@ EC.receiveLesson({
       ],
       [
        "Feature selection",
-       "âœ… Yes (sparse)",
-       "âŒ No"
+       "✅ Yes (sparse)",
+       "❌ No"
       ],
       [
        "Correlated features",
@@ -89,7 +89,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from sklearn.linear_model import Lasso, Ridge, ElasticNet\n\n# L1 â€” Feature selection\nlasso = Lasso(alpha=0.1)\nlasso.fit(X_train, y_train)\nprint(f\"Non-zero features: {(lasso.coef_ != 0).sum()}/{len(lasso.coef_)}\")\n\n# L2 â€” Prevent overfitting\nridge = Ridge(alpha=1.0)\nridge.fit(X_train, y_train)\n\n# ElasticNet â€” Best of both\nelastic = ElasticNet(alpha=0.1, l1_ratio=0.5)  # 50% L1 + 50% L2"
+     "code": "from sklearn.linear_model import Lasso, Ridge, ElasticNet\n\n# L1 — Feature selection\nlasso = Lasso(alpha=0.1)\nlasso.fit(X_train, y_train)\nprint(f\"Non-zero features: {(lasso.coef_ != 0).sum()}/{len(lasso.coef_)}\")\n\n# L2 — Prevent overfitting\nridge = Ridge(alpha=1.0)\nridge.fit(X_train, y_train)\n\n# ElasticNet — Best of both\nelastic = ElasticNet(alpha=0.1, l1_ratio=0.5)  # 50% L1 + 50% L2"
     }
    ],
    "kind": ""
@@ -97,7 +97,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Explain precision, recall, F1-score â€” when to use each?",
+   "q": "Explain precision, recall, F1-score — when to use each?",
    "body": [
     {
      "t": "code",
@@ -124,7 +124,7 @@ EC.receiveLesson({
       ],
       [
        "**F1**",
-       "2 Ã— (P Ã— R) / (P + R)",
+       "2 × (P × R) / (P + R)",
        "Balance between precision and recall"
       ],
       [
@@ -167,7 +167,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "Design an A/B test â€” key considerations",
+   "q": "Design an A/B test — key considerations",
    "body": [
     {
      "t": "p",
@@ -213,10 +213,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Peeking:** Checking results before planned duration â†’ inflated false positive rate",
-      "**Multiple comparisons:** Testing many metrics â†’ Bonferroni correction",
-      "**Novelty effect:** New features get initial engagement spike â†’ wait for steady state",
-      "**Network effects:** Social products â†’ use cluster randomization"
+      "**Peeking:** Checking results before planned duration → inflated false positive rate",
+      "**Multiple comparisons:** Testing many metrics → Bonferroni correction",
+      "**Novelty effect:** New features get initial engagement spike → wait for steady state",
+      "**Network effects:** Social products → use cluster randomization"
      ]
     },
     {
@@ -239,7 +239,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "User Request â†’ API Gateway â†’ Feature Store â†’ Model Service â†’ Ranking â†’ Response\n                                  â†‘                â†‘\n                           Offline Pipeline    Model Registry\n                           (Spark/Airflow)     (MLflow)"
+     "code": "User Request → API Gateway → Feature Store → Model Service → Ranking → Response\n                                  ↑                ↑\n                           Offline Pipeline    Model Registry\n                           (Spark/Airflow)     (MLflow)"
     },
     {
      "t": "p",
@@ -435,7 +435,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import pandas as pd\nfrom collections import defaultdict\n\n# Touchpoint data: user journeys before conversion\njourneys = pd.DataFrame({\n    'user_id': [1,1,1,2,2,3,3,3,3],\n    'channel': ['search','email','social','search','email','display','search','email','social'],\n    'timestamp': pd.date_range('2024-01-01', periods=9, freq='D'),\n    'converted': [0,0,1,0,1,0,0,0,1],\n    'revenue': [0,0,100,0,200,0,0,0,150]\n})\n\n# Last-touch attribution\ndef last_touch(df):\n    conversions = df[df['converted'] == 1]\n    # Last touchpoint before conversion for each user\n    last_touches = (df.groupby('user_id')\n                     .apply(lambda x: x[x['converted'] == 1].iloc[0] if x['converted'].any() else None)\n                     .dropna())\n    return last_touches.groupby('channel')['revenue'].sum()\n\n# Linear attribution (equal credit to all touchpoints)\ndef linear_attribution(df):\n    attribution = defaultdict(float)\n    for user_id, group in df.groupby('user_id'):\n        if group['converted'].any():\n            revenue = group[group['converted'] == 1]['revenue'].iloc[0]\n            touchpoints = group[group['converted'] == 0].append(\n                group[group['converted'] == 1].head(1)\n            )\n            credit = revenue / len(touchpoints)\n            for _, row in touchpoints.iterrows():\n                attribution[row['channel']] += credit\n    return dict(attribution)\n\n# Time-decay attribution\ndef time_decay_attribution(df, half_life_days=7):\n    import numpy as np\n    attribution = defaultdict(float)\n\n    for user_id, group in df.groupby('user_id'):\n        if group['converted'].any():\n            conv_row = group[group['converted'] == 1].iloc[0]\n            revenue = conv_row['revenue']\n            conv_time = conv_row['timestamp']\n\n            # Calculate decay weights\n            weights = {}\n            for _, row in group.iterrows():\n                days_before = (conv_time - row['timestamp']).days\n                weight = np.exp(-0.693 * days_before / half_life_days)\n                weights[row.name] = weight\n\n            total_weight = sum(weights.values())\n            for idx, weight in weights.items():\n                channel = group.loc[idx, 'channel']\n                attribution[channel] += revenue * (weight / total_weight)\n\n    return dict(attribution)\n\nprint(\"Last-touch:\", last_touch(journeys).to_dict())\nprint(\"Linear:\", linear_attribution(journeys))"
+     "code": "import pandas as pd\nfrom collections import defaultdict\n\n# Touchpoint data: user journeys before conversion\njourneys = pd.DataFrame({\n    'user_id': [1,1,1,2,2,3,3,3,3],\n    'channel': ['search','email','social','search','email','display','search','email','social'],\n    'timestamp': pd.date_range('2024-01-01', periods=9, freq='D'),\n    'converted': [0,0,1,0,1,0,0,0,1],\n    'revenue': [0,0,100,0,200,0,0,0,150]\n})\n\n# Last-touch attribution\ndef last_touch(df):\n    conversions = df[df['converted'] == 1]\n    # Last touchpoint before conversion for each user\n    last_touches = (df.groupby('user_id')\n                     .apply(lambda x: x[x['converted'] == 1].iloc[0] if x['converted'].any() else None)\n                     .dropna())\n    return last_touches.groupby('channel')['revenue'].sum()\n\n# Linear attribution (equal credit to all touchpoints)\ndef linear_attribution(df):\n    attribution = defaultdict(float)\n    for user_id, group in df.groupby('user_id'):\n        if group['converted'].any():\n            revenue = group[group['converted'] == 1]['revenue'].iloc[0]\n            touchpoints = pd.concat([group[group['converted'] == 0],\n                group[group['converted'] == 1].head(1)]\n            )\n            credit = revenue / len(touchpoints)\n            for _, row in touchpoints.iterrows():\n                attribution[row['channel']] += credit\n    return dict(attribution)\n\n# Time-decay attribution\ndef time_decay_attribution(df, half_life_days=7):\n    import numpy as np\n    attribution = defaultdict(float)\n\n    for user_id, group in df.groupby('user_id'):\n        if group['converted'].any():\n            conv_row = group[group['converted'] == 1].iloc[0]\n            revenue = conv_row['revenue']\n            conv_time = conv_row['timestamp']\n\n            # Calculate decay weights\n            weights = {}\n            for _, row in group.iterrows():\n                days_before = (conv_time - row['timestamp']).days\n                weight = np.exp(-0.693 * days_before / half_life_days)\n                weights[row.name] = weight\n\n            total_weight = sum(weights.values())\n            for idx, weight in weights.items():\n                channel = group.loc[idx, 'channel']\n                attribution[channel] += revenue * (weight / total_weight)\n\n    return dict(attribution)\n\nprint(\"Last-touch:\", last_touch(journeys).to_dict())\nprint(\"Linear:\", linear_attribution(journeys))"
     },
     {
      "t": "p",

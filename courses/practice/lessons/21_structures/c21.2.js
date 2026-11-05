@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c21.2",
  "lede": "**26 programs to write**, on caches and cycle detection. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 26 programs on caches and cycle detection without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c21.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2463–2488.** What this set actually drills, counted from its own problems — 14 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["graphs & trees", "lists", "dicts and sets", "files and paths", "threads", "strings"], "cells": [[{"text": "4", "tone": "accent"}, "Implement Trie with Autocomple"], [{"text": "4", "tone": "good"}, "Flatten Binary Tree to Linked "], [{"text": "2", "tone": "violet"}, "LRU Cache (OrderedDict)"], [{"text": "2", "tone": "teal"}, "Path Sum (All Paths)"], [{"text": "1", "tone": "warn"}, "Implement Queue Using Stacks"], [{"text": "1", "tone": "crit"}, "Longest Substring Without Repe"]], "t": "diagram", "id": "dg-c21_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

@@ -352,7 +352,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Recursive `defaultdict` (\"tree\") is great for nested config/JSON-like trees, but note that simply *indexing* deep paths materializes intermediate dicts."
+     "text": "**Key takeaway:** Recursive `defaultdict` (\"tree\") is great for nested config/JSON-like trees, but note that simply *indexing* deep paths materialises intermediate dicts."
     }
    ]
   },
@@ -619,7 +619,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `defaults` fill from the **right**; `_make` builds from iterables, `_asdict` serializes, `_replace` returns a modified copy (since the original is immutable)."
+     "text": "**Key takeaway:** `defaults` fill from the **right**; `_make` builds from iterables, `_asdict` serialises, `_replace` returns a modified copy (since the original is immutable)."
     }
    ]
   },
@@ -804,7 +804,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Summarize the time complexity of the main collection operations.",
+   "q": "Summarise the time complexity of the main collection operations.",
    "body": [
     {
      "t": "p",
@@ -987,7 +987,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Indexing a missing key on a `defaultdict` *inserts* it — use `.get()` to peek safely. The factory must take no arguments (use a `lambda` for parameterized defaults). Convert to `dict(dd)` before serializing/printing if you want a clean view."
+     "text": "**Key takeaway:** Indexing a missing key on a `defaultdict` *inserts* it — use `.get()` to peek safely. The factory must take no arguments (use a `lambda` for parameterised defaults). Convert to `dict(dd)` before serialising/printing if you want a clean view."
     }
    ]
   },

@@ -70,7 +70,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Pydantic is a data validation and serialization library that uses Python type hints to define schemas. At construction time it validates and coerces input, raising a structured `ValidationError` for bad data; it also serializes models to dicts/JSON and generates JSON Schema."
+     "text": "Pydantic is a data validation and serialisation library that uses Python type hints to define schemas. At construction time it validates and coerces input, raising a structured `ValidationError` for bad data; it also serialises models to dicts/JSON and generates JSON Schema."
     },
     {
      "t": "code",
@@ -80,7 +80,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pydantic turns type hints into enforced runtime contracts — validation, parsing, and serialization from one declaration."
+     "text": "**Key takeaway:** Pydantic turns type hints into enforced runtime contracts — validation, parsing, and serialisation from one declaration."
     }
    ]
   },
@@ -201,7 +201,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**before** runs on the **raw input** before type coercion — use to normalize/reshape (e.g., parse a CSV string into a list, remap camelCase keys).",
+      "**before** runs on the **raw input** before type coercion — use to normalise/reshape (e.g., parse a CSV string into a list, remap camelCase keys).",
       "**after** (default) runs on the **already-coerced, type-correct** value — use to enforce business rules."
      ]
     },
@@ -253,7 +253,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "How do you serialize a Pydantic model?",
+   "q": "How do you serialise a Pydantic model?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -315,7 +315,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`model_config = ConfigDict(...)` configures model behavior (replaces v1's inner `class Config`)."
+     "text": "`model_config = ConfigDict(...)` configures model behaviour (replaces v1's inner `class Config`)."
     },
     {
      "t": "table",
@@ -438,7 +438,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`@computed_field` exposes a derived `@property` in the serialized output, so calculated values appear in `model_dump()`/JSON and the schema."
+     "text": "`@computed_field` exposes a derived `@property` in the serialised output, so calculated values appear in `model_dump()`/JSON and the schema."
     },
     {
      "t": "code",
@@ -448,7 +448,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use computed fields for read-only derived values you want serialized without storing them."
+     "text": "**Key takeaway:** Use computed fields for read-only derived values you want serialised without storing them."
     }
    ]
   },
@@ -593,14 +593,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**attrs**lean, fast classes for library internals with optional validators; no JSON-schema overhead. Pairs with `cattrs` for serialization. Choose when you don't need API schema generation.",
-      "**msgspec**fastest validation + JSON/msgpack serde; ideal for high-throughput pipelines, message brokers, and real-time systems where FastAPI integration isn't required.",
-      "**Pydantic**API layers (FastAPI), config management, anywhere you need JSON Schema/OpenAPI and rich coercion."
+      "**attrs:** lean, fast classes for library internals with optional validators; no JSON-schema overhead. Pairs with `cattrs` for serialisation. Choose when you don't need API schema generation.",
+      "**msgspec:** fastest validation + JSON/msgpack serde; ideal for high-throughput pipelines, message brokers, and real-time systems where FastAPI integration isn't required.",
+      "**Pydantic:** API layers (FastAPI), config management, anywhere you need JSON Schema/OpenAPI and rich coercion."
      ]
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pydantic for APIs/configs, attrs for lean internals, msgspec for raw serialization speed."
+     "text": "**Key takeaway:** Pydantic for APIs/configs, attrs for lean internals, msgspec for raw serialisation speed."
     }
    ]
   },
@@ -620,11 +620,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`dataclasses` are stdlib and fast but do **no validation or coercion** and have no built-in JSON serialization or schema. Pydantic validates, coerces, serializes, and generates schemas at some runtime cost. (Pydantic also offers `pydantic.dataclasses.dataclass` to add validation to a dataclass-style API.)"
+     "text": "`dataclasses` are stdlib and fast but do **no validation or coercion** and have no built-in JSON serialisation or schema. Pydantic validates, coerces, serialises, and generates schemas at some runtime cost. (Pydantic also offers `pydantic.dataclasses.dataclass` to add validation to a dataclass-style API.)"
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use plain dataclasses for trivial internal DTOs; reach for Pydantic when input is untrusted or you need (de)serialization/schema."
+     "text": "**Key takeaway:** Use plain dataclasses for trivial internal DTOs; reach for Pydantic when input is untrusted or you need (de)serialisation/schema."
     }
    ]
   },
@@ -656,7 +656,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Custom type** implementing `__get_pydantic_core_schema__` for full control over validation and serialization."
+      "**Custom type** implementing `__get_pydantic_core_schema__` for full control over validation and serialisation."
      ]
     },
     {

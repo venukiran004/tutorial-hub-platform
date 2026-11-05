@@ -56,7 +56,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n33.py — inspecting the encoding", code:
+    { t: "code", lang: "python", title: "inspecting the encoding", code:
 "from transformers import AutoTokenizer\n\ntok = AutoTokenizer.from_pretrained(\"bert-base-uncased\")\nenc = tok(\"Hello world\", return_tensors=\"pt\")\n\nprint(list(enc.keys()))\nprint(tok.convert_ids_to_tokens(enc[\"input_ids\"][0]))",
       caption: "Always print `convert_ids_to_tokens` when something is wrong. Most tokenisation bugs are visible immediately and invisible otherwise." },
 

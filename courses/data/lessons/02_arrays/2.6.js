@@ -221,7 +221,7 @@ np.gradient(vals, irregular)        # correct
 np.gradient(np.gradient(y, t), t)   # ~2 everywhere
 
 # INTEGRATION -- the trapezoid rule:
-np.trapezoid(y, t)            # 333.5 (exact: 1000/3 = 333.33)
+np.trapezoid(y, t)            # 335.0 (exact: 1000/3 = 333.33)
 #
 # Named np.trapz in older NumPy; both exist in the transition period.
 np.cumulative_trapezoid = None      # not in NumPy -- scipy has it
@@ -232,7 +232,7 @@ def cumtrapz(y, x):
     avg = (y[1:] + y[:-1]) / 2
     return np.concatenate([[0.0], np.cumsum(dx * avg)])
 
-cumtrapz(y, t)[-1]            # 333.5 -- matches
+cumtrapz(y, t)[-1]            # 335.0 -- matches
 
 # WHERE THIS SHOWS UP IN FEATURE CODE:
 #
@@ -299,7 +299,7 @@ power = np.abs(spectrum) ** 2
 # THE PEAKS ARE THE PERIODS. Convert frequency to period:
 order = np.argsort(power)[::-1][:5]
 periods = 1 / freqs[order]
-periods.round(1)              # [168.0, 24.0, ...] -- weekly and daily
+periods.round(1)              # [24.0, 160.0, 180.0, ...] -- daily, then close to weekly
 #
 # 168 hours = 7 days. The FFT found the weekly cycle without being
 # told to look for one, which is the whole point: you do not have to
@@ -419,7 +419,7 @@ for deg in (1, 2, 5, 20):
 # WHAT A HIGH-DEGREE FIT DOES BETWEEN THE POINTS:
 fit20 = Polynomial.fit(x, y, 20)
 dense = np.linspace(0, 10, 1000)
-fit20(dense).ptp() / y.ptp()  # a huge ratio -- it oscillates wildly
+np.ptp(fit20(dense)) / np.ptp(y)  # a huge ratio -- it oscillates wildly
 #
 # RUNGE'S PHENOMENON: high-degree polynomials oscillate violently
 # between the fitted points, especially near the edges. The fit passes

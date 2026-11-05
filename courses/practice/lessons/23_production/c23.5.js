@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c23.5",
  "lede": "**23 programs to write**, on batch systems, rollout and operations. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 23 problems on docker & kubernetes without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 23 programs on batch systems, rollout and operations without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c23.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2816–2838.** What this set actually drills, counted from its own problems — 2 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["patterns", "production"], "cells": [[{"text": "1", "tone": "accent"}, "API deprecation strategy"], [{"text": "1", "tone": "good"}, "Production incident handling"]], "t": "diagram", "id": "dg-c23_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -44,7 +44,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q568: System design for batch processing\")\nprint(\"  Process large datasets in scheduled batches.\")\nprint(\"  Tools: Apache Spark, AWS Batch, Airflow DAGs\")\nprint(\"  Patterns: MapReduce, partition-process-aggregate\")\nprint(\"  Considerations: idempotency, checkpointing, monitoring\")\nprint()",
+     "code": "print(\"System design for batch processing\")\nprint(\"  Process large datasets in scheduled batches.\")\nprint(\"  Tools: Apache Spark, AWS Batch, Airflow DAGs\")\nprint(\"  Patterns: MapReduce, partition-process-aggregate\")\nprint(\"  Considerations: idempotency, checkpointing, monitoring\")\nprint()",
      "numbered": false
     },
     {
@@ -54,7 +54,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q568: System design for batch processing\n  Process large datasets in scheduled batches.\n  Tools: Apache Spark, AWS Batch, Airflow DAGs\n  Patterns: MapReduce, partition-process-aggregate\n  Considerations: idempotency, checkpointing, monitoring",
+     "code": "System design for batch processing\n  Process large datasets in scheduled batches.\n  Tools: Apache Spark, AWS Batch, Airflow DAGs\n  Patterns: MapReduce, partition-process-aggregate\n  Considerations: idempotency, checkpointing, monitoring",
      "numbered": false
     }
    ]
@@ -67,7 +67,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q569: System design for stream processing\")\nprint(\"  Process data in real-time as it arrives.\")\nprint(\"  Tools: Kafka Streams, Apache Flink, AWS Kinesis\")\nprint(\"  Patterns: windowing, aggregation, enrichment, filtering\")\nprint(\"  Guarantees: at-most-once, at-least-once, exactly-once\")\nprint()",
+     "code": "print(\"System design for stream processing\")\nprint(\"  Process data in real-time as it arrives.\")\nprint(\"  Tools: Kafka Streams, Apache Flink, AWS Kinesis\")\nprint(\"  Patterns: windowing, aggregation, enrichment, filtering\")\nprint(\"  Guarantees: at-most-once, at-least-once, exactly-once\")\nprint()",
      "numbered": false
     },
     {
@@ -77,7 +77,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q569: System design for stream processing\n  Process data in real-time as it arrives.\n  Tools: Kafka Streams, Apache Flink, AWS Kinesis\n  Patterns: windowing, aggregation, enrichment, filtering\n  Guarantees: at-most-once, at-least-once, exactly-once",
+     "code": "System design for stream processing\n  Process data in real-time as it arrives.\n  Tools: Kafka Streams, Apache Flink, AWS Kinesis\n  Patterns: windowing, aggregation, enrichment, filtering\n  Guarantees: at-most-once, at-least-once, exactly-once",
      "numbered": false
     }
    ]
@@ -90,7 +90,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q570: System design for multi-tenant systems\")\nprint(\"  Serve multiple customers from single application.\")\nprint(\"  Isolation models:\")\nprint(\"    - Shared DB, shared schema (row-level isolation)\")\nprint(\"    - Shared DB, separate schemas\")\nprint(\"    - Separate databases per tenant\")\nprint(\"  Trade-offs: cost vs isolation vs complexity\")\nprint()",
+     "code": "print(\"System design for multi-tenant systems\")\nprint(\"  Serve multiple customers from single application.\")\nprint(\"  Isolation models:\")\nprint(\"    - Shared DB, shared schema (row-level isolation)\")\nprint(\"    - Shared DB, separate schemas\")\nprint(\"    - Separate databases per tenant\")\nprint(\"  Trade-offs: cost vs isolation vs complexity\")\nprint()",
      "numbered": false
     },
     {
@@ -100,7 +100,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q570: System design for multi-tenant systems\n  Serve multiple customers from single application.\n  Isolation models:\n    - Shared DB, shared schema (row-level isolation)\n    - Shared DB, separate schemas\n    - Separate databases per tenant\n  Trade-offs: cost vs isolation vs complexity",
+     "code": "System design for multi-tenant systems\n  Serve multiple customers from single application.\n  Isolation models:\n    - Shared DB, shared schema (row-level isolation)\n    - Shared DB, separate schemas\n    - Separate databases per tenant\n  Trade-offs: cost vs isolation vs complexity",
      "numbered": false
     }
    ]
@@ -113,7 +113,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q571: Python code review practices\")\nprint(\"  Check: logic correctness, edge cases, error handling\")\nprint(\"  Style: PEP 8, consistent naming, clear docstrings\")\nprint(\"  Performance: O(n²) hidden loops, unnecessary copies\")\nprint(\"  Security: input validation, SQL injection, secret exposure\")\nprint(\"  Tests: adequate coverage, meaningful assertions\")\nprint()",
+     "code": "print(\"Python code review practices\")\nprint(\"  Check: logic correctness, edge cases, error handling\")\nprint(\"  Style: PEP 8, consistent naming, clear docstrings\")\nprint(\"  Performance: O(n²) hidden loops, unnecessary copies\")\nprint(\"  Security: input validation, SQL injection, secret exposure\")\nprint(\"  Tests: adequate coverage, meaningful assertions\")\nprint()",
      "numbered": false
     },
     {
@@ -123,7 +123,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q571: Python code review practices\n  Check: logic correctness, edge cases, error handling\n  Style: PEP 8, consistent naming, clear docstrings\n  Performance: O(n²) hidden loops, unnecessary copies\n  Security: input validation, SQL injection, secret exposure\n  Tests: adequate coverage, meaningful assertions",
+     "code": "Python code review practices\n  Check: logic correctness, edge cases, error handling\n  Style: PEP 8, consistent naming, clear docstrings\n  Performance: O(n²) hidden loops, unnecessary copies\n  Security: input validation, SQL injection, secret exposure\n  Tests: adequate coverage, meaningful assertions",
      "numbered": false
     }
    ]
@@ -136,7 +136,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q572: Refactoring legacy code\")\nprint(\"  1. Add tests first (characterization tests)\")\nprint(\"  2. Extract functions/classes (small steps)\")\nprint(\"  3. Rename for clarity\")\nprint(\"  4. Remove dead code\")\nprint(\"  5. Apply design patterns where appropriate\")\nprint(\"  6. Add type hints incrementally\")\nprint(\"  Tools: rope, bowler, libCST for automated refactoring\")\nprint()",
+     "code": "print(\"Refactoring legacy code\")\nprint(\"  1. Add tests first (characterization tests)\")\nprint(\"  2. Extract functions/classes (small steps)\")\nprint(\"  3. Rename for clarity\")\nprint(\"  4. Remove dead code\")\nprint(\"  5. Apply design patterns where appropriate\")\nprint(\"  6. Add type hints incrementally\")\nprint(\"  Tools: rope, bowler, libCST for automated refactoring\")\nprint()",
      "numbered": false
     },
     {
@@ -146,7 +146,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q572: Refactoring legacy code\n  1. Add tests first (characterization tests)\n  2. Extract functions/classes (small steps)\n  3. Rename for clarity\n  4. Remove dead code\n  5. Apply design patterns where appropriate\n  6. Add type hints incrementally\n  Tools: rope, bowler, libCST for automated refactoring",
+     "code": "Refactoring legacy code\n  1. Add tests first (characterization tests)\n  2. Extract functions/classes (small steps)\n  3. Rename for clarity\n  4. Remove dead code\n  5. Apply design patterns where appropriate\n  6. Add type hints incrementally\n  Tools: rope, bowler, libCST for automated refactoring",
      "numbered": false
     }
    ]
@@ -159,7 +159,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q573: Feature flags\")\nprint(\"  Toggle features on/off without deploying new code.\")\nprint(\"  from feature_flags import is_enabled\")\nprint(\"  if is_enabled('new_checkout', user_id=123):\")\nprint(\"      new_checkout_flow()\")\nprint(\"  Tools: LaunchDarkly, Unleash, Flagsmith, custom (DB/Redis)\")\nprint(\"  Uses: gradual rollout, A/B testing, kill switches\")\nprint()",
+     "code": "print(\"Feature flags\")\nprint(\"  Toggle features on/off without deploying new code.\")\nprint(\"  from feature_flags import is_enabled\")\nprint(\"  if is_enabled('new_checkout', user_id=123):\")\nprint(\"      new_checkout_flow()\")\nprint(\"  Tools: LaunchDarkly, Unleash, Flagsmith, custom (DB/Redis)\")\nprint(\"  Uses: gradual rollout, A/B testing, kill switches\")\nprint()",
      "numbered": false
     },
     {
@@ -169,7 +169,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q573: Feature flags\n  Toggle features on/off without deploying new code.\n  from feature_flags import is_enabled\n  if is_enabled('new_checkout', user_id=123):\n      new_checkout_flow()\n  Tools: LaunchDarkly, Unleash, Flagsmith, custom (DB/Redis)\n  Uses: gradual rollout, A/B testing, kill switches",
+     "code": "Feature flags\n  Toggle features on/off without deploying new code.\n  from feature_flags import is_enabled\n  if is_enabled('new_checkout', user_id=123):\n      new_checkout_flow()\n  Tools: LaunchDarkly, Unleash, Flagsmith, custom (DB/Redis)\n  Uses: gradual rollout, A/B testing, kill switches",
      "numbered": false
     }
    ]
@@ -182,7 +182,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q574: Backward compatibility\")\nprint(\"  Don't break existing consumers when making changes.\")\nprint(\"  API: add new fields (don't remove/rename), version endpoints\")\nprint(\"  DB: add columns as nullable, expand-then-contract\")\nprint(\"  Code: deprecation warnings before removal\")\nprint(\"  Semantic versioning: breaking changes = MAJOR bump\")\nprint()",
+     "code": "print(\"Backward compatibility\")\nprint(\"  Don't break existing consumers when making changes.\")\nprint(\"  API: add new fields (don't remove/rename), version endpoints\")\nprint(\"  DB: add columns as nullable, expand-then-contract\")\nprint(\"  Code: deprecation warnings before removal\")\nprint(\"  Semantic versioning: breaking changes = MAJOR bump\")\nprint()",
      "numbered": false
     },
     {
@@ -192,7 +192,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q574: Backward compatibility\n  Don't break existing consumers when making changes.\n  API: add new fields (don't remove/rename), version endpoints\n  DB: add columns as nullable, expand-then-contract\n  Code: deprecation warnings before removal\n  Semantic versioning: breaking changes = MAJOR bump",
+     "code": "Backward compatibility\n  Don't break existing consumers when making changes.\n  API: add new fields (don't remove/rename), version endpoints\n  DB: add columns as nullable, expand-then-contract\n  Code: deprecation warnings before removal\n  Semantic versioning: breaking changes = MAJOR bump",
      "numbered": false
     }
    ]
@@ -205,7 +205,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q575: API deprecation strategy\")\nprint(\"  1. Announce deprecation (docs, changelog, headers)\")\nprint(\"  2. Add Deprecation header to responses\")\nprint(\"  3. Set sunset date (Sunset header)\")\nprint(\"  4. Provide migration guide\")\nprint(\"  5. Monitor usage of deprecated endpoints\")\nprint(\"  6. Remove after sunset period\")\nprint()",
+     "code": "print(\"API deprecation strategy\")\nprint(\"  1. Announce deprecation (docs, changelog, headers)\")\nprint(\"  2. Add Deprecation header to responses\")\nprint(\"  3. Set sunset date (Sunset header)\")\nprint(\"  4. Provide migration guide\")\nprint(\"  5. Monitor usage of deprecated endpoints\")\nprint(\"  6. Remove after sunset period\")\nprint()",
      "numbered": false
     },
     {
@@ -215,7 +215,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q575: API deprecation strategy\n  1. Announce deprecation (docs, changelog, headers)\n  2. Add Deprecation header to responses\n  3. Set sunset date (Sunset header)\n  4. Provide migration guide\n  5. Monitor usage of deprecated endpoints\n  6. Remove after sunset period",
+     "code": "API deprecation strategy\n  1. Announce deprecation (docs, changelog, headers)\n  2. Add Deprecation header to responses\n  3. Set sunset date (Sunset header)\n  4. Provide migration guide\n  5. Monitor usage of deprecated endpoints\n  6. Remove after sunset period",
      "numbered": false
     }
    ]
@@ -228,7 +228,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q576: Production incident handling\")\nprint(\"  1. Detect: monitoring, alerting, user reports\")\nprint(\"  2. Respond: acknowledge, assess severity, communicate\")\nprint(\"  3. Mitigate: rollback, feature flag, scale, restart\")\nprint(\"  4. Resolve: fix root cause, deploy fix\")\nprint(\"  5. Follow-up: postmortem, action items\")\nprint(\"  Roles: incident commander, communications, subject matter expert\")\nprint()",
+     "code": "print(\"Production incident handling\")\nprint(\"  1. Detect: monitoring, alerting, user reports\")\nprint(\"  2. Respond: acknowledge, assess severity, communicate\")\nprint(\"  3. Mitigate: rollback, feature flag, scale, restart\")\nprint(\"  4. Resolve: fix root cause, deploy fix\")\nprint(\"  5. Follow-up: postmortem, action items\")\nprint(\"  Roles: incident commander, communications, subject matter expert\")\nprint()",
      "numbered": false
     },
     {
@@ -238,7 +238,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q576: Production incident handling\n  1. Detect: monitoring, alerting, user reports\n  2. Respond: acknowledge, assess severity, communicate\n  3. Mitigate: rollback, feature flag, scale, restart\n  4. Resolve: fix root cause, deploy fix\n  5. Follow-up: postmortem, action items\n  Roles: incident commander, communications, subject matter expert",
+     "code": "Production incident handling\n  1. Detect: monitoring, alerting, user reports\n  2. Respond: acknowledge, assess severity, communicate\n  3. Mitigate: rollback, feature flag, scale, restart\n  4. Resolve: fix root cause, deploy fix\n  5. Follow-up: postmortem, action items\n  Roles: incident commander, communications, subject matter expert",
      "numbered": false
     }
    ]
@@ -251,7 +251,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q577: Root cause analysis\")\nprint(\"  Techniques:\")\nprint(\"    - 5 Whys: ask 'why' repeatedly to find root cause\")\nprint(\"    - Fishbone diagram: categorize potential causes\")\nprint(\"    - Timeline: reconstruct event sequence\")\nprint(\"    - Blame-free: focus on system, not people\")\nprint(\"  Document findings and preventive actions\")\nprint()",
+     "code": "print(\"Root cause analysis\")\nprint(\"  Techniques:\")\nprint(\"    - 5 Whys: ask 'why' repeatedly to find root cause\")\nprint(\"    - Fishbone diagram: categorize potential causes\")\nprint(\"    - Timeline: reconstruct event sequence\")\nprint(\"    - Blame-free: focus on system, not people\")\nprint(\"  Document findings and preventive actions\")\nprint()",
      "numbered": false
     },
     {
@@ -261,7 +261,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q577: Root cause analysis\n  Techniques:\n    - 5 Whys: ask 'why' repeatedly to find root cause\n    - Fishbone diagram: categorize potential causes\n    - Timeline: reconstruct event sequence\n    - Blame-free: focus on system, not people\n  Document findings and preventive actions",
+     "code": "Root cause analysis\n  Techniques:\n    - 5 Whys: ask 'why' repeatedly to find root cause\n    - Fishbone diagram: categorize potential causes\n    - Timeline: reconstruct event sequence\n    - Blame-free: focus on system, not people\n  Document findings and preventive actions",
      "numbered": false
     }
    ]
@@ -274,7 +274,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q578: Postmortem writing\")\nprint(\"  Structure:\")\nprint(\"    - Summary: what happened, impact, duration\")\nprint(\"    - Timeline: key events with timestamps\")\nprint(\"    - Root cause: why it happened\")\nprint(\"    - What went well: detection, response successes\")\nprint(\"    - What went wrong: gaps in process/tooling\")\nprint(\"    - Action items: specific, assigned, deadlined\")\nprint()",
+     "code": "print(\"Postmortem writing\")\nprint(\"  Structure:\")\nprint(\"    - Summary: what happened, impact, duration\")\nprint(\"    - Timeline: key events with timestamps\")\nprint(\"    - Root cause: why it happened\")\nprint(\"    - What went well: detection, response successes\")\nprint(\"    - What went wrong: gaps in process/tooling\")\nprint(\"    - Action items: specific, assigned, deadlined\")\nprint()",
      "numbered": false
     },
     {
@@ -284,7 +284,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q578: Postmortem writing\n  Structure:\n    - Summary: what happened, impact, duration\n    - Timeline: key events with timestamps\n    - Root cause: why it happened\n    - What went well: detection, response successes\n    - What went wrong: gaps in process/tooling\n    - Action items: specific, assigned, deadlined",
+     "code": "Postmortem writing\n  Structure:\n    - Summary: what happened, impact, duration\n    - Timeline: key events with timestamps\n    - Root cause: why it happened\n    - What went well: detection, response successes\n    - What went wrong: gaps in process/tooling\n    - Action items: specific, assigned, deadlined",
      "numbered": false
     }
    ]
@@ -297,7 +297,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q579: Capacity planning\")\nprint(\"  Predict future resource needs based on growth.\")\nprint(\"  Metrics: current usage, growth rate, peak patterns\")\nprint(\"  Plan: CPU, memory, storage, network, DB connections\")\nprint(\"  Load testing: validate capacity estimates\")\nprint(\"  Buffer: 30-40% headroom for spikes\")\nprint()",
+     "code": "print(\"Capacity planning\")\nprint(\"  Predict future resource needs based on growth.\")\nprint(\"  Metrics: current usage, growth rate, peak patterns\")\nprint(\"  Plan: CPU, memory, storage, network, DB connections\")\nprint(\"  Load testing: validate capacity estimates\")\nprint(\"  Buffer: 30-40% headroom for spikes\")\nprint()",
      "numbered": false
     },
     {
@@ -307,7 +307,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q579: Capacity planning\n  Predict future resource needs based on growth.\n  Metrics: current usage, growth rate, peak patterns\n  Plan: CPU, memory, storage, network, DB connections\n  Load testing: validate capacity estimates\n  Buffer: 30-40% headroom for spikes",
+     "code": "Capacity planning\n  Predict future resource needs based on growth.\n  Metrics: current usage, growth rate, peak patterns\n  Plan: CPU, memory, storage, network, DB connections\n  Load testing: validate capacity estimates\n  Buffer: 30-40% headroom for spikes",
      "numbered": false
     }
    ]
@@ -320,7 +320,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q580: Scalability planning\")\nprint(\"  Design systems to handle growth.\")\nprint(\"  Horizontal: add more instances (stateless services)\")\nprint(\"  Vertical: bigger machines (databases, caches)\")\nprint(\"  Data: sharding, partitioning, archiving\")\nprint(\"  Patterns: CQRS, event sourcing, microservices\")\nprint()",
+     "code": "print(\"Scalability planning\")\nprint(\"  Design systems to handle growth.\")\nprint(\"  Horizontal: add more instances (stateless services)\")\nprint(\"  Vertical: bigger machines (databases, caches)\")\nprint(\"  Data: sharding, partitioning, archiving\")\nprint(\"  Patterns: CQRS, event sourcing, microservices\")\nprint()",
      "numbered": false
     },
     {
@@ -330,7 +330,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q580: Scalability planning\n  Design systems to handle growth.\n  Horizontal: add more instances (stateless services)\n  Vertical: bigger machines (databases, caches)\n  Data: sharding, partitioning, archiving\n  Patterns: CQRS, event sourcing, microservices",
+     "code": "Scalability planning\n  Design systems to handle growth.\n  Horizontal: add more instances (stateless services)\n  Vertical: bigger machines (databases, caches)\n  Data: sharding, partitioning, archiving\n  Patterns: CQRS, event sourcing, microservices",
      "numbered": false
     }
    ]
@@ -343,7 +343,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q581: Reliability engineering\")\nprint(\"  Build systems that work correctly despite failures.\")\nprint(\"  Principles: redundancy, graceful degradation, fail-safe defaults\")\nprint(\"  Practices: testing, monitoring, incident response, chaos engineering\")\nprint(\"  Metrics: uptime, MTTR, MTBF, error budgets\")\nprint()",
+     "code": "print(\"Reliability engineering\")\nprint(\"  Build systems that work correctly despite failures.\")\nprint(\"  Principles: redundancy, graceful degradation, fail-safe defaults\")\nprint(\"  Practices: testing, monitoring, incident response, chaos engineering\")\nprint(\"  Metrics: uptime, MTTR, MTBF, error budgets\")\nprint()",
      "numbered": false
     },
     {
@@ -353,7 +353,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q581: Reliability engineering\n  Build systems that work correctly despite failures.\n  Principles: redundancy, graceful degradation, fail-safe defaults\n  Practices: testing, monitoring, incident response, chaos engineering\n  Metrics: uptime, MTTR, MTBF, error budgets",
+     "code": "Reliability engineering\n  Build systems that work correctly despite failures.\n  Principles: redundancy, graceful degradation, fail-safe defaults\n  Practices: testing, monitoring, incident response, chaos engineering\n  Metrics: uptime, MTTR, MTBF, error budgets",
      "numbered": false
     }
    ]
@@ -366,7 +366,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q582: Disaster recovery\")\nprint(\"  Plan for catastrophic failures.\")\nprint(\"  RPO (Recovery Point Objective): max acceptable data loss\")\nprint(\"  RTO (Recovery Time Objective): max acceptable downtime\")\nprint(\"  Strategies: backup/restore, pilot light, warm standby, multi-site\")\nprint(\"  Test DR plans regularly!\")\nprint()",
+     "code": "print(\"Disaster recovery\")\nprint(\"  Plan for catastrophic failures.\")\nprint(\"  RPO (Recovery Point Objective): max acceptable data loss\")\nprint(\"  RTO (Recovery Time Objective): max acceptable downtime\")\nprint(\"  Strategies: backup/restore, pilot light, warm standby, multi-site\")\nprint(\"  Test DR plans regularly!\")\nprint()",
      "numbered": false
     },
     {
@@ -376,7 +376,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q582: Disaster recovery\n  Plan for catastrophic failures.\n  RPO (Recovery Point Objective): max acceptable data loss\n  RTO (Recovery Time Objective): max acceptable downtime\n  Strategies: backup/restore, pilot light, warm standby, multi-site\n  Test DR plans regularly!",
+     "code": "Disaster recovery\n  Plan for catastrophic failures.\n  RPO (Recovery Point Objective): max acceptable data loss\n  RTO (Recovery Time Objective): max acceptable downtime\n  Strategies: backup/restore, pilot light, warm standby, multi-site\n  Test DR plans regularly!",
      "numbered": false
     }
    ]
@@ -389,7 +389,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q583: Backup strategies\")\nprint(\"  Types: full, incremental, differential\")\nprint(\"  3-2-1 rule: 3 copies, 2 media types, 1 offsite\")\nprint(\"  Database: pg_dump, WAL archiving, continuous archiving\")\nprint(\"  Test restores regularly (untested backup = no backup)\")\nprint()",
+     "code": "print(\"Backup strategies\")\nprint(\"  Types: full, incremental, differential\")\nprint(\"  3-2-1 rule: 3 copies, 2 media types, 1 offsite\")\nprint(\"  Database: pg_dump, WAL archiving, continuous archiving\")\nprint(\"  Test restores regularly (untested backup = no backup)\")\nprint()",
      "numbered": false
     },
     {
@@ -399,7 +399,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q583: Backup strategies\n  Types: full, incremental, differential\n  3-2-1 rule: 3 copies, 2 media types, 1 offsite\n  Database: pg_dump, WAL archiving, continuous archiving\n  Test restores regularly (untested backup = no backup)",
+     "code": "Backup strategies\n  Types: full, incremental, differential\n  3-2-1 rule: 3 copies, 2 media types, 1 offsite\n  Database: pg_dump, WAL archiving, continuous archiving\n  Test restores regularly (untested backup = no backup)",
      "numbered": false
     }
    ]
@@ -412,7 +412,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q584: High availability\")\nprint(\"  Minimize downtime: 99.9% (8.7h/year) → 99.99% (52min/year)\")\nprint(\"  Patterns: redundancy, load balancing, failover, health checks\")\nprint(\"  Database: primary-replica, multi-AZ, automatic failover\")\nprint(\"  Application: multiple instances behind load balancer\")\nprint()",
+     "code": "print(\"High availability\")\nprint(\"  Minimize downtime: 99.9% (8.7h/year) → 99.99% (52min/year)\")\nprint(\"  Patterns: redundancy, load balancing, failover, health checks\")\nprint(\"  Database: primary-replica, multi-AZ, automatic failover\")\nprint(\"  Application: multiple instances behind load balancer\")\nprint()",
      "numbered": false
     },
     {
@@ -422,7 +422,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q584: High availability\n  Minimize downtime: 99.9% (8.7h/year) → 99.99% (52min/year)\n  Patterns: redundancy, load balancing, failover, health checks\n  Database: primary-replica, multi-AZ, automatic failover\n  Application: multiple instances behind load balancer",
+     "code": "High availability\n  Minimize downtime: 99.9% (8.7h/year) → 99.99% (52min/year)\n  Patterns: redundancy, load balancing, failover, health checks\n  Database: primary-replica, multi-AZ, automatic failover\n  Application: multiple instances behind load balancer",
      "numbered": false
     }
    ]
@@ -435,7 +435,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q585: Fault tolerance\")\nprint(\"  System continues operating despite component failures.\")\nprint(\"  Techniques: retry, circuit breaker, bulkhead, fallback\")\nprint(\"  Data: replication, consensus algorithms (Raft, Paxos)\")\nprint(\"  Design: assume everything can fail, degrade gracefully\")\nprint()",
+     "code": "print(\"Fault tolerance\")\nprint(\"  System continues operating despite component failures.\")\nprint(\"  Techniques: retry, circuit breaker, bulkhead, fallback\")\nprint(\"  Data: replication, consensus algorithms (Raft, Paxos)\")\nprint(\"  Design: assume everything can fail, degrade gracefully\")\nprint()",
      "numbered": false
     },
     {
@@ -445,7 +445,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q585: Fault tolerance\n  System continues operating despite component failures.\n  Techniques: retry, circuit breaker, bulkhead, fallback\n  Data: replication, consensus algorithms (Raft, Paxos)\n  Design: assume everything can fail, degrade gracefully",
+     "code": "Fault tolerance\n  System continues operating despite component failures.\n  Techniques: retry, circuit breaker, bulkhead, fallback\n  Data: replication, consensus algorithms (Raft, Paxos)\n  Design: assume everything can fail, degrade gracefully",
      "numbered": false
     }
    ]
@@ -458,7 +458,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q586: Chaos engineering basics\")\nprint(\"  Deliberately inject failures to test system resilience.\")\nprint(\"  Principles: define steady state, hypothesize, experiment, learn\")\nprint(\"  Tools: Chaos Monkey (Netflix), Litmus, Chaos Toolkit\")\nprint(\"  Start small: kill a pod, add latency, block a port\")\nprint(\"  Always in controlled environment first!\")\nprint()",
+     "code": "print(\"Chaos engineering basics\")\nprint(\"  Deliberately inject failures to test system resilience.\")\nprint(\"  Principles: define steady state, hypothesize, experiment, learn\")\nprint(\"  Tools: Chaos Monkey (Netflix), Litmus, Chaos Toolkit\")\nprint(\"  Start small: kill a pod, add latency, block a port\")\nprint(\"  Always in controlled environment first!\")\nprint()",
      "numbered": false
     },
     {
@@ -468,7 +468,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q586: Chaos engineering basics\n  Deliberately inject failures to test system resilience.\n  Principles: define steady state, hypothesize, experiment, learn\n  Tools: Chaos Monkey (Netflix), Litmus, Chaos Toolkit\n  Start small: kill a pod, add latency, block a port\n  Always in controlled environment first!",
+     "code": "Chaos engineering basics\n  Deliberately inject failures to test system resilience.\n  Principles: define steady state, hypothesize, experiment, learn\n  Tools: Chaos Monkey (Netflix), Litmus, Chaos Toolkit\n  Start small: kill a pod, add latency, block a port\n  Always in controlled environment first!",
      "numbered": false
     }
    ]
@@ -481,7 +481,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q587: Operational excellence\")\nprint(\"  Automate everything: deployments, scaling, monitoring, remediation\")\nprint(\"  Runbooks: documented procedures for common operations\")\nprint(\"  On-call: rotation, escalation, clear procedures\")\nprint(\"  Continuous improvement: postmortems → action items → better systems\")\nprint()",
+     "code": "print(\"Operational excellence\")\nprint(\"  Automate everything: deployments, scaling, monitoring, remediation\")\nprint(\"  Runbooks: documented procedures for common operations\")\nprint(\"  On-call: rotation, escalation, clear procedures\")\nprint(\"  Continuous improvement: postmortems → action items → better systems\")\nprint()",
      "numbered": false
     },
     {
@@ -491,7 +491,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q587: Operational excellence\n  Automate everything: deployments, scaling, monitoring, remediation\n  Runbooks: documented procedures for common operations\n  On-call: rotation, escalation, clear procedures\n  Continuous improvement: postmortems → action items → better systems",
+     "code": "Operational excellence\n  Automate everything: deployments, scaling, monitoring, remediation\n  Runbooks: documented procedures for common operations\n  On-call: rotation, escalation, clear procedures\n  Continuous improvement: postmortems → action items → better systems",
      "numbered": false
     }
    ]
@@ -504,7 +504,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q588: Technical debt management\")\nprint(\"  Technical debt = shortcuts that slow future development.\")\nprint(\"  Track: document debt, estimate impact and fix cost\")\nprint(\"  Prioritize: risk × impact × frequency\")\nprint(\"  Pay down: allocate % of sprint capacity, boy scout rule\")\nprint(\"  Prevent: code review, standards, refactoring time\")\nprint()",
+     "code": "print(\"Technical debt management\")\nprint(\"  Technical debt = shortcuts that slow future development.\")\nprint(\"  Track: document debt, estimate impact and fix cost\")\nprint(\"  Prioritize: risk × impact × frequency\")\nprint(\"  Pay down: allocate % of sprint capacity, boy scout rule\")\nprint(\"  Prevent: code review, standards, refactoring time\")\nprint()",
      "numbered": false
     },
     {
@@ -514,7 +514,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q588: Technical debt management\n  Technical debt = shortcuts that slow future development.\n  Track: document debt, estimate impact and fix cost\n  Prioritize: risk × impact × frequency\n  Pay down: allocate % of sprint capacity, boy scout rule\n  Prevent: code review, standards, refactoring time",
+     "code": "Technical debt management\n  Technical debt = shortcuts that slow future development.\n  Track: document debt, estimate impact and fix cost\n  Prioritize: risk × impact × frequency\n  Pay down: allocate % of sprint capacity, boy scout rule\n  Prevent: code review, standards, refactoring time",
      "numbered": false
     }
    ]
@@ -527,7 +527,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q589: Engineering best practices\")\nprint(\"  1. Code review all changes\")\nprint(\"  2. Comprehensive testing (unit + integration + e2e)\")\nprint(\"  3. CI/CD pipelines for automated quality gates\")\nprint(\"  4. Monitoring + alerting in production\")\nprint(\"  5. Documentation (architecture, API, runbooks)\")\nprint(\"  6. Blameless postmortems\")\nprint(\"  7. Continuous learning and improvement\")\nprint()",
+     "code": "print(\"Engineering best practices\")\nprint(\"  1. Code review all changes\")\nprint(\"  2. Comprehensive testing (unit + integration + e2e)\")\nprint(\"  3. CI/CD pipelines for automated quality gates\")\nprint(\"  4. Monitoring + alerting in production\")\nprint(\"  5. Documentation (architecture, API, runbooks)\")\nprint(\"  6. Blameless postmortems\")\nprint(\"  7. Continuous learning and improvement\")\nprint()",
      "numbered": false
     },
     {
@@ -537,7 +537,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q589: Engineering best practices\n  1. Code review all changes\n  2. Comprehensive testing (unit + integration + e2e)\n  3. CI/CD pipelines for automated quality gates\n  4. Monitoring + alerting in production\n  5. Documentation (architecture, API, runbooks)\n  6. Blameless postmortems\n  7. Continuous learning and improvement",
+     "code": "Engineering best practices\n  1. Code review all changes\n  2. Comprehensive testing (unit + integration + e2e)\n  3. CI/CD pipelines for automated quality gates\n  4. Monitoring + alerting in production\n  5. Documentation (architecture, API, runbooks)\n  6. Blameless postmortems\n  7. Continuous learning and improvement",
      "numbered": false
     }
    ]
@@ -550,7 +550,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q590: Python backend architecture discussions\")\nprint(\"  Common patterns:\")\nprint(\"    - Layered: API → Service → Repository → Database\")\nprint(\"    - Clean/Hexagonal: domain at center, ports + adapters\")\nprint(\"    - Event-driven: events + handlers + event bus\")\nprint(\"  Framework choices: FastAPI (async), Django (batteries), Flask (minimal)\")\nprint(\"  Data: SQLAlchemy (flexibility) vs Django ORM (simplicity)\")\nprint()",
+     "code": "print(\"Python backend architecture discussions\")\nprint(\"  Common patterns:\")\nprint(\"    - Layered: API → Service → Repository → Database\")\nprint(\"    - Clean/Hexagonal: domain at center, ports + adapters\")\nprint(\"    - Event-driven: events + handlers + event bus\")\nprint(\"  Framework choices: FastAPI (async), Django (batteries), Flask (minimal)\")\nprint(\"  Data: SQLAlchemy (flexibility) vs Django ORM (simplicity)\")\nprint()",
      "numbered": false
     },
     {
@@ -560,7 +560,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q590: Python backend architecture discussions\n  Common patterns:\n    - Layered: API → Service → Repository → Database\n    - Clean/Hexagonal: domain at center, ports + adapters\n    - Event-driven: events + handlers + event bus\n  Framework choices: FastAPI (async), Django (batteries), Flask (minimal)\n  Data: SQLAlchemy (flexibility) vs Django ORM (simplicity)",
+     "code": "Python backend architecture discussions\n  Common patterns:\n    - Layered: API → Service → Repository → Database\n    - Clean/Hexagonal: domain at center, ports + adapters\n    - Event-driven: events + handlers + event bus\n  Framework choices: FastAPI (async), Django (batteries), Flask (minimal)\n  Data: SQLAlchemy (flexibility) vs Django ORM (simplicity)",
      "numbered": false
     }
    ]

@@ -781,44 +781,44 @@ def test_time_ordering_is_respected_in_cv():
         stem: "`X = StandardScaler().fit_transform(X)` before `cross_val_score`. What is wrong?",
         options: [
           "Nothing — scaling is not learned from labels",
-          "The scaler's statistics are computed over all rows including each validation fold, so every fold's score is optimistic",
           "`fit_transform` cannot be used with cross-validation",
-          "The scaler should be applied after the model"
+          "The scaler should be applied after the model",
+          "The scaler saw each validation fold, so every fold's score is optimistic"
         ],
-        answer: 1,
+        answer: 3,
         why: "The mean used to scale a fold's validation rows was computed partly from those rows. Putting the scaler inside a `Pipeline` fixes it structurally — cross-validation then fits it on each training fold only, and the same applies inside a grid search."
       },
       {
         stem: "A churn model uses `cancellation_reason` as a feature and scores 0.99 AUC. What happens in production?",
         options: [
+          "The column is null for everyone being scored, so it is near chance",
           "It performs as validated",
-          "The column is null for everyone not yet churned — which is everyone being scored — so the model performs at roughly chance",
           "Predictions become slower",
-          "The encoder raises on the null values"
+          "The encoder raises on the null values, so every prediction request fails"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is target leakage: a feature that exists only as a consequence of the outcome. The test is whether the column would exist and hold that value at the moment the prediction is needed, which is a different question from whether it is in the training table."
       },
       {
         stem: "You try twelve hyperparameter configurations, score each on the test set, and report the best. What is wrong with the number?",
         options: [
+          "The test set chose the winner, so the score is biased upward",
           "Nothing, provided the split was random",
-          "The test set influenced a decision, so the reported score is the maximum of twelve noisy draws and is biased upward",
           "Twelve configurations is too few to be meaningful",
           "The model should be refit on all data first"
         ],
-        answer: 1,
+        answer: 0,
         why: "Even with no other bug that is worth a couple of points of pure optimism. Use cross-validation on a development set for every decision, and score a held-out set exactly once at the end — a number that influenced a choice is no longer an estimate of generalisation."
       },
       {
         stem: "Training used `pd.get_dummies` and inference fails with a shape mismatch. Why?",
         options: [
-          "The model was saved incorrectly",
-          "`get_dummies` creates columns from the values present in that frame, so a new or absent category changes the column set at inference",
-          "One-hot encoding is not supported by tree models",
-          "The dtypes differ between training and inference"
+          "The model was saved incorrectly, so its expected input width was lost",
+          "One-hot encoding is not supported by tree models at inference time",
+          "Its columns depend on the values present, so categories shift them",
+          "The dtypes differ between training and inference, so the columns no longer align"
         ],
-        answer: 1,
+        answer: 2,
         why: "A `OneHotEncoder` inside the pipeline learns the categories during `fit` and applies exactly those at `transform`, with `handle_unknown=\"ignore\"` mapping unseen values to all-zeros. The silent version of this bug — a missing category shifting columns — returns confident nonsense rather than raising."
       }
     ]

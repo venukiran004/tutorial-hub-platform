@@ -298,7 +298,7 @@ for i, (q, doc, must) in enumerate(QS):
 
 # the fix that was worth ten points
 def _norm(t):
-    return re.sub(r"[_\-\s]+", " ", t.lower())`,
+    return re.sub(r"[_\\-\\s]+", " ", t.lower())`,
         out: `  BEFORE fixing the evaluation set:
   k              chunk recall    document recall
   1                       65%                80%

@@ -108,19 +108,19 @@ def cv(model, X):
 lin = make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000))
 
 # LINEAR ON THE TWO FEATURES: it cannot draw a corner.
-cv(lin, df[["age", "income"]])                                # 0.53 -- near chance
+cv(lin, df[["age", "income"]])                                # 0.56 -- near chance
 
 # WITH THE INTERACTION ADDED:
 df["age_x_income"] = df["age"] * np.log(df["income"])
-cv(lin, df[["age", "income", "age_x_income"]])                # 0.79
+cv(lin, df[["age", "income", "age_x_income"]])                # 0.70
 #
 # One product column and the linear model finds the corner. This is
 # the general result: if the effect of one feature DEPENDS ON the
 # level of another, the product is the feature.
 
 # A TREE FINDS IT ALONE:
-cv(HistGradientBoostingClassifier(random_state=0), df[["age", "income"]])          # 0.80
-cv(HistGradientBoostingClassifier(random_state=0), df[["age", "income", "age_x_income"]])   # 0.80
+cv(HistGradientBoostingClassifier(random_state=0), df[["age", "income"]])          # 0.71
+cv(HistGradientBoostingClassifier(random_state=0), df[["age", "income", "age_x_income"]])   # 0.71
 #
 # Two splits -- age < 40, then income > 50k -- carve the corner. The
 # product adds nothing a tree did not have. Interactions are a
@@ -176,7 +176,7 @@ P.shape                                                       # (n, 9)
 # features, and add the product where the residual has structure.
 `,
       hl: [24, 28, 43, 66],
-      caption: "**One product column takes the linear model from 0.53 to 0.79; the tree was at 0.80 without it.** Interactions are a linear-model feature. Ratios are different — a tree needs a staircase of splits to build `spend / tenure`, and the ratio hands it over in one column."
+      caption: "**One product column takes the linear model from 0.56 to 0.70; the tree was at 0.71 without it.** Interactions are a linear-model feature. Ratios are different — a tree needs a staircase of splits to build `spend / tenure`, and the ratio hands it over in one column."
     },
 
     { t: "callout", kind: "insight", title: "Products are for linear models; ratios are for everyone", body: [
@@ -733,7 +733,7 @@ def test_linear_needs_ratio_and_interaction_tree_needs_ratio_only():
     title: "Knowledge check",
     questions: [
       {
-        stem: "A logistic regression scores 0.53 on `age` and `income` for a target that is high only when the customer is young AND rich. Adding `age × log(income)` takes it to 0.79. Why?",
+        stem: "A logistic regression scores 0.56 on `age` and `income` for a target that is high only when the customer is young AND rich. Adding `age × log(income)` takes it to 0.70. Why?",
         options: [
           "The product is on a better scale",
           "A linear model fits one slope per feature and predicts a ramp — high when either is high; the product is large only where both are, which is the corner the target lives in",
@@ -741,7 +741,7 @@ def test_linear_needs_ratio_and_interaction_tree_needs_ratio_only():
           "The log fixed the skew"
         ],
         answer: 1,
-        why: "A sum of separate effects cannot express 'both together'. The product can, with one coefficient. A tree scored 0.80 without the product — two sequential splits carve the corner — which is why interactions are a linear-model feature."
+        why: "A sum of separate effects cannot express 'both together'. The product can, with one coefficient. A tree scored 0.71 without the product — two sequential splits carve the corner — which is why interactions are a linear-model feature."
       },
       {
         stem: "Why does a gradient-boosted tree benefit from an explicit ratio column when it does not benefit from a product?",

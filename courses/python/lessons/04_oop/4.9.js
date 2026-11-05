@@ -699,19 +699,19 @@ if __name__ == "__main__":
       {
         stem: "A class defines `__eq__` but not `__hash__`. What happens when you put an instance in a set?",
         options: [
-          "It works — Python falls back to identity-based hashing",
           "`TypeError: unhashable type` — defining `__eq__` sets `__hash__` to `None`",
-          "It works, but two equal instances are stored separately",
-          "A `DeprecationWarning`, then it uses `id()`"
+          "It works — Python falls back to the inherited identity-based hash from `object`",
+          "It works, but two equal instances are stored separately because their hashes differ",
+          "A `DeprecationWarning` is emitted, and then the set uses `id()` as the hash"
         ],
-        answer: 1,
+        answer: 0,
         why: "Python sets `__hash__ = None` when you define `__eq__`, making the class unhashable. That is protection, not an oversight: the inherited identity-based hash would give two equal objects different hashes, so a set could hold both and a dict lookup could miss an entry that is present. Rather than let that ship, Python forces you to decide — define `__hash__` from the same fields, or state `__hash__ = None` deliberately for a mutable type."
       },
       {
         stem: "Why should `__eq__` return `NotImplemented` rather than `False` for an unsupported type?",
         options: [
           "`False` raises a `DeprecationWarning` in recent Python versions",
-          "`NotImplemented` lets Python try the reflected operation on the other operand, so a type that knows about yours can still compare successfully",
+          "It lets Python try the other operand's method, so a type that knows yours can compare",
           "`NotImplemented` is faster because it skips the comparison",
           "They are equivalent; `NotImplemented` is only a convention"
         ],
@@ -721,23 +721,23 @@ if __name__ == "__main__":
       {
         stem: "A class defines `__getitem__` but no `__iter__`. What does `for x in obj` do?",
         options: [
-          "Raises `TypeError: object is not iterable`",
-          "Calls `__getitem__` with 0, 1, 2… until `IndexError` — a legacy fallback that can produce surprising behaviour",
-          "Iterates the object's `__dict__`",
-          "Yields nothing silently"
+          "Raises `TypeError: object is not iterable`, because iteration requires `__iter__`",
+          "Iterates over the object's `__dict__`, yielding its attribute names",
+          "Yields nothing, silently, because there is no iterator to ask for values",
+          "Calls `__getitem__` with 0, 1, 2… until `IndexError` — a legacy fallback"
         ],
-        answer: 1,
+        answer: 3,
         why: "Python 2 compatibility left a fallback: an object with `__getitem__` and no `__iter__` is iterated by integer index until `IndexError`. On a sequence-like class that is usually harmless; on a mapping-like class it tries integer keys and either raises confusingly or silently yields nothing. Define `__iter__` explicitly on anything meant to be iterable rather than relying on the fallback."
       },
       {
         stem: "A cache keyed by `Query` objects behaves oddly. `__eq__` compares SQL and parameters; `__hash__` returns `hash(self.sql)` only. What is wrong?",
         options: [
-          "Nothing — the hash may use a subset of the equality fields",
-          "The hash ignores a field equality depends on, so unequal queries collide and the cache degenerates; both should derive from one key tuple",
+          "Nothing — the hash may use a subset of the equality fields, and this one does so correctly",
           "`hash()` cannot be called on a string attribute",
-          "The class needs `__ne__` defined as well"
+          "The class needs `__ne__` defined as well",
+          "The hash ignores a field that equality uses, so unequal queries collide constantly"
         ],
-        answer: 1,
+        answer: 3,
         why: "Strictly, using a subset does not violate the invariant — equal objects still hash equally, so nothing crashes. But unequal queries now collide constantly, the dict falls back to `__eq__` on every collision, and the cache's performance degrades toward a linear scan. Any code reasoning about hash equality as a proxy for equality is also wrong. Deriving both from one `_key()` tuple makes the mismatch impossible."
       }
     ]

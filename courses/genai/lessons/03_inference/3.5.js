@@ -113,7 +113,10 @@ EC.receiveLesson({
 
     { t: "p", text: "On a uniform workload this costs nothing. On chat traffic it costs most of the machine, because chat output lengths are long-tailed: many short answers and a few very long ones, which is exactly the distribution that maximises the gap between the mean and the maximum." },
 
-    { t: "code", lang: "python", title: "g35.py — padded slots in a static batch", code: `LENS = [random.choice([12, 18, 24, 30, 40, 55, 90, 160, 320]) for _ in range(64)]
+    { t: "code", lang: "python", title: "g35.py — padded slots in a static batch", code: `import random
+
+random.seed(0)
+LENS = [random.choice([12, 18, 24, 30, 40, 55, 90, 160, 320]) for _ in range(64)]
 
 for bs in (1, 4, 8, 16, 32, 64):
     slots = useful = 0

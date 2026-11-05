@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.5 — The Decoder and Causal Masking
    Causal mask verified exactly zero above the diagonal
-   (scratchpad/dl/d41.py).
+   (d41.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.5",

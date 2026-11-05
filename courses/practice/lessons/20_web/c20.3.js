@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c20.3",
  "lede": "**26 programs to write**, on validation and HTTP clients. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 26 programs on validation and HTTP clients without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c20.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2342–2367.** What this set actually drills, counted from its own problems — 14 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["web and APIs", "files and paths", "functions", "databases", "production", "regex"], "cells": [[{"text": "6", "tone": "accent"}, "URL Router"], [{"text": "4", "tone": "good"}, "CSV Processing Pipeline"], [{"text": "1", "tone": "violet"}, "CLI Argument Parser"], [{"text": "1", "tone": "teal"}, "Database Connection Pool (Simu"], [{"text": "1", "tone": "warn"}, "Logging Framework"], [{"text": "1", "tone": "crit"}, "Pub/Sub Message Broker"]], "t": "diagram", "id": "dg-c20_3-top-0"},
   {
    "t": "callout",
    "kind": "note",

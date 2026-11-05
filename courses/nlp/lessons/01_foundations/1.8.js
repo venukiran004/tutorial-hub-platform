@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 1.8 — POS Tagging and Dependency Parsing
    Every reference example is run through spaCy 3.8 and reproduces exactly,
-   including the SVO triple and the noun chunks (scratchpad/nlp/n18.py).
+   including the SVO triple and the noun chunks (n18.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "1.8",

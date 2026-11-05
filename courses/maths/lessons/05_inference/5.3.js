@@ -87,9 +87,9 @@ for _ in range(100_000):
     hits += lo <= TRUE_MU <= hi
     widths.append(hi - lo)
 
-hits / 100_000                        # 0.9503 -- the coverage claim, met
-np.mean(widths)                       # 12.35  -- and the intervals VARY
-np.std(widths)                        # 1.80
+hits / 100_000                        # 0.9496 -- the coverage claim, met
+np.mean(widths)                       # 12.25  -- and the intervals VARY
+np.std(widths)                        # 1.78
 #
 # THE INTERVALS ARE DIFFERENT EVERY TIME. That is what 95% is about:
 # the procedure produces a family of intervals, and 95% of them cover.
@@ -164,14 +164,14 @@ crit = stats.t.ppf(0.975, n_-1)
 pred = (m - crit*s*np.sqrt(1 + 1/n_), m + crit*s*np.sqrt(1 + 1/n_))
 pred                                                  # ~[68, 132]
 
-(ci[1]-ci[0]), (pred[1]-pred[0])                      # 12.4 vs 63.2
+(ci[1]-ci[0]), (pred[1]-pred[0])                      # 13.0 vs 66.4
 #
 # THE PREDICTION INTERVAL IS FIVE TIMES WIDER. The extra sqrt(1 + 1/n)
 # is the individual's own variation, which does not shrink with n:
 for n_ in (25, 250, 25_000):
     print(f"n={n_:<7} CI width {2*1.96*15/np.sqrt(n_):6.2f}   "
           f"PI width {2*1.96*15*np.sqrt(1+1/n_):6.2f}")
-# n=25      CI width  11.76   PI width  59.98
+# n=25      CI width  11.76   PI width  59.96
 # n=250     CI width   3.72   PI width  58.92
 # n=25000   CI width   0.37   PI width  58.80
 #
@@ -209,7 +209,7 @@ for n_ in (100, 400, 1600, 6400):
 # n=100    half-width 2.940
 # n=400    half-width 1.470     4x the data, half the width
 # n=1600   half-width 0.735
-# n=6400   half-width 0.368
+# n=6400   half-width 0.367
 #
 # HALVING THE WIDTH COSTS 4x THE DATA, every time.
 
@@ -245,8 +245,8 @@ after = before + rng.normal(2, 15*np.sqrt(2*(1-0.8)), n_)
 unpaired_se = np.sqrt(before.var(ddof=1)/n_ + after.var(ddof=1)/n_)
 paired_se = (after - before).std(ddof=1)/np.sqrt(n_)
 
-unpaired_se, paired_se                    # 3.05, 1.36
-(unpaired_se/paired_se)**2                # 5.0x -- equivalent data
+unpaired_se, paired_se                    # 3.45, 1.25
+(unpaired_se/paired_se)**2                # 7.6x -- equivalent data
 #
 # PAIRING GAVE THE EQUIVALENT OF FIVE TIMES THE SAMPLE, for free, by
 # removing the between-subject variance from the comparison entirely.
@@ -321,7 +321,7 @@ rate_interval(0, 1000)     # (0.0, 0.0030)  ~ 3/1000
 # WHY IT MATTERS: "we saw no failures in 300 runs" is routinely
 # reported as evidence of reliability. The honest statement is that
 # the failure rate could be as high as 1%.
-rate_interval(0, 300)      # (0.0, 0.00995)
+rate_interval(0, 300)      # (0.0, 0.00994)
 
 # CHECK THE COVERAGE RATHER THAN TRUSTING ANY OF THEM:
 def coverage(method, p_true, n, trials=20_000, seed=0):

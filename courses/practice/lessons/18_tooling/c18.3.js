@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c18.3",
  "lede": "**29 programs to write**, on mocking, uuid and itertools. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on mocking, uuid and itertools without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c18.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 2061–2089.** What this set asks you to predict, counted from its own problems — 11 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["numbers", "dicts and sets", "testing", "strings", "exceptions", "patterns"], "cells": [[{"text": "3", "tone": "accent"}, "What is the output of `math.ce"], [{"text": "3", "tone": "good"}, "A Counter"], [{"text": "2", "tone": "violet"}, "unittest.mock: Patching a Depe"], [{"text": "1", "tone": "teal"}, "logging: Levels, Format and a "], [{"text": "1", "tone": "warn"}, "logging: exc_info Captures the"], [{"text": "1", "tone": "crit"}, "A Command"]], "t": "diagram", "id": "dg-c18_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -211,16 +211,19 @@ EC.receiveLesson({
    "q": "Program 2074: What is the output of `math.ceil(4.1)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5`, `4`, `-4` **Explanation:** `ceil` rounds up, `floor` rounds down, `trunc` rounds toward zero."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import math\nprint(math.ceil(4.1))\nprint(math.floor(4.9))\nprint(math.trunc(-4.7))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5`, `4`, `-4` **Explanation:** `ceil` rounds up, `floor` rounds down, `trunc` rounds toward zero."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -228,16 +231,19 @@ EC.receiveLesson({
    "q": "Program 2075: What is the output of `type(sys.path)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'list'>`, `True`, `False` **Explanation:** `sys.path` is a list. `sys.modules` contains cached imported modules."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\nprint(type(sys.path))\nprint(sys.path[0] == '' or sys.path[0] is not None)\nprint('builtins' in dir(sys.modules['builtins']))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'list'>`, `True`, `False` **Explanation:** `sys.path` is a list. `sys.modules` contains cached imported modules."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -245,16 +251,19 @@ EC.receiveLesson({
    "q": "Program 2076: A Counter — output of `c.most_common(2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('apple', 3), ('banana', 2)]`, `3`, `0` **Explanation:** Counter counts occurrences. Missing keys return 0 (not KeyError)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\n\ndata = ['apple', 'banana', 'apple', 'cherry', 'banana', 'apple']\nc = Counter(data)\nprint(c.most_common(2))\nprint(c['apple'])\nprint(c['grape'])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('apple', 3), ('banana', 2)]`, `3`, `0` **Explanation:** Counter counts occurrences. Missing keys return 0 (not KeyError)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -262,16 +271,19 @@ EC.receiveLesson({
    "q": "Program 2077: An itertools recipe — output of `list(combined)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `['x', 'x', 'x']` **Explanation:** `chain` concatenates iterables. `islice` slices iterators."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import chain, repeat, islice\n\ncombined = chain([1, 2], [3, 4], [5])\nprint(list(combined))\n\nrepeated = list(islice(repeat('x', 5), 3))\nprint(repeated)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `['x', 'x', 'x']` **Explanation:** `chain` concatenates iterables. `islice` slices iterators."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -279,16 +291,19 @@ EC.receiveLesson({
    "q": "Program 2078: A lambda — output of `result = reduce(lambda x, y: x * y, [1, 2, 3,…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `120`, `1024` **Explanation:** `reduce` accumulates values. `partial` fixes first argument of `pow` to 2."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce, partial\n\nresult = reduce(lambda x, y: x * y, [1, 2, 3, 4, 5])\nprint(result)\n\ndouble = partial(pow, 2)\nprint(double(10))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `120`, `1024` **Explanation:** `reduce` accumulates values. `partial` fixes first argument of `pow` to 2."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -296,16 +311,19 @@ EC.receiveLesson({
    "q": "Program 2079: deepcopy versus a shallow copy — output of `shallow[0]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 99]`, `[1, 2]` **Explanation:** Shallow copy shares nested objects. Deep copy creates independent copies."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from copy import copy, deepcopy\n\noriginal = [[1, 2], [3, 4]]\nshallow = copy(original)\ndeep = deepcopy(original)\n\noriginal[0].append(99)\nprint(shallow[0])\nprint(deep[0])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 99]`, `[1, 2]` **Explanation:** Shallow copy shares nested objects. Deep copy creates independent copies."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -313,16 +331,19 @@ EC.receiveLesson({
    "q": "Program 2080: Dates and times — output of `future.strftime(\"%Y-%m-%d %H:%M\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2024-07-15 19:30`, `30` **Explanation:** `timedelta` adds/subtracts time. Subtracting datetimes gives timedelta."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from datetime import datetime, timedelta\n\nnow = datetime(2024, 6, 15, 14, 30)\nfuture = now + timedelta(days=30, hours=5)\nprint(future.strftime(\"%Y-%m-%d %H:%M\"))\nprint((future - now).days)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2024-07-15 19:30`, `30` **Explanation:** `timedelta` adds/subtracts time. Subtracting datetimes gives timedelta."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -330,16 +351,19 @@ EC.receiveLesson({
    "q": "Program 2081: An Enum — output of `Color.RED.value`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `RED`, `Color.GREEN`, `Color.BLUE`, `[<Color.RED: 1>, <Color.GREEN: 2>, <Color.BLUE: 3>]` **Explanation:** `auto()` assigns incrementing values. Access by value `Color(2)` or name `Color['BLUE']`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from enum import Enum, auto\n\nclass Color(Enum):\n    RED = auto()\n    GREEN = auto()\n    BLUE = auto()\n\nprint(Color.RED.value)\nprint(Color.RED.name)\nprint(Color(2))\nprint(Color['BLUE'])\nprint(list(Color))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `RED`, `Color.GREEN`, `Color.BLUE`, `[<Color.RED: 1>, <Color.GREEN: 2>, <Color.BLUE: 3>]` **Explanation:** `auto()` assigns incrementing values. Access by value `Color(2)` or name `Color['BLUE']`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -347,16 +371,19 @@ EC.receiveLesson({
    "q": "Program 2082: Decimal and Fraction arithmetic — output of `from decimal import Decimal, ROUND_HALF_UP`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0.3`, `0.30000000000000004`, `True`, `3` **Explanation:** Decimal avoids float precision issues. `ROUND_HALF_UP` rounds 2.5 to 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from decimal import Decimal, ROUND_HALF_UP\n\na = Decimal('0.1') + Decimal('0.2')\nb = 0.1 + 0.2\nprint(a)\nprint(b)\nprint(a == Decimal('0.3'))\nprint(Decimal('2.5').quantize(Decimal('1'), rounding=ROUND_HALF_UP))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `0.3`, `0.30000000000000004`, `True`, `3` **Explanation:** Decimal avoids float precision issues. `ROUND_HALF_UP` rounds 2.5 to 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -364,16 +391,19 @@ EC.receiveLesson({
    "q": "Program 2083: Decimal and Fraction arithmetic — output of `f1 + f2`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `1/10`, `3602879701896397/36028797018963968` **Explanation:** `Fraction` from string is exact. From float inherits imprecision."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from fractions import Fraction\n\nf1 = Fraction(1, 3)\nf2 = Fraction(2, 3)\nprint(f1 + f2)\nprint(Fraction('0.1'))\nprint(Fraction(0.1))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `1/10`, `3602879701896397/36028797018963968` **Explanation:** `Fraction` from string is exact. From float inherits imprecision."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -381,16 +411,19 @@ EC.receiveLesson({
    "q": "Program 2084: A dataclass — output of `s1.grades` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[90]`, `[]`, `90` **Explanation:** `field(default_factory=list)` creates independent lists. Without it, all instances share."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from dataclasses import dataclass, field\n\n@dataclass\nclass Student:\n    name: str\n    grades: list = field(default_factory=list)\n    \n    @property\n    def average(self):\n        return sum(self.grades) / len(self.grades) if self.grades else 0\n\ns1 = Student(\"Alice\")\ns2 = Student(\"Bob\")\ns1.grades.append(90)\nprint(s1.grades)\nprint(s2.grades)\nprint(s1.average)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[90]`, `[]`, `90` **Explanation:** `field(default_factory=list)` creates independent lists. Without it, all instances share."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -398,16 +431,19 @@ EC.receiveLesson({
    "q": "Program 2085: Inheritance — output of `from typing import NamedTuple`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Point(x=1, y=2, z=0.0)`, `1`, `1`, `True` **Explanation:** NamedTuple with type hints. Default values supported. Compares equal to tuples."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from typing import NamedTuple\n\nclass Point(NamedTuple):\n    x: float\n    y: float\n    z: float = 0.0\n\np1 = Point(1, 2)\np2 = Point(1, 2, 3)\nprint(p1)\nprint(p1.x)\nprint(p1[0])\nprint(p1 == (1, 2, 0.0))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Point(x=1, y=2, z=0.0)`, `1`, `1`, `True` **Explanation:** NamedTuple with type hints. Default values supported. Compares equal to tuples."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -415,16 +451,19 @@ EC.receiveLesson({
    "q": "Program 2086: A regular expression — output of `result = re.sub(r'\\d+', lambda m: str(int(m.g…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['john@email.com', 'jane.doe@company.org']`, `a2b4c6` **Explanation:** `findall` returns all matches. `sub` with lambda doubles each number."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import re\n\ntext = \"Contact: john@email.com or jane.doe@company.org\"\npattern = r'[\\w.]+@[\\w.]+'\nmatches = re.findall(pattern, text)\nprint(matches)\n\nresult = re.sub(r'\\d+', lambda m: str(int(m.group()) * 2), \"a1b2c3\")\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['john@email.com', 'jane.doe@company.org']`, `a2b4c6` **Explanation:** `findall` returns all matches. `sub` with lambda doubles each number."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -432,16 +471,19 @@ EC.receiveLesson({
    "q": "Program 2087: A defaultdict — output of `dict(dd)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': 4, 'b': 2}`, `{'a': [1, 3], 'b': [2]}` **Explanation:** `defaultdict(int)` starts at 0. `defaultdict(list)` starts with empty list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\n\ndd = defaultdict(int)\ndd['a'] += 1\ndd['b'] += 2\ndd['a'] += 3\nprint(dict(dd))\n\ndd2 = defaultdict(list)\nfor k, v in [('a', 1), ('b', 2), ('a', 3)]:\n    dd2[k].append(v)\nprint(dict(dd2))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': 4, 'b': 2}`, `{'a': [1, 3], 'b': [2]}` **Explanation:** `defaultdict(int)` starts at 0. `defaultdict(list)` starts with empty list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -449,16 +491,19 @@ EC.receiveLesson({
    "q": "Program 2088: An OrderedDict — output of `list(od.keys())`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['c', 'a', 'b']`, `['a', 'b', 'c']`, `['b', 'a', 'c']` **Explanation:** `OrderedDict` maintains insertion order with `move_to_end` control."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import OrderedDict\n\nod = OrderedDict()\nod['c'] = 3\nod['a'] = 1\nod['b'] = 2\nprint(list(od.keys()))\n\nod.move_to_end('c')\nprint(list(od.keys()))\n\nod.move_to_end('b', last=False)\nprint(list(od.keys()))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['c', 'a', 'b']`, `['a', 'b', 'c']`, `['b', 'a', 'c']` **Explanation:** `OrderedDict` maintains insertion order with `move_to_end` control."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -466,16 +511,19 @@ EC.receiveLesson({
    "q": "Program 2089: A deque — output of `list(d)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[3, 4, 5, 6, 7]`, `[0, 3, 4, 5, 6]`, `[5, 6, 0, 3, 4]` **Explanation:** `maxlen=5` drops oldest. `rotate(2)` moves 2 from right to left."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import deque\n\nd = deque([1, 2, 3], maxlen=5)\nd.extend([4, 5, 6, 7])\nprint(list(d))\n\nd.appendleft(0)\nprint(list(d))\n\nd.rotate(2)\nprint(list(d))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[3, 4, 5, 6, 7]`, `[0, 3, 4, 5, 6]`, `[5, 6, 0, 3, 4]` **Explanation:** `maxlen=5` drops oldest. `rotate(2)` moves 2 from right to left."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [

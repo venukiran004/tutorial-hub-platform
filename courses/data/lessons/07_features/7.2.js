@@ -117,8 +117,8 @@ train_naive = train.assign(cat_te=train["cat"].map(means))
 test_naive = test.assign(cat_te=test["cat"].map(means).fillna(train["y"].mean()))
 
 m = LogisticRegression().fit(train_naive[["x", "cat_te"]], train_naive["y"])
-roc_auc_score(train_naive["y"], m.predict_proba(train_naive[["x", "cat_te"]])[:, 1])   # 0.86
-roc_auc_score(test_naive["y"], m.predict_proba(test_naive[["x", "cat_te"]])[:, 1])     # 0.69
+roc_auc_score(train_naive["y"], m.predict_proba(train_naive[["x", "cat_te"]])[:, 1])   # 0.78
+roc_auc_score(test_naive["y"], m.predict_proba(test_naive[["x", "cat_te"]])[:, 1])     # 0.63
 #
 # Train 0.86, test 0.69. The gap is the leak. With ~7 rows per
 # category in training, each row's own label is 1/7 of its own
@@ -127,7 +127,7 @@ roc_auc_score(test_naive["y"], m.predict_proba(test_naive[["x", "cat_te"]])[:, 1
 # are not in the means -- cat_te is just a noisy category average.
 
 # THE COEFFICIENT SHOWS IT:
-m.coef_                        # [[0.4, 4.1]]  -- cat_te dominates x by 10x
+m.coef_                        # [[0.8, 4.8]]  -- cat_te dominates x by 10x
 #
 # The true per-category effect is small (sd 0.3 on the logit). The
 # model gave it a coefficient of 4.1 because in training, cat_te
@@ -233,13 +233,13 @@ train_oof = train.assign(cat_te=te.fit_transform(train[["cat"]], train["y"]).rav
 test_oof = test.assign(cat_te=te.transform(test[["cat"]]).ravel())
 
 m2 = LogisticRegression().fit(train_oof[["x", "cat_te"]], train_oof["y"])
-roc_auc_score(train_oof["y"], m2.predict_proba(train_oof[["x", "cat_te"]])[:, 1])   # 0.71
+roc_auc_score(train_oof["y"], m2.predict_proba(train_oof[["x", "cat_te"]])[:, 1])   # 0.69
 roc_auc_score(test_oof["y"], m2.predict_proba(test_oof[["x", "cat_te"]])[:, 1])     # 0.70
 #
 # Train 0.71, test 0.70. The gap is gone. The test score is a little
 # HIGHER than the naive version's (0.70 vs 0.69), because the naive
 # model had learned to over-trust cat_te and was miscalibrated.
-m2.coef_                       # [[0.78, 1.9]]  -- x is back to its true weight
+m2.coef_                       # [[0.76, 0.9]]  -- x is back to its true weight
 
 # WHAT SMOOTHING DID, category by category:
 stats = train.groupby("cat")["y"].agg(["mean", "count"])

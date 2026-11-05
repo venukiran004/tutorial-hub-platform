@@ -56,7 +56,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n32.py — the worked example", code:
+    { t: "code", lang: "python", title: "the worked example", code:
 "import nltk\nfrom nltk.tokenize import word_tokenize, sent_tokenize\nfrom nltk import pos_tag, ne_chunk\n\n# nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')\n# nltk.download('maxent_ne_chunker'); nltk.download('words')\n\ntext = \"Steve Jobs founded Apple Inc. in Cupertino. He was a visionary leader.\"\n\nprint(sent_tokenize(text))\ntokens = word_tokenize(text)\ntagged = pos_tag(tokens)\n\ntree = ne_chunk(tagged)\nfor subtree in tree:\n    if hasattr(subtree, \"label\"):\n        entity = \" \".join(word for word, tag in subtree.leaves())\n        print(entity, subtree.label())",
       caption: "On NLTK 3.9 and later the downloads are `punkt_tab`, `averaged_perceptron_tagger_eng` and `maxent_ne_chunker_tab` — the older names still resolve but the data layout changed." },
 

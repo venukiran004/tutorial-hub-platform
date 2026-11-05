@@ -616,41 +616,41 @@ def test_caching_format_currency_would_be_slower():
       {
         stem: "`@lru_cache` on a method whose result depends on `self.tenant_id`. What is the most serious problem?",
         options: [
+          "`tenant_id` is not in the key, so a reused service object can serve another tenant's data",
           "The cache is too small",
-          "`tenant_id` is not in the key — it rides in on `self`, keyed by identity — so a reused or pooled service object can serve one tenant's data to another",
           "`self` is not hashable",
           "The cache is never cleared"
         ],
-        answer: 1,
+        answer: 0,
         why: "The key looks complete because `month` is an explicit argument, which is why it survives review. The tenant is hidden inside `self`, and `self` is keyed by identity — so two objects for the same tenant waste the cache, and any pooling across tenants leaks data. There is a second fault too: the cache lives on the class, so every cached instance is pinned for the life of the process."
       },
       {
         stem: "A cached function reads a module-level `TAX_RATE`. Why is that dangerous?",
         options: [
-          "Globals are slower to access than arguments",
-          "The rate is not part of the key, so changing it leaves every cached value silently wrong — and per-process caches make it non-deterministic during a rolling deploy",
-          "`Decimal` cannot be hashed",
-          "The cache will never be populated"
+          "Globals are slower to access than arguments, which defeats the point of caching the function",
+          "`Decimal` values cannot be hashed, so the cache raises on the first call that returns one",
+          "The rate is not in the key, so a change leaves cached values silently wrong",
+          "The cache will never be populated, because functions that read globals are skipped by `lru_cache`"
         ],
-        answer: 1,
+        answer: 2,
         why: "A cache promises that the same inputs give the same output. Anything the result depends on that is not an argument breaks that promise with no error and no log line. During a rolling deploy each worker has its own cache, so the same request gets different answers from different workers and the problem resolves itself when the rollout finishes — the hardest shape of bug to reproduce."
       },
       {
         stem: "An update path deletes the cache key, then commits the write. What can go wrong?",
         options: [
-          "Nothing — deleting first is the safe order",
-          "A concurrent read between the delete and the commit loads the old value and re-caches it, so the stale value persists for the full TTL",
-          "The delete fails if the key does not exist",
-          "The commit invalidates the connection"
+          "Nothing — deleting the key first is the safe order, because readers can never see a stale value afterwards",
+          "The delete fails if the key does not exist yet, so the first write for a new record raises an error",
+          "A read between delete and commit re-caches the old value for the whole TTL",
+          "The commit invalidates the cache connection, so every later read falls through to the database"
         ],
-        answer: 1,
+        answer: 2,
         why: "The window is small and load-dependent, so it never reproduces in staging and has usually expired by the time anyone investigates. Invalidating after the write is durable closes it. This is also the argument for keeping a TTL underneath explicit invalidation — it bounds the damage when a race or a missed invalidation happens anyway."
       },
       {
         stem: "`format_currency(amount: Decimal, code: str)` does a dict lookup and an f-string, and is decorated with `@lru_cache(maxsize=512)`. What does the cache achieve?",
         options: [
           "A modest speed-up on repeated values",
-          "It makes the function slower — hashing the arguments and LRU bookkeeping cost more than the body, and a per-row `Decimal` gives a hit rate near zero",
+          "It makes it slower — hashing costs more than the body, and almost nothing ever hits",
           "It prevents formatting errors",
           "It reduces memory by sharing strings"
         ],

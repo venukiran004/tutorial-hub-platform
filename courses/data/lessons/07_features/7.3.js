@@ -120,7 +120,7 @@ table[["n", "share", "rate", "dist_pos", "dist_neg", "woe", "iv"]].round(3)
 # south 7988  0.399  0.037     0.334     0.402 -0.185  0.013
 # west  2402  0.120  0.060     0.163     0.118  0.322  0.014
 # north 3598  0.180  0.091     0.339     0.173  0.671  0.111
-iv                                               # 0.228
+iv                                               # 0.222
 
 # READING WoE:
 #   north +0.67   north holds 34% of the fraud but 17% of the
@@ -179,17 +179,17 @@ X_oh_te = pd.get_dummies(test["region"], drop_first=True, dtype=float).reindex(c
 m_oh = LogisticRegression(C=1e6).fit(X_oh_tr, train["fraud"])       # ~unregularised
 dict(zip(X_oh_tr.columns, m_oh.coef_[0].round(3)))
 # {'north': 1.31, 'south': 0.44, 'west': 0.95}    -- each vs east
-roc_auc_score(test["fraud"], m_oh.predict_proba(X_oh_te)[:, 1])     # 0.634
+roc_auc_score(test["fraud"], m_oh.predict_proba(X_oh_te)[:, 1])     # 0.615
 
 # WoE: one column, one coefficient. FIT THE TABLE ON TRAIN ONLY.
 tbl, _ = woe_table(train["region"], train["fraud"])
 X_woe_tr = train["region"].map(tbl["woe"]).to_frame("region_woe")
 X_woe_te = test["region"].map(tbl["woe"]).fillna(0.0).to_frame("region_woe")    # unseen -> 0
 m_woe = LogisticRegression(C=1e6).fit(X_woe_tr, train["fraud"])
-m_woe.coef_[0]                                                       # [1.01]
+m_woe.coef_[0]                                                       # [1.00]
 m_woe.intercept_[0], np.log(train["fraud"].mean() / (1 - train["fraud"].mean()))
 # (-3.08, -3.08)                                                    -- the prior log-odds
-roc_auc_score(test["fraud"], m_woe.predict_proba(X_woe_te)[:, 1])   # 0.634
+roc_auc_score(test["fraud"], m_woe.predict_proba(X_woe_te)[:, 1])   # 0.615
 #
 # SAME AUC. The one-hot model learned four numbers; the WoE model
 # learned one, and it is 1.0, and its intercept is the overall
@@ -241,7 +241,7 @@ scorecard(m_woe, {"region": tbl})["region"]
 # why regulators accept it: nothing in the model is hidden.
 `,
       hl: [19, 26, 42, 60],
-      caption: "**One-hot: four coefficients, AUC 0.634. WoE: one coefficient equal to 1.0, AUC 0.634.** The WoE column already contained what the four one-hot coefficients encoded, and the intercept is the prior log-odds."
+      caption: "**One-hot: four coefficients, AUC 0.615. WoE: one coefficient equal to 1.0, AUC 0.615.** The WoE column already contained what the four one-hot coefficients encoded, and the intercept is the prior log-odds."
     },
 
     { t: "callout", kind: "insight", title: "The coefficient near 1 is a diagnostic", body: [
@@ -283,7 +283,7 @@ tbl.sort_index()[["n", "rate", "woe"]].round(3)
 # (53700, 64600]      2000  0.053 -0.270
 # (64600, 82800]      2000  0.038 -0.617
 # (82800, 405000]     2000  0.030 -0.860
-iv                                                        # 0.19
+iv                                                        # 0.27
 #
 # NEARLY monotonic, with one wobble at bins 7-8. Sampling noise on
 # 2,000 rows at a 5% rate: the standard error on the rate is ~0.5%,
@@ -328,7 +328,7 @@ t_mono[["n", "rate", "woe"]].round(3)
 # (53700, 82800]      4000  0.046  -0.420
 # (82800, inf]        2000  0.030  -0.860
 #
-# Six bins, strictly decreasing WoE. IV drops slightly (0.19 -> 0.18)
+# Six bins, strictly decreasing WoE. IV drops slightly
 # because merging loses a little resolution -- and gains a curve the
 # model can trust and a card that can be printed.
 

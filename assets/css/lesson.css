@@ -16,7 +16,7 @@
 
 /* Objectives + prerequisites sit side by side: the contract of the lesson.
    Framed as an outcome ("you will be able to…"), not a topic list. */
-.lh-contract { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; margin: 22px 0 8px; }
+.lh-contract { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; margin: 22px 0 8px; align-items: start; }
 @media (max-width: 780px) { .lh-contract { grid-template-columns: 1fr; } }
 .contract-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px 18px; }
 .contract-box.obj { border-left: 3px solid var(--accent); }

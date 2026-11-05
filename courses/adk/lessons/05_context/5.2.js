@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 5.2 — State: Scopes, Prefixes and the Event Delta
-   The scope behaviour was executed (scratchpad/adk/s2.py) and the storage
+   The scope behaviour was executed (s2.py) and the storage
    layout was read out of the SQLite file DatabaseSessionService created.
    ========================================================================= */
 EC.receiveLesson({
@@ -51,7 +51,7 @@ print(State.APP_PREFIX, State.USER_PREFIX, State.TEMP_PREFIX)`,
 
     { t: "p", text: "One tool writes one key in each scope and returns. It is then run in three places: a session, a second session belonging to the same user, and a session belonging to a different user. Nothing here is asserted from the documentation — the output is what the framework did." },
 
-    { t: "code", lang: "python", title: "s2.py — one tool, four writes",
+    { t: "code", lang: "python", title: "one tool, four writes",
       code: `def mark(tool_context) -> dict:
     """Writes one key in each scope."""
     n = tool_context.state.get("app:hits", 0) + 1

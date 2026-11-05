@@ -66,7 +66,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def safe_apply(func, df, col):\n    errors = {}\n    def wrapped(row):\n        try:\n            return func(row)\n        except Exception as e:\n            errors[row.name] = str(e)\n            return np.nan\n\n    result = df[col].apply(wrapped)\n    if errors:\n        print(f\"Errors in {len(errors)} rows: {list(errors.items())[:3]}\")\n    return result"
+     "code": "def safe_apply(func, df, col):\n    errors = {}\n    results = {}\n    for idx, value in df[col].items():\n        try:\n            results[idx] = func(value)\n        except Exception as e:\n            errors[idx] = str(e)\n            results[idx] = np.nan\n\n    if errors:\n        print(f\"Errors in {len(errors)} rows: {list(errors.items())[:3]}\")\n    return pd.Series(results)"
     }
    ],
    "kind": ""
@@ -217,7 +217,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def process_in_chunks(df: pd.DataFrame, chunk_size: int = 10_000, func=None):\n    results = []\n    for start in range(0, len(df), chunk_size):\n        chunk = df.iloc[start:start + chunk_size]\n        results.append(func(chunk))\n    return pd.concat(results, ignore_index=True)\n\n# Or use from CSV directly\nfor chunk in pd.read_csv(\"data.csv\", chunksize=10_000):\n    processed = transform(chunk)\n    processed.to_parquet(f\"output/part_{i}.parquet\")"
+     "code": "def process_in_chunks(df: pd.DataFrame, chunk_size: int = 10_000, func=None):\n    results = []\n    for start in range(0, len(df), chunk_size):\n        chunk = df.iloc[start:start + chunk_size]\n        results.append(func(chunk))\n    return pd.concat(results, ignore_index=True)\n\n# Or use from CSV directly\nfor i, chunk in enumerate(pd.read_csv(\"data.csv\", chunksize=10_000)):\n    processed = transform(chunk)\n    processed.to_parquet(f\"output/part_{i}.parquet\")"
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import functools\n\ndef track_lineage(func):\n    @functools.wraps(func)\n    def wrapper(df, *args, **kwargs):\n        before_shape = df.shape\n        result = func(df, *args, **kwargs)\n        after_shape = result.shape\n        print(f\"{func.__name__}: {before_shape} → {after_shape} \"\n              f\"(rows: {before_shape[0]-after_shape[0]:+}, cols: {before_shape[1]-after_shape[1]:+})\")\n        return result\n    return wrapper\n\n@track_lineage\ndef remove_nulls(df): return df.dropna()\n\n@track_lineage\ndef add_features(df): return df.assign(revenue_log=np.log1p(df[\"revenue\"]))"
+     "code": "import functools\n\ndef track_lineage(func):\n    @functools.wraps(func)\n    def wrapper(df, *args, **kwargs):\n        before_shape = df.shape\n        result = func(df, *args, **kwargs)\n        after_shape = result.shape\n        print(f\"{func.__name__}: {before_shape} → {after_shape} \"\n              f\"(rows: {after_shape[0]-before_shape[0]:+}, cols: {after_shape[1]-before_shape[1]:+})\")\n        return result\n    return wrapper\n\n@track_lineage\ndef remove_nulls(df): return df.dropna()\n\n@track_lineage\ndef add_features(df): return df.assign(revenue_log=np.log1p(df[\"revenue\"]))"
     }
    ],
    "kind": ""
@@ -244,10 +244,6 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "code": "class DataPipeline:\n    def __init__(self, config):\n        self.config = config\n        self.logger = logging.getLogger(__name__)\n\n    def run(self, source_path: str) -> pd.DataFrame:\n        df = self._load(source_path)\n        df = self._validate(df)\n        df = self._clean(df)\n        df = self._transform(df)\n        df = self._feature_engineer(df)\n        self._save(df)\n        return df\n\n    def _load(self, path): ...\n    def _validate(self, df): ...  # pandera schema check\n    def _clean(self, df): ...     # nulls, types, outliers\n    def _transform(self, df): ... # reshape, aggregate\n    def _feature_engineer(self, df): ...\n    def _save(self, df): ...      # to parquet/database"
-    },
-    {
-     "t": "p",
-     "text": "*Last Updated: April 2026* *Topic: Pandas Interview Questions*"
     }
    ],
    "kind": ""

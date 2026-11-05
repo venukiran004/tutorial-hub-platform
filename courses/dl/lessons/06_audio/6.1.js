@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.1 — The Signal: Sampling, Nyquist, Bit Depth
    Storage arithmetic and the aliasing demonstration executed in
-   scratchpad/dl/d61.py.
+   d61.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.1",

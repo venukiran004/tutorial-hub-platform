@@ -82,8 +82,8 @@ entropy([1/6]*6), np.log2(6)              # 2.585, 2.585
 
 # WHICH GIVES A COMPRESSION BOUND YOU CAN COMPUTE:
 freqs = np.array([0.40, 0.25, 0.15, 0.10, 0.06, 0.04])
-entropy(freqs)                            # 2.246 bits per symbol
-2.246 / 8                                 # 0.281 -- best possible ratio
+entropy(freqs)                            # 2.201 bits per symbol
+2.201 / 8                                 # 0.275 -- best possible ratio
 #
 # A file of these symbols cannot compress below 28% of its raw size.
 # If your compressor reaches 30%, it is near optimal and further
@@ -157,8 +157,8 @@ p = np.array([0.7, 0.2, 0.1])          # the truth
 q = np.array([0.5, 0.3, 0.2])          # the model
 
 entropy(p)                             # 1.157   irreducible
-cross_entropy(p, q)                    # 1.286   what you pay
-kl(p, q)                               # 0.129   the waste
+cross_entropy(p, q)                    # 1.280   what you pay
+kl(p, q)                               # 0.123   the waste
 
 # THE IDENTITY:  H(p,q) = H(p) + KL(p||q)
 np.isclose(cross_entropy(p, q), entropy(p) + kl(p, q))     # True
@@ -288,10 +288,10 @@ rng = np.random.default_rng(0)
 x = rng.uniform(-1, 1, 100_000)
 y = x**2 + rng.normal(0, 0.05, 100_000)
 
-np.corrcoef(x, y)[0, 1]                                # 0.002 -- blind
+np.corrcoef(x, y)[0, 1]                                # -0.006 -- blind
 
 from sklearn.feature_selection import mutual_info_regression
-mutual_info_regression(x.reshape(-1, 1), y, random_state=0)   # [1.15]
+mutual_info_regression(x.reshape(-1, 1), y, random_state=0)   # [1.58]
 #
 # THE PARABOLA FROM LESSON 3.7, FOUND. This is why a feature filter
 # should use mutual information rather than correlation -- correlation

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c11.1",
  "lede": "**21 programs to write**, on decorators, properties and pdb. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 22 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 21 programs on decorators, properties and pdb without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c10.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1299–1319.** What this set actually drills, counted from its own problems — 15 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["decorators", "generators", "classes", "internals"], "cells": [[{"text": "7", "tone": "accent"}, "What a Decorator Actually Does"], [{"text": "6", "tone": "good"}, "A Generator Is Lazy"], [{"text": "1", "tone": "violet"}, "A Property With a Setter and V"], [{"text": "1", "tone": "teal"}, "dis: What the Bytecode Actuall"]], "t": "diagram", "id": "dg-c11_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

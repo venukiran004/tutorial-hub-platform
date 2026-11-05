@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.4 — LSTM: Long Short-Term Memory
    The six equations are implemented from scratch and matched against
-   nn.LSTM; dC_t/dC_{t-1} = f_t is verified exactly (scratchpad/dl/d34.py).
+   nn.LSTM; dC_t/dC_{t-1} = f_t is verified exactly (d34.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.4",

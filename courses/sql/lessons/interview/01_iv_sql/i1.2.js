@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.2",
- "lede": "**15 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**15 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -96,7 +96,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NULL = NULL evaluates to FALSE in joins, so rows with NULL join keys are never matched. They appear in OUTER joins with NULLs for the other table's columns."
+     "text": "NULL = NULL evaluates to NULL (unknown), not TRUE, so rows with NULL join keys are never matched. They appear in OUTER joins with NULLs for the other table's columns."
     }
    ],
    "kind": ""
@@ -120,7 +120,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Chain JOINs: `FROM a JOIN b ON ... JOIN c ON ...`. Order matters for performance but not for correctness (optimizer may reorder)."
+     "text": "Chain JOINs: `FROM a JOIN b ON ... JOIN c ON ...`. With inner joins, the order changes performance but not the result, and the optimizer may reorder them. With outer joins, the order can change the result, so write it deliberately."
     }
    ],
    "kind": ""
@@ -207,10 +207,6 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "Nested loop: for each row in outer, scan inner (good for small datasets, indexed). Hash join: build hash table on smaller set, probe with larger (good for unsorted, no index). Merge join: sort both, merge (good if already sorted or indexed)."
-    },
-    {
-     "t": "p",
-     "text": "**Q36-40. Additional JOIN scenarios** — pivot queries with joins, joining on expressions, multiple join conditions, non-equi joins, and join performance with composite keys all follow similar patterns of explicit conditions and careful NULL handling."
     }
    ],
    "kind": ""

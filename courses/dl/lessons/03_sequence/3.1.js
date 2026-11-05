@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.1 — The Vanilla RNN
    The recurrence is implemented by hand and checked against nn.RNN
-   (scratchpad/dl/d31.py).
+   (d31.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.1",

@@ -238,7 +238,7 @@ p_guilty_given_match(60_000_000)   # 1.6%   -- 60 expected false matches
 
     { t: "h2", n: "03", text: "Independence and its conditional cousin", id: "independence" },
 
-    {"kind": "compare", "title": "A common cause and a common effect pull in opposite directions", "caption": "**These are the two shapes behind “should I control for this variable?”, and they answer it oppositely** — which is why “control for everything” is unsafe advice rather than cautious advice. Ice cream and drownings correlate at 0.771 because both follow temperature; hold the temperature in a narrow band and the correlation falls to 0.011. **A collider does the reverse: conditioning on a common effect manufactures an association between causes that were genuinely unrelated.** Independence and conditional independence are different properties, and neither implies the other.", "columns": [{"title": "Confounder - a common CAUSE", "tone": "warn", "items": ["temperature drives ice cream and drownings", "marginally correlated at 0.771", "hold temperature fixed: 0.011", "conditioning REMOVES a spurious link", "so here you should control for it"]}, {"title": "Collider - a common EFFECT", "tone": "crit", "items": ["two unrelated causes of one outcome", "marginally independent", "condition on the outcome: now correlated", "conditioning CREATES a link that was absent", "so here controlling for it is the bug"]}], "t": "diagram", "id": "dg-3_6-03-2"},
+    {"kind": "compare", "title": "A common cause and a common effect pull in opposite directions", "caption": "**These are the two shapes behind “should I control for this variable?”, and they answer it oppositely** — which is why “control for everything” is unsafe advice rather than cautious advice. Ice cream and drownings correlate at 0.831 because both follow temperature; hold the temperature in a narrow band and the correlation falls to 0.003. **A collider does the reverse: conditioning on a common effect manufactures an association between causes that were genuinely unrelated.** Independence and conditional independence are different properties, and neither implies the other.", "columns": [{"title": "Confounder - a common CAUSE", "tone": "warn", "items": ["temperature drives ice cream and drownings", "marginally correlated at 0.831", "hold temperature fixed: 0.003", "conditioning REMOVES a spurious link", "so here you should control for it"]}, {"title": "Collider - a common EFFECT", "tone": "crit", "items": ["two unrelated causes of one outcome", "marginally independent", "condition on the outcome: now correlated", "conditioning CREATES a link that was absent", "so here controlling for it is the bug"]}], "t": "diagram", "id": "dg-3_6-03-2"},
 
 
     { t: "p", text: "**Independence means learning one thing tells you nothing about the other**, and it is a much stronger claim than it sounds. Conditional independence — independence once a third variable is known — is a different property, and neither implies the other." },
@@ -269,11 +269,11 @@ temp = rng.normal(20, 8, n)
 icecream = temp * 3 + rng.normal(0, 5, n)
 drownings = temp * 0.4 + rng.normal(0, 2, n)
 
-np.corrcoef(icecream, drownings)[0, 1]           # 0.771 -- strong
+np.corrcoef(icecream, drownings)[0, 1]           # 0.831 -- strong
 
 # Condition on temperature (take a narrow band) and it vanishes:
 band = np.abs(temp - 20) < 0.5
-np.corrcoef(icecream[band], drownings[band])[0, 1]   # 0.011
+np.corrcoef(icecream[band], drownings[band])[0, 1]   # 0.003
 #
 # THIS IS CONFOUNDING, and conditioning on the confounder is the fix.
 
@@ -283,11 +283,11 @@ talent = rng.normal(0, 1, n)
 luck = rng.normal(0, 1, n)
 success = talent + luck
 
-np.corrcoef(talent, luck)[0, 1]                  # -0.001 -- independent
+np.corrcoef(talent, luck)[0, 1]                  # 0.001 -- independent
 
 # Condition on being successful, and they become NEGATIVELY correlated:
 top = success > 2.0
-np.corrcoef(talent[top], luck[top])[0, 1]        # -0.669
+np.corrcoef(talent[top], luck[top])[0, 1]        # -0.724
 #
 # Among successful people, the talented ones were less lucky -- because
 # either route sufficed. THIS IS COLLIDER BIAS, and here conditioning

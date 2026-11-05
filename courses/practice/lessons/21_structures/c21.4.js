@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c21.4",
  "lede": "**29 programs to write**, on in-place rotation and copy semantics. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 29 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 29 snippets on in-place rotation and copy semantics before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c21.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 2510–2538.** What this set asks you to predict, counted from its own problems — 19 of the 29 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["lists", "dicts and sets", "strings", "numbers", "functions", "graphs & trees"], "cells": [[{"text": "9", "tone": "accent"}, "Matrix Rotation In Place"], [{"text": "4", "tone": "good"}, "Sorting is stable"], [{"text": "3", "tone": "violet"}, "Aho"], [{"text": "1", "tone": "teal"}, "Comparing floats for equality"], [{"text": "1", "tone": "warn"}, "Default argument shared across"], [{"text": "1", "tone": "crit"}, "heapq gives you a MIN"]], "t": "diagram", "id": "dg-c21_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -104,12 +104,6 @@ EC.receiveLesson({
    "q": "Program 2514: Slicing past the end of a list — output of `a[2:100]`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "a = [1, 2, 3, 4, 5]\nprint(a[2:100])\nprint(a[100:200])\nprint(a[-100:2])",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:**"
     },
@@ -123,19 +117,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Slicing clamps to the bounds and never raises; only INDEXING raises `IndexError`. That is why an off-by-one in a slice fails silently instead of loudly."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a = [1, 2, 3, 4, 5]\nprint(a[2:100])\nprint(a[100:200])\nprint(a[-100:2])",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2515",
    "q": "Program 2515: A reversed slice with a positive step — output of `a[4:1]`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "a = [1, 2, 3, 4, 5]\nprint(a[4:1])\nprint(a[4:1:-1])\nprint(a[::-1][:2])",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -150,19 +147,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `a[4:1]` is empty because the default step is +1 and you cannot walk forward from 4 to 1. You must give a negative step for a backwards slice."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a = [1, 2, 3, 4, 5]\nprint(a[4:1])\nprint(a[4:1:-1])\nprint(a[::-1][:2])",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2516",
    "q": "Program 2516: Integer division with a negative operand — output of `7 // 2, -7 // 2`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "print(7 // 2, -7 // 2)\nprint(7 % 2, -7 % 2)\nprint(int(-3.5), round(-3.5))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -177,19 +177,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `//` floors toward negative infinity, so `-7 // 2` is `-4`, not `-3`. The remainder takes the sign of the DIVISOR. `int()` truncates toward zero, and `round()` uses banker's rounding, so -3.5 goes to the even -4."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "print(7 // 2, -7 // 2)\nprint(7 % 2, -7 % 2)\nprint(int(-3.5), round(-3.5))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2517",
    "q": "Program 2517: Banker's rounding — output of `round(0.5), round(1.5), round(2.5), round…`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "print(round(0.5), round(1.5), round(2.5), round(3.5))\nprint(round(2.675, 2))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -204,19 +207,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Python rounds half to EVEN, so 0.5 and 2.5 both go to the even neighbour. And 2.675 is really 2.67499999... in binary, so it rounds down. Use `decimal.Decimal` when the rounding rule is part of the requirement."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "print(round(0.5), round(1.5), round(2.5), round(3.5))\nprint(round(2.675, 2))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2518",
    "q": "Program 2518: Comparing floats for equality — output of `total = sum([0.1] * 10)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "total = sum([0.1] * 10)\nprint(total)\nprint(total == 1.0)\nprint(abs(total - 1.0) < 1e-9)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -229,21 +235,24 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Ten binary approximations of 0.1 do not add to exactly 1.0. Never write `==` between computed floats; compare with a tolerance or `math.isclose`."
+     "text": "**Explanation:** Ten binary approximations of 0.1 do not add to exactly 1.0. That is the output through Python 3.11; from 3.12, `sum()` compensates for rounding on floats and prints `1.0`, `True`, `True`. The rule does not change: never write `==` between computed floats; compare with a tolerance or `math.isclose`."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "total = sum([0.1] * 10)\nprint(total)\nprint(total == 1.0)\nprint(abs(total - 1.0) < 1e-9)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2519",
    "q": "Program 2519: Mutating a list while iterating it — output of `nums = [1, 2, 3, 4, 5, 6]`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "nums = [1, 2, 3, 4, 5, 6]\nfor n in nums:\n    if n % 2 == 0:\n        nums.remove(n)\nprint(nums)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:** `[1, 3, 5]`"
@@ -252,19 +261,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Removing shifts every later element down one, but the loop's index still advances - so the element that moved into the vacated slot is skipped. Iterate over a copy, or build a new list."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "nums = [1, 2, 3, 4, 5, 6]\nfor n in nums:\n    if n % 2 == 0:\n        nums.remove(n)\nprint(nums)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2520",
    "q": "Program 2520: Sorting is stable — output of `sorted(data, key=lambda t: t[1])`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "data = [(\"b\", 2), (\"a\", 1), (\"c\", 2), (\"d\", 1)]\nprint(sorted(data, key=lambda t: t[1]))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:** `[('a', 1), ('d', 1), ('b', 2), ('c', 2)]`"
@@ -273,19 +285,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Python's sort is stable: records with an equal key keep their original relative order. That is what lets you sort by a minor key first and a major key second."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "data = [(\"b\", 2), (\"a\", 1), (\"c\", 2), (\"d\", 1)]\nprint(sorted(data, key=lambda t: t[1]))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2521",
    "q": "Program 2521: sort() returns None — output of `a, b`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "a = [3, 1, 2]\nb = a.sort()\nprint(a, b)\nc = sorted([3, 1, 2])\nprint(c)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -300,19 +315,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `list.sort()` sorts in place and returns `None`; `sorted()` returns a new list. Assigning the result of `.sort()` is one of the most common beginner bugs."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a = [3, 1, 2]\nb = a.sort()\nprint(a, b)\nc = sorted([3, 1, 2])\nprint(c)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2522",
    "q": "Program 2522: max() with a key function — output of `max(words)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "words = [\"apple\", \"fig\", \"banana\", \"kiwi\"]\nprint(max(words))\nprint(max(words, key=len))\nprint(max(words, key=lambda w: (len(w), w)))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -327,19 +345,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Without a key, `max` compares the strings themselves, so it returns the alphabetically last. With `key=len` it returns the longest - and ties go to the FIRST one seen, which the tuple key breaks deterministically."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "words = [\"apple\", \"fig\", \"banana\", \"kiwi\"]\nprint(max(words))\nprint(max(words, key=len))\nprint(max(words, key=lambda w: (len(w), w)))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2523",
    "q": "Program 2523: Building a matrix with the multiplication operator — output of `grid = [[0] * 3] * 3`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "grid = [[0] * 3] * 3\ngrid[0][0] = 1\nprint(grid)\nprint(grid[0] is grid[1])",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -354,19 +375,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `[row] * 3` copies the REFERENCE three times, so all three rows are one object. Use `[[0] * 3 for _ in range(3)]` to get independent rows."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "grid = [[0] * 3] * 3\ngrid[0][0] = 1\nprint(grid)\nprint(grid[0] is grid[1])",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2524",
    "q": "Program 2524: Recursion without a base case guard — output of `countdown(50)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import sys\nsys.setrecursionlimit(100)\n\ndef countdown(n):\n    if n == 0:\n        return 0\n    return countdown(n - 1)\n\nprint(countdown(50))\ntry:\n    countdown(1000)\nexcept RecursionError:\n    print(\"RecursionError\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -381,19 +405,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Python has no tail-call elimination, so every recursive call keeps a frame. Deep recursion hits the limit rather than running slowly - convert to a loop."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import sys\nsys.setrecursionlimit(100)\n\ndef countdown(n):\n    if n == 0:\n        return 0\n    return countdown(n - 1)\n\nprint(countdown(50))\ntry:\n    countdown(1000)\nexcept RecursionError:\n    print(\"RecursionError\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2525",
    "q": "Program 2525: Default argument shared across calls in a recursive helper — output of `collect(1)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def collect(n, acc=[]):\n    acc.append(n)\n    return acc\n\nprint(collect(1))\nprint(collect(2))\nprint(collect(3))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -408,19 +435,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** The default list is created ONCE when the `def` runs, so every call appends to the same list. Use `acc=None` and create the list inside."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def collect(n, acc=[]):\n    acc.append(n)\n    return acc\n\nprint(collect(1))\nprint(collect(2))\nprint(collect(3))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2526",
    "q": "Program 2526: Integer caching and the identity operator — output of `a is b, x is y`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "a, b = 100, 100\nx = 1000\ny = x\nz = 1000\nprint(a is b, x is y)\nprint(x is z)\nprint(x == z)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -435,19 +465,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Small integers (-5..256) are pre-allocated and shared. Larger ones may or may not be, depending on constant folding - which is exactly why you compare values with `==`."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a, b = 100, 100\nx = 1000\ny = x\nz = 1000\nprint(a is b, x is y)\nprint(x is z)\nprint(x == z)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2527",
    "q": "Program 2527: Sum of an empty sequence — output of `sum([])`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "print(sum([]))\nprint(sum([], 10))\ntry:\n    print(max([]))\nexcept ValueError as e:\n    print(\"ValueError:\", e)\nprint(max([], default=\"empty\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -462,19 +495,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `sum` has an identity element (0) so it handles empty input; `max` has none and raises unless you pass `default`. Edge cases like this are what an interviewer probes."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "print(sum([]))\nprint(sum([], 10))\ntry:\n    print(max([]))\nexcept ValueError as e:\n    print(\"ValueError:\", e)\nprint(max([], default=\"empty\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2528",
    "q": "Program 2528: Chained comparison versus a bitwise operator — output of `1 < 2 < 3`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "print(1 < 2 < 3)\nprint((1 < 2) < 3)\nprint(1 & 2, 2 & 3)\nprint(True + True)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -489,19 +525,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `1 < 2 < 3` chains, but `(1 < 2) < 3` compares `True < 3`, i.e. `1 < 3`. Booleans are integers in Python, which is why `True + True` is 2."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "print(1 < 2 < 3)\nprint((1 < 2) < 3)\nprint(1 & 2, 2 & 3)\nprint(True + True)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2529",
    "q": "Program 2529: Set operations do not preserve order — output of `sorted(set(a))`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "a = [3, 1, 2, 1, 3]\nprint(sorted(set(a)))\nprint(len(set(a)))\nprint(list(dict.fromkeys(a)))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -516,19 +555,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** A set deduplicates but gives no ordering guarantee, so anything order-dependent must sort. `dict.fromkeys` deduplicates AND preserves first-seen order."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a = [3, 1, 2, 1, 3]\nprint(sorted(set(a)))\nprint(len(set(a)))\nprint(list(dict.fromkeys(a)))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2530",
    "q": "Program 2530: Modifying a dict during iteration — output of `\"RuntimeError:\", \"changed size\" in str(e)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "d = {\"a\": 1, \"b\": 2, \"c\": 3}\ntry:\n    for k in d:\n        if d[k] == 2:\n            del d[k]\nexcept RuntimeError as e:\n    print(\"RuntimeError:\", \"changed size\" in str(e))\nprint(sorted(d))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -543,19 +585,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Deleting during iteration invalidates the iterator. Iterate over `list(d)` or build the keys to remove first, then delete."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "d = {\"a\": 1, \"b\": 2, \"c\": 3}\ntry:\n    for k in d:\n        if d[k] == 2:\n            del d[k]\nexcept RuntimeError as e:\n    print(\"RuntimeError:\", \"changed size\" in str(e))\nprint(sorted(d))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2531",
    "q": "Program 2531: Tuple comparison is lexicographic — output of `(1, 2) < (1, 3)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "print((1, 2) < (1, 3))\nprint((1, 10) < (2, 1))\nprint((\"a\", 2) < (\"a\", 10))\nprint(sorted([(2, \"a\"), (1, \"z\"), (1, \"a\")]))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -570,19 +615,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Tuples compare element by element and stop at the first difference. This is what makes `(priority, item)` tuples work directly in a heap."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "print((1, 2) < (1, 3))\nprint((1, 10) < (2, 1))\nprint((\"a\", 2) < (\"a\", 10))\nprint(sorted([(2, \"a\"), (1, \"z\"), (1, \"a\")]))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2532",
    "q": "Program 2532: heapq gives you a MIN-heap — output of `heapq.heappop(h)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import heapq\nh = []\nfor n in [5, 1, 8, 3]:\n    heapq.heappush(h, n)\nprint(heapq.heappop(h))\nprint(h[0])\nprint(heapq.nlargest(2, [5, 1, 8, 3]))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -597,19 +645,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `heapq` is a min-heap: `heappop` gives the smallest. For a max-heap, push negated values or use `nlargest`. `h[0]` is the smallest but the rest of the list is NOT sorted."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import heapq\nh = []\nfor n in [5, 1, 8, 3]:\n    heapq.heappush(h, n)\nprint(heapq.heappop(h))\nprint(h[0])\nprint(heapq.nlargest(2, [5, 1, 8, 3]))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2533",
    "q": "Program 2533: bisect finds the insertion point, not the item — output of `bisect.bisect_left(a, 5), bisect.bisect_r…`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import bisect\na = [1, 3, 5, 7]\nprint(bisect.bisect_left(a, 5), bisect.bisect_right(a, 5))\nprint(bisect.bisect_left(a, 4))\nbisect.insort(a, 4)\nprint(a)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -624,19 +675,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `bisect_left` returns where the value would go to keep the list sorted, so a value that is absent still returns a valid index. Checking `a[i] == x` is what turns it into a membership test."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import bisect\na = [1, 3, 5, 7]\nprint(bisect.bisect_left(a, 5), bisect.bisect_right(a, 5))\nprint(bisect.bisect_left(a, 4))\nbisect.insort(a, 4)\nprint(a)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2534",
    "q": "Program 2534: Copying a nested structure — output of `a = [[1, 2], [3, 4]]`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import copy\na = [[1, 2], [3, 4]]\nb = a[:]\nc = copy.deepcopy(a)\na[0].append(99)\nprint(b)\nprint(c)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -651,19 +705,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** A slice copy is SHALLOW: the outer list is new but the inner lists are shared. Only `deepcopy` recurses."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import copy\na = [[1, 2], [3, 4]]\nb = a[:]\nc = copy.deepcopy(a)\na[0].append(99)\nprint(b)\nprint(c)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2535",
    "q": "Program 2535: String concatenation in a loop — output of `concat() == join()`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "import timeit\ndef concat():\n    s = \"\"\n    for i in range(1000):\n        s += str(i)\n    return s\ndef join():\n    return \"\".join(str(i) for i in range(1000))\nprint(concat() == join())\nprint(len(join()))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -678,19 +735,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Both give the same string, but `+=` builds a new immutable string each time - O(n^2) total. `str.join` allocates once. On long loops this is the difference between milliseconds and seconds."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "import timeit\ndef concat():\n    s = \"\"\n    for i in range(1000):\n        s += str(i)\n    return s\ndef join():\n    return \"\".join(str(i) for i in range(1000))\nprint(concat() == join())\nprint(len(join()))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2536",
    "q": "Program 2536: Generators are consumed once — output of `sum(squares)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "squares = (x * x for x in range(5))\nprint(sum(squares))\nprint(sum(squares))\nprint(list(squares))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -705,19 +765,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** A generator object is exhausted after one full pass. The second `sum` sees nothing and returns 0. If you need it twice, materialise it into a list or call the generator function again."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "squares = (x * x for x in range(5))\nprint(sum(squares))\nprint(sum(squares))\nprint(list(squares))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2537",
    "q": "Program 2537: zip stops at the shortest input — output of `list(zip(ids, names))`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "ids = [1, 2, 3, 4]\nnames = [\"a\", \"b\"]\nprint(list(zip(ids, names)))\nprint(len(list(zip(ids, names))))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -732,19 +795,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `zip` silently truncates to the shortest iterable, which loses data with no warning. Use `strict=True` (3.10+) or `itertools.zip_longest` when the lengths should match."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "ids = [1, 2, 3, 4]\nnames = [\"a\", \"b\"]\nprint(list(zip(ids, names)))\nprint(len(list(zip(ids, names))))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "2538",
    "q": "Program 2538: enumerate with a start value — output of `list(enumerate(items))`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "items = [\"a\", \"b\", \"c\"]\nprint(list(enumerate(items)))\nprint(list(enumerate(items, start=1)))\nfor i, v in enumerate(items):\n    if i == 1:\n        print(i, v)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -759,12 +825,21 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `enumerate` is zero-based by default; `start=1` is what you want for human-facing line or row numbers."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "items = [\"a\", \"b\", \"c\"]\nprint(list(enumerate(items)))\nprint(list(enumerate(items, start=1)))\nfor i, v in enumerate(items):\n    if i == 1:\n        print(i, v)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

@@ -281,7 +281,7 @@ class LoggingConnection:
             "**Dunder methods are not forwarded.** Special methods are looked up on the *type*, not the instance, so `len(wrapper)` and `with wrapper:` bypass `__getattr__` entirely. You must define those explicitly.",
             "**Autocomplete and mypy see nothing.** The wrapper has no visible interface, so tooling cannot help callers.",
             "**A typo becomes a wrong forward.** `conn.exectue(...)` is forwarded to the wrapped object rather than raising, and fails there with a confusing message.",
-            "**Infinite recursion is one mistake away.** Referencing `self._wrapped` before it is set — during `__init__`, or after unpickling — re-enters `__getattr__` forever (Lesson 1.9)."
+            "**Infinite recursion is one mistake away.** Referencing `self._wrapped` before it is set — during `__init__`, or after unpickling — re-enters `__getattr__` forever (Lesson 3.8)."
           ]}
         ]}
       ]},
@@ -689,44 +689,44 @@ if __name__ == "__main__":
         stem: "`RetryingHttpClient(HttpClient)` overrides `post` to retry on timeout. What is the design problem?",
         options: [
           "It violates the single responsibility principle by mixing transport and retry logic",
-          "It is not substitutable — it changes a behaviour callers depend on (at-most-once delivery) and hides that change behind a type they cannot inspect",
-          "Retries belong in the transport layer, not the client",
-          "Nothing, provided the retry count is configurable"
+          "Retries belong in the transport layer, not the client, so the override is in the wrong place",
+          "Nothing, provided the retry count is configurable and defaults to a small number",
+          "It is not substitutable — it silently changes at-most-once delivery behind the same type"
         ],
-        answer: 1,
+        answer: 3,
         why: "It passes every is-a test and still breaks callers: a service doing a non-idempotent POST now issues duplicates, and because the object was injected as an `HttpClient` there is nothing at the call site to reveal it. Composition — `RetryPolicy().execute(lambda: client.post(...))` — puts the retry where the engineer can see it and ask whether the operation is safe to repeat."
       },
       {
         stem: "Two formats and two compression modes need four classes; adding encryption makes eight. What does this indicate?",
         options: [
           "The hierarchy needs an additional abstract base class to factor out the common code",
-          "Multiple independent axes of variation — inheritance can only vary cleanly along one, so composition should hold each axis as a collaborator",
-          "The classes should use multiple inheritance with mixins",
-          "The format and compression logic should be merged into one class"
+          "The classes should use multiple inheritance with mixins, one mixin per format and compression mode",
+          "The format and compression logic should be merged into one class with a flag for each behaviour",
+          "Several independent axes of variation, which composition handles one collaborator each"
         ],
-        answer: 1,
+        answer: 3,
         why: "Combinatorial growth is the diagnostic. Inheritance fixes one axis at definition time, so a second axis forces a class per pairing and a third doubles it again. Mixins reduce duplication but keep the class count and add MRO ordering questions. Collaborators turn n×m into n+m, make the choice runtime-configurable, and support combinations nobody wrote a class for."
       },
       {
         stem: "A wrapper uses `__getattr__` to forward everything to the wrapped object. Why does `len(wrapper)` still fail?",
         options: [
-          "`__getattr__` cannot return callables",
-          "Special methods are looked up on the type rather than the instance, so dunder access bypasses `__getattr__` entirely",
-          "`len()` requires the object to inherit from `Sized`",
-          "The wrapped object's `__len__` is private"
+          "`__getattr__` cannot return callables, so `__len__` is returned as a plain value",
+          "`len()` requires the object to inherit from `collections.abc.Sized`, which the wrapper does not",
+          "Special methods are looked up on the type, so `len()` never reaches `__getattr__`",
+          "The wrapped object's `__len__` is private, so `__getattr__` is not allowed to forward it"
         ],
-        answer: 1,
+        answer: 2,
         why: "Implicit special-method lookup goes to the type, not through the instance's attribute machinery — so `len()`, `with`, `+` and subscripting all skip `__getattr__`. Any dunder the wrapper should support must be defined explicitly. This is one of several reasons the catch-all is a blunt tool: it also hides the interface from mypy and autocomplete, and silently forwards typos."
       },
       {
         stem: "When is inheritance clearly the right choice over composition?",
         options: [
           "Whenever two classes share more than three methods",
-          "When a framework's contract *is* the base class — a Django model, a pytest plugin — and you do not control it",
           "When the subclass adds new methods without overriding any",
+          "When a framework's contract is the base class, as with a Django model",
           "When performance matters, since attribute lookup is faster than delegation"
         ],
-        answer: 1,
+        answer: 2,
         why: "Framework inheritance is the case people forget while reciting \"favour composition\". Subclassing `models.Model` is how the framework discovers and configures your class; fighting it produces worse code than accepting it. Shared methods alone signal reuse, which is the most common reason people inherit wrongly, and the performance difference is negligible next to the design cost."
       }
     ]

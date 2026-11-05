@@ -2,7 +2,7 @@
    LESSON 5.4 — Scaling Laws and Emergent Abilities
    The Chinchilla arithmetic is verified, and "emergence" is reproduced from
    a perfectly smooth underlying curve purely by changing the metric (§05) —
-   scratchpad/nlp/n54.py.
+   n54.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.4",

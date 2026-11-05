@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 10.3 — Error Handling, Retries and Resumability
    The on_tool_error conversion, the escaping ConnectionError and the
-   max_llm_calls default are executed/introspected from scratchpad/adk/n1.py
+   max_llm_calls default are executed/introspected from n1.py
    on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
@@ -25,7 +25,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "By default the exception comes out of run_async, and the turn ends", "caption": "**Your HTTP handler sees it, the user sees whatever your error page says, and the conversation is left with an incomplete event log.** For a genuine bug that is exactly right — you want it in the error tracker rather than swallowed. **For an upstream that is briefly unavailable it is a poor outcome**, because the agent could simply have said so and carried on. The whole of this lesson is deciding which failures are which.", "cols": 3, "nodes": [{"id": "t", "label": "The tool raises ConnectionError", "sub": "no error callback registered", "tone": "crit"}, {"id": "r", "label": "It escapes run_async", "sub": "the turn ends there", "tone": "crit"}, {"id": "l", "label": "An incomplete event log", "sub": "and your error page", "tone": "crit"}, {"id": "b", "label": "For a real bug: correct", "sub": "you want it in the tracker", "tone": "good"}, {"id": "u", "label": "For a flaky upstream: poor", "sub": "the agent could have said so", "tone": "warn"}], "edges": [["t", "r"], ["r", "l"], ["l", "b"], ["l", "u"]], "t": "diagram", "id": "dg-10_3-01-2"},
 
-    { t: "code", lang: "python", title: "n1.py — a tool that raises, with no error callback",
+    { t: "code", lang: "python", title: "a tool that raises, with no error callback",
       code: `def flaky(city: str) -> dict:
     """Always fails."""
     raise ConnectionError("upstream timed out")

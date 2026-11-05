@@ -28,7 +28,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**First-order:** Uses gradient ∇f. SGD, Adam, RMSprop — cheap per step, scale well.",
-      "**Second-order:** Uses Hessian ∇²f. Newton's method, L-BFGS — faster convergence but quadratic memory cost O(n²). Used for small ML models (sklearn `solver=\"lbfgs\"`)."
+      "**Second-order:** Uses curvature. Newton's method stores the full Hessian ∇²f, at O(n²) memory. L-BFGS approximates it from recent gradients, at O(mn) memory, which is why sklearn uses it (`solver=\"lbfgs\"`)."
      ]
     }
    ],

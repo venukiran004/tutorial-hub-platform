@@ -2,7 +2,7 @@
    LESSON 7.8 — Multimodal Evaluation
    CLIPScore is measured against count, colour and shape errors — and it
    rates "one blue square" HIGHER than the correct "two blue squares" (§03)
-   (scratchpad/nlp/n71.py).
+   (n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.8",

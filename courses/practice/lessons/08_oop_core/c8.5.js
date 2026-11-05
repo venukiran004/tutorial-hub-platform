@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c8.5",
  "lede": "**30 snippets to read**, on super() and the MRO. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on super() and the MRO before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c8.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 1028–1057.** What this set asks you to predict, counted from its own problems — 27 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["classes", "exceptions"], "cells": [[{"text": "26", "tone": "accent"}, "Inheritance"], [{"text": "1", "tone": "good"}, "A class"]], "t": "diagram", "id": "dg-c8_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 1028: Inheritance — output of `f\"Parent setup: {self.value}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Child setup: parent` **Explanation:** `self.setup()` in Parent's `__init__` calls Child's `setup` due to polymorphism. `self` is a Child instance."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Parent:\n    def __init__(self):\n        self.value = \"parent\"\n        self.setup()\n    \n    def setup(self):\n        print(f\"Parent setup: {self.value}\")\n\nclass Child(Parent):\n    def setup(self):\n        print(f\"Child setup: {self.value}\")\n\nc = Child()",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Child setup: parent` **Explanation:** `self.setup()` in Parent's `__init__` calls Child's `setup` due to polymorphism. `self` is a Child instance."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 1029: __repr__ versus __str__ — output of `C()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `C(parent=A)` **Explanation:** `super().__str__()` in C calls A's `__str__` since B doesn't override it."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class A:\n    def __str__(self):\n        return \"A\"\n\nclass B(A):\n    pass\n\nclass C(B):\n    def __str__(self):\n        return f\"C(parent={super().__str__()})\"\n\nprint(C())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `C(parent=A)` **Explanation:** `super().__str__()` in C calls A's `__str__` since B doesn't override it."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 1030: super() and the method resolution order — output of `Combined().action()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Mixin1-Mixin2-Base` **Explanation:** Cooperative multiple inheritance. MRO: Combined→Mixin1→Mixin2→Base. Each `super().action()` follows MRO."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Mixin1:\n    def action(self):\n        return \"Mixin1-\" + super().action()\n\nclass Mixin2:\n    def action(self):\n        return \"Mixin2-\" + super().action()\n\nclass Base:\n    def action(self):\n        return \"Base\"\n\nclass Combined(Mixin1, Mixin2, Base):\n    pass\n\nprint(Combined().action())\nprint(Combined.__mro__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Mixin1-Mixin2-Base` **Explanation:** Cooperative multiple inheritance. MRO: Combined→Mixin1→Mixin2→Base. Each `super().action()` follows MRO."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 1031: Attribute lookup hooks — output of `c.host, c.port`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `localhost 8080`, `Read-only object` **Explanation:** `ReadOnly` base class prevents attribute modification via `__setattr__` override."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class ReadOnly:\n    def __init__(self, **kwargs):\n        self.__dict__.update(kwargs)\n    \n    def __setattr__(self, *args):\n        raise TypeError(\"Read-only object\")\n\nclass Config(ReadOnly):\n    pass\n\nc = Config(host=\"localhost\", port=8080)\nprint(c.host, c.port)\ntry:\n    c.host = \"remote\"\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `localhost 8080`, `Read-only object` **Explanation:** `ReadOnly` base class prevents attribute modification via `__setattr__` override."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 1032: __repr__ versus __str__ — output of `return f\"{self.__class__.__name__}('{self.nam…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[Dog('Rex'), Cat('Whiskers')]` **Explanation:** `__repr__` from base class uses `self.__class__.__name__` for correct class name."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n    \n    def __repr__(self):\n        return f\"{self.__class__.__name__}('{self.name}')\"\n\nclass Dog(Animal):\n    def speak(self):\n        return \"Woof!\"\n\nclass Cat(Animal):\n    def speak(self):\n        return \"Meow!\"\n\nanimals = [Dog(\"Rex\"), Cat(\"Whiskers\")]\nprint(animals)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[Dog('Rex'), Cat('Whiskers')]` **Explanation:** `__repr__` from base class uses `self.__class__.__name__` for correct class name."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 1033: An abstract base class — output of `b.is_empty()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `2`, `False` **Explanation:** ABC provides abstract methods and concrete `is_empty()`. Subclass implements abstract methods."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from abc import ABC, abstractmethod\n\nclass Collection(ABC):\n    @abstractmethod\n    def add(self, item): pass\n    \n    @abstractmethod\n    def remove(self, item): pass\n    \n    @abstractmethod\n    def __len__(self): pass\n    \n    def is_empty(self):\n        return len(self) == 0\n\nclass Bag(Collection):\n    def __init__(self):\n        self._items = []\n    def add(self, item):\n        self._items.append(item)\n    def remove(self, item):\n        self._items.remove(item)\n    def __len__(self):\n        return len(self._items)\n\nb = Bag()\nprint(b.is_empty())\nb.add(1)\nb.add(2)\nprint(len(b))\nprint(b.is_empty())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `2`, `False` **Explanation:** ABC provides abstract methods and concrete `is_empty()`. Subclass implements abstract methods."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 1034: __repr__ versus __str__ — output of `Person(\"Alice\", 30)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Alice, age 30` **Explanation:** Template method pattern — base class defines structure, subclass fills in details."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Printable:\n    def __str__(self):\n        return self.to_string()\n    \n    def to_string(self):\n        raise NotImplementedError\n\nclass Person(Printable):\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    \n    def to_string(self):\n        return f\"{self.name}, age {self.age}\"\n\nprint(Person(\"Alice\", 30))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Alice, age 30` **Explanation:** Template method pattern — base class defines structure, subclass fills in details."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 1035: Inheritance — output of `v.validate(50)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `False` **Explanation:** Composite pattern — combines validators. All must pass."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Validator:\n    def validate(self, value):\n        return True\n\nclass RangeValidator(Validator):\n    def __init__(self, min_val, max_val):\n        self.min_val = min_val\n        self.max_val = max_val\n    \n    def validate(self, value):\n        return self.min_val <= value <= self.max_val\n\nclass TypeValidator(Validator):\n    def __init__(self, expected_type):\n        self.expected_type = expected_type\n    \n    def validate(self, value):\n        return isinstance(value, self.expected_type)\n\nclass CompositeValidator(Validator):\n    def __init__(self, *validators):\n        self.validators = validators\n    \n    def validate(self, value):\n        return all(v.validate(value) for v in self.validators)\n\nv = CompositeValidator(TypeValidator(int), RangeValidator(0, 100))\nprint(v.validate(50))\nprint(v.validate(150))\nprint(v.validate(\"50\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `False` **Explanation:** Composite pattern — combines validators. All must pass."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 1036: A class definition — output of `a.class_var`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** All print `[1, 2]` **Explanation:** Mutable class variable is shared. `self.class_var` refers to the same list for all instances."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Base:\n    class_var = []\n    \n    def add(self, item):\n        self.class_var.append(item)\n\na = Base()\nb = Base()\na.add(1)\nb.add(2)\nprint(a.class_var)\nprint(b.class_var)\nprint(Base.class_var)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** All print `[1, 2]` **Explanation:** Mutable class variable is shared. `self.class_var` refers to the same list for all instances."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 1037: A class-creation hook — output of `Greeter().greet(\"World\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello, World!`, `Goodbye, World!` **Explanation:** `__init_subclass__` with keyword args customizes subclasses at definition time."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Base:\n    def __init_subclass__(cls, prefix='', **kwargs):\n        super().__init_subclass__(**kwargs)\n        cls.prefix = prefix\n\nclass Greeter(Base, prefix=\"Hello\"):\n    def greet(self, name):\n        return f\"{self.prefix}, {name}!\"\n\nclass Farewell(Base, prefix=\"Goodbye\"):\n    def greet(self, name):\n        return f\"{self.prefix}, {name}!\"\n\nprint(Greeter().greet(\"World\"))\nprint(Farewell().greet(\"World\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello, World!`, `Goodbye, World!` **Explanation:** `__init_subclass__` with keyword args customizes subclasses at definition time."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 1038: Inheritance — output of `Processor(SortAsc()).process(data)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 1, 3, 4, 5]`, `[5, 4, 3, 1, 1]` **Explanation:** Strategy pattern — different algorithms interchangeable via common interface."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Strategy:\n    def execute(self, data):\n        raise NotImplementedError\n\nclass SortAsc(Strategy):\n    def execute(self, data):\n        return sorted(data)\n\nclass SortDesc(Strategy):\n    def execute(self, data):\n        return sorted(data, reverse=True)\n\nclass Processor:\n    def __init__(self, strategy):\n        self.strategy = strategy\n    \n    def process(self, data):\n        return self.strategy.execute(data)\n\ndata = [3, 1, 4, 1, 5]\nprint(Processor(SortAsc()).process(data))\nprint(Processor(SortDesc()).process(data))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 1, 3, 4, 5]`, `[5, 4, 3, 1, 1]` **Explanation:** Strategy pattern — different algorithms interchangeable via common interface."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,28 +257,25 @@ EC.receiveLesson({
    "q": "Program 1039: Inheritance — output of `c.call_private()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `parent private` **Explanation:** Name mangling makes `__private_method` into `_Parent__private_method` and `_Child__private_method`. Parent's `call_private` calls `_Parent__private_method`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Parent:\n    def __private_method(self):\n        return \"parent private\"\n    \n    def call_private(self):\n        return self.__private_method()\n\nclass Child(Parent):\n    def __private_method(self):\n        return \"child private\"\n\nc = Child()\nprint(c.call_private())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `parent private` **Explanation:** Name mangling makes `__private_method` into `_Parent__private_method` and `_Child__private_method`. Parent's `call_private` calls `_Parent__private_method`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1040",
    "q": "Program 1040: super() and the method resolution order — output of `f\"Adding: {item}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Base:\n    def __init__(self):\n        self.data = []\n    \n    def add(self, item):\n        self.data.append(item)\n\nclass LoggingMixin:\n    def add(self, item):\n        print(f\"Adding: {item}\")\n        super().add(item)\n\nclass LoggingList(LoggingMixin, Base):\n    pass\n\nll = LoggingList()\nll.add(1)\nll.add(2)\nprint(ll.data)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -260,7 +290,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Mixin uses `super()` for cooperative inheritance. MRO: LoggingList→LoggingMixin→Base."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Base:\n    def __init__(self):\n        self.data = []\n    \n    def add(self, item):\n        self.data.append(item)\n\nclass LoggingMixin:\n    def add(self, item):\n        print(f\"Adding: {item}\")\n        super().add(item)\n\nclass LoggingList(LoggingMixin, Base):\n    pass\n\nll = LoggingList()\nll.add(1)\nll.add(2)\nprint(ll.data)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -268,28 +307,25 @@ EC.receiveLesson({
    "q": "Program 1041: A callable object via __call__ — output of `a is b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True` **Explanation:** Metaclass-based singleton. `__call__` on the metaclass controls instance creation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Singleton(type):\n    _instances = {}\n    \n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super().__call__(*args, **kwargs)\n        return cls._instances[cls]\n\nclass DB(metaclass=Singleton):\n    def __init__(self):\n        self.connected = True\n\na = DB()\nb = DB()\nprint(a is b)\nprint(a.connected)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True` **Explanation:** Metaclass-based singleton. `__call__` on the metaclass controls instance creation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1042",
    "q": "Program 1042: Attribute lookup hooks — output of `f\"Called {name} with {args} {kwargs}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class MethodMissing:\n    def __getattr__(self, name):\n        def method(*args, **kwargs):\n            print(f\"Called {name} with {args} {kwargs}\")\n        return method\n\nobj = MethodMissing()\nobj.hello(\"world\")\nobj.anything(1, 2, key=\"value\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -304,19 +340,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `__getattr__` intercepts undefined attribute access, returning a callable — like Ruby's `method_missing`."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class MethodMissing:\n    def __getattr__(self, name):\n        def method(*args, **kwargs):\n            print(f\"Called {name} with {args} {kwargs}\")\n        return method\n\nobj = MethodMissing()\nobj.hello(\"world\")\nobj.anything(1, 2, key=\"value\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1043",
    "q": "Program 1043: A class definition — output of `f\"Current: {self.value}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Chainable:\n    def __init__(self, value):\n        self.value = value\n    \n    def transform(self, func):\n        self.value = func(self.value)\n        return self\n    \n    def peek(self):\n        print(f\"Current: {self.value}\")\n        return self\n\nresult = (Chainable(5)\n    .transform(lambda x: x * 2)\n    .peek()\n    .transform(lambda x: x + 10)\n    .peek()\n    .value)\nprint(f\"Final: {result}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -331,7 +370,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Fluent interface — each method returns `self` for chaining."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Chainable:\n    def __init__(self, value):\n        self.value = value\n    \n    def transform(self, func):\n        self.value = func(self.value)\n        return self\n    \n    def peek(self):\n        print(f\"Current: {self.value}\")\n        return self\n\nresult = (Chainable(5)\n    .transform(lambda x: x * 2)\n    .peek()\n    .transform(lambda x: x + 10)\n    .peek()\n    .value)\nprint(f\"Final: {result}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -339,16 +387,19 @@ EC.receiveLesson({
    "q": "Program 1044: Inheritance — output of `d.fly()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Donald is flying`, `Donald is swimming`, `True` **Explanation:** Multiple inheritance with mixins — Duck gets both abilities."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\nclass Flyable:\n    def fly(self):\n        return f\"{self.name} is flying\"\n\nclass Swimmable:\n    def swim(self):\n        return f\"{self.name} is swimming\"\n\nclass Duck(Animal, Flyable, Swimmable):\n    pass\n\nd = Duck(\"Donald\")\nprint(d.fly())\nprint(d.swim())\nprint(isinstance(d, Flyable))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Donald is flying`, `Donald is swimming`, `True` **Explanation:** Multiple inheritance with mixins — Duck gets both abilities."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -356,16 +407,19 @@ EC.receiveLesson({
    "q": "Program 1045: A class-creation hook — output of `c.x, c.y`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10 20` **Explanation:** Descriptors inherited from base class work in child class."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Descriptor:\n    def __set_name__(self, owner, name):\n        self.public_name = name\n        self.private_name = f\"_{name}\"\n    \n    def __get__(self, obj, objtype=None):\n        return getattr(obj, self.private_name, None)\n    \n    def __set__(self, obj, value):\n        setattr(obj, self.private_name, value)\n\nclass Base:\n    x = Descriptor()\n\nclass Child(Base):\n    y = Descriptor()\n\nc = Child()\nc.x = 10\nc.y = 20\nprint(c.x, c.y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10 20` **Explanation:** Descriptors inherited from base class work in child class."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -373,16 +427,19 @@ EC.receiveLesson({
    "q": "Program 1046: super() and the method resolution order — output of `class Observable:`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `changed: {'key': 'name', 'old': None, 'new': 'Alice'}` **Explanation:** Observer pattern — store notifies subscribers on data changes."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Observable:\n    def __init__(self):\n        self._observers = []\n    \n    def subscribe(self, observer):\n        self._observers.append(observer)\n    \n    def notify(self, event, data=None):\n        for obs in self._observers:\n            obs(event, data)\n\nclass Store(Observable):\n    def __init__(self):\n        super().__init__()\n        self._data = {}\n    \n    def set(self, key, value):\n        old = self._data.get(key)\n        self._data[key] = value\n        self.notify('changed', {'key': key, 'old': old, 'new': value})\n\nstore = Store()\nstore.subscribe(lambda event, data: print(f\"{event}: {data}\"))\nstore.set('name', 'Alice')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `changed: {'key': 'name', 'old': None, 'new': 'Alice'}` **Explanation:** Observer pattern — store notifies subscribers on data changes."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -390,16 +447,19 @@ EC.receiveLesson({
    "q": "Program 1047: __eq__ and __hash__ — output of `a == b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True` **Explanation:** `Extended` inherits `__eq__` from `Comparable`. Since both have `value=5`, they're equal."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Comparable:\n    def __init__(self, value):\n        self.value = value\n    \n    def __eq__(self, other):\n        if isinstance(other, Comparable):\n            return self.value == other.value\n        return NotImplemented\n    \n    def __hash__(self):\n        return hash(self.value)\n\nclass Extended(Comparable):\n    def __init__(self, value, label):\n        super().__init__(value)\n        self.label = label\n\na = Comparable(5)\nb = Extended(5, \"five\")\nprint(a == b)\nprint(b == a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True` **Explanation:** `Extended` inherits `__eq__` from `Comparable`. Since both have `value=5`, they're equal."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -407,16 +467,19 @@ EC.receiveLesson({
    "q": "Program 1048: Inheritance — output of `A.x, B.x, C.x`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 2 1` **Explanation:** Setting `B.x` creates a new attribute on B. C still inherits from A."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class A:\n    x = 1\n\nclass B(A):\n    pass\n\nclass C(A):\n    pass\n\nB.x = 2\nprint(A.x, B.x, C.x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 1` **Explanation:** Setting `B.x` creates a new attribute on B. C still inherits from A."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -424,16 +487,19 @@ EC.receiveLesson({
    "q": "Program 1049: Inheritance — output of `Base().method()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `base helper`, `child helper` **Explanation:** `self._helper()` uses dynamic dispatch. Child's `_helper` overrides Base's."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Base:\n    def method(self):\n        return self._helper()\n    \n    def _helper(self):\n        return \"base helper\"\n\nclass Child(Base):\n    def _helper(self):\n        return \"child helper\"\n\nprint(Base().method())\nprint(Child().method())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `base helper`, `child helper` **Explanation:** `self._helper()` uses dynamic dispatch. Child's `_helper` overrides Base's."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -441,16 +507,19 @@ EC.receiveLesson({
    "q": "Program 1050: Inheritance — output of `d2.operation()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `DecoratorB(DecoratorA(ConcreteComponent))` **Explanation:** Decorator pattern — layers of wrapping, each adding behavior."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Decorator:\n    def __init__(self, component):\n        self._component = component\n    \n    def operation(self):\n        return self._component.operation()\n\nclass ConcreteComponent:\n    def operation(self):\n        return \"ConcreteComponent\"\n\nclass ConcreteDecoratorA(Decorator):\n    def operation(self):\n        return f\"DecoratorA({super().operation()})\"\n\nclass ConcreteDecoratorB(Decorator):\n    def operation(self):\n        return f\"DecoratorB({super().operation()})\"\n\ncomponent = ConcreteComponent()\nd1 = ConcreteDecoratorA(component)\nd2 = ConcreteDecoratorB(d1)\nprint(d2.operation())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `DecoratorB(DecoratorA(ConcreteComponent))` **Explanation:** Decorator pattern — layers of wrapping, each adding behavior."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -458,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 1051: Inheritance — output of `Config.settings`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'debug': True, 'version': '1.0'}`, `False` **Explanation:** Class property returns a copy each time — different objects each call."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class classproperty(classmethod):\n    def __get__(self, obj, cls):\n        return self.__func__(cls)\n\nclass Config:\n    _settings = {'debug': True, 'version': '1.0'}\n    \n    @classproperty\n    def settings(cls):\n        return cls._settings.copy()\n\nprint(Config.settings)\nprint(Config.settings is Config.settings)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'debug': True, 'version': '1.0'}`, `False` **Explanation:** Class property returns a copy each time — different objects each call."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -475,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 1052: A class-creation hook — output of `Ordered._order`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['First', 'Second', 'Third']` **Explanation:** `__init_subclass__` hook captures subclass creation order."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Ordered:\n    _order = []\n    \n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        Ordered._order.append(cls.__name__)\n\nclass First(Ordered): pass\nclass Second(Ordered): pass\nclass Third(Ordered): pass\n\nprint(Ordered._order)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['First', 'Second', 'Third']` **Explanation:** `__init_subclass__` hook captures subclass creation order."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -492,28 +567,25 @@ EC.receiveLesson({
    "q": "Program 1053: deepcopy versus a shallow copy — output of `doc.content, doc.metadata`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello {'author': 'Alice'}`, `World {'author': 'Bob'}` **Explanation:** Prototype pattern with deep copy — cloned object is fully independent."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Prototype:\n    def clone(self):\n        import copy\n        return copy.deepcopy(self)\n\nclass Document(Prototype):\n    def __init__(self, content, metadata=None):\n        self.content = content\n        self.metadata = metadata or {}\n\ndoc = Document(\"Hello\", {\"author\": \"Alice\"})\ndoc2 = doc.clone()\ndoc2.content = \"World\"\ndoc2.metadata['author'] = \"Bob\"\nprint(doc.content, doc.metadata)\nprint(doc2.content, doc2.metadata)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello {'author': 'Alice'}`, `World {'author': 'Bob'}` **Explanation:** Prototype pattern with deep copy — cloned object is fully independent."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1054",
    "q": "Program 1054: super() and the method resolution order — output of `\"Auth: OK\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Handler:\n    def __init__(self, successor=None):\n        self._successor = successor\n    \n    def handle(self, request):\n        if self._successor:\n            return self._successor.handle(request)\n        return None\n\nclass AuthHandler(Handler):\n    def handle(self, request):\n        if request.get('auth'):\n            print(\"Auth: OK\")\n            return super().handle(request)\n        print(\"Auth: FAILED\")\n        return False\n\nclass LogHandler(Handler):\n    def handle(self, request):\n        print(f\"Log: {request}\")\n        return super().handle(request)\n\nchain = AuthHandler(LogHandler())\nchain.handle({'auth': True, 'action': 'read'})",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -528,7 +600,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Chain of Responsibility pattern — request passes through handler chain."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Handler:\n    def __init__(self, successor=None):\n        self._successor = successor\n    \n    def handle(self, request):\n        if self._successor:\n            return self._successor.handle(request)\n        return None\n\nclass AuthHandler(Handler):\n    def handle(self, request):\n        if request.get('auth'):\n            print(\"Auth: OK\")\n            return super().handle(request)\n        print(\"Auth: FAILED\")\n        return False\n\nclass LogHandler(Handler):\n    def handle(self, request):\n        print(f\"Log: {request}\")\n        return super().handle(request)\n\nchain = AuthHandler(LogHandler())\nchain.handle({'auth': True, 'action': 'read'})",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -536,16 +617,19 @@ EC.receiveLesson({
    "q": "Program 1055: A classmethod — output of `Base.get_visibility_name()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `public`, `private`, `protected` **Explanation:** `cls` in classmethod refers to the calling class, not the defining class."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Property:\n    PRIVATE = 0\n    PROTECTED = 1\n    PUBLIC = 2\n\nclass Base:\n    visibility = Property.PUBLIC\n    \n    @classmethod\n    def get_visibility_name(cls):\n        names = {0: 'private', 1: 'protected', 2: 'public'}\n        return names.get(cls.visibility, 'unknown')\n\nclass ChildA(Base):\n    visibility = Property.PRIVATE\n\nclass ChildB(Base):\n    visibility = Property.PROTECTED\n\nprint(Base.get_visibility_name())\nprint(ChildA.get_visibility_name())\nprint(ChildB.get_visibility_name())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `public`, `private`, `protected` **Explanation:** `cls` in classmethod refers to the calling class, not the defining class."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -553,28 +637,25 @@ EC.receiveLesson({
    "q": "Program 1056: A class-creation hook — output of `raise TypeError(f\"{cls.__name__} must impleme…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Bad must implement to_string`, `Good!` **Explanation:** Interface enforcement via `__init_subclass__` — checks method existence at class definition. The early `return` matters: without it, `Printable` itself fails the check."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
-     "code": "class Interface:\n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        required = getattr(cls, '_required_methods', [])\n        for method in required:\n            if not callable(getattr(cls, method, None)):\n                raise TypeError(f\"{cls.__name__} must implement {method}\")\n\nclass Printable(Interface):\n    _required_methods = ['to_string']\n\ntry:\n    class Bad(Printable):\n        pass\nexcept TypeError as e:\n    print(e)\n\nclass Good(Printable):\n    def to_string(self):\n        return \"Good!\"\n\nprint(Good().to_string())",
+     "code": "class Interface:\n    def __init_subclass__(cls, **kwargs):\n        super().__init_subclass__(**kwargs)\n        if '_required_methods' in cls.__dict__:\n            return  # the class declaring the contract is not bound by it\n        required = getattr(cls, '_required_methods', [])\n        for method in required:\n            if not callable(getattr(cls, method, None)):\n                raise TypeError(f\"{cls.__name__} must implement {method}\")\n\nclass Printable(Interface):\n    _required_methods = ['to_string']\n\ntry:\n    class Bad(Printable):\n        pass\nexcept TypeError as e:\n    print(e)\n\nclass Good(Printable):\n    def to_string(self):\n        return \"Good!\"\n\nprint(Good().to_string())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Bad must implement to_string`, `Good!` **Explanation:** Interface enforcement via `__init_subclass__` — checks method existence at class definition."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1057",
    "q": "Program 1057: super() and the method resolution order — output of `f\"Mixin ({self.__class__.__name__})\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class Mixin:\n    def method(self):\n        print(f\"Mixin ({self.__class__.__name__})\")\n        if hasattr(super(), 'method'):\n            super().method()\n\nclass Base:\n    def method(self):\n        print(f\"Base ({self.__class__.__name__})\")\n\nclass Combined(Mixin, Base):\n    pass\n\nCombined().method()",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -589,12 +670,21 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Cooperative mixin checks if super has the method before calling."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Mixin:\n    def method(self):\n        print(f\"Mixin ({self.__class__.__name__})\")\n        if hasattr(super(), 'method'):\n            super().method()\n\nclass Base:\n    def method(self):\n        print(f\"Base ({self.__class__.__name__})\")\n\nclass Combined(Mixin, Base):\n    pass\n\nCombined().method()",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

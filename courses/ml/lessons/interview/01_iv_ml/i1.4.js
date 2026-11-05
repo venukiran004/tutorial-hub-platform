@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Log loss = −(1/n)·Σ[yᵢ·log(pᵢ) + (1−yᵢ)·log(1−pᵢ)]. Measures quality of probability estimates. Lower = better calibrated predictions."
+     "text": "Log loss = −(1/n)·Σ[yᵢ·log(pᵢ) + (1−yᵢ)·log(1−pᵢ)]. Measures quality of probability estimates, rewarding both calibration and discrimination. Lower is better."
     }
    ],
    "kind": ""

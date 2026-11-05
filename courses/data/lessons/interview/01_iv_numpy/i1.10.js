@@ -291,7 +291,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Compute A^n using fast exponentiation (O(log n) matrix multiplications)\nA = np.array([[1, 1], [1, 0]])   # Fibonacci recurrence matrix\nnp.linalg.matrix_power(A, 10)   # A^10\n\n# Also works for A^(-1) = A^{-n}: np.linalg.matrix_power(A, -1) = inv(A)\nnp.linalg.matrix_power(A, -2)   # (A^2)^{-1}"
+     "code": "# Compute A^n using fast exponentiation (O(log n) matrix multiplications)\nA = np.array([[1, 1], [1, 0]])   # Fibonacci recurrence matrix\nnp.linalg.matrix_power(A, 10)   # A^10\n\n# Negative powers invert first: matrix_power(A, -1) = inv(A)\nnp.linalg.matrix_power(A, -2)   # (A^2)^{-1}"
     }
    ],
    "kind": ""

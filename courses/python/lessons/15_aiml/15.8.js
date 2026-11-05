@@ -429,7 +429,7 @@ async def classify(ticket_id: str):
     history = db.get_all_messages(ticket.customer_id)
 
     response = client.messages.create(
-        model="claude-opus-4",
+        model="claude-opus-5-5",
         max_tokens=4096,
         messages=[{"role": "user", "content": PROMPT.format(
             ticket=ticket.body, history=history)}],
@@ -585,7 +585,7 @@ client = anthropic.AsyncAnthropic(
 
 # A small model. Classification into a fixed taxonomy does not need a
 # frontier model -- fix B.
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "claude-haiku-5-5"
 MAX_HISTORY_MESSAGES = 3
 
 
@@ -747,7 +747,7 @@ def test_malformed_json_does_not_500(mock_llm):
 
 def test_an_invalid_category_is_rejected_and_retried(mock_llm):
     """Problem 2. It must not reach the database."""
-    mock_llm.returns_tool_input({"category": "made_up_category", ...})
+    mock_llm.returns_tool_input({"category": "made_up_category"})  # other fields valid
     mock_llm.then_returns_tool_input(valid_classification())
 
     result = client.post(f"/classify/{TICKET}").json()
@@ -765,7 +765,8 @@ def test_urgent_requires_confidence(mock_llm):
         Classification.model_validate(mock_llm.last_input)
 
 
-def test_history_is_bounded(db):
+@pytest.mark.asyncio
+async def test_history_is_bounded(db):
     """Fix A -- the whole cost problem, as an assertion."""
     seed_messages(customer_id=CUSTOMER, count=5000)
 
@@ -859,44 +860,44 @@ def test_repeated_classification_is_cached(mock_llm):
         stem: "Why is `json.loads(response.content[0].text)` unreliable for structured output?",
         options: [
           "The response is always base64-encoded",
-          "The model may wrap the JSON in markdown fences or prose, so it parses in testing and fails on some production inputs",
-          "`json.loads` cannot handle Unicode from LLMs",
-          "The content list is always empty"
+          "`json.loads` cannot handle the Unicode characters that LLMs commonly produce",
+          "The content list is always empty",
+          "The model may wrap the JSON in fences or prose on some inputs"
         ],
-        answer: 1,
+        answer: 3,
         why: "Tool use with a JSON schema constrains the shape at the provider, which removes the parsing class of failure. Validation still matters for semantics — a well-formed invoice whose total does not match its own line items passes any schema check."
       },
       {
         stem: "A synchronous LLM client is called inside an `async def` FastAPI handler. What is the symptom?",
         options: [
-          "The request fails with a RuntimeError",
-          "The call blocks the event loop, so every other request on that worker stalls for its full duration — including health probes",
-          "Only that request is slow",
-          "The response is truncated"
+          "The request fails with a `RuntimeError` about a blocking call inside a coroutine",
+          "Only that request is slow; the event loop schedules the others around it",
+          "The response is truncated, because the loop times the call out",
+          "It blocks the event loop, stalling every request on that worker"
         ],
-        answer: 1,
+        answer: 3,
         why: "FastAPI trusts the declaration and runs `async def` handlers on the loop. With generations taking tens of seconds this presents as the whole service hanging rather than one slow endpoint. Use the async client, or declare the handler `def` so it runs in a threadpool."
       },
       {
         stem: "A classification feature costs £14,000 a month against a £2,000 budget. Which change saves the most?",
         options: [
-          "Reducing `max_tokens` on the output",
-          "Removing the full customer history from the prompt — it can be 99% of the input tokens and is not needed to classify a ticket",
-          "Switching to a streaming response",
-          "Adding a retry limit"
+          "Dropping the customer history from the prompt — most of the tokens",
+          "Reducing `max_tokens` on the output, since output tokens cost more than input tokens",
+          "Switching to a streaming response, which is billed at a lower rate per token",
+          "Adding a retry limit, so failed calls stop being retried and billed repeatedly"
         ],
-        answer: 1,
+        answer: 0,
         why: "Most LLM cost problems are a prompt containing something nobody asked for. A smaller model, a `max_tokens` cap and prompt caching all help afterwards, but they act on a base that the history change reduces by roughly two orders of magnitude first."
       },
       {
         stem: "Structured extraction fails validation. What is more effective than retrying the same prompt?",
         options: [
           "Increasing the temperature",
-          "Appending the model's output and the specific validation error, asking it to correct — it usually succeeds on the next attempt",
           "Switching to a larger model each retry",
-          "Parsing the output with a regex instead"
+          "Parsing the output with a regex instead",
+          "Send back the output and the exact validation error to correct"
         ],
-        answer: 1,
+        answer: 3,
         why: "A blind retry sends an identical prompt and often produces an identical failure. Giving the model its own output plus the precise reason it was rejected is a correction rather than a repetition, and it costs one extra turn instead of a full re-run."
       }
     ]

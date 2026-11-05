@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c6.4",
  "lede": "**30 snippets to read**, on lambdas, reduce and ranges. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on lambdas, reduce and ranges before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c6.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 725–754.** What this set asks you to predict, counted from its own problems — 12 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["lists", "generators", "functions", "exceptions"], "cells": [[{"text": "8", "tone": "accent"}, "Sorting"], [{"text": "2", "tone": "good"}, "A generator expression"], [{"text": "1", "tone": "violet"}, "A lambda"], [{"text": "1", "tone": "teal"}, "A caught TypeError"]], "t": "diagram", "id": "dg-c6_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 725: A lambda — output of `result = reduce(lambda a, b: a + b, nums)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `15` **Explanation:** `reduce()` cumulatively applies the function: `((((1+2)+3)+4)+5) = 15`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnums = [1, 2, 3, 4, 5]\nresult = reduce(lambda a, b: a + b, nums)\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `15` **Explanation:** `reduce()` cumulatively applies the function: `((((1+2)+3)+4)+5) = 15`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 726: What is the output of `*a`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 2 3`, `1-2-3` **Explanation:** `*` unpacks the list into individual arguments for `print()`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nprint(*a)\nprint(*a, sep='-')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 3`, `1-2-3` **Explanation:** `*` unpacks the list into individual arguments for `print()`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 727: What is the output of `min(a)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `9`, `23`, `4.6` **Explanation:** Built-in functions for list aggregation. Division gives the average as float."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [4, 2, 7, 1, 9]\nprint(min(a))\nprint(max(a))\nprint(sum(a))\nprint(sum(a) / len(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `9`, `23`, `4.6` **Explanation:** Built-in functions for list aggregation. Division gives the average as float."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 728: Slicing — output of `a = [1, 2, 3, 4, 5]` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[]` **Explanation:** Slicing beyond list bounds returns an empty list — no error raised."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nresult = a[10:20]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[]` **Explanation:** Slicing beyond list bounds returns an empty list — no error raised."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 729: A for loop — output of `for item in a:`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3]` but this is dangerous! **Explanation:** Modifying a list during iteration can skip elements. It works here by chance. Use `a = [x for x in a if x != 2]` instead."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nfor item in a:\n    if item == 2:\n        a.remove(item)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3]` but this is dangerous! **Explanation:** Modifying a list during iteration can skip elements. It works here by chance. Use `a = [x for x in a if x != 2]` instead."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 730: Sorting — output of `sorted(unique)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3]` **Explanation:** Converting to set removes duplicates. `sorted()` returns a sorted list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 2, 3, 3, 3]\nunique = list(set(a))\nprint(sorted(unique))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3]` **Explanation:** Converting to set removes duplicates. `sorted()` returns a sorted list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 731: A generator expression — output of `[x + y for x, y in zip(a, b)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[5, 7, 9]` **Explanation:** `zip()` pairs elements. Comprehension adds corresponding elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5, 6]\nprint([x + y for x, y in zip(a, b)])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[5, 7, 9]` **Explanation:** `zip()` pairs elements. Comprehension adds corresponding elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 732: Slicing — output of `a[:]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5]`, `False`, `True` **Explanation:** `a[:]` creates a shallow copy — same values, different object."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nprint(a[:])\nprint(a[::])\nprint(a[:] is a)\nprint(a[:] == a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[1, 2, 3, 4, 5]`, `False`, `True` **Explanation:** `a[:]` creates a shallow copy — same values, different object."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 733: zip() — output of `a = [[1, 2], [3, 4], [5, 6]]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[(1, 3, 5), (2, 4, 6)]` **Explanation:** `zip(*a)` unpacks the sublists and zips them — effectively transposing the matrix."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [[1, 2], [3, 4], [5, 6]]\ntransposed = list(zip(*a))\nprint(transposed)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[(1, 3, 5), (2, 4, 6)]` **Explanation:** `zip(*a)` unpacks the sublists and zips them — effectively transposing the matrix."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 734: list.append — output of `a = [1, 2, 3, 2, 3, 4, 3, 4, 5]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]` **Explanation:** This preserves order while removing duplicates. In Python 3.7+, `list(dict.fromkeys(a))` also works."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 2, 3, 4, 3, 4, 5]\nseen = set()\nunique_order = []\nfor x in a:\n    if x not in seen:\n        seen.add(x)\n        unique_order.append(x)\nprint(unique_order)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]` **Explanation:** This preserves order while removing duplicates. In Python 3.7+, `list(dict.fromkeys(a))` also works."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 735: Slicing — output of `a[-1]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5`, `[3, 4, 5]`, `[1, 2, 3, 4]` **Explanation:** Negative indexing: `-1` is last, `-3:` is last 3, `:-1` is all except last."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nprint(a[-1])\nprint(a[-3:])\nprint(a[:-1])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5`, `[3, 4, 5]`, `[1, 2, 3, 4]` **Explanation:** Negative indexing: `-1` is last, `-3:` is last 3, `:-1` is all except last."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,16 +257,19 @@ EC.receiveLesson({
    "q": "Program 736: list.append — output of `bool(a)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `True` **Explanation:** Empty list is falsy. Non-empty list is truthy, regardless of content."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = []\nprint(bool(a))\na.append(0)\nprint(bool(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `True` **Explanation:** Empty list is falsy. Non-empty list is truthy, regardless of content."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -241,16 +277,19 @@ EC.receiveLesson({
    "q": "Program 737: A list comprehension — output of `nested = [x * y for x in range(1, 4) for y in…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 2, 4, 6, 3, 6, 9]` **Explanation:** Equivalent to nested for loops: outer loop iterates `x`, inner loop iterates `y`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nested = [x * y for x in range(1, 4) for y in range(1, 4)]\nprint(nested)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 2, 4, 6, 3, 6, 9]` **Explanation:** Equivalent to nested for loops: outer loop iterates `x`, inner loop iterates `y`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -258,16 +297,19 @@ EC.receiveLesson({
    "q": "Program 738: str.join — output of `a = list(\"hello\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['h', 'e', 'l', 'l', 'o']`, `hello` **Explanation:** `list()` on a string creates a list of characters. `join()` combines them back."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = list(\"hello\")\nprint(a)\nprint(\"\".join(a))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['h', 'e', 'l', 'l', 'o']`, `hello` **Explanation:** `list()` on a string creates a list of characters. `join()` combines them back."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -275,16 +317,19 @@ EC.receiveLesson({
    "q": "Program 739: Slicing — output of `a = [1, 2, 3, 4, 5]` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[99, 3, 4]` **Explanation:** Slicing creates a new list (shallow copy). Modifying `b` doesn't affect `a` for immutable elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nb = a[1:4]\nb[0] = 99\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `[99, 3, 4]` **Explanation:** Slicing creates a new list (shallow copy). Modifying `b` doesn't affect `a` for immutable elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -292,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 740: A filtered list comprehension — output of `a == b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True` **Explanation:** Both produce `[0, 2, 4, 6, 8]`. List comprehension with condition equals range with step."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [i for i in range(10) if i % 2 == 0]\nb = list(range(0, 10, 2))\nprint(a == b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True` **Explanation:** Both produce `[0, 2, 4, 6, 8]`. List comprehension with condition equals range with step."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -309,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 741: What is the output of `a` (7)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 3, 4, 5, 7, 9]`, `3` **Explanation:** `insort()` inserts maintaining sorted order. `bisect_left()` finds insertion point."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import bisect\na = [1, 3, 5, 7, 9]\nbisect.insort(a, 4)\nprint(a)\nprint(bisect.bisect_left(a, 5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 3, 4, 5, 7, 9]`, `3` **Explanation:** `insort()` inserts maintaining sorted order. `bisect_left()` finds insertion point."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -326,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 742: An itertools recipe — output of `list(chain(a, b, c))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7, 8, 9]` **Explanation:** `chain()` creates a single iterator from multiple iterables — more memory-efficient than concatenation."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from itertools import chain\na = [1, 2, 3]\nb = [4, 5, 6]\nc = [7, 8, 9]\nprint(list(chain(a, b, c)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 7, 8, 9]` **Explanation:** `chain()` creates a single iterator from multiple iterables — more memory-efficient than concatenation."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -343,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 743: What is the output of `a[slice(1, 4)]`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 3, 4]`, `[5, 4, 3, 2, 1]` **Explanation:** `slice()` objects can be used just like slice notation. Useful for reusable slicing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3, 4, 5]\nprint(a[slice(1, 4)])\ns = slice(None, None, -1)\nprint(a[s])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 3, 4]`, `[5, 4, 3, 2, 1]` **Explanation:** `slice()` objects can be used just like slice notation. Useful for reusable slicing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -360,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 744: A sequence built with the * operator — output of `a = [1, 2, 3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 1, 2, 3, 1, 2, 3]`, `[1, 2, 3, 1, 2, 3, 1, 2, 3]` **Explanation:** For immutable elements, `*` copies values. Changing `a[0]` doesn't affect `b` because integers are immutable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a * 3\nprint(b)\na[0] = 99\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 1, 2, 3, 1, 2, 3]`, `[1, 2, 3, 1, 2, 3, 1, 2, 3]` **Explanation:** For immutable elements, `*` copies values. Changing `a[0]` doesn't affect `b` because integers are immutable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -377,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 745: Slicing — output of `t[1:3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(2, 3)`, `(5, 4, 3, 2, 1)`, `(1, 2, 3, 4, 5, 6, 7)` **Explanation:** Tuples support slicing and concatenation like lists, but are immutable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1, 2, 3, 4, 5)\nprint(t[1:3])\nprint(t[::-1])\nprint(t + (6, 7))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(2, 3)`, `(5, 4, 3, 2, 1)`, `(1, 2, 3, 4, 5, 6, 7)` **Explanation:** Tuples support slicing and concatenation like lists, but are immutable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -394,16 +457,19 @@ EC.receiveLesson({
    "q": "Program 746: What is the output of `type(t), type(t2), type(t3), type(t4)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'tuple'> <class 'int'> <class 'tuple'> <class 'tuple'>` **Explanation:** Trailing comma makes a single-element tuple. `(1)` is just parenthesized int."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1,)\nt2 = (1)\nt3 = ()\nt4 = tuple()\nprint(type(t), type(t2), type(t3), type(t4))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'tuple'> <class 'int'> <class 'tuple'> <class 'tuple'>` **Explanation:** Trailing comma makes a single-element tuple. `(1)` is just parenthesized int."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -411,16 +477,19 @@ EC.receiveLesson({
    "q": "Program 747: What is the output of `t.count(2)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `2` **Explanation:** Tuples have only `count()` and `index()` methods since they're immutable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1, 2, 3, 2, 1)\nprint(t.count(2))\nprint(t.index(3))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `2` **Explanation:** Tuples have only `count()` and `index()` methods since they're immutable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -428,16 +497,19 @@ EC.receiveLesson({
    "q": "Program 748: What is the output of `a, b, c`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 2 [3, 4, 5]`, `[1, 2, 3] 4 5` **Explanation:** `*` in unpacking collects remaining elements into a list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a, b, *c = (1, 2, 3, 4, 5)\nprint(a, b, c)\n*x, y, z = (1, 2, 3, 4, 5)\nprint(x, y, z)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 [3, 4, 5]`, `[1, 2, 3] 4 5` **Explanation:** `*` in unpacking collects remaining elements into a list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -445,16 +517,19 @@ EC.receiveLesson({
    "q": "Program 749: What is the output of `a, b, c` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 3 5` **Explanation:** `_` is conventionally used to discard values during unpacking."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a, _, b, _, c = (1, 2, 3, 4, 5)\nprint(a, b, c)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 3 5` **Explanation:** `_` is conventionally used to discard values during unpacking."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -462,16 +537,19 @@ EC.receiveLesson({
    "q": "Program 750: list.append — output of `t = (1, 2, [3, 4])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** The tuple itself is immutable, but mutable objects inside it can be modified."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1, 2, [3, 4])\nt[2].append(5)\nprint(t)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** The tuple itself is immutable, but mutable objects inside it can be modified."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -479,16 +557,19 @@ EC.receiveLesson({
    "q": "Program 751: A caught TypeError — output of `except TypeError as e:` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `unhashable type: 'list'` **Explanation:** Tuples containing mutable objects cannot be hashed."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1, 2, [3, 4])\ntry:\n    hash(t)\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `unhashable type: 'list'` **Explanation:** Tuples containing mutable objects cannot be hashed."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -496,16 +577,19 @@ EC.receiveLesson({
    "q": "Program 752: Identity (is) versus equality (==) — output of `t1 == t2`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, could be `True` or `False` (implementation-dependent) **Explanation:** Equal tuples with immutable elements may or may not be the same object (CPython may cache small tuples)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t1 = (1, 2, 3)\nt2 = (1, 2, 3)\nprint(t1 == t2)\nprint(t1 is t2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, could be `True` or `False` (implementation-dependent) **Explanation:** Equal tuples with immutable elements may or may not be the same object (CPython may cache small tuples)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -513,16 +597,19 @@ EC.receiveLesson({
    "q": "Program 753: A namedtuple — output of `p.x, p.y`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3 4`, `3 4`, `{'x': 3, 'y': 4}` (or `OrderedDict`) **Explanation:** Named tuples combine tuple efficiency with named access. They're immutable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import namedtuple\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p.x, p.y)\nprint(p[0], p[1])\nprint(p._asdict())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3 4`, `3 4`, `{'x': 3, 'y': 4}` (or `OrderedDict`) **Explanation:** Named tuples combine tuple efficiency with named access. They're immutable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -530,21 +617,24 @@ EC.receiveLesson({
    "q": "Program 754: range() — output of `t = tuple(range(5))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(0, 1, 2, 3, 4)`, `5`, `True` **Explanation:** `tuple()` converts any iterable. Standard operations work on tuples."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = tuple(range(5))\nprint(t)\nprint(len(t))\nprint(3 in t)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(0, 1, 2, 3, 4)`, `5`, `True` **Explanation:** `tuple()` converts any iterable. Standard operations work on tuples."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

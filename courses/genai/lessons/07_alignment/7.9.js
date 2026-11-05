@@ -253,7 +253,7 @@ for a in ATTACKS:
 
 def verify_v2(completion, gold):
     """Require a single boxed answer, and exactly one."""
-    boxed = re.findall(r"\\\\boxed\{([^}]*)\}", completion)
+    boxed = re.findall(r"\\\\boxed\\{([^}]*)\\}", completion)
     if len(boxed) != 1:
         return 0.0
     try:

@@ -125,7 +125,7 @@ def example(pos_only, /, standard, *args, kw_only, **kwargs):
       title: "A function with several options",
       rungs: [
         { level: "bad", label: "All positional", why: "the call site is unreadable",
-          code: `def export(rows, path, True, False, ",", None):
+          code: `def export(rows, path, header, index, sep, encoding):
     ...
 
 # A caller writes:
@@ -383,11 +383,9 @@ update(rec, notes=None)    # notes explicitly cleared`,
         title: "report.py",
         code: `# ---- the original ------------------------------------------------------
 
-def build_report(data, out, True, False, False, True, ",", []):
+def build_report(data, out, header, index, compress, email, sep, recipients):
     ...
-# Real signature:
-#   build_report(data, out, header, index, compress, email, sep, recipients)
-#
+
 # Call site:
 #   build_report(rows, "q1.csv", True, False, False, True, ",", ["a@b.com"])
 #
@@ -563,10 +561,10 @@ if __name__ == "__main__":
       {
         stem: "A library renames a parameter from `data` to `payload` in a patch release and downstream code breaks. What is the underlying issue?",
         options: [
-          "Patch releases should never change function signatures at all",
-          "Parameter names are part of the public API as soon as keyword arguments are accepted — `/` is how you opt out",
+          "Patch releases should never change function signatures at all, so the version number was wrong",
+          "Parameter names are public API once keywords are allowed; `/` is how you opt out",
           "The rename should have been accompanied by a deprecation warning on the old name",
-          "Python caches parameter names, so callers need to reinstall"
+          "Python caches parameter names in compiled bytecode, so downstream callers need to reinstall"
         ],
         answer: 1,
         why: "Any caller writing `f(data=x)` depends on that name, so renaming it is a breaking change regardless of the version number. Marking the parameter positional-only with `/` declares that its name is an implementation detail and reclaims the freedom to rename. Much of the standard library was retrofitted with `/` for exactly this reason. A deprecation shim helps in the moment but does not address the design question."
@@ -574,21 +572,21 @@ if __name__ == "__main__":
       {
         stem: "Why replace three related boolean parameters with an enum?",
         options: [
-          "Enums are faster to compare than booleans",
-          "Three booleans describe eight states; if the options are mutually exclusive, an enum makes the invalid combinations unrepresentable and lets the type checker verify it",
-          "Booleans cannot be made keyword-only",
-          "Enums serialise to JSON more reliably"
+          "Enums are faster to compare than booleans, which matters because these flags are checked on every call",
+          "Booleans cannot be made keyword-only, so callers end up passing `True, False, True` positionally",
+          "If the options are exclusive, an enum makes invalid combinations impossible to express and checkable",
+          "Enums serialise to JSON more reliably than booleans, which some encoders turn into the strings `\"True\"` and `\"False\"`"
         ],
-        answer: 1,
+        answer: 2,
         why: "It removes a class of bug rather than documenting it. If `header`, `index` and `plain` are alternatives, then `header=True, plain=True` is meaningless — and nothing in a boolean signature says so, so the check has to live inside the function at runtime. An enum makes the invalid state impossible to write and mypy catches a wrong value before the code runs."
       },
       {
         stem: "What happens when a caller misspells a keyword for a function defined as `def create(**kwargs)`?",
         options: [
-          "`TypeError`, because the keyword is not a known parameter",
-          "Nothing — the misspelling is silently collected into `kwargs` and the intended field is left at its default",
-          "A `DeprecationWarning` is emitted",
-          "The nearest matching parameter is used"
+          "`TypeError`, because Python checks every keyword against the names the function body reads",
+          "Nothing — the typo lands in `kwargs` and the real field keeps its default",
+          "A `DeprecationWarning` is emitted, and the unknown keyword is ignored for this call",
+          "The nearest matching parameter name is used, so the misspelling still sets the intended field"
         ],
         answer: 1,
         why: "`**kwargs` accepts any keyword, so `create(emial=\"a@b.com\")` is absorbed without complaint and the user is created with no email. Explicit parameters turn that typo into an immediate `TypeError` at the call site. This is the strongest argument for naming every real option and reserving `**kwargs` for genuinely open-ended sets such as tags or extra metadata."

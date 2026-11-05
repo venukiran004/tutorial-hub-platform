@@ -297,7 +297,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "For any significance level \\(\\alpha\\), the true label is in the set at least \\((1-\\alpha)\\)% of the time without strong distributional assumptions."
+     "text": "For any significance level \\(\\alpha\\), the true label is in the set with probability at least \\(1-\\alpha\\), assuming only that the data are exchangeable."
     }
    ],
    "kind": ""
@@ -577,10 +577,6 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "**Rule of thumb:** for embeddings, normalize and use cosine (≡ dot product). For raw feature vectors where scale matters, use Euclidean — but **standardize features first** so one large-scale feature doesn't dominate the distance."
-    },
-    {
-     "t": "p",
-     "text": "*Last Updated: April 2026* *Topic: Machine Learning Interview Questions*"
     }
    ],
    "kind": ""

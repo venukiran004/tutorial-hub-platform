@@ -44,7 +44,7 @@ EC.receiveLesson({
       caption: "Raw: the median is 20, the mean is 33, and a linear model fitting the mean is pulled toward a tail most rows are nowhere near. Logged: symmetric, the mean and median coincide, and a 10× step is the same width everywhere.",
       svg: `<svg viewBox="0 0 880 280" role="img" aria-label="Two histograms: a right-skewed raw amount with the median and mean marked apart, and its log transform, symmetric, with median and mean coinciding">
   <g transform="translate(40,30)">
-    <text x="0" y="-8" class="s-label" style="fill:var(--crit)">raw amount — skew 3.1, kurtosis 18</text>
+    <text x="0" y="-8" class="s-label" style="fill:var(--crit)">raw amount — skew 2.6, kurtosis 11</text>
     <g style="fill:var(--crit);fill-opacity:.35">
       <rect x="0" y="40" width="18" height="150"/><rect x="20" y="10" width="18" height="180"/><rect x="40" y="50" width="18" height="140"/>
       <rect x="60" y="90" width="18" height="100"/><rect x="80" y="120" width="18" height="70"/><rect x="100" y="140" width="18" height="50"/>
@@ -89,9 +89,9 @@ n = 5000
 amount = rng.lognormal(3, 0.8, n)                          # median ~20, long tail
 
 # THE MEASUREMENTS:
-pd.Series(amount).skew()                                   # 3.1  -- strongly right-skewed
-pd.Series(amount).kurt()                                   # 18   -- heavy tail (normal = 0)
-amount.mean(), np.median(amount)                           # (27.6, 20.1) -- mean > median
+pd.Series(amount).skew()                                   # 2.6  -- strongly right-skewed
+pd.Series(amount).kurt()                                   # 11   -- heavy tail (normal = 0)
+amount.mean(), np.median(amount)                           # (27.5, 19.6) -- mean > median
 #
 #   skew  ~0        symmetric
 #   skew  0.5-1     moderate; a linear model is a little off
@@ -108,7 +108,7 @@ y = np.exp(1 + 0.5 * x + rng.normal(0, 0.6, n))           # y is log-normal give
 from sklearn.linear_model import LinearRegression
 m_raw = LinearRegression().fit(x[:, None], y)
 resid_raw = y - m_raw.predict(x[:, None])
-pd.Series(resid_raw).skew()                                # 3.4 -- the residuals are skewed
+pd.Series(resid_raw).skew()                                # 2.8 -- the residuals are skewed
 #
 # The model underpredicts a few rows by a lot and overpredicts many
 # rows by a little. Its confidence interval is symmetric; the truth
@@ -119,7 +119,7 @@ pd.Series(resid_raw).skew()                                # 3.4 -- the residual
 
 m_log = LinearRegression().fit(x[:, None], np.log(y))
 resid_log = np.log(y) - m_log.predict(x[:, None])
-pd.Series(resid_log).skew()                                # 0.02 -- symmetric
+pd.Series(resid_log).skew()                                # -0.02 -- symmetric
 #
 # On the log scale the residuals are normal, every row contributes
 # proportionately, and the slope 0.5 is recovered exactly. The
@@ -176,7 +176,7 @@ np.log([0.01, 0.1, 1, 10, 100])            # [-4.6, -2.3, 0.0, 2.30, 4.61]
 
 # SQUARE ROOT: gentler than log. Power 0.5.
 np.sqrt(amount)
-pd.Series(np.sqrt(amount)).skew()          # 1.1 -- from 3.1; halfway to symmetric
+pd.Series(np.sqrt(amount)).skew()          # 1.2 -- from 2.6; halfway to symmetric
 #
 # For COUNT data (Poisson-ish), sqrt is the variance-stabilising
 # transform: it makes the spread constant across the range. It
@@ -185,7 +185,7 @@ pd.Series(np.sqrt(amount)).skew()          # 1.1 -- from 3.1; halfway to symmetr
 # BOX-COX: fit the power.
 pt_bc = PowerTransformer(method="box-cox", standardize=False)
 bc = pt_bc.fit_transform(amount.reshape(-1, 1)).ravel()
-pt_bc.lambdas_                              # [0.03] -- essentially log
+pt_bc.lambdas_                              # [-0.01] -- essentially log
 pd.Series(bc).skew()                        # 0.00
 #
 #   lambda = 1     no change (x - 1)
@@ -291,7 +291,7 @@ pred_log = m.predict(xte[:, None])
 
 # NAIVE: exp the log-prediction.
 pred_naive = np.exp(pred_log)
-pred_naive.sum() / yte.sum()                               # 0.84
+pred_naive.sum() / yte.sum()                               # 0.82
 #
 # The forecast total is 16% BELOW the actual total. Not by chance:
 # by construction. exp(E[log y]) is the geometric mean, and for a
@@ -311,7 +311,7 @@ np.exp(sigma ** 2 / 2)                                     # 1.197
 resid = np.log(ytr) - m.predict(xtr[:, None])
 s2 = resid.var(ddof=2)
 pred_lognormal = np.exp(pred_log + s2 / 2)
-pred_lognormal.sum() / yte.sum()                           # 1.00
+pred_lognormal.sum() / yte.sum()                           # 0.98
 #
 # ASSUMES the log-scale residuals are normal. When they are, this is
 # exact. When they are not, it over- or under-corrects.
@@ -320,7 +320,7 @@ pred_lognormal.sum() / yte.sum()                           # 1.00
 # no distributional assumption.
 smear = np.mean(np.exp(resid))
 pred_smear = np.exp(pred_log) * smear
-pred_smear.sum() / yte.sum()                               # 1.00
+pred_smear.sum() / yte.sum()                               # 0.98
 smear, np.exp(s2 / 2)                                      # (1.20, 1.20) -- agree here
 #
 # Smearing uses the EMPIRICAL residual distribution. On real data
@@ -334,7 +334,7 @@ smear, np.exp(s2 / 2)                                      # (1.20, 1.20) -- agr
 from sklearn.linear_model import GammaRegressor, PoissonRegressor
 g = GammaRegressor(alpha=0).fit(xtr[:, None], ytr)
 pred_gamma = g.predict(xte[:, None])
-pred_gamma.sum() / yte.sum()                               # 1.00
+pred_gamma.sum() / yte.sum()                               # 0.99
 #
 # The GLM keeps the multiplicative structure (log link) and predicts
 # the mean directly. For a positive, skewed target it is often the

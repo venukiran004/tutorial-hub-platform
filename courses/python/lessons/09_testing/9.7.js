@@ -65,7 +65,7 @@ EC.receiveLesson({
         ["`Decimal` stored and read back as `float`", "Misses — the fake stores the object", "**Catches it**"],
         ["A migration that fails on an empty table", "Misses", "**Catches it**"],
         ["An API returning HTML on a 404", "Misses", "**Catches it**"],
-        ["A timezone dropped on the way into the database", "Misses", "**Catches it**"]
+        ["A time zone dropped on the way into the database", "Misses", "**Catches it**"]
       ],
       caption: "**Every miss in that column is a fake agreeing with you.** A fake encodes your understanding of the dependency, so it cannot tell you your understanding is wrong — which is exactly what an integration test is for (Lesson 9.5)."
     },
@@ -678,7 +678,7 @@ def test_the_vendor_still_returns_what_our_fixture_says():
         notes: [
           { t: "p", text: "**The eleven minutes was per-test schema creation, not the database.** Swapping SQLite for a real Postgres container made the absolute cost *higher* by three seconds and the suite twenty times faster overall, because `create_all()` moved from 900 executions to one. Measuring what happens per test, rather than blaming the slowest-looking dependency, is the transferable move (Lesson 10.2)." },
           { t: "p", text: "**`join_transaction_mode=\"create_savepoint\"` is the line the whole isolation strategy rests on.** Without it a `commit()` in the code under test ends the outer transaction, the rollback becomes a no-op, and rows leak into the next test — which surfaces as an order-dependent suite months later." },
-          { t: "p", text: "**The `Decimal` round-trip test is the one that justifies the container.** SQLite's dynamic typing returns a float where Postgres returns a `Decimal`, so every money assertion in the old suite was passing against a value that would be wrong in production (Lesson 2.6)." },
+          { t: "p", text: "**The `Decimal` round-trip test is the one that justifies the container.** SQLite's dynamic typing returns a float where Postgres returns a `Decimal`, so every money assertion in the old suite was passing against a value that would be wrong in production (Lesson 1.5)." },
           { t: "callout", kind: "insight", title: "Why the contract test earns its place", body: [
             { t: "p", text: "A recorded fixture is only as true as the day it was recorded. Every replayed test above asserts against the team's snapshot of the vendor's response, which drifts silently the moment the vendor ships a change." },
             { t: "p", text: "One nightly test hitting the real sandbox converts that silent drift into a failing build, and marking it `contract` keeps a vendor outage from failing unrelated pull requests." }
@@ -717,10 +717,10 @@ def test_the_vendor_still_returns_what_our_fixture_says():
       {
         stem: "A suite runs against SQLite in memory and is green. What class of bug can it not see?",
         options: [
-          "Off-by-one errors in pagination",
-          "Anything that depends on the real engine — dynamic versus enforced typing, `JSONB`, collation, `ALTER TABLE` limits, concurrency behaviour",
-          "Incorrect business rules",
-          "Missing error handling"
+          "Off-by-one errors in pagination, which SQLite and Postgres both hide",
+          "Anything depending on the real engine — typing, `JSONB`, collation",
+          "Incorrect business rules in the service layer",
+          "Missing error handling around the database calls"
         ],
         answer: 1,
         why: "SQLite's silence carries no information about Postgres. A `Decimal` written and read back comes out as a float, a `VARCHAR(10)` accepts 400 characters, `JSONB` queries cannot run at all, and `LIKE` has different case sensitivity. Those bugs are found by deploying. The other three options are logic errors that a unit test with a fake catches perfectly well."
@@ -728,21 +728,21 @@ def test_the_vendor_still_returns_what_our_fixture_says():
       {
         stem: "An integration suite takes eleven minutes. The database fixture calls `create_all()` per test. What is the fix?",
         options: [
-          "Switch to SQLite in memory",
-          "Move schema creation to a session-scoped fixture and isolate per test with a transaction rollback",
-          "Run fewer integration tests",
-          "Increase the container's memory"
+          "Create the schema once per session; roll back per test",
+          "Switch to SQLite in memory, which creates its schema instantly",
+          "Run fewer integration tests and move the rest to unit tests",
+          "Increase the container's memory so the database stops swapping"
         ],
-        answer: 1,
+        answer: 0,
         why: "Schema creation is tens to hundreds of milliseconds; across 900 tests that is the whole eleven minutes. A rollback is sub-millisecond. Moving to a real container actually adds a few seconds in absolute terms and still takes the suite to under a minute — which is why measuring per-test cost beats blaming the slowest-looking dependency."
       },
       {
         stem: "Why stub HTTP with `respx` rather than patching your own `PaymentClient`?",
         options: [
-          "`respx` is faster",
-          "Your real client still runs — building the URL, headers and body, and parsing the response — so the request it produces becomes assertable",
-          "Patching does not work with `httpx`",
-          "It avoids needing a fixture"
+          "`respx` is faster than patching, because no Python objects are replaced",
+          "Your real client still runs, so the request it builds can be asserted",
+          "Patching does not work with `httpx`, which binds its methods at import",
+          "It avoids needing a fixture, because the stub is registered globally"
         ],
         answer: 1,
         why: "Patching the client replaces the code under test with the test's assumptions, so a wrong header, a wrong URL, a wrong serialisation or a renamed SDK method all still pass. Stubbing the transport replaces only the socket, which means `route.calls.last.request` lets you assert the amount was sent in minor units and the idempotency key was set."
@@ -750,12 +750,12 @@ def test_the_vendor_still_returns_what_our_fixture_says():
       {
         stem: "Why prefer factories over a shared 900-row seed file?",
         options: [
-          "Factories are faster to load",
-          "Each test states its own premise, so the assertion is verifiable and adding data for one test cannot break four others",
-          "Seed files cannot contain foreign keys",
-          "Factories generate more realistic data"
+          "Each test states its own premise, so data cannot couple tests",
+          "Factories are faster to load than a seed file of the same size",
+          "Seed files cannot contain foreign keys between their tables",
+          "Factories generate more realistic data than hand-written fixtures"
         ],
-        answer: 1,
+        answer: 0,
         why: "A shared dataset produces assertions like `== Decimal(\"48210.55\")` that nobody can verify six months later, so when it changes the test gets updated rather than investigated. It also couples every test to every row, which ossifies the dataset. A factory call naming only the field under test makes the premise visible and the total computable in your head."
       }
     ]

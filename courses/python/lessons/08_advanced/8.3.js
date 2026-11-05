@@ -124,7 +124,7 @@ def total_safe(prices: Sequence[int]) -> int:
 total_safe((1, 2, 3))                    # a tuple works
 total((1, 2, 3))                         # mypy: expected list[int]
 `,
-      caption: "`Sequence` is not a weaker type — it is a **more honest** one. It stops you mutating a caller's list by accident, and it lets a caller pass the tuple they already have (Lesson 3.3)."
+      caption: "`Sequence` is not a weaker type — it is a **more honest** one. It stops you mutating a caller's list by accident, and it lets a caller pass the tuple they already have (Lesson 2.5)."
     },
 
     { t: "h2", n: "03", text: "Types that encode a rule", id: "rules" },
@@ -343,7 +343,7 @@ ignore_missing_imports = true`,
     },
 
     { t: "callout", kind: "insight", title: "Type the boundaries first", body: [
-      { t: "p", text: "The highest return comes from annotating where data enters and leaves: request handlers, database rows, queue messages, public functions. Those are the places where a wrong assumption travels furthest before failing, and where the checker turns an ambiguous `dict` into a named shape (Lesson 6.5)." },
+      { t: "p", text: "The highest return comes from annotating where data enters and leaves: request handlers, database rows, queue messages, public functions. Those are the places where a wrong assumption travels furthest before failing, and where the checker turns an ambiguous `dict` into a named shape (Lesson 2.9)." },
       { t: "p", text: "The lowest return is a five-line private helper whose types are obvious from two lines above. Annotate it because strict mode asks, not because it will catch anything." },
       { t: "p", text: "**A useful sequencing:** public function signatures, then dataclasses and models, then module internals, then the legacy exception list — with each step producing findings that justify the next." }
     ]},
@@ -669,20 +669,20 @@ def test_functions_do_not_mutate_their_arguments() -> None:
         stem: "Why annotate a parameter as `Sequence[str]` rather than `list[str]`?",
         options: [
           "`Sequence` is faster to check",
-          "It accepts tuples and other sequences, and has no `append` — so the checker rejects any accidental mutation of the caller's data",
           "`list` is deprecated in annotations",
-          "It allows the function to return a different type"
+          "It allows the function to return a different sequence type from the one it was given",
+          "It accepts tuples too, and has no `append`, so mutation is a type error"
         ],
-        answer: 1,
+        answer: 3,
         why: "The annotation is simultaneously looser in what it accepts and stricter in what the body may do. That is the parameter/return asymmetry: accept the most general type you can handle, return the most specific type you have. Returning `Sequence[str]` would be the mistake in the other direction — you have a list, and hiding that only limits the caller."
       },
       {
         stem: "What is wrong with annotating a JSON loader's return as `Any`?",
         options: [
-          "Nothing — JSON is genuinely dynamic",
-          "`Any` propagates: every attribute access, typo and assignment downstream is unchecked, so the type checker goes quiet exactly where data is least trustworthy",
-          "`Any` causes a runtime performance cost",
-          "It prevents the function from being called with keyword arguments"
+          "Nothing — JSON is genuinely dynamic, so `Any` is the most honest annotation for it",
+          "`Any` spreads and switches checking off downstream, exactly where data is least trusted",
+          "`Any` causes a runtime performance cost, because every access is checked dynamically",
+          "It prevents the function from being called with keyword arguments, since `Any` erases the parameter names"
         ],
         answer: 1,
         why: "`Any` is a request to stop checking, and it spreads through every expression it touches — `config.databse.hostname` raises no error, and assigning it to an `int` variable is silently allowed. `object` says \"unknown\" without disabling checking: it forces a narrowing step, which is exactly where validation of external data belongs."
@@ -690,23 +690,23 @@ def test_functions_do_not_mutate_their_arguments() -> None:
       {
         stem: "`assert isinstance(payload, dict)` narrows the type for mypy. When is it the wrong tool?",
         options: [
-          "Whenever `isinstance` is involved",
-          "When it is validating external input — `python -O` removes assertions, so the check silently disappears in an optimised run",
-          "When the type has more than one possible value",
-          "In any function that returns a value"
+          "Whenever `isinstance` is involved, because mypy cannot narrow types from an assertion",
+          "When the type has more than one possible value, since `assert` can only check a single type",
+          "When validating external input — `python -O` removes the assertion",
+          "In any function that returns a value, since the assertion changes what the function returns"
         ],
-        answer: 1,
+        answer: 2,
         why: "Assertions compile to nothing under `-O`, and some base images enable it. For an internal invariant the checker cannot see — \"build() has been called\" — that is fine. For validating a payload it means the guard vanishes in production. `if not isinstance(...): raise TypeError(...)` narrows exactly as well and always runs."
       },
       {
         stem: "A codebase has 11,000 `# type: ignore` comments and the checker has never caught a bug. What is the fix?",
         options: [
           "Remove the type checker",
-          "Strict by default with legacy modules named in an explicit, shrinking override list, plus `ignore-without-code` so every suppression names its error",
           "Annotate every function in one large pull request",
-          "Switch to a different type checker"
+          "Switch to a different type checker",
+          "Strict by default with a shrinking list of exempt modules, and coded ignores"
         ],
-        answer: 1,
+        answer: 3,
         why: "A blanket ignore also hides every future error on that line — and those lines are the ones the checker found suspicious. Strict-by-default means new and touched code is fully checked from the first commit, while the exceptions live in one file where they can be counted and reduced. A gate failing everywhere gets bypassed; one passing everywhere except a named list gets defended."
       }
     ]

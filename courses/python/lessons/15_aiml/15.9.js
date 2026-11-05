@@ -390,7 +390,7 @@ async def summarise_all():
 
 async def summarise(ticket):
     response = await client.messages.create(
-        model="claude-opus-4",
+        model="claude-opus-5-5",
         max_tokens=2000,
         messages=[{"role": "user",
                    "content": SUMMARY_PROMPT + ticket.full_thread}],
@@ -494,7 +494,7 @@ async def summarise(ticket):
 
 CONCURRENCY = 15
 BATCH_SIZE = 500          # database batch, not API batch
-MODEL = "claude-haiku-4-5-20251001"     # see the cost note below
+MODEL = "claude-haiku-5-5"     # see the cost note below
 
 
 async def summarise_all(day: date) -> RunStats:
@@ -777,20 +777,20 @@ async def test_unchanged_tickets_are_not_reprocessed(mock_llm):
       {
         stem: "`await asyncio.gather(*[classify(d) for d in documents])` on 80,000 documents. What happens first?",
         options: [
-          "The tasks run a few at a time as the event loop schedules them",
-          "All 80,000 coroutines are created immediately, each holding its document — so memory is exhausted before rate limiting even begins",
-          "asyncio caps concurrency at the connection pool size",
-          "The list comprehension is evaluated lazily"
+          "The tasks run a few at a time as the event loop schedules them, so memory stays bounded",
+          "asyncio caps concurrency at the HTTP client's connection pool size, so only a few start",
+          "The list comprehension is evaluated lazily, creating each coroutine only when it is scheduled",
+          "All 80,000 coroutines exist at once, each holding its document"
         ],
-        answer: 1,
+        answer: 3,
         why: "Memory becomes a function of input size rather than of concurrency. A semaphore bounds how many run at once but not how many exist; for a large input, create tasks as capacity frees up so both are bounded."
       },
       {
         stem: "You are rate-limited despite staying well under the requests-per-minute limit. Why?",
         options: [
-          "The limit is enforced per-second, not per-minute",
-          "Providers meter tokens per minute as well, and longer prompts exhaust that budget while the request count stays low",
-          "Retries count double against the limit",
+          "The limit is enforced per second rather than per minute, so short bursts exceed it",
+          "Tokens per minute are metered too, and long prompts use them up",
+          "Retries count double against the request limit, so each failure uses two slots",
           "The connection pool is too small"
         ],
         answer: 1,
@@ -799,23 +799,23 @@ async def test_unchanged_tickets_are_not_reprocessed(mock_llm):
       {
         stem: "Requests arrive at 100/s against a capacity of 20/s, with an unbounded queue. What is the outcome?",
         options: [
-          "Latency rises to a steady state and stabilises",
-          "The queue grows without bound, clients time out and retry, and the system continues failing after the load stops",
-          "The event loop applies backpressure automatically",
-          "Throughput increases to match demand"
+          "Latency rises to a new steady state and stabilises there",
+          "The event loop applies backpressure automatically, slowing clients down",
+          "The queue grows without bound and retries keep it failing",
+          "Throughput increases to match demand as the queue fills"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is a collapse rather than a degradation, and it is self-sustaining because timed-out clients retry. A bounded queue returning 503 with `Retry-After`, plus shedding jobs older than the client timeout, is what allows the queue to drain."
       },
       {
         stem: "Where should the variable part of a prompt go when using provider prompt caching?",
         options: [
-          "At the beginning, so it is processed first",
-          "At the end — the cache matches a prefix, so anything variable near the top invalidates everything after it",
+          "At the beginning, so the model reads it before the instructions",
           "In a separate request",
-          "Position does not matter"
+          "At the end, because the cache matches a prefix",
+          "Position does not matter, because the cache matches on content"
         ],
-        answer: 1,
+        answer: 2,
         why: "A timestamp or a user id at the top of a system prompt breaks the cache on every call. Reading a cached prefix costs roughly a tenth of the normal input rate while writing it costs slightly more, so it pays off after about two uses and loses on a one-off."
       }
     ]

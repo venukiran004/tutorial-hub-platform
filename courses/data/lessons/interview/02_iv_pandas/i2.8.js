@@ -87,11 +87,11 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def add_margin(group_df):\n    group_df[\"margin\"] = group_df[\"profit\"] / group_df[\"revenue\"]\n    return group_df\n\nresult = df.groupby(\"region\").pipe(add_margin)"
+     "code": "def revenue_spread(grouped):\n    return grouped[\"revenue\"].max() - grouped[\"revenue\"].min()\n\nresult = df.groupby(\"region\").pipe(revenue_spread)"
     },
     {
      "t": "p",
-     "text": "Like `DataFrame.pipe` but applied within each group. Enables composable groupby transformations."
+     "text": "It is not applied per group: your function receives the whole GroupBy object, once. That lets you package reusable logic that takes a GroupBy; to run code on each group, use `apply`."
     }
    ],
    "kind": ""
@@ -273,7 +273,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Automatically detect the frequency of a DatetimeIndex\npd.infer_freq(df.index)   # Returns \"D\", \"H\", \"ME\", \"Q\", etc.\n\n# Fix an irregular index\ndf = df.asfreq(pd.infer_freq(df.index))"
+     "code": "# Automatically detect the frequency of a DatetimeIndex\npd.infer_freq(df.index)   # Returns \"D\", \"h\", \"ME\", \"QE-DEC\", etc.\n\n# Fix an irregular index\ndf = df.asfreq(pd.infer_freq(df.index))"
     }
    ],
    "kind": ""

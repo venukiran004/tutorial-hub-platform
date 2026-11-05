@@ -170,6 +170,7 @@ def next_greater(nums: list[int]) -> list[int]:
 
     { t: "code", lang: "python", title: "heapq, and its three sharp edges", code: `
 import heapq
+import itertools
 
 h: list[int] = []
 heapq.heappush(h, 5)         # O(log n)
@@ -182,8 +183,8 @@ heapq.heappushpop(h, x)      # push then pop -- pops the smaller
 heapq.heapreplace(h, x)      # pop then push -- pops unconditionally
 
 
-# EDGE 1 -- IT IS A MIN-HEAP, AND THERE IS NO max VARIANT.
-# For a max-heap, negate:
+# EDGE 1 -- IT IS A MIN-HEAP. Python 3.14 added heappush_max() and
+# friends; on any older version, negate:
 heapq.heappush(h, -value)
 largest = -heapq.heappop(h)
 # ...which is fine for numbers and awkward for anything else.
@@ -202,6 +203,7 @@ heapq.heappush(h, (priority, next(counter), task))
 
 # EDGE 3 -- NO update-priority OPERATION. To change a priority:
 #   push the new entry, and mark the old one as stale:
+REMOVED = object()
 entry_finder: dict[str, list] = {}
 
 def add_task(task_id: str, priority: int) -> None:
@@ -238,7 +240,7 @@ top = [-heapq.heappop(h) for _ in range(k)]    # O(k log n)` },
         { level: "best", label: "A min-heap of size k",
           why: "The heap never exceeds k elements, so memory is O(k) regardless of n — and it works on a stream that does not fit in memory at all. The smallest of the current best k sits at the root, so the comparison is O(1).",
           code: `def top_k(stream: Iterable[int], k: int) -> list[int]:
-    """O(n log k) time, O(k) space. Works on an infinite stream."""
+    """O(n log k) time, O(k) space. Works on a stream too large to hold."""
     h: list[int] = []
     for x in stream:
         if len(h) < k:
@@ -267,7 +269,7 @@ heapq.nlargest(k, tasks, key=lambda t: t.priority)   # WITH a key`,
         ["n is a stream", "**A size-k heap**", "The only option that works"],
         ["Repeated queries", "Sort once, then index", "Amortises the sort"]
       ],
-      caption: "**At k close to n, `nlargest` is slower than sorting** — the heap operations cost more than Timsort's optimised pass. CPython's implementation switches to sorting when k is large for exactly this reason."
+      caption: "**At k close to n, `nlargest` is slower than sorting** — the heap operations cost more than Timsort's optimised pass. The documentation says to use `sorted()` there; CPython itself only falls back to it once k >= n."
     },
 
     { t: "h2", n: "04", text: "Practice", id: "practice" },
@@ -328,6 +330,11 @@ window            max
 # =========================================================================
 
 import heapq
+import random
+from timeit import timeit
+
+import pytest
+
 
 def max_sliding_window_heap(nums: list[int], k: int) -> list[int]:
     """O(n log n) time, O(n) space."""
@@ -351,9 +358,9 @@ def max_sliding_window_heap(nums: list[int], k: int) -> list[int]:
 # WHY NOT O(n):
 #
 #   The heap can grow to hold every element. Consider a strictly
-#   DECREASING array: nothing is ever popped by the lazy-deletion
-#   loop until it reaches the top, and the maximum is always the
-#   oldest element -- so the heap ends up holding all n entries.
+#   INCREASING array: the newest element is always the maximum, so
+#   stale entries sink below the root, where lazy deletion never
+#   sees them -- and the heap ends up holding all n entries.
 #
 #   Each push is O(log n) against a heap of size up to n.
 #
@@ -480,10 +487,12 @@ def max_sliding_window(nums: list[int], k: int) -> list[int]:
 #     With "<=" the deque holds one index at a time. Correct.
 #
 #   strictly decreasing, e.g. [5, 4, 3, 2, 1]
-#     THE WORST CASE FOR SPACE: nothing is ever dominated, so the
-#     deque grows to k before the front check starts removing. This
-#     is exactly the case where the heap solution degrades to O(n)
-#     space and this one stays at O(k).
+#     THE DEQUE'S WORST CASE: nothing is ever dominated, so it grows
+#     to k before the front check starts removing -- and stays there.
+#
+#   strictly increasing, e.g. [1, 2, 3, 4, 5]
+#     THE HEAP'S WORST CASE: stale entries never reach the root, so
+#     it grows to n. The deque holds one index the whole way.
 #
 #
 # =========================================================================
@@ -491,13 +500,13 @@ def max_sliding_window(nums: list[int], k: int) -> list[int]:
 # =========================================================================
 #
 #                       time          space     notes
-#   brute force         O(n * k)      O(1)      allocates per window
+#   brute force         O(n * k)      O(k)      allocates per window
 #   heap, lazy delete   O(n log n)    O(n)      easy to write
 #   monotonic deque     O(n)          O(k)      the intended answer
 #
 # On n = 100,000, k = 50,000:
-#   brute force  ~2.5e9 ops   (minutes)
-#   heap         ~1.7e6 ops   (~0.3 s)
+#   brute force  ~2.5e9 ops   (~30 s)
+#   heap         ~1.7e6 ops   (~0.04 s)
 #   deque        ~2e5 ops     (~0.02 s)
 #
 #
@@ -538,12 +547,20 @@ def test_matches_the_brute_force_on_random_input():
 
 
 def test_space_is_bounded_by_k():
-    """The property the heap version does not have."""
-    nums = list(range(100_000, 0, -1))     # strictly decreasing
+    """Decreasing input is the deque's worst case, and it still never
+    holds more than k indices."""
+    nums = list(range(100_000, 0, -1))
+    k, dq, peak = 10, deque(), 0
 
-    peak = measure_peak_deque_size(nums, k=10)
+    for i, x in enumerate(nums):
+        if dq and dq[0] <= i - k:
+            dq.popleft()
+        while dq and nums[dq[-1]] <= x:
+            dq.pop()
+        dq.append(i)
+        peak = max(peak, len(dq))
 
-    assert peak <= 10
+    assert peak <= k
 
 
 def test_linear_time():
@@ -558,10 +575,10 @@ def test_linear_time():
           { t: "p", text: "**Both ends are needed because the two removal conditions are independent.** The front removes by age, the back by value, and neither a stack nor a queue can do both — which is precisely what `deque` is for." },
           { t: "callout", kind: "insight", title: "Give the heap answer first, honestly", body: [
             { t: "p", text: "The heap solution is correct, quick to write, and O(n log n) with O(n) space. Presenting it, stating its complexity accurately, and then saying you can do better is the sequence interviewers are assessing — not the ability to produce the optimal answer immediately." },
-            { t: "p", text: "The reason it is not O(n) is worth being precise about: on a decreasing array nothing is ever lazily deleted until it reaches the top, so the heap holds all n elements." }
+            { t: "p", text: "The reason it is not O(n) is worth being precise about: on an increasing array the newest element is always the root, so stale entries never reach the top to be lazily deleted, and the heap holds all n elements." }
           ]},
           { t: "p", text: "**The front check needs `if`, not `while`.** At most one index falls out of the window per step, so a loop there is harmless but signals that the invariant is not clear to you." },
-          { t: "p", text: "**A strictly decreasing array is the case that separates the two solutions.** Nothing is ever dominated, so the heap grows to n while the deque stays bounded at k — which is why the space complexities differ." },
+          { t: "p", text: "**A strictly increasing array is the case that separates the two solutions.** Lazy deletion never fires, so the heap grows to n, while each new element clears the deque down to one index — which is why the space complexities differ." },
           { t: "p", text: "**`k > len(nums)` is a question for the interviewer.** Raising, returning `[]`, and returning `[max(nums)]` are all defensible, and asking is better than choosing silently." },
           { t: "p", text: "**The brute force makes an ideal property-test oracle** — obviously correct, obviously slow, and comparing against it on random inputs catches the off-by-one errors that hand-picked examples miss." }
         ]
@@ -569,7 +586,7 @@ def test_linear_time():
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A metrics service computed a rolling maximum over a 60-second window, recalculating from the buffer on every data point. At 10,000 points per second it consumed an entire core." },
+      { t: "p", text: "A metrics service computed a rolling maximum over a 60-second window, recalculating from the buffer on every data point. At 10,000 points per second it needed more than fifty cores to keep up." },
       { t: "p", text: "**The buffer held 600,000 points and `max()` scanned all of them, 10,000 times a second** — six billion comparisons per second, for a value that changes by one element at a time." },
       { t: "p", text: "**A monotonic deque reduced it to a fraction of a percent of one core.** The same code that answers an interview question, doing the same job." },
       { t: "p", text: "**\"Recompute an aggregate over a sliding window\" is the production form of this problem**, and it appears in metrics, rate limiting and streaming analytics far more often than the interview framing suggests." }
@@ -584,12 +601,12 @@ def test_linear_time():
     "**A monotonic stack answers \"the nearest element satisfying a comparison\"** in O(n), replacing a rescan from every position.",
     "**Push indices, not values.** You usually need the position, and the value is one lookup away.",
     "**Each index pushed once and popped once is why a nested loop is still linear** — the same amortised argument as the sliding window.",
-    "**`heapq` is a min-heap with no `key` parameter.** Negate for a max-heap; push tuples to sort by something else.",
+    "**`heapq` is a min-heap with no `key` parameter.** Negate for a max-heap (Python 3.14 added `_max` functions); push tuples to sort by something else.",
     "**Add a unique counter as a tiebreaker**, or equal priorities make Python compare objects that have no ordering.",
     "**`heapq` has no update-priority** — push a new entry and tombstone the old one.",
     "**A size-k min-heap gives the k largest in O(n log k) and O(k) space**, and it works on a stream that does not fit in memory.",
     "**`heapq.nlargest` accepts a `key`** where the raw heap functions do not — often the shortest correct answer.",
-    "**At k close to n, sorting beats a heap.** CPython's `nlargest` switches to sorting for exactly that reason.",
+    "**At k close to n, sorting beats a heap.** Call `sorted()` yourself: `nlargest` only does so once k >= n.",
     "**When a new element dominates an older one on every axis, the older one is permanently useless.** That argument is what makes the monotonic deque work."
   ],
 
@@ -599,45 +616,45 @@ def test_linear_time():
       {
         stem: "Why is `list.pop(0)` the wrong way to implement a queue?",
         options: [
-          "It raises on an empty list",
-          "It shifts every remaining element down one, so it is O(n) — and O(n²) across a full drain",
-          "It returns elements in the wrong order",
-          "Lists cannot be used as queues at all"
+          "It raises on an empty list, so every consumer needs an extra guard around the call",
+          "It returns elements in the wrong order, because `pop` works from the far end",
+          "Lists cannot be used as queues at all, because they are not thread-safe",
+          "It shifts every remaining element down one, so it is O(n) — and O(n²) across a full drain"
         ],
-        answer: 1,
+        answer: 3,
         why: "A list is contiguous, so removing from the front moves everything after it. `collections.deque` is a doubly-linked list of blocks, giving O(1) at both ends — at the cost of O(n) indexing in the middle, which a queue never needs."
       },
       {
         stem: "A monotonic stack solution has a `while` inside a `for`. What is its complexity?",
         options: [
-          "O(n²), because of the nesting",
-          "O(n) — each index is pushed exactly once and popped at most once, so total inner work is bounded by n",
-          "O(n log n)",
-          "It depends on whether the input is sorted"
+          "O(n²), because a loop nested inside a loop multiplies the work",
+          "O(n log n), because each pop discards half of the remaining candidates",
+          "O(n) — each index is pushed once and popped at most once",
+          "It depends on whether the input is sorted, which decides how much the stack holds"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is the same amortised argument as the sliding window. One arrival can pop several waiting elements, but every element it pops was pushed by an earlier iteration — so the work is charged to the pushes, of which there are exactly n."
       },
       {
         stem: "`heapq.heappush(h, (priority, task))` raises `TypeError: '<' not supported between instances of 'Task'`. Why?",
         options: [
-          "Tasks must be hashable",
-          "Two entries have equal priorities, so Python compares the second tuple elements — and `Task` defines no ordering",
-          "heapq only accepts numbers",
-          "The tuple must be a list"
+          "Items pushed to a heap must be hashable, and `Task` defines no `__hash__`",
+          "`heapq` only accepts numbers, so the tuple itself cannot be compared",
+          "On a priority tie, Python compares the `Task` objects, which have no ordering",
+          "The entry must be a list rather than a tuple, because heaps swap items in place"
         ],
-        answer: 1,
+        answer: 2,
         why: "Tuples compare element by element, so a tie on the first pushes the comparison to the second. Inserting a unique counter in the middle — `(priority, next(counter), task)` — means the third element is never reached."
       },
       {
         stem: "To find the 10 largest of a stream of ten million numbers, what do you use?",
         options: [
-          "Sort the stream and take the first 10",
-          "A min-heap of size 10 — the root is the weakest of the current best, so it is exactly what a new candidate must beat",
-          "A max-heap of all ten million",
-          "Two passes with `max()`"
+          "A min-heap of size 10, whose root is what a new candidate must beat",
+          "Sort the stream and take the first 10, since Timsort is fast on real data",
+          "A max-heap of all ten million, popped ten times at the end",
+          "Ten passes with `max()`, removing the winner each time"
         ],
-        answer: 1,
+        answer: 0,
         why: "O(n log k) time and O(k) space, and it works on a stream that never fits in memory. The min-heap-for-largest inversion reads backwards until you see that the root is the element a new candidate must displace — `heapq.nlargest` implements exactly this."
       }
     ]

@@ -53,7 +53,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Direct dictionary mapping\ndf[\"grade\"] = df[\"score\"].map({90: \"A\", 80: \"B\", 70: \"C\"})\n\n# Apply function\ndf[\"grade\"] = df[\"score\"].apply(lambda x: \"A\" if x >= 90 else \"B\")\n\n# Replace\ndf[\"status\"].replace({\"active\": 1, \"inactive\": 0}, inplace=True)\n\n# Cut into bins with labels\ndf[\"age_group\"] = pd.cut(df[\"age\"], bins=[0, 18, 35, 65, 100],\n                          labels=[\"child\", \"young\", \"adult\", \"senior\"])"
+     "code": "# Direct dictionary mapping\ndf[\"grade\"] = df[\"score\"].map({90: \"A\", 80: \"B\", 70: \"C\"})\n\n# Apply function\ndf[\"grade\"] = df[\"score\"].apply(lambda x: \"A\" if x >= 90 else \"B\")\n\n# Replace\ndf[\"status\"] = df[\"status\"].replace({\"active\": 1, \"inactive\": 0})\n\n# Cut into bins with labels\ndf[\"age_group\"] = pd.cut(df[\"age\"], bins=[0, 18, 35, 65, 100],\n                          labels=[\"child\", \"young\", \"adult\", \"senior\"])"
     }
    ],
    "kind": ""
@@ -191,7 +191,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Convert to Categorical\ndf[\"gender\"] = df[\"gender\"].astype(\"category\")\n\n# Ordered categorical\nfrom pandas.api.types import CategoricalDtype\nsize_type = CategoricalDtype(categories=[\"S\", \"M\", \"L\", \"XL\"], ordered=True)\ndf[\"size\"] = df[\"size\"].astype(size_type)\ndf[df[\"size\"] > \"M\"]   # Works with ordered categories\n\n# Memory savings\ndf[\"high_card_col\"].memory_usage() vs df[\"high_card_col\"].astype(\"category\").memory_usage()"
+     "code": "# Convert to Categorical\ndf[\"gender\"] = df[\"gender\"].astype(\"category\")\n\n# Ordered categorical\nfrom pandas.api.types import CategoricalDtype\nsize_type = CategoricalDtype(categories=[\"S\", \"M\", \"L\", \"XL\"], ordered=True)\ndf[\"size\"] = df[\"size\"].astype(size_type)\ndf[df[\"size\"] > \"M\"]   # Works with ordered categories\n\n# Memory savings: large for low-cardinality columns, little or none for high-cardinality ones\ndf[\"gender\"].memory_usage(deep=True)\ndf[\"gender\"].astype(\"category\").memory_usage(deep=True)"
     }
    ],
    "kind": ""
@@ -260,7 +260,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Use bitwise operators (not 'and'/'or' which are Python booleans)\nmask = (df[\"age\"] > 30) & (df[\"salary\"] > 50000) | (df[\"manager\"] == True)\nfiltered = df[mask]\n\n# For many conditions, build mask iteratively:\nconditions = [(\"age\", \">\", 30), (\"status\", \"==\", \"active\")]\nmask = pd.Series(True, index=df.index)\nfor col, op, val in conditions:\n    mask &= df[col].map(lambda x, o=op, v=val: eval(f\"x {o} v\"))"
+     "code": "# Use bitwise operators (not 'and'/'or' which are Python booleans)\nmask = (df[\"age\"] > 30) & (df[\"salary\"] > 50000) | (df[\"manager\"] == True)\nfiltered = df[mask]\n\n# For many conditions, build mask iteratively:\nimport operator\nops = {\">\": operator.gt, \"==\": operator.eq}\nconditions = [(\"age\", \">\", 30), (\"status\", \"==\", \"active\")]\nmask = pd.Series(True, index=df.index)\nfor col, op, val in conditions:\n    mask &= ops[op](df[col], val)"
     }
    ],
    "kind": ""
@@ -290,7 +290,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Manual profile\ndef profile(df: pd.DataFrame) -> pd.DataFrame:\n    return pd.DataFrame({\n        \"dtype\": df.dtypes,\n        \"nulls\": df.isnull().sum(),\n        \"null_pct\": df.isnull().mean() * 100,\n        \"unique\": df.nunique(),\n        \"sample\": df.iloc[0]\n    })\n\n# Library option\nimport ydata_profiling\nProfileReport(df, minimal=True).to_file(\"profile.html\")"
+     "code": "# Manual profile\ndef profile(df: pd.DataFrame) -> pd.DataFrame:\n    return pd.DataFrame({\n        \"dtype\": df.dtypes,\n        \"nulls\": df.isnull().sum(),\n        \"null_pct\": df.isnull().mean() * 100,\n        \"unique\": df.nunique(),\n        \"sample\": df.iloc[0]\n    })\n\n# Library option\nfrom ydata_profiling import ProfileReport\nProfileReport(df, minimal=True).to_file(\"profile.html\")"
     }
    ],
    "kind": ""

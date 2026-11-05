@@ -160,7 +160,7 @@ logger.info("login attempt", extra={"body": await request.json()})
 
     { t: "callout", kind: "tradeoff", title: "The refresh-token compromise", body: [
       { t: "p", text: "The standard resolution keeps both properties by splitting the credential in two: a **short-lived access token** verified statelessly, and a **long-lived refresh token** that is a database row." },
-      { t: "code", lang: "python", title: "why this works", numbered: false, code: `
+      { t: "code", lang: "text", title: "why this works", numbered: false, code: `
 access token    15 minutes    JWT, no lookup, cannot be revoked
 refresh token   30 days       opaque, a row, revoked instantly
 
@@ -918,7 +918,7 @@ def test_no_secret_is_hard_coded():
         stem: "`jwt.decode(token, key, algorithms=[\"HS256\", \"none\"])`. What can an attacker do?",
         options: [
           "Nothing — HS256 is still checked first",
-          "Craft a token with `alg: none` and an empty signature, naming any user and role, and be authenticated as them without knowing the secret",
+          "Forge an unsigned `alg: none` token for any user and be trusted",
           "Only read the payload, not forge one",
           "Cause a denial of service"
         ],
@@ -928,19 +928,19 @@ def test_no_secret_is_hard_coded():
       {
         stem: "A login endpoint returns \"Invalid email or password\" for both failures, but returns early when the account is missing. Is enumeration fixed?",
         options: [
-          "Yes — the messages are identical",
-          "No — the early return skips password hashing, so a missing account answers in milliseconds and a real one takes far longer",
-          "Yes, provided rate limiting is enabled",
-          "Only if the status codes also match"
+          "Yes — the messages are identical, so a caller cannot tell which of the two checks failed",
+          "Yes, provided rate limiting is enabled, since an attacker cannot try enough emails to learn anything",
+          "Only if the status codes also match for both failures, which is the remaining signal an attacker can read",
+          "No — skipping the hash makes missing accounts answer measurably faster"
         ],
-        answer: 1,
+        answer: 3,
         why: "Timing is as readable as the message body and trivially measurable over a network. Verifying against a dummy hash before returning costs one wasted Argon2 call per invalid email and closes an oracle that matching messages does not touch."
       },
       {
         stem: "Why return 404 rather than 403 when a user requests another account's order?",
         options: [
           "403 is not a valid REST status code",
-          "403 confirms the id exists, so iterating ids and sorting by status code yields an inventory of every order in the system",
+          "403 confirms the id exists, so ids can be enumerated",
           "404 is faster to produce",
           "Clients handle 404 more consistently"
         ],
@@ -950,12 +950,12 @@ def test_no_secret_is_hard_coded():
       {
         stem: "Your database holds unsalted SHA-256 password hashes. How do you migrate to Argon2?",
         options: [
-          "Re-hash the stored digests with Argon2 in a batch job",
-          "Verify the legacy hash at login, and re-hash with Argon2 while you have the plaintext — then force a reset on the dormant tail",
-          "Force every user to reset their password immediately",
-          "Run both schemes forever"
+          "Re-hash the stored SHA-256 digests with Argon2 in one batch job, so every account is upgraded at once",
+          "Force every user to reset their password immediately, then store the new passwords with Argon2",
+          "Run both schemes side by side forever, since the old hashes are still valid for existing users",
+          "Verify the old hash at login and re-hash with Argon2 then; reset the dormant rest"
         ],
-        answer: 1,
+        answer: 3,
         why: "Hashing a digest adds no strength — the original password remains as weak as the SHA-256 protecting it. Login is the only moment the plaintext exists, so a dual-path verifier converts the population gradually. Treat the old hashes as cracked throughout, and reset privileged accounts immediately rather than waiting."
       }
     ]

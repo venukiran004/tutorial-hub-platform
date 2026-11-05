@@ -116,8 +116,8 @@ for i in range(20):                        # a realistic wide frame
 df.to_csv("data.csv", index=False)
 df.to_parquet("data.parquet")
 
-os.path.getsize("data.csv") / 1e6          # ~2,600 MB
-os.path.getsize("data.parquet") / 1e6      # ~700 MB   -- 3.7x smaller
+os.path.getsize("data.csv") / 1e6          # ~2,252 MB
+os.path.getsize("data.parquet") / 1e6      # ~928 MB   -- 3.7x smaller
 
 # READING EVERYTHING:
 # %timeit pd.read_csv("data.csv")                 -> ~35 s

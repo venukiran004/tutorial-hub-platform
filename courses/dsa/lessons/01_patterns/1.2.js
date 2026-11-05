@@ -126,7 +126,7 @@ def two_sum(nums: list[int], target: int) -> tuple[int, int] | None:
     { t: "table",
       head: ["Structure", "For", "Note"],
       rows: [
-        ["`set`", "Membership and deduplication", "**No values — half the memory of a dict**"],
+        ["`set`", "Membership and deduplication", "**No values, though barely smaller than a dict**"],
         ["`dict`", "Key to value", "Insertion-ordered since 3.7"],
         ["`Counter`", "Frequencies", "**`most_common`, and it does arithmetic**"],
         ["`defaultdict(list)`", "Grouping", "Removes the `setdefault` boilerplate"],
@@ -226,7 +226,7 @@ return list(groups.values())
 
 d[[1, 2]] = "x"          # TypeError: unhashable type: 'list'
 d[(1, 2)] = "x"          # fine
-d[frozenset({1, 2})]     # fine -- and order-independent, unlike a
+d[frozenset({1, 2})] = "x"  # fine -- and order-independent, unlike a
                          # tuple, which is what makes it right for
                          # "the same set of items"
 
@@ -365,6 +365,11 @@ for ch in text:
 # STEP 3 -- the key is the running sum; the value is the FIRST index
 #   at which it occurred. Never overwrite, because a later index
 #   would give a shorter subarray.
+
+
+from timeit import timeit
+
+import pytest
 
 
 def find_max_length(nums: list[int]) -> int:
@@ -573,9 +578,9 @@ def test_generalises_to_three_values():
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A deduplication job over ten million records took four hours. The code checked `if record_id in seen_ids` where `seen_ids` was a list." },
+      { t: "p", text: "A deduplication job over ten million records was still running after four days. The code checked `if record_id in seen_ids` where `seen_ids` was a list." },
       { t: "p", text: "**Each membership test was a linear scan**, so the job was O(n²) — roughly fifty trillion comparisons by the end. Changing `list` to `set` brought it to ninety seconds." },
-      { t: "p", text: "**The memory cost was 400MB instead of 80MB**, which nobody noticed and nobody would have minded. The trade was overwhelmingly worth it and had simply never been made deliberately." },
+      { t: "p", text: "**The memory cost was 270MB instead of 80MB**, which nobody noticed and nobody would have minded. The trade was overwhelmingly worth it and had simply never been made deliberately." },
       { t: "p", text: "**`in` on a list is O(n); on a set it is O(1).** It is one word of difference, it reads identically, and it is the most common accidental quadratic in Python." }
     ]}
   ],
@@ -603,46 +608,46 @@ def test_generalises_to_three_values():
       {
         stem: "In `two_sum`, why must you store the current value *after* checking for its complement?",
         options: [
-          "For better cache locality",
-          "Otherwise an element can match itself — with target 6 and value 3, storing first returns index 0 paired with index 0",
-          "To preserve insertion order",
-          "Because dict writes are slower than reads"
+          "Otherwise an element can pair with itself",
+          "For better cache locality, because the read happens on a key that is already loaded",
+          "To preserve insertion order, so the returned indices come back smallest first",
+          "Because dict writes are slower than reads, so skipping one on a match saves time"
         ],
-        answer: 1,
+        answer: 0,
         why: "The ordering encodes the constraint that the two indices must differ. It is the kind of one-line detail an interviewer probes with a single adversarial input, so stating why the order matters is worth doing unprompted."
       },
       {
         stem: "`d[1] = \"int\"; d[True] = \"bool\"; d[1.0] = \"float\"`. What does `d` contain?",
         options: [
-          "Three entries",
-          "One entry, `{1: 'float'}` — the three keys hash equally and compare equal, so each assignment overwrites the value",
-          "Two entries, since bool is a distinct type",
-          "A TypeError on the second assignment"
+          "Three entries, because each key has a different type",
+          "Two entries: `bool` is a distinct type, while 1 and 1.0 compare equal",
+          "A `TypeError` on the second assignment, because the key already exists",
+          "One entry, `{1: 'float'}` — the keys hash and compare equal"
         ],
-        answer: 1,
+        answer: 3,
         why: "`hash(1) == hash(True) == hash(1.0)` and all three compare equal, so they are one key. The original key object is kept and only the value is replaced — which is why the key prints as `1` rather than `True`."
       },
       {
         stem: "A prefix-sum solution returns 0 for `[0, 1]` where the answer is 2. What is missing?",
         options: [
-          "The running sum should start at 1",
-          "The sentinel entry `{0: -1}` — without it, no subarray starting at index 0 can be matched",
-          "The map should store the last index, not the first",
-          "The values should be mapped to 1 and 2 rather than 1 and -1"
+          "The running sum should start at 1, because the first element is always counted",
+          "The values should be mapped to 1 and 2, because -1 cancels the prefix sum",
+          "The map should store the last index of each sum, not the first",
+          "The sentinel entry `{0: -1}`, which lets a match start at index 0"
         ],
-        answer: 1,
+        answer: 3,
         why: "A subarray from index 0 requires a prefix sum of zero \"before the array began\", and the sentinel supplies exactly that. The value `-1` matters too: the length is `j - first_index[sum]`, so the sentinel must sit one position before the start."
       },
       {
         stem: "A deduplication job uses `if record_id in seen` where `seen` is a list. What is the effect at ten million records?",
         options: [
-          "Correct but uses more memory than a set",
           "Each check is a linear scan, so the job is O(n²) — around fifty trillion comparisons",
-          "It fails with a recursion limit",
-          "Nothing — CPython optimises list membership"
+          "It is correct and fast, but it uses more memory than a set would",
+          "It fails with a recursion limit once the list holds a few million records",
+          "Nothing changes — CPython caches list membership tests after the first scan"
         ],
-        answer: 1,
-        why: "This is the most common accidental quadratic in Python, because the two versions read identically. A set costs roughly four times the memory and turns hours into seconds — a trade worth making deliberately rather than discovering."
+        answer: 0,
+        why: "This is the most common accidental quadratic in Python, because the two versions read identically. A set costs roughly four times the memory and turns days into seconds — a trade worth making deliberately rather than discovering."
       }
     ]
   },

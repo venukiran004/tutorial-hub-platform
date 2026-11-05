@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.1",
  "lede": "**24 programs to write**, on chunking, grouping and runs. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 24 programs on chunking, grouping and runs without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 409–432.** What this set actually drills, counted from its own problems — 11 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "databases", "algorithms"], "cells": [[{"text": "7", "tone": "accent"}, "Chunk a List into Sublists"], [{"text": "2", "tone": "good"}, "Find Index of All Occurrences"], [{"text": "2", "tone": "violet"}, "Sliding Window Maximum"]], "t": "diagram", "id": "dg-c4_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

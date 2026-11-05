@@ -194,11 +194,15 @@ beth
     { t: "callout", kind: "trap", title: "`max` and `min` raise on empty; `sum` does not", body: [
       { t: "code", lang: "python", title: "the asymmetry", numbered: false, code: `
 print(sum([]))                    # 0 -- has a natural identity
-max([])                           # ValueError: max() arg is an empty sequence
+try:
+    max([])                       # has no identity, so it refuses
+except ValueError as exc:
+    print(f"ValueError: {exc}")
 
 print(max([], default=None))      # state the empty case explicitly
 print(max([], default=0))`,
         out: `0
+ValueError: max() arg is an empty sequence
 None
 0`},
       { t: "p", text: "This is the behaviour change that turns a loop-to-built-in refactor into a bug (Lesson 2.7). A hand-written \"track the best so far\" loop returns `None` for empty input; `max()` raises. **Always pass `default=` when the input can be empty** — it makes the empty case a stated decision rather than an inherited accident." },
@@ -514,8 +518,8 @@ if __name__ == "__main__":
         options: [
           "A `ValueError`, because the lengths differ",
           "98 pairs — `zip` stops at the shorter input and the last two IDs are silently dropped",
-          "100 pairs, with `None` for the two missing predictions",
-          "100 pairs, with the last two predictions repeated"
+          "100 pairs, with `None` filling in for the two missing predictions at the end",
+          "100 pairs, with the shorter input's last value repeated to make up the difference"
         ],
         answer: 1,
         why: "Default `zip` stops at the shortest input with no warning. The output is correctly paired but incomplete, which is far harder to detect than corruption — row counts look plausible and spot checks pass. `strict=True` (3.10+) raises instead, at the point of the bug. Use `itertools.zip_longest` when you actually want padding, which is option C's behaviour."
@@ -524,33 +528,33 @@ if __name__ == "__main__":
         stem: "Why does `any(check(x) for x in items)` differ from `any([check(x) for x in items])`?",
         options: [
           "They are identical — the brackets are stylistic",
-          "The generator short-circuits at the first `True`; the list comprehension evaluates every element before `any` is called",
           "The list version is faster because it avoids generator overhead",
+          "The generator stops at the first `True`; the list version evaluates everything first",
           "The bracketed version raises on an empty list"
         ],
-        answer: 1,
+        answer: 2,
         why: "A list comprehension is fully evaluated and then passed as an argument, so `any` never gets the chance to stop early. The generator is consumed lazily, so `any` stops as soon as it finds a truthy value — matching the `break` in the loop it replaced. On an expensive predicate this is wasted work; on an infinite generator the list version never returns."
       },
       {
         stem: "A refactor replaces a best-so-far loop with `max(orders, key=lambda o: o.total)`. What breaks?",
         options: [
-          "Nothing — it is an exact equivalent",
-          "Empty input: `max` raises `ValueError` where the loop returned `None`",
+          "Nothing — `max` with a `key` is an exact equivalent of the loop",
           "The `key` function cannot access attributes, only dict keys",
-          "`max` returns the value rather than the object"
+          "Empty input: `max` raises `ValueError` where the loop returned `None`",
+          "`max` returns the largest `total` value rather than the order object"
         ],
-        answer: 1,
+        answer: 2,
         why: "A hand-written loop that starts with `best = None` returns `None` for an empty sequence; `max()` raises. If any caller relies on the `None`, the failure appears the first time the input happens to be empty — often in production. `max(..., default=None)` restores the contract, and is better than either original because it makes the empty case explicit rather than implied."
       },
       {
         stem: "In which case is a plain `for` loop the better choice over a comprehension or built-in?",
         options: [
-          "When the collection has more than 1,000 elements",
-          "When the body performs an action rather than producing a value — `[send(u) for u in users]` builds a list of `None`s and misstates the intent",
-          "When the elements are dictionaries rather than scalars",
-          "When you need to know the index of each element"
+          "When the body performs an action — `[send(u) for u in users]` builds a list of `None`s",
+          "When the collection has more than 1,000 elements, because comprehensions build the whole result in memory first",
+          "When the elements are dictionaries rather than scalars, since comprehensions cannot unpack mapping items cleanly",
+          "When you need to know the index of each element, which a comprehension has no way to provide"
         ],
-        answer: 1,
+        answer: 0,
         why: "A comprehension exists to build a collection. Using one for side effects allocates a list nobody wants and tells every future reader that a collection is being constructed when it is not. Two other legitimate cases: needing several results from one pass over a generator that can only be consumed once, and a `key`/condition too complex to read inline. Size is irrelevant, and `enumerate` covers indices."
       }
     ]

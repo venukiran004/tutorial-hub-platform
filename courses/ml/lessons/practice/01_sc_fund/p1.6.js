@@ -258,7 +258,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "model = torchvision.models.resnet18(pretrained=True)\nmodel.fc = nn.Linear(512, 10)  # Replace last layer for 10 classes\n# Freeze early layers, train only the last few\nfor param in model.parameters():\n    param.requires_grad = False\nmodel.fc.requires_grad_(True)"
+     "code": "model = torchvision.models.resnet18(weights=\"DEFAULT\")\nmodel.fc = nn.Linear(512, 10)  # Replace last layer for 10 classes\n# Freeze early layers, train only the last few\nfor param in model.parameters():\n    param.requires_grad = False\nmodel.fc.requires_grad_(True)"
     },
     {
      "t": "ol",
@@ -762,7 +762,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from langchain.agents import create_openai_tools_agent, AgentExecutor\nfrom langchain.tools import Tool\n\n# Define tools\ntools = [\n    Tool(name=\"search\", func=search_api, description=\"Search the web for current information\"),\n    Tool(name=\"sql_query\", func=run_sql, description=\"Query the company database\"),\n    Tool(name=\"send_email\", func=send_email, description=\"Send an email to a recipient\"),\n]\n\n# Create agent\nagent = create_openai_tools_agent(llm, tools, prompt)\nexecutor = AgentExecutor(agent=agent, tools=tools, verbose=True,\n    max_iterations=5,           # Prevent infinite loops\n    handle_parsing_errors=True, # Graceful error handling\n)\n\n# Safety: Add human-in-the-loop for dangerous tools\nfrom langchain.tools import HumanApprovalCallbackHandler\nsend_email_tool.callbacks = [HumanApprovalCallbackHandler()]"
+     "code": "from langchain.agents import create_openai_tools_agent, AgentExecutor\nfrom langchain.tools import Tool\n\n# Define tools\ntools = [\n    Tool(name=\"search\", func=search_api, description=\"Search the web for current information\"),\n    Tool(name=\"sql_query\", func=run_sql, description=\"Query the company database\"),\n    Tool(name=\"send_email\", func=send_email, description=\"Send an email to a recipient\"),\n]\n\n# Create agent\nagent = create_openai_tools_agent(llm, tools, prompt)\nexecutor = AgentExecutor(agent=agent, tools=tools, verbose=True,\n    max_iterations=5,           # Prevent infinite loops\n    handle_parsing_errors=True, # Graceful error handling\n)\n\n# Safety: Add human-in-the-loop for dangerous tools\nfrom langchain_community.callbacks.human import HumanApprovalCallbackHandler\nsend_email_tool.callbacks = [HumanApprovalCallbackHandler()]"
     },
     {
      "t": "p",

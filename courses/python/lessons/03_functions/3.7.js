@@ -668,21 +668,21 @@ if __name__ == "__main__":
       {
         stem: "What is `@decorator` above `def f(): ...` exactly equivalent to?",
         options: [
-          "`f = decorator(f)`, executed at definition time",
           "`decorator(f())`, executed each time `f` is called",
           "A registration that Python applies lazily on first call",
-          "`f.__decorator__ = decorator`"
+          "`f.__decorator__ = decorator`",
+          "`f = decorator(f)`, executed at definition time"
         ],
-        answer: 0,
+        answer: 3,
         why: "The `@` symbol is pure syntactic sugar for calling the decorator with the function and rebinding the name to the result. It runs when the `def` statement executes — at import time, not at call time. Understanding this removes all the apparent magic: a decorator with arguments needs an extra layer precisely because `@expr` calls `expr`, so if `expr` is itself a call, its result must be what takes the function."
       },
       {
         stem: "A decorated FastAPI endpoint stops parsing request parameters and accepts nothing. What is the likely cause?",
         options: [
           "The decorator is applied in the wrong order relative to the route decorator",
-          "The decorator omits `functools.wraps`, so `inspect.signature` reports the wrapper's `(*args, **kwargs)` instead of the real signature",
-          "FastAPI does not support decorated endpoints",
-          "The wrapper needs to be declared `async`"
+          "It lacks `functools.wraps`, so `inspect.signature` sees `(*args, **kwargs)` instead",
+          "FastAPI does not support decorated endpoints, because it registers the route before the decorator runs",
+          "The wrapper needs to be declared `async`, and a sync wrapper around an async endpoint discards the parameters"
         ],
         answer: 1,
         why: "FastAPI builds its request parsing, validation and OpenAPI schema by inspecting the endpoint's signature. Without `functools.wraps`, the name refers to a wrapper whose signature is `(*args, **kwargs)`, so FastAPI concludes the endpoint takes no parameters. `wraps` sets `__wrapped__`, which is how `inspect.signature` recovers the original. This is the most common concrete symptom of a forgotten `@wraps`."
@@ -690,10 +690,10 @@ if __name__ == "__main__":
       {
         stem: "Why must a decorator use a bare `raise` rather than `raise exc` when re-raising?",
         options: [
-          "`raise exc` creates a new exception object, losing the original message",
-          "A bare `raise` preserves the original traceback; `raise exc` attaches the decorator's frame and truncates where the error actually came from",
-          "`raise exc` is a syntax error inside an `except` block",
-          "They are equivalent; the bare form is only shorter"
+          "`raise exc` creates a new exception object, losing the original message and any attributes set on it",
+          "A bare `raise` keeps the original traceback; `raise exc` makes it start in the decorator",
+          "`raise exc` is a syntax error inside an `except` block, so the decorator would fail to import",
+          "They are equivalent; the bare form is only shorter, and both re-raise the same exception with its traceback"
         ],
         answer: 1,
         why: "Both re-raise the same exception object with the same message, but `raise exc` re-raises it from the current frame, so the traceback appears to start inside the decorator. Every decorated function's failures then look identical and the actual origin is lost — destroying exactly the debugging information an instrumentation decorator exists to provide. The bare `raise` re-raises the exception being handled with its traceback intact."
@@ -701,10 +701,10 @@ if __name__ == "__main__":
       {
         stem: "Adding `@retry(times=3)` to a payment endpoint reduces timeouts but produces duplicate charges. Why?",
         options: [
-          "The retry decorator has a race condition when called concurrently",
-          "A timeout means the response was lost, not that nothing happened — retrying a non-idempotent write repeats the side effect",
-          "Three retries is too many; one would be safe",
-          "The exception type being caught is too broad"
+          "The retry decorator has a race condition when called concurrently, so two retries can run at once",
+          "A timeout means the reply was lost, not the charge — retrying the write repeats it",
+          "Three retries is too many for a payment call; a single retry would be safe from duplicates",
+          "The exception type being caught is too broad, so declined cards are retried as well as timeouts"
         ],
         answer: 1,
         why: "The gateway may have processed the charge successfully and had its response lost in transit. The client sees a timeout and retries, charging again. The fix is not removing the retry but making the operation idempotent — an idempotency key lets the gateway recognise the repeat and return the original result. The broader point is that a decorator changes behaviour at a distance: on a read `@retry` is obviously safe, on a write it is a correctness decision the syntax makes look like configuration."

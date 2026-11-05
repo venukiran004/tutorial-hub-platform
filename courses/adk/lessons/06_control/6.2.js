@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 6.2 — Plugins: Cross-Cutting Concerns
    The 15 hooks and the one-plugin-many-agents trace are executed output from
-   scratchpad/adk/c2.py on google-adk 2.9.2.
+   c2.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "6.2",
@@ -52,7 +52,7 @@ on_event_callback        on_user_message_callback close` },
 
     { t: "h2", n: "02", text: "One plugin, every agent", id: "every" },
 
-    { t: "code", lang: "python", title: "c2.py — an audit plugin over a two-agent pipeline",
+    { t: "code", lang: "python", title: "an audit plugin over a two-agent pipeline",
       code: `class Audit(BasePlugin):
     def __init__(self):
         super().__init__(name="audit")

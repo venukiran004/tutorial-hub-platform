@@ -351,7 +351,8 @@ class Order:
       solution: {
         lang: "python",
         title: "subscription.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 class Subscription:
     def __init__(self, seats, price_per_seat):
@@ -388,7 +389,6 @@ class Subscription:
 
 # ---- the redesign ------------------------------------------------------
 
-from __future__ import annotations
 
 from collections.abc import Iterator
 from decimal import Decimal
@@ -597,32 +597,32 @@ if __name__ == "__main__":
       {
         stem: "What does a double leading underscore, as in `self.__value`, actually do?",
         options: [
-          "Makes the attribute private and inaccessible from outside the class",
-          "Renames it to `_ClassName__value` so a subclass using the same name cannot clobber it — it remains fully reachable",
-          "Marks it read-only after first assignment",
-          "Excludes it from `vars()` and `__dict__`"
+          "Makes the attribute private, so code outside the class cannot read or write it at all",
+          "Marks it read-only after its first assignment, so later writes raise `AttributeError`",
+          "Renames it to `_ClassName__value` to avoid subclass clashes — it stays fully reachable",
+          "Excludes it from `vars()` and `__dict__`, so it does not appear in serialisation or debugging output"
         ],
-        answer: 1,
+        answer: 2,
         why: "It is name mangling, not privacy. Inside class `C`, `__value` becomes `_C__value`, which is trivially reachable and appears in `vars()`. The purpose is preventing accidental collisions when strangers subclass your class — genuinely useful for library base classes. For application code a single underscore is better: mangling complicates debugging, `getattr` and serialisation while protecting against a problem you rarely have."
       },
       {
         stem: "A class validates `seats` in a property setter but `__init__` assigns `self._seats = seats` directly. What is the consequence?",
         options: [
-          "Nothing — the setter still runs because the property intercepts all writes",
-          "The invariant does not hold at construction: an invalid value can enter, and only later assignments are validated",
-          "A `RecursionError`, because the setter calls itself",
-          "The property becomes read-only"
+          "Nothing — the setter still runs, because the property intercepts every write to the instance",
+          "A `RecursionError`, because the setter writes to `_seats`, which calls the setter again",
+          "The property becomes read-only, because `__init__` claimed the underlying attribute first",
+          "Invalid values can enter at construction; only later assignments are validated"
         ],
-        answer: 1,
+        answer: 3,
         why: "Assigning to the underlying `_seats` bypasses the setter entirely, so `Subscription(-5, ...)` succeeds and the object exists in an invalid state. Every subsequent assignment *is* checked, which makes it worse — the object protects itself from everything except its own creation. Writing `self.seats = seats` in `__init__` routes the initial value through the same validation as every later one."
       },
       {
         stem: "Why is `@cached_property` unsafe for a value derived from a mutable list?",
         options: [
-          "It raises an error when the underlying collection changes",
-          "It computes once and stores the result on the instance, never invalidating — so it goes silently stale when the list changes",
-          "It recomputes on every access, defeating the cache",
-          "It holds a strong reference to the list and leaks memory"
+          "It raises an error when the underlying collection changes, because the cached value no longer matches",
+          "It computes once and never invalidates, so it goes silently stale when the list changes",
+          "It recomputes on every access, which defeats the point of caching an expensive value",
+          "It holds a strong reference to the list, which keeps the list alive after the instance is gone"
         ],
         answer: 1,
         why: "`cached_property` replaces itself with the computed value in the instance `__dict__` on first access, so later reads are plain attribute lookups and the function never runs again. Appending to the underlying list produces no invalidation and no error — just a wrong answer. It is correct only for values derived from immutable state; for mutable state use a plain `property` if the computation is cheap, or freeze the object."
@@ -630,12 +630,12 @@ if __name__ == "__main__":
       {
         stem: "A dashboard rendering 50 orders issues 51 queries. The template reads `order.customer.name`. What went wrong?",
         options: [
-          "The ORM is not configured with a connection pool",
-          "`customer` is a property that queries the database, so attribute syntax hid one query per iteration from reviewers",
-          "The template engine evaluates properties twice",
-          "The orders were fetched lazily and the loop forced evaluation"
+          "`customer` is a property that runs a query, so each loop iteration hid one query",
+          "The ORM is not configured with a connection pool, so every query opens a new connection",
+          "The template engine evaluates each property twice, once to check it and once to render it",
+          "The orders were fetched lazily, and iterating them in the template forced one query per row"
         ],
-        answer: 1,
+        answer: 0,
         why: "A property that does I/O breaks the promise attribute syntax makes — cheap, side-effect-free, safe to repeat. Because `order.customer` reads like a field access, nobody looked for a query, and in a loop it becomes the classic N+1. Renaming it `fetch_customer()` makes the cost visible at every call site; the parentheses are what let a reviewer see what a line costs."
       }
     ]

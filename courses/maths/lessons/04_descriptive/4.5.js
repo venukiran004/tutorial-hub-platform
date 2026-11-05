@@ -75,8 +75,8 @@ for name, y in [
 xc, yc = x.copy(), (3*x + rng.normal(0, 1, 500))
 xc[0], yc[0] = 1000.0, -1000.0                  # one absurd point
 
-stats.pearsonr(xc, yc).statistic                # -0.66  sign FLIPPED
-stats.spearmanr(xc, yc).statistic               # +0.99  unmoved
+stats.pearsonr(xc, yc).statistic                # -0.97  sign FLIPPED
+stats.spearmanr(xc, yc).statistic               # +0.98  unmoved
 #
 # ONE POINT IN FIVE HUNDRED REVERSED THE SIGN OF PEARSON'S r. That is
 # the breakdown point of 1/n from lesson 4.1, appearing in a
@@ -264,13 +264,13 @@ n = 200_000
 technical = rng.normal(0, 1, n)
 communication = rng.normal(0, 1, n)
 
-np.corrcoef(technical, communication)[0, 1]        # 0.000
+np.corrcoef(technical, communication)[0, 1]        # -0.002
 
 # A HIRING PROCESS accepts candidates who are good enough OVERALL.
 hired = (technical + communication) > 2.0
 hired.mean()                                       # 0.079
 
-np.corrcoef(technical[hired], communication[hired])[0, 1]   # -0.71
+np.corrcoef(technical[hired], communication[hired])[0, 1]   # -0.72
 #
 # AMONG PEOPLE YOU HIRED, THE TWO SKILLS ARE STRONGLY NEGATIVELY
 # CORRELATED -- and they are independent in the population. Nothing

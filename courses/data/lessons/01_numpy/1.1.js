@@ -284,7 +284,7 @@ def smallest_int_dtype(a):
 smallest_int_dtype(ages)                # <class 'numpy.int8'>
 
 # THE RISK IS SILENT OVERFLOW, and NumPy does not warn:
-counts = np.array([200, 100], dtype=np.int8)     # 200 > 127 already
+counts = np.array([200, 100]).astype(np.int8)    # 200 > 127 already
 counts                                  # array([-56, 100]) -- wrapped
 #
 # ALWAYS CHECK THE RANGE BEFORE DOWNCASTING, and re-check when new data
@@ -294,8 +294,8 @@ counts                                  # array([-56, 100]) -- wrapped
 big = np.ones(10_000_000, dtype=np.float32)
 big.sum()                               # 10,000,000.0 -- but not always
 noisy = np.full(10_000_000, 0.1, dtype=np.float32)
-noisy.sum()                             # 999,999.9  -- error accumulates
-np.full(10_000_000, 0.1, dtype=np.float64).sum()   # 1,000,000.0000001
+noisy.sum()                             # 1,000,000.1  -- error accumulates
+np.full(10_000_000, 0.1, dtype=np.float64).sum()   # 1,000,000.0000000
 #
 # NumPy uses pairwise summation, which limits the damage -- a naive loop
 # would be far worse. But the rule holds: STORE in float32, ACCUMULATE

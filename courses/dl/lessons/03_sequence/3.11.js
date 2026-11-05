@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.11 — Padding, Packing and Masking
    Packed-vs-padded h_n divergence, attention leakage onto padding, and loss
-   masking all measured (scratchpad/dl/d39.py).
+   masking all measured (d39.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.11",

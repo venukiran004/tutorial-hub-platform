@@ -2,7 +2,7 @@
    LESSON 4.2 — Input Embeddings and Positional Encoding
    The sinusoidal construction is built and probed — constant norm, unique
    per position, and the rotation property verified. Deep dive in 4.9
-   (scratchpad/nlp/n42b.py).
+   (n42b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.2",
@@ -52,7 +52,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n42b.py — sinusoidal positional encoding", code:
+    { t: "code", lang: "python", title: "sinusoidal positional encoding", code:
 "def sinusoidal(max_len, d_model):\n    pe = torch.zeros(max_len, d_model)\n    position = torch.arange(0, max_len).unsqueeze(1).float()\n    div_term = torch.exp(torch.arange(0, d_model, 2).float() *\n                         -(math.log(10000.0) / d_model))\n    pe[:, 0::2] = torch.sin(position * div_term)   # even dimensions\n    pe[:, 1::2] = torch.cos(position * div_term)   # odd dimensions\n    return pe",
       caption: "`div_term` is computed in log space then exponentiated, which is numerically safer than raising 10000 to a negative power directly." },
 

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c18.2",
  "lede": "**26 programs to write**, on pytest, profiling and CLIs. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 26 programs on pytest, profiling and CLIs without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c18.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2035–2060.** What this set actually drills, counted from its own problems — 22 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["testing", "files and paths", "internals", "decorators", "generators", "production"], "cells": [[{"text": "10", "tone": "accent"}, "Pytest Style Tests"], [{"text": "5", "tone": "good"}, "File Watcher"], [{"text": "2", "tone": "violet"}, "Performance Profiling"], [{"text": "2", "tone": "teal"}, "Memory Profiling"], [{"text": "2", "tone": "warn"}, "Config File Generator"], [{"text": "1", "tone": "crit"}, "Debugging with Logging"]], "t": "diagram", "id": "dg-c18_2-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -159,7 +159,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative",
-     "code": "print(\"Q530: Memory profiling\")\nprint(\"  Tools: tracemalloc (stdlib), memory_profiler, objgraph, pympler\")\nprint(\"  import tracemalloc\")\nprint(\"  tracemalloc.start()\")\nprint(\"  # ... code ...\")\nprint(\"  snapshot = tracemalloc.take_snapshot()\")\nprint(\"  top = snapshot.statistics('lineno')\")\nprint(\"  for stat in top[:5]: print(stat)\")\nprint()\nQ530: Memory profiling\n  Tools: tracemalloc (stdlib), memory_profiler, objgraph, pympler\n  import tracemalloc\n  tracemalloc.start()\n  # ... code ...\n  snapshot = tracemalloc.take_snapshot()\n  top = snapshot.statistics('lineno')\n  for stat in top[:5]: print(stat)",
+     "code": "print(\"Memory profiling\")\nprint(\"  Tools: tracemalloc (stdlib), memory_profiler, objgraph, pympler\")\nprint(\"  import tracemalloc\")\nprint(\"  tracemalloc.start()\")\nprint(\"  # ... code ...\")\nprint(\"  snapshot = tracemalloc.take_snapshot()\")\nprint(\"  top = snapshot.statistics('lineno')\")\nprint(\"  for stat in top[:5]: print(stat)\")\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "Memory profiling\n  Tools: tracemalloc (stdlib), memory_profiler, objgraph, pympler\n  import tracemalloc\n  tracemalloc.start()\n  # ... code ...\n  snapshot = tracemalloc.take_snapshot()\n  top = snapshot.statistics('lineno')\n  for stat in top[:5]: print(stat)",
      "numbered": false
     }
    ]

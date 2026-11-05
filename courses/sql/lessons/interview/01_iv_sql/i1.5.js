@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.5",
- "lede": "**18 \u0001** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**18 \u0001** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -21,7 +21,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "86",
+   "n": "58",
    "q": "What is a CTE? Advantages over subqueries?",
    "body": [
     {
@@ -33,7 +33,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "87",
+   "n": "59",
    "q": "Explain recursive CTEs with an example.",
    "body": [
     {
@@ -46,7 +46,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "88",
+   "n": "60",
    "q": "Correlated vs non-correlated subquery?",
    "body": [
     {
@@ -58,36 +58,32 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "89",
+   "n": "61",
    "q": "When to use EXISTS vs IN with subqueries?",
    "body": [
     {
      "t": "p",
-     "text": "EXISTS is faster for large subqueries (stops at first match). IN materializes entire subquery result. EXISTS handles NULLs correctly. Use EXISTS for correlated checks, IN for small value lists."
+     "text": "Planners often make them equivalent, so choose on meaning. EXISTS handles NULLs correctly in the negated form: NOT IN returns nothing if the subquery contains a NULL. Use EXISTS for correlated checks, IN for small value lists."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "90",
+   "n": "62",
    "q": "Write a CTE to generate a date series.",
    "body": [
     {
      "t": "code",
      "lang": "sql",
-     "code": "WITH RECURSIVE dates AS (\n    SELECT '2024-01-01'::date AS dt\n    UNION ALL\n    SELECT dt + INTERVAL '1 day' FROM dates WHERE dt < '2024-12-31'\n)\nSELECT dt FROM dates;"
-    },
-    {
-     "t": "p",
-     "text": "**Q91-105.** Additional patterns: multiple CTEs chained together, CTE vs temp table performance, subqueries in SELECT/FROM/WHERE clauses, scalar subqueries, and lateral subqueries for row-dependent computations."
+     "code": "WITH RECURSIVE dates AS (\n    SELECT '2024-01-01'::date AS dt\n    UNION ALL\n    SELECT (dt + INTERVAL '1 day')::date FROM dates WHERE dt < '2024-12-31'\n)\nSELECT dt FROM dates;"
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "106",
+   "n": "63",
    "q": "Common string functions.",
    "body": [
     {
@@ -100,7 +96,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "107",
+   "n": "64",
    "q": "Common date functions.",
    "body": [
     {
@@ -113,7 +109,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "108",
+   "n": "65",
    "q": "How to calculate age from date of birth?",
    "body": [
     {
@@ -126,23 +122,19 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "109",
+   "n": "66",
    "q": "CAST vs CONVERT?",
    "body": [
     {
      "t": "p",
      "text": "CAST is standard SQL (`CAST(col AS INT)`). CONVERT is database-specific with additional formatting options. Prefer CAST for portability."
-    },
-    {
-     "t": "p",
-     "text": "**Q110-125.** Date arithmetic, string pattern extraction with regex, type conversions, timezone handling, interval calculations, and working with JSON columns in SQL."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "126",
+   "n": "67",
    "q": "Explain ACID properties.",
    "body": [
     {
@@ -154,7 +146,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "127",
+   "n": "68",
    "q": "What are isolation levels?",
    "body": [
     {
@@ -166,7 +158,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "128",
+   "n": "69",
    "q": "Explain optimistic vs pessimistic locking.",
    "body": [
     {
@@ -178,7 +170,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "129",
+   "n": "70",
    "q": "What are stored procedures and functions?",
    "body": [
     {
@@ -190,7 +182,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "130",
+   "n": "71",
    "q": "What is a view? Materialized view?",
    "body": [
     {
@@ -202,7 +194,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "131",
+   "n": "72",
    "q": "Explain triggers.",
    "body": [
     {
@@ -214,7 +206,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "132",
+   "n": "73",
    "q": "What are indexes? Types?",
    "body": [
     {
@@ -226,7 +218,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "133",
+   "n": "74",
    "q": "Composite index vs multiple indexes?",
    "body": [
     {
@@ -238,16 +230,12 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "134",
+   "n": "75",
    "q": "What is query execution plan? How to read it?",
    "body": [
     {
      "t": "p",
      "text": "EXPLAIN/EXPLAIN ANALYZE shows how database executes a query. Look for: Seq Scan (full scan, slow), Index Scan (good), Sort (costly), Hash Join vs Nested Loop, estimated vs actual rows."
-    },
-    {
-     "t": "p",
-     "text": "**Q135-150.** Additional topics: partitioning (range, list, hash), MERGE/UPSERT statement, Common Table Expressions with INSERT/UPDATE, recursive hierarchy traversal, generating time series data, window function in UPDATE, database-specific features (PostgreSQL arrays, JSON operators, MySQL specifics vs PostgreSQL)."
     }
    ],
    "kind": ""

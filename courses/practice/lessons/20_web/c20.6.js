@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c20.6",
  "lede": "**20 programs to write**, on middleware, sessions and uploads. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on auth, security, websockets & protocols without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on middleware, sessions and uploads without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c20.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2419–2438.** What this set actually drills, counted from its own problems — 7 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["web and APIs", "files and paths", "patterns"], "cells": [[{"text": "5", "tone": "accent"}, "Session"], [{"text": "1", "tone": "good"}, "File uploads"], [{"text": "1", "tone": "violet"}, "Reverse proxy"]], "t": "diagram", "id": "dg-c20_6-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -39,7 +39,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q471: Middleware\")\nprint(\"  Code that runs before/after each request.\")\nprint(\"  Use cases: logging, auth, CORS, timing, error handling\")\nprint(\"  FastAPI: @app.middleware('http')\")\nprint(\"  Django: MIDDLEWARE list in settings.py\")\nprint()",
+     "code": "print(\"Middleware\")\nprint(\"  Code that runs before/after each request.\")\nprint(\"  Use cases: logging, auth, CORS, timing, error handling\")\nprint(\"  FastAPI: @app.middleware('http')\")\nprint(\"  Django: MIDDLEWARE list in settings.py\")\nprint()",
      "numbered": false
     },
     {
@@ -49,7 +49,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q471: Middleware\n  Code that runs before/after each request.\n  Use cases: logging, auth, CORS, timing, error handling\n  FastAPI: @app.middleware('http')\n  Django: MIDDLEWARE list in settings.py",
+     "code": "Middleware\n  Code that runs before/after each request.\n  Use cases: logging, auth, CORS, timing, error handling\n  FastAPI: @app.middleware('http')\n  Django: MIDDLEWARE list in settings.py",
      "numbered": false
     }
    ]
@@ -62,7 +62,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q472: Authentication\")\nprint(\"  Verify identity (who are you?).\")\nprint(\"  Methods: password, token, OAuth, biometric, MFA\")\nprint(\"  Flow: credentials → verify → issue token/session\")\nprint()",
+     "code": "print(\"Authentication\")\nprint(\"  Verify identity (who are you?).\")\nprint(\"  Methods: password, token, OAuth, biometric, MFA\")\nprint(\"  Flow: credentials → verify → issue token/session\")\nprint()",
      "numbered": false
     },
     {
@@ -72,7 +72,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q472: Authentication\n  Verify identity (who are you?).\n  Methods: password, token, OAuth, biometric, MFA\n  Flow: credentials → verify → issue token/session",
+     "code": "Authentication\n  Verify identity (who are you?).\n  Methods: password, token, OAuth, biometric, MFA\n  Flow: credentials → verify → issue token/session",
      "numbered": false
     }
    ]
@@ -85,7 +85,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q473: Authorization\")\nprint(\"  Verify permissions (what can you do?).\")\nprint(\"  Models: RBAC (Role-Based), ABAC (Attribute-Based), ACL\")\nprint(\"  Check after authentication, before action.\")\nprint()",
+     "code": "print(\"Authorization\")\nprint(\"  Verify permissions (what can you do?).\")\nprint(\"  Models: RBAC (Role-Based), ABAC (Attribute-Based), ACL\")\nprint(\"  Check after authentication, before action.\")\nprint()",
      "numbered": false
     },
     {
@@ -95,7 +95,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q473: Authorization\n  Verify permissions (what can you do?).\n  Models: RBAC (Role-Based), ABAC (Attribute-Based), ACL\n  Check after authentication, before action.",
+     "code": "Authorization\n  Verify permissions (what can you do?).\n  Models: RBAC (Role-Based), ABAC (Attribute-Based), ACL\n  Check after authentication, before action.",
      "numbered": false
     }
    ]
@@ -108,7 +108,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q474: OAuth2\")\nprint(\"  Authorization framework for third-party access.\")\nprint(\"  Flows: Authorization Code (web), Client Credentials (M2M),\")\nprint(\"         PKCE (SPA/mobile), Implicit (deprecated)\")\nprint(\"  Roles: Resource Owner, Client, Auth Server, Resource Server\")\nprint()",
+     "code": "print(\"OAuth2\")\nprint(\"  Authorization framework for third-party access.\")\nprint(\"  Flows: Authorization Code (web), Client Credentials (M2M),\")\nprint(\"         PKCE (SPA/mobile), Implicit (deprecated)\")\nprint(\"  Roles: Resource Owner, Client, Auth Server, Resource Server\")\nprint()",
      "numbered": false
     },
     {
@@ -118,7 +118,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q474: OAuth2\n  Authorization framework for third-party access.\n  Flows: Authorization Code (web), Client Credentials (M2M),\n         PKCE (SPA/mobile), Implicit (deprecated)\n  Roles: Resource Owner, Client, Auth Server, Resource Server",
+     "code": "OAuth2\n  Authorization framework for third-party access.\n  Flows: Authorization Code (web), Client Credentials (M2M),\n         PKCE (SPA/mobile), Implicit (deprecated)\n  Roles: Resource Owner, Client, Auth Server, Resource Server",
      "numbered": false
     }
    ]
@@ -131,7 +131,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q475: JWT\")\nprint(\"  JSON Web Token: self-contained, signed token.\")\nprint(\"  Structure: header.payload.signature (base64url encoded)\")\nprint(\"  Contains: sub, exp, iat, iss + custom claims\")\nprint(\"  Verify signature, check expiration, extract claims\")\nimport json, base64, hmac, hashlib\n\ndef create_simple_jwt(payload, secret):\n    header = base64.urlsafe_b64encode(json.dumps({\"alg\": \"HS256\"}).encode()).decode().rstrip('=')\n    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')\n    sig = hmac.new(secret.encode(), f\"{header}.{body}\".encode(), hashlib.sha256).hexdigest()[:16]\n    return f\"{header}.{body}.{sig}\"\n\ntoken = create_simple_jwt({\"sub\": \"user123\", \"role\": \"admin\"}, \"secret\")\nprint(f\"  Simple JWT: {token[:50]}...\")\nprint()",
+     "code": "print(\"JWT\")\nprint(\"  JSON Web Token: self-contained, signed token.\")\nprint(\"  Structure: header.payload.signature (base64url encoded)\")\nprint(\"  Contains: sub, exp, iat, iss + custom claims\")\nprint(\"  Verify signature, check expiration, extract claims\")\nimport json, base64, hmac, hashlib\n\ndef create_simple_jwt(payload, secret):\n    header = base64.urlsafe_b64encode(json.dumps({\"alg\": \"HS256\"}).encode()).decode().rstrip('=')\n    body = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')\n    sig = hmac.new(secret.encode(), f\"{header}.{body}\".encode(), hashlib.sha256).hexdigest()[:16]\n    return f\"{header}.{body}.{sig}\"\n\ntoken = create_simple_jwt({\"sub\": \"user123\", \"role\": \"admin\"}, \"secret\")\nprint(f\"  Simple JWT: {token[:50]}...\")\nprint()",
      "numbered": false
     },
     {
@@ -141,7 +141,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q475: JWT\n  JSON Web Token: self-contained, signed token.\n  Structure: header.payload.signature (base64url encoded)\n  Contains: sub, exp, iat, iss + custom claims\n  Verify signature, check expiration, extract claims\n  Simple JWT: eyJhbGciOiAiSFMyNTYifQ.eyJzdWIiOiAidXNlcjEyMyIsICJ...",
+     "code": "JWT\n  JSON Web Token: self-contained, signed token.\n  Structure: header.payload.signature (base64url encoded)\n  Contains: sub, exp, iat, iss + custom claims\n  Verify signature, check expiration, extract claims\n  Simple JWT: eyJhbGciOiAiSFMyNTYifQ.eyJzdWIiOiAidXNlcjEyMyIsICJ...",
      "numbered": false
     }
    ]
@@ -154,7 +154,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q476: Session-based auth\")\nprint(\"  Server stores session data, client holds session ID cookie.\")\nprint(\"  Flow: Login → server creates session → set cookie → \")\nprint(\"        subsequent requests include cookie → server validates\")\nprint(\"  Pros: server control, easy revocation\")\nprint(\"  Cons: server state, scaling issues (sticky sessions/Redis)\")\nprint()",
+     "code": "print(\"Session-based auth\")\nprint(\"  Server stores session data, client holds session ID cookie.\")\nprint(\"  Flow: Login → server creates session → set cookie → \")\nprint(\"        subsequent requests include cookie → server validates\")\nprint(\"  Pros: server control, easy revocation\")\nprint(\"  Cons: server state, scaling issues (sticky sessions/Redis)\")\nprint()",
      "numbered": false
     },
     {
@@ -164,7 +164,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q476: Session-based auth\n  Server stores session data, client holds session ID cookie.\n  Flow: Login → server creates session → set cookie → \n        subsequent requests include cookie → server validates\n  Pros: server control, easy revocation\n  Cons: server state, scaling issues (sticky sessions/Redis)",
+     "code": "Session-based auth\n  Server stores session data, client holds session ID cookie.\n  Flow: Login → server creates session → set cookie → \n        subsequent requests include cookie → server validates\n  Pros: server control, easy revocation\n  Cons: server state, scaling issues (sticky sessions/Redis)",
      "numbered": false
     }
    ]
@@ -177,7 +177,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q477: API keys\")\nprint(\"  Simple auth: include key in header or query param.\")\nprint(\"  X-API-Key: sk_live_abc123\")\nprint(\"  Pros: simple, good for server-to-server\")\nprint(\"  Cons: no user identity, hard to rotate, easily leaked\")\nprint(\"  Best: use for internal/partner APIs, not end-user auth\")\nprint()",
+     "code": "print(\"API keys\")\nprint(\"  Simple auth: include key in header or query param.\")\nprint(\"  X-API-Key: sk_live_abc123\")\nprint(\"  Pros: simple, good for server-to-server\")\nprint(\"  Cons: no user identity, hard to rotate, easily leaked\")\nprint(\"  Best: use for internal/partner APIs, not end-user auth\")\nprint()",
      "numbered": false
     },
     {
@@ -187,7 +187,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q477: API keys\n  Simple auth: include key in header or query param.\n  X-API-Key: sk_live_abc123\n  Pros: simple, good for server-to-server\n  Cons: no user identity, hard to rotate, easily leaked\n  Best: use for internal/partner APIs, not end-user auth",
+     "code": "API keys\n  Simple auth: include key in header or query param.\n  X-API-Key: sk_live_abc123\n  Pros: simple, good for server-to-server\n  Cons: no user identity, hard to rotate, easily leaked\n  Best: use for internal/partner APIs, not end-user auth",
      "numbered": false
     }
    ]
@@ -200,7 +200,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q478: Rate limiting\")\nprint(\"  Limit requests per client per time window.\")\nprint(\"  Algorithms: fixed window, sliding window, token bucket, leaky bucket\")\nprint(\"  Headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After\")\nprint(\"  Implementation: Redis counters with TTL\")\n\nclass TokenBucket:\n    \"\"\"Token bucket rate limiter.\"\"\"\n    def __init__(self, rate, capacity):\n        self.rate = rate\n        self.capacity = capacity\n        self.tokens = capacity\n        import time\n        self.last_refill = time.monotonic()\n\n    def allow(self):\n        import time\n        now = time.monotonic()\n        elapsed = now - self.last_refill\n        self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)\n        self.last_refill = now\n        if self.tokens >= 1:\n            self.tokens -= 1\n            return True\n        return False\n\nlimiter = TokenBucket(rate=10, capacity=10)\nresults = [limiter.allow() for _ in range(12)]\nprint(f\"  12 requests, 10 capacity: {sum(results)} allowed\")\nprint()",
+     "code": "print(\"Rate limiting\")\nprint(\"  Limit requests per client per time window.\")\nprint(\"  Algorithms: fixed window, sliding window, token bucket, leaky bucket\")\nprint(\"  Headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After\")\nprint(\"  Implementation: Redis counters with TTL\")\n\nclass TokenBucket:\n    \"\"\"Token bucket rate limiter.\"\"\"\n    def __init__(self, rate, capacity):\n        self.rate = rate\n        self.capacity = capacity\n        self.tokens = capacity\n        import time\n        self.last_refill = time.monotonic()\n\n    def allow(self):\n        import time\n        now = time.monotonic()\n        elapsed = now - self.last_refill\n        self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)\n        self.last_refill = now\n        if self.tokens >= 1:\n            self.tokens -= 1\n            return True\n        return False\n\nlimiter = TokenBucket(rate=10, capacity=10)\nresults = [limiter.allow() for _ in range(12)]\nprint(f\"  12 requests, 10 capacity: {sum(results)} allowed\")\nprint()",
      "numbered": false
     },
     {
@@ -210,7 +210,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q478: Rate limiting\n  Limit requests per client per time window.\n  Algorithms: fixed window, sliding window, token bucket, leaky bucket\n  Headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After\n  Implementation: Redis counters with TTL\n  12 requests, 10 capacity: 10 allowed",
+     "code": "Rate limiting\n  Limit requests per client per time window.\n  Algorithms: fixed window, sliding window, token bucket, leaky bucket\n  Headers: X-RateLimit-Limit, X-RateLimit-Remaining, Retry-After\n  Implementation: Redis counters with TTL\n  12 requests, 10 capacity: 10 allowed",
      "numbered": false
     }
    ]
@@ -223,7 +223,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q479: CORS\")\nprint(\"  Cross-Origin Resource Sharing: browser security mechanism.\")\nprint(\"  Server headers: Access-Control-Allow-Origin, -Methods, -Headers\")\nprint(\"  Preflight: OPTIONS request for non-simple requests\")\nprint(\"  FastAPI: app.add_middleware(CORSMiddleware, allow_origins=[...])\")\nprint()",
+     "code": "print(\"CORS\")\nprint(\"  Cross-Origin Resource Sharing: browser security mechanism.\")\nprint(\"  Server headers: Access-Control-Allow-Origin, -Methods, -Headers\")\nprint(\"  Preflight: OPTIONS request for non-simple requests\")\nprint(\"  FastAPI: app.add_middleware(CORSMiddleware, allow_origins=[...])\")\nprint()",
      "numbered": false
     },
     {
@@ -233,7 +233,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q479: CORS\n  Cross-Origin Resource Sharing: browser security mechanism.\n  Server headers: Access-Control-Allow-Origin, -Methods, -Headers\n  Preflight: OPTIONS request for non-simple requests\n  FastAPI: app.add_middleware(CORSMiddleware, allow_origins=[...])",
+     "code": "CORS\n  Cross-Origin Resource Sharing: browser security mechanism.\n  Server headers: Access-Control-Allow-Origin, -Methods, -Headers\n  Preflight: OPTIONS request for non-simple requests\n  FastAPI: app.add_middleware(CORSMiddleware, allow_origins=[...])",
      "numbered": false
     }
    ]
@@ -246,7 +246,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q480: CSRF\")\nprint(\"  Cross-Site Request Forgery: attacker tricks user's browser.\")\nprint(\"  Prevention: CSRF tokens in forms, SameSite cookies,\")\nprint(\"  Origin header validation, double-submit cookie pattern.\")\nprint(\"  APIs with JWT: less vulnerable (no automatic cookie sending)\")\nprint()",
+     "code": "print(\"CSRF\")\nprint(\"  Cross-Site Request Forgery: attacker tricks user's browser.\")\nprint(\"  Prevention: CSRF tokens in forms, SameSite cookies,\")\nprint(\"  Origin header validation, double-submit cookie pattern.\")\nprint(\"  APIs with JWT: less vulnerable (no automatic cookie sending)\")\nprint()",
      "numbered": false
     },
     {
@@ -256,7 +256,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q480: CSRF\n  Cross-Site Request Forgery: attacker tricks user's browser.\n  Prevention: CSRF tokens in forms, SameSite cookies,\n  Origin header validation, double-submit cookie pattern.\n  APIs with JWT: less vulnerable (no automatic cookie sending)",
+     "code": "CSRF\n  Cross-Site Request Forgery: attacker tricks user's browser.\n  Prevention: CSRF tokens in forms, SameSite cookies,\n  Origin header validation, double-submit cookie pattern.\n  APIs with JWT: less vulnerable (no automatic cookie sending)",
      "numbered": false
     }
    ]
@@ -269,7 +269,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q481: WebSockets\")\nprint(\"  Full-duplex communication over single TCP connection.\")\nprint(\"  Use cases: chat, live updates, gaming, real-time data\")\nprint(\"  FastAPI: @app.websocket('/ws')\")\nprint(\"  async def ws(websocket: WebSocket):\")\nprint(\"      await websocket.accept()\")\nprint(\"      data = await websocket.receive_text()\")\nprint(\"      await websocket.send_text(f'Echo: {data}')\")\nprint()",
+     "code": "print(\"WebSockets\")\nprint(\"  Full-duplex communication over single TCP connection.\")\nprint(\"  Use cases: chat, live updates, gaming, real-time data\")\nprint(\"  FastAPI: @app.websocket('/ws')\")\nprint(\"  async def ws(websocket: WebSocket):\")\nprint(\"      await websocket.accept()\")\nprint(\"      data = await websocket.receive_text()\")\nprint(\"      await websocket.send_text(f'Echo: {data}')\")\nprint()",
      "numbered": false
     },
     {
@@ -279,7 +279,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q481: WebSockets\n  Full-duplex communication over single TCP connection.\n  Use cases: chat, live updates, gaming, real-time data\n  FastAPI: @app.websocket('/ws')\n  async def ws(websocket: WebSocket):\n      await websocket.accept()\n      data = await websocket.receive_text()\n      await websocket.send_text(f'Echo: {data}')",
+     "code": "WebSockets\n  Full-duplex communication over single TCP connection.\n  Use cases: chat, live updates, gaming, real-time data\n  FastAPI: @app.websocket('/ws')\n  async def ws(websocket: WebSocket):\n      await websocket.accept()\n      data = await websocket.receive_text()\n      await websocket.send_text(f'Echo: {data}')",
      "numbered": false
     }
    ]
@@ -292,7 +292,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q482: Server-Sent Events (SSE)\")\nprint(\"  Server pushes events to client over HTTP (one-directional).\")\nprint(\"  Simpler than WebSockets for server→client streaming.\")\nprint(\"  Content-Type: text/event-stream\")\nprint(\"  data: {\\\"message\\\": \\\"hello\\\"}\\\\n\\\\n\")\nprint(\"  Use cases: notifications, live feeds, progress updates\")\nprint()",
+     "code": "print(\"Server-Sent Events (SSE)\")\nprint(\"  Server pushes events to client over HTTP (one-directional).\")\nprint(\"  Simpler than WebSockets for server→client streaming.\")\nprint(\"  Content-Type: text/event-stream\")\nprint(\"  data: {\\\"message\\\": \\\"hello\\\"}\\\\n\\\\n\")\nprint(\"  Use cases: notifications, live feeds, progress updates\")\nprint()",
      "numbered": false
     },
     {
@@ -302,7 +302,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q482: Server-Sent Events (SSE)\n  Server pushes events to client over HTTP (one-directional).\n  Simpler than WebSockets for server→client streaming.\n  Content-Type: text/event-stream\n  data: {\"message\": \"hello\"}\\n\\n\n  Use cases: notifications, live feeds, progress updates",
+     "code": "Server-Sent Events (SSE)\n  Server pushes events to client over HTTP (one-directional).\n  Simpler than WebSockets for server→client streaming.\n  Content-Type: text/event-stream\n  data: {\"message\": \"hello\"}\\n\\n\n  Use cases: notifications, live feeds, progress updates",
      "numbered": false
     }
    ]
@@ -315,7 +315,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q483: gRPC\")\nprint(\"  High-performance RPC framework using Protocol Buffers.\")\nprint(\"  Features: HTTP/2, streaming, code generation, strong typing\")\nprint(\"  Python: grpcio + grpcio-tools\")\nprint(\"  Define .proto files → generate Python stubs\")\nprint(\"  Best for: internal microservice communication\")\nprint()",
+     "code": "print(\"gRPC\")\nprint(\"  High-performance RPC framework using Protocol Buffers.\")\nprint(\"  Features: HTTP/2, streaming, code generation, strong typing\")\nprint(\"  Python: grpcio + grpcio-tools\")\nprint(\"  Define .proto files → generate Python stubs\")\nprint(\"  Best for: internal microservice communication\")\nprint()",
      "numbered": false
     },
     {
@@ -325,7 +325,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q483: gRPC\n  High-performance RPC framework using Protocol Buffers.\n  Features: HTTP/2, streaming, code generation, strong typing\n  Python: grpcio + grpcio-tools\n  Define .proto files → generate Python stubs\n  Best for: internal microservice communication",
+     "code": "gRPC\n  High-performance RPC framework using Protocol Buffers.\n  Features: HTTP/2, streaming, code generation, strong typing\n  Python: grpcio + grpcio-tools\n  Define .proto files → generate Python stubs\n  Best for: internal microservice communication",
      "numbered": false
     }
    ]
@@ -338,7 +338,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q484: REST vs gRPC\")\nprint(\"  REST: HTTP/1.1, JSON, human-readable, browser-friendly\")\nprint(\"  gRPC: HTTP/2, protobuf, binary, efficient, streaming\")\nprint(\"  REST for: public APIs, web frontends\")\nprint(\"  gRPC for: internal services, low-latency, streaming\")\nprint()",
+     "code": "print(\"REST vs gRPC\")\nprint(\"  REST: HTTP/1.1, JSON, human-readable, browser-friendly\")\nprint(\"  gRPC: HTTP/2, protobuf, binary, efficient, streaming\")\nprint(\"  REST for: public APIs, web frontends\")\nprint(\"  gRPC for: internal services, low-latency, streaming\")\nprint()",
      "numbered": false
     },
     {
@@ -348,7 +348,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q484: REST vs gRPC\n  REST: HTTP/1.1, JSON, human-readable, browser-friendly\n  gRPC: HTTP/2, protobuf, binary, efficient, streaming\n  REST for: public APIs, web frontends\n  gRPC for: internal services, low-latency, streaming",
+     "code": "REST vs gRPC\n  REST: HTTP/1.1, JSON, human-readable, browser-friendly\n  gRPC: HTTP/2, protobuf, binary, efficient, streaming\n  REST for: public APIs, web frontends\n  gRPC for: internal services, low-latency, streaming",
      "numbered": false
     }
    ]
@@ -361,7 +361,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q485: GraphQL basics\")\nprint(\"  Query language for APIs: client specifies exact data needed.\")\nprint(\"  Single endpoint, typed schema, no over/under-fetching.\")\nprint(\"  Python: Strawberry, Ariadne, Graphene\")\nprint(\"  query { user(id: 1) { name email orders { id total } } }\")\nprint()",
+     "code": "print(\"GraphQL basics\")\nprint(\"  Query language for APIs: client specifies exact data needed.\")\nprint(\"  Single endpoint, typed schema, no over/under-fetching.\")\nprint(\"  Python: Strawberry, Ariadne, Graphene\")\nprint(\"  query { user(id: 1) { name email orders { id total } } }\")\nprint()",
      "numbered": false
     },
     {
@@ -371,7 +371,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q485: GraphQL basics\n  Query language for APIs: client specifies exact data needed.\n  Single endpoint, typed schema, no over/under-fetching.\n  Python: Strawberry, Ariadne, Graphene\n  query { user(id: 1) { name email orders { id total } } }",
+     "code": "GraphQL basics\n  Query language for APIs: client specifies exact data needed.\n  Single endpoint, typed schema, no over/under-fetching.\n  Python: Strawberry, Ariadne, Graphene\n  query { user(id: 1) { name email orders { id total } } }",
      "numbered": false
     }
    ]
@@ -384,7 +384,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q486: File uploads\")\nprint(\"  FastAPI: @app.post('/upload')\")\nprint(\"  async def upload(file: UploadFile):\")\nprint(\"      contents = await file.read()\")\nprint(\"  Best: stream large files, validate type/size, use cloud storage\")\nprint()",
+     "code": "print(\"File uploads\")\nprint(\"  FastAPI: @app.post('/upload')\")\nprint(\"  async def upload(file: UploadFile):\")\nprint(\"      contents = await file.read()\")\nprint(\"  Best: stream large files, validate type/size, use cloud storage\")\nprint()",
      "numbered": false
     },
     {
@@ -394,7 +394,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q486: File uploads\n  FastAPI: @app.post('/upload')\n  async def upload(file: UploadFile):\n      contents = await file.read()\n  Best: stream large files, validate type/size, use cloud storage",
+     "code": "File uploads\n  FastAPI: @app.post('/upload')\n  async def upload(file: UploadFile):\n      contents = await file.read()\n  Best: stream large files, validate type/size, use cloud storage",
      "numbered": false
     }
    ]
@@ -407,7 +407,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q487: Streaming responses\")\nprint(\"  Return data as a stream (large files, real-time data).\")\nprint(\"  FastAPI: StreamingResponse(generator(), media_type='text/csv')\")\nprint(\"  Benefits: low memory usage, fast first byte\")\nprint()",
+     "code": "print(\"Streaming responses\")\nprint(\"  Return data as a stream (large files, real-time data).\")\nprint(\"  FastAPI: StreamingResponse(generator(), media_type='text/csv')\")\nprint(\"  Benefits: low memory usage, fast first byte\")\nprint()",
      "numbered": false
     },
     {
@@ -417,7 +417,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q487: Streaming responses\n  Return data as a stream (large files, real-time data).\n  FastAPI: StreamingResponse(generator(), media_type='text/csv')\n  Benefits: low memory usage, fast first byte",
+     "code": "Streaming responses\n  Return data as a stream (large files, real-time data).\n  FastAPI: StreamingResponse(generator(), media_type='text/csv')\n  Benefits: low memory usage, fast first byte",
      "numbered": false
     }
    ]
@@ -430,7 +430,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q488: API gateway\")\nprint(\"  Single entry point for multiple backend services.\")\nprint(\"  Features: routing, auth, rate limiting, caching, load balancing\")\nprint(\"  Tools: Kong, AWS API Gateway, Traefik, Nginx\")\nprint()",
+     "code": "print(\"API gateway\")\nprint(\"  Single entry point for multiple backend services.\")\nprint(\"  Features: routing, auth, rate limiting, caching, load balancing\")\nprint(\"  Tools: Kong, AWS API Gateway, Traefik, Nginx\")\nprint()",
      "numbered": false
     },
     {
@@ -440,7 +440,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q488: API gateway\n  Single entry point for multiple backend services.\n  Features: routing, auth, rate limiting, caching, load balancing\n  Tools: Kong, AWS API Gateway, Traefik, Nginx",
+     "code": "API gateway\n  Single entry point for multiple backend services.\n  Features: routing, auth, rate limiting, caching, load balancing\n  Tools: Kong, AWS API Gateway, Traefik, Nginx",
      "numbered": false
     }
    ]
@@ -453,7 +453,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q489: Reverse proxy\")\nprint(\"  Server that forwards client requests to backend servers.\")\nprint(\"  Functions: load balancing, SSL termination, caching, compression\")\nprint(\"  Tools: Nginx, HAProxy, Traefik, Caddy\")\nprint()",
+     "code": "print(\"Reverse proxy\")\nprint(\"  Server that forwards client requests to backend servers.\")\nprint(\"  Functions: load balancing, SSL termination, caching, compression\")\nprint(\"  Tools: Nginx, HAProxy, Traefik, Caddy\")\nprint()",
      "numbered": false
     },
     {
@@ -463,7 +463,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q489: Reverse proxy\n  Server that forwards client requests to backend servers.\n  Functions: load balancing, SSL termination, caching, compression\n  Tools: Nginx, HAProxy, Traefik, Caddy",
+     "code": "Reverse proxy\n  Server that forwards client requests to backend servers.\n  Functions: load balancing, SSL termination, caching, compression\n  Tools: Nginx, HAProxy, Traefik, Caddy",
      "numbered": false
     }
    ]
@@ -476,7 +476,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q490: Nginx basics\")\nprint(\"  High-performance web server / reverse proxy.\")\nprint(\"  Config: /etc/nginx/nginx.conf\")\nprint(\"  server { listen 80; location / { proxy_pass http://app:8000; } }\")\nprint(\"  Features: static files, SSL, load balancing, rate limiting\")\nprint()",
+     "code": "print(\"Nginx basics\")\nprint(\"  High-performance web server / reverse proxy.\")\nprint(\"  Config: /etc/nginx/nginx.conf\")\nprint(\"  server { listen 80; location / { proxy_pass http://app:8000; } }\")\nprint(\"  Features: static files, SSL, load balancing, rate limiting\")\nprint()",
      "numbered": false
     },
     {
@@ -486,7 +486,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q490: Nginx basics\n  High-performance web server / reverse proxy.\n  Config: /etc/nginx/nginx.conf\n  server { listen 80; location / { proxy_pass http://app:8000; } }\n  Features: static files, SSL, load balancing, rate limiting",
+     "code": "Nginx basics\n  High-performance web server / reverse proxy.\n  Config: /etc/nginx/nginx.conf\n  server { listen 80; location / { proxy_pass http://app:8000; } }\n  Features: static files, SSL, load balancing, rate limiting",
      "numbered": false
     }
    ]

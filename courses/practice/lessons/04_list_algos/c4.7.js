@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.7",
  "lede": "**7 programs to write**, on arrays, memory and membership. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 7 problems on more list programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 7 programs on arrays, memory and membership without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 560–566.** What this set actually drills, counted from its own problems — 6 of the 7 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "decorators", "generators", "dicts and sets"], "cells": [[{"text": "3", "tone": "accent"}, "A numpy array is not a list, a"], [{"text": "1", "tone": "good"}, "array.array holds one C type a"], [{"text": "1", "tone": "violet"}, "itertools.product flattens nes"], [{"text": "1", "tone": "teal"}, "Membership: a list scans, a se"]], "t": "diagram", "id": "dg-c4_7-top-0"},
   {
    "t": "callout",
    "kind": "note",

@@ -13,7 +13,7 @@ Open `index.html` in a browser. It works from `file://` and from any static host
 | Course | Modules | Lessons | Questions / problems |
 |---|---:|---:|---:|
 | **Python** | 24 | 177 | 1,074 interview questions |
-| **Coding Practice** | 10 | 114 | 3,079 programming problems |
+| **Coding Practice** | 23 | 114 | 2,882 programming problems |
 
 Python runs from execution model to production services, in five phases —
 Fundamentals, Craft, Depth, Building systems, Applied — followed by an

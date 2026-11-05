@@ -188,7 +188,7 @@ CREATE TABLE users (
       rungs: [
         { level: "bad", label: "Repeat everything on the order",
           why: "One row per order forces a fixed number of items, and every product name is duplicated per order. Renaming a product means updating a million rows, and asking \"how many of product X sold?\" means parsing columns.",
-          code: `CREATE TABLE orders (
+          lang: "sql", code: `CREATE TABLE orders (
     id             UUID PRIMARY KEY,
     item_1_name    TEXT,
     item_1_price   NUMERIC,
@@ -199,7 +199,7 @@ CREATE TABLE users (
 );` },
         { level: "ok", label: "A child table, fully normalised",
           why: "Correct, flexible, and the right default. One subtlety remains: joining to `products` for the name returns today's name, not the name at the time of sale — so a reprinted invoice from last year shows a product that has since been renamed.",
-          code: `CREATE TABLE order_items (
+          lang: "sql", code: `CREATE TABLE order_items (
     id          UUID PRIMARY KEY,
     order_id    UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     product_id  UUID NOT NULL REFERENCES products(id),
@@ -208,7 +208,7 @@ CREATE TABLE users (
 -- Price and name come from products via a join.` },
         { level: "best", label: "Normalised, with deliberate historical copies",
           why: "An invoice is a record of what happened, not a live view. Copying the name and price at the time of sale is not duplication — the current product row and the historical line item are genuinely different facts that happen to have been equal once.",
-          code: `CREATE TABLE order_items (
+          lang: "sql", code: `CREATE TABLE order_items (
     id            UUID PRIMARY KEY,
     order_id      UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     product_id    UUID NOT NULL REFERENCES products(id),
@@ -706,31 +706,31 @@ ALTER TABLE orders ALTER COLUMN user_id SET NOT NULL;
       {
         stem: "A cleanup job deleting old orders locked the database for six minutes. `order_items.order_id` has a foreign key with `ON DELETE CASCADE`. What is the cause?",
         options: [
-          "`CASCADE` always takes a table lock",
-          "There is no index on `order_items(order_id)`, so the cascade full-scans the child table once per deleted parent while holding locks",
-          "Too many rows were deleted in one transaction",
-          "The foreign key should have been `RESTRICT`"
+          "`ON DELETE CASCADE` always takes an exclusive lock on the whole child table while it runs",
+          "Too many rows were deleted in a single transaction, so the lock was held until the very last one",
+          "No index on `order_items(order_id)`, so each cascade scans the child table",
+          "The foreign key should have been `RESTRICT`, which deletes the child rows without locking them"
         ],
-        answer: 1,
+        answer: 2,
         why: "PostgreSQL creates an index for the primary key automatically and never for the referencing column. The cascade must find each parent's children, so with no index that is a sequential scan per delete. It is the most common indexing omission in an otherwise careful schema, and a query over `pg_constraint` finds all of them in one go."
       },
       {
         stem: "Why is `email` a poor primary key even though emails are unique?",
         options: [
+          "Emails change, and every reference must then change with them",
           "Emails are too long to index",
-          "A key identifies a row, and an email is an attribute a user can change — so every referencing row must be updated, and a re-registered address inherits the old user's history",
           "Uniqueness is not guaranteed across providers",
           "Text keys cannot be foreign keys"
         ],
-        answer: 1,
+        answer: 0,
         why: "Natural keys change, and the change propagates to every table referencing them. A surrogate key with a `UNIQUE` constraint on the email gives stable identity and enforced uniqueness together. Case sensitivity is the second problem — a plain `TEXT` unique index lets the same mailbox register twice."
       },
       {
         stem: "You add `CHECK (total = subtotal + tax)` to a live 50-million-row table. What happens, and what should you do instead?",
         options: [
           "It applies instantly to new rows only",
-          "It scans the whole table under an exclusive lock — use `NOT VALID` to apply it to new rows, then `VALIDATE CONSTRAINT` to check existing ones without blocking",
-          "It is rejected because the table is too large",
+          "A locked full-table scan — add it `NOT VALID`, then validate",
+          "It is rejected outright, because PostgreSQL cannot add constraints to tables above a size limit",
           "It applies only after a `VACUUM`"
         ],
         answer: 1,
@@ -739,12 +739,12 @@ ALTER TABLE orders ALTER COLUMN user_id SET NOT NULL;
       {
         stem: "`order_items` stores only `product_id`, and invoices reprinted after a rename show the wrong name. What is the fix?",
         options: [
+          "Copy the name and price onto the line item at the time of sale",
           "Prevent products from being renamed",
-          "Store `product_name` and `unit_price` on the line item as point-in-time copies — the historical value and the current one are different facts",
-          "Cache the product table in the application",
+          "Cache the product table in the application, so reprints use the cached names",
           "Add a version column to products"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is the case where copying is not denormalisation. The test is whether updating the source would be wrong: renaming a product should not alter a past invoice, so the invoice's name is history rather than a stale cache of the current name."
       }
     ]

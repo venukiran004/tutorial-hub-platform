@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c14.3",
  "lede": "**29 programs to write**, on error strategy and filesystem work. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 29 programs on error strategy and filesystem work without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c14.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1660–1688.** What this set actually drills, counted from its own problems — 23 of the 29 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["files and paths", "exceptions", "production", "dicts and sets", "strings", "lists"], "cells": [[{"text": "11", "tone": "accent"}, "Atomic File Write"], [{"text": "8", "tone": "good"}, "finally Runs Even When You ret"], [{"text": "1", "tone": "violet"}, "Re"], [{"text": "1", "tone": "teal"}, "KeyError, .get() and defaultdi"], [{"text": "1", "tone": "warn"}, "A Context Manager That Handles"], [{"text": "1", "tone": "crit"}, "Merging Sorted Files Without L"]], "t": "diagram", "id": "dg-c14_3-top-0"},
   {
    "t": "callout",
    "kind": "note",

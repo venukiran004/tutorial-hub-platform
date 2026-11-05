@@ -111,17 +111,17 @@ def cv_auc(cols):
     return cross_val_score(m, df[cols], df.churned, cv=5, scoring="roc_auc").mean().round(3)
 
 print(cv_auc(["tenure_d", "spend", "tickets", "closure_code"]))   # 1.000
-print(cv_auc(["tenure_d", "spend", "tickets"]))                   # 0.744
+print(cv_auc(["tenure_d", "spend", "tickets"]))                   # 0.679
 
 # the one-line check: every feature on its own
 for c in ["tenure_d", "spend", "tickets", "closure_code"]:
     a = roc_auc_score(df.churned, df[c]); print(f"{c:13s} {max(a, 1 - a):.3f}")
-# tenure_d 0.61   spend 0.66   tickets 0.60   closure_code 1.000   <- alone, it is the label
+# tenure_d 0.58   spend 0.59   tickets 0.64   closure_code 1.000   <- alone, it is the label
 
 # and the question no scan replaces: what does this column hold at the moment we predict?
 # closure_code at scoring time is null for every open account. The model trained on a column
 # that is populated by the outcome it is meant to predict.`,
-      caption: "**AUC 1.000 with the code, 0.744 without; alone, the code scores 1.000.** A single feature that predicts the label on its own better than the whole model has any right to is either the discovery of the year or a leak, and it is a leak."
+      caption: "**AUC 1.000 with the code, 0.679 without; alone, the code scores 1.000.** A single feature that predicts the label on its own better than the whole model has any right to is either the discovery of the year or a leak, and it is a leak."
     },
 
     { t: "p", text: "Subtler versions: a `total_charges` column that includes the refund you are predicting; an `n_contacts` count that includes the complaint call; a `last_updated` timestamp that is later for rows that had an event. **The symptom set is consistent**: one feature dominates importance, the score is implausibly high for the domain, and the column's null rate in a live scoring sample is far higher than in training." },
@@ -148,8 +148,8 @@ yd = pd.concat([y, y.iloc[dup_idx]], ignore_index=True)
 
 rf = RandomForestClassifier(n_estimators=300, random_state=0, n_jobs=-1)
 cv = StratifiedKFold(5, shuffle=True, random_state=0)
-print(cross_val_score(rf, Xd, yd, cv=cv, scoring="roc_auc").mean().round(3))   # 0.846
-print(cross_val_score(rf, X,  y,  cv=cv, scoring="roc_auc").mean().round(3))   # 0.731
+print(cross_val_score(rf, Xd, yd, cv=cv, scoring="roc_auc").mean().round(3))   # 0.792
+print(cross_val_score(rf, X,  y,  cv=cv, scoring="roc_auc").mean().round(3))   # 0.619
 
 # the check: how many validation rows have an exact twin on the training side?
 for tr, te in cv.split(Xd, yd):
@@ -231,10 +231,10 @@ def time_split_auc(cols):
     d = ts.dropna(subset=cols)
     tr, te = d.step < 6, d.step >= 6          # the last two steps of every customer are the test
     m = GradientBoostingClassifier(random_state=0).fit(d.loc[tr, cols], d.loc[tr, "y"])
-    return roc_auc_score(d.loc[te, "y"], m.predict_proba(d.loc[te, cols])[:, 1]).round(3)
+    return round(roc_auc_score(d.loc[te, "y"], m.predict_proba(d.loc[te, cols])[:, 1]), 3)
 
-print(time_split_auc(["spend", "spend_prev", "spend_trail"]))    # 0.804
-print(time_split_auc(["spend", "spend_prev", "spend_smooth"]))   # 0.862  <- split by time, still leaking
+print(time_split_auc(["spend", "spend_prev", "spend_trail"]))    # 0.924
+print(time_split_auc(["spend", "spend_prev", "spend_smooth"]))   # 0.930  <- split by time, still leaking
 
 # the check that catches it: rebuild the features on a truncated history and compare
 def features(d):
@@ -290,6 +290,7 @@ print(changed.mean().round(2))     # spend_prev 0.00   spend_smooth 0.20   spend
     "closure_code": ("crm.cases",     "case closed",   True),     # <- fails review on sight
 }
 leaks = [c for c, (_, _, post) in manifest.items() if post]
+# raises here, which is the point of the check
 assert not leaks, f"columns populated after the label: {leaks}"
 
 # and the number the manifest cannot give you: what the column holds when you actually score

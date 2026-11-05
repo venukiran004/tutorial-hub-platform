@@ -635,7 +635,7 @@ def test_two_pipelines_do_not_share_a_counter() -> None:
     assert (a.skipped, b.skipped) == (1, 2)`,
         notes: [
           { t: "p", text: "**A generator's `return` value is unreachable from a `for` loop.** It becomes the value attached to `StopIteration`, which the loop swallows — only `yield from` can capture it. Worse, it only exists on exhaustion, so a pipeline abandoned after ten items never produces it. That is why the count lives in an object the caller holds." },
-          { t: "p", text: "**`Stats` is passed in rather than being a module-level counter** for the same reason a `defaultdict` should not escape into shared state: two pipelines running concurrently would share one tally, and the numbers would be quietly wrong rather than obviously broken (Lesson 4.2)." },
+          { t: "p", text: "**`Stats` is passed in rather than being a module-level counter** for the same reason a `defaultdict` should not escape into shared state: two pipelines running concurrently would share one tally, and the numbers would be quietly wrong rather than obviously broken (Lesson 2.5)." },
           { t: "p", text: "**`with` inside the generator is the whole cleanup story.** When a suspended generator is closed or collected, `GeneratorExit` is raised at the paused `yield`, which unwinds the `with` blocks above it. `yield from` forwards `close()` down the chain, so closing the outermost generator closes the file and the database connection." },
           { t: "callout", kind: "insight", title: "The two abandonment tests are not the same test", body: [
             { t: "p", text: "`lines.close()` tests the explicit path — what `contextlib.closing` and a `with` around the pipeline will do. `del lines; gc.collect()` tests the implicit one, which is what actually happens when a function returns early or an exception unwinds past the loop." },
@@ -675,45 +675,45 @@ def test_two_pipelines_do_not_share_a_counter() -> None:
       {
         stem: "A pipeline stage opens a database connection and the caller abandons the pipeline after ten items. What guarantees the connection is released?",
         options: [
+          "Closing the paused generator raises `GeneratorExit` there, so its `with` unwinds",
           "Nothing — the connection leaks until the process exits",
-          "Closing or collecting the suspended generator raises `GeneratorExit` at the paused `yield`, so a `with` inside the generator unwinds",
           "The connection is released when the generator object is created",
           "Python closes all open resources at the end of each `for` loop"
         ],
-        answer: 1,
+        answer: 0,
         why: "`GeneratorExit` is raised at the point the generator is paused, so `finally` blocks and `with` statements enclosing that `yield` run normally. That is why the resource must be acquired *inside* the generator: an open-and-close around the consuming loop only runs on the happy path, and a consumer that raises or returns early leaves the generator suspended holding the connection."
       },
       {
         stem: "Why can a pipeline stage not report its skipped-row count with `return count`?",
         options: [
           "Generators cannot contain a `return` statement",
-          "The value becomes part of `StopIteration`, which a `for` loop swallows — only `yield from` sees it, and only on exhaustion",
           "The count would be reset on each iteration",
-          "`return` closes the generator prematurely"
+          "`return` closes the generator prematurely",
+          "It rides on `StopIteration`, which `for` swallows; only `yield from` sees it"
         ],
-        answer: 1,
+        answer: 3,
         why: "A generator's return value is attached to the `StopIteration` that ends iteration, so `for` discards it and only `total = yield from gen()` captures it. It also only exists once the generator is exhausted, so a pipeline abandoned after ten items never produces one. A small mutable object owned by the caller is readable at any point, including partway through."
       },
       {
         stem: "What does `yield from source` give you that `for x in source: yield x` does not?",
         options: [
           "It is faster because it avoids a loop",
-          "It forwards `send`, `throw` and `close` to the sub-generator and captures its return value",
           "It flattens nested structures recursively",
+          "It forwards `send`, `throw` and `close`, and captures the return value",
           "It makes the outer generator reusable"
         ],
-        answer: 1,
+        answer: 2,
         why: "The manual loop only relays values outward. Anything the caller sends or throws into the outer generator lands in the loop rather than in the sub-generator, and `close()` does not propagate. For a plain producer the two are equivalent apart from a small speed difference; for delegation involving the two-way protocol, `yield from` is the only correct form."
       },
       {
         stem: "Which of these is a poor fit for a generator pipeline?",
         options: [
+          "Sorting the stream, then feeding two consumers",
           "Parsing and filtering a 40 GB log file",
-          "Sorting the stream, then feeding two independent consumers from it",
-          "Transforming records and writing them in batches",
-          "Taking the first ten matching records from a large source"
+          "Transforming records and writing them out in batches of 1,000",
+          "Taking the first ten matching records from a very large source"
         ],
-        answer: 1,
+        answer: 0,
         why: "Sorting needs the entire input in memory, so the laziness is lost anyway — and a generator is single-pass, so the first consumer drains it and the second gets nothing. `tee` does not help: it buffers everything one branch has consumed. A pipeline is a sequence of single-pass transformations on a stream; anything needing the whole dataset at once is a different tool."
       }
     ]

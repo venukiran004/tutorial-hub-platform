@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c17.4",
  "lede": "**10 programs to write**, on event loop internals and backpressure. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 10 problems on advanced asyncio without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 10 programs on event loop internals and backpressure without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c17.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1998–2007.** What this set actually drills, counted from its own problems — 6 of the 10 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["async"], "cells": [[{"text": "6", "tone": "accent"}, "Event loop internals"]], "t": "diagram", "id": "dg-c17_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -39,7 +39,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q606: Event loop internals\")\nprint(\"  The event loop is the core of asyncio:\")\nprint(\"  1. Check for ready callbacks (call_soon queue)\")\nprint(\"  2. Poll for I/O events (select/epoll/kqueue)\")\nprint(\"  3. Execute ready callbacks\")\nprint(\"  4. Schedule timers (call_later, call_at)\")\nprint(\"  5. Repeat\")\nprint(\"  Single-threaded: one iteration at a time\")\nprint()",
+     "code": "print(\"Event loop internals\")\nprint(\"  The event loop is the core of asyncio:\")\nprint(\"  1. Check for ready callbacks (call_soon queue)\")\nprint(\"  2. Poll for I/O events (select/epoll/kqueue)\")\nprint(\"  3. Execute ready callbacks\")\nprint(\"  4. Schedule timers (call_later, call_at)\")\nprint(\"  5. Repeat\")\nprint(\"  Single-threaded: one iteration at a time\")\nprint()",
      "numbered": false
     },
     {
@@ -49,7 +49,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q606: Event loop internals\n  The event loop is the core of asyncio:\n  1. Check for ready callbacks (call_soon queue)\n  2. Poll for I/O events (select/epoll/kqueue)\n  3. Execute ready callbacks\n  4. Schedule timers (call_later, call_at)\n  5. Repeat\n  Single-threaded: one iteration at a time",
+     "code": "Event loop internals\n  The event loop is the core of asyncio:\n  1. Check for ready callbacks (call_soon queue)\n  2. Poll for I/O events (select/epoll/kqueue)\n  3. Execute ready callbacks\n  4. Schedule timers (call_later, call_at)\n  5. Repeat\n  Single-threaded: one iteration at a time",
      "numbered": false
     }
    ]
@@ -62,7 +62,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q607: How task scheduling works\")\nprint(\"  Tasks wrap coroutines and schedule them on the event loop.\")\nprint(\"  task = asyncio.create_task(coro()) adds to ready queue.\")\nprint(\"  At each await, task yields control to event loop.\")\nprint(\"  Event loop picks next ready task and resumes it.\")\nprint(\"  This is cooperative multitasking - tasks must yield voluntarily.\")\nprint()",
+     "code": "print(\"How task scheduling works\")\nprint(\"  Tasks wrap coroutines and schedule them on the event loop.\")\nprint(\"  task = asyncio.create_task(coro()) adds to ready queue.\")\nprint(\"  At each await, task yields control to event loop.\")\nprint(\"  Event loop picks next ready task and resumes it.\")\nprint(\"  This is cooperative multitasking - tasks must yield voluntarily.\")\nprint()",
      "numbered": false
     },
     {
@@ -72,7 +72,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q607: How task scheduling works\n  Tasks wrap coroutines and schedule them on the event loop.\n  task = asyncio.create_task(coro()) adds to ready queue.\n  At each await, task yields control to event loop.\n  Event loop picks next ready task and resumes it.\n  This is cooperative multitasking - tasks must yield voluntarily.",
+     "code": "How task scheduling works\n  Tasks wrap coroutines and schedule them on the event loop.\n  task = asyncio.create_task(coro()) adds to ready queue.\n  At each await, task yields control to event loop.\n  Event loop picks next ready task and resumes it.\n  This is cooperative multitasking - tasks must yield voluntarily.",
      "numbered": false
     }
    ]
@@ -85,7 +85,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q608: Cooperative multitasking\")\nprint(\"  Tasks voluntarily yield control (at await points).\")\nprint(\"  No preemption: a task runs until it awaits.\")\nprint(\"  Problem: CPU-bound code blocks entire event loop.\")\n\nasync def demo_cooperative():\n    async def task(name, delay):\n        print(f\"  {name} start\")\n        await asyncio.sleep(delay)\n        print(f\"  {name} end\")\n    await asyncio.gather(task(\"A\", 0.02), task(\"B\", 0.01))\n\nasyncio.run(demo_cooperative())\nprint()",
+     "code": "import asyncio\n\nprint(\"Cooperative multitasking\")\nprint(\"  Tasks voluntarily yield control (at await points).\")\nprint(\"  No preemption: a task runs until it awaits.\")\nprint(\"  Problem: CPU-bound code blocks entire event loop.\")\n\nasync def demo_cooperative():\n    async def task(name, delay):\n        print(f\"  {name} start\")\n        await asyncio.sleep(delay)\n        print(f\"  {name} end\")\n    await asyncio.gather(task(\"A\", 0.02), task(\"B\", 0.01))\n\nasyncio.run(demo_cooperative())\nprint()",
      "numbered": false
     },
     {
@@ -95,7 +95,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q608: Cooperative multitasking\n  Tasks voluntarily yield control (at await points).\n  No preemption: a task runs until it awaits.\n  Problem: CPU-bound code blocks entire event loop.\n  A start\n  B start\n  B end\n  A end",
+     "code": "Cooperative multitasking\n  Tasks voluntarily yield control (at await points).\n  No preemption: a task runs until it awaits.\n  Problem: CPU-bound code blocks entire event loop.\n  A start\n  B start\n  B end\n  A end",
      "numbered": false
     }
    ]
@@ -108,7 +108,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q609: Backpressure handling (advanced)\")\nprint(\"  When producer >> consumer, buffer grows unbounded.\")\nprint(\"  asyncio solutions:\")\nprint(\"    1. Bounded Queue (blocks producer)\")\nprint(\"    2. Semaphore (limits concurrent tasks)\")\nprint(\"    3. Flow control: StreamWriter.drain()\")\nprint(\"    4. Manual: track pending count, pause when high\")\nprint()",
+     "code": "print(\"Backpressure handling (advanced)\")\nprint(\"  When producer >> consumer, buffer grows unbounded.\")\nprint(\"  asyncio solutions:\")\nprint(\"    1. Bounded Queue (blocks producer)\")\nprint(\"    2. Semaphore (limits concurrent tasks)\")\nprint(\"    3. Flow control: StreamWriter.drain()\")\nprint(\"    4. Manual: track pending count, pause when high\")\nprint()",
      "numbered": false
     },
     {
@@ -118,7 +118,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q609: Backpressure handling (advanced)\n  When producer >> consumer, buffer grows unbounded.\n  asyncio solutions:\n    1. Bounded Queue (blocks producer)\n    2. Semaphore (limits concurrent tasks)\n    3. Flow control: StreamWriter.drain()\n    4. Manual: track pending count, pause when high",
+     "code": "Backpressure handling (advanced)\n  When producer >> consumer, buffer grows unbounded.\n  asyncio solutions:\n    1. Bounded Queue (blocks producer)\n    2. Semaphore (limits concurrent tasks)\n    3. Flow control: StreamWriter.drain()\n    4. Manual: track pending count, pause when high",
      "numbered": false
     }
    ]
@@ -131,7 +131,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q610: Cancellation propagation\")\nprint(\"  When a parent task is cancelled, child tasks should also be cancelled.\")\n\nasync def demo_cancel_propagation():\n    async def child(name):\n        try:\n            await asyncio.sleep(10)\n        except asyncio.CancelledError:\n            print(f\"  {name} cancelled\")\n            raise\n\n    async def parent():\n        tasks = [asyncio.create_task(child(f\"child-{i}\")) for i in range(3)]\n        try:\n            await asyncio.gather(*tasks)\n        except asyncio.CancelledError:\n            for t in tasks:\n                t.cancel()\n            await asyncio.gather(*tasks, return_exceptions=True)\n            raise\n\n    task = asyncio.create_task(parent())\n    await asyncio.sleep(0.01)\n    task.cancel()\n    try:\n        await task\n    except asyncio.CancelledError:\n        print(\"  Parent and children all cancelled\")\n\nasyncio.run(demo_cancel_propagation())\nprint()",
+     "code": "import asyncio\n\nprint(\"Cancellation propagation\")\nprint(\"  When a parent task is cancelled, child tasks should also be cancelled.\")\n\nasync def demo_cancel_propagation():\n    async def child(name):\n        try:\n            await asyncio.sleep(10)\n        except asyncio.CancelledError:\n            print(f\"  {name} cancelled\")\n            raise\n\n    async def parent():\n        tasks = [asyncio.create_task(child(f\"child-{i}\")) for i in range(3)]\n        try:\n            await asyncio.gather(*tasks)\n        except asyncio.CancelledError:\n            for t in tasks:\n                t.cancel()\n            await asyncio.gather(*tasks, return_exceptions=True)\n            raise\n\n    task = asyncio.create_task(parent())\n    await asyncio.sleep(0.01)\n    task.cancel()\n    try:\n        await task\n    except asyncio.CancelledError:\n        print(\"  Parent and children all cancelled\")\n\nasyncio.run(demo_cancel_propagation())\nprint()",
      "numbered": false
     },
     {
@@ -141,7 +141,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q610: Cancellation propagation\n  When a parent task is cancelled, child tasks should also be cancelled.\n  child-0 cancelled\n  child-1 cancelled\n  child-2 cancelled\n  Parent and children all cancelled",
+     "code": "Cancellation propagation\n  When a parent task is cancelled, child tasks should also be cancelled.\n  child-0 cancelled\n  child-1 cancelled\n  child-2 cancelled\n  Parent and children all cancelled",
      "numbered": false
     }
    ]
@@ -154,7 +154,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q611: Async context propagation\")\nprint(\"  Use contextvars to propagate context across async boundaries.\")\nimport contextvars\nrequest_id = contextvars.ContextVar('request_id')\n\nasync def demo_context_propagation():\n    request_id.set(\"req-123\")\n    async def inner():\n        print(f\"  Inner sees request_id: {request_id.get()}\")\n    await inner()\n\nasyncio.run(demo_context_propagation())\nprint()",
+     "code": "import asyncio\n\nprint(\"Async context propagation\")\nprint(\"  Use contextvars to propagate context across async boundaries.\")\nimport contextvars\nrequest_id = contextvars.ContextVar('request_id')\n\nasync def demo_context_propagation():\n    request_id.set(\"req-123\")\n    async def inner():\n        print(f\"  Inner sees request_id: {request_id.get()}\")\n    await inner()\n\nasyncio.run(demo_context_propagation())\nprint()",
      "numbered": false
     },
     {
@@ -164,7 +164,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q611: Async context propagation\n  Use contextvars to propagate context across async boundaries.\n  Inner sees request_id: req-123",
+     "code": "Async context propagation\n  Use contextvars to propagate context across async boundaries.\n  Inner sees request_id: req-123",
      "numbered": false
     }
    ]
@@ -177,7 +177,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q612: Async resource cleanup\")\nprint(\"  Use 'async with' and try/finally for guaranteed cleanup.\")\n\nasync def demo_async_cleanup():\n    class AsyncDB:\n        async def connect(self):\n            print(\"  Connected\")\n        async def close(self):\n            print(\"  Connection closed\")\n        async def __aenter__(self):\n            await self.connect()\n            return self\n        async def __aexit__(self, *args):\n            await self.close()\n\n    async with AsyncDB() as db:\n        print(\"  Using database...\")\n\nasyncio.run(demo_async_cleanup())\nprint()",
+     "code": "import asyncio\n\nprint(\"Async resource cleanup\")\nprint(\"  Use 'async with' and try/finally for guaranteed cleanup.\")\n\nasync def demo_async_cleanup():\n    class AsyncDB:\n        async def connect(self):\n            print(\"  Connected\")\n        async def close(self):\n            print(\"  Connection closed\")\n        async def __aenter__(self):\n            await self.connect()\n            return self\n        async def __aexit__(self, *args):\n            await self.close()\n\n    async with AsyncDB() as db:\n        print(\"  Using database...\")\n\nasyncio.run(demo_async_cleanup())\nprint()",
      "numbered": false
     },
     {
@@ -187,7 +187,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q612: Async resource cleanup\n  Use 'async with' and try/finally for guaranteed cleanup.\n  Connected\n  Using database...\n  Connection closed",
+     "code": "Async resource cleanup\n  Use 'async with' and try/finally for guaranteed cleanup.\n  Connected\n  Using database...\n  Connection closed",
      "numbered": false
     }
    ]
@@ -200,7 +200,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q613: Async deadlocks\")\nprint(\"  Deadlocks in async code when coroutines wait for each other.\")\nprint(\"  Common causes:\")\nprint(\"    1. Two tasks each holding a lock the other needs\")\nprint(\"    2. Awaiting a result that depends on current task\")\nprint(\"    3. Blocking call in async code (starves event loop)\")\nprint(\"  Prevention: lock ordering, timeouts, avoid blocking calls\")\nprint()",
+     "code": "print(\"Async deadlocks\")\nprint(\"  Deadlocks in async code when coroutines wait for each other.\")\nprint(\"  Common causes:\")\nprint(\"    1. Two tasks each holding a lock the other needs\")\nprint(\"    2. Awaiting a result that depends on current task\")\nprint(\"    3. Blocking call in async code (starves event loop)\")\nprint(\"  Prevention: lock ordering, timeouts, avoid blocking calls\")\nprint()",
      "numbered": false
     },
     {
@@ -210,7 +210,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q613: Async deadlocks\n  Deadlocks in async code when coroutines wait for each other.\n  Common causes:\n    1. Two tasks each holding a lock the other needs\n    2. Awaiting a result that depends on current task\n    3. Blocking call in async code (starves event loop)\n  Prevention: lock ordering, timeouts, avoid blocking calls",
+     "code": "Async deadlocks\n  Deadlocks in async code when coroutines wait for each other.\n  Common causes:\n    1. Two tasks each holding a lock the other needs\n    2. Awaiting a result that depends on current task\n    3. Blocking call in async code (starves event loop)\n  Prevention: lock ordering, timeouts, avoid blocking calls",
      "numbered": false
     }
    ]
@@ -223,7 +223,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q614: Async connection pools\")\n\nclass AsyncConnectionPool:\n    \"\"\"Simplified async connection pool.\"\"\"\n    def __init__(self, max_size=5):\n        self._pool = asyncio.Queue(maxsize=max_size)\n        self._size = 0\n        self._max_size = max_size\n\n    async def acquire(self):\n        if self._size < self._max_size:\n            self._size += 1\n            return f\"conn-{self._size}\"\n        return await self._pool.get()\n\n    async def release(self, conn):\n        await self._pool.put(conn)\n\nasync def demo_pool():\n    pool = AsyncConnectionPool(max_size=2)\n    c1 = await pool.acquire()\n    c2 = await pool.acquire()\n    print(f\"  Acquired: {c1}, {c2}\")\n    await pool.release(c1)\n    c3 = await pool.acquire()\n    print(f\"  Reused: {c3}\")\n\nasyncio.run(demo_pool())\nprint()",
+     "code": "import asyncio\n\nprint(\"Async connection pools\")\n\nclass AsyncConnectionPool:\n    \"\"\"Simplified async connection pool.\"\"\"\n    def __init__(self, max_size=5):\n        self._pool = asyncio.Queue(maxsize=max_size)\n        self._size = 0\n        self._max_size = max_size\n\n    async def acquire(self):\n        if self._size < self._max_size:\n            self._size += 1\n            return f\"conn-{self._size}\"\n        return await self._pool.get()\n\n    async def release(self, conn):\n        await self._pool.put(conn)\n\nasync def demo_pool():\n    pool = AsyncConnectionPool(max_size=2)\n    c1 = await pool.acquire()\n    c2 = await pool.acquire()\n    print(f\"  Acquired: {c1}, {c2}\")\n    await pool.release(c1)\n    c3 = await pool.acquire()\n    print(f\"  Reused: {c3}\")\n\nasyncio.run(demo_pool())\nprint()",
      "numbered": false
     },
     {
@@ -233,7 +233,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q614: Async connection pools\n  Acquired: conn-1, conn-2\n  Reused: conn-1",
+     "code": "Async connection pools\n  Acquired: conn-1, conn-2\n  Reused: conn-1",
      "numbered": false
     }
    ]
@@ -246,7 +246,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q615: Async architecture patterns\")\nprint(\"  1. Fan-out/fan-in: distribute work, collect results\")\nprint(\"  2. Pipeline: chain of async processing stages\")\nprint(\"  3. Pub/Sub: async event bus with subscribers\")\nprint(\"  4. Actor model: independent actors communicating via messages\")\nprint(\"  5. Saga: orchestrate distributed operations\")\nprint()",
+     "code": "print(\"Async architecture patterns\")\nprint(\"  1. Fan-out/fan-in: distribute work, collect results\")\nprint(\"  2. Pipeline: chain of async processing stages\")\nprint(\"  3. Pub/Sub: async event bus with subscribers\")\nprint(\"  4. Actor model: independent actors communicating via messages\")\nprint(\"  5. Saga: orchestrate distributed operations\")\nprint()",
      "numbered": false
     },
     {
@@ -256,7 +256,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q615: Async architecture patterns\n  1. Fan-out/fan-in: distribute work, collect results\n  2. Pipeline: chain of async processing stages\n  3. Pub/Sub: async event bus with subscribers\n  4. Actor model: independent actors communicating via messages\n  5. Saga: orchestrate distributed operations",
+     "code": "Async architecture patterns\n  1. Fan-out/fan-in: distribute work, collect results\n  2. Pipeline: chain of async processing stages\n  3. Pub/Sub: async event bus with subscribers\n  4. Actor model: independent actors communicating via messages\n  5. Saga: orchestrate distributed operations",
      "numbered": false
     }
    ]

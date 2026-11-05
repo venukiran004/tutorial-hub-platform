@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 5.3 — Session Services: In-Memory, Database and Vertex AI
    The SQLite run, the schema dump and the driver error are all executed output
-   from scratchpad/adk/s3.py on google-adk 2.9.2.
+   from s3.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "5.3",
@@ -61,7 +61,7 @@ delete_session(self, *, app_name: str, user_id: str, session_id: str) -> None` }
 
     { t: "p", text: "The script below runs one tool-using turn against SQLite, then constructs a **second** service object — standing in for a process that has restarted — and reads the conversation back through it." },
 
-    { t: "code", lang: "python", title: "s3.py — write, 'restart', read",
+    { t: "code", lang: "python", title: "write, 'restart', read",
       code: `svc = DatabaseSessionService(db_url="sqlite+aiosqlite:///sess.db")
 runner = Runner(app_name="notes", agent=agent, session_service=svc)
 s = await svc.create_session(app_name="notes", user_id="u1")

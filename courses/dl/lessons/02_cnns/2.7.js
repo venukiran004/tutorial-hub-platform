@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 2.7 — Object Detection, IoU and NMS
    Every IoU, the NMS sweep, the COCO metric and the AP calculation are
-   executed in scratchpad/dl/d27.py against torchvision.ops.
+   executed in d27.py against torchvision.ops.
    ========================================================================= */
 EC.receiveLesson({
   id: "2.7",

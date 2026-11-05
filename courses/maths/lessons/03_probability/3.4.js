@@ -314,7 +314,7 @@ stats.binom(2000, 0.5).pmf(1000)        # 0.017839  -- scipy does this
 # THE GENERAL RULE FOR DISCRETE DISTRIBUTIONS: compute in log space and
 # exponentiate once. It is why every library exposes logpmf, and why
 # likelihoods are always summed as logs rather than multiplied.
-stats.binom(2000, 0.5).logpmf(1000)     # -4.0250`},
+stats.binom(2000, 0.5).logpmf(1000)     # -4.0264`},
       { t: "p", text: "**Every library exposes `logpmf` for this reason**, and it is why likelihoods are summed as logs rather than multiplied — a product of 10,000 probabilities underflows to zero regardless of how well conditioned the problem is." }
     ]},
 

@@ -138,8 +138,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Broker**the queue that *delivers tasks* from your app to workers (Redis, RabbitMQ).",
-      "**Result backend**optional storage where Celery *saves the return value / state* of a task so you can later query `task.status` / `task.get()` (Redis, a database, etc.)."
+      "**Broker:** the queue that *delivers tasks* from your app to workers (Redis, RabbitMQ).",
+      "**Result backend:** optional storage where Celery *saves the return value / state* of a task so you can later query `task.status` / `task.get()` (Redis, a database, etc.)."
      ]
     },
     {
@@ -420,8 +420,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Default (early ack)**the message is acked as soon as the worker *picks it up*. If the worker then crashes mid-task, the message is **lost**.",
-      "**`acks_late=True`**the message is acked only **after** the task finishes. If the worker crashes mid-task, the message is redelivered and runs again — safer, but requires idempotent tasks."
+      "**Default (early ack):** the message is acked as soon as the worker *picks it up*. If the worker then crashes mid-task, the message is **lost**.",
+      "**`acks_late=True`:** the message is acked only **after** the task finishes. If the worker crashes mid-task, the message is redelivered and runs again — safer, but requires idempotent tasks."
      ]
     },
     {
@@ -447,7 +447,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Pass **lightweight identifiers (IDs)**, not large objects. Messages are serialized (usually JSON) and stored in the broker. Passing a fat object: - Bloats the broker and slows serialization. - Risks **staleness** — by the time the worker runs, the data may have changed."
+     "text": "Pass **lightweight identifiers (IDs)**, not large objects. Messages are serialised (usually JSON) and stored in the broker. Passing a fat object: - Bloats the broker and slows serialisation. - Risks **staleness** — by the time the worker runs, the data may have changed."
     },
     {
      "t": "p",
@@ -461,7 +461,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Send IDs and re-load inside the worker — smaller messages, always-fresh data, no serialization headaches."
+     "text": "**Key takeaway:** Send IDs and re-load inside the worker — smaller messages, always-fresh data, no serialisation headaches."
     }
    ]
   },
@@ -485,9 +485,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Flower**web dashboard for Celery (tasks, workers, rates, failures).",
+      "**Flower:** web dashboard for Celery (tasks, workers, rates, failures).",
       "**Queue depth** metrics — a growing backlog means workers can't keep up (scale out).",
-      "**Task latency & failure rate**exported to Prometheus/Grafana.",
+      "**Task latency & failure rate:** exported to Prometheus/Grafana.",
       "**Structured logging** with the task ID for tracing.",
       "**Alerts** on DLQ size, retry spikes, and worker liveness."
      ]
@@ -501,7 +501,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "What serialization format should tasks use, and why not `pickle`?",
+   "q": "What serialisation format should tasks use, and why not `pickle`?",
    "terms": [
     "Answer",
     "JSON",
@@ -515,11 +515,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Celery's default and recommended serializer is **JSON**. Avoid **`pickle`**: it can execute arbitrary code on deserialization, so a compromised or spoofed broker message becomes remote code execution. JSON is safe and language-agnostic (workers in other languages can read it) but only supports basic types — another reason to pass simple IDs/dicts, not rich objects."
+     "text": "Celery's default and recommended serialiser is **JSON**. Avoid **`pickle`**: it can execute arbitrary code on deserialization, so a compromised or spoofed broker message becomes remote code execution. JSON is safe and language-agnostic (workers in other languages can read it) but only supports basic types — another reason to pass simple IDs/dicts, not rich objects."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use JSON serialization for safety and interoperability; never accept `pickle` from an untrusted broker."
+     "text": "**Key takeaway:** Use JSON serialisation for safety and interoperability; never accept `pickle` from an untrusted broker."
     }
    ]
   },

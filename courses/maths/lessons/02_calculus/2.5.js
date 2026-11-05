@@ -96,14 +96,14 @@ con = {"type": "eq", "fun": lambda v: v[0] + v[1] - 1}
 
 r = minimize(f, [0.5, 0.5], constraints=[con], bounds=[(0, None)]*2)
 r.x                      # [0.8333, 0.1667]  = [5/6, 1/6]
--r.fun                   # 1.4404
+-r.fun                   # 1.4069
 
 # THE MULTIPLIER IS A PRICE. lam = 6/7 = 0.857 says one more unit of
 # budget buys 0.857 more reach. Check it numerically:
 con2 = {"type": "eq", "fun": lambda v: v[0] + v[1] - 1.01}
 r2 = minimize(f, [0.5, 0.5], constraints=[con2], bounds=[(0, None)]*2)
 
-(-r2.fun) - (-r.fun)     # 0.00857  =  0.857 * 0.01   exactly lam * delta
+(-r2.fun) - (-r.fun)     # 0.00855  =  0.857 * 0.01   exactly lam * delta
 `,
       hl: [21, 30, 41],
       caption: "**Differentiating with respect to λ recovers the constraint**, which is why the trick is legitimate — you have not discarded the constraint, you have encoded it as one more stationarity condition."

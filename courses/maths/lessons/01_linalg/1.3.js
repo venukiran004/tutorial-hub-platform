@@ -270,14 +270,14 @@ x = solve_triangular(A, b, lower=True)
 # In exact arithmetic this matrix has rank 1. In floating point the
 # dependence is only approximate, so nothing is exactly zero.
 A = np.array([[1.0, 2.0],
-              [2.0, 4.0 + 1e-13]])
+              [2.0, 4.0 + 1e-15]])
 
-np.linalg.det(A)                # 1.0000000000287557e-13 -- not zero
+np.linalg.det(A)                # 8.8817841970012444e-16 -- not zero
 np.linalg.matrix_rank(A)        # 1  -- correctly judged rank-deficient
 
 # matrix_rank does NOT test for zero. It counts singular values above a
 # tolerance scaled to the matrix:
-np.linalg.svd(A, compute_uv=False)      # [5.0, 2.0e-14]
+np.linalg.svd(A, compute_uv=False)      # [5.0, 5.0e-16]
 # One large, one negligible -> rank 1.
 
 # WHICH MEANS "IS THIS SINGULAR?" IS A QUESTION ABOUT SCALE, NOT LOGIC.
@@ -285,11 +285,11 @@ np.linalg.svd(A, compute_uv=False)      # [5.0, 2.0e-14]
 # meaningless too, because the determinant scales like the n-th power of
 # the entries:
 big = A * 1000
-np.linalg.det(big)              # 1.0e-07 -- looks "bigger", same matrix
+np.linalg.det(big)              # 9.1e-10 -- looks "bigger", same matrix
 
 # USE THE CONDITION NUMBER, which is scale-invariant:
-np.linalg.cond(A)               # 2.5e14 -- effectively singular
-np.linalg.cond(big)             # 2.5e14 -- identical, correctly`},
+np.linalg.cond(A)               # 1.0e16 -- effectively singular
+np.linalg.cond(big)             # 9.5e15 -- same order: scaling did not move it`},
       { t: "p", text: "**`det == 0` is never the right test.** The determinant carries the units of your data raised to the n-th power, so it can be made arbitrarily small or large by rescaling a matrix that has not changed. The condition number is the scale-free version of the same question." }
     ]},
 

@@ -72,7 +72,7 @@ EC.receiveLesson({
 # Better -- and note the transaction is what makes it survivable.` },
         { level: "best", label: "Upsert on a natural key",
           why: "One atomic statement per row set. There is no window in which the day is absent, a re-run converges to the same state, and concurrent runs of the same day do not corrupt each other.",
-          code: `INSERT INTO daily_totals (day, country, revenue, order_count, computed_at)
+          lang: "sql", code: `INSERT INTO daily_totals (day, country, revenue, order_count, computed_at)
 SELECT * FROM staging_daily_totals
 ON CONFLICT (day, country) DO UPDATE SET
     revenue      = EXCLUDED.revenue,
@@ -838,45 +838,45 @@ def test_every_day_in_a_range_is_either_loaded_or_recorded_failed():
       {
         stem: "A pipeline writes with `if_exists=\"append\"` and is re-run after a failure. What happens?",
         options: [
-          "The write fails because the rows already exist",
-          "That day's rows are added a second time, with nothing distinguishing them, so every downstream sum is doubled for that day",
-          "Pandas deduplicates on the index",
-          "Only new rows are appended"
+          "That day's rows are written twice, doubling its downstream sums",
+          "The write fails, because the rows for that day already exist in the table",
+          "Pandas deduplicates the rows on the DataFrame index before appending them",
+          "Only the rows that are not already in the table are appended"
         ],
-        answer: 1,
+        answer: 0,
         why: "Idempotence is a property of the write. The fix is an upsert on a natural key plus a unique constraint — with the constraint in place, the appending write would have raised on the second run instead of silently corrupting the table."
       },
       {
         stem: "A daily job produces zero rows because the status filter matched nothing. What does the pipeline report?",
         options: [
-          "A failure, since the output is empty",
-          "Success — zero rows are written without error, so the day is silently missing and indistinguishable from a genuine zero-revenue day",
-          "A warning from the database",
-          "It retries automatically"
+          "A failure, since an empty output is treated as an error by the scheduler",
+          "A warning from the database that no rows were inserted",
+          "Success — and the missing day looks like a genuine zero",
+          "It retries automatically until the filter returns some rows"
         ],
-        answer: 1,
+        answer: 2,
         why: "Exit code zero means the code did not crash, not that the output is correct. An explicit assertion on the output — non-empty, non-null, within a plausible range — is what turns this into a failure someone can act on."
       },
       {
         stem: "Upstream fails to deliver, so yesterday's file is still in place. Which check catches this?",
         options: [
-          "A schema validation — the columns will differ",
-          "A freshness check comparing the newest record's timestamp against the expected date",
-          "A row-count check — the file is smaller",
-          "A null-rate check"
+          "A freshness check on the newest record's timestamp",
+          "A schema validation — yesterday's file will have different columns from today's",
+          "A row-count check — yesterday's file will be smaller than today's",
+          "A null-rate check on the key columns"
         ],
-        answer: 1,
+        answer: 0,
         why: "The file is perfectly valid and the row count is normal, so every static check passes. It is the most common silent pipeline failure: the job succeeds, reports success, and the dashboard stops moving without anyone noticing for days."
       },
       {
         stem: "A backfill over 1,000 days fails at day 600 inside one transaction. What is the design problem?",
         options: [
+          "Everything rolls back, so the retry starts again from day one",
           "The transaction isolation level is too strict",
-          "Everything rolls back, so 14 hours of work is discarded and the next attempt starts from zero",
           "The database ran out of connections",
           "Backfills should not use transactions"
         ],
-        answer: 1,
+        answer: 0,
         why: "One transaction per unit of work, plus a completion record and a skip check, makes the job resumable — and because each unit is an upsert, re-running a completed day is harmless, so the resume point does not need to be exact."
       }
     ]

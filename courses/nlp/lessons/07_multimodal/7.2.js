@@ -2,7 +2,7 @@
    LESSON 7.2 — CLIP and Contrastive Learning
    The InfoNCE loss is implemented, and real zero-shot classification is run
    on synthesised images — it scores 3/4, and the failure is instructive
-   (§05) (scratchpad/nlp/n71.py).
+   (§05) (n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.2",
@@ -36,7 +36,7 @@ EC.receiveLesson({
     {"kind": "trace", "title": "0.000284 for perfect alignment and 6.0767 for none, against a chance level of 2.0794", "caption": "The loss is symmetric cross-entropy over the similarity matrix, and the three numbers bracket it exactly. **Perfect alignment gives 0.000284; random data gives 6.0767 — which is nearly three times the chance level of `ln(8) = 2.0794`, not equal to it.** That is the temperature's doing: **at `T = 0.07` the softmax is sharp, so a wrong ranking is confidently wrong rather than merely unhelpful**, which §04 measures directly.", "left": "condition", "codeW": 190, "vars": ["loss", "against chance = 2.0794"], "steps": [{"code": "perfect alignment", "state": ["0.000284", "far below"], "tone": "good"}, {"code": "chance level, ln(8)", "state": ["2.0794", "the reference"], "changed": [0, 1], "tone": "accent"}, {"code": "random data", "state": ["6.0767", "2.9x WORSE than chance"], "changed": [0, 1], "tone": "crit", "note": "the sharp softmax"}], "t": "diagram", "id": "dg-7_2-02-1"},
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n71.py — InfoNCE, symmetric", code:
+    { t: "code", lang: "python", title: "InfoNCE, symmetric", code:
 "def clip_loss(image_embeddings, text_embeddings, temperature=0.07):\n    image_embeddings = F.normalize(image_embeddings, dim=-1)\n    text_embeddings  = F.normalize(text_embeddings,  dim=-1)\n\n    logits = image_embeddings @ text_embeddings.T / temperature\n\n    # the diagonal is the positive pairs: image i matches text i\n    labels = torch.arange(len(logits))\n\n    loss_i2t = F.cross_entropy(logits,   labels)   # image finds its caption\n    loss_t2i = F.cross_entropy(logits.T, labels)   # caption finds its image\n    return (loss_i2t + loss_t2i) / 2",
       caption: "Normalising first makes the dot product a cosine. The loss is **symmetric** — the model must solve the problem in both directions, which stops it degenerating into a one-way lookup." },
 

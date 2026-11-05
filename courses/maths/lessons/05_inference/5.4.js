@@ -307,8 +307,8 @@ permutation_test(control, treatment, lambda v: v.std() / v.mean())
 
 # IT ALSO REPRODUCES THE NAMED TESTS, which is a good way to trust it:
 a = rng.normal(0, 1, 60); b = rng.normal(0.5, 1, 60)
-permutation_test(a, b, np.mean)["p"]          # 0.0089
-stats.ttest_ind(a, b).pvalue                  # 0.0091
+permutation_test(a, b, np.mean)["p"]          # 0.0097
+stats.ttest_ind(a, b).pvalue                  # 0.0096
 #
 # THE ONE ASSUMPTION IT DOES MAKE: exchangeability under the null. That
 # fails for paired or clustered data -- there you must shuffle WITHIN
@@ -325,7 +325,7 @@ def honest(rng):
     a, b = rng.normal(0, 1, 100), rng.normal(0, 1, 100)
     return stats.ttest_ind(a, b).pvalue < 0.05
 
-np.mean([honest(np.random.default_rng(i)) for i in range(5000)])   # 0.050
+np.mean([honest(np.random.default_rng(i)) for i in range(5000)])   # 0.055
 
 # CHERRY-PICKING THE STATISTIC: run four tests, report the best.
 def pick_best(rng):
@@ -336,7 +336,7 @@ def pick_best(rng):
           stats.ttest_ind(a, b, equal_var=False).pvalue]
     return min(ps) < 0.05
 
-np.mean([pick_best(np.random.default_rng(i)) for i in range(5000)])  # 0.083
+np.mean([pick_best(np.random.default_rng(i)) for i in range(5000)])  # 0.074
 
 # CHERRY-PICKING THE DIRECTION: choose one-sided after seeing the sign.
 def pick_direction(rng):

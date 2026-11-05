@@ -22,7 +22,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Compute sum of any rectangle in a matrix â€” Prefix Sum (Meta â€” ML Engineer)",
+   "q": "Compute sum of any rectangle in a matrix — Prefix Sum (Meta — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -44,13 +44,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Preprocessing: O(m Ã— n) time and space",
+      "Preprocessing: O(m × n) time and space",
       "Query: O(1) time"
      ]
     },
     {
      "t": "p",
-     "text": "**Key Insight:** This is the 2D extension of prefix sums. Uses inclusion-exclusion principle. Very common at Meta â€” know this cold."
+     "text": "**Key Insight:** This is the 2D extension of prefix sums. Uses inclusion-exclusion principle. Very common at Meta — know this cold."
     }
    ],
    "kind": ""
@@ -58,11 +58,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Next Greatest Element to the Right (Meta â€” ML Engineer)",
+   "q": "Next Greatest Element to the Right (Meta — ML Engineer)",
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Given an array, for each element find the next greater element to its right. The O(nÂ²) brute force was rejected â€” provide O(n) solution."
+     "text": "**Question:** Given an array, for each element find the next greater element to its right. The O(n²) brute force was rejected — provide O(n) solution."
     },
     {
      "t": "p",
@@ -75,7 +75,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Variant â€” Circular array (Next Greater Element II):**"
+     "text": "**Variant — Circular array (Next Greater Element II):**"
     },
     {
      "t": "code",
@@ -84,7 +84,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Monotonic stack pattern â€” O(n) because each element is pushed and popped at most once. Must-know for Meta interviews."
+     "text": "**Key Insight:** Monotonic stack pattern — O(n) because each element is pushed and popped at most once. Must-know for Meta interviews."
     }
    ],
    "kind": ""
@@ -92,7 +92,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Sort in O(log n) time (Shopee â€” ML Engineer)",
+   "q": "Sort in O(log n) time (Shopee — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -108,12 +108,12 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "This is provable via decision tree argument: any comparison sort must make at least logâ‚‚(n!) â‰ˆ n log n comparisons. However, there are special cases:"
+     "text": "This is provable via decision tree argument: any comparison sort must make at least log₂(n!) ≈ n log n comparisons. However, there are special cases:"
     },
     {
      "t": "code",
      "lang": "python",
-     "code": "# Case 1: Array is ALREADY sorted except for a few elements\n# â†’ Insertion sort: O(n + k) where k = inversions\ndef insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n\n# Case 2: Known small range â†’ Counting Sort O(n + k)\ndef counting_sort(arr, max_val):\n    count = [0] * (max_val + 1)\n    for num in arr:\n        count[num] += 1\n    result = []\n    for val, cnt in enumerate(count):\n        result.extend([val] * cnt)\n    return result\n\n# Case 3: O(log n) is possible if array has O(1) or O(log n) elements!\n# Two elements â†’ one comparison â†’ O(1)"
+     "code": "# Case 1: Array is ALREADY sorted except for a few elements\n# → Insertion sort: O(n + k) where k = inversions\ndef insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n\n# Case 2: Known small range → Counting Sort O(n + k)\ndef counting_sort(arr, max_val):\n    count = [0] * (max_val + 1)\n    for num in arr:\n        count[num] += 1\n    result = []\n    for val, cnt in enumerate(count):\n        result.extend([val] * cnt)\n    return result\n\n# Case 3: O(log n) is possible if array has O(1) or O(log n) elements!\n# Two elements → one comparison → O(1)"
     },
     {
      "t": "p",
@@ -134,7 +134,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Why does gradient descent sometimes not converge? (Baidu â€” ML Engineer)",
+   "q": "Why does gradient descent sometimes not converge? (Baidu — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -303,7 +303,7 @@ EC.receiveLesson({
       [
        "Focal loss",
        "Deep learning, detection",
-       "Needs tuning Î±, Î³"
+       "Needs tuning α, γ"
       ],
       [
        "Threshold tuning",
@@ -318,7 +318,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Linked List vs Array, Stack vs Queue, Hash Table (Amazon â€” ML Engineer)",
+   "q": "Linked List vs Array, Stack vs Queue, Hash Table (Amazon — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -327,7 +327,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• LINKED LIST vs ARRAY â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\n# Array (Python list): Contiguous memory\narr = [1, 2, 3, 4, 5]\narr.append(6)       # O(1) amortized\narr.insert(0, 0)    # O(n) â€” shift all elements\narr.pop()           # O(1)\narr[3]              # O(1) â€” random access\n\n# Linked List: Non-contiguous, node-based\nclass Node:\n    def __init__(self, val, next=None):\n        self.val = val\n        self.next = next\n\n# Insert at head: O(1)\n# Insert at position: O(n) traversal + O(1) insert\n# Access by index: O(n)\n# No random access!\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STACK vs QUEUE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\nfrom collections import deque\n\n# Stack â€” LIFO (Last In, First Out)\nstack = []\nstack.append(1)  # push\nstack.append(2)\nstack.pop()      # 2 â€” last element\n# Use cases: undo/redo, DFS, expression evaluation, call stack\n\n# Queue â€” FIFO (First In, First Out)\nqueue = deque()\nqueue.append(1)    # enqueue (right)\nqueue.append(2)\nqueue.popleft()    # 1 â€” first element\n# Use cases: BFS, task scheduling, message queues, rate limiting\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• HASH TABLE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\n# Python dict: O(1) average for get/set/delete\nhash_map = {}\nhash_map['key'] = 'value'  # O(1)\nval = hash_map.get('key')  # O(1)\ndel hash_map['key']        # O(1)\n\n# Hash collisions: chaining (linked list) or open addressing (probing)\n# Load factor = n_elements / n_buckets â†’ resize when > 0.75"
+     "code": "# ═══════════════ LINKED LIST vs ARRAY ═══════════════\n\n# Array (Python list): Contiguous memory\narr = [1, 2, 3, 4, 5]\narr.append(6)       # O(1) amortized\narr.insert(0, 0)    # O(n) — shift all elements\narr.pop()           # O(1)\narr[3]              # O(1) — random access\n\n# Linked List: Non-contiguous, node-based\nclass Node:\n    def __init__(self, val, next=None):\n        self.val = val\n        self.next = next\n\n# Insert at head: O(1)\n# Insert at position: O(n) traversal + O(1) insert\n# Access by index: O(n)\n# No random access!\n\n# ═══════════════ STACK vs QUEUE ═══════════════\n\nfrom collections import deque\n\n# Stack — LIFO (Last In, First Out)\nstack = []\nstack.append(1)  # push\nstack.append(2)\nstack.pop()      # 2 — last element\n# Use cases: undo/redo, DFS, expression evaluation, call stack\n\n# Queue — FIFO (First In, First Out)\nqueue = deque()\nqueue.append(1)    # enqueue (right)\nqueue.append(2)\nqueue.popleft()    # 1 — first element\n# Use cases: BFS, task scheduling, message queues, rate limiting\n\n# ═══════════════ HASH TABLE ═══════════════\n\n# Python dict: O(1) average for get/set/delete\nhash_map = {}\nhash_map['key'] = 'value'  # O(1)\nval = hash_map.get('key')  # O(1)\ndel hash_map['key']        # O(1)\n\n# Hash collisions: chaining (linked list) or open addressing (probing)\n# Load factor = n_elements / n_buckets → resize when > 0.75"
     },
     {
      "t": "table",
@@ -386,7 +386,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Image IoU Calculation (PathAI â€” ML Engineer)",
+   "q": "Image IoU Calculation (PathAI — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -408,9 +408,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**IoU > 0.5** â†’ PASCAL VOC standard (moderate)",
-      "**IoU > 0.75** â†’ COCO \"strict\" evaluation",
-      "**mAP@[0.5:0.95]** â†’ COCO primary metric (averaged over thresholds)"
+      "**IoU > 0.5** → PASCAL VOC standard (moderate)",
+      "**IoU > 0.75** → COCO \"strict\" evaluation",
+      "**mAP@[0.5:0.95]** → COCO primary metric (averaged over thresholds)"
      ]
     }
    ],
@@ -419,7 +419,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Text Analytics Implementation (Cognizant â€” ML Engineer)",
+   "q": "Text Analytics Implementation (Cognizant — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -428,7 +428,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import re\nfrom collections import Counter\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.naive_bayes import MultinomialNB\nfrom sklearn.pipeline import Pipeline\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TEXT PREPROCESSING â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\ndef preprocess_text(text):\n    \"\"\"Full text preprocessing pipeline.\"\"\"\n    # Lowercase\n    text = text.lower()\n    # Remove URLs\n    text = re.sub(r'https?://\\S+|www\\.\\S+', '', text)\n    # Remove HTML tags\n    text = re.sub(r'<.*?>', '', text)\n    # Remove special characters (keep alphanumeric + spaces)\n    text = re.sub(r'[^a-zA-Z0-9\\s]', '', text)\n    # Remove extra whitespace\n    text = re.sub(r'\\s+', ' ', text).strip()\n    return text\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TF-IDF + CLASSIFIER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\npipeline = Pipeline([\n    ('tfidf', TfidfVectorizer(\n        max_features=10000,\n        ngram_range=(1, 2),\n        stop_words='english',\n        min_df=2,\n        max_df=0.95\n    )),\n    ('classifier', MultinomialNB(alpha=0.1))\n])\n\n# Train\npipeline.fit(X_train_texts, y_train)\n\n# Predict\npredictions = pipeline.predict(X_test_texts)\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SENTIMENT WITH TRANSFORMERS â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\nfrom transformers import pipeline as hf_pipeline\n\nsentiment = hf_pipeline(\"sentiment-analysis\")\nresult = sentiment(\"This product is amazing!\")\nprint(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]"
+     "code": "import re\nfrom collections import Counter\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.naive_bayes import MultinomialNB\nfrom sklearn.pipeline import Pipeline\n\n# ═══════════════ TEXT PREPROCESSING ═══════════════\n\ndef preprocess_text(text):\n    \"\"\"Full text preprocessing pipeline.\"\"\"\n    # Lowercase\n    text = text.lower()\n    # Remove URLs\n    text = re.sub(r'https?://\\S+|www\\.\\S+', '', text)\n    # Remove HTML tags\n    text = re.sub(r'<.*?>', '', text)\n    # Remove special characters (keep alphanumeric + spaces)\n    text = re.sub(r'[^a-zA-Z0-9\\s]', '', text)\n    # Remove extra whitespace\n    text = re.sub(r'\\s+', ' ', text).strip()\n    return text\n\n# ═══════════════ TF-IDF + CLASSIFIER ═══════════════\n\npipeline = Pipeline([\n    ('tfidf', TfidfVectorizer(\n        max_features=10000,\n        ngram_range=(1, 2),\n        stop_words='english',\n        min_df=2,\n        max_df=0.95\n    )),\n    ('classifier', MultinomialNB(alpha=0.1))\n])\n\n# Train\npipeline.fit(X_train_texts, y_train)\n\n# Predict\npredictions = pipeline.predict(X_test_texts)\n\n# ═══════════════ SENTIMENT WITH TRANSFORMERS ═══════════════\n\nfrom transformers import pipeline as hf_pipeline\n\nsentiment = hf_pipeline(\"sentiment-analysis\")\nresult = sentiment(\"This product is amazing!\")\nprint(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]"
     }
    ],
    "kind": ""

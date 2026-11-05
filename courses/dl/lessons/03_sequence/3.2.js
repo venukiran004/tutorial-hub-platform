@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.2 — Backpropagation Through Time
    Gradient decay across sequence length and clipping behaviour measured in
-   scratchpad/dl/d31.py.
+   d31.py.
    ========================================================================= */
 EC.receiveLesson({
   id: "3.2",

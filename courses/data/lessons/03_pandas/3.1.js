@@ -321,7 +321,7 @@ type(d.loc["b"])              # Series -- one row
 #
 # Code that does d.loc[k]["v"] works for "b" and breaks for "a". Check
 # uniqueness when you set an index you intend to look up:
-assert d.index.is_unique, "index must be unique for reliable .loc"
+assert d.index.is_unique, "index must be unique for reliable .loc"   # raises here: "a" repeats
 
 # 4. MEMORY: an index of strings costs the same as a string column.
 #    Setting an index does not save space; it buys lookup speed.

@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "16.1",
 
-  lede: "Disaster recovery for a web application is a solved shape: restore the database, point traffic at the standby, done. **An ML or agentic system has state a web application does not have — a model artifact, a vector index, a prompt version, a half-finished agent run — and most of it is *derived*, which makes \"how long to rebuild it\" the number that actually sets your recovery time.** This lesson is the framework the rest of the module applies: the five stages at which you can intervene, the per-asset numbers, the rebuild-or-restore decision, and the rehearsal that turns a document into a capability. Lessons 16.2 to 16.5 then walk the pipeline of an ML, RAG, agentic and Python system stage by stage, and say what to do at each one.",
+  lede: "Disaster recovery for a web application is a solved shape: restore the database, point traffic at the standby, done. **An ML or agentic system has state a web application does not have — a model artefact, a vector index, a prompt version, a half-finished agent run — and most of it is *derived*, which makes \"how long to rebuild it\" the number that actually sets your recovery time.** This lesson is the framework the rest of the module applies: the five stages at which you can intervene, the per-asset numbers, the rebuild-or-restore decision, and the rehearsal that turns a document into a capability. Lessons 16.2 to 16.5 then walk the pipeline of an ML, RAG, agentic and Python system stage by stage, and say what to do at each one.",
 
   objectives: [
     "Name the five stages at which a failure can be mitigated, and what each one costs",
@@ -21,14 +21,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Five stages, and the cost of acting at each", id: "stages" },
 
-    {"kind": "layers", "title": "Five stages, cheapest at the top", "caption": "**A plan that describes only the fourth row pays the maximum cost every time.** Prevention is design work, so it loses to features unless somebody argues for it; detection is cheap and bounds everything below it, because nothing is contained or recovered faster than it is noticed. **Verification is the other cheap one, and omitting it is how a silent regression ships** — a restore that returns 200 has been checked for liveness, which was never the property at risk.", "items": [{"label": "Prevent", "sub": "immutable artifacts, pinned deps, idempotency keys, retention on the source", "tone": "good", "side": "cheapest"}, {"label": "Detect", "sub": "freshness, canary queries, eval scores in monitoring, drift alarms", "tone": "good", "side": "low"}, {"label": "Contain", "sub": "degraded mode, blue-green, circuit breakers, load shedding", "tone": "accent", "side": "moderate"}, {"label": "Recover", "sub": "snapshots, point-in-time, rebuild pipelines, a second provider", "tone": "crit", "side": "highest"}, {"label": "Verify", "sub": "evals against a dated baseline, reconciliation, golden outputs", "tone": "violet", "side": "low"}], "t": "diagram", "id": "dg-16_1-01-0"},
+    {"kind": "layers", "title": "Five stages, cheapest at the top", "caption": "**A plan that describes only the fourth row pays the maximum cost every time.** Prevention is design work, so it loses to features unless somebody argues for it; detection is cheap and bounds everything below it, because nothing is contained or recovered faster than it is noticed. **Verification is the other cheap one, and omitting it is how a silent regression ships** — a restore that returns 200 has been checked for liveness, which was never the property at risk.", "items": [{"label": "Prevent", "sub": "immutable artefacts, pinned deps, idempotency keys, retention on the source", "tone": "good", "side": "cheapest"}, {"label": "Detect", "sub": "freshness, canary queries, eval scores in monitoring, drift alarms", "tone": "good", "side": "low"}, {"label": "Contain", "sub": "degraded mode, blue-green, circuit breakers, load shedding", "tone": "accent", "side": "moderate"}, {"label": "Recover", "sub": "snapshots, point-in-time, rebuild pipelines, a second provider", "tone": "crit", "side": "highest"}, {"label": "Verify", "sub": "evals against a dated baseline, reconciliation, golden outputs", "tone": "violet", "side": "low"}], "t": "diagram", "id": "dg-16_1-01-0"},
 
     { t: "p", text: "Every failure in this module can be addressed at five points, and they are not alternatives \u2014 a real plan acts at several. **What distinguishes them is cost and leverage: prevention is the cheapest per incident and the easiest to under-invest in, and recovery is the most expensive and the one everybody writes down.** The four lessons after this one walk a specific pipeline and name the mitigation available at each of its stages; this is the vocabulary they use." },
 
     { t: "table",
       head: ["Stage", "The question it answers", "Typical mitigations", "Cost"],
       rows: [
-        ["**Prevent**", "Can this failure be made impossible?", "Immutable versioned artifacts, pinned dependencies, idempotency keys, a read-only replica, retention on the source corpus", "**Lowest per incident** \u2014 and it is design work, so it competes with features"],
+        ["**Prevent**", "Can this failure be made impossible?", "Immutable versioned artefacts, pinned dependencies, idempotency keys, a read-only replica, retention on the source corpus", "**Lowest per incident** \u2014 and it is design work, so it competes with features"],
         ["**Detect**", "How long until somebody knows?", "Health checks, freshness assertions, eval scores in monitoring, drift alarms, a canary query per index", "Low, and it sets a floor under every RTO below"],
         ["**Contain**", "Can the blast radius be smaller?", "Degraded mode, circuit breakers, bulkheads per tenant, a queue that sheds, feature flags that disable one path", "Moderate \u2014 and it is what turns an outage into a partial one"],
         ["**Recover**", "How do we get back?", "Snapshots, point-in-time recovery, a rebuild pipeline, a second provider, replay from a durable queue", "**Highest** \u2014 and the only stage most plans describe"],
@@ -38,12 +38,12 @@ EC.receiveLesson({
 
     { t: "callout", kind: "mental", title: "The mental model", body: [
       { t: "p", text: "**Prevention removes a failure, containment shrinks it, recovery undoes it, and verification proves the undoing worked.** Detection sits before all three and bounds them: nothing can be contained or recovered faster than it is noticed, which is why a freshness check is often worth more than a second replica." },
-      { t: "p", text: "So the question to ask of any failure in the next four lessons is not \"what is the backup\" but **\"which of the five is cheapest here\"** \u2014 and for a surprising number of AI-specific failures the answer is prevent, because the failure exists only because an artifact was mutable or a key was random." }
+      { t: "p", text: "So the question to ask of any failure in the next four lessons is not \"what is the backup\" but **\"which of the five is cheapest here\"** \u2014 and for a surprising number of AI-specific failures the answer is prevent, because the failure exists only because an artefact was mutable or a key was random." }
     ]},
 
     { t: "h2", n: "02", text: "Two numbers, and why one pair is not enough", id: "rto-rpo" },
 
-    {"kind": "trace", "title": "One pair of numbers, applied to six assets that disagree", "caption": "**A single system-wide RTO is an average of things with nothing in common** — and the moment it is written down, the plan is wrong for every asset at once. Here a stated four-hour RTO is comfortable for four rows and arithmetically impossible for one: **the index cannot be rebuilt in four hours, so the plan commits to something nobody has checked.** Per-asset numbers make that visible on the page rather than during the incident.", "left": "asset", "codeW": 170, "vars": ["realistic RTO", "against a stated 4h"], "steps": [{"code": "application code", "state": ["10 minutes", "comfortable"], "tone": "good"}, {"code": "model artifact", "state": ["15 minutes, from object storage", "comfortable"], "changed": [0, 1], "tone": "good"}, {"code": "prompts", "state": ["10 minutes, they are in git", "comfortable"], "changed": [0, 1], "tone": "good"}, {"code": "checkpointer database", "state": ["30 minutes, point-in-time", "comfortable"], "changed": [0, 1], "tone": "accent"}, {"code": "vector index, rebuilt", "state": ["6.1 hours, measured", "IMPOSSIBLE"], "changed": [0, 1], "tone": "crit"}, {"code": "source documents", "state": ["not recoverable at all", "the real risk"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_1-02-1"},
+    {"kind": "trace", "title": "One pair of numbers, applied to six assets that disagree", "caption": "**A single system-wide RTO is an average of things with nothing in common** — and the moment it is written down, the plan is wrong for every asset at once. Here a stated four-hour RTO is comfortable for four rows and arithmetically impossible for one: **the index cannot be rebuilt in four hours, so the plan commits to something nobody has checked.** Per-asset numbers make that visible on the page rather than during the incident.", "left": "asset", "codeW": 170, "vars": ["realistic RTO", "against a stated 4h"], "steps": [{"code": "application code", "state": ["10 minutes", "comfortable"], "tone": "good"}, {"code": "model artefact", "state": ["15 minutes, from object storage", "comfortable"], "changed": [0, 1], "tone": "good"}, {"code": "prompts", "state": ["10 minutes, they are in git", "comfortable"], "changed": [0, 1], "tone": "good"}, {"code": "checkpointer database", "state": ["30 minutes, point-in-time", "comfortable"], "changed": [0, 1], "tone": "accent"}, {"code": "vector index, rebuilt", "state": ["6.1 hours, measured", "IMPOSSIBLE"], "changed": [0, 1], "tone": "crit"}, {"code": "source documents", "state": ["not recoverable at all", "the real risk"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_1-02-1"},
 
 
     { t: "p", text: "Disaster recovery is specified with two numbers, and they are about different things. **RTO is time: how long until the system serves requests again. RPO is data: how much recent work you accept losing.** A four-hour RTO and a five-minute RPO is a normal pair for an ordinary application." },
@@ -56,11 +56,11 @@ EC.receiveLesson({
       ["Degraded mode", "A deliberately reduced service that stays up: cached answers, extractive answers, a smaller model, or a queue with an honest wait. The alternative is an error page."]
     ]},
 
-    { t: "p", text: "**The single most common mistake in this area is stating one RTO and one RPO for \"the system\".** An ML application is five or six assets with genuinely different needs: the code can be restored in a minute, the model artifact in a few minutes, the vector index possibly not for nine hours. One pair of numbers hides that, and the plan it produces is wrong for every asset at once." },
+    { t: "p", text: "**The single most common mistake in this area is stating one RTO and one RPO for \"the system\".** An ML application is five or six assets with genuinely different needs: the code can be restored in a minute, the model artefact in a few minutes, the vector index possibly not for nine hours. One pair of numbers hides that, and the plan it produces is wrong for every asset at once." },
 
     { t: "h2", n: "03", text: "The asset inventory", id: "inventory" },
 
-    {"kind": "tree", "title": "What is source, what is derived, and the one that only looks derived", "caption": "**Read it as two piles.** Everything on the right can be recomputed, so its recovery is a question of time and money. Everything on the left cannot, so it needs real backups and a named owner. **The trap is in the middle: a vector index is derived from the documents, which makes it recoverable only while the documents exist somewhere else** — and in a RAG system that somewhere is frequently another team's system with its own retention policy.", "root": {"label": "Everything to recover", "sub": "two piles, and one of them is dangerous", "tone": "accent", "children": [{"label": "SOURCE - must be backed up", "sub": "nothing recomputes these", "tone": "crit", "children": [{"label": "source documents", "sub": "the only true single point of failure", "tone": "crit"}, {"label": "agent and approval state", "sub": "the conversation IS the request", "tone": "crit"}, {"label": "code, prompts, eval goldens", "sub": "in git, so already solved", "tone": "good"}]}, {"label": "DERIVED - recomputable", "sub": "the question is how long", "tone": "violet", "children": [{"label": "vector index", "sub": "from documents plus an embedding model", "tone": "warn"}, {"label": "model artifact", "sub": "from data plus code plus a seed", "tone": "warn"}, {"label": "online feature store", "sub": "from the offline store", "tone": "good"}, {"label": "response and semantic cache", "sub": "cold start, not a disaster", "tone": "good"}]}]}, "t": "diagram", "id": "dg-16_1-03-2"},
+    {"kind": "tree", "title": "What is source, what is derived, and the one that only looks derived", "caption": "**Read it as two piles.** Everything on the right can be recomputed, so its recovery is a question of time and money. Everything on the left cannot, so it needs real backups and a named owner. **The trap is in the middle: a vector index is derived from the documents, which makes it recoverable only while the documents exist somewhere else** — and in a RAG system that somewhere is frequently another team's system with its own retention policy.", "root": {"label": "Everything to recover", "sub": "two piles, and one of them is dangerous", "tone": "accent", "children": [{"label": "SOURCE - must be backed up", "sub": "nothing recomputes these", "tone": "crit", "children": [{"label": "source documents", "sub": "the only true single point of failure", "tone": "crit"}, {"label": "agent and approval state", "sub": "the conversation IS the request", "tone": "crit"}, {"label": "code, prompts, eval goldens", "sub": "in git, so already solved", "tone": "good"}]}, {"label": "DERIVED - recomputable", "sub": "the question is how long", "tone": "violet", "children": [{"label": "vector index", "sub": "from documents plus an embedding model", "tone": "warn"}, {"label": "model artefact", "sub": "from data plus code plus a seed", "tone": "warn"}, {"label": "online feature store", "sub": "from the offline store", "tone": "good"}, {"label": "response and semantic cache", "sub": "cold start, not a disaster", "tone": "good"}]}]}, "t": "diagram", "id": "dg-16_1-03-2"},
 
 
     { t: "p", text: "Every recovery plan starts as a table of what there is to recover. For an ML or agentic application it is longer than people expect, and the interesting column is the last one." },
@@ -69,7 +69,7 @@ EC.receiveLesson({
       head: ["Asset", "Lives in", "Derived from", "If you lose it"],
       rows: [
         ["Application code", "Git, plus a container registry", "Nothing — it is the source", "Restore from git; minutes, and the rehearsed part"],
-        ["**Model artifact**", "Object storage, versioned", "Training data + code + seed", "Retrain, or restore the artifact. **Retraining is hours to days** (15.6)"],
+        ["**Model artefact**", "Object storage, versioned", "Training data + code + seed", "Retrain, or restore the artefact. **Retraining is hours to days** (15.6)"],
         ["**Vector index**", "A vector store", "Documents + an embedding model", "**Re-embed and re-index — the number nobody has measured**"],
         ["Source documents", "Object storage or a CMS", "Nothing — the source of truth for RAG", "The index cannot be rebuilt at all. This is the one real single point of failure"],
         ["Prompts and prompt versions", "Code, or a prompt registry", "Nothing", "Behaviour changes silently. Treat them as code (14.2)"],
@@ -132,7 +132,7 @@ print(f"provider cost: ~\${CHUNKS / 1000 * 0.00002 * 1000:,.0f}")
         ["Embedding model deprecated by the provider", "Yes, but the index is now frozen", "**No** — vectors from a new model are not comparable to old ones"],
         ["Documents changed and the index is stale", "No — it restores the staleness", "**Yes** — the only path"]
       ],
-      caption: "**The fourth row is the one that surprises people.** A provider retiring an embedding model does not corrupt your index; it means you can no longer embed a *query* into the same space, so every new search is comparing vectors from two different models. The index still answers, and the answers are quietly wrong — see section 06." },
+      caption: "**The fourth row is the one that surprises people.** A provider retiring an embedding model does not corrupt your index; it means you can no longer embed a *query* into the same space, so every new search is comparing vectors from two different models. The index still answers, and the answers are quietly wrong — see section 07." },
 
     { t: "h2", n: "05", text: "The dependency you cannot fail over", id: "provider" },
 
@@ -268,7 +268,7 @@ for metric, floor in [("retrieval_recall@5", 0.92),
       caption: "**Every one of those four failures passes a health check.** This is the specific reason the evaluation sets belong in the asset inventory: without them a restore can be verified only for liveness, and liveness is not the property that was lost." },
 
     { t: "callout", kind: "production", title: "What to rehearse, and how often", body: [
-      { t: "p", text: "**Quarterly, in a scratch environment, timed:** restore the model artifact from object storage, restore the vector index from its snapshot, restore the checkpointer database, point a copy of the application at all three, and run the evaluation suite. Record the wall-clock time for each step, because that total is your real RTO and it drifts upward as the corpus grows." },
+      { t: "p", text: "**Quarterly, in a scratch environment, timed:** restore the model artefact from object storage, restore the vector index from its snapshot, restore the checkpointer database, point a copy of the application at all three, and run the evaluation suite. Record the wall-clock time for each step, because that total is your real RTO and it drifts upward as the corpus grows." },
       { t: "p", text: "**Annually, or after any significant change:** the full rebuild path — re-embed the corpus from source documents, rebuild the index, and compare the evaluation scores against the snapshot-restored system. This is the drill that finds the deprecated embedding model and the source corpus nobody kept a copy of." },
       { t: "p", text: "**And write down the numbers each time.** A DR plan with a stated four-hour RTO and no dated measurement behind it is a document, not a capability." }
     ]},
@@ -311,6 +311,11 @@ for metric, floor in [("retrieval_recall@5", 0.92),
 #
 # REHEARSED: 2026-07-14, restore 51m end to end, evals passed.` }
       ] },
+
+    { t: "callout", kind: "insight", title: "Where the rest of this module goes", body: [
+      { t: "p", text: "The five stages and the per-asset table are the framework. **What they do not tell you is where a given system actually breaks**, and that is pipeline-specific \u2014 an ML training pipeline fails at different points from a retrieval pipeline, and both fail differently from an agent loop." },
+      { t: "p", text: "So the next four lessons each take one pipeline, walk it stage by stage, and name the prevention, detection, containment, recovery and verification available at every stage: **16.2 for ML systems, 16.3 for RAG, 16.4 for agentic systems, and 16.5 for the Python application underneath all three.**" }
+    ]},
 
     { t: "h2", n: "08", text: "Practice", id: "practice" },
 
@@ -406,11 +411,6 @@ THE APPLICATION CHANGE
       { t: "p", text: "**Three weeks later, answer quality complaints led to the discovery that the restored index had been built by the previous pipeline version, with 400-token chunks rather than 800.** Retrieval recall had fallen by roughly nine points. Nothing had errored, no dashboard had moved, and the restore had been verified with a health check and a single spot-checked query." },
       { t: "p", text: "**The snapshot was fine. The verification was the failure.** A restore is a deployment of an artefact built by an older pipeline, and it deserves the same quality gate as any other deployment." },
       { t: "p", text: "**The fix was two lines in the runbook:** record the pipeline version and chunking parameters in the snapshot metadata, and run the evaluation suite as the final step of every restore rather than a health check." }
-    ]},
-
-    { t: "callout", kind: "insight", title: "Where the rest of this module goes", body: [
-      { t: "p", text: "The five stages and the per-asset table are the framework. **What they do not tell you is where a given system actually breaks**, and that is pipeline-specific \u2014 an ML training pipeline fails at different points from a retrieval pipeline, and both fail differently from an agent loop." },
-      { t: "p", text: "So the next four lessons each take one pipeline, walk it stage by stage, and name the prevention, detection, containment, recovery and verification available at every stage: **16.2 for ML systems, 16.3 for RAG, 16.4 for agentic systems, and 16.5 for the Python application underneath all three.**" }
     ]}
   ],
 
@@ -429,7 +429,7 @@ THE APPLICATION CHANGE
     "**Derive idempotency keys from the run id**, never per attempt — a fresh key on each retry defeats the entire mechanism.",
     "**Decide the fate of in-flight work in advance**, by kind: drop chat turns, replay read-only work, replay side-effecting work only with keys, and never drop a run that is waiting for an approval.",
     "**Evaluation sets and a dated baseline belong in the asset inventory.** Without them a restore can be verified only for liveness, which is not the property at risk.",
-    "**Every silent restore failure returns 200** — wrong embedding version, changed chunking, older model artifact, stale prompt revision. Only an eval suite reads them.",
+    "**Every silent restore failure returns 200** — wrong embedding version, changed chunking, older model artefact, stale prompt revision. Only an eval suite reads them.",
     "**Rehearse quarterly and time each step.** An RTO with no dated measurement behind it is a document rather than a capability."
   ],
 
@@ -439,45 +439,45 @@ THE APPLICATION CHANGE
       {
         stem: "Your vector index is derived from documents you still have. What is its RTO?",
         options: [
-          "Zero — derived assets do not need recovery planning",
-          "The restore time of your snapshot, if you keep one; otherwise the measured rebuild time, which is usually hours",
-          "The same as the application code, since both are redeployed together",
-          "Determined by the vector store vendor's SLA"
+          "Your snapshot's restore time, or else the measured rebuild time",
+          "Zero — derived assets can always be regenerated, so they do not need a recovery objective",
+          "The same as the application code, since both are redeployed together from the pipeline",
+          "Whatever the vector store vendor's SLA states, since restoring the index is their job"
         ],
-        answer: 1,
+        answer: 0,
         why: "\"Derived\" says it is *recoverable*, not that it is recoverable quickly. Re-embedding and re-indexing a mid-sized corpus measured 6.1 hours against 11 minutes to restore a snapshot — which is why the snapshot exists even for an asset you could rebuild."
       },
       {
         stem: "A restored RAG system passes its health check, returns passages and meets its latency budget. What has not been verified?",
         options: [
-          "Nothing — those three checks are sufficient",
-          "That the index was built by the same pipeline version, with the same embedding model and chunking, so retrieval quality is unchanged",
-          "That the load balancer is healthy",
-          "That the container image matches the git tag"
+          "Nothing — health, retrieval and latency together cover what a restore can break",
+          "That the same embedding model and chunking built the index",
+          "That the load balancer in front of the service is healthy and routing correctly",
+          "That the container image that was restored matches the expected git tag"
         ],
         answer: 1,
-        why: "All four silent failure modes — wrong embedding model version, changed chunking, an older model artifact, a stale prompt revision — return 200 and plausible answers. A restore is a deployment of an artefact built by an older pipeline, and the evaluation suite is the only instrument that reads the difference."
+        why: "All four silent failure modes — wrong embedding model version, changed chunking, an older model artefact, a stale prompt revision — return 200 and plausible answers. A restore is a deployment of an artefact built by an older pipeline, and the evaluation suite is the only instrument that reads the difference."
       },
       {
         stem: "An agent run crashed after charging a card but before its checkpoint was written. You resume from the last checkpoint. What happens?",
         options: [
-          "The checkpointer detects the completed side effect and skips the node",
-          "The charge node runs again and the customer is charged twice, with no error raised",
-          "The run fails to resume because the state is inconsistent",
-          "The payment provider automatically deduplicates identical charges"
+          "The checkpointer detects the completed side effect and skips the charge node",
+          "The run fails to resume, because its state no longer matches the last checkpoint",
+          "The payment provider automatically deduplicates the identical second charge",
+          "The charge node runs again and the customer is charged twice, with no error raised"
         ],
-        answer: 1,
+        answer: 3,
         why: "A checkpointer restores the graph to a node; it has no knowledge of what the node did to the outside world. The fix is an idempotency key derived from the run id — stable across retries — plus a ledger written around any action the provider cannot deduplicate."
       },
       {
         stem: "Your embedding provider announces the retirement of the model your index was built with. What is the effect?",
         options: [
-          "The index is corrupted and must be restored from a snapshot",
-          "Nothing, until you rebuild — the stored vectors are unaffected",
-          "The index still answers, but new queries are embedded by a different model into a different space, so recall silently degrades",
-          "The vector store rejects queries until the index is rebuilt"
+          "The index is corrupted by the retirement and must be restored from a snapshot",
+          "Nothing changes until you rebuild, because the stored vectors are unaffected",
+          "The vector store rejects queries until the index has been rebuilt",
+          "Queries are embedded into a different space, so recall silently drops"
         ],
-        answer: 2,
+        answer: 3,
         why: "The stored vectors are fine and the queries are not: a query embedded by the replacement model is being compared against documents embedded by the old one. Nothing errors, every answer still looks plausible, and the only path back is a full rebuild — which is why the rebuild path has to stay working."
       },
       {
@@ -485,10 +485,10 @@ THE APPLICATION CHANGE
         options: [
           "Interactive chat turns, because a user is waiting",
           "Read-only retrieval and summarisation workflows",
-          "Runs paused awaiting human approval, because the state is the request and is reconstructible from nothing",
-          "Scheduled batch jobs, because they have a deadline"
+          "Scheduled batch jobs, because they have a deadline",
+          "Runs awaiting human approval — they exist nowhere else"
         ],
-        answer: 2,
+        answer: 3,
         why: "A chat turn has already been retried or abandoned; read-only work can be replayed freely; a batch job re-runs from its own checkpoint. An approval-pending run holds a request that may be days old and exists nowhere else — which is what makes the checkpointer database a system of record rather than a cache."
       }
     ]

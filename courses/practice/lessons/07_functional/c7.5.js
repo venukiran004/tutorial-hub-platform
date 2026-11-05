@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c7.5",
  "lede": "**30 snippets to read**, on decorators and map. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on decorators and map before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c7.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 860–889.** What this set asks you to predict, counted from its own problems — 27 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["functions", "lists", "decorators", "exceptions", "strings", "generators"], "cells": [[{"text": "13", "tone": "accent"}, "A function call"], [{"text": "5", "tone": "good"}, "A list comprehension"], [{"text": "4", "tone": "violet"}, "A decorated function"], [{"text": "2", "tone": "teal"}, "A return inside finally"], [{"text": "2", "tone": "warn"}, "The nonlocal keyword"], [{"text": "1", "tone": "crit"}, "A generator"]], "t": "diagram", "id": "dg-c7_5-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 860: A decorated function — output of `double(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10`, `Expected int, got str` **Explanation:** Decorator adds type checking before calling the actual function."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def type_check(func):\n    def wrapper(x):\n        if not isinstance(x, int):\n            raise TypeError(f\"Expected int, got {type(x).__name__}\")\n        return func(x)\n    return wrapper\n\n@type_check\ndef double(x):\n    return x * 2\n\nprint(double(5))\ntry:\n    print(double(\"5\"))\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10`, `Expected int, got str` **Explanation:** Decorator adds type checking before calling the actual function."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 861: A generator — output of `type(g)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'generator'>`, `1`, `2` **Explanation:** `yield` makes it a generator function. Each `next()` resumes execution."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen_func():\n    yield 1\n    yield 2\n    yield 3\n\ng = gen_func()\nprint(type(g))\nprint(next(g))\nprint(next(g))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'generator'>`, `1`, `2` **Explanation:** `yield` makes it a generator function. Each `next()` resumes execution."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 862: A function call — output of `func()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `28` (or similar — integer size in bytes, platform-dependent) **Explanation:** `sys.getsizeof()` returns memory size of an object."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\n\ndef func():\n    x = 10\n    return sys.getsizeof(x)\n\nprint(func())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `28` (or similar — integer size in bytes, platform-dependent) **Explanation:** `sys.getsizeof()` returns memory size of an object."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 863: A function call — output of `func(1, 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3`, `ab`, `{'x': <class 'int'>, 'y': <class 'int'>, 'return': <class 'int'>}` **Explanation:** Type hints are not enforced at runtime. They're just metadata."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func(x: int, y: int) -> int:\n    return x + y\n\nprint(func(1, 2))\nprint(func(\"a\", \"b\"))\nprint(func.__annotations__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3`, `ab`, `{'x': <class 'int'>, 'y': <class 'int'>, 'return': <class 'int'>}` **Explanation:** Type hints are not enforced at runtime. They're just metadata."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 864: A function call — output of `\"unreachable\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `None` **Explanation:** `return` without value returns `None`. Code after `return` is unreachable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func():\n    return\n    print(\"unreachable\")\n\nresult = func()\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `None` **Explanation:** `return` without value returns `None`. Code after `return` is unreachable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 865: A list comprehension — output of `[f(10) for f in functions]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 11, 12]` **Explanation:** Default parameter `i=i` captures current loop value, avoiding the closure trap."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def outer():\n    funcs = []\n    for i in range(3):\n        def inner(x, i=i):\n            return x + i\n        funcs.append(inner)\n    return funcs\n\nfunctions = outer()\nprint([f(10) for f in functions])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 11, 12]` **Explanation:** Default parameter `i=i` captures current loop value, avoiding the closure trap."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 866: A lambda — output of `add(3)(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `8` **Explanation:** Curried function using nested lambdas. `add(3)` returns a function that adds 3."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "add = lambda x: lambda y: x + y\nprint(add(3)(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `8` **Explanation:** Curried function using nested lambdas. `add(3)` returns a function that adds 3."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 867: A function call — output of `func(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]` **Explanation:** Recursive function building a list from 1 to n."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func(n):\n    if n == 0:\n        return []\n    return func(n-1) + [n]\n\nprint(func(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]` **Explanation:** Recursive function building a list from 1 to n."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,28 +197,25 @@ EC.receiveLesson({
    "q": "Program 868: functools.partial — output of `square(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `25`, `125` **Explanation:** `partial` pre-fills some function arguments, creating specialized versions."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import partial\n\ndef power(base, exponent):\n    return base ** exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\nprint(square(5))\nprint(cube(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `25`, `125` **Explanation:** `partial` pre-fills some function arguments, creating specialized versions."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "869",
    "q": "Program 869: A decorated function — output of `f\"Calling {func.__name__}{args}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def trace(func):\n    def wrapper(*args):\n        print(f\"Calling {func.__name__}{args}\")\n        result = func(*args)\n        print(f\"Returned {result}\")\n        return result\n    return wrapper\n\n@trace\ndef add(a, b):\n    return a + b\n\nadd(3, 4)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -209,7 +230,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Decorator traces function calls and returns."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def trace(func):\n    def wrapper(*args):\n        print(f\"Calling {func.__name__}{args}\")\n        result = func(*args)\n        print(f\"Returned {result}\")\n        return result\n    return wrapper\n\n@trace\ndef add(a, b):\n    return a + b\n\nadd(3, 4)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -217,16 +247,19 @@ EC.receiveLesson({
    "q": "Program 870: A return inside finally — output of `func()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2` **Explanation:** `finally` block's `return` overrides `try` block's `return`. Avoid returning from `finally`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func():\n    try:\n        return 1\n    finally:\n        return 2\n\nprint(func())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2` **Explanation:** `finally` block's `return` overrides `try` block's `return`. Avoid returning from `finally`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -234,16 +267,19 @@ EC.receiveLesson({
    "q": "Program 871: The nonlocal keyword — output of `acc(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5`, `15`, `18` **Explanation:** Closure maintains running total across calls using `nonlocal`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def accumulate():\n    total = 0\n    def add(n):\n        nonlocal total\n        total += n\n        return total\n    return add\n\nacc = accumulate()\nprint(acc(5))\nprint(acc(10))\nprint(acc(3))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5`, `15`, `18` **Explanation:** Closure maintains running total across calls using `nonlocal`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -251,16 +287,19 @@ EC.receiveLesson({
    "q": "Program 872: *args and **kwargs — output of `func(*args)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `6`, `6` **Explanation:** `*args` unpacks tuple into positional args. `**kwargs` unpacks dict into keyword args."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func(x, y, z):\n    return x + y + z\n\nargs = (1, 2, 3)\nprint(func(*args))\n\nkwargs = {'x': 1, 'y': 2, 'z': 3}\nprint(func(**kwargs))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `6`, `6` **Explanation:** `*args` unpacks tuple into positional args. `**kwargs` unpacks dict into keyword args."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -268,16 +307,19 @@ EC.receiveLesson({
    "q": "Program 873: A for loop — output of `transform(\" HELLO WORLD \")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Hello World` **Explanation:** Function composition — applies strip, then lower, then title sequentially."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def chain(*funcs):\n    def apply(x):\n        for f in funcs:\n            x = f(x)\n        return x\n    return apply\n\ntransform = chain(str.strip, str.lower, str.title)\nprint(transform(\"  HELLO WORLD  \"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Hello World` **Explanation:** Function composition — applies strip, then lower, then title sequentially."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -285,16 +327,19 @@ EC.receiveLesson({
    "q": "Program 874: A function call — output of `locals()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}` **Explanation:** `locals()` returns dict of local variables in current scope."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func(a, b, c):\n    print(locals())\n\nfunc(1, 2, 3)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}` **Explanation:** `locals()` returns dict of local variables in current scope."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -302,16 +347,19 @@ EC.receiveLesson({
    "q": "Program 875: A try / except block — output of `\"RecursionError caught\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `RecursionError caught` **Explanation:** Python has a recursion limit (default ~1000). Exceeded limit raises `RecursionError`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\nsys.setrecursionlimit(50)\n\ndef infinite():\n    return infinite()\n\ntry:\n    infinite()\nexcept RecursionError:\n    print(\"RecursionError caught\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `RecursionError caught` **Explanation:** Python has a recursion limit (default ~1000). Exceeded limit raises `RecursionError`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -319,16 +367,19 @@ EC.receiveLesson({
    "q": "Program 876: A mutable default argument — output of `foo()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0]`, `[0, 1]`, `[10, 20, 2]`, `[0, 1, 2]` **Explanation:** Default list persists across calls. Passing explicit list doesn't affect default."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def foo(x=[]):\n    x.append(len(x))\n    return x\n\nprint(foo())\nprint(foo())\nprint(foo([10, 20]))\nprint(foo())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0]`, `[0, 1]`, `[10, 20, 2]`, `[0, 1, 2]` **Explanation:** Default list persists across calls. Passing explicit list doesn't affect default."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -336,16 +387,19 @@ EC.receiveLesson({
    "q": "Program 877: A function call — output of `a, b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 [2, 3]`, `[1, 2] 3` **Explanation:** Star unpacking captures remaining elements into a list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def func():\n    return 1, 2, 3\n\na, *b = func()\nprint(a, b)\n*a, b = func()\nprint(a, b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 [2, 3]`, `[1, 2] 3` **Explanation:** Star unpacking captures remaining elements into a list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -353,16 +407,19 @@ EC.receiveLesson({
    "q": "Program 878: A decorated function — output of `sqrt(16)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `4.0`, `Negative value!` **Explanation:** Decorator adds input validation before calling the actual function."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def validate(func):\n    def wrapper(x):\n        if x < 0:\n            raise ValueError(\"Negative value!\")\n        return func(x)\n    return wrapper\n\n@validate\ndef sqrt(x):\n    return x ** 0.5\n\nprint(sqrt(16))\ntry:\n    sqrt(-4)\nexcept ValueError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `4.0`, `Negative value!` **Explanation:** Decorator adds input validation before calling the actual function."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -370,16 +427,19 @@ EC.receiveLesson({
    "q": "Program 879: A lambda — output of `double_then_increment(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `11`, `12` **Explanation:** `compose(f, g)(x)` is `f(g(x))`. First: `(5*2)+1=11`. Second: `(5+1)*2=12`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def compose(f, g):\n    return lambda x: f(g(x))\n\ndouble = lambda x: x * 2\nincrement = lambda x: x + 1\n\ndouble_then_increment = compose(increment, double)\nincrement_then_double = compose(double, increment)\n\nprint(double_then_increment(5))\nprint(increment_then_double(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `11`, `12` **Explanation:** `compose(f, g)(x)` is `f(g(x))`. First: `(5*2)+1=11`. Second: `(5+1)*2=12`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -387,16 +447,19 @@ EC.receiveLesson({
    "q": "Program 880: A lambda — output of `square(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `25`, `<class 'function'>` **Explanation:** Lambda creates anonymous function. It's still a function object."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "square = lambda x: x ** 2\nprint(square(5))\nprint(type(square))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `25`, `<class 'function'>` **Explanation:** Lambda creates anonymous function. It's still a function object."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -404,16 +467,19 @@ EC.receiveLesson({
    "q": "Program 881: A lambda — output of `result = list(map(lambda x: x * 2, nums))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[2, 4, 6, 8, 10]` **Explanation:** `map()` applies function to each element."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = list(map(lambda x: x * 2, nums))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[2, 4, 6, 8, 10]` **Explanation:** `map()` applies function to each element."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -421,16 +487,19 @@ EC.receiveLesson({
    "q": "Program 882: A lambda — output of `total = reduce(lambda a, b: a + b, nums)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `15` **Explanation:** `reduce()` cumulatively applies function: `((((1+2)+3)+4)+5) = 15`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnums = [1, 2, 3, 4, 5]\ntotal = reduce(lambda a, b: a + b, nums)\nprint(total)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `15` **Explanation:** `reduce()` cumulatively applies function: `((((1+2)+3)+4)+5) = 15`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -438,16 +507,19 @@ EC.receiveLesson({
    "q": "Program 883: A lambda — output of `maximum = reduce(lambda a, b: a if a > b else…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5` **Explanation:** Reduce to find max by comparing pairs cumulatively."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from functools import reduce\nnums = [3, 1, 4, 1, 5]\nmaximum = reduce(lambda a, b: a if a > b else b, nums)\nprint(maximum)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5` **Explanation:** Reduce to find max by comparing pairs cumulatively."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -455,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 884: A lambda — output of `result = list(map(lambda x, y: x + y, a, b))` — lambda",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[5, 7, 9]` **Explanation:** `map()` can take multiple iterables. Lambda receives one element from each."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5, 6]\nresult = list(map(lambda x, y: x + y, a, b))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[5, 7, 9]` **Explanation:** `map()` can take multiple iterables. Lambda receives one element from each."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -472,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 885: A lambda — output of `result = list(map(lambda x, y: x + y, a, b))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[5, 7]` **Explanation:** `map()` with multiple iterables stops at the shortest one."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = [4, 5]\nresult = list(map(lambda x, y: x + y, a, b))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[5, 7]` **Explanation:** `map()` with multiple iterables stops at the shortest one."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -489,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 886: map() and filter() — output of `words = ['hello', 'world', 'python']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['HELLO', 'WORLD', 'PYTHON']` **Explanation:** Can pass bound methods directly instead of lambda."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "words = ['hello', 'world', 'python']\nresult = list(map(str.upper, words))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['HELLO', 'WORLD', 'PYTHON']` **Explanation:** Can pass bound methods directly instead of lambda."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -506,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 887: map() and filter() — output of `data = ['1', '2', '3', '4', '5']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `15` **Explanation:** `map(int, ...)` converts each string to integer."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "data = ['1', '2', '3', '4', '5']\nresult = list(map(int, data))\nprint(result)\nprint(sum(result))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5]`, `15` **Explanation:** `map(int, ...)` converts each string to integer."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -523,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 888: map() and filter() — output of `nums = [0, 1, 2, '', 'hello', None, [], [1]]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 'hello', [1]]` **Explanation:** `filter(None, ...)` removes all falsy values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [0, 1, 2, '', 'hello', None, [], [1]]\ntruthy = list(filter(None, nums))\nprint(truthy)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 'hello', [1]]` **Explanation:** `filter(None, ...)` removes all falsy values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -540,21 +627,24 @@ EC.receiveLesson({
    "q": "Program 889: A lambda — output of `result = list(map(lambda x: x ** 2, filter(la…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 9, 25]` **Explanation:** Filter odds first, then square. Chaining map and filter."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nums = [1, 2, 3, 4, 5]\nresult = list(map(lambda x: x ** 2, filter(lambda x: x % 2 != 0, nums)))\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 9, 25]` **Explanation:** Filter odds first, then square. Chaining map and filter."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

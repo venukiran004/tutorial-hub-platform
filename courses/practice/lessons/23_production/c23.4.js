@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c23.4",
  "lede": "**28 programs to write**, on performance, security and system design. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 28 problems on docker & kubernetes without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 28 programs on performance, security and system design without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c23.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2788–2815.** What this set actually drills, counted from its own problems — 9 of the 28 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["threads", "files and paths", "web and APIs", "dicts and sets", "strings", "databases"], "cells": [[{"text": "2", "tone": "accent"}, "Threading bottlenecks"], [{"text": "2", "tone": "good"}, "Deserialization attacks"], [{"text": "2", "tone": "violet"}, "System design for URL shortene"], [{"text": "1", "tone": "teal"}, "Hashing basics"], [{"text": "1", "tone": "warn"}, "Password storage"], [{"text": "1", "tone": "crit"}, "SQL injection prevention"]], "t": "diagram", "id": "dg-c23_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -49,7 +49,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q540: Threading bottlenecks\")\nprint(\"  GIL: limits CPU parallelism to one thread\")\nprint(\"  Lock contention: threads waiting for locks\")\nprint(\"  Thread creation overhead: use thread pools\")\nprint(\"  Solutions: multiprocessing for CPU, asyncio for I/O\")\nprint()",
+     "code": "print(\"Threading bottlenecks\")\nprint(\"  GIL: limits CPU parallelism to one thread\")\nprint(\"  Lock contention: threads waiting for locks\")\nprint(\"  Thread creation overhead: use thread pools\")\nprint(\"  Solutions: multiprocessing for CPU, asyncio for I/O\")\nprint()",
      "numbered": false
     },
     {
@@ -59,7 +59,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q540: Threading bottlenecks\n  GIL: limits CPU parallelism to one thread\n  Lock contention: threads waiting for locks\n  Thread creation overhead: use thread pools\n  Solutions: multiprocessing for CPU, asyncio for I/O",
+     "code": "Threading bottlenecks\n  GIL: limits CPU parallelism to one thread\n  Lock contention: threads waiting for locks\n  Thread creation overhead: use thread pools\n  Solutions: multiprocessing for CPU, asyncio for I/O",
      "numbered": false
     }
    ]
@@ -72,7 +72,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q541: Security best practices\")\nprint(\"  1. Input validation (never trust user input)\")\nprint(\"  2. Parameterized queries (prevent SQL injection)\")\nprint(\"  3. Output encoding (prevent XSS)\")\nprint(\"  4. Authentication + authorization on every endpoint\")\nprint(\"  5. HTTPS everywhere\")\nprint(\"  6. Secrets in environment/vault, not code\")\nprint(\"  7. Dependency scanning + updates\")\nprint(\"  8. Least privilege principle\")\nprint()",
+     "code": "print(\"Security best practices\")\nprint(\"  1. Input validation (never trust user input)\")\nprint(\"  2. Parameterized queries (prevent SQL injection)\")\nprint(\"  3. Output encoding (prevent XSS)\")\nprint(\"  4. Authentication + authorization on every endpoint\")\nprint(\"  5. HTTPS everywhere\")\nprint(\"  6. Secrets in environment/vault, not code\")\nprint(\"  7. Dependency scanning + updates\")\nprint(\"  8. Least privilege principle\")\nprint()",
      "numbered": false
     },
     {
@@ -82,7 +82,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q541: Security best practices\n  1. Input validation (never trust user input)\n  2. Parameterized queries (prevent SQL injection)\n  3. Output encoding (prevent XSS)\n  4. Authentication + authorization on every endpoint\n  5. HTTPS everywhere\n  6. Secrets in environment/vault, not code\n  7. Dependency scanning + updates\n  8. Least privilege principle",
+     "code": "Security best practices\n  1. Input validation (never trust user input)\n  2. Parameterized queries (prevent SQL injection)\n  3. Output encoding (prevent XSS)\n  4. Authentication + authorization on every endpoint\n  5. HTTPS everywhere\n  6. Secrets in environment/vault, not code\n  7. Dependency scanning + updates\n  8. Least privilege principle",
      "numbered": false
     }
    ]
@@ -95,7 +95,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q542: Secure coding\")\nprint(\"  Avoid: eval(), exec(), pickle with untrusted data\")\nprint(\"  Use: parameterized queries, not string formatting for SQL\")\nprint(\"  Validate: file uploads (type, size, content)\")\nprint(\"  Sanitize: HTML output, file paths, URLs\")\nprint(\"  Hash passwords: bcrypt/argon2, never SHA/MD5\")\nprint()",
+     "code": "print(\"Secure coding\")\nprint(\"  Avoid: eval(), exec(), pickle with untrusted data\")\nprint(\"  Use: parameterized queries, not string formatting for SQL\")\nprint(\"  Validate: file uploads (type, size, content)\")\nprint(\"  Sanitize: HTML output, file paths, URLs\")\nprint(\"  Hash passwords: bcrypt/argon2, never SHA/MD5\")\nprint()",
      "numbered": false
     },
     {
@@ -105,7 +105,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q542: Secure coding\n  Avoid: eval(), exec(), pickle with untrusted data\n  Use: parameterized queries, not string formatting for SQL\n  Validate: file uploads (type, size, content)\n  Sanitize: HTML output, file paths, URLs\n  Hash passwords: bcrypt/argon2, never SHA/MD5",
+     "code": "Secure coding\n  Avoid: eval(), exec(), pickle with untrusted data\n  Use: parameterized queries, not string formatting for SQL\n  Validate: file uploads (type, size, content)\n  Sanitize: HTML output, file paths, URLs\n  Hash passwords: bcrypt/argon2, never SHA/MD5",
      "numbered": false
     }
    ]
@@ -118,7 +118,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q543: Secret management\")\nprint(\"  Never commit secrets to git!\")\nprint(\"  Tools: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault\")\nprint(\"  Environment variables for simple cases\")\nprint(\"  .env files (gitignored) for local development\")\nprint(\"  Rotate secrets regularly, audit access logs\")\nprint()",
+     "code": "print(\"Secret management\")\nprint(\"  Never commit secrets to git!\")\nprint(\"  Tools: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault\")\nprint(\"  Environment variables for simple cases\")\nprint(\"  .env files (gitignored) for local development\")\nprint(\"  Rotate secrets regularly, audit access logs\")\nprint()",
      "numbered": false
     },
     {
@@ -128,7 +128,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q543: Secret management\n  Never commit secrets to git!\n  Tools: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault\n  Environment variables for simple cases\n  .env files (gitignored) for local development\n  Rotate secrets regularly, audit access logs",
+     "code": "Secret management\n  Never commit secrets to git!\n  Tools: HashiCorp Vault, AWS Secrets Manager, Azure Key Vault\n  Environment variables for simple cases\n  .env files (gitignored) for local development\n  Rotate secrets regularly, audit access logs",
      "numbered": false
     }
    ]
@@ -141,7 +141,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q544: Encryption basics\")\nprint(\"  Symmetric: same key to encrypt/decrypt (AES, ChaCha20)\")\nprint(\"    Fast, used for data encryption\")\nprint(\"  Asymmetric: public/private key pair (RSA, Ed25519)\")\nprint(\"    Slower, used for key exchange, signatures\")\nprint(\"  TLS: combines both for secure communication\")\nprint()\n\nimport hashlib",
+     "code": "print(\"Encryption basics\")\nprint(\"  Symmetric: same key to encrypt/decrypt (AES, ChaCha20)\")\nprint(\"    Fast, used for data encryption\")\nprint(\"  Asymmetric: public/private key pair (RSA, Ed25519)\")\nprint(\"    Slower, used for key exchange, signatures\")\nprint(\"  TLS: combines both for secure communication\")\nprint()\n\nimport hashlib",
      "numbered": false
     },
     {
@@ -151,7 +151,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q544: Encryption basics\n  Symmetric: same key to encrypt/decrypt (AES, ChaCha20)\n    Fast, used for data encryption\n  Asymmetric: public/private key pair (RSA, Ed25519)\n    Slower, used for key exchange, signatures\n  TLS: combines both for secure communication",
+     "code": "Encryption basics\n  Symmetric: same key to encrypt/decrypt (AES, ChaCha20)\n    Fast, used for data encryption\n  Asymmetric: public/private key pair (RSA, Ed25519)\n    Slower, used for key exchange, signatures\n  TLS: combines both for secure communication",
      "numbered": false
     }
    ]
@@ -164,7 +164,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q545: Hashing basics\")\nprint(\"  One-way function: can't reverse hash to get original data.\")\nprint(\"  Properties: deterministic, fixed output, collision resistant\")\nmd5_hash = hashlib.md5(b\"hello\").hexdigest()\nsha256_hash = hashlib.sha256(b\"hello\").hexdigest()\nprint(f\"  MD5('hello'): {md5_hash}\")\nprint(f\"  SHA256('hello'): {sha256_hash}\")\nprint(\"  Use SHA-256+ for security, bcrypt/argon2 for passwords\")\nprint()",
+     "code": "import hashlib\n\nprint(\"Hashing basics\")\nprint(\"  One-way function: can't reverse hash to get original data.\")\nprint(\"  Properties: deterministic, fixed output, collision resistant\")\nmd5_hash = hashlib.md5(b\"hello\").hexdigest()\nsha256_hash = hashlib.sha256(b\"hello\").hexdigest()\nprint(f\"  MD5('hello'): {md5_hash}\")\nprint(f\"  SHA256('hello'): {sha256_hash}\")\nprint(\"  Use SHA-256+ for security, bcrypt/argon2 for passwords\")\nprint()",
      "numbered": false
     },
     {
@@ -174,7 +174,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q545: Hashing basics\n  One-way function: can't reverse hash to get original data.\n  Properties: deterministic, fixed output, collision resistant\n  MD5('hello'): 5d41402abc4b2a76b9719d911017c592\n  SHA256('hello'): 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\n  Use SHA-256+ for security, bcrypt/argon2 for passwords",
+     "code": "Hashing basics\n  One-way function: can't reverse hash to get original data.\n  Properties: deterministic, fixed output, collision resistant\n  MD5('hello'): 5d41402abc4b2a76b9719d911017c592\n  SHA256('hello'): 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\n  Use SHA-256+ for security, bcrypt/argon2 for passwords",
      "numbered": false
     }
    ]
@@ -187,7 +187,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q546: Password storage\")\nprint(\"  NEVER store plaintext passwords!\")\nprint(\"  Use: bcrypt, argon2, scrypt (adaptive hashing)\")\nprint(\"  import bcrypt\")\nprint(\"  hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\")\nprint(\"  bcrypt.checkpw(password.encode(), hashed)  # Verify\")\nprint(\"  Salt is included in hash (no separate storage needed)\")\nprint()",
+     "code": "print(\"Password storage\")\nprint(\"  NEVER store plaintext passwords!\")\nprint(\"  Use: bcrypt, argon2, scrypt (adaptive hashing)\")\nprint(\"  import bcrypt\")\nprint(\"  hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\")\nprint(\"  bcrypt.checkpw(password.encode(), hashed)  # Verify\")\nprint(\"  Salt is included in hash (no separate storage needed)\")\nprint()",
      "numbered": false
     },
     {
@@ -197,7 +197,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q546: Password storage\n  NEVER store plaintext passwords!\n  Use: bcrypt, argon2, scrypt (adaptive hashing)\n  import bcrypt\n  hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\n  bcrypt.checkpw(password.encode(), hashed)  # Verify\n  Salt is included in hash (no separate storage needed)",
+     "code": "Password storage\n  NEVER store plaintext passwords!\n  Use: bcrypt, argon2, scrypt (adaptive hashing)\n  import bcrypt\n  hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())\n  bcrypt.checkpw(password.encode(), hashed)  # Verify\n  Salt is included in hash (no separate storage needed)",
      "numbered": false
     }
    ]
@@ -210,7 +210,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q547: SQL injection prevention\")\nprint(\"  NEVER use string formatting for SQL queries!\")\nprint(\"  Bad:  f\\\"SELECT * FROM users WHERE id = {user_id}\\\"\")\nprint(\"  Good: cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))\")\nprint(\"  ORM: User.objects.filter(id=user_id)  # Safe\")\nprint(\"  Prepared statements, parameterized queries, ORM\")\nprint()",
+     "code": "print(\"SQL injection prevention\")\nprint(\"  NEVER use string formatting for SQL queries!\")\nprint(\"  Bad:  f\\\"SELECT * FROM users WHERE id = {user_id}\\\"\")\nprint(\"  Good: cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))\")\nprint(\"  ORM: User.objects.filter(id=user_id)  # Safe\")\nprint(\"  Prepared statements, parameterized queries, ORM\")\nprint()",
      "numbered": false
     },
     {
@@ -220,7 +220,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q547: SQL injection prevention\n  NEVER use string formatting for SQL queries!\n  Bad:  f\"SELECT * FROM users WHERE id = {user_id}\"\n  Good: cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))\n  ORM: User.objects.filter(id=user_id)  # Safe\n  Prepared statements, parameterized queries, ORM",
+     "code": "SQL injection prevention\n  NEVER use string formatting for SQL queries!\n  Bad:  f\"SELECT * FROM users WHERE id = {user_id}\"\n  Good: cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,))\n  ORM: User.objects.filter(id=user_id)  # Safe\n  Prepared statements, parameterized queries, ORM",
      "numbered": false
     }
    ]
@@ -233,7 +233,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q548: XSS prevention\")\nprint(\"  Cross-Site Scripting: inject malicious scripts into web pages.\")\nprint(\"  Prevention:\")\nprint(\"    - Escape HTML output (Jinja2 auto-escapes)\")\nprint(\"    - Content-Security-Policy header\")\nprint(\"    - HttpOnly cookies (prevent JS access)\")\nprint(\"    - Sanitize user input (bleach library)\")\nprint()",
+     "code": "print(\"XSS prevention\")\nprint(\"  Cross-Site Scripting: inject malicious scripts into web pages.\")\nprint(\"  Prevention:\")\nprint(\"    - Escape HTML output (Jinja2 auto-escapes)\")\nprint(\"    - Content-Security-Policy header\")\nprint(\"    - HttpOnly cookies (prevent JS access)\")\nprint(\"    - Sanitize user input (bleach library)\")\nprint()",
      "numbered": false
     },
     {
@@ -243,7 +243,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q548: XSS prevention\n  Cross-Site Scripting: inject malicious scripts into web pages.\n  Prevention:\n    - Escape HTML output (Jinja2 auto-escapes)\n    - Content-Security-Policy header\n    - HttpOnly cookies (prevent JS access)\n    - Sanitize user input (bleach library)",
+     "code": "XSS prevention\n  Cross-Site Scripting: inject malicious scripts into web pages.\n  Prevention:\n    - Escape HTML output (Jinja2 auto-escapes)\n    - Content-Security-Policy header\n    - HttpOnly cookies (prevent JS access)\n    - Sanitize user input (bleach library)",
      "numbered": false
     }
    ]
@@ -256,7 +256,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q549: SSRF prevention\")\nprint(\"  Server-Side Request Forgery: trick server into making requests.\")\nprint(\"  Attack: user provides URL → server fetches → accesses internal resources\")\nprint(\"  Prevention:\")\nprint(\"    - Whitelist allowed domains/IPs\")\nprint(\"    - Block private IP ranges (10.x, 172.16-31.x, 192.168.x)\")\nprint(\"    - Don't follow redirects blindly\")\nprint(\"    - Use network segmentation\")\nprint()",
+     "code": "print(\"SSRF prevention\")\nprint(\"  Server-Side Request Forgery: trick server into making requests.\")\nprint(\"  Attack: user provides URL → server fetches → accesses internal resources\")\nprint(\"  Prevention:\")\nprint(\"    - Whitelist allowed domains/IPs\")\nprint(\"    - Block private IP ranges (10.x, 172.16-31.x, 192.168.x)\")\nprint(\"    - Don't follow redirects blindly\")\nprint(\"    - Use network segmentation\")\nprint()",
      "numbered": false
     },
     {
@@ -266,7 +266,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q549: SSRF prevention\n  Server-Side Request Forgery: trick server into making requests.\n  Attack: user provides URL → server fetches → accesses internal resources\n  Prevention:\n    - Whitelist allowed domains/IPs\n    - Block private IP ranges (10.x, 172.16-31.x, 192.168.x)\n    - Don't follow redirects blindly\n    - Use network segmentation",
+     "code": "SSRF prevention\n  Server-Side Request Forgery: trick server into making requests.\n  Attack: user provides URL → server fetches → accesses internal resources\n  Prevention:\n    - Whitelist allowed domains/IPs\n    - Block private IP ranges (10.x, 172.16-31.x, 192.168.x)\n    - Don't follow redirects blindly\n    - Use network segmentation",
      "numbered": false
     }
    ]
@@ -279,7 +279,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q550: Deserialization attacks\")\nprint(\"  Deserializing untrusted data can execute arbitrary code.\")\nprint(\"  NEVER use pickle with untrusted data!\")\nprint(\"  import pickle\")\nprint(\"  # pickle.loads(untrusted_data)  # DANGEROUS!\")\nprint(\"  Safe alternatives: JSON, msgpack, protobuf\")\nprint(\"  If pickle needed: use hmac signing to verify integrity\")\nprint()\n\nprint(\"=\" * 70)\nprint(\"FILE 10 COMPLETE: Questions 501-550 (Infrastructure, Security)\")\nprint(\"=\" * 70)",
+     "code": "print(\"Deserialization attacks\")\nprint(\"  Deserializing untrusted data can execute arbitrary code.\")\nprint(\"  NEVER use pickle with untrusted data!\")\nprint(\"  import pickle\")\nprint(\"  # pickle.loads(untrusted_data)  # DANGEROUS!\")\nprint(\"  Safe alternatives: JSON, msgpack, protobuf\")\nprint(\"  If pickle needed: use hmac signing to verify integrity\")\nprint()\n\nprint(\"=\" * 70)\nprint(\"FILE 10 COMPLETE: Questions 501-550 (Infrastructure, Security)\")\nprint(\"=\" * 70)",
      "numbered": false
     },
     {
@@ -289,7 +289,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q550: Deserialization attacks\n  Deserializing untrusted data can execute arbitrary code.\n  NEVER use pickle with untrusted data!\n  import pickle\n  # pickle.loads(untrusted_data)  # DANGEROUS!\n  Safe alternatives: JSON, msgpack, protobuf\n  If pickle needed: use hmac signing to verify integrity\n\n======================================================================\nFILE 10 COMPLETE: Questions 501-550 (Infrastructure, Security)\n======================================================================",
+     "code": "Deserialization attacks\n  Deserializing untrusted data can execute arbitrary code.\n  NEVER use pickle with untrusted data!\n  import pickle\n  # pickle.loads(untrusted_data)  # DANGEROUS!\n  Safe alternatives: JSON, msgpack, protobuf\n  If pickle needed: use hmac signing to verify integrity\n\n======================================================================\nFILE 10 COMPLETE: Questions 501-550 (Infrastructure, Security)\n======================================================================",
      "numbered": false
     }
    ]
@@ -302,7 +302,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q551: Dependency vulnerabilities\")\nprint(\"  Third-party packages may have known vulnerabilities.\")\nprint(\"  Scan: pip-audit, safety, snyk, dependabot\")\nprint(\"  pip-audit  # Scan installed packages\")\nprint(\"  Automate: Dependabot/Renovate for auto-update PRs\")\nprint(\"  Lock + hash dependencies in production\")\nprint()",
+     "code": "print(\"Dependency vulnerabilities\")\nprint(\"  Third-party packages may have known vulnerabilities.\")\nprint(\"  Scan: pip-audit, safety, snyk, dependabot\")\nprint(\"  pip-audit  # Scan installed packages\")\nprint(\"  Automate: Dependabot/Renovate for auto-update PRs\")\nprint(\"  Lock + hash dependencies in production\")\nprint()",
      "numbered": false
     },
     {
@@ -312,7 +312,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q551: Dependency vulnerabilities\n  Third-party packages may have known vulnerabilities.\n  Scan: pip-audit, safety, snyk, dependabot\n  pip-audit  # Scan installed packages\n  Automate: Dependabot/Renovate for auto-update PRs\n  Lock + hash dependencies in production",
+     "code": "Dependency vulnerabilities\n  Third-party packages may have known vulnerabilities.\n  Scan: pip-audit, safety, snyk, dependabot\n  pip-audit  # Scan installed packages\n  Automate: Dependabot/Renovate for auto-update PRs\n  Lock + hash dependencies in production",
      "numbered": false
     }
    ]
@@ -325,7 +325,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q552: Audit logging\")\nprint(\"  Record security-relevant events for compliance.\")\nprint(\"  Events: login, logout, access, modification, admin actions\")\nprint(\"  Include: who, what, when, where (IP), outcome\")\nprint(\"  Store: tamper-proof, separate from app logs\")\nprint(\"  Retention: per compliance requirements (7 years for SOX)\")\nprint()",
+     "code": "print(\"Audit logging\")\nprint(\"  Record security-relevant events for compliance.\")\nprint(\"  Events: login, logout, access, modification, admin actions\")\nprint(\"  Include: who, what, when, where (IP), outcome\")\nprint(\"  Store: tamper-proof, separate from app logs\")\nprint(\"  Retention: per compliance requirements (7 years for SOX)\")\nprint()",
      "numbered": false
     },
     {
@@ -335,7 +335,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q552: Audit logging\n  Record security-relevant events for compliance.\n  Events: login, logout, access, modification, admin actions\n  Include: who, what, when, where (IP), outcome\n  Store: tamper-proof, separate from app logs\n  Retention: per compliance requirements (7 years for SOX)",
+     "code": "Audit logging\n  Record security-relevant events for compliance.\n  Events: login, logout, access, modification, admin actions\n  Include: who, what, when, where (IP), outcome\n  Store: tamper-proof, separate from app logs\n  Retention: per compliance requirements (7 years for SOX)",
      "numbered": false
     }
    ]
@@ -348,7 +348,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q553: Compliance considerations\")\nprint(\"  SOC 2: security controls for service organizations\")\nprint(\"  PCI DSS: payment card data handling\")\nprint(\"  HIPAA: healthcare data protection\")\nprint(\"  ISO 27001: information security management\")\nprint(\"  Requirements: access control, encryption, audit logs, incident response\")\nprint()",
+     "code": "print(\"Compliance considerations\")\nprint(\"  SOC 2: security controls for service organizations\")\nprint(\"  PCI DSS: payment card data handling\")\nprint(\"  HIPAA: healthcare data protection\")\nprint(\"  ISO 27001: information security management\")\nprint(\"  Requirements: access control, encryption, audit logs, incident response\")\nprint()",
      "numbered": false
     },
     {
@@ -358,7 +358,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q553: Compliance considerations\n  SOC 2: security controls for service organizations\n  PCI DSS: payment card data handling\n  HIPAA: healthcare data protection\n  ISO 27001: information security management\n  Requirements: access control, encryption, audit logs, incident response",
+     "code": "Compliance considerations\n  SOC 2: security controls for service organizations\n  PCI DSS: payment card data handling\n  HIPAA: healthcare data protection\n  ISO 27001: information security management\n  Requirements: access control, encryption, audit logs, incident response",
      "numbered": false
     }
    ]
@@ -371,7 +371,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q554: Data retention policies\")\nprint(\"  Define how long data is kept and when it's deleted.\")\nprint(\"  Legal requirements vary by jurisdiction and data type.\")\nprint(\"  Implement: automated deletion, anonymization, archiving\")\nprint(\"  Document: what data, retention period, deletion method\")\nprint()",
+     "code": "print(\"Data retention policies\")\nprint(\"  Define how long data is kept and when it's deleted.\")\nprint(\"  Legal requirements vary by jurisdiction and data type.\")\nprint(\"  Implement: automated deletion, anonymization, archiving\")\nprint(\"  Document: what data, retention period, deletion method\")\nprint()",
      "numbered": false
     },
     {
@@ -381,7 +381,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q554: Data retention policies\n  Define how long data is kept and when it's deleted.\n  Legal requirements vary by jurisdiction and data type.\n  Implement: automated deletion, anonymization, archiving\n  Document: what data, retention period, deletion method",
+     "code": "Data retention policies\n  Define how long data is kept and when it's deleted.\n  Legal requirements vary by jurisdiction and data type.\n  Implement: automated deletion, anonymization, archiving\n  Document: what data, retention period, deletion method",
      "numbered": false
     }
    ]
@@ -394,7 +394,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q555: GDPR basics\")\nprint(\"  General Data Protection Regulation (EU data privacy law).\")\nprint(\"  Principles: lawfulness, purpose limitation, data minimization\")\nprint(\"  Rights: access, erasure (right to be forgotten), portability\")\nprint(\"  Requirements: consent, DPO, breach notification (72 hours)\")\nprint(\"  Technical: encryption, pseudonymization, access controls\")\nprint()",
+     "code": "print(\"GDPR basics\")\nprint(\"  General Data Protection Regulation (EU data privacy law).\")\nprint(\"  Principles: lawfulness, purpose limitation, data minimization\")\nprint(\"  Rights: access, erasure (right to be forgotten), portability\")\nprint(\"  Requirements: consent, DPO, breach notification (72 hours)\")\nprint(\"  Technical: encryption, pseudonymization, access controls\")\nprint()",
      "numbered": false
     },
     {
@@ -404,7 +404,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q555: GDPR basics\n  General Data Protection Regulation (EU data privacy law).\n  Principles: lawfulness, purpose limitation, data minimization\n  Rights: access, erasure (right to be forgotten), portability\n  Requirements: consent, DPO, breach notification (72 hours)\n  Technical: encryption, pseudonymization, access controls",
+     "code": "GDPR basics\n  General Data Protection Regulation (EU data privacy law).\n  Principles: lawfulness, purpose limitation, data minimization\n  Rights: access, erasure (right to be forgotten), portability\n  Requirements: consent, DPO, breach notification (72 hours)\n  Technical: encryption, pseudonymization, access controls",
      "numbered": false
     }
    ]
@@ -417,7 +417,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q556: System design for file processing\")\nprint(\"  Components: Upload API → Object Storage (S3) → Queue → Workers\")\nprint(\"  Workers: process files (parse, transform, validate)\")\nprint(\"  Scaling: more workers for more throughput\")\nprint(\"  Monitoring: queue depth, processing time, error rate\")\nprint(\"  Considerations: large files (streaming), retries, idempotency\")\nprint()",
+     "code": "print(\"System design for file processing\")\nprint(\"  Components: Upload API → Object Storage (S3) → Queue → Workers\")\nprint(\"  Workers: process files (parse, transform, validate)\")\nprint(\"  Scaling: more workers for more throughput\")\nprint(\"  Monitoring: queue depth, processing time, error rate\")\nprint(\"  Considerations: large files (streaming), retries, idempotency\")\nprint()",
      "numbered": false
     },
     {
@@ -427,7 +427,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q556: System design for file processing\n  Components: Upload API → Object Storage (S3) → Queue → Workers\n  Workers: process files (parse, transform, validate)\n  Scaling: more workers for more throughput\n  Monitoring: queue depth, processing time, error rate\n  Considerations: large files (streaming), retries, idempotency",
+     "code": "System design for file processing\n  Components: Upload API → Object Storage (S3) → Queue → Workers\n  Workers: process files (parse, transform, validate)\n  Scaling: more workers for more throughput\n  Monitoring: queue depth, processing time, error rate\n  Considerations: large files (streaming), retries, idempotency",
      "numbered": false
     }
    ]
@@ -440,7 +440,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q557: System design for notification service\")\nprint(\"  Channels: email, SMS, push, in-app, webhook\")\nprint(\"  Architecture: API → Priority Queue → Channel Dispatchers\")\nprint(\"  Features: templates, preferences, rate limiting, scheduling\")\nprint(\"  Delivery: at-least-once, deduplication, retry with backoff\")\nprint(\"  Storage: notification history, read/unread status\")\nprint()",
+     "code": "print(\"System design for notification service\")\nprint(\"  Channels: email, SMS, push, in-app, webhook\")\nprint(\"  Architecture: API → Priority Queue → Channel Dispatchers\")\nprint(\"  Features: templates, preferences, rate limiting, scheduling\")\nprint(\"  Delivery: at-least-once, deduplication, retry with backoff\")\nprint(\"  Storage: notification history, read/unread status\")\nprint()",
      "numbered": false
     },
     {
@@ -450,7 +450,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q557: System design for notification service\n  Channels: email, SMS, push, in-app, webhook\n  Architecture: API → Priority Queue → Channel Dispatchers\n  Features: templates, preferences, rate limiting, scheduling\n  Delivery: at-least-once, deduplication, retry with backoff\n  Storage: notification history, read/unread status",
+     "code": "System design for notification service\n  Channels: email, SMS, push, in-app, webhook\n  Architecture: API → Priority Queue → Channel Dispatchers\n  Features: templates, preferences, rate limiting, scheduling\n  Delivery: at-least-once, deduplication, retry with backoff\n  Storage: notification history, read/unread status",
      "numbered": false
     }
    ]
@@ -463,7 +463,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q558: System design for URL shortener\")\nprint(\"  Generate short URLs that redirect to long URLs.\")\nprint(\"  Components: API → ID Generator → Database → Cache\")\nprint(\"  ID generation: base62 encoding of auto-increment or hash\")\nprint(\"  Storage: key-value store (DynamoDB, Redis)\")\nprint(\"  Features: analytics, custom aliases, expiration\")\nprint(\"  Scale: read-heavy → cache aggressively\")\n\ndef encode_base62(num):\n    chars = \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n    result = []\n    while num > 0:\n        result.append(chars[num % 62])\n        num //= 62\n    return ''.join(reversed(result)) or '0'\n\nprint(f\"  base62(123456) = {encode_base62(123456)}\")\nprint(f\"  base62(999999999) = {encode_base62(999999999)}\")\nprint()",
+     "code": "print(\"System design for URL shortener\")\nprint(\"  Generate short URLs that redirect to long URLs.\")\nprint(\"  Components: API → ID Generator → Database → Cache\")\nprint(\"  ID generation: base62 encoding of auto-increment or hash\")\nprint(\"  Storage: key-value store (DynamoDB, Redis)\")\nprint(\"  Features: analytics, custom aliases, expiration\")\nprint(\"  Scale: read-heavy → cache aggressively\")\n\ndef encode_base62(num):\n    chars = \"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n    result = []\n    while num > 0:\n        result.append(chars[num % 62])\n        num //= 62\n    return ''.join(reversed(result)) or '0'\n\nprint(f\"  base62(123456) = {encode_base62(123456)}\")\nprint(f\"  base62(999999999) = {encode_base62(999999999)}\")\nprint()",
      "numbered": false
     },
     {
@@ -473,7 +473,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q558: System design for URL shortener\n  Generate short URLs that redirect to long URLs.\n  Components: API → ID Generator → Database → Cache\n  ID generation: base62 encoding of auto-increment or hash\n  Storage: key-value store (DynamoDB, Redis)\n  Features: analytics, custom aliases, expiration\n  Scale: read-heavy → cache aggressively\n  base62(123456) = w7e\n  base62(999999999) = 15FTGf",
+     "code": "System design for URL shortener\n  Generate short URLs that redirect to long URLs.\n  Components: API → ID Generator → Database → Cache\n  ID generation: base62 encoding of auto-increment or hash\n  Storage: key-value store (DynamoDB, Redis)\n  Features: analytics, custom aliases, expiration\n  Scale: read-heavy → cache aggressively\n  base62(123456) = w7e\n  base62(999999999) = 15FTGf",
      "numbered": false
     }
    ]
@@ -486,7 +486,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q559: System design for chat service\")\nprint(\"  Real-time messaging between users.\")\nprint(\"  Protocol: WebSocket for real-time, HTTP for history/search\")\nprint(\"  Components: WebSocket Server → Message Queue → Storage\")\nprint(\"  Storage: messages (Cassandra), user presence (Redis)\")\nprint(\"  Features: 1:1, groups, read receipts, typing indicators\")\nprint(\"  Scale: partition by chat room, sticky sessions for WebSocket\")\nprint()",
+     "code": "print(\"System design for chat service\")\nprint(\"  Real-time messaging between users.\")\nprint(\"  Protocol: WebSocket for real-time, HTTP for history/search\")\nprint(\"  Components: WebSocket Server → Message Queue → Storage\")\nprint(\"  Storage: messages (Cassandra), user presence (Redis)\")\nprint(\"  Features: 1:1, groups, read receipts, typing indicators\")\nprint(\"  Scale: partition by chat room, sticky sessions for WebSocket\")\nprint()",
      "numbered": false
     },
     {
@@ -496,7 +496,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q559: System design for chat service\n  Real-time messaging between users.\n  Protocol: WebSocket for real-time, HTTP for history/search\n  Components: WebSocket Server → Message Queue → Storage\n  Storage: messages (Cassandra), user presence (Redis)\n  Features: 1:1, groups, read receipts, typing indicators\n  Scale: partition by chat room, sticky sessions for WebSocket",
+     "code": "System design for chat service\n  Real-time messaging between users.\n  Protocol: WebSocket for real-time, HTTP for history/search\n  Components: WebSocket Server → Message Queue → Storage\n  Storage: messages (Cassandra), user presence (Redis)\n  Features: 1:1, groups, read receipts, typing indicators\n  Scale: partition by chat room, sticky sessions for WebSocket",
      "numbered": false
     }
    ]
@@ -509,7 +509,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q560: System design for task queue\")\nprint(\"  Distribute and execute background tasks reliably.\")\nprint(\"  Components: Producer → Broker (Redis/RabbitMQ) → Workers\")\nprint(\"  Features: priorities, retries, dead letter queue, scheduling\")\nprint(\"  Monitoring: queue depth, processing rate, failure rate\")\nprint(\"  Implementation: Celery, RQ, Dramatiq, custom\")\n\nclass SimpleTaskQueue:\n    def __init__(self):\n        self.queues = {\"high\": [], \"default\": [], \"low\": []}\n\n    def enqueue(self, task, priority=\"default\"):\n        self.queues[priority].append(task)\n\n    def dequeue(self):\n        for priority in [\"high\", \"default\", \"low\"]:\n            if self.queues[priority]:\n                return self.queues[priority].pop(0)\n        return None\n\ntq = SimpleTaskQueue()\ntq.enqueue(\"send_email\", \"high\")\ntq.enqueue(\"generate_report\", \"low\")\ntq.enqueue(\"process_payment\", \"high\")\nprint(f\"  Next task: {tq.dequeue()}\")  # high priority first\nprint(f\"  Next task: {tq.dequeue()}\")\nprint()",
+     "code": "print(\"System design for task queue\")\nprint(\"  Distribute and execute background tasks reliably.\")\nprint(\"  Components: Producer → Broker (Redis/RabbitMQ) → Workers\")\nprint(\"  Features: priorities, retries, dead letter queue, scheduling\")\nprint(\"  Monitoring: queue depth, processing rate, failure rate\")\nprint(\"  Implementation: Celery, RQ, Dramatiq, custom\")\n\nclass SimpleTaskQueue:\n    def __init__(self):\n        self.queues = {\"high\": [], \"default\": [], \"low\": []}\n\n    def enqueue(self, task, priority=\"default\"):\n        self.queues[priority].append(task)\n\n    def dequeue(self):\n        for priority in [\"high\", \"default\", \"low\"]:\n            if self.queues[priority]:\n                return self.queues[priority].pop(0)\n        return None\n\ntq = SimpleTaskQueue()\ntq.enqueue(\"send_email\", \"high\")\ntq.enqueue(\"generate_report\", \"low\")\ntq.enqueue(\"process_payment\", \"high\")\nprint(f\"  Next task: {tq.dequeue()}\")  # high priority first\nprint(f\"  Next task: {tq.dequeue()}\")\nprint()",
      "numbered": false
     },
     {
@@ -519,7 +519,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q560: System design for task queue\n  Distribute and execute background tasks reliably.\n  Components: Producer → Broker (Redis/RabbitMQ) → Workers\n  Features: priorities, retries, dead letter queue, scheduling\n  Monitoring: queue depth, processing rate, failure rate\n  Implementation: Celery, RQ, Dramatiq, custom\n  Next task: send_email\n  Next task: process_payment",
+     "code": "System design for task queue\n  Distribute and execute background tasks reliably.\n  Components: Producer → Broker (Redis/RabbitMQ) → Workers\n  Features: priorities, retries, dead letter queue, scheduling\n  Monitoring: queue depth, processing rate, failure rate\n  Implementation: Celery, RQ, Dramatiq, custom\n  Next task: send_email\n  Next task: process_payment",
      "numbered": false
     }
    ]
@@ -532,7 +532,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q561: System design for document processing\")\nprint(\"  Pipeline: Upload → Extract → Transform → Store → Index\")\nprint(\"  OCR: Tesseract, AWS Textract for image/PDF text extraction\")\nprint(\"  Processing: async workers (Celery), chunked for large docs\")\nprint(\"  Search: Elasticsearch for full-text search\")\nprint(\"  Storage: S3 for originals, DB for metadata\")\nprint()",
+     "code": "print(\"System design for document processing\")\nprint(\"  Pipeline: Upload → Extract → Transform → Store → Index\")\nprint(\"  OCR: Tesseract, AWS Textract for image/PDF text extraction\")\nprint(\"  Processing: async workers (Celery), chunked for large docs\")\nprint(\"  Search: Elasticsearch for full-text search\")\nprint(\"  Storage: S3 for originals, DB for metadata\")\nprint()",
      "numbered": false
     },
     {
@@ -542,7 +542,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q561: System design for document processing\n  Pipeline: Upload → Extract → Transform → Store → Index\n  OCR: Tesseract, AWS Textract for image/PDF text extraction\n  Processing: async workers (Celery), chunked for large docs\n  Search: Elasticsearch for full-text search\n  Storage: S3 for originals, DB for metadata",
+     "code": "System design for document processing\n  Pipeline: Upload → Extract → Transform → Store → Index\n  OCR: Tesseract, AWS Textract for image/PDF text extraction\n  Processing: async workers (Celery), chunked for large docs\n  Search: Elasticsearch for full-text search\n  Storage: S3 for originals, DB for metadata",
      "numbered": false
     }
    ]
@@ -555,7 +555,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q562: System design for caching layer\")\nprint(\"  Multi-level cache: L1 (in-process) → L2 (Redis) → DB\")\nprint(\"  Cache strategies: cache-aside, read-through, write-through\")\nprint(\"  Invalidation: TTL, event-based, version keys\")\nprint(\"  Consistency: eventual consistency is usually acceptable\")\nprint(\"  Monitoring: hit rate, miss rate, eviction rate, latency\")\nprint()",
+     "code": "print(\"System design for caching layer\")\nprint(\"  Multi-level cache: L1 (in-process) → L2 (Redis) → DB\")\nprint(\"  Cache strategies: cache-aside, read-through, write-through\")\nprint(\"  Invalidation: TTL, event-based, version keys\")\nprint(\"  Consistency: eventual consistency is usually acceptable\")\nprint(\"  Monitoring: hit rate, miss rate, eviction rate, latency\")\nprint()",
      "numbered": false
     },
     {
@@ -565,7 +565,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q562: System design for caching layer\n  Multi-level cache: L1 (in-process) → L2 (Redis) → DB\n  Cache strategies: cache-aside, read-through, write-through\n  Invalidation: TTL, event-based, version keys\n  Consistency: eventual consistency is usually acceptable\n  Monitoring: hit rate, miss rate, eviction rate, latency",
+     "code": "System design for caching layer\n  Multi-level cache: L1 (in-process) → L2 (Redis) → DB\n  Cache strategies: cache-aside, read-through, write-through\n  Invalidation: TTL, event-based, version keys\n  Consistency: eventual consistency is usually acceptable\n  Monitoring: hit rate, miss rate, eviction rate, latency",
      "numbered": false
     }
    ]
@@ -578,7 +578,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q563: System design for API gateway\")\nprint(\"  Central entry point for all client requests.\")\nprint(\"  Features: routing, auth, rate limiting, transformation,\")\nprint(\"    caching, circuit breaking, request/response logging\")\nprint(\"  Tools: Kong, AWS API Gateway, custom (FastAPI)\")\nprint(\"  Pattern: BFF (Backend for Frontend) per client type\")\nprint()",
+     "code": "print(\"System design for API gateway\")\nprint(\"  Central entry point for all client requests.\")\nprint(\"  Features: routing, auth, rate limiting, transformation,\")\nprint(\"    caching, circuit breaking, request/response logging\")\nprint(\"  Tools: Kong, AWS API Gateway, custom (FastAPI)\")\nprint(\"  Pattern: BFF (Backend for Frontend) per client type\")\nprint()",
      "numbered": false
     },
     {
@@ -588,7 +588,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q563: System design for API gateway\n  Central entry point for all client requests.\n  Features: routing, auth, rate limiting, transformation,\n    caching, circuit breaking, request/response logging\n  Tools: Kong, AWS API Gateway, custom (FastAPI)\n  Pattern: BFF (Backend for Frontend) per client type",
+     "code": "System design for API gateway\n  Central entry point for all client requests.\n  Features: routing, auth, rate limiting, transformation,\n    caching, circuit breaking, request/response logging\n  Tools: Kong, AWS API Gateway, custom (FastAPI)\n  Pattern: BFF (Backend for Frontend) per client type",
      "numbered": false
     }
    ]
@@ -601,7 +601,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q564: System design for search service\")\nprint(\"  Components: Indexer → Search Engine → API\")\nprint(\"  Engine: Elasticsearch, OpenSearch, Meilisearch\")\nprint(\"  Indexing: real-time (on write) or batch (periodic)\")\nprint(\"  Features: full-text, facets, autocomplete, fuzzy matching\")\nprint(\"  Scale: shard index, read replicas\")\nprint()",
+     "code": "print(\"System design for search service\")\nprint(\"  Components: Indexer → Search Engine → API\")\nprint(\"  Engine: Elasticsearch, OpenSearch, Meilisearch\")\nprint(\"  Indexing: real-time (on write) or batch (periodic)\")\nprint(\"  Features: full-text, facets, autocomplete, fuzzy matching\")\nprint(\"  Scale: shard index, read replicas\")\nprint()",
      "numbered": false
     },
     {
@@ -611,7 +611,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q564: System design for search service\n  Components: Indexer → Search Engine → API\n  Engine: Elasticsearch, OpenSearch, Meilisearch\n  Indexing: real-time (on write) or batch (periodic)\n  Features: full-text, facets, autocomplete, fuzzy matching\n  Scale: shard index, read replicas",
+     "code": "System design for search service\n  Components: Indexer → Search Engine → API\n  Engine: Elasticsearch, OpenSearch, Meilisearch\n  Indexing: real-time (on write) or batch (periodic)\n  Features: full-text, facets, autocomplete, fuzzy matching\n  Scale: shard index, read replicas",
      "numbered": false
     }
    ]
@@ -624,7 +624,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q565: System design for recommendation service\")\nprint(\"  Approaches: collaborative filtering, content-based, hybrid\")\nprint(\"  Pipeline: Data collection → Feature engineering → Model → Serving\")\nprint(\"  Real-time: user actions → feature store → model inference\")\nprint(\"  Batch: nightly training on interaction data\")\nprint(\"  Storage: feature store (Redis), model store (S3)\")\nprint()",
+     "code": "print(\"System design for recommendation service\")\nprint(\"  Approaches: collaborative filtering, content-based, hybrid\")\nprint(\"  Pipeline: Data collection → Feature engineering → Model → Serving\")\nprint(\"  Real-time: user actions → feature store → model inference\")\nprint(\"  Batch: nightly training on interaction data\")\nprint(\"  Storage: feature store (Redis), model store (S3)\")\nprint()",
      "numbered": false
     },
     {
@@ -634,7 +634,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q565: System design for recommendation service\n  Approaches: collaborative filtering, content-based, hybrid\n  Pipeline: Data collection → Feature engineering → Model → Serving\n  Real-time: user actions → feature store → model inference\n  Batch: nightly training on interaction data\n  Storage: feature store (Redis), model store (S3)",
+     "code": "System design for recommendation service\n  Approaches: collaborative filtering, content-based, hybrid\n  Pipeline: Data collection → Feature engineering → Model → Serving\n  Real-time: user actions → feature store → model inference\n  Batch: nightly training on interaction data\n  Storage: feature store (Redis), model store (S3)",
      "numbered": false
     }
    ]
@@ -647,7 +647,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q566: System design for analytics pipeline\")\nprint(\"  Collect → Process → Store → Visualize\")\nprint(\"  Collect: event tracking, logs, metrics\")\nprint(\"  Process: stream (Kafka Streams, Flink) or batch (Spark)\")\nprint(\"  Store: data warehouse (BigQuery, Redshift, Snowflake)\")\nprint(\"  Visualize: dashboards (Grafana, Looker, Metabase)\")\nprint()",
+     "code": "print(\"System design for analytics pipeline\")\nprint(\"  Collect → Process → Store → Visualize\")\nprint(\"  Collect: event tracking, logs, metrics\")\nprint(\"  Process: stream (Kafka Streams, Flink) or batch (Spark)\")\nprint(\"  Store: data warehouse (BigQuery, Redshift, Snowflake)\")\nprint(\"  Visualize: dashboards (Grafana, Looker, Metabase)\")\nprint()",
      "numbered": false
     },
     {
@@ -657,7 +657,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q566: System design for analytics pipeline\n  Collect → Process → Store → Visualize\n  Collect: event tracking, logs, metrics\n  Process: stream (Kafka Streams, Flink) or batch (Spark)\n  Store: data warehouse (BigQuery, Redshift, Snowflake)\n  Visualize: dashboards (Grafana, Looker, Metabase)",
+     "code": "System design for analytics pipeline\n  Collect → Process → Store → Visualize\n  Collect: event tracking, logs, metrics\n  Process: stream (Kafka Streams, Flink) or batch (Spark)\n  Store: data warehouse (BigQuery, Redshift, Snowflake)\n  Visualize: dashboards (Grafana, Looker, Metabase)",
      "numbered": false
     }
    ]
@@ -670,7 +670,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q567: System design for ETL service\")\nprint(\"  Extract-Transform-Load: move data between systems.\")\nprint(\"  Tools: Airflow, Prefect, Dagster, dbt\")\nprint(\"  Extract: APIs, databases, files, streams\")\nprint(\"  Transform: clean, validate, aggregate, join\")\nprint(\"  Load: data warehouse, data lake, analytics DB\")\nprint()",
+     "code": "print(\"System design for ETL service\")\nprint(\"  Extract-Transform-Load: move data between systems.\")\nprint(\"  Tools: Airflow, Prefect, Dagster, dbt\")\nprint(\"  Extract: APIs, databases, files, streams\")\nprint(\"  Transform: clean, validate, aggregate, join\")\nprint(\"  Load: data warehouse, data lake, analytics DB\")\nprint()",
      "numbered": false
     },
     {
@@ -680,7 +680,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q567: System design for ETL service\n  Extract-Transform-Load: move data between systems.\n  Tools: Airflow, Prefect, Dagster, dbt\n  Extract: APIs, databases, files, streams\n  Transform: clean, validate, aggregate, join\n  Load: data warehouse, data lake, analytics DB",
+     "code": "System design for ETL service\n  Extract-Transform-Load: move data between systems.\n  Tools: Airflow, Prefect, Dagster, dbt\n  Extract: APIs, databases, files, streams\n  Transform: clean, validate, aggregate, join\n  Load: data warehouse, data lake, analytics DB",
      "numbered": false
     }
    ]

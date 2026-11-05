@@ -575,10 +575,10 @@ too_short | must be at least 3 characters`,
       {
         stem: "A callback registered with `app.on_event(handler())` never fires. Why?",
         options: [
-          "The handler must be registered before the app starts",
-          "`handler()` calls the function immediately and registers its return value — usually `None` — rather than the function itself",
-          "Callbacks must be registered as strings, not objects",
-          "The function needs a decorator to be recognised"
+          "The handler must be registered before the app starts, and this call happened after the event loop began",
+          "`handler()` runs immediately, so its return value — usually `None` — is what gets registered",
+          "Callbacks must be registered by name as strings, so the framework can import them when the event fires",
+          "The function needs a decorator before the framework recognises it as an event handler"
         ],
         answer: 1,
         why: "The parentheses call the function at registration time. Since a function with no explicit return gives `None`, the framework stores `None` as the handler — and typically fails much later with `'NoneType' object is not callable`, or simply never fires. Whenever a callback \"does nothing\", check for stray parentheses at the registration site before anything else."
@@ -586,10 +586,10 @@ too_short | must be at least 3 characters`,
       {
         stem: "Why is `partial(send, channel=\"ops\")` often preferable to `lambda m: send(m, channel=\"ops\")`?",
         options: [
-          "`partial` executes faster because it avoids creating a new scope",
-          "`partial` is introspectable, appears by name in tracebacks, is pickleable, and binds argument values immediately rather than looking them up at call time",
-          "`lambda` cannot accept keyword arguments",
-          "`partial` allows the wrapped function to be modified later"
+          "`partial` executes faster, because it avoids creating a new scope and a new frame on every call",
+          "`partial` is introspectable, pickleable and binds its arguments now rather than at call time",
+          "`lambda` cannot accept keyword arguments, so `channel` has to be bound some other way",
+          "`partial` allows the wrapped function to be swapped later without re-creating the callable"
         ],
         answer: 1,
         why: "Four practical advantages. `.func` and `.keywords` are readable, so a debugger shows what it wraps rather than `<lambda>`. It survives pickling, so it works with `multiprocessing`. And it binds values at creation, avoiding the late-binding closure trap where lambdas built in a loop all capture the final value of the loop variable."
@@ -598,7 +598,7 @@ too_short | must be at least 3 characters`,
         stem: "A webhook handler registered by decorator is silently ignored in production but works in tests. What is the cause?",
         options: [
           "Decorators are stripped when Python runs with optimisations enabled",
-          "The module defining the handler is never imported in production — registration is a side effect of import, and the test file imported it directly",
+          "Production never imports the handler's module, and registration only happens on import",
           "The decorator must be applied at class level to persist",
           "Production runs a cached bytecode version without the decorator"
         ],
@@ -608,10 +608,10 @@ too_short | must be at least 3 characters`,
       {
         stem: "When should a strategy be a class rather than a function?",
         options: [
-          "Whenever the behaviour might change in future",
-          "When it has more than one related method, carries substantial state, or must be introspected or serialised by type",
-          "Always — classes are more maintainable than functions",
-          "Only when it needs to inherit from a base class"
+          "Whenever the behaviour might change in future, because a class is easier to extend later",
+          "When it has several related methods, real state, or must be identified by its type",
+          "Always — classes are more maintainable than functions, and they document the strategy's role by name",
+          "Only when it needs to inherit shared behaviour from a base class"
         ],
         answer: 1,
         why: "A single-method interface is exactly what a function is, so wrapping one in a class named `execute` or `apply` adds ceremony without capability. The pressure to use a class comes from real needs: several related behaviours per strategy, meaningful state to hold, or a requirement to name, serialise or introspect the type. Starting with functions and moving to a class when that pressure appears is the right direction."

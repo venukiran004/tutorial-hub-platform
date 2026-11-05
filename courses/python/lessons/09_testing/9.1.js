@@ -315,7 +315,7 @@ def test_discount_rules(pricing, subtotal, code, expected_total):
     { t: "callout", kind: "good", title: "A deletion checklist you can defend in review", body: [
       { t: "ul", items: [
         "**It asserts on mock calls only.** No assertion about a return value, state change or emitted event. Delete, or rewrite as a behaviour test.",
-        "**It duplicates a table row.** Three tests differing only in an input value are one parametrised test (Lesson 9.4).",
+        "**It duplicates a table row.** Three tests differing only in an input value are one parameterised test (Lesson 9.4).",
         "**It has been `@pytest.mark.skip` for more than a release.** A skipped test is documentation of an intention nobody has. Delete it, or fix it this week.",
         "**Its git history is nothing but 'update test after refactor'.** It has never found a defect and has cost several hours. That is a negative return, measured.",
         "**It tests a private helper that a public test already covers.** Redundant coverage, double the maintenance.",
@@ -556,30 +556,30 @@ def test_repeated_post_returns_the_original_refund(client, db) -> None:
         stem: "A test file reports 100% line coverage of a pricing function that returns the wrong rounding. How is that possible?",
         options: [
           "Coverage ignores functions that use `Decimal`",
-          "Line coverage records only whether each line executed — it never compares output to an expected value, so a test that calls the function and asserts nothing reports full coverage",
           "The coverage tool needs `--strict` to detect wrong results",
-          "The test must have been skipped, and skipped tests still count as covered"
+          "The test must have been skipped, and skipped tests still count as covered",
+          "Line coverage only records which lines ran; it never checks a single result"
         ],
-        answer: 1,
+        answer: 3,
         why: "Coverage instrumentation records executed lines and nothing else. A test body of `apply_discount(Decimal('100'), 10)` with no assertion executes every line and reports 100%, so the number is honest about what it measures and useless as evidence of correctness. Skipped tests execute nothing and therefore *reduce* coverage, and no flag makes a coverage tool check results — that is what assertions are for. The tools that do address this are branch coverage, which finds untaken edges, and mutation testing, which finds executed-but-unverified lines."
       },
       {
         stem: "Which suite shape indicates that the *code* needs changing rather than the tests?",
         options: [
-          "A pyramid with slightly too many integration tests",
-          "An ice-cream cone: almost all end-to-end tests, few unit tests, a 40-minute suite",
-          "An hourglass, because the middle layer is always optional",
-          "Any suite under 80% coverage"
+          "A pyramid with slightly too many integration tests in the middle layer",
+          "An hourglass, because the middle layer of tests is always optional",
+          "Any suite under 80% coverage",
+          "An ice-cream cone of slow end-to-end tests"
         ],
-        answer: 1,
+        answer: 3,
         why: "A cone forms because components cannot be constructed or exercised in isolation — I/O in `__init__`, module-level clients, direct reads of the clock and environment — so the end-to-end test is the only test that can be written at all. Mandating unit tests on that code produces the hourglass instead: a mock per collaborator, all green, wiring still broken. The fix is to introduce seams so the cheap tests become writable. Coverage percentage says nothing about shape, and a few extra integration tests is a healthy suite, not a symptom."
       },
       {
         stem: "Which of these tests is the strongest candidate for deletion?",
         options: [
-          "A test written from a customer bug report, annotated with the issue number",
-          "A test that configures `repo.get.return_value` and then asserts `repo.get.called`, with no assertion about the result",
-          "A parametrised test with eight rounding rows and readable ids",
+          "A test written from a customer bug report, annotated with the issue number it reproduces",
+          "One that sets `repo.get.return_value` and only asserts `repo.get.called`",
+          "A parameterised test with eight rounding rows and readable ids for each case",
           "An integration test proving a UNIQUE constraint rejects a duplicate idempotency key"
         ],
         answer: 1,
@@ -588,12 +588,12 @@ def test_repeated_post_returns_the_original_refund(client, db) -> None:
       {
         stem: "Your team wants to raise confidence without a coverage-theatre outcome. Which policy does that?",
         options: [
+          "Cover changed lines with `diff-cover`, add branch coverage, and mutation-test money code",
           "Set `fail_under = 100` so no line escapes",
-          "Require that lines changed by a pull request are covered (`diff-cover`), run coverage with `--cov-branch`, and mutation-test the money modules periodically",
           "Add an end-to-end test for every new endpoint",
           "Ban mocks from the suite entirely"
         ],
-        answer: 1,
+        answer: 0,
         why: "Diff coverage is enforceable at the moment of change and cannot be satisfied by drive-by assertion-free tests; branch coverage stops one-sided `if` statements from reporting as fully exercised; mutation testing directly detects lines that are executed but unverified, which is the exact blind spot. A 100% gate maximises the incentive to write tests that call code and assert nothing. An end-to-end test per endpoint builds the cone, with slow, non-specific failures. And mocks are the right tool at a real boundary — the problem is asserting on the mock's call log instead of on behaviour."
       }
     ]

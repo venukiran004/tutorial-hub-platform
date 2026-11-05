@@ -120,7 +120,7 @@ def pca(X, k):
     return Xc @ vecs[:, :k], vals, vecs[:, :k]
 
 scores, vals, comps = pca(X, 2)
-(vals / vals.sum()).round(4)          # [0.8489, 0.1116, 0.0395]
+(vals / vals.sum()).round(4)          # [0.9204, 0.0440, 0.0356]
 
 # The same thing via SVD, which is what libraries actually do -- no
 # covariance matrix is formed, so the condition number is not squared.
@@ -166,7 +166,7 @@ np.allclose(np.abs(Vt[:2]), np.abs(comps.T))     # True, up to sign
           why: "Without centring, `XᵀX` measures distance from the origin rather than spread about the mean, so the first component points at the data's centroid. If the mean is large the first component is simply \"where the data is\", carrying no information about variation at all.",
           code: `X = np.array([[100.1, 50.2], [100.3, 50.1], [99.8, 49.9]])
 U, s, Vt = np.linalg.svd(X, full_matrices=False)
-Vt[0].round(3)          # [0.894, 0.448] -- points at the MEAN
+Vt[0].round(3)          # [-0.894, -0.447] -- points at the MEAN
 
 Xc = X - X.mean(axis=0)
 np.linalg.svd(Xc, full_matrices=False)[2][0].round(3)
@@ -184,7 +184,7 @@ np.linalg.svd(Xc, full_matrices=False)[2][0].round(3)
 raw = np.column_stack([rng.normal(45, 12, 500),          # age
                        rng.normal(52000, 18000, 500)])   # salary
 _, v_raw, c_raw = pca(raw, 1)
-np.abs(c_raw[:, 0]).round(3)          # [0.001, 1.   ] -- salary only
+np.abs(c_raw[:, 0]).round(3)          # [0.000, 1.   ] -- salary only
 
 std = (raw - raw.mean(0)) / raw.std(0)
 _, v_std, c_std = pca(std, 1)
@@ -204,7 +204,7 @@ np.abs(c_std[:, 0]).round(3)          # [0.707, 0.707] -- both counted
 
     { t: "h2", n: "03", text: "What a component is not", id: "not" },
 
-    {"kind": "trace", "title": "99.75% of the variance, and none of the signal", "caption": "**Two columns: one loud and meaningless, one quiet and decisive.** PCA has never seen the labels, so it ranks by spread and puts the noise first. Keep one component “retaining 99.75% of the information” and you have thrown away the only column that predicts anything — **correlation with the target drops from 0.79 to roughly zero.** This is the whole warning about PCA in one measurement: explained variance is explained *variance*, not explained target. If the reduction must respect the label, use a method that sees it.", "left": "the column, and its component", "codeW": 210, "vars": ["share of variance", "correlation with y"], "steps": [{"code": "noise, sd 10 - becomes PC1", "state": ["99.75%", "about 0.00 - useless"], "tone": "crit"}, {"code": "signal, sd 0.5 - becomes PC2", "state": ["0.25%", "0.79 - the answer"], "changed": [0, 1], "tone": "good"}, {"code": "so keeping one component", "state": ["keeps 99.75%", "keeps nothing that predicts"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_6-03-1"},
+    {"kind": "trace", "title": "99.75% of the variance, and none of the signal", "caption": "**Two columns: one loud and meaningless, one quiet and decisive.** PCA has never seen the labels, so it ranks by spread and puts the noise first. Keep one component “retaining 99.75% of the information” and you have thrown away the only column that predicts anything — **correlation with the target drops from 0.81 in size to roughly zero.** This is the whole warning about PCA in one measurement: explained variance is explained *variance*, not explained target. If the reduction must respect the label, use a method that sees it.", "left": "the column, and its component", "codeW": 210, "vars": ["share of variance", "correlation with y"], "steps": [{"code": "noise, sd 10 - becomes PC1", "state": ["99.75%", "about 0.00 - useless"], "tone": "crit"}, {"code": "signal, sd 0.5 - becomes PC2", "state": ["0.25%", "0.81 - the answer"], "changed": [0, 1], "tone": "good"}, {"code": "so keeping one component", "state": ["keeps 99.75%", "keeps nothing that predicts"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-1_6-03-1"},
 
     { t: "p", text: "PCA is routinely misused because two plausible-sounding beliefs about it are false: that the top components carry the useful signal, and that components mean something. **PCA maximises variance, and variance is not relevance.**" },
 
@@ -238,7 +238,7 @@ y = (signal > 0).astype(int)
 X = np.column_stack([noise, signal])
 _, vals, comps = pca(X, 2)
 
-(vals / vals.sum()).round(4)      # [0.9975, 0.0025]
+(vals / vals.sum()).round(4)      # [0.9977, 0.0023]
 
 # PC1 holds 99.75% of the variance -- and it is the pure noise column.
 np.abs(comps[:, 0]).round(3)      # [1., 0.]
@@ -247,8 +247,8 @@ np.abs(comps[:, 0]).round(3)      # [1., 0.]
 # have thrown away the only thing that predicts y:
 Xc = X - X.mean(0)
 pc1 = Xc @ comps[:, 0]
-np.corrcoef(pc1, y)[0, 1].round(3)        # ~0.00  -- useless
-np.corrcoef(Xc @ comps[:, 1], y)[0, 1].round(3)   # ~0.79 -- the answer
+np.corrcoef(pc1, y)[0, 1].round(3)        # ~-0.02  -- useless
+np.corrcoef(Xc @ comps[:, 1], y)[0, 1].round(3)   # ~-0.81 -- the answer
 
 # THE LESSON: "explained variance" is explained VARIANCE, not explained
 # TARGET. If you need a supervised reduction, use one -- LDA, or feature

@@ -90,7 +90,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The feature with range \\([0, 10^6]\\) dominates the distance calculation. A difference of 1 in this feature overwhelms differences in all other features."
+     "text": "The feature with range \\([0, 10^6]\\) dominates the distance calculation. A difference of 1,000 in this feature overwhelms differences in all other features."
     },
     {
      "t": "p",
@@ -128,7 +128,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Algorithms affected by scaling:** KNN, SVM, linear regression, PCA, neural networks."
+     "text": "**Algorithms affected by scaling:** KNN, SVM, regularised linear models, PCA, neural networks."
     },
     {
      "t": "p",
@@ -316,7 +316,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "n = \\frac{(2.576 + 2.326)^2 \\cdot [0.05(0.95) + 0.06(0.94)]}{(0.01)^2} = \\frac{24.06 \\times 0.1039}{0.0001} \\approx 25,002"
+     "tex": "n = \\frac{(2.576 + 2.326)^2 \\cdot [0.05(0.95) + 0.06(0.94)]}{(0.01)^2} = \\frac{24.03 \\times 0.1039}{0.0001} \\approx 24,967"
     },
     {
      "t": "p",
@@ -447,7 +447,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You have 10,000 face images (100×100 pixels = 10,000 features). You want to build a face recognition system."
+     "text": "**Situation:** You have 1,000 face images (100×100 pixels = 10,000 features). You want to build a face recognition system."
     },
     {
      "t": "p",
@@ -463,7 +463,7 @@ EC.receiveLesson({
       "Flatten each image to a 10,000-dim vector",
       "Center: \\(\\bar{x} = \\frac{1}{n}\\sum x_i\\); \\(\\tilde{x}_i = x_i - \\bar{x}\\)",
       "Compute covariance \\(C = \\frac{1}{n}\\tilde{X}^T\\tilde{X}\\) (10,000 × 10,000 — too large!)",
-      "**Trick:** Compute \\(\\tilde{X}\\tilde{X}^T\\) instead (n × n = 10,000 × 10,000). Eigenvectors of this smaller matrix can be projected back.",
+      "**Trick:** Compute \\(\\tilde{X}\\tilde{X}^T\\) instead (n × n = 1,000 × 1,000). Eigenvectors of this smaller matrix can be projected back.",
       "Keep top-\\(k\\) eigenvectors (eigenfaces): \\(k = 100-300\\) typically captures 95%+ variance",
       "Project: \\(z_i = V_k^T \\tilde{x}_i\\) (10,000-dim → 200-dim)",
       "Recognition: Compare projections using cosine similarity or SVM"

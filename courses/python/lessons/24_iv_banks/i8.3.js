@@ -64,7 +64,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "`__new__`: Creates the instance (allocates memory); called first.",
-      "`__init__`: Initializes the instance; called after `__new__`."
+      "`__init__`: Initialises the instance; called after `__new__`."
      ]
     },
     {
@@ -539,7 +539,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Python's native serialization protocol — converts any Python object to bytes:"
+     "text": "Python's native serialisation protocol — converts any Python object to bytes:"
     },
     {
      "t": "code",
@@ -556,7 +556,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "What is `__reduce__` for custom pickle serialization?",
+   "q": "What is `__reduce__` for custom pickle serialisation?",
    "body": [
     {
      "t": "code",
@@ -566,7 +566,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Also: `__getstate__` / `__setstate__` for custom state serialization."
+     "text": "Also: `__getstate__` / `__setstate__` for custom state serialisation."
     }
    ]
   },
@@ -599,7 +599,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from contextlib import contextmanager\n\n@contextmanager\ndef temp_file(suffix=\".tmp\"):\n    path = tempfile.mktemp(suffix=suffix)\n    try:\n        yield path\n    finally:\n        if os.path.exists(path):\n            os.remove(path)\n\nwith temp_file(\".json\") as path:\n    write_data(path)\n    process(path)\n# File automatically deleted",
+     "code": "from contextlib import contextmanager\n\n@contextmanager\ndef temp_file(suffix=\".tmp\"):\n    fd, path = tempfile.mkstemp(suffix=suffix)\n    os.close(fd)\n    try:\n        yield path\n    finally:\n        if os.path.exists(path):\n            os.remove(path)\n\nwith temp_file(\".json\") as path:\n    write_data(path)\n    process(path)\n# File automatically deleted",
      "numbered": false
     }
    ]
@@ -1369,7 +1369,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`assert` statements are compiled out when Python runs with `-O` optimization flag (when `__debug__ == False`):"
+     "text": "`assert` statements are compiled out when Python runs with `-O` optimisation flag (when `__debug__ == False`):"
     },
     {
      "t": "code",
@@ -1478,7 +1478,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "What is `pickle` vs `json` vs `msgpack` vs `parquet` for data serialization?",
+   "q": "What is `pickle` vs `json` vs `msgpack` vs `parquet` for data serialisation?",
    "body": [
     {
      "t": "table",

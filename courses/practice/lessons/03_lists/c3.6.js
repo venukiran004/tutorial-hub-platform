@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.6",
  "lede": "**30 snippets to read**, on sequences and aliasing. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on sequences and aliasing before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 379–408.** What this set asks you to predict, counted from its own problems — 11 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["dicts and sets", "lists", "functions"], "cells": [[{"text": "9", "tone": "accent"}, "Set operations"], [{"text": "1", "tone": "good"}, "Sorting"], [{"text": "1", "tone": "violet"}, "A function call"]], "t": "diagram", "id": "dg-c3_6-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 379: What is the output of `len(s)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `6`, `{1, 2, 3, 4, 5, 6}` **Explanation:** Sets ignore duplicates. Adding an existing element has no effect."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {1, 2, 3, 4, 5}\ns.add(6)\ns.add(3)  # duplicate\nprint(len(s))\nprint(s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `6`, `{1, 2, 3, 4, 5, 6}` **Explanation:** Sets ignore duplicates. Adding an existing element has no effect."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 380: What is the output of `s`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1, 2, 4, 5}`, `{1, 2, 4, 5}`, `{1, 4, 5}` **Explanation:** `discard()` silently ignores missing elements. `remove()` raises `KeyError` if missing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {1, 2, 3, 4, 5}\ns.discard(3)\nprint(s)\ns.discard(99)  # no error\nprint(s)\ns.remove(2)\nprint(s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1, 2, 4, 5}`, `{1, 2, 4, 5}`, `{1, 4, 5}` **Explanation:** `discard()` silently ignores missing elements. `remove()` raises `KeyError` if missing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,28 +77,25 @@ EC.receiveLesson({
    "q": "Program 381: What happens (10)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `KeyError: 99` **Explanation:** `remove()` raises `KeyError` when the element is not found. Use `discard()` for safe removal."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {1, 2, 3}\ns.remove(99)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `KeyError: 99` **Explanation:** `remove()` raises `KeyError` when the element is not found. Use `discard()` for safe removal."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "382",
    "q": "Program 382: What is the output of `a.union(b)`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(a.union(b))\nprint(a.intersection(b))\nprint(a.difference(b))\nprint(a.symmetric_difference(b))\nprint(a.issubset(b))\nprint({3, 4}.issubset(a))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -107,7 +110,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Set operations — union (`|`), intersection (`&`), difference (`-`), symmetric difference (`^`)."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "a = {1, 2, 3, 4}\nb = {3, 4, 5, 6}\nprint(a.union(b))\nprint(a.intersection(b))\nprint(a.difference(b))\nprint(a.symmetric_difference(b))\nprint(a.issubset(b))\nprint({3, 4}.issubset(a))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -115,16 +127,19 @@ EC.receiveLesson({
    "q": "Program 383: Set operations — output of `s = set(\"hello\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'h', 'e', 'l', 'o'}` (order may vary), `4` **Explanation:** Set from string creates unique characters. `'l'` appears once despite appearing twice in `\"hello\"`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = set(\"hello\")\nprint(s)\nprint(len(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'h', 'e', 'l', 'o'}` (order may vary), `4` **Explanation:** Set from string creates unique characters. `'l'` appears once despite appearing twice in `\"hello\"`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -132,16 +147,19 @@ EC.receiveLesson({
    "q": "Program 384: Sorting — output of `sorted(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 9]`, `1 9` **Explanation:** Sets can be sorted (returns a list). `min()` and `max()` work on sets."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {3, 1, 4, 1, 5, 9, 2, 6}\nprint(sorted(s))\nprint(min(s), max(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4, 5, 6, 9]`, `1 9` **Explanation:** Sets can be sorted (returns a list). `min()` and `max()` work on sets."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -149,16 +167,19 @@ EC.receiveLesson({
    "q": "Program 385: Set operations — output of `type(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'set'>`, `<class 'dict'>` **Explanation:** Empty `{}` creates a dict, not a set! Use `set()` for an empty set."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = set()\nprint(type(s))\nd = {}\nprint(type(d))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'set'>`, `<class 'dict'>` **Explanation:** Empty `{}` creates a dict, not a set! Use `set()` for an empty set."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -166,16 +187,19 @@ EC.receiveLesson({
    "q": "Program 386: A frozenset — output of `fs = frozenset([1, 2, 3, 4, 5])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `frozenset({1, 2, 3, 4, 5})`, `True`, `'frozenset' object has no attribute 'add'` **Explanation:** Frozensets are immutable sets. They support lookups but not modifications."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "fs = frozenset([1, 2, 3, 4, 5])\nprint(fs)\nprint(3 in fs)\ntry:\n    fs.add(6)\nexcept AttributeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `frozenset({1, 2, 3, 4, 5})`, `True`, `'frozenset' object has no attribute 'add'` **Explanation:** Frozensets are immutable sets. They support lookups but not modifications."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -183,16 +207,19 @@ EC.receiveLesson({
    "q": "Program 387: A frozenset — output of `s = {frozenset([1, 2]), frozenset([3, 4])}`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{frozenset({1, 2}), frozenset({3, 4})}`, `True` **Explanation:** Frozensets are hashable and can be elements of sets or keys in dicts."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {frozenset([1, 2]), frozenset([3, 4])}\nprint(s)\nprint(frozenset([1, 2]) in s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{frozenset({1, 2}), frozenset({3, 4})}`, `True` **Explanation:** Frozensets are hashable and can be elements of sets or keys in dicts."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -200,16 +227,19 @@ EC.receiveLesson({
    "q": "Program 388: What is the output of `s` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1, 2, 3, 4, 5, 6, 7}` **Explanation:** `update()` accepts multiple iterables and adds all elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {1, 2, 3}\ns.update([4, 5], {6, 7})\nprint(s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1, 2, 3, 4, 5, 6, 7}` **Explanation:** `update()` accepts multiple iterables and adds all elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -217,16 +247,19 @@ EC.receiveLesson({
    "q": "Program 389: What is the output of `a` — copying",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1, 2, 3}`, `{1, 2, 3, 4}` **Explanation:** `copy()` creates a shallow copy. Since sets contain immutable elements here, they're independent."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = a.copy()\nb.add(4)\nprint(a)\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1, 2, 3}`, `{1, 2, 3, 4}` **Explanation:** `copy()` creates a shallow copy. Since sets contain immutable elements here, they're independent."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -234,16 +267,19 @@ EC.receiveLesson({
    "q": "Program 390: What is the output of `a` (4)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{2, 3}` **Explanation:** `intersection_update()` modifies the set in-place, keeping only common elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = {2, 3, 4}\na.intersection_update(b)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{2, 3}` **Explanation:** `intersection_update()` modifies the set in-place, keeping only common elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -251,16 +287,19 @@ EC.receiveLesson({
    "q": "Program 391: What is the output of `a.isdisjoint(b)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False` **Explanation:** `isdisjoint()` returns `True` if sets have no common elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = {4, 5, 6}\nprint(a.isdisjoint(b))\nc = {3, 4, 5}\nprint(a.isdisjoint(c))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False` **Explanation:** `isdisjoint()` returns `True` if sets have no common elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -268,16 +307,19 @@ EC.receiveLesson({
    "q": "Program 392: Removing an item with pop() — output of `type(elem)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'int'>`, `4` **Explanation:** `pop()` removes and returns an arbitrary element. Sets are unordered, so which element is unpredictable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {1, 2, 3, 4, 5}\nelem = s.pop()\nprint(type(elem))\nprint(len(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'int'>`, `4` **Explanation:** `pop()` removes and returns an arbitrary element. Sets are unordered, so which element is unpredictable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -285,16 +327,19 @@ EC.receiveLesson({
    "q": "Program 393: A set comprehension — output of `sorted(s)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 4, 9]` **Explanation:** `(-3)² = 9, (-2)² = 4, (-1)² = 1, 0² = 0, ...` Duplicates like `(-3)²` and `3²` are removed."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "# Set comprehension\ns = {x**2 for x in range(-3, 4)}\nprint(sorted(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 4, 9]` **Explanation:** `(-3)² = 9, (-2)² = 4, (-1)² = 1, 0² = 0, ...` Duplicates like `(-3)²` and `3²` are removed."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -302,16 +347,19 @@ EC.receiveLesson({
    "q": "Program 394: Set operations — output of `t == t2`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** Could be `True` or `False` (order not guaranteed) **Explanation:** Sets are unordered. Converting back to tuple may not preserve original order, though for small integers it often does in CPython."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = (1, 2, 3)\ns = set(t)\nt2 = tuple(s)\nprint(t == t2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** Could be `True` or `False` (order not guaranteed) **Explanation:** Sets are unordered. Converting back to tuple may not preserve original order, though for small integers it often does in CPython."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -319,16 +367,19 @@ EC.receiveLesson({
    "q": "Program 395: What is the output of `a < b` — equality",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False`, `False` **Explanation:** `<` is proper subset, `<=` is subset, `>` is proper superset. `a` is a proper subset of `b`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = {1, 2, 3, 4, 5}\nprint(a < b)\nprint(a <= b)\nprint(a > b)\nprint(a == b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False`, `False` **Explanation:** `<` is proper subset, `<=` is subset, `>` is proper superset. `a` is a proper subset of `b`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -336,16 +387,19 @@ EC.receiveLesson({
    "q": "Program 396: What happens (11)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `TypeError: unhashable type: 'list'` **Explanation:** Sets require hashable elements. Lists are mutable and thus unhashable. Use tuples instead."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {[1, 2], [3, 4]}",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `TypeError: unhashable type: 'list'` **Explanation:** Sets require hashable elements. Lists are mutable and thus unhashable. Use tuples instead."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -353,16 +407,19 @@ EC.receiveLesson({
    "q": "Program 397: A frozenset — output of `a | b`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `frozenset({1, 2, 3, 4})`, `frozenset({2, 3})`, `frozenset({1})` **Explanation:** Frozensets support all set operations but return new frozensets."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = frozenset([1, 2, 3])\nb = frozenset([2, 3, 4])\nprint(a | b)\nprint(a & b)\nprint(a - b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `frozenset({1, 2, 3, 4})`, `frozenset({2, 3})`, `frozenset({1})` **Explanation:** Frozensets support all set operations but return new frozensets."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -370,16 +427,19 @@ EC.receiveLesson({
    "q": "Program 398: A sequence built with the * operator — output of `t3 = t1 + t2`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, 3, 4)`, `(1, 2, 1, 2, 1, 2)` **Explanation:** Tuples support concatenation and repetition, creating new tuples each time."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t1 = (1, 2)\nt2 = (3, 4)\nt3 = t1 + t2\nprint(t3)\nt4 = t1 * 3\nprint(t4)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, 3, 4)`, `(1, 2, 1, 2, 1, 2)` **Explanation:** Tuples support concatenation and repetition, creating new tuples each time."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -387,16 +447,19 @@ EC.receiveLesson({
    "q": "Program 399: What is the output of `sys.getsizeof(l)`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** List is larger (e.g., ~120 bytes) than tuple (e.g., ~64 bytes) **Explanation:** Tuples are more memory-efficient because they're fixed-size and don't need extra space for dynamic resizing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\nl = [1, 2, 3]\nt = (1, 2, 3)\nprint(sys.getsizeof(l))\nprint(sys.getsizeof(t))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** List is larger (e.g., ~120 bytes) than tuple (e.g., ~64 bytes) **Explanation:** Tuples are more memory-efficient because they're fixed-size and don't need extra space for dynamic resizing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -404,16 +467,19 @@ EC.receiveLesson({
    "q": "Program 400: A caught TypeError — output of `d[(1, 2)] = \"tuple key\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{(1, 2): 'tuple key'}`, `unhashable type: 'list'` **Explanation:** Tuples can be dict keys (hashable). Lists cannot (unhashable)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {}\nd[(1, 2)] = \"tuple key\"\nprint(d)\ntry:\n    d[[1, 2]] = \"list key\"\nexcept TypeError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{(1, 2): 'tuple key'}`, `unhashable type: 'list'` **Explanation:** Tuples can be dict keys (hashable). Lists cannot (unhashable)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -421,16 +487,19 @@ EC.receiveLesson({
    "q": "Program 401: What is the output of `x, y, z`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 2 3`, `1 2 3` **Explanation:** Tuple unpacking works with nested structures. Pattern must match the tuple structure."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = (1, 2, 3)\nx, y, z = a\nprint(x, y, z)\n\nb = (1, (2, 3))\np, (q, r) = b\nprint(p, q, r)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 3`, `1 2 3` **Explanation:** Tuple unpacking works with nested structures. Pattern must match the tuple structure."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -438,16 +507,19 @@ EC.receiveLesson({
    "q": "Program 402: A function call — output of `return min(numbers), max(numbers), sum(number…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 5, 3.0)`, `<class 'tuple'>`, `Min: 1, Max: 5, Avg: 3.0` **Explanation:** Functions returning multiple values use tuples implicitly."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def get_stats(numbers):\n    return min(numbers), max(numbers), sum(numbers) / len(numbers)\n\nresult = get_stats([1, 2, 3, 4, 5])\nprint(result)\nprint(type(result))\nlo, hi, avg = result\nprint(f\"Min: {lo}, Max: {hi}, Avg: {avg}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 5, 3.0)`, `<class 'tuple'>`, `Min: 1, Max: 5, Avg: 3.0` **Explanation:** Functions returning multiple values use tuples implicitly."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -455,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 403: What is the output of `s` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{True}`, `1` **Explanation:** `True == 1 == 1.0` in Python. Since they're equal and have the same hash, only the first one is kept."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {True, 1, 1.0}\nprint(s)\nprint(len(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{True}`, `1` **Explanation:** `True == 1 == 1.0` in Python. Since they're equal and have the same hash, only the first one is kept."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -472,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 404: What is the output of `s` (4)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{False}` (or `{0}`), `1` **Explanation:** `False == 0 == 0.0`. All are considered equal in a set."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = {False, 0, 0.0}\nprint(s)\nprint(len(s))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{False}` (or `{0}`), `1` **Explanation:** `False == 0 == 0.0`. All are considered equal in a set."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -489,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 405: A frozenset — output of `a == b == c`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `<class 'set'> <class 'frozenset'> <class 'set'>` **Explanation:** Sets and frozensets with the same elements are considered equal."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = frozenset(a)\nc = set(b)\nprint(a == b == c)\nprint(type(a), type(b), type(c))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `<class 'set'> <class 'frozenset'> <class 'set'>` **Explanation:** Sets and frozensets with the same elements are considered equal."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -506,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 406: Set operations — output of `t, l, s`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, 3) [4, 5, 6] {1, 2, 3}` **Explanation:** Constructors can convert between sequence types."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "t = tuple([1, 2, 3])\nl = list((4, 5, 6))\ns = set([1, 2, 2, 3])\nprint(t, l, s)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, 3) [4, 5, 6] {1, 2, 3}` **Explanation:** Constructors can convert between sequence types."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -523,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 407: What is the output of `a` (5)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1}` **Explanation:** `difference_update()` removes all elements found in `b` from `a`, modifying `a` in-place."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = {2, 3, 4}\na.difference_update(b)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1}` **Explanation:** `difference_update()` removes all elements found in `b` from `a`, modifying `a` in-place."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -540,21 +627,24 @@ EC.receiveLesson({
    "q": "Program 408: What is the output of `a` (6)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1, 4}` **Explanation:** `symmetric_difference_update()` keeps only elements in either set but not both."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = {1, 2, 3}\nb = {2, 3, 4}\na.symmetric_difference_update(b)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1, 4}` **Explanation:** `symmetric_difference_update()` keeps only elements in either set but not both."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

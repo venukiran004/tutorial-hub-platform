@@ -103,16 +103,16 @@ def ols(X, y):
             "resid": resid, "r2": 1 - resid.var()/y.var()}
 
 # SIMPLE REGRESSION -- omits z, so the coefficient absorbs its effect.
-ols(x, y)["beta"][1]                       # 2.28
+ols(x, y)["beta"][1]                       # 1.89
 
 # MULTIPLE REGRESSION -- includes z.
-ols(np.column_stack([x, z]), y)["beta"][1] # 0.70 -- the true value
+ols(np.column_stack([x, z]), y)["beta"][1] # 0.67 -- close to the true 0.70
 
 # THE FRISCH-WAUGH-LOVELL IDENTITY: residualise both sides on z, then
 # run a simple regression.
 x_res = x - ols(z, x)["beta"] @ np.column_stack([np.ones(n), z]).T
 y_res = y - ols(z, y)["beta"] @ np.column_stack([np.ones(n), z]).T
-ols(x_res, y_res)["beta"][1]               # 0.70 -- IDENTICAL
+ols(x_res, y_res)["beta"][1]               # 0.67 -- IDENTICAL
 #
 # THAT IS NOT AN ANALOGY. The multiple-regression coefficient on x IS
 # the slope of the part of y that z cannot explain against the part of
@@ -122,8 +122,8 @@ ols(x_res, y_res)["beta"][1]               # 0.70 -- IDENTICAL
 # property of the MODEL, not of x. Change the other variables and it
 # changes.
 w = 0.9*x + rng.normal(0, 0.3, n)          # a near-duplicate of x
-ols(np.column_stack([x, z]), y)["beta"][1]        # 0.70
-ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.55, and unstable
+ols(np.column_stack([x, z]), y)["beta"][1]        # 0.67
+ols(np.column_stack([x, z, w]), y)["beta"][1]     # 0.61, and unstable
 #
 # ADDING A CORRELATED VARIABLE SPLITS THE EFFECT between them. Neither
 # coefficient is "wrong" -- they answer a different question, namely
@@ -197,7 +197,7 @@ def omitted_bias(true_beta_x, beta_z, gamma_xz):
     return beta_z * gamma_xz
 
 omitted_bias(true_beta_x=0.7, beta_z=1.5, gamma_xz=0.8)   # +1.20
-0.7 + 1.20                                                # 1.90, near 2.28
+0.7 + 1.20                                                # 1.90, near 1.89
 #
 # THE DIRECTION IS PREDICTABLE. If the omitted variable raises y and
 # is positively correlated with x, the coefficient on x is overstated.
@@ -210,9 +210,9 @@ y2 = 5*np.log(x2) + rng.normal(0, 0.5, n)
 
 linear = ols(x2, y2)
 logged = ols(np.log(x2), y2)
-linear["r2"], logged["r2"]                 # 0.86, 0.98
+linear["r2"], logged["r2"]                 # 0.90, 0.97
 #
-# The linear fit is not obviously terrible -- R^2 = 0.86 -- and its
+# The linear fit is not obviously terrible -- R^2 = 0.90 -- and its
 # coefficient describes a relationship that does not exist. THE
 # RESIDUAL PLOT IS THE DIAGNOSTIC, and R^2 is not:
 np.corrcoef(x2, linear["resid"])[0,1]      # ~0, as it must be
@@ -230,7 +230,7 @@ x3 = rng.normal(0, 1, 2000)
 y3 = 0.5*x3 + g_effect[group] + rng.normal(0, 0.5, 2000)
 
 naive = ols(x3, y3)
-naive["beta"][1], naive["se"][1]           # 0.50, 0.035 -- unbiased beta
+naive["beta"][1], naive["se"][1]           # 0.48, 0.035 -- unbiased beta
 
 def cluster_robust_se(X, y, groups):
     """Standard errors valid under arbitrary within-cluster
@@ -249,15 +249,15 @@ def cluster_robust_se(X, y, groups):
     adj = G/(G-1) * (len(y)-1)/(len(y)-X.shape[1])
     return np.sqrt(np.diag(bread @ (adj*meat) @ bread))
 
-cluster_robust_se(x3, y3, group)[1]        # 0.036 -- similar HERE
+cluster_robust_se(x3, y3, group)[1]        # 0.048 -- similar HERE
 #
 # Similar because x3 varies WITHIN clusters. If the predictor is
 # constant within a cluster, the naive SE collapses:
 x4 = np.repeat(rng.normal(0, 1, 50), 40)   # a group-level predictor
 y4 = 0.5*x4 + g_effect[group] + rng.normal(0, 0.5, 2000)
 
-ols(x4, y4)["se"][1]                       # 0.019
-cluster_robust_se(x4, y4, group)[1]        # 0.222 -- 12x larger
+ols(x4, y4)["se"][1]                       # 0.038
+cluster_robust_se(x4, y4, group)[1]        # 0.221 -- 6x larger
 #
 # A GROUP-LEVEL PREDICTOR HAS AS MANY INDEPENDENT OBSERVATIONS AS
 # THERE ARE GROUPS, not rows. 2,000 rows carry 50 observations' worth
@@ -279,7 +279,7 @@ def robust_se(X, y):
     bread = np.linalg.inv(X.T @ X)
     return np.sqrt(np.diag(bread @ (X.T * w) @ X @ bread))
 
-ols(x5, y5)["se"][1], robust_se(x5, y5)[1]    # 0.033, 0.041
+ols(x5, y5)["se"][1], robust_se(x5, y5)[1]    # 0.028, 0.030
 #
 # 24% LARGER, so a t-statistic of 2.1 becomes 1.7. Not dramatic, and
 # free to fix.
@@ -308,26 +308,26 @@ y = 2*X[:,0] + rng.normal(0, 3, 200)
 for k in (1, 20, 100, 190):
     Xk = np.column_stack([X, rng.normal(0, 1, (200, k-1))])
     print(f"{k:3d} predictors: R2 = {ols(Xk, y)['r2']:.3f}")
-#   1 predictors: R2 = 0.297
-#  20 predictors: R2 = 0.386
-# 100 predictors: R2 = 0.647
-# 190 predictors: R2 = 0.966
+#   1 predictors: R2 = 0.350
+#  20 predictors: R2 = 0.387
+# 100 predictors: R2 = 0.661
+# 190 predictors: R2 = 0.987
 #
 # 190 PURE-NOISE PREDICTORS EXPLAIN 97% OF THE VARIANCE. Adjusted R^2
 # penalises this and is the minimum defence:
 def adjusted_r2(r2, n, k):
     return 1 - (1-r2)*(n-1)/(n-k-1)
 
-adjusted_r2(0.966, 200, 190)                  # 0.35 -- honest
+adjusted_r2(0.966, 200, 190)                  # 0.25 -- honest
 
 # 2. A HIGH R^2 CAN COME WITH A WRONG MODEL. The log example above had
-#    R^2 = 0.86 on a linear fit of a logarithmic relationship.
+#    R^2 = 0.90 on a linear fit of a logarithmic relationship.
 
 # 3. A LOW R^2 CAN COME WITH A PERFECTLY GOOD MODEL. If the outcome is
 #    intrinsically noisy, 5% explained may be everything there is:
 y_noisy = 0.3*X[:,0] + rng.normal(0, 3, 200)
 r = ols(X, y_noisy)
-r["r2"], r["p"][1]                            # 0.012, and p = 0.12
+r["r2"], r["p"][1]                            # 0.001, and p = 0.68
 #
 # In a randomised experiment, R^2 is nearly irrelevant -- the
 # treatment coefficient is the finding and it can be precise while
@@ -339,7 +339,7 @@ r["r2"], r["p"][1]                            # 0.012, and p = 0.12
 full = ols(X, y)["r2"]
 narrow_mask = np.abs(X[:,0]) < 0.5
 narrow = ols(X[narrow_mask], y[narrow_mask])["r2"]
-full, narrow                                  # 0.297, 0.038
+full, narrow                                  # 0.350, 0.040
 #
 # THE SAME RELATIONSHIP, THE SAME NOISE, AN EIGHT-FOLD DROP IN R^2 --
 # purely from measuring over a narrower range of x.
@@ -349,7 +349,7 @@ full, narrow                                  # 0.297, 0.038
 #   - the residual standard error, which is in the units of y and says
 #     how wrong a prediction typically is
 #   - out-of-sample error, if prediction is the goal
-np.sqrt(ols(X, y)["resid"].var())             # 2.94 -- interpretable`},
+np.sqrt(ols(X, y)["resid"].var())             # 2.99 -- interpretable`},
       { t: "p", text: "**190 pure-noise predictors explain 97% of the variance.** R² never decreases when you add a variable, does not fall when the functional form is wrong, and is not comparable across datasets with different `x` ranges." }
     ]},
 
@@ -668,12 +668,12 @@ def test_narrower_band_needs_more_customers():
         stem: "A regression with 190 noise predictors on 200 observations gives R² = 0.97. What does that tell you?",
         options: [
           "The model fits very well",
-          "That R² never decreases when you add variables — adjusted R² gives 0.35, which is the honest figure",
+          "That R² never decreases when you add variables — adjusted R² gives 0.25, which is the honest figure",
           "The predictors are collinear",
           "The sample is too small for regression"
         ],
         answer: 1,
-        why: "R² is also silent on functional form — a linear fit to a logarithmic relationship scored 0.86 — and it is not comparable across datasets, since narrowing the range of `x` dropped it eight-fold with no change in the relationship."
+        why: "R² is also silent on functional form — a linear fit to a logarithmic relationship scored 0.90 — and it is not comparable across datasets, since narrowing the range of `x` dropped it eight-fold with no change in the relationship."
       },
       {
         stem: "Your predictor is constant within each of 50 clusters, across 2,000 rows. What happens to the standard errors?",

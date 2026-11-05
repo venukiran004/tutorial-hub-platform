@@ -646,7 +646,7 @@ def test_incomplete_abc_subclass_still_fails() -> None:
             { t: "p", text: "A class has exactly one metaclass, and it must be a subclass of every base's. That is why introducing an ABC broke everything — and why the fix, `class CombinedMeta(ModelMeta, ABCMeta)`, is a class statement with an empty body." },
             { t: "p", text: "That only works because `ModelMeta` no longer has a `__new__` doing five things. A metaclass with substantial `__new__` logic tends to conflict in ways that cannot be resolved by inheritance, since the two `__new__` implementations both want to control creation." }
           ]},
-          { t: "p", text: "**`super().__init_subclass__(**kwargs)` is not optional.** Omit it and a sibling hook further up the MRO never runs — which in a codebase with several mixins produces a class that is missing behaviour with no error anywhere (Lesson 4.7)." }
+          { t: "p", text: "**`super().__init_subclass__(**kwargs)` is not optional.** Omit it and a sibling hook further up the MRO never runs — which in a codebase with several mixins produces a class that is missing behaviour with no error anywhere (Lesson 4.5)." }
         ]
       }
     },
@@ -680,41 +680,41 @@ def test_incomplete_abc_subclass_still_fails() -> None:
       {
         stem: "Which of these genuinely requires a metaclass?",
         options: [
-          "Registering every subclass in a dictionary",
-          "Making `len(MyClass)` — on the class itself, not an instance — return a value",
-          "Validating that subclasses define a required attribute",
-          "Giving each declared field its attribute name"
+          "Making `len(MyClass)` work on the class itself",
+          "Registering every subclass in a dictionary as it is defined",
+          "Validating that every subclass defines a required attribute",
+          "Giving each declared field object the name it was assigned to"
         ],
-        answer: 1,
+        answer: 0,
         why: "Dunder methods are looked up on the *type* of the object. For an instance that is its class; for a class it is the metaclass. So `__len__` on a class can only come from its metaclass — assigning `__len__` as a class attribute makes instances sized instead. The other three are `__init_subclass__` and `__set_name__`, both of which act on the class's contents."
       },
       {
         stem: "Why does `class C(A, B)` fail when `A` and `B` have different metaclasses?",
         options: [
-          "Multiple inheritance is not allowed with metaclasses",
-          "A class has exactly one metaclass, and it must be a subclass of every base's — neither `MetaA` nor `MetaB` qualifies",
-          "The MRO cannot be linearised",
-          "Metaclasses are resolved before bases"
+          "Multiple inheritance is not allowed at all when either base declares a metaclass",
+          "The MRO cannot be linearised, because each metaclass contributes its own ordering",
+          "A class has one metaclass, which must derive from every base's",
+          "Metaclasses are resolved before bases, so the second metaclass is never consulted"
         ],
-        answer: 1,
+        answer: 2,
         why: "Python must pick one metaclass for the new class, and it must be compatible with all the bases. Two unrelated metaclasses have no common subclass, so you must write one inheriting from both — which only works if their `__new__` implementations cooperate. This is why a metaclass on a public base class is a constraint imposed on every future user."
       },
       {
         stem: "Why must `__init_subclass__` call `super().__init_subclass__(**kwargs)`?",
         options: [
           "To register the subclass with `type`",
-          "So a hook defined further up the MRO still runs — omitting it silently skips sibling behaviour with no error",
           "Because the method is abstract in `object`",
-          "To make the keyword arguments available to the subclass"
+          "To make the keyword arguments available to the subclass",
+          "So hooks further up the MRO still run instead of being silently skipped"
         ],
-        answer: 1,
+        answer: 3,
         why: "`__init_subclass__` participates in the MRO like any other method, so several bases can each define one. Without the `super()` call, the chain stops at yours and any mixin further along contributes nothing — producing a class that quietly lacks behaviour rather than failing. Passing `**kwargs` along is what lets each hook consume the arguments it recognises."
       },
       {
         stem: "A base class marks abstract models with `__abstract__ = True`. Why check `cls.__dict__.get(\"__abstract__\")` rather than `getattr(cls, \"__abstract__\")`?",
         options: [
           "`getattr` is slower on classes",
-          "`getattr` walks the MRO and finds the base's `True`, so every subclass looks abstract and nothing gets registered",
+          "`getattr` inherits the base's `True`, so every subclass looks abstract",
           "`__dict__` access bypasses descriptors, which is required here",
           "They are equivalent; `__dict__` is only more explicit"
         ],

@@ -224,7 +224,7 @@ gc.set_debug(gc.DEBUG_SAVEALL)     # unreachable objects go to gc.garbage instea
 # The nuclear option, and rarely correct:
 gc.disable()      # cycles now leak for the life of the process`},
       { t: "p", text: "**`gc.freeze()` before forking is the one with a clear, measurable win.** A pre-fork server's workers share memory copy-on-write until something writes — and the collector writing GC header bits to every object is exactly such a write, so each worker ends up with a private copy of pages it never modified." },
-      { t: "p", text: "**`gc.disable()` is almost always wrong.** Cycles are common enough that a long-running process will accumulate them, and \"we disabled the GC\" is a memory leak with extra steps. Measure before touching any of this (Lesson 10.1)." }
+      { t: "p", text: "**`gc.disable()` is almost always wrong.** Cycles are common enough that a long-running process will accumulate them, and \"we disabled the GC\" is a memory leak with extra steps. Measure before touching any of this (Lesson 10.3)." }
     ]},
 
     { t: "h2", n: "03", text: "weakref", id: "weakref" },
@@ -384,7 +384,7 @@ class Records:
     },
 
     { t: "callout", kind: "warn", title: "Why RSS does not fall after you free objects", body: [
-      { t: "p", text: "CPython allocates small objects from 256 KB **arenas** managed by its own allocator. An arena returns to the operating system only when *every* object in it is freed — so one surviving object keeps 256 KB resident." },
+      { t: "p", text: "CPython allocates small objects from 1 MiB **arenas** (256 KB before Python 3.10) managed by its own allocator. An arena returns to the operating system only when *every* object in it is freed — so one surviving object keeps the whole 1 MiB resident." },
       { t: "ul", items: [
         "**Fragmentation is normal.** After a large batch job, freed objects leave gaps that Python happily reuses but cannot return.",
         "**A memory spike is permanent for the process.** Peak RSS is what your container limit must accommodate, even if average usage is far lower.",
@@ -621,9 +621,9 @@ class ColumnarPriceCache:
 # =========================================================================
 #
 # Even after freeing everything, the process's RSS may stay near its
-# peak. CPython allocates small objects from 256 KB arenas, and an
+# peak. CPython allocates small objects from 1 MiB arenas, and an
 # arena returns to the OS only when EVERY object in it is freed. One
-# surviving object keeps 256 KB resident, and after a large batch the
+# surviving object keeps 1 MiB resident, and after a large batch the
 # survivors are scattered across many arenas.
 #
 # So the useful distinction is:
@@ -757,7 +757,7 @@ def test_by_symbol_shares_objects_rather_than_copying() -> None:
             { t: "p", text: "`{id(p.symbol) for p in points}` having 500 entries proves the strings are shared. An equality-based test — `p.symbol == \"SYM1\"` — passes just as happily when every point holds its own copy, which is exactly the bug." },
             { t: "p", text: "The same reasoning applies to `_by_symbol`: asserting `is` rather than `==` proves the second index holds references rather than duplicating ten million records." }
           ]},
-          { t: "p", text: "**Storing pence as an `int` removes both a memory cost and a correctness problem.** A `float` is 24 bytes and cannot represent decimal money exactly; a `Decimal` is correct and considerably larger. Integer minor units are the standard answer for both (Lesson 2.6)." }
+          { t: "p", text: "**Storing pence as an `int` removes both a memory cost and a correctness problem.** A `float` is 24 bytes and cannot represent decimal money exactly; a `Decimal` is correct and considerably larger. Integer minor units are the standard answer for both (Lesson 1.5)." }
         ]
       }
     },
@@ -781,7 +781,7 @@ def test_by_symbol_shares_objects_rather_than_copying() -> None:
     "**`weakref` holds a reference without extending a lifetime** — `WeakValueDictionary` is the correct structure for a cache that must not keep its values alive.",
     "**`__slots__` removes `__weakref__` unless you list it**, and removes `__dict__`, which is what breaks `cached_property`.",
     "**`sys.getsizeof` is shallow** — it ignores the instance dictionary and the referenced values. Use `tracemalloc` to measure what was actually allocated.",
-    "**RSS often does not fall after freeing** because CPython returns a 256 KB arena only when every object in it is freed. A plateau is fragmentation; unbounded growth is the real signal.",
+    "**RSS often does not fall after freeing** because CPython returns a 1 MiB arena only when every object in it is freed. A plateau is fragmentation; unbounded growth is the real signal.",
     "**Most \"leaks\" are unbounded growth of reachable objects** — an unevicted cache, a list that only appends. Ask what holds it and what bounds it before hunting for cycles."
   ],
 
@@ -791,10 +791,10 @@ def test_by_symbol_shares_objects_rather_than_copying() -> None:
       {
         stem: "Why does CPython need a cyclic garbage collector at all?",
         options: [
-          "To free objects faster than reference counting can",
-          "Because two objects referring to each other each keep a count of one, so refcounting can never free them even when nothing else points at either",
-          "To compact memory and reduce fragmentation",
-          "To handle objects allocated by C extensions"
+          "To free objects faster than reference counting can, by releasing them in batches",
+          "Objects in a cycle keep each other's counts above zero, so refcounting never frees them",
+          "To compact memory and reduce fragmentation by moving live objects together",
+          "To handle objects allocated by C extensions, which do not carry reference counts"
         ],
         answer: 1,
         why: "Reference counting frees an object the instant its count reaches zero, which covers nearly everything and gives deterministic cleanup. It cannot handle a cycle: a parent referencing a child that references the parent keeps both counts at one forever. The collector finds such groups by checking whether an object's references are all internal to the group. It does not compact memory."
@@ -802,21 +802,21 @@ def test_by_symbol_shares_objects_rather_than_copying() -> None:
       {
         stem: "A service's RSS rises to 2 GB during a batch job and stays there afterwards, though the objects were freed. Is this a leak?",
         options: [
-          "Yes — freed objects must return memory to the OS",
-          "No — CPython returns a 256 KB arena only when every object in it is freed, so scattered survivors keep arenas resident",
-          "Yes — it indicates a reference cycle the collector missed",
-          "No — RSS always includes shared library pages"
+          "Yes — freed objects must return their memory to the OS, so RSS should fall back",
+          "Yes — it indicates a reference cycle that the collector missed during the job",
+          "No — arenas are only returned when completely empty, and survivors are scattered",
+          "No — RSS always includes shared library pages, which were loaded by the batch job"
         ],
-        answer: 1,
+        answer: 2,
         why: "Small objects come from arenas managed by CPython's own allocator, and fragmentation after a large batch leaves survivors scattered across many of them. The memory is reusable by Python and not returnable to the OS. The distinction that matters is whether RSS grows *without bound* across cycles — that is a leak — or rises to a plateau, which is normal. Avoid the spike by streaming or batching rather than chasing a release."
       },
       {
         stem: "Why does `weakref.ref(instance)` fail on a class with `__slots__ = (\"x\",)`?",
         options: [
-          "Slotted classes cannot be referenced at all",
+          "Slotted classes cannot be referenced at all except through strong references",
           "`__slots__` removes the `__weakref__` slot unless it is listed explicitly",
-          "Weak references require a `__dict__`",
-          "The class must inherit from `object` explicitly"
+          "Weak references require a `__dict__` to store the callback, which `__slots__` removes",
+          "The class must inherit from `object` explicitly for weak references to work"
         ],
         answer: 1,
         why: "Weak-reference support needs a slot in the object's layout, which a normal class gets automatically and a slotted one does not. Adding `\"__weakref__\"` to `__slots__` restores it. This bites people combining a memory optimisation with a weakref-based cache — and it is the same category of surprise as `cached_property` failing because `__slots__` removed the instance dictionary."
@@ -824,10 +824,10 @@ def test_by_symbol_shares_objects_rather_than_copying() -> None:
       {
         stem: "Memory grows steadily all day, `gc.collect()` frees nothing, and `tracemalloc` shows only legitimate allocations. What is the most likely cause?",
         options: [
-          "A reference cycle involving `__del__`",
+          "A reference cycle involving an object with `__del__`, which the collector refuses to free",
           "Unbounded growth of reachable objects — a cache with no eviction, or a list that only appends",
-          "Arena fragmentation",
-          "A leak inside a C extension"
+          "Arena fragmentation, which keeps freed memory resident between requests",
+          "A leak inside a C extension, which `tracemalloc` cannot see"
         ],
         answer: 1,
         why: "If everything is reachable, no tool will call it a leak, because it is not one — the objects have every right to be there. The bug is a missing limit rather than a missing free: a debugging endpoint keeping recent responses, a registry keyed by request id, a memo dict that never evicts. Ask what holds the objects and what bounds it; `deque(maxlen=n)` or an LRU is usually the one-line fix."

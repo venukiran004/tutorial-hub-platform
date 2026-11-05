@@ -132,6 +132,20 @@ def delete_doc(doc_id: int, user: User = Depends(require("delete_doc")), db=Depe
 
     { t: "p", text: "For a machine caller there is no user to log in. Two patterns: an **API key** — a random token (`secrets.token_urlsafe`) handed to the caller, stored hashed on your side like a password, sent in a header, compared with `compare_digest`, scoped and revocable — or **OAuth2 client credentials**, where the calling service authenticates to an authorisation server and presents a short-lived access token, which scales better across many services and expires by itself. Inside one platform, mutual TLS between services adds identity at the transport layer. In every case: rotate, scope narrowly, log the key id (never the key), and rate-limit per key." },
 
+    { t: "callout", kind: "trap", title: "An API key in the query string is a key in your logs", body: [
+      { t: "p", text: "`GET /v1/rates?api_key=sk_live_...` works, and it writes the credential everywhere a URL is recorded: your access logs, the load balancer's logs, proxy and CDN logs, APM traces, browser history, and the `Referer` header of any link the response contains. **None of those is a secret store, so a key sent in a URL can be read by every person and system that can read a log.**" },
+      { t: "code", lang: "python", title: "refuse the habit, do not just discourage it", code: `from fastapi import Header, HTTPException, Request
+
+
+def api_key(request: Request, x_api_key: str | None = Header(default=None)) -> str:
+    if "api_key" in request.query_params:
+        raise HTTPException(400, "send the key in the X-API-Key header, not the URL")
+    if x_api_key is None:
+        raise HTTPException(401, "missing X-API-Key")
+    return x_api_key` },
+      { t: "p", text: "**Accept credentials only in a header, and reject a query-string key with a 400** rather than quietly accepting it, so no client can come to depend on it. A key that has ever been sent in a URL is leaked: rotate it, because redacting your logs does not reach the copies already shipped to other systems." }
+    ]},
+
     { t: "h2", n: "05", text: "Transport and web-layer defences", id: "web" },
 
     {"kind": "trace", "title": "Six layers, and the CSRF row explains why one auth scheme needs no CSRF defence at all", "caption": "**A bearer token in a header is immune, because the browser does not attach it automatically** — CSRF exists precisely because cookies are sent on any request to the origin. So the defence is scoped to cookie-authenticated state changes: **`SameSite` plus a synchroniser token compared with `compare_digest`.** The row most often misconfigured is CORS: **never `*` with credentials** — and the one most often omitted entirely is the host check, **which is what stops a poisoned `Host` header being used to build an absolute URL in a password-reset email.**", "left": "layer", "codeW": 140, "vars": ["defence", "the setting"], "steps": [{"code": "TLS", "state": ["HTTPS, and HSTS", "max-age=31536000; includeSubDomains"], "tone": "good"}, {"code": "cookies", "state": ["unreadable by scripts, not cross-site", "Secure; HttpOnly; SameSite=Lax"], "changed": [0, 1], "tone": "good"}, {"code": "CORS", "state": ["exactly the origins that need it", "never * with credentials"], "changed": [0, 1], "tone": "crit"}, {"code": "Host header", "state": ["reject hosts you do not serve", "TrustedHostMiddleware"], "changed": [0, 1], "tone": "violet"}, {"code": "CSRF", "state": ["SameSite + a synchroniser token", "bearer tokens are immune"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-12_10-05-2"},
@@ -181,7 +195,13 @@ detect-secrets scan > .secrets.baseline   # secret scanning, then as a pre-commi
 3  PARTNER_KEY from random.choice — predictable                     A02  → secrets.token_urlsafe(32), stored hashed
 4  CORS '*' with credentials — any site can call as the user         A05  → allow_origins=[the real origins]
 fix 1 first: it is exploitable today by any logged-in accountant with a URL`,
-        notes: [{ t: "p", text: "Three of the four pass every automated scanner; only the predictable key would be flagged. The object-level check has to come from a person who asks 'whose row is this?' on every handler that takes an id." }] } }
+        notes: [{ t: "p", text: "Three of the four pass every automated scanner; only the predictable key would be flagged. The object-level check has to come from a person who asks 'whose row is this?' on every handler that takes an id." }] } },
+
+    { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
+      { t: "p", text: "A B2B billing portal served invoices at `/invoices/{id}` with sequential integer ids. Authentication was correct and the role check was correct. **A customer's finance analyst changed 48213 to 48212 in the address bar and received another company's invoice.** A script did the rest: 31,000 invoices were downloaded over a weekend before an alert on per-user request volume fired." },
+      { t: "p", text: "Switching to UUIDs was proposed first and rejected as the fix. Unguessable ids make discovery harder, but an id that leaks in an email, a log or a screenshot still opens the invoice. **The missing line was the object-level check:** the query loaded by id alone instead of by id and account." },
+      { t: "p", text: "**The fix was `WHERE id = :id AND account_id = :account_id`, a 404 for a miss so the response does not confirm the invoice exists, and one test per endpoint that requests another tenant's object and asserts the 404.** That test is what stops the check being deleted in a later refactor; the code alone does not." }
+    ]}
   ],
 
   takeaways: [
@@ -195,20 +215,20 @@ fix 1 first: it is exploitable today by any logged-in accountant with a URL`,
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why must an API key be compared with hmac.compare_digest rather than ==?",
-      options: ["== does not work on strings", "== returns as soon as a byte differs, so response time leaks how many leading bytes matched", "compare_digest also hashes the key", "== is slower"],
+      options: ["`==` does not work reliably on strings containing non-ASCII bytes", "`==` stops at the first mismatch, so timing leaks how much matched", "`compare_digest` also hashes the key, so the stored secret never appears in memory", "`==` is slower than `compare_digest` for long keys"],
       answer: 1,
       why: "A short-circuiting comparison finishes faster when the mismatch is early, and an attacker measuring response times can recover the secret one byte at a time. compare_digest takes the same time regardless of where the strings differ — measured here at 66 ns either way — and costs nothing worth mentioning." },
     { stem: "A single-page app needs to log users in via Google. Which OAuth2 flow?",
-      options: ["Implicit", "Resource Owner Password", "Authorization Code with PKCE", "Client Credentials"],
+      options: ["Implicit", "Resource Owner Password, with the app collecting the credentials", "Authorization Code with PKCE", "Client Credentials, using the app's own client secret"],
       answer: 2,
       why: "A SPA is a public client that cannot keep a secret, so the code flow needs PKCE: a verifier the app generates and a challenge it sends, so an intercepted authorisation code cannot be exchanged without the verifier. Implicit is deprecated for putting tokens in the URL; ROPC hands the password to the app; client credentials has no user." },
     { stem: "A user with the 'accountant' role can read any invoice by changing the id in the URL. Which OWASP category, and what is missing?",
-      options: ["A03 Injection — parameterise the query", "A01 Broken access control — the object-level ownership check", "A02 Cryptographic failures — hash the id", "A10 SSRF — allow-list the id"],
-      answer: 1,
+      options: ["A03 Injection — the id must be parameterised in the query", "A02 Cryptographic failures — the id should be hashed or encrypted", "A10 SSRF — the id must be checked against an allow-list", "A01 Broken access control — the object-level ownership check"],
+      answer: 3,
       why: "The role check answers 'may accountants read invoices?' but not 'may this accountant read this invoice?'. Object-level authorisation compares the row's owner or account with the requester on every request, and returns 404 rather than 403 so the existence of other users' rows is not confirmed." },
     { stem: "What does OpenID Connect add to OAuth2?",
-      options: ["Refresh tokens", "An ID token — a JWT stating who the user is — turning delegated access into authentication", "PKCE", "Scopes"],
-      answer: 1,
+      options: ["Refresh tokens, so a session can outlive the access token", "PKCE, so public clients can use the code flow safely", "Scopes, so an app can ask for limited access to a resource", "An ID token that says who the user is"],
+      answer: 3,
       why: "OAuth2 on its own tells your app it may access a resource; it does not standardise who the user is. OIDC layers an ID token with standard claims (sub, email, iss, aud, exp) and a discovery document, which is what 'Sign in with …' actually relies on." }
   ] },
 

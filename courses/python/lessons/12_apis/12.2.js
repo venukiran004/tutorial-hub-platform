@@ -945,8 +945,8 @@ def test_connections_are_reused():
       {
         stem: "A partner slows to 90 seconds per response and the whole service becomes unavailable, with an error rate of zero. What was missing?",
         options: [
-          "A circuit breaker around the partner",
-          "A timeout — `requests` waits forever, so workers blocked, the pool filled, and eventually the health check could not be served",
+          "A circuit breaker around the partner, so calls fail fast once the partner's error rate climbs above a threshold",
+          "A timeout — without one every worker waited, until even health checks failed",
           "More worker threads",
           "Retries with exponential backoff"
         ],
@@ -956,10 +956,10 @@ def test_connections_are_reused():
       {
         stem: "A refund retry loop generates a new `uuid4()` idempotency key on each attempt. What happens when the first attempt succeeds but the response is lost?",
         options: [
-          "The partner recognises the retry and returns the original refund",
+          "The partner recognises the retry from the matching amount and order, and returns the original refund",
           "The partner sees a different key, treats it as a new request, and refunds again — the key achieves nothing",
-          "The retry is rejected as a duplicate",
-          "The refund is rolled back automatically"
+          "The retry is rejected as a duplicate, because two refunds for the same order arrived in quick succession",
+          "The second refund is rolled back automatically once the partner notices the first one succeeded"
         ],
         answer: 1,
         why: "An idempotency key works by letting the server recognise a repeated request. A fresh key per attempt is functionally identical to no key at all, and the code looks correct in review. The key must be generated once for the whole logical operation, and a test asserting all attempts share one key is what catches the difference."
@@ -967,23 +967,23 @@ def test_connections_are_reused():
       {
         stem: "`return r.json()` with no status check. The API returns 404 with `{\"error\": \"not found\"}`. What happens?",
         options: [
-          "`json()` raises because the status is not 2xx",
-          "It parses fine and the error dict is returned as if it were data, surfacing later as a `KeyError` somewhere unrelated",
-          "`requests` raises automatically on 4xx",
-          "The response body is empty for 404s"
+          "It parses fine, and the error dict travels on as if it were data",
+          "`json()` raises an `HTTPError`, because it refuses to parse a body whose status is not 2xx",
+          "`requests` raises automatically on any 4xx response before your code reaches `json()`",
+          "The response body is always empty for a 404, so `json()` raises a decoding error"
         ],
-        answer: 1,
+        answer: 0,
         why: "A well-formed error body is indistinguishable from a result unless you check the code designed to tell you. The related failure is a 500 returning HTML, which raises `JSONDecodeError` and sends whoever is debugging to the parser instead of the partner. Check the status first, then parse."
       },
       {
         stem: "Why prefer cursor pagination over `?page=N&limit=100` when reading a large collection?",
         options: [
           "Cursors are faster for the server to compute",
-          "Offsets drift when rows are written during the scan, so pages re-read and skip records; a cursor encodes a position and is stable",
           "Page numbers have a maximum value",
+          "Writes during the scan shift offsets, so rows repeat or vanish; a cursor is stable",
           "Cursors allow parallel fetching"
         ],
-        answer: 1,
+        answer: 2,
         why: "An offset means \"skip the first N rows of the current result\", and the current result changes as data is written — so a row inserted before your position pushes one across a page boundary and you never see it. A cursor names where you were. Bound the loop and track seen cursors too: an API returning the same cursor twice is not hypothetical."
       }
     ]

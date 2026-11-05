@@ -187,7 +187,7 @@ results = vectorstore.similarity_search(
         note: "Catches exact repeats. Misses a trailing space \u2014 see below, because that turns out to matter." },
       { level: "ok", label: "Normalise, then hash",
         why: "Collapsing whitespace and folding case before hashing is what makes the hash catch the edits that actually occur in practice.",
-        code: `def normalize(text): return re.sub(r"\s+", " ", text.lower().strip())
+        code: `def normalize(text): return re.sub(r"\\s+", " ", text.lower().strip())
 def content_id(text): return hashlib.sha256(normalize(text).encode()).hexdigest()`,
         note: "Measured below: without normalisation, four of five trivial variants hash differently." },
       { level: "best", label: "Hash, then a near-duplicate pass, then MMR at query time",
@@ -338,7 +338,7 @@ def est_jaccard(a, b):
 from collections import Counter
 
 def normalize(t):
-    return re.sub(r"\s+", " ", t.lower().strip())
+    return re.sub(r"\\s+", " ", t.lower().strip())
 
 raw_ids  = Counter(hashlib.sha256(c.encode()).hexdigest()       for c in chunks)
 norm_ids = Counter(hashlib.sha256(normalize(c).encode()).hexdigest() for c in chunks)

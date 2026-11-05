@@ -1,9 +1,9 @@
 /* ============================================================================
    LESSON 10.2 — Streaming
    The partial events, the final event and the two-event session are executed
-   output from scratchpad/adk/n1.py on google-adk 2.9.2, with a model that
+   output from n1.py on google-adk 2.9.2, with a model that
    yields fragments the way a streaming provider does. The BIDI trace is from
-   scratchpad/adk/b1.py, which implements BaseLlmConnection against a script so
+   b1.py, which implements BaseLlmConnection against a script so
    run_live can be driven without a live-capable provider.
    ========================================================================= */
 EC.receiveLesson({
@@ -53,7 +53,7 @@ StreamingMode.NONE` },
 
 
 
-    { t: "code", lang: "python", title: "n1.py — running with SSE",
+    { t: "code", lang: "python", title: "running with SSE",
       code: `async for e in runner.run_async(
         user_id="u1", session_id=sid,
         new_message=msg,

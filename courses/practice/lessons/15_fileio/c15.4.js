@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c15.4",
  "lede": "**24 programs to write**, on threads to async pipelines. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 24 programs on threads to async pipelines without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c15.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1797–1820.** What this set actually drills, counted from its own problems — 20 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["threads", "async"], "cells": [[{"text": "12", "tone": "accent"}, "Basic Thread Creation"], [{"text": "8", "tone": "good"}, "Async/Await Basic"]], "t": "diagram", "id": "dg-c15_4-top-0"},
   {
    "t": "callout",
    "kind": "note",

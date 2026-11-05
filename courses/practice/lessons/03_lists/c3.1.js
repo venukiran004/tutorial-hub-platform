@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.1",
  "lede": "**26 programs to write**, on list basics, slicing and flattening. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 26 programs on list basics, slicing and flattening without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c2.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 245–270.** What this set actually drills, counted from its own problems — 19 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "databases", "classes", "generators"], "cells": [[{"text": "16", "tone": "accent"}, "Create a List and Print Elemen"], [{"text": "1", "tone": "good"}, "Access Elements by Index"], [{"text": "1", "tone": "violet"}, "Reverse a List (3 Methods)"], [{"text": "1", "tone": "teal"}, "Flatten Using itertools.chain"]], "t": "diagram", "id": "dg-c3_1-top-0"},
   {
    "t": "viz",
    "title": "Three traversals that solve most list problems",

@@ -937,44 +937,44 @@ def test_auth_appears_in_the_schema():
         stem: "Authentication middleware is deployed and the load balancer marks every instance unhealthy. Why?",
         options: [
           "The middleware is too slow for the probe's timeout",
-          "Middleware runs for every request, so the health probe — which sends no `Authorization` header — receives a 401",
           "Middleware cannot access `request.state`",
-          "The probe uses HTTP/1.0, which the middleware rejects"
+          "The probe uses HTTP/1.0, which the middleware rejects",
+          "Middleware runs for every request, so the probe without a token gets a 401"
         ],
-        answer: 1,
+        answer: 3,
         why: "The usual fix, a path allowlist inside the middleware, drifts — someone adds `/metrics` and the scraper breaks the same way. As a dependency there is nothing to exempt: `/health` does not declare `CurrentUser`. It also puts the security scheme in the OpenAPI document, which middleware cannot do."
       },
       {
         stem: "A FastAPI handler does `return {\"error\": \"not found\"}, 404`. What does the client receive?",
         options: [
-          "A 404 with the error body",
-          "HTTP 200 with the body `[{\"error\": \"not found\"}, 404]` — the tuple is serialised as data",
-          "A 500, because the return type is invalid",
-          "A 404 with an empty body"
+          "A 404 with the error dictionary as the body",
+          "A 500, because a tuple is not a valid return type for a handler",
+          "A 404 with an empty body, since the dict is discarded",
+          "HTTP 200, with the tuple serialised as a JSON array"
         ],
-        answer: 1,
+        answer: 3,
         why: "That tuple form is Flask's, not FastAPI's. FastAPI serialises whatever is returned, so the status stays 200 and the code becomes an array element. Every client's `raise_for_status()` passes and the failure is invisible. Raise an exception and let a handler map it to a status."
       },
       {
         stem: "Why return 404 rather than 403 when a user requests another customer's order?",
         options: [
           "403 is reserved for authentication failures",
-          "A 403 confirms the resource exists, so a caller can enumerate valid ids by watching which status comes back",
           "404 is cacheable and 403 is not",
+          "A 403 confirms the order exists, so valid ids can be enumerated",
           "Most clients do not handle 403"
         ],
-        answer: 1,
+        answer: 2,
         why: "Distinguishing \"does not exist\" from \"exists but is not yours\" turns the endpoint into an oracle: iterate ids and the status reveals which are real. Returning 404 for both leaks nothing. It is one of the few places where a deliberately less precise status is the more correct one."
       },
       {
         stem: "What is wrong with `return JSONResponse({\"detail\": str(exc)}, status_code=500)`?",
         options: [
-          "`str()` on an exception may raise",
-          "It returns internal detail — database hostnames and users, SQL fragments, internal service names — none of which helps the caller",
-          "The status code should be 400",
-          "`JSONResponse` bypasses the response model"
+          "`str()` on an exception may itself raise, which would turn the error handler into a second failure",
+          "The status code should be 400, since the request that triggered the exception came from the client",
+          "It leaks internal detail — hostnames, users, SQL — to whoever is calling",
+          "`JSONResponse` bypasses the response model, so the error body is missing from the OpenAPI schema"
         ],
-        answer: 1,
+        answer: 2,
         why: "A real `OperationalError` message contains the database host, port and username; a `ProgrammingError` contains SQL and column names. It is useless to the caller and useful to anyone probing the service. Log the detail with a correlation id and return a stable error code plus that id, which is what makes a support ticket traceable."
       }
     ]

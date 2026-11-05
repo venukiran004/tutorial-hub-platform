@@ -2,7 +2,7 @@
    LESSON 2.7 — Machine Translation
    Marian en-fr and fr-en are run in both directions; BLEU is computed by
    hand and then shown scoring a failed translation perfectly
-   (scratchpad/nlp/n26.py, n27.py, n27b.py).
+   (n26.py, n27.py, n27b.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "2.7",
@@ -45,7 +45,7 @@ EC.receiveLesson({
       ["Beam search", "Keep the k best partial translations at each step rather than the single best. Standard at k = 4 for MT."]
     ] },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n27.py — Marian, English to French", code:
+    { t: "code", lang: "python", title: "Marian, English to French", code:
 "import torch\nfrom transformers import MarianMTModel, MarianTokenizer\n\nname = \"Helsinki-NLP/opus-mt-en-fr\"\ntok = MarianTokenizer.from_pretrained(name)     # needs sentencepiece\nmod = MarianMTModel.from_pretrained(name).eval()\n\nfor src in [\"Machine learning is transforming the world.\",\n            \"The bank raised interest rates.\",\n            \"The river bank was muddy.\"]:\n    with torch.no_grad():\n        g = mod.generate(**tok(src, return_tensors=\"pt\"),\n                         num_beams=4, max_length=100)\n    print(tok.decode(g[0], skip_special_tokens=True))",
       caption: "It is commonly called this through `pipeline(\"translation\", ...)`, which transformers 5.x removed. `MarianTokenizer` also requires `sentencepiece`, which is not a transformers dependency — install it separately." },
 
@@ -102,7 +102,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\text{BLEU} = \\text{BP} \\cdot \\exp\\!\\left(\\sum_{n=1}^{4} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{1 - r/c} & c \\leq r \\end{cases}" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n26.py — the BLEU example", code:
+    { t: "code", lang: "python", title: "the BLEU example", code:
 "from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction\n\nreference = [[\"the\", \"cat\", \"sat\", \"on\", \"the\", \"mat\"]]\ncandidate =  [\"the\", \"cat\", \"is\", \"on\", \"the\", \"mat\"]\n\nprint(\"%.4f\" % sentence_bleu(reference, candidate))\n\n# and with smoothing, so a single zero order does not annihilate it\nsm = SmoothingFunction().method1\nprint(\"%.4f\" % sentence_bleu(reference, candidate, smoothing_function=sm))",
       caption: "One word differs out of six. Predict the score before reading the output." },
 

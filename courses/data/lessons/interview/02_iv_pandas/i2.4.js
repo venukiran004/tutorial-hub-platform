@@ -44,7 +44,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df = df.set_index(\"date\")\ndf[\"2024\"]           # All of 2024\ndf[\"2024-01\":\"2024-06\"]  # Jan–Jun 2024"
+     "code": "df = df.set_index(\"date\")\ndf.loc[\"2024\"]           # All of 2024\ndf.loc[\"2024-01\":\"2024-06\"]  # Jan–Jun 2024"
     }
    ],
    "kind": ""
@@ -57,7 +57,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df.resample(\"M\").sum()    # Monthly sum\ndf.resample(\"W\").mean()   # Weekly mean\ndf.resample(\"Q\").agg({\"sales\": \"sum\", \"orders\": \"count\"})"
+     "code": "df.resample(\"ME\").sum()   # Monthly sum (\"M\" before pandas 2.2)\ndf.resample(\"W\").mean()   # Weekly mean\ndf.resample(\"QE\").agg({\"sales\": \"sum\", \"orders\": \"count\"})"
     }
    ],
    "kind": ""
@@ -100,7 +100,7 @@ EC.receiveLesson({
       "Use appropriate dtypes (`int32` vs `int64`, `category`).",
       "Use `query()` for filtering (can be faster than boolean indexing for large DataFrames).",
       "Avoid `apply` where vectorization is possible.",
-      "Use `chunksizes` when reading large files."
+      "Use `chunksize` when reading large files."
      ]
     }
    ],
@@ -156,7 +156,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df2 = df.copy()         # Independent deep copy\ndf2 = df                # Same object — mutating df2 mutates df\ndf2 = df[[\"a\", \"b\"]]   # Might be a view — use .copy() to be safe"
+     "code": "df2 = df.copy()         # Independent deep copy\ndf2 = df                # Same object — mutating df2 mutates df\ndf2 = df[[\"a\", \"b\"]]   # New frame — add .copy() if you will modify it, to avoid the pandas 2 warning"
     }
    ],
    "kind": ""

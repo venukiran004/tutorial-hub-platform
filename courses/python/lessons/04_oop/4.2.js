@@ -370,7 +370,8 @@ AttributeError: 'Slotted' object has no attribute 'z'`
       solution: {
         lang: "python",
         title: "session.py",
-        code: `# ---- the original ------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original ------------------------------------------------------
 
 class Session:
     active_users = []            # BUG 1: mutable class attribute
@@ -415,7 +416,6 @@ class Session:
 
 # ---- the fix -----------------------------------------------------------
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import ClassVar, Final
@@ -551,45 +551,45 @@ a, b = Cart(), Cart()
 a.items.append("x")
 print(b.items)`,
         options: [
-          "`[]` — each instance gets its own list",
-          "`['x']` — `append` mutates the single shared class attribute, with no assignment to create an instance attribute",
-          "`AttributeError`, because `items` was never set on the instance",
-          "`['x']`, but only because `a` and `b` were created in the same statement"
+          "`['x']` — `append` mutates the one list shared through the class attribute",
+          "`[]` — each instance gets its own copy of the list when it is created, so `b.items` is empty",
+          "`AttributeError`, because `items` was never assigned on the instance in `__init__`",
+          "`['x']`, but only because `a` and `b` were created in the same statement and share a namespace"
         ],
-        answer: 1,
+        answer: 0,
         why: "`a.items` reads through to the class and returns the one list created when the class body executed. `.append()` mutates that object — no assignment happens, so no instance attribute is created to shadow it. Every instance in the process shares one list for the program's lifetime. This is the mutable-default trap from Lesson 1.4, one level up."
       },
       {
         stem: "A class has `count = 0` and a method doing `self.count += 1`. After two instances each call it once, what is `Cls.count`?",
         options: [
-          "`2` — both increments applied to the class attribute",
-          "`0` — the read fell through to the class but the write created an instance attribute on each object",
-          "`1` — only the first increment reached the class",
-          "`AttributeError` on the second instance"
+          "`2` — `self.count` refers to the class attribute, so both increments were applied to it",
+          "`1` — the first increment reached the class, and the second created an instance attribute",
+          "`AttributeError` on the second instance, because the first call converted `count` to an instance attribute",
+          "`0` — the read fell through to the class but the write created an instance attribute on each object"
         ],
-        answer: 1,
+        answer: 3,
         why: "`self.count += 1` expands to `self.count = self.count + 1`. The read finds 0 on the class; the write creates an instance attribute holding 1. So each instance has its own `count` of 1 and the class attribute never changes. The output looks nearly right — the numbers do increment — which is what makes it a silent bug. Use `Cls.count += 1`, and mark it `ClassVar` so mypy rejects the `self` form."
       },
       {
         stem: "What does `ClassVar[frozenset[str]]` actually accomplish?",
         options: [
-          "It makes the attribute read-only at runtime",
-          "It tells a type checker the attribute belongs to the class, so assigning it through `self` becomes a type error",
-          "It creates a separate copy for each subclass",
-          "It is required for any attribute defined in a class body"
+          "It makes the attribute read-only at runtime, so assigning to it through an instance raises",
+          "It creates a separate copy of the value for each subclass, so subclasses cannot mutate the parent's",
+          "It tells the type checker the attribute is class-level, so assigning via `self` is an error",
+          "It is required for any attribute defined in a class body, or the attribute becomes an instance field"
         ],
-        answer: 1,
+        answer: 2,
         why: "`ClassVar` is a hint, not runtime enforcement — nothing stops `obj.X = ...` when the code runs. Its value is that mypy will reject it, catching the exact mistake of assigning through `self` to something meant to be class-level. Without the annotation a type checker cannot distinguish an intentional class constant from an instance attribute someone forgot to set in `__init__`. The `frozenset` is what provides the runtime immutability."
       },
       {
         stem: "Why do mutable-class-attribute bugs pass unit tests but fail in production?",
         options: [
-          "Test runners reset class attributes between tests automatically",
-          "The corruption accumulates across constructions in one long-lived process — a test creates one or two objects and asserts immediately",
-          "Production uses a different import mechanism",
-          "They only occur under concurrent access"
+          "Test runners reset class attributes between tests automatically, so state never carries over",
+          "Production uses a different import mechanism that executes class bodies once per worker",
+          "They only occur under concurrent access, which unit tests running one at a time never produce",
+          "The damage accumulates over many constructions in one process; tests build one or two objects"
         ],
-        answer: 1,
+        answer: 3,
         why: "The shared object is created once, when the class body executes at import, and lives as long as the process. A test creates a couple of instances in a fresh process and asserts straight away, so nothing has accumulated. A server creating one per request accumulates all day. Concurrency makes it *more visible* but is not required — the same corruption happens single-threaded, as Lesson 2.5 showed."
       }
     ]

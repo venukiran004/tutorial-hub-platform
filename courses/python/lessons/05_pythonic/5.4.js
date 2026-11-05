@@ -576,45 +576,45 @@ if __name__ == "__main__":
       {
         stem: "A partner's CSV gains a column, shifting fields right. Code reading `region = row[3]` runs for two weeks producing wrong reports. What would have caught it?",
         options: [
-          "A try/except around the row access",
+          "A `try/except IndexError` around the row access, which would have caught the shifted field",
+          "Converting the rows to a dict with `dict(enumerate(row))` first, so fields are looked up by key",
           "Unpacking — `order_id, sku, amount, region = row` raises immediately when the width changes",
-          "Converting the rows to a dict first",
-          "Nothing — schema drift is undetectable in application code"
+          "Nothing — schema drift in a partner's file is undetectable from inside application code"
         ],
-        answer: 1,
+        answer: 2,
         why: "`row[3]` is valid for any row with four or more columns, so indexing cannot detect a shape change — it reads a different field into the same variable name and carries on. Unpacking asserts the count, so a wider or narrower row raises `ValueError` at the row that caused it. A `try/except` catches nothing because nothing was raised. Where trailing columns are legitimate, `a, b, c, d, *_ = row` still asserts the first four."
       },
       {
         stem: "What is the type of `rest` after `first, *rest = (1, 2, 3)`?",
         options: [
-          "`tuple`, matching the source",
-          "`list`, always — a starred target produces a list regardless of the source type",
-          "`Iterator`, evaluated lazily",
-          "It depends on the source; a tuple gives a tuple"
+          "`list`, always, whatever the source type",
+          "`tuple`, matching the type of the source being unpacked",
+          "`Iterator`, so the remaining items are evaluated lazily",
+          "It depends on the source: a tuple gives a tuple, a list gives a list"
         ],
-        answer: 1,
+        answer: 0,
         why: "A starred target always collects into a `list`, whatever it unpacks from — a tuple, a string, a generator. Worth knowing alongside a second property: a starred target can be empty, so `a, *rest = [1]` succeeds with `rest == []`. That means the star removes the length assertion for whatever it absorbs, while the non-starred names before and after it are still checked."
       },
       {
         stem: "Which use of the walrus operator genuinely improves the code?",
         options: [
-          "`(count := len(items))` on its own line",
-          "`[v for x in data if (v := expensive(x)) is not None]` — the value is computed once and used again in the same statement",
-          "`if (user := db.fetch(uid)) and user.active:` — it shortens the lookup",
-          "`[y := f(x) for x in data]` — it keeps the last value available"
+          "`(count := len(items))` on its own line — it assigns and shows the value in one step",
+          "`if (n := len(items)) > 10:` where `n` is never used again — it names the length",
+          "`[v for x in data if (v := expensive(x)) is not None]` — computed once, used twice",
+          "`[y := f(x) for x in data]` — it keeps the last computed value available after the loop"
         ],
-        answer: 1,
-        why: "Option B is the case the operator was designed for: without it you either call `expensive` twice or restructure into a four-line loop. Option A is a plain assignment with extra parentheses. Option C uses the walrus correctly but hides a network call inside a condition, which is a separate problem. Option D leaks `y` into the enclosing scope — deliberate behaviour, and rarely what a reader expects."
+        answer: 2,
+        why: "Option C is the case the operator was designed for: without it you either call `expensive` twice or restructure into a four-line loop. Option A is a plain assignment with extra parentheses. Option B binds a name nobody reads, so the walrus adds a concept and buys nothing; it earns its place only when `n` is used inside the branch. Option D leaks `y` into the enclosing scope — deliberate behaviour, and rarely what a reader expects."
       },
       {
         stem: "Why prefer a `NamedTuple` return over a bare 3-tuple?",
         options: [
-          "It is faster to construct and unpack",
-          "Existing unpacking call sites keep working *and* new callers can use names — so adding a field later does not break every `a, b, c = f()`",
-          "Bare tuples cannot be type-annotated",
-          "It prevents callers from unpacking the result"
+          "Old unpacking keeps working while new callers use names, so adding a field breaks nothing",
+          "It is faster to construct and to unpack than a plain tuple, because fields are slots",
+          "Bare tuples cannot be type-annotated with per-position types, so mypy cannot check them",
+          "It prevents callers from unpacking the result positionally, so they must use the names"
         ],
-        answer: 1,
+        answer: 0,
         why: "A `NamedTuple` is a tuple, so every `a, b, c = f()` continues to work unchanged — but it also has attribute access, indexing and a useful `repr`. That combination makes converting a bare tuple return one of the safest refactors available: nothing breaks today, and adding a fourth field tomorrow no longer silently breaks every positional unpack in the codebase."
       }
     ]

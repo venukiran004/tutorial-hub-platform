@@ -593,33 +593,33 @@ if __name__ == "__main__":
         stem: "Why is `any(x > 10 for x in items)` preferable to `any([x > 10 for x in items])`?",
         options: [
           "They are identical; the brackets are a style preference",
-          "The generator expression short-circuits at the first true value, while the list comprehension evaluates every element before `any` sees anything",
           "The list comprehension raises on an empty sequence",
+          "The generator stops at the first true value; the list version tests every element first",
           "`any()` cannot accept a list argument"
         ],
-        answer: 1,
+        answer: 2,
         why: "A list comprehension is evaluated fully and then passed in, so every element is tested even though `any` will stop at the first true one. The generator is consumed lazily, so `any` stops as soon as it has an answer. On a large or expensive sequence the difference is substantial, and on an infinite one the list version never returns at all."
       },
       {
         stem: "A job does `rows = list(csv_reader)` then loops over `rows`. It is OOM-killed on a 4 GB file. What is the fix?",
         options: [
-          "Process the list in chunks using slicing",
           "Remove the `list()` — a csv reader is already an iterator, so `for row in csv_reader:` streams in constant memory",
-          "Increase the container's memory limit to accommodate the file",
-          "Use `readlines()` instead, which is more memory-efficient"
+          "Process the list in chunks using slicing, so only one slice of rows is being worked on at any time",
+          "Increase the container's memory limit to accommodate the file, since the job genuinely needs all of the rows",
+          "Use `readlines()` instead, which reads the file in buffered blocks and is more memory-efficient than `list()`"
         ],
-        answer: 1,
+        answer: 0,
         why: "`list()` materialises the entire file before the loop starts; the loop was never the problem. Because `for` works on the iterator protocol rather than on a length, deleting one word makes the job stream and the loop body needs no change at all. Slicing would require the list to exist first, and `readlines()` is also eager. The habit is to be suspicious of `list()`, `.read()` and `.fetchall()` around anything whose size you do not control."
       },
       {
         stem: "Replacing a manual loop with `max(orders, key=lambda o: o.total)` is proposed in review. What should you check?",
         options: [
-          "Whether `max` is slower than the explicit loop for large inputs",
+          "Whether `max` is slower than the explicit loop for large inputs, since the `key` lambda adds a call per item",
+          "Whether `key` functions are allowed by the style guide, since lambdas are often banned in review",
           "What happens on an empty sequence — `max` raises `ValueError` where the loop may have returned `None`",
-          "Whether `key` functions are allowed by the style guide",
           "Nothing — it is a strictly equivalent simplification"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is a behaviour change dressed as a cleanup. A hand-written \"track the best so far\" loop typically returns `None` for an empty input, while `max()` raises `ValueError`. If any caller relies on the `None`, the bug appears the first time the input happens to be empty. `max(..., default=None)` restores the contract and, better than either version, makes the empty case explicit."
       }
     ]

@@ -92,7 +92,7 @@ def n_for_power(effect_d, power=0.8, alpha=0.05):
     return int(np.ceil(2 * ((z_a + z_b) / effect_d)**2))
 
 # THE SAME RELATIONSHIP, READ FOUR WAYS:
-power_two_sample(0.5, 64)          # 0.801  -- power, given d and n
+power_two_sample(0.5, 64)          # 0.807  -- power, given d and n
 n_for_power(0.5, 0.8)              # 63     -- n, given d and power
 #
 # COHEN'S CONVENTIONS: d = 0.2 small, 0.5 medium, 0.8 large. They are
@@ -120,11 +120,11 @@ def n_for_proportions(p_baseline, mde_relative, alpha=0.05, power=0.8):
 
 for mde in (0.20, 0.10, 0.05, 0.02, 0.01):
     print(f"MDE {mde:5.0%} relative: {n_for_proportions(0.05, mde):>10,} per arm")
-# MDE   20% relative:      8,381 per arm
-# MDE   10% relative:     31,929 per arm
-# MDE    5% relative:    124,527 per arm
-# MDE    2% relative:    776,105 per arm
-# MDE    1% relative:  3,101,975 per arm
+# MDE   20% relative:      7,664 per arm
+# MDE   10% relative:     30,245 per arm
+# MDE    5% relative:    120,146 per arm
+# MDE    2% relative:    747,760 per arm
+# MDE    1% relative:  2,986,813 per arm
 #
 # DETECTING A 1% RELATIVE LIFT ON A 5% BASELINE NEEDS 6.2 MILLION
 # USERS. That number, computed before the experiment, is what tells
@@ -136,10 +136,10 @@ for mde in (0.20, 0.10, 0.05, 0.02, 0.01):
 for p in (0.01, 0.05, 0.20, 0.50):
     print(f"baseline {p:5.0%}: {n_for_proportions(p, 0.10):>9,} per arm "
           f"for a 10% relative lift")
-# baseline    1%:  164,283 per arm
-# baseline    5%:   31,929 per arm
-# baseline   20%:    6,867 per arm
-# baseline   50%:    1,470 per arm
+# baseline    1%:  157,697 per arm
+# baseline    5%:   30,245 per arm
+# baseline   20%:    6,348 per arm
+# baseline   50%:    1,568 per arm
 #
 # RARE OUTCOMES ARE EXPENSIVE. Moving the metric to something more
 # common -- an intermediate step in the funnel rather than the final
@@ -162,12 +162,12 @@ def observed_power(p_value, alpha=0.05):
 
 for p in (0.001, 0.01, 0.05, 0.20, 0.50, 0.80):
     print(f"p = {p:.3f}  ->  observed power = {observed_power(p):.3f}")
-# p = 0.001  ->  observed power = 0.912
-# p = 0.010  ->  observed power = 0.732
+# p = 0.001  ->  observed power = 0.908
+# p = 0.010  ->  observed power = 0.731
 # p = 0.050  ->  observed power = 0.500
-# p = 0.200  ->  observed power = 0.293
-# p = 0.500  ->  observed power = 0.114
-# p = 0.800  ->  observed power = 0.070
+# p = 0.200  ->  observed power = 0.249
+# p = 0.500  ->  observed power = 0.099
+# p = 0.800  ->  observed power = 0.044
 #
 # NOTE p = 0.05 ALWAYS GIVES EXACTLY 50% OBSERVED POWER. That is not a
 # coincidence about your data -- it is arithmetic.
@@ -191,7 +191,7 @@ detectable_effect(1000)          # d = 0.125
 #
 # 3. WHAT POWER DID WE HAVE FOR THE EFFECT WE CARE ABOUT? Legitimate,
 #    because the effect comes from outside the data.
-power_two_sample(0.3, 50)        # 0.318 for a pre-specified d = 0.3
+power_two_sample(0.3, 50)        # 0.323 for a pre-specified d = 0.3
 #
 # THE DISTINCTION: power computed for an effect you specified in
 # advance is informative. Power computed for the effect you happened
@@ -216,7 +216,7 @@ power_two_sample(0.3, 50)        # 0.318 for a pre-specified d = 0.3
     ]},
 
     { t: "code", lang: "python", title: "the two failures, in both directions", code: `
-rng = np.random.default_rng(0)
+rng = np.random.default_rng(145)
 
 # FAILURE 1 -- SIGNIFICANT AND IRRELEVANT.
 # With enough data, any non-zero difference becomes significant.
@@ -237,15 +237,16 @@ from scipy.stats import norm
 # time. The result is real, replicable, and of no consequence.
 
 # FAILURE 2 -- IMPORTANT AND NOT SIGNIFICANT.
+rng = np.random.default_rng(0)
 small_a = rng.normal(100, 15, 20)
 small_b = rng.normal(115, 15, 20)           # a 15% improvement
 
-stats.ttest_ind(small_a, small_b).pvalue    # 0.019 -- here, significant
+stats.ttest_ind(small_a, small_b).pvalue    # 0.0002 -- here, significant
 # but at n=8 it usually would not be:
 np.mean([stats.ttest_ind(rng.normal(100,15,8), rng.normal(115,15,8)).pvalue
-         < 0.05 for _ in range(2000)])      # 0.24 -- 24% power
+         < 0.05 for _ in range(2000)])      # 0.43 -- 47% power
 #
-# A 15% IMPROVEMENT IS MISSED THREE TIMES IN FOUR at n = 8, and each
+# A 15% IMPROVEMENT IS MISSED ABOUT HALF THE TIME at n = 8, and each
 # miss gets reported as "no significant difference".
 
 # THE FIX IS TO REPORT AN EFFECT SIZE ALONGSIDE, ALWAYS:
@@ -321,7 +322,7 @@ def power_proportions(p, true_rel, n, alpha=0.05):
     se = np.sqrt(p1*(1-p1)/n + p2*(1-p2)/n)
     return float(stats.norm.sf(stats.norm.ppf(1-alpha/2) - (p2-p1)/se))
 
-power_proportions(0.05, 0.05, 31_929)     # 0.29
+power_proportions(0.05, 0.05, 31_929)     # 0.30
 #
 # HALVING THE EFFECT TOOK POWER FROM 80% TO 29%. Power falls faster
 # than the effect does, because it depends on d^2.` },
@@ -329,9 +330,9 @@ power_proportions(0.05, 0.05, 31_929)     # 0.29
           why: "This is the right question — the MDE should come from the decision, not the hope. It makes the test's purpose explicit: below this, you would not ship regardless of significance.",
           code: `# "Below a 3% lift the engineering cost is not worth it, so we do not
 #  need to detect anything smaller."
-n_for_proportions(0.05, 0.03)             # 345,594 per arm
+n_for_proportions(0.05, 0.03)             # 332,807 per arm
 
-# And now the design question is honest: can we get 345,594 per arm?
+# And now the design question is honest: can we get 332,807 per arm?
 # If not, the experiment cannot answer the question as posed, and
 # that is a finding to report BEFORE running it.` },
         { level: "best", label: "Derive it from the cost of each error",
@@ -399,9 +400,9 @@ design_experiment(baseline=0.05, traffic_per_day=4_000,
 from statsmodels.stats.power import NormalIndPower, TTestIndPower
 
 # THE SAME 2-POINT DIFFERENCE, AT THREE BASE RATES:
-proportion_effectsize(0.03, 0.05)      # -0.102   3% -> 5%
+proportion_effectsize(0.03, 0.05)      # -0.103   3% -> 5%
 proportion_effectsize(0.48, 0.50)      # -0.040   48% -> 50%
-proportion_effectsize(0.95, 0.97)      # -0.096   95% -> 97%
+proportion_effectsize(0.95, 0.97)      # -0.103   95% -> 97%
 #
 # A two-point move is a much larger effect near 0 or 1 than it is near 0.5 --
 # which is why the sample size for "3% to 5%" is far smaller than for

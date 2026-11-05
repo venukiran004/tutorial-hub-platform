@@ -891,7 +891,7 @@ def test_a_cache_outage_does_not_make_the_service_unready(client, monkeypatch):
 
 def test_no_pii_reaches_the_logs(client, log_capture):
     """Finding 2."""
-    client.post("/orders", json={"customer_email": "alice@example.com", ...})
+    client.post("/orders", json={"customer_email": "alice@example.com"})  # plus a valid order body
 
     assert "alice@example.com" not in log_capture.text
 
@@ -959,10 +959,10 @@ def test_an_unhandled_error_logs_a_traceback(client, log_capture, monkeypatch):
       {
         stem: "`request_count.labels(path=request.url.path).inc()` — what is wrong?",
         options: [
-          "Counters should be gauges for request counts",
-          "The resolved path is unbounded, so every distinct URL creates a time series — millions of them, which exhausts the metrics backend",
-          "The label name should be `route`",
-          "Nothing, provided retention is short"
+          "Counters should be gauges for request counts, since the number can go down when requests finish",
+          "The raw path is unbounded, so every distinct URL creates a new time series",
+          "The label name should be `route` rather than `path`, which is reserved by the metrics library",
+          "Nothing is wrong, provided the backend's retention period is short enough to drop old series"
         ],
         answer: 1,
         why: "Old series are retained, so the count only grows. Using the route template `/orders/{id}` bounds the label by the number of routes. Per-customer or per-order questions belong in logs, which carry unbounded fields by design."
@@ -970,10 +970,10 @@ def test_an_unhandled_error_logs_a_traceback(client, log_capture, monkeypatch):
       {
         stem: "A single `/health` endpoint checks the database, Redis and Stripe, and serves both liveness and readiness probes. What happens when Stripe is slow?",
         options: [
-          "Checkout degrades gracefully",
-          "Liveness fails, so every pod is killed and restarted, and the replacements fail readiness too — a total outage caused by a third party",
-          "The probes time out but traffic continues",
-          "Only the payment routes are affected"
+          "Checkout degrades gracefully, because the other two dependencies still report as healthy",
+          "Liveness fails, so every pod restarts into failing readiness — a total outage",
+          "The probes time out, but traffic continues to flow to the pods as before",
+          "Only the payment routes are affected, since nothing else talks to Stripe"
         ],
         answer: 1,
         why: "Liveness asks whether the process should be restarted, and restarting cannot fix a third party's outage. Liveness should check nothing external, readiness only critical dependencies, and a non-critical one like a cache should be reported as degraded rather than failing the check."
@@ -981,21 +981,21 @@ def test_an_unhandled_error_logs_a_traceback(client, log_capture, monkeypatch):
       {
         stem: "Why does head sampling at 1% fail you during an incident?",
         options: [
-          "It samples too much data",
-          "The decision is made at the start of a request, so with a 0.1% error rate you keep roughly one failure in a thousand — the trace you need almost certainly was not kept",
-          "It cannot be combined with metrics",
-          "It only samples the first request of each minute"
+          "It decides before the outcome is known, so at 1% the failing trace is almost never kept",
+          "It samples too much data, so the tracing backend drops traces during the spike in traffic an incident causes",
+          "Head sampling cannot be combined with metrics, so the trace cannot be linked to the alert that fired",
+          "It only samples the first request of each minute, so a burst of failures inside that minute is missed"
         ],
-        answer: 1,
+        answer: 0,
         why: "Errors are rare, which is exactly why random sampling misses them. Tail sampling decides after the trace completes, so it can keep every error and every slow request plus a small percentage of the rest — at the cost of a collector that buffers whole traces."
       },
       {
         stem: "A service logs `UserNotFound` at error level. What is the consequence?",
         options: [
-          "Nothing — it is defensive",
-          "The error rate is dominated by normal behaviour, so the alert built on it is muted and never fires for a real failure",
-          "The log volume grows but nothing else changes",
-          "Tracing spans are marked failed incorrectly"
+          "Nothing — logging an unexpected lookup failure at error level is the defensive choice",
+          "Normal behaviour swamps the error rate, so its alert gets muted",
+          "The log volume grows with traffic, but alerting and dashboards are unaffected",
+          "Tracing spans for those requests are marked as failed, which distorts the latency graphs"
         ],
         answer: 1,
         why: "Error level should mean a human may need to look. Once expected conditions are logged as errors, the metric derived from them is meaningless — and the alert gets muted, which is the outcome that matters, because a muted alert is one that will not fire when it should."

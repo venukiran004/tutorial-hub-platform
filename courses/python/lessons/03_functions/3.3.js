@@ -400,7 +400,8 @@ class Config:
       solution: {
         lang: "python",
         title: "scope_exercises.py",
-        code: `# ---- PART ONE: predict ------------------------------------------------
+        code: `from __future__ import annotations
+# ---- PART ONE: predict ------------------------------------------------
 
 # (1)
 x = 10
@@ -494,7 +495,6 @@ def reset():
 
 # ---- PART TWO: the redesign -------------------------------------------
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from statistics import median
@@ -607,10 +607,10 @@ def f():
 
 f()`,
         options: [
-          "`10` — the global is read, then a local is created",
-          "`UnboundLocalError` on the `print` line — the assignment below makes `x` local for the whole function",
-          "`20` — the assignment is hoisted",
-          "`None` — `x` is undefined at that point"
+          "`10` — the global is read first, and the assignment below then creates a separate local",
+          "`UnboundLocalError` — the assignment below makes `x` local to the whole function",
+          "`20` — the assignment is hoisted to the top of the function before anything runs",
+          "`None` — `x` is declared by the assignment but has no value yet at that point"
         ],
         answer: 1,
         why: "The compiler sees `x = 20` and marks `x` as a local for the entire function body, so the `print` compiles to a local-slot lookup rather than a global one. That slot has no value yet, hence `UnboundLocalError`. The error points at the `print`, but the cause is the assignment underneath it — knowing that turns a confusing message into a clue."
@@ -618,34 +618,34 @@ f()`,
       {
         stem: "Why does `items.append(1)` inside a function reach the module-level `items`, while `items = [1]` does not?",
         options: [
-          "`append` is a special method that bypasses scoping rules",
-          "`append` mutates the object the global name points at; `items = [1]` is an assignment, which creates a local",
-          "Lists are passed by reference and other types are not",
-          "The difference only applies when `global` is declared"
+          "`append` is a special method that bypasses the normal scoping rules for module-level names",
+          "Lists are passed by reference and other types are passed by value, so only lists can be changed",
+          "The difference only applies when `global` is declared, which makes the assignment reach the module too",
+          "`append` mutates the global's object; `items = [1]` is an assignment, which creates a local"
         ],
-        answer: 1,
+        answer: 3,
         why: "This is the rebind-versus-mutate distinction with scope consequences. `append` never assigns to the *name* `items`, so no local is created and LEGB finds the global. `items = [1]` is an assignment, which makes `items` local throughout the function — the new list is discarded on return and the global is untouched, silently, with no error."
       },
       {
         stem: "A test suite passes when tests run individually but fails in random order. What is the most likely cause?",
         options: [
-          "Tests are running in parallel and competing for CPU",
-          "Module-level mutable state persisting between tests — a cache, registry or counter defined at import time",
-          "The test framework is caching results between runs",
-          "Some tests depend on the current time"
+          "Module-level mutable state — a cache, registry or counter — persisting between tests",
+          "Tests are running in parallel and competing for CPU, so timing-sensitive ones fail under load",
+          "The test framework is caching results between runs, so a stale pass hides the real failure",
+          "Some tests depend on the current time, and random ordering changes when each one runs"
         ],
-        answer: 1,
+        answer: 0,
         why: "Module-level state is created once at import and lives for the whole process, so one test's writes are visible to every test that follows. Which test fails then depends on order. `global` statements are the loudest signal, but plain mutation — `_cache[key] = value` — is far more common and needs no keyword. The durable fix is giving the state an owner, not adding a reset fixture."
       },
       {
         stem: "When is `nonlocal` the right tool?",
         options: [
           "Whenever a function needs to modify a variable from an outer scope",
+          "As a safer replacement for `global` in all cases, because it limits the change to one module",
           "For small private state owned by a closure or decorator, where nothing outside should see it",
-          "As a safer replacement for `global` in all cases",
-          "Only inside class methods"
+          "Only inside class methods, where it lets a method modify the instance's attributes"
         ],
-        answer: 1,
+        answer: 2,
         why: "`nonlocal` shines where a decorator or closure needs a counter, a cache or an accumulator that has the lifetime of the wrapped function and is invisible to everyone else — no class needed. It is not a general-purpose replacement for `global`: reaching up into an enclosing function's variables from deeply nested code has the same readability problems as a global, just in a smaller radius."
       }
     ]

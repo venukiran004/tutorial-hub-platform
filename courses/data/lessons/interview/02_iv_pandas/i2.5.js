@@ -53,7 +53,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df[\"gender\"].replace({\"M\": \"Male\", \"F\": \"Female\"}, inplace=True)\ndf[\"city\"] = df[\"city\"].str.replace(\"NYC\", \"New York\")\ndf[\"value\"] = df[\"value\"].mask(df[\"value\"] < 0, 0)  # Replace negatives with 0"
+     "code": "df[\"gender\"] = df[\"gender\"].replace({\"M\": \"Male\", \"F\": \"Female\"})\ndf[\"city\"] = df[\"city\"].str.replace(\"NYC\", \"New York\")\ndf[\"value\"] = df[\"value\"].mask(df[\"value\"] < 0, 0)  # Replace negatives with 0"
     }
    ],
    "kind": ""
@@ -120,7 +120,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "df[\"val\"].ffill()   # Propagate last valid value forward\ndf[\"val\"].bfill()   # Propagate next valid value backward\ndf[\"val\"].fillna(method=\"ffill\", limit=3)  # Max 3 consecutive fills"
+     "code": "df[\"val\"].ffill()   # Propagate last valid value forward\ndf[\"val\"].bfill()   # Propagate next valid value backward\ndf[\"val\"].ffill(limit=3)  # Max 3 consecutive fills"
     }
    ],
    "kind": ""

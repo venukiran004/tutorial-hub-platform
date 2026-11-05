@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c3.2",
  "lede": "**18 programs to write**, on matrices and range compression. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 19 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 18 programs on matrices and range compression without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c3.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 271–288.** What this set actually drills, counted from its own problems — 5 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "threads", "files and paths"], "cells": [[{"text": "3", "tone": "accent"}, "Implement Multi"], [{"text": "1", "tone": "good"}, "Reconstruct Queue by Height"], [{"text": "1", "tone": "violet"}, "Count Unique Paths in Grid wit"]], "t": "diagram", "id": "dg-c3_2-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -104,7 +104,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def max_width_ramp(nums):\n    \"\"\"Find max j-i such that nums[i] <= nums[j].\"\"\"\n    stack = []\n    for i, val in enumerate(nums):\n        if not stack or nums[stack[-1]] > val:\n            stack.append(i)\n    max_width = 0\n    for j in range(len(nums)-1, -1, -1):\n        while stack and nums[stack[-1]] <= nums[j]:\n            max_width = max(max_width, j - stack.pop())\n    return max_width\n\nprint(max_width_ramp([6, 0, 8, 2, 1, 5]))  # Output: 4\nprint(max_width_ramp([9, 8, 1, 0, 1, 9, 4, 0, 13, 13]))  # Output: 7",
+     "code": "def max_width_ramp(nums):\n    \"\"\"Find max j-i such that nums[i] <= nums[j].\"\"\"\n    stack = []\n    for i, val in enumerate(nums):\n        if not stack or nums[stack[-1]] > val:\n            stack.append(i)\n    max_width = 0\n    for j in range(len(nums)-1, -1, -1):\n        while stack and nums[stack[-1]] <= nums[j]:\n            max_width = max(max_width, j - stack.pop())\n    return max_width\n\nprint(max_width_ramp([6, 0, 8, 2, 1, 5]))  # Output: 4\nprint(max_width_ramp([9, 8, 1, 0, 1, 9, 4, 0, 13, 13]))  # Output: 9",
      "numbered": false
     }
    ]

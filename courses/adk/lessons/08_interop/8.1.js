@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 8.1 — Using MCP From ADK
    The discovered tools, the executed call and the filtered toolset are output
-   from scratchpad/adk/m1.py talking to a real FastMCP server over stdio
+   from m1.py talking to a real FastMCP server over stdio
    (google-adk 2.9.2 + mcp).
    ========================================================================= */
 EC.receiveLesson({
@@ -31,7 +31,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "m1.py — a stdio server, discovered and used",
+    { t: "code", lang: "python", title: "a stdio server, discovered and used",
       code: `from google.adk.tools.mcp_tool import McpToolset, StdioConnectionParams
 from mcp import StdioServerParameters
 

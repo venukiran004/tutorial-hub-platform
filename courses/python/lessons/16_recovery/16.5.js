@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Six stages, from dependency to data", id: "stages" },
 
-    {"kind": "trace", "title": "Six stages in deploy order, and the recovery cost rises along it", "caption": "**The last row breaks the mental model the other five share.** Every stage above it recovers by returning to the previous artifact; a migration has already changed the database, and rolling back the application does not roll back the schema. **So stage 6 is the only one where the prevention is mandatory rather than advisable** — expand-and-contract is what keeps a code rollback available, and without it a failed deploy leaves old code against a new database with no fast way back.", "left": "stage", "codeW": 170, "vars": ["recovery cost", "the prevention most codebases lack"], "steps": [{"code": "1 dependencies", "state": ["minutes, with a lock file", "hashes, and a private mirror"], "tone": "good"}, {"code": "2 build", "state": ["minutes to hours", "immutable digests; keep the image"], "changed": [0, 1], "tone": "good"}, {"code": "3 configuration", "state": ["minutes", "validate at start-up, fail fast"], "changed": [0, 1], "tone": "accent"}, {"code": "4 deploy", "state": ["minutes, if rollback is routine", "a rollback exercised on a schedule"], "changed": [0, 1], "tone": "accent"}, {"code": "5 runtime", "state": ["minutes, then it recurs", "a bound on every pool and queue"], "changed": [0, 1], "tone": "warn"}, {"code": "6 migrations", "state": ["HOURS, and not by rolling back code", "expand-and-contract, always"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_5-01-0"},
+    {"kind": "trace", "title": "Six stages in deploy order, and the recovery cost rises along it", "caption": "**The last row breaks the mental model the other five share.** Every stage above it recovers by returning to the previous artefact; a migration has already changed the database, and rolling back the application does not roll back the schema. **So stage 6 is the only one where the prevention is mandatory rather than advisable** — expand-and-contract is what keeps a code rollback available, and without it a failed deploy leaves old code against a new database with no fast way back.", "left": "stage", "codeW": 170, "vars": ["recovery cost", "the prevention most codebases lack"], "steps": [{"code": "1 dependencies", "state": ["minutes, with a lock file", "hashes, and a private mirror"], "tone": "good"}, {"code": "2 build", "state": ["minutes to hours", "immutable digests; keep the image"], "changed": [0, 1], "tone": "good"}, {"code": "3 configuration", "state": ["minutes", "validate at startup, fail fast"], "changed": [0, 1], "tone": "accent"}, {"code": "4 deploy", "state": ["minutes, if rollback is routine", "a rollback exercised on a schedule"], "changed": [0, 1], "tone": "accent"}, {"code": "5 runtime", "state": ["minutes, then it recurs", "a bound on every pool and queue"], "changed": [0, 1], "tone": "warn"}, {"code": "6 migrations", "state": ["HOURS, and not by rolling back code", "expand-and-contract, always"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-16_5-01-0"},
 
     { t: "p", text: "These run in deploy order, and the recovery cost rises sharply along it. **The first three are cheap to recover and cheap to prevent; the last is the one where a mistake is not recoverable by rolling back code.**" },
 
@@ -29,7 +29,7 @@ EC.receiveLesson({
       rows: [
         ["**1 Dependencies**", "A build that worked yesterday does not today", "Minutes — if the lock file is complete", "A lock file with hashes, and a private index mirror"],
         ["**2 Build**", "The image cannot be rebuilt identically", "Minutes to hours", "Immutable digests, and keeping the image rather than rebuilding it"],
-        ["**3 Configuration**", "The app starts and behaves wrongly", "Minutes", "**Validate at start-up and fail fast, rather than at first use**"],
+        ["**3 Configuration**", "The app starts and behaves wrongly", "Minutes", "**Validate at startup and fail fast, rather than at first use**"],
         ["**4 Deploy**", "The new version is broken", "Minutes — if rollback is routine", "A rollback that is tested as often as the deploy"],
         ["**5 Runtime**", "Memory, descriptors, connections, disk", "Minutes, then it recurs", "A bound on every pool, queue and cache"],
         ["**6 Data / migrations**", "The schema no longer matches the code", "**Hours, and not by rolling back code**", "Expand-and-contract, so no deploy needs a matching schema"]
@@ -38,7 +38,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Stages 1 and 2: dependencies and build", id: "deps-build" },
 
-    {"kind": "flow", "title": "A tag can be moved; a digest cannot", "caption": "**This is the mechanism behind a whole class of incident: the team performs the correct rollback, observes no improvement, and reasonably concludes the problem is elsewhere.** The release moved the tag, so redeploying that tag deploys the broken image again — an action that looks like a fix and is a no-op. Referencing the digest makes the rollback deterministic. **And the second failure in this chain is somebody else's retention policy:** the recovery path depends on an artifact that a registry default may have deleted.", "cols": 3, "nodes": [{"id": "r", "label": "The release pushes app:prod", "sub": "the tag now points at the new build", "tone": "accent"}, {"id": "b", "label": "The deploy is broken", "sub": "errors at 30%", "tone": "crit"}, {"id": "u", "label": "Rollback: set image app=app:prod", "sub": "the correct action", "tone": "warn"}, {"id": "n", "label": "It redeploys the SAME image", "sub": "a no-op that looks like a fix", "tone": "crit"}, {"id": "d", "label": "Deploy by digest instead", "sub": "sha256:9f2a... cannot be moved", "tone": "good"}, {"id": "k", "label": "And retain images past the rollback window", "sub": "a recovery path has dependencies too", "tone": "violet"}], "edges": [["r", "b"], ["b", "u"], ["u", "n"], ["n", "d"], ["d", "k"]], "t": "diagram", "id": "dg-16_5-02-1"},
+    {"kind": "flow", "title": "A tag can be moved; a digest cannot", "caption": "**This is the mechanism behind a whole class of incident: the team performs the correct rollback, observes no improvement, and reasonably concludes the problem is elsewhere.** The release moved the tag, so redeploying that tag deploys the broken image again — an action that looks like a fix and is a no-op. Referencing the digest makes the rollback deterministic. **And the second failure in this chain is somebody else's retention policy:** the recovery path depends on an artefact that a registry default may have deleted.", "cols": 3, "nodes": [{"id": "r", "label": "The release pushes app:prod", "sub": "the tag now points at the new build", "tone": "accent"}, {"id": "b", "label": "The deploy is broken", "sub": "errors at 30%", "tone": "crit"}, {"id": "u", "label": "Rollback: set image app=app:prod", "sub": "the correct action", "tone": "warn"}, {"id": "n", "label": "It redeploys the SAME image", "sub": "a no-op that looks like a fix", "tone": "crit"}, {"id": "d", "label": "Deploy by digest instead", "sub": "sha256:9f2a... cannot be moved", "tone": "good"}, {"id": "k", "label": "And retain images past the rollback window", "sub": "a recovery path has dependencies too", "tone": "violet"}], "edges": [["r", "b"], ["b", "u"], ["u", "n"], ["n", "d"], ["d", "k"]], "t": "diagram", "id": "dg-16_5-02-1"},
 
     { t: "p", text: "A rebuild is a recovery mechanism only if it produces the same thing. **An unpinned build is not a recovery path, it is a new release performed under pressure** — which is the worst possible moment to discover that a transitive dependency published a version this morning." },
 
@@ -82,7 +82,7 @@ docker build -t a . && docker build -t b .
 
     { t: "p", text: "Configuration is the stage that most often produces a running, healthy, wrong application. **The failure is not that a value is missing — that is easy. It is that a value is present, parses, and is not what was intended.**" },
 
-    { t: "code", lang: "python", title: "Failing at start-up instead of at first use",
+    { t: "code", lang: "python", title: "Failing at startup instead of at first use",
       code: `from pydantic import Field, PostgresDsn, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -180,7 +180,7 @@ cache = cachetools.TTLCache(maxsize=10_000, ttl=300)         # both bounds
 
     { t: "h2", n: "05", text: "Stage 6: migrations, where rolling back code is not enough", id: "migrations" },
 
-    { t: "p", text: "Every other stage recovers by returning to the previous artifact. **Stage 6 does not: a migration has already changed the database, and the previous image expects the previous schema.** The discipline that removes this is expand-and-contract, and it is the one thing in this lesson that must be designed rather than configured." },
+    { t: "p", text: "Every other stage recovers by returning to the previous artefact. **Stage 6 does not: a migration has already changed the database, and the previous image expects the previous schema.** The discipline that removes this is expand-and-contract, and it is the one thing in this lesson that must be designed rather than configured." },
 
     { t: "code", lang: "python", title: "Expand and contract: four deploys, every one of them reversible",
       code: `# THE GOAL: at no point does any deployed version require a schema that is
@@ -231,14 +231,14 @@ def upgrade():
       rungs: [
         { level: "bad", label: "Build, migrate, deploy",
           why: "**Three irreversible things in one step.** The build is not reproducible, so a rebuild is a new version; the migration has already changed the schema when the deploy fails; and the only recovery is forward, under pressure, with no known-good state to return to.",
-          code: `# .ci/deploy.sh
+          lang: "bash", code: `# .ci/deploy.sh
 docker build -t app:latest .
 docker push app:latest
 alembic upgrade head
 kubectl set image deploy/app app=app:latest` },
         { level: "ok", label: "Pinned build, digest deploy, migration separated",
           why: "**A rollback is now possible: the digest is known and the migration is its own step.** What is missing is any guarantee that the previous image still works against the new schema, so the rollback may not be available when it is needed.",
-          code: `# .ci/deploy.sh
+          lang: "bash", code: `# .ci/deploy.sh
 uv sync --frozen
 DIGEST=$(docker build -q . | tee /dev/stderr)
 docker push "$DIGEST"
@@ -247,7 +247,7 @@ kubectl set image deploy/app "app=$DIGEST" # by digest, not by tag
 kubectl rollout status deploy/app --timeout=120s` },
         { level: "best", label: "Expand-and-contract, canary, and a rehearsed rollback",
           why: "**Every stage is now reversible, and the reversal is exercised rather than assumed.** The schema check proves the rollback exists before the deploy needs it, the canary limits the blast radius, and the scheduled rollback drill keeps the path working.",
-          code: `# .ci/deploy.sh
+          lang: "bash", code: `# .ci/deploy.sh
 uv sync --frozen
 DIGEST=$(docker build -q .)
 docker push "$DIGEST"
@@ -271,6 +271,15 @@ kubectl rollout status deploy/app --timeout=120s
 # rollback is one command, and it runs on a schedule in staging:
 #   kubectl rollout undo deploy/app        -- last drill 2026-07-09, 34s` }
       ] },
+
+    { t: "callout", kind: "trap", title: "`downgrade()` is the least-tested code in the repository", body: [
+      { t: "p", text: "Autogenerate writes a `downgrade()` for every migration, so the rollback plan reads \"run `alembic downgrade -1`\". **Nothing has ever executed that function.** When it is finally run, during an incident, it fails on a constraint name that differs between environments, or it succeeds and recreates a dropped column as an empty one. The schema is back, and the data is not." },
+      { t: "code", lang: "python", title: "say which migrations cannot be undone", code: `def downgrade() -> None:
+    # CONTRACT step: the data in users.name was dropped in upgrade().
+    # Recreating an empty column would look like a rollback and is not one.
+    raise NotImplementedError("irreversible: restore from PITR, see runbook R7")` },
+      { t: "p", text: "**Exercise the path in CI:** a stairway test that runs upgrade, downgrade, upgrade for each revision against a real database. For the contract step, make the downgrade refuse loudly, so the runbook's answer is point-in-time recovery and not a function that only looks like one." }
+    ]},
 
     { t: "h2", n: "06", text: "Practice", id: "practice" },
 
@@ -375,7 +384,7 @@ THE CI CHECK THAT WOULD HAVE BLOCKED IT.
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
       { t: "p", text: "A team's rollback had worked in every drill. During a real incident it failed: the deployment manifest referenced `app:prod`, and the registry's retention policy had removed the previous build two days earlier because it was no longer tagged." },
-      { t: "p", text: "**The rollback path depended on an artifact nobody had decided to keep.** Retention was set by a default on the registry, the drills had always run within a day of the deploy, and the one time the gap was longer the artifact was gone." },
+      { t: "p", text: "**The rollback path depended on an artefact nobody had decided to keep.** Retention was set by a default on the registry, the drills had always run within a day of the deploy, and the one time the gap was longer the artefact was gone." },
       { t: "p", text: "**Two changes followed, and neither is about the deploy script:** retain images for at least as long as the longest plausible rollback window — a quarter, not two days — and reference them by digest so the retention policy cannot quietly remove the one thing the rollback needs." },
       { t: "p", text: "**The general lesson is that a recovery path has its own dependencies**, and they need the same inventory treatment as the system's: the image, the snapshot, the lock file and the credential all have retention policies somebody else set." }
     ]}
@@ -405,43 +414,43 @@ THE CI CHECK THAT WOULD HAVE BLOCKED IT.
       {
         stem: "A deploy fails and the team runs `kubectl set image deploy/app app=app:prod`. Why might this change nothing?",
         options: [
+          "`app:prod` is a tag the release just moved, so it is the same image",
           "Because the rollout needs a restart to take effect",
-          "Because `app:prod` is a mutable tag that the release just moved, so this redeploys the same broken image",
           "Because the image cache has to be cleared first",
           "Because the readiness probe fails on the old image"
         ],
-        answer: 1,
+        answer: 0,
         why: "A tag is a pointer and the release moved it, so the rollback deploys exactly what is already running — an action that looks like a fix and is a no-op. Deploying by digest removes this entire class of incident-time confusion, because a digest cannot be moved."
       },
       {
         stem: "A release renames a column in one migration and then fails. Why does rolling back the image not recover the service?",
         options: [
-          "It does — the previous image is schema-agnostic",
-          "Because the previous image expects the old column name, and a code rollback does not roll back a migration",
-          "Because the migration has to complete before a rollback is allowed",
-          "Because connection pools cache the old schema"
+          "It does — the previous image is schema-agnostic and adapts to the renamed column",
+          "Because the failed migration has to complete before Kubernetes allows a rollback",
+          "Because connection pools cache the old schema and keep using it until restarted",
+          "The old image expects the old column, and the migration stays applied"
         ],
-        answer: 1,
+        answer: 3,
         why: "This is the one stage where the usual recovery model fails: the schema has already changed and the previous code does not match it. Expand-and-contract exists precisely so that no deployed version ever requires a schema that is not already present — which keeps every step reversible by a code rollback alone."
       },
       {
         stem: "A service runs 8 replicas with `pool_size=20` against a database whose `max_connections` is 100. What happens?",
         options: [
           "Nothing — pools are lazy, so connections are only opened as needed",
-          "Under load the pools reach 160 connections, the database refuses them, and every service sharing that database is affected",
           "SQLAlchemy caps the total across replicas automatically",
+          "Pools reach 160 connections and the database refuses the excess",
           "The pool blocks until a connection is free, so throughput falls but nothing errors"
         ],
-        answer: 1,
+        answer: 2,
         why: "Each process has its own pool and knows nothing about the others, so the limit that matters is the product. With headroom needed for migrations and admin sessions the safe ceiling here is about 11 per replica — which means a scale-up is an outage, and it presents as database errors with no code fault at all."
       },
       {
         stem: "Where should configuration be validated?",
         options: [
-          "At first use, so start-up stays fast",
-          "At import, so a bad configuration fails the container's start and never takes traffic",
-          "In a scheduled job that checks the environment",
-          "In the health check, which the orchestrator already calls"
+          "At first use, so startup stays fast and unused settings cost nothing",
+          "At startup, so a bad value stops the rollout",
+          "In a scheduled job that checks the environment and alerts on bad values",
+          "In the health check, which the orchestrator already calls regularly"
         ],
         answer: 1,
         why: "Validating at first use means the deploy succeeded, the probe passed and the rollout completed before the failure appears — by which time the previous version may be gone. A container that refuses to start is never marked ready, so the orchestrator keeps the old pods and the bad configuration stops its own rollout."
@@ -449,12 +458,12 @@ THE CI CHECK THAT WOULD HAVE BLOCKED IT.
       {
         stem: "Which CI check proves that a release is still reversible?",
         options: [
-          "The test suite passes against the new schema",
-          "The migration applies and rolls back cleanly in a scratch database",
-          "The previous image starts and serves successfully against the migrated schema",
-          "The image builds reproducibly twice in a row"
+          "The full test suite passes against the new schema",
+          "The migration applies and then rolls back cleanly in a scratch database",
+          "The image builds reproducibly, byte for byte, twice in a row",
+          "The previous image runs against the migrated schema"
         ],
-        answer: 2,
+        answer: 3,
         why: "A down-migration that works in a scratch database says nothing about whether the previous application version can run against the new schema, which is what a rollback actually requires. Starting the previous image against the migrated schema answers exactly that question — and answers it before the deploy rather than during the incident."
       }
     ]
@@ -467,7 +476,7 @@ THE CI CHECK THAT WOULD HAVE BLOCKED IT.
       {
         level: "advanced",
         q: "How do you make a Python deployment recoverable?",
-        strong: "Make every stage reversible and exercise the reversal. Dependencies locked with hashes and mirrored, so a rebuild is a recovery rather than a new release. Images referenced by digest and retained for longer than the rollback window, because a tag can be moved and a retention policy can delete the artifact the rollback needs. Configuration validated at import so a bad value fails the rollout instead of the first request. Rollback exercised on a schedule, not only during incidents. Every pool, queue and cache bounded, with the pool arithmetic done against max_connections. And migrations expand-and-contract, with a CI check that the previous image still serves against the new schema.",
+        strong: "Make every stage reversible and exercise the reversal. Dependencies locked with hashes and mirrored, so a rebuild is a recovery rather than a new release. Images referenced by digest and retained for longer than the rollback window, because a tag can be moved and a retention policy can delete the artefact the rollback needs. Configuration validated at import so a bad value fails the rollout instead of the first request. Rollback exercised on a schedule, not only during incidents. Every pool, queue and cache bounded, with the pool arithmetic done against max_connections. And migrations expand-and-contract, with a CI check that the previous image still serves against the new schema.",
         answer: [
           { t: "p", text: "Organising the answer by stage, with the reversal as the theme, is what makes it a system rather than a checklist." },
           { t: "p", text: "The digest-versus-tag point is the strongest single specific, because it is a real incident mechanism most people have met without diagnosing." },

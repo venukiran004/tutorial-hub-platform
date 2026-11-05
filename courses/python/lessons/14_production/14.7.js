@@ -85,14 +85,14 @@ requests
 # Today: fastapi 0.115.0. Next week: 0.116.0, with a changed default.` },
         { level: "ok", label: "Direct dependencies pinned",
           why: "Your direct dependencies are stable, which removes the most visible surprises. The transitive tree — usually eighty percent of the code — is still unpinned, so most of the risk remains.",
-          code: `fastapi==0.115.0
+          lang: "text", code: `fastapi==0.115.0
 sqlalchemy==2.0.35
 requests==2.32.3
 
 # pydantic, starlette, anyio, urllib3, certifi: all still floating.` },
         { level: "best", label: "Fully resolved, with hashes",
           why: "Every package at every level is pinned, and each hash is verified on install. A tampered or substituted artefact fails the install rather than shipping — and the build is byte-for-byte reproducible.",
-          code: `# uv.lock (or requirements.lock via pip-compile --generate-hashes)
+          lang: "text", code: `# uv.lock (or requirements.lock via pip-compile --generate-hashes)
 fastapi==0.115.0 \\
     --hash=sha256:17ea427674467486e997206a5ab2f4c6... \\
     --hash=sha256:0fc037e9d1d0d0f4b7d6b3b5c0e8e2a1...
@@ -287,7 +287,7 @@ acme-lib = { index = "company" }
 
     { t: "h2", n: "05", text: "SBOM and provenance", id: "sbom" },
 
-    {"kind": "flow", "title": "An SBOM is inventory, not protection", "caption": "**Its whole value is answering the exposure question quickly** — when a CVE lands in a transitive dependency, the difference between a ten-minute answer and a two-day audit is whether you generated one. Which is also its limit: **it prevents nothing, and a complete SBOM for a vulnerable system is still a vulnerable system.** Provenance is the other half and answers a different question: **a signed attestation says *this* artifact came from *that* commit through *that* pipeline**, so an image nobody can trace to a build is one you should not deploy.", "cols": 3, "nodes": [{"id": "s", "label": "An SBOM lists what is inside", "sub": "including transitive packages", "tone": "good"}, {"id": "q", "label": "So 'are we exposed?' takes minutes", "sub": "not a two-day audit", "tone": "violet"}, {"id": "n", "label": "And it prevents nothing", "sub": "inventory, not protection", "tone": "warn"}, {"id": "p", "label": "Provenance: this artifact, that commit", "sub": "a signed attestation", "tone": "good"}, {"id": "t", "label": "An untraceable image is undeployable", "sub": "which is the policy it enables", "tone": "violet"}], "edges": [["s", "q"], ["q", "n"], ["p", "t"], ["n", "p"]], "t": "diagram", "id": "dg-14_7-05-2"},
+    {"kind": "flow", "title": "An SBOM is inventory, not protection", "caption": "**Its whole value is answering the exposure question quickly** — when a CVE lands in a transitive dependency, the difference between a ten-minute answer and a two-day audit is whether you generated one. Which is also its limit: **it prevents nothing, and a complete SBOM for a vulnerable system is still a vulnerable system.** Provenance is the other half and answers a different question: **a signed attestation says *this* artefact came from *that* commit through *that* pipeline**, so an image nobody can trace to a build is one you should not deploy.", "cols": 3, "nodes": [{"id": "s", "label": "An SBOM lists what is inside", "sub": "including transitive packages", "tone": "good"}, {"id": "q", "label": "So 'are we exposed?' takes minutes", "sub": "not a two-day audit", "tone": "violet"}, {"id": "n", "label": "And it prevents nothing", "sub": "inventory, not protection", "tone": "warn"}, {"id": "p", "label": "Provenance: this artefact, that commit", "sub": "a signed attestation", "tone": "good"}, {"id": "t", "label": "An untraceable image is undeployable", "sub": "which is the policy it enables", "tone": "violet"}], "edges": [["s", "q"], ["q", "n"], ["p", "t"], ["n", "p"]], "t": "diagram", "id": "dg-14_7-05-2"},
 
     { t: "code", lang: "bash", title: "the question an SBOM answers", code: `
 # Generate a bill of materials for the artefact you shipped.
@@ -698,32 +698,32 @@ RUN pip install --extra-index-url https://pypi.acme-corp.com/simple/ \\
       {
         stem: "Why is `pip install --extra-index-url https://internal/ mypackage` dangerous?",
         options: [
+          "pip picks the highest version from either index, so a public upload can win",
           "The internal index may be slower",
-          "pip queries both indexes and installs the highest version, so anyone who learns the internal package name can publish a higher version publicly and take over the build",
           "It disables hash checking",
-          "Internal packages cannot be cached"
+          "Packages from an internal index cannot be cached by pip, so every build downloads them again"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is dependency confusion, and it requires no access to any of your systems — only the name, which leaks through stack traces, job adverts and public Dockerfiles. `--index-url` against an index that proxies public packages is the fix, plus registering placeholder names on public PyPI."
       },
       {
         stem: "You pin `requests==2.32.3` but use no hashes. What remains unprotected?",
         options: [
           "Nothing — a pinned version is fully reproducible",
-          "The build still trusts whatever the index serves under that name, so a compromised maintainer account or a substituted artefact ships without detection",
           "Transitive dependencies are unaffected by hashes",
-          "Only the wheel format is at risk"
+          "Only the wheel format is at risk",
+          "You still trust whatever bytes the index serves, so a swapped file ships undetected"
         ],
-        answer: 1,
+        answer: 3,
         why: "A version is a label; a hash is the artefact's identity. `--require-hashes` makes a tampered or replaced package fail the install rather than run. It also forces the whole tree to be pinned, since an unpinned transitive dependency cannot be hashed."
       },
       {
         stem: "A critical CVE is announced in `urllib3`, which is not in your `requirements.txt`. Are you affected?",
         options: [
-          "No — it is not a declared dependency",
-          "Very likely yes — it arrives transitively through `requests` and `botocore`, and without a lockfile you cannot say which version you run",
-          "Only if you make HTTP requests directly",
-          "Only in the development environment"
+          "No — it is not a declared dependency, so it is never installed in your environment",
+          "Very likely yes — it comes in transitively, and without a lockfile you cannot tell",
+          "Only if your own code makes HTTP requests directly with `urllib3`",
+          "Only in the development environment, where unpinned tools pull it in"
         ],
         answer: 1,
         why: "Most of a dependency tree is packages nobody chose explicitly. Without a lockfile the installed version is a property of whenever the last build happened, so answering the question means inspecting running pods — and the answer changes on the next rebuild."
@@ -731,12 +731,12 @@ RUN pip install --extra-index-url https://pypi.acme-corp.com/simple/ \\
       {
         stem: "A team disabled Dependabot because it was \"too noisy\". What is the right response?",
         options: [
-          "Accept it — dependency updates can be manual",
-          "Group routine minor and patch updates into one weekly PR, keep majors individual, and let security advisories bypass the schedule entirely",
-          "Increase the PR limit so nothing is missed",
-          "Only enable it for direct dependencies"
+          "Accept it — dependency updates can be handled manually during a quarterly maintenance week",
+          "Increase the PR limit so nothing is missed, and assign the queue to one person each sprint",
+          "Group routine updates weekly, keep majors separate, and let advisories through",
+          "Only enable it for direct dependencies, which is where the noise comes from"
         ],
-        answer: 1,
+        answer: 2,
         why: "Forty unreviewed PRs a week is a genuine problem, and disabling the bot also disables security patching. Separating routine maintenance from security advisories gives one reviewable PR a week while urgent fixes still arrive immediately and individually."
       }
     ]

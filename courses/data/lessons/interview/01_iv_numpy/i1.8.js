@@ -77,7 +77,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# optimize=True: Find optimal contraction order for multi-tensor einsum\n# Critical for 3+ tensor contractions\nresult = np.einsum(\"ij,jk,kl->il\", A, B, C, optimize=True)\n\n# Without optimize: left-to-right, possibly O(n^5)\n# With optimize: finds O(n^3) path like (A@B)@C\n# Cost: path planning, which is cached after first call"
+     "code": "# optimize=True: Find optimal contraction order for multi-tensor einsum\n# Critical for 3+ tensor contractions\nresult = np.einsum(\"ij,jk,kl->il\", A, B, C, optimize=True)\n\n# Without optimize: one nested loop over all four indices, O(n^4)\n# With optimize: finds an O(n^3) path like (A@B)@C\n# Cost: path planning on every call; precompute it with np.einsum_path"
     }
    ],
    "kind": ""
@@ -219,7 +219,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import timeit\narr = np.arange(1_000_000, dtype=np.float64)\n\n# np.sum: C-level SIMD vectorized, single-precision accumulator for speed\n# sum(): Python level, slow, doesn't benefit from numpy\ntimeit.timeit(lambda: np.sum(arr), number=1000)   # ~1ms\ntimeit.timeit(lambda: sum(arr), number=1000)      # ~100ms (100x slower)"
+     "code": "import timeit\narr = np.arange(1_000_000, dtype=np.float64)\n\n# np.sum: C loop with pairwise summation\n# sum(): Python level, boxes every element into a Python object\ntimeit.timeit(lambda: np.sum(arr), number=1)   # a few ms\ntimeit.timeit(lambda: sum(arr), number=1)      # a few hundred ms (roughly 50-100x slower)"
     }
    ],
    "kind": ""
@@ -232,7 +232,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Create a ufunc from a Python function\nadd_with_log = np.frompyfunc(lambda x, y: x + y, 2, 1)\n# Supports broadcasting and element-wise application\n\n# For full ufunc with C performance, use Cython or ctypes with np.frompyfunc/CFFI"
+     "code": "# Create a ufunc from a Python function\nadd_with_log = np.frompyfunc(lambda x, y: x + y, 2, 1)\n# Supports broadcasting and element-wise application\n\n# For a real ufunc with compiled speed, use numba.vectorize or a C extension"
     }
    ],
    "kind": ""

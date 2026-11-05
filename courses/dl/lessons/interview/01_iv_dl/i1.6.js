@@ -284,7 +284,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Learn an invertible transformation \\(f: x \\leftrightarrow z\\) (bijection between data and latent space). Exact log-likelihood computation via change of variables formula. Examples: Glow, RealNVP, Normalizing Flows. Slower than diffusion/GANs in practice."
+     "text": "Learn an invertible transformation \\(f: x \\leftrightarrow z\\) (bijection between data and latent space). Exact log-likelihood computation via change of variables formula. Examples: Glow, RealNVP, Normalizing Flows. Samples in one pass, but invertibility limits the architecture and sample quality usually trails diffusion."
     }
    ],
    "kind": ""

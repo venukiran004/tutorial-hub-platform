@@ -562,10 +562,10 @@ filterwarnings = [
     },
 
     { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
-      { t: "p", text: "A payments team splits its test suite into `tests/unit` and `tests/integration` and adds `-m 'not integration'` to the fast pull-request job. Six weeks later a schema change ships that drops a column still referenced in a query. The integration test covering it exists, is correct, and never ran — in either job." },
-      { t: "p", text: "**The mechanism: a marker typo plus no strict-markers.** The test was decorated `@pytest.mark.integratoin`. Without `--strict-markers`, pytest accepts any attribute on `pytest.mark` as a new marker, so nothing complained. The pull-request job's `-m 'not integration'` did not match the misspelled marker, so the test *should* have run there — but the nightly integration job selected with `-m integration`, which also did not match. The test fell between two filters and was executed by neither, while `pytest --collect-only` cheerfully listed it." },
+      { t: "p", text: "A payments team splits its test suite into `tests/unit` and `tests/integration`. The fast pull-request job runs `pytest tests/unit`; the nightly job runs `pytest -m integration` across the whole tree. Six weeks later a schema change ships that drops a column still referenced in a query. The integration test covering it exists, is correct, and never ran — in either job." },
+      { t: "p", text: "**The mechanism: a marker typo plus no strict-markers.** The test was decorated `@pytest.mark.integratoin`. Without `--strict-markers`, pytest accepts any attribute on `pytest.mark` as a new marker, so nothing complained. The pull-request job never looks inside `tests/integration`, and the nightly job's `-m integration` did not match the misspelled marker. The test fell between a path filter and a marker filter and was executed by neither, while `pytest --collect-only` cheerfully listed it." },
       { t: "p", text: "**The fix is two lines of configuration.** `--strict-markers` in `addopts` plus a `markers` list turns an unregistered marker into a collection error, so the typo fails the build the moment it is written. `--strict-config` does the same for the config file itself." },
-      { t: "p", text: "The general lesson: **selection is a silent operation.** A `-m` or `-k` expression that matches nothing exits successfully with `no tests ran`, and CI treats that as green. Any job that filters tests should also assert a floor — `--strict-markers` for the marker names, and a plugin or a grep on the collected count for the number of tests that must run." }
+      { t: "p", text: "The general lesson: **selection is a silent operation.** pytest exits with code 5 when an expression selects *nothing*, but one deselected test among hundreds that did run leaves no trace at all: the nightly job above was green every night. Any job that filters tests should also assert a floor — `--strict-markers` for the marker names, and a plugin or a grep on the collected count for the number of tests that must run." }
     ]}
   ],
 
@@ -589,46 +589,46 @@ filterwarnings = [
       {
         stem: "You move a repeated assertion into `tests/helpers.py`. Failures now show a bare `AssertionError` with no values. Why?",
         options: [
+          "pytest only rewrites asserts in modules it collects, and the helper was not one",
           "Helper modules run with optimisations enabled, which strips assertions",
-          "pytest only rewrites assertions in modules it collects — test modules, `conftest.py` and registered plugins — so the helper was imported by the ordinary machinery and never transformed",
-          "The diff is suppressed because the assertion is not in a `test_*` function",
+          "The diff is suppressed because the assertion is no longer inside a function named `test_*`",
           "Assertions only produce diffs inside a `pytest.raises` block"
         ],
-        answer: 1,
+        answer: 0,
         why: "The explanation comes from pytest's `AssertionRewritingHook`, a meta path finder that parses a module to an AST, expands each `assert` into captured intermediates plus an explanation builder, and compiles that. It runs only for modules pytest knows about; `tests/helpers.py` is imported normally, before pytest has any reason to look at it. `pytest.register_assert_rewrite(\"tests.helpers\")` in the root `conftest.py` fixes it, but returning the data and asserting in the test is usually better — the failure then appears on the line the reader is looking at. `-O` does strip asserts, but that is not what happened here."
       },
       {
         stem: "A test class is written as `class TestCheckout` with an `__init__` that builds a client. `pytest` reports `no tests ran`. What happened?",
         options: [
-          "The class name must end in `Test` rather than begin with it",
-          "pytest instantiates a collected class once per test method and cannot supply constructor arguments, so a class defining `__init__` is skipped with a `PytestCollectionWarning`",
+          "The class name must end in `Test` rather than begin with it, so pytest never looked inside it",
           "Test classes must inherit from `unittest.TestCase`",
+          "pytest cannot construct a class with `__init__`, so it skips it with a warning",
           "The methods need the `@pytest.mark.test` decorator"
         ],
-        answer: 1,
+        answer: 2,
         why: "Collection requires pytest to create a fresh instance per test method, which it cannot do for a class with a constructor — so it skips the class and emits a warning that scrolls past unread. The correct home for that setup is a fixture, which declares the dependency in the test signature and is rebuilt per test. `Test*` is the default prefix and is correct here, inheriting from `TestCase` is unnecessary, and there is no `@pytest.mark.test`. Adding `filterwarnings = [\"error::pytest.PytestCollectionWarning\"]` turns this silent skip into a hard failure."
       },
       {
-        stem: "Which assertion is true even after the method it names is deleted and replaced by a misspelling?",
+        stem: "`svc.validate_coupon(\"NOPE\")` has a bug and returns `True`. Which assertion still passes?",
         options: [
-          "`assert svc.validate_coupon(\"NOPE\") is False`",
           "`assert svc.validate_coupon`",
+          "`assert svc.validate_coupon(\"NOPE\") is False`",
           "`assert svc.validate_coupon(\"NOPE\") == False`",
           "`with pytest.raises(AttributeError): svc.validate_coupon(\"NOPE\")`"
         ],
-        answer: 1,
-        why: "A bare attribute reference evaluates to a bound method object, which is always truthy, so the assertion passes without ever invoking anything. If the method is renamed the attribute lookup raises `AttributeError` and the test fails — but if it is replaced by any other attribute, or if a `__getattr__` supplies something, it keeps passing. The two calling forms actually invoke the method and would fail, and the `pytest.raises` version deliberately asserts absence. The same missing-parentheses shape appears as `assert mock.called_once`, where `Mock` auto-creates the attribute and it is truthy forever."
+        answer: 0,
+        why: "A bare attribute reference evaluates to a bound method object, which is always truthy, so the assertion passes without invoking anything — the bug is invisible to it. The two calling forms invoke the method and fail on the `True`, and the `pytest.raises` form fails because the method exists. The same missing-parentheses shape appears as `assert mock.called_once`, where `Mock` auto-creates the attribute and it is truthy forever."
       },
       {
-        stem: "A test decorated `@pytest.mark.integratoin` ran in neither the `-m integration` job nor the `-m 'not integration'` job. How is that possible, and what prevents it?",
+        stem: "A test in `tests/integration/` is decorated `@pytest.mark.integratoin`. The PR job runs `pytest tests/unit`; the nightly job runs `pytest -m integration`. The test runs in neither. Why, and what prevents it?",
         options: [
-          "A typo in a marker cannot affect selection; the test must have been skipped for another reason",
-          "Without `--strict-markers`, any attribute on `pytest.mark` becomes a valid marker, so the misspelled marker matched neither expression — `--strict-markers` plus a registered `markers` list makes it a collection error",
-          "Markers only work on classes, not functions",
-          "The test needed `-p no:cacheprovider` to be selected"
+          "Without `--strict-markers` the typo is a valid marker that no expression selects",
+          "A typo in a marker cannot affect selection, so the test must have been skipped for some other reason",
+          "Markers only work on classes, not on functions, so the decorator was ignored and the test filtered out",
+          "The test needed `-p no:cacheprovider`, because the cache remembered it as deselected from an earlier run"
         ],
-        answer: 1,
-        why: "`pytest.mark` accepts arbitrary attribute names by default, so the typo silently creates a marker nobody selects on. The `-m integration` job did not match it and the `-m 'not integration'` job — which should have run it — was itself misconfigured in the incident to select a positive set, leaving the test in neither. Registering markers in the config and adding `--strict-markers` turns the typo into an immediate collection error. The deeper habit is to remember that selection is silent: a `-m` or `-k` expression matching nothing exits zero with `no tests ran`, which CI reports as green."
+        answer: 0,
+        why: "`pytest.mark` accepts arbitrary attribute names by default, so the typo silently creates a marker nobody selects on. The PR job never collects `tests/integration`, and the nightly job's `-m integration` does not match `integratoin`. Registering markers in the config and adding `--strict-markers` turns the typo into an immediate collection error. The deeper habit is to remember that selection is silent: pytest fails with exit code 5 only when nothing at all is selected, so a single test that drops out of a job that still runs others is never reported."
       }
     ]
   },

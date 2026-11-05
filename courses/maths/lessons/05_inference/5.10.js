@@ -81,7 +81,7 @@ def uncorrected_hits(m, n=100, trials=2000, seed=0):
         counts.append(sum(p < 0.05 for p in ps))
     return np.mean(counts), np.mean([c > 0 for c in counts])
 
-uncorrected_hits(20)              # (1.00, 0.641) -- matches the formula
+uncorrected_hits(20)              # (1.04, 0.652) -- matches the formula
 
 # THE TESTS ARE OFTEN CORRELATED, which reduces the FWER but never
 # removes it:
@@ -100,9 +100,9 @@ def correlated_hits(m, rho=0.7, n=100, trials=2000, seed=0):
         any_hit += hit
     return any_hit / trials
 
-correlated_hits(20, rho=0.0)      # 0.643 -- independent
-correlated_hits(20, rho=0.7)      # 0.402 -- correlated, still 8x nominal
-correlated_hits(20, rho=0.95)     # 0.183
+correlated_hits(20, rho=0.0)      # 0.633 -- independent
+correlated_hits(20, rho=0.7)      # 0.275 -- correlated, still 8x nominal
+correlated_hits(20, rho=0.95)     # 0.101
 #
 # CORRELATION HELPS AND DOES NOT RESCUE YOU. Even at rho = 0.95 the
 # rate is nearly four times nominal, and most corrections are valid
@@ -343,7 +343,7 @@ def subgroup_hunting(seed, n=2000, n_splits=5):
             ps.append(stats.ttest_ind(a[m], b[m]).pvalue)
     return min(ps)
 
-np.mean([subgroup_hunting(s) < 0.05 for s in range(3000)])    # 0.339
+np.mean([subgroup_hunting(s) < 0.05 for s in range(3000)])    # 0.278
 
 # 2. MULTIPLE METRICS ON ONE DASHBOARD. A typical experiment readout
 #    shows 15-40 metrics, and any of them turning green is treated as

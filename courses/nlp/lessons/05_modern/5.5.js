@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 5.5 — A Transformer from Scratch in PyTorch
-   Trained to 100% on sequence reversal (scratchpad/nlp/n55.py).
+   Trained to 100% on sequence reversal (n55.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.5",
@@ -27,7 +27,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n55.py — attention with a fused QKV projection", code:
+    { t: "code", lang: "python", title: "attention with a fused QKV projection", code:
 "class MultiHeadAttention(nn.Module):\n    def __init__(self, d_model, n_heads, dropout=0.1):\n        super().__init__()\n        self.d_k = d_model // n_heads\n        self.n_heads = n_heads\n        self.qkv = nn.Linear(d_model, 3 * d_model)   # one matmul, not three\n        self.out = nn.Linear(d_model, d_model)\n        self.dropout = nn.Dropout(dropout)\n\n    def forward(self, x, mask=None):\n        B, T, C = x.size()\n        qkv = self.qkv(x).reshape(B, T, 3, self.n_heads, self.d_k)\n        qkv = qkv.permute(2, 0, 3, 1, 4)             # (3, B, heads, T, d_k)\n        Q, K, V = qkv[0], qkv[1], qkv[2]\n\n        scores = (Q @ K.transpose(-2, -1)) / math.sqrt(self.d_k)\n        if mask is not None:\n            scores = scores.masked_fill(mask == 0, float('-inf'))\n\n        weights = self.dropout(torch.softmax(scores, dim=-1))\n        out = (weights @ V).transpose(1, 2).reshape(B, T, C)\n        return self.out(out)",
       caption: "Fusing Q, K and V into one `d_model → 3·d_model` projection is mathematically identical to three separate ones and meaningfully faster — one larger matmul beats three smaller ones on any accelerator." },
 

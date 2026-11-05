@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 3.12 — RNN and LSTM from Scratch in NumPy
    Both cells implemented with forward AND backward, verified against
-   PyTorch autograd to float64 round-off (scratchpad/dl/d312.py).
+   PyTorch autograd to float64 round-off (d312.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "3.12",

@@ -712,43 +712,43 @@ def test_peak_memory_is_bounded():
       {
         stem: "Why is `for x in numpy_array: total += x` slower than the same loop over a Python list?",
         options: [
-          "NumPy arrays are stored on disk",
-          "Each iteration boxes a machine int into a Python object, so you pay NumPy's indexing cost plus the interpreter's",
-          "The array must be copied for iteration",
-          "NumPy disables the interpreter's fast path"
+          "Each element is boxed into a Python object, paying both costs",
+          "NumPy arrays are memory-mapped from disk, so each element is read from storage",
+          "The array must be copied into a list before Python can iterate it",
+          "NumPy disables the interpreter's fast path for `+=` on its scalar types"
         ],
-        answer: 1,
+        answer: 0,
         why: "NumPy is fast because compiled loops operate on raw memory without per-element Python objects. Iterating element by element reintroduces exactly the cost it exists to avoid — `.sum()` does the same work about 300× faster."
       },
       {
         stem: "`np.exp(x) / (1 + np.exp(x))` produces `nan` for some records. Why, and what is the fix?",
         options: [
           "Division by zero for negative x; add an epsilon",
-          "`np.exp` overflows to `inf` for large positive x, giving `inf/inf` — use `scipy.special.expit`, which is stable in both tails",
           "The dtype is too narrow; use float64",
-          "NumPy cannot represent the sigmoid function"
+          "NumPy cannot represent the sigmoid function",
+          "`np.exp` overflows to `inf`, giving `inf/inf`; use `scipy.special.expit`"
         ],
-        answer: 1,
+        answer: 3,
         why: "The threshold is around 709 in float64 and 88 in float32, so whether it triggers depends on the input dtype. `nan` then propagates through every downstream aggregate, which is why it presents as a reporting problem rather than a crash."
       },
       {
         stem: "`subset = data[2:5]; subset[0] = 999`. What happens to `data`?",
         options: [
-          "It is unchanged — slicing copies",
-          "`data[2]` becomes 999, because basic slicing returns a view onto the same memory",
-          "A `ValueError` is raised for writing to a slice",
-          "It depends on the dtype"
+          "`data[2]` becomes 999, because a basic slice is a view",
+          "It is unchanged — slicing an array copies the selected elements",
+          "A `ValueError` is raised, because a slice of an array is read-only",
+          "It depends on the dtype; only integer arrays share memory with slices"
         ],
-        answer: 1,
+        answer: 0,
         why: "Basic slicing, transposing and most reshapes return views; fancy indexing and boolean masks return copies. Knowing which lets you copy where mutation matters instead of defensively copying everywhere, which on a multi-gigabyte array is the difference between fitting in memory and not."
       },
       {
         stem: "You need a per-row scaling factor for a (1000, 50) array from a (1000,) vector. What do you write?",
         options: [
-          "`arr * vec`",
-          "`arr * vec[:, None]` — the new axis aligns the vector with rows rather than the last axis",
-          "`arr * vec.T`",
-          "`np.repeat(vec, 50).reshape(1000, 50) * arr`"
+          "`arr * vec` — broadcasting matches the vector to the rows automatically",
+          "`arr * vec[:, None]` — the new axis lines the vector up with rows",
+          "`arr * vec.T` — transposing turns the vector into a column",
+          "`np.repeat(vec, 50).reshape(1000, 50) * arr` — build the full matrix explicitly"
         ],
         answer: 1,
         why: "Broadcasting aligns shapes from the right, so a bare (1000,) would be compared against the trailing 50 and fail. `[:, None]` makes it (1000, 1), which broadcasts across columns. `.T` does nothing to a 1-D array, and `np.repeat` allocates a full copy that broadcasting avoids."

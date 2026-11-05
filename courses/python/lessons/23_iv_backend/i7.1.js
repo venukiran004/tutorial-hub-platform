@@ -60,8 +60,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Runtime performance**async-native on ASGI, it reaches throughput comparable to Node.js and Go.",
-      "**Developer speed**type hints + Pydantic auto-generate validation, serialization, and OpenAPI docs, removing large amounts of boilerplate."
+      "**Runtime performance:** async-native on ASGI, it reaches throughput comparable to Node.js and Go.",
+      "**Developer speed:** type hints + Pydantic auto-generate validation, serialisation, and OpenAPI docs, removing large amounts of boilerplate."
      ]
     },
     {
@@ -72,7 +72,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** A single type-annotated function gives you validation, serialization, and documentation for free."
+     "text": "**Key takeaway:** A single type-annotated function gives you validation, serialisation, and documentation for free."
     }
    ]
   },
@@ -221,7 +221,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pydantic is the validation + serialization engine; FastAPI is the routing/HTTP layer that wires it to requests."
+     "text": "**Key takeaway:** Pydantic is the validation + serialisation engine; FastAPI is the routing/HTTP layer that wires it to requests."
     }
    ]
   },
@@ -346,8 +346,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**401 Unauthorized**authentication is missing or invalid: \"who are you?\" (no token, expired token, bad API key).",
-      "**403 Forbidden**authentication succeeded but the user lacks permission: \"I know who you are, but you can't do this\"."
+      "**401 Unauthorized:** authentication is missing or invalid: \"who are you?\" (no token, expired token, bad API key).",
+      "**403 Forbidden:** authentication succeeded but the user lacks permission: \"I know who you are, but you can't do this\"."
      ]
     },
     {
@@ -358,14 +358,14 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** 401 = not authenticated; 403 = authenticated but not authorized."
+     "text": "**Key takeaway:** 401 = not authenticated; 403 = authenticated but not authorised."
     }
    ]
   },
   {
    "t": "drill",
    "n": "10",
-   "q": "How do you handle role-based authorization?",
+   "q": "How do you handle role-based authorisation?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Dependency factories let you parametrize authorization while keeping endpoints declarative."
+     "text": "**Key takeaway:** Dependency factories let you parameterise authorisation while keeping endpoints declarative."
     }
    ]
   },
@@ -453,7 +453,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "How do you customize error handling?",
+   "q": "How do you customise error handling?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -555,8 +555,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**WebSocket**bidirectional, persistent. Use for chat and live updates: `@app.websocket(\"/ws\")` with `accept()`, `receive_text()`, `send_text()`, handling `WebSocketDisconnect`.",
-      "**SSE (Server-Sent Events)**server-to-client only, over plain HTTP via `StreamingResponse(media_type=\"text/event-stream\")`, yielding `f\"data: {chunk}\\n\\n\"`. Ideal for LLM token streaming."
+      "**WebSocket:** bidirectional, persistent. Use for chat and live updates: `@app.websocket(\"/ws\")` with `accept()`, `receive_text()`, `send_text()`, handling `WebSocketDisconnect`.",
+      "**SSE (Server-Sent Events):** server-to-client only, over plain HTTP via `StreamingResponse(media_type=\"text/event-stream\")`, yielding `f\"data: {chunk}\\n\\n\"`. Ideal for LLM token streaming."
      ]
     },
     {
@@ -1095,7 +1095,7 @@ EC.receiveLesson({
       [
        "Validation",
        "None built-in",
-       "DRF serializers",
+       "DRF serialisers",
        "Pydantic + type hints"
       ],
       [
@@ -1148,10 +1148,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Unary**single request → single response (like REST).",
-      "**Server streaming**single request → a stream of responses.",
-      "**Client streaming**a stream of requests → single response.",
-      "**Bidirectional streaming**streams in both directions simultaneously over one HTTP/2 connection."
+      "**Unary:** single request → single response (like REST).",
+      "**Server streaming:** single request → a stream of responses.",
+      "**Client streaming:** a stream of requests → single response.",
+      "**Bidirectional streaming:** streams in both directions simultaneously over one HTTP/2 connection."
      ]
     },
     {
@@ -1222,7 +1222,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "What performance optimizations apply to a FastAPI app?",
+   "q": "What performance optimisations apply to a FastAPI app?",
    "terms": [
     "Answer",
     "Key takeaway"

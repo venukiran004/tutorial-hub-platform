@@ -93,7 +93,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from collections import defaultdict, Counter\n\ndef build_ngram_model(text, n=2):\n    tokens = text.lower().split()\n    model = defaultdict(Counter)\n    for i in range(len(tokens) - n):\n        context = tuple(tokens[i:i+n-1])\n        next_word = tokens[i+n-1]\n        model[context][next_word] += 1\n    # Convert to probabilities\n    for context in model:\n        total = sum(model[context].values())\n        model[context] = {w: c/total for w, c in model[context].items()}\n    return model\n\ntext = \"the cat sat on the mat the cat ate the food the dog sat on the log\"\nmodel = build_ngram_model(text, n=2)\nfor context, probs in list(model.items())[:5]:\n    print(f\"{context} → {probs}\")"
+     "code": "from collections import defaultdict, Counter\n\ndef build_ngram_model(text, n=2):\n    tokens = text.lower().split()\n    model = defaultdict(Counter)\n    for i in range(len(tokens) - n + 1):\n        context = tuple(tokens[i:i+n-1])\n        next_word = tokens[i+n-1]\n        model[context][next_word] += 1\n    # Convert to probabilities\n    for context in model:\n        total = sum(model[context].values())\n        model[context] = {w: c/total for w, c in model[context].items()}\n    return model\n\ntext = \"the cat sat on the mat the cat ate the food the dog sat on the log\"\nmodel = build_ngram_model(text, n=2)\nfor context, probs in list(model.items())[:5]:\n    print(f\"{context} → {probs}\")"
     },
     {
      "t": "out",

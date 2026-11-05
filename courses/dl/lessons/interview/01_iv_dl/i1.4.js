@@ -35,7 +35,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Input Embeddings + Positional Encoding\n    ↓\n[Multi-Head Self-Attention → Add & Norm] × N\n    ↓\n[Position-wise FFN → Add & Norm] × N\n    ↓\nOutput Projection"
+     "code": "Input Embeddings + Positional Encoding\n    ↓\n[Multi-Head Self-Attention → Add & Norm\n    → Position-wise FFN → Add & Norm] × N\n    ↓\nOutput Projection"
     },
     {
      "t": "p",
@@ -55,7 +55,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Layer Normalisation (Pre-LN variant):**"
+     "text": "**Layer Normalisation:**"
     },
     {
      "t": "math",
@@ -67,7 +67,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Residual connections:** \\(\\text{output} = \\text{LayerNorm}(\\mathbf{x} + \\text{Sublayer}(\\mathbf{x}))\\)"
+     "text": "**Residual connections (Post-LN, as in the original paper):** \\(\\text{output} = \\text{LayerNorm}(\\mathbf{x} + \\text{Sublayer}(\\mathbf{x}))\\)"
     }
    ],
    "kind": ""
@@ -168,7 +168,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Sinusoidal (learned components):**"
+     "text": "**Sinusoidal (fixed, not learned):**"
     },
     {
      "t": "math",
@@ -245,8 +245,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Post-LN (original): \\(x + \\text{SubLayer}(\\text{LN}(x))\\) — better final performance but training unstable without warmup",
-      "Pre-LN: \\(\\text{LN}(x + \\text{SubLayer}(x))\\) — more stable training, used in LLaMA, GPT-3"
+      "Post-LN (original): \\(\\text{LN}(x + \\text{SubLayer}(x))\\) — training is unstable without warmup",
+      "Pre-LN: \\(x + \\text{SubLayer}(\\text{LN}(x))\\) — more stable training, used in LLaMA, GPT-2 onward"
      ]
     }
    ],
@@ -427,7 +427,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Trainable params: \\(r(d_{in}+d_{out})\\) vs \\(d_{in}d_{out}\\). Rank \\(r=8\\) → \\(\\sim800\\times\\) reduction."
+     "text": "Trainable params: \\(r(d_{in}+d_{out})\\) vs \\(d_{in}d_{out}\\). With \\(d_{in}=d_{out}=4096\\) and \\(r=8\\) → about \\(256\\times\\) fewer parameters."
     },
     {
      "t": "p",

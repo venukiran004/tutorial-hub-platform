@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c11.3",
  "lede": "**30 snippets to read**, on parameterised decorators and iterators. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on parameterised decorators and iterators before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c11.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 1350–1379.** What this set asks you to predict, counted from its own problems — 30 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["generators", "decorators", "classes", "lists", "functions", "strings"], "cells": [[{"text": "11", "tone": "accent"}, "A @contextmanager generator"], [{"text": "9", "tone": "good"}, "A decorator that takes argumen"], [{"text": "4", "tone": "violet"}, "A class definition"], [{"text": "2", "tone": "teal"}, "A list comprehension"], [{"text": "2", "tone": "warn"}, "A lambda"], [{"text": "2", "tone": "crit"}, "The nonlocal keyword"]], "t": "diagram", "id": "dg-c11_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,28 +37,25 @@ EC.receiveLesson({
    "q": "Program 1350: A decorator that takes arguments — output of `expensive(5)`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "def cache_with_expiry(ttl_seconds):\n    import time\n    def decorator(func):\n        cache = {}\n        def wrapper(*args):\n            now = time.time()\n            if args in cache:\n                result, timestamp = cache[args]\n                if now - timestamp < ttl_seconds:\n                    return result\n            result = func(*args)\n            cache[args] = (result, now)\n            return result\n        return wrapper\n    return decorator\n\n@cache_with_expiry(60)\ndef expensive(x):\n    return x ** 2\n\nprint(expensive(5))\nprint(expensive(5))  # from cache",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:** `25`, `25` **Explanation:** Cache with time-to-live. Entries expire after specified seconds."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def cache_with_expiry(ttl_seconds):\n    import time\n    def decorator(func):\n        cache = {}\n        def wrapper(*args):\n            now = time.time()\n            if args in cache:\n                result, timestamp = cache[args]\n                if now - timestamp < ttl_seconds:\n                    return result\n            result = func(*args)\n            cache[args] = (result, now)\n            return result\n        return wrapper\n    return decorator\n\n@cache_with_expiry(60)\ndef expensive(x):\n    return x ** 2\n\nprint(expensive(5))\nprint(expensive(5))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1351",
    "q": "Program 1351: A class definition — output of `\"Connected!\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def ensure_connected(func):\n    def wrapper(self, *args, **kwargs):\n        if not self.connected:\n            self.connect()\n        return func(self, *args, **kwargs)\n    return wrapper\n\nclass Database:\n    def __init__(self):\n        self.connected = False\n    \n    def connect(self):\n        self.connected = True\n        print(\"Connected!\")\n    \n    @ensure_connected\n    def query(self, sql):\n        return f\"Result of: {sql}\"\n\ndb = Database()\nprint(db.query(\"SELECT * FROM users\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -73,7 +70,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Decorator ensures database is connected before executing query."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def ensure_connected(func):\n    def wrapper(self, *args, **kwargs):\n        if not self.connected:\n            self.connect()\n        return func(self, *args, **kwargs)\n    return wrapper\n\nclass Database:\n    def __init__(self):\n        self.connected = False\n    \n    def connect(self):\n        self.connected = True\n        print(\"Connected!\")\n    \n    @ensure_connected\n    def query(self, sql):\n        return f\"Result of: {sql}\"\n\ndb = Database()\nprint(db.query(\"SELECT * FROM users\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -81,16 +87,19 @@ EC.receiveLesson({
    "q": "Program 1352: A list comprehension — output of `[a(10) for a in adders]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[10, 11, 12, 13, 14]` **Explanation:** Default argument `n=n` captures current loop value — avoids late binding closure trap."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "adders = [lambda x, n=n: x + n for n in range(5)]\nprint([a(10) for a in adders])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[10, 11, 12, 13, 14]` **Explanation:** Default argument `n=n` captures current loop value — avoids late binding closure trap."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -98,28 +107,25 @@ EC.receiveLesson({
    "q": "Program 1353: A lambda — output of `transform(4)`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "def compose(*funcs):\n    def composed(x):\n        for f in reversed(funcs):\n            x = f(x)\n        return x\n    return composed\n\ntransform = compose(\n    lambda x: x * 2,\n    lambda x: x + 3,\n    lambda x: x ** 2\n)\nprint(transform(4))  # 4**2=16, 16+3=19, 19*2=38",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:** `38` **Explanation:** Functions applied right to left (mathematical composition): square → add 3 → double."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def compose(*funcs):\n    def composed(x):\n        for f in reversed(funcs):\n            x = f(x)\n        return x\n    return composed\n\ntransform = compose(\n    lambda x: x * 2,\n    lambda x: x + 3,\n    lambda x: x ** 2\n)\nprint(transform(4))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1354",
    "q": "Program 1354: A class definition — output of `f\"Creating {cls.__name__}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def logged_class(cls):\n    orig_init = cls.__init__\n    def new_init(self, *args, **kwargs):\n        print(f\"Creating {cls.__name__}\")\n        orig_init(self, *args, **kwargs)\n    cls.__init__ = new_init\n    return cls\n\n@logged_class\nclass User:\n    def __init__(self, name):\n        self.name = name\n\nu = User(\"Alice\")\nprint(u.name)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -134,7 +140,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Class decorator modifies `__init__` to add logging."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def logged_class(cls):\n    orig_init = cls.__init__\n    def new_init(self, *args, **kwargs):\n        print(f\"Creating {cls.__name__}\")\n        orig_init(self, *args, **kwargs)\n    cls.__init__ = new_init\n    return cls\n\n@logged_class\nclass User:\n    def __init__(self, name):\n        self.name = name\n\nu = User(\"Alice\")\nprint(u.name)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -142,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 1355: A list comprehension — output of `[op(3) for op in operations]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[9, 27, 81]` **Explanation:** Each closure captures different `n`. Applied to 3: 3², 3³, 3⁴."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def power_of(n):\n    def inner(x):\n        return x ** n\n    return inner\n\nsquare = power_of(2)\ncube = power_of(3)\noperations = [square, cube, power_of(4)]\nprint([op(3) for op in operations])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[9, 27, 81]` **Explanation:** Each closure captures different `n`. Applied to 3: 3², 3³, 3⁴."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -159,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 1356: A decorator that takes arguments — output of `greet(\"world\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `HELLO WORLD!` **Explanation:** Middleware applies decorators in order. First upper, then exclaim."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def middleware(*decorators):\n    def decorator(func):\n        for d in reversed(decorators):\n            func = d(func)\n        return func\n    return decorator\n\ndef upper(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs).upper()\n    return wrapper\n\ndef exclaim(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs) + \"!\"\n    return wrapper\n\n@middleware(upper, exclaim)\ndef greet(name):\n    return f\"hello {name}\"\n\nprint(greet(\"world\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `HELLO WORLD!` **Explanation:** Middleware applies decorators in order. First upper, then exclaim."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -176,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 1357: A decorator using functools.wraps — output of `process.calls`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `3`, `process` **Explanation:** Function attribute `calls` tracks invocations. `@wraps` preserves name."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import functools\n\ndef count_calls(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        wrapper.calls += 1\n        return func(*args, **kwargs)\n    wrapper.calls = 0\n    return wrapper\n\n@count_calls\ndef process():\n    pass\n\nprocess()\nprocess()\nprocess()\nprint(process.calls)\nprint(process.__name__)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `3`, `process` **Explanation:** Function attribute `calls` tracks invocations. `@wraps` preserves name."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -193,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 1358: A decorator that takes arguments — output of `divide(10, 2)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5.0`, `0` **Explanation:** Safe decorator catches exceptions and returns default value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def make_safe(default=None):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            try:\n                return func(*args, **kwargs)\n            except Exception:\n                return default\n        return wrapper\n    return decorator\n\n@make_safe(default=0)\ndef divide(a, b):\n    return a / b\n\nprint(divide(10, 2))\nprint(divide(10, 0))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5.0`, `0` **Explanation:** Safe decorator catches exceptions and returns default value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -210,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 1359: A function call — output of `f()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `20` **Explanation:** Closures capture variables by reference (late binding), not by value. `x` was `20` when `inner` was returned."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def closure_test():\n    x = 10\n    def inner():\n        return x\n    x = 20\n    return inner\n\nf = closure_test()\nprint(f())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `20` **Explanation:** Closures capture variables by reference (late binding), not by value. `x` was `20` when `inner` was returned."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -227,28 +257,25 @@ EC.receiveLesson({
    "q": "Program 1360: A decorator that takes arguments — output of `list(plugins.keys())`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['plugin_a', 'plugin_b']`, `A` **Explanation:** Registration decorator adds functions to a registry dict without modifying them."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def register(registry):\n    def decorator(func):\n        registry[func.__name__] = func\n        return func\n    return decorator\n\nplugins = {}\n\n@register(plugins)\ndef plugin_a():\n    return \"A\"\n\n@register(plugins)\ndef plugin_b():\n    return \"B\"\n\nprint(list(plugins.keys()))\nprint(plugins['plugin_a']())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['plugin_a', 'plugin_b']`, `A` **Explanation:** Registration decorator adds functions to a registry dict without modifying them."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1361",
    "q": "Program 1361: A @contextmanager generator — output of `f\"Acquiring {name}\"` — yield",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from contextlib import contextmanager\n\n@contextmanager\ndef managed_resource(name):\n    print(f\"Acquiring {name}\")\n    yield name\n    print(f\"Releasing {name}\")\n\nwith managed_resource(\"database\") as r:\n    print(f\"Using {r}\")",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -263,19 +290,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `@contextmanager` creates context managers using generator syntax."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from contextlib import contextmanager\n\n@contextmanager\ndef managed_resource(name):\n    print(f\"Acquiring {name}\")\n    yield name\n    print(f\"Releasing {name}\")\n\nwith managed_resource(\"database\") as r:\n    print(f\"Using {r}\")",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1362",
    "q": "Program 1362: A property — output of `\"Computing area...\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def lazy_property(func):\n    attr_name = f\"_lazy_{func.__name__}\"\n    @property\n    def wrapper(self):\n        if not hasattr(self, attr_name):\n            setattr(self, attr_name, func(self))\n        return getattr(self, attr_name)\n    return wrapper\n\nclass Circle:\n    def __init__(self, radius):\n        self.radius = radius\n    \n    @lazy_property\n    def area(self):\n        print(\"Computing area...\")\n        import math\n        return math.pi * self.radius ** 2\n\nc = Circle(5)\nprint(c.area)\nprint(c.area)  # no recomputation",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -290,19 +320,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Lazy property computes value once, caches it for subsequent access."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def lazy_property(func):\n    attr_name = f\"_lazy_{func.__name__}\"\n    @property\n    def wrapper(self):\n        if not hasattr(self, attr_name):\n            setattr(self, attr_name, func(self))\n        return getattr(self, attr_name)\n    return wrapper\n\nclass Circle:\n    def __init__(self, radius):\n        self.radius = radius\n    \n    @lazy_property\n    def area(self):\n        print(\"Computing area...\")\n        import math\n        return math.pi * self.radius ** 2\n\nc = Circle(5)\nprint(c.area)\nprint(c.area)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1363",
    "q": "Program 1363: A callable object via __call__ — output of `f\"Call`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "class StaticDecorator:\n    def __init__(self, func):\n        self.func = func\n        self.calls = 0\n    \n    def __call__(self, *args, **kwargs):\n        self.calls += 1\n        print(f\"Call #{self.calls}\")\n        return self.func(*args, **kwargs)\n\n@StaticDecorator\ndef add(a, b):\n    return a + b\n\nprint(add(1, 2))\nprint(add(3, 4))\nprint(add.calls)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -317,7 +350,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Class decorator with instance state tracking call count."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class StaticDecorator:\n    def __init__(self, func):\n        self.func = func\n        self.calls = 0\n    \n    def __call__(self, *args, **kwargs):\n        self.calls += 1\n        print(f\"Call #{self.calls}\")\n        return self.func(*args, **kwargs)\n\n@StaticDecorator\ndef add(a, b):\n    return a + b\n\nprint(add(1, 2))\nprint(add(3, 4))\nprint(add.calls)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -325,16 +367,19 @@ EC.receiveLesson({
    "q": "Program 1364: The nonlocal keyword — output of `by_ones(), by_ones(), by_ones()`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `0 1 2`, `0 2 4` **Explanation:** Configurable counter closures with independent state."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def make_counter(start=0, step=1):\n    count = start - step\n    def counter():\n        nonlocal count\n        count += step\n        return count\n    return counter\n\nby_ones = make_counter()\nby_twos = make_counter(0, 2)\nprint(by_ones(), by_ones(), by_ones())\nprint(by_twos(), by_twos(), by_twos())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 3`, `2 4 6` **Explanation:** Configurable counter closures with independent state."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -342,28 +387,25 @@ EC.receiveLesson({
    "q": "Program 1365: A decorated function — output of `process(5)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `20` **Explanation:** Chainable decorator pattern. `5 * 2 = 10`, `10 + 10 = 20`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def chain_decorators(func):\n    func.transforms = []\n    def add_transform(transform):\n        func.transforms.append(transform)\n        return func\n    func.then = add_transform\n    return func\n\n@chain_decorators\ndef process(x):\n    result = x\n    for t in process.transforms:\n        result = t(result)\n    return result\n\nprocess.then(lambda x: x * 2).then(lambda x: x + 10)\nprint(process(5))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `20` **Explanation:** Chainable decorator pattern. `5 * 2 = 10`, `10 + 10 = 20`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1366",
    "q": "Program 1366: A decorator that takes arguments — output of `f\"[{level}] Entering {func.__name__}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def with_logging(level=\"INFO\"):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            print(f\"[{level}] Entering {func.__name__}\")\n            result = func(*args, **kwargs)\n            print(f\"[{level}] Exiting {func.__name__}\")\n            return result\n        return wrapper\n    return decorator\n\n@with_logging(\"DEBUG\")\ndef compute(x):\n    return x ** 2\n\nprint(compute(5))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -378,7 +420,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Parameterized logging decorator with configurable log level."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def with_logging(level=\"INFO\"):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            print(f\"[{level}] Entering {func.__name__}\")\n            result = func(*args, **kwargs)\n            print(f\"[{level}] Exiting {func.__name__}\")\n            return result\n        return wrapper\n    return decorator\n\n@with_logging(\"DEBUG\")\ndef compute(x):\n    return x ** 2\n\nprint(compute(5))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -386,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 1367: The nonlocal keyword — output of `acc(10)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10`, `30`, `60`, `[10, 20, 30]` **Explanation:** Closure with `history` list attached as function attribute for external access."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def make_accumulator():\n    total = 0\n    history = []\n    def accumulator(n):\n        nonlocal total\n        total += n\n        history.append(n)\n        return total\n    accumulator.history = history\n    return accumulator\n\nacc = make_accumulator()\nprint(acc(10))\nprint(acc(20))\nprint(acc(30))\nprint(acc.history)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10`, `30`, `60`, `[10, 20, 30]` **Explanation:** Closure with `history` list attached as function attribute for external access."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -403,28 +457,25 @@ EC.receiveLesson({
    "q": "Program 1368: A decorator that takes arguments — output of `process_user({'name': 'Alice', 'email': '…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Processing Alice`, `\"Missing keys: ['email']\"` **Explanation:** Decorator validates required dictionary keys before function execution."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def requires(*required_keys):\n    def decorator(func):\n        def wrapper(data, *args, **kwargs):\n            missing = [k for k in required_keys if k not in data]\n            if missing:\n                raise KeyError(f\"Missing keys: {missing}\")\n            return func(data, *args, **kwargs)\n        return wrapper\n    return decorator\n\n@requires('name', 'email')\ndef process_user(data):\n    return f\"Processing {data['name']}\"\n\nprint(process_user({'name': 'Alice', 'email': 'a@b.com'}))\ntry:\n    process_user({'name': 'Bob'})\nexcept KeyError as e:\n    print(e)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Processing Alice`, `\"Missing keys: ['email']\"` **Explanation:** Decorator validates required dictionary keys before function execution."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1369",
    "q": "Program 1369: A decorated function — output of `compute(3, 4)`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def observable(func):\n    func._observers = []\n    def wrapper(*args, **kwargs):\n        result = func(*args, **kwargs)\n        for observer in func._observers:\n            observer(func.__name__, args, kwargs, result)\n        return result\n    wrapper._observers = func._observers\n    wrapper.subscribe = lambda obs: wrapper._observers.append(obs)\n    return wrapper\n\n@observable\ndef compute(x, y):\n    return x + y\n\ncompute.subscribe(lambda name, args, kwargs, result: print(f\"{name}{args} = {result}\"))\nprint(compute(3, 4))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -439,7 +490,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Observer pattern via decorator — subscribers notified after function call."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def observable(func):\n    func._observers = []\n    def wrapper(*args, **kwargs):\n        result = func(*args, **kwargs)\n        for observer in func._observers:\n            observer(func.__name__, args, kwargs, result)\n        return result\n    wrapper._observers = func._observers\n    wrapper.subscribe = lambda obs: wrapper._observers.append(obs)\n    return wrapper\n\n@observable\ndef compute(x, y):\n    return x + y\n\ncompute.subscribe(lambda name, args, kwargs, result: print(f\"{name}{args} = {result}\"))\nprint(compute(3, 4))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -447,16 +507,19 @@ EC.receiveLesson({
    "q": "Program 1370: A generator — output of `next(g)` — yield",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `2`, `3` **Explanation:** Each `next()` resumes the generator from where it last yielded."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def simple_gen():\n    yield 1\n    yield 2\n    yield 3\n\ng = simple_gen()\nprint(next(g))\nprint(next(g))\nprint(next(g))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `2`, `3` **Explanation:** Each `next()` resumes the generator from where it last yielded."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -464,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 1371: A generator — output of `next(g)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `2`, then `StopIteration` **Explanation:** After all yields are exhausted, `next()` raises `StopIteration`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def gen():\n    yield 1\n    yield 2\n\ng = gen()\nprint(next(g))\nprint(next(g))\nprint(next(g))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `2`, then `StopIteration` **Explanation:** After all yields are exhausted, `next()` raises `StopIteration`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -481,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 1372: A generator — output of `num, end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `5 4 3 2 1` **Explanation:** Generator yields values one at a time. `for` loop handles `StopIteration`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\nfor num in countdown(5):\n    print(num, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `5 4 3 2 1` **Explanation:** Generator yields values one at a time. `for` loop handles `StopIteration`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -498,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 1373: A generator expression — output of `type(gen)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'generator'>`, `[0, 1, 4, 9, 16]`, `[]` **Explanation:** Generator expressions are single-use iterators. Second `list()` gets empty."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "gen = (x**2 for x in range(5))\nprint(type(gen))\nprint(list(gen))\nprint(list(gen))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'generator'>`, `[0, 1, 4, 9, 16]`, `[]` **Explanation:** Generator expressions are single-use iterators. Second `list()` gets empty."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -515,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 1374: A generator expression — output of `sys.getsizeof(list_comp)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** List: ~8856 bytes, Generator: ~200 bytes (approx) **Explanation:** Generators are memory-efficient — they generate values lazily, not storing all at once."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import sys\nlist_comp = [x**2 for x in range(1000)]\ngen_expr = (x**2 for x in range(1000))\nprint(sys.getsizeof(list_comp))\nprint(sys.getsizeof(gen_expr))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** List: ~8856 bytes, Generator: ~200 bytes (approx) **Explanation:** Generators are memory-efficient — they generate values lazily, not storing all at once."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -532,28 +607,25 @@ EC.receiveLesson({
    "q": "Program 1375: A generator — output of `result = [next(fib) for _ in range(10)]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]` **Explanation:** Infinite generator. We take only first 10 values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\nfib = fibonacci()\nresult = [next(fib) for _ in range(10)]\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[0, 1, 1, 2, 3, 5, 8, 13, 21, 34]` **Explanation:** Infinite generator. We take only first 10 values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "1376",
    "q": "Program 1376: A generator driven with .send() — output of `f\"Received: {value}\"`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "def gen():\n    value = yield 1\n    print(f\"Received: {value}\")\n    value = yield 2\n    print(f\"Received: {value}\")\n\ng = gen()\nprint(next(g))\nprint(g.send(\"hello\"))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -568,7 +640,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `send()` resumes generator and sends a value that becomes the result of the `yield` expression."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "def gen():\n    value = yield 1\n    print(f\"Received: {value}\")\n    value = yield 2\n    print(f\"Received: {value}\")\n\ng = gen()\nprint(next(g))\nprint(g.send(\"hello\"))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -576,16 +657,19 @@ EC.receiveLesson({
    "q": "Program 1377: A generator driven with .send() — output of `acc.send(10)` — yield",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10`, `30`, `60` **Explanation:** Coroutine-style generator accumulating sent values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "def accumulator():\n    total = 0\n    while True:\n        value = yield total\n        if value is None:\n            break\n        total += value\n\nacc = accumulator()\nnext(acc)  # prime the generator\nprint(acc.send(10))\nprint(acc.send(20))\nprint(acc.send(30))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10`, `30`, `60` **Explanation:** Coroutine-style generator accumulating sent values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -593,16 +677,19 @@ EC.receiveLesson({
    "q": "Program 1378: The iterator protocol — output of `i, end=' '`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1 2 3` **Explanation:** Custom iterator class implementing `__iter__` and `__next__`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "class Counter:\n    def __init__(self, start, end):\n        self.current = start\n        self.end = end\n    \n    def __iter__(self):\n        return self\n    \n    def __next__(self):\n        if self.current >= self.end:\n            raise StopIteration\n        value = self.current\n        self.current += 1\n        return value\n\nfor i in Counter(1, 4):\n    print(i, end=' ')",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1 2 3` **Explanation:** Custom iterator class implementing `__iter__` and `__next__`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -610,21 +697,24 @@ EC.receiveLesson({
    "q": "Program 1379: The iterator protocol — output of `list(s)`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "class Squares:\n    def __init__(self, n):\n        self.n = n\n    \n    def __iter__(self):\n        for i in range(self.n):\n            yield i ** 2\n\ns = Squares(5)\nprint(list(s))\nprint(list(s))  # can iterate again!",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:** `[0, 1, 4, 9, 16]`, `[0, 1, 4, 9, 16]` **Explanation:** `__iter__` as a generator function creates new iterator each time — reusable!"
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "class Squares:\n    def __init__(self, n):\n        self.n = n\n    \n    def __iter__(self):\n        for i in range(self.n):\n            yield i ** 2\n\ns = Squares(5)\nprint(list(s))\nprint(list(s))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

@@ -374,9 +374,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Readability**`reduce()` is hard to read — requires mental simulation of the fold.",
-      "**Debugging**No visibility into intermediate steps.",
-      "**Misuse**Most `reduce()` calls have cleaner alternatives.",
+      "**Readability:** `reduce()` is hard to read — requires mental simulation of the fold.",
+      "**Debugging:** No visibility into intermediate steps.",
+      "**Misuse:** Most `reduce()` calls have cleaner alternatives.",
       "**Better alternatives exist**"
      ]
     },
@@ -532,7 +532,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Higher-order functions enable: - **Abstraction**: Separate \"what to do\" from \"how to iterate.\" - **Composition**: Build complex behavior from simple functions. - **Reusability**: Same HOF with different functions. - **Declarative style**: Describe the transformation, not the loop."
+     "text": "Higher-order functions enable: - **Abstraction**: Separate \"what to do\" from \"how to iterate.\" - **Composition**: Build complex behaviour from simple functions. - **Reusability**: Same HOF with different functions. - **Declarative style**: Describe the transformation, not the loop."
     }
    ]
   },
@@ -679,7 +679,7 @@ EC.receiveLesson({
       ],
       [
        "**Picklable**",
-       "Yes (serializable)",
+       "Yes (serialisable)",
        "No"
       ],
       [
@@ -887,7 +887,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Single dispatch**Overload based on the type of the **first** argument only.",
+      "**Single dispatch:** Overload based on the type of the **first** argument only.",
       "Use `@func.register(type)` to add implementations for specific types.",
       "The base function is the fallback / default handler.",
       "For method overloading in classes, use `singledispatchmethod` (Python 3.8+).",
@@ -970,7 +970,7 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "**Tail call optimization**",
+       "**Tail call optimisation**",
        "❌ No TCO — deep recursion causes `RecursionError`"
       ],
       [

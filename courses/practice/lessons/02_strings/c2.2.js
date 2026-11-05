@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c2.2",
  "lede": "**30 snippets to read**, on built-in types and string methods. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on built-in types and string methods before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c2.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 106–135.** What this set asks you to predict, counted from its own problems — 8 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["functions", "dicts and sets", "strings", "lists"], "cells": [[{"text": "3", "tone": "accent"}, "A function call"], [{"text": "2", "tone": "good"}, "A frozenset"], [{"text": "2", "tone": "violet"}, "str.replace"], [{"text": "1", "tone": "teal"}, "list.append"]], "t": "diagram", "id": "dg-c2_2-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 106: Predict the output: (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'tuple'>`, `<class 'int'>` **Explanation:** `(1,)` with trailing comma is a tuple. `(1)` is just parenthesized integer expression."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = (1,)\nb = (1)\nprint(type(a))\nprint(type(b))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'tuple'>`, `<class 'int'>` **Explanation:** `(1,)` with trailing comma is a tuple. `(1)` is just parenthesized integer expression."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 107: What happens (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `bytearray(b'Hello')` **Explanation:** `bytearray` is mutable. You can change individual bytes. `72` is ASCII for `'H'`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = bytearray(b\"hello\")\nx[0] = 72  # ASCII for 'H'\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `bytearray(b'Hello')` **Explanation:** `bytearray` is mutable. You can change individual bytes. `72` is ASCII for `'H'`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 108: What is the output of `x`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `b'\\x00\\x00\\x00\\x00\\x00'`, `5` **Explanation:** `bytes(n)` creates a bytes object of `n` zero bytes."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = bytes(5)\nprint(x)\nprint(len(x))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `b'\\x00\\x00\\x00\\x00\\x00'`, `5` **Explanation:** `bytes(n)` creates a bytes object of `n` zero bytes."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 109: What happens here?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3]` **Explanation:** `.copy()` creates a shallow copy. Changes to `a` don't affect `b` for immutable elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [1, 2, 3]\nb = a.copy()\na[0] = 99\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3]` **Explanation:** `.copy()` creates a shallow copy. Changes to `a` don't affect `b` for immutable elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 110: deepcopy versus a shallow copy — output of `a = [[1, 2], [3, 4]]` — copying",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[99, 2], [3, 4]]` **Explanation:** Shallow copy copies the outer list but inner lists are still references. Use `copy.deepcopy()` for full independence."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import copy\na = [[1, 2], [3, 4]]\nb = copy.copy(a)\na[0][0] = 99\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[99, 2], [3, 4]]` **Explanation:** Shallow copy copies the outer list but inner lists are still references. Use `copy.deepcopy()` for full independence."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 111: deepcopy versus a shallow copy — output of `a = [[1, 2], [3, 4]]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1, 2], [3, 4]]` **Explanation:** `deepcopy` recursively copies all nested objects. `b` is fully independent."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import copy\na = [[1, 2], [3, 4]]\nb = copy.deepcopy(a)\na[0][0] = 99\nprint(b)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1, 2], [3, 4]]` **Explanation:** `deepcopy` recursively copies all nested objects. `b` is fully independent."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 112: Predict the output: (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1: 'a', 2: 'b', 3: 'c'}` **Explanation:** `**` unpacks the dictionary. This creates a new dict with all items from `x` plus the new key-value pair."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = {1: 'a', 2: 'b'}\ny = {**x, 3: 'c'}\nprint(y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1: 'a', 2: 'b', 3: 'c'}` **Explanation:** `**` unpacks the dictionary. This creates a new dict with all items from `x` plus the new key-value pair."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 113: A frozenset — output of `x = frozenset([1, 2, 3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `AttributeError: 'frozenset' object has no attribute 'add'` **Explanation:** `frozenset` is immutable — you cannot add or remove elements."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = frozenset([1, 2, 3])\nx.add(4)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `AttributeError: 'frozenset' object has no attribute 'add'` **Explanation:** `frozenset` is immutable — you cannot add or remove elements."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 114: What is the output of `x & y`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{2, 3}`, `{1, 2, 3, 4}`, `{1}`, `{1, 4}` **Explanation:** `&` intersection, `|` union, `-` difference, `^` symmetric difference."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = {1, 2, 3}\ny = {2, 3, 4}\nprint(x & y)\nprint(x | y)\nprint(x - y)\nprint(x ^ y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{2, 3}`, `{1, 2, 3, 4}`, `{1}`, `{1, 4}` **Explanation:** `&` intersection, `|` union, `-` difference, `^` symmetric difference."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 115: str.replace — output of `y = x.replace(\"l\", \"L\")`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `hello`, `heLLo` **Explanation:** Strings are immutable. `replace()` returns a new string; `x` is unchanged."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = \"hello\"\ny = x.replace(\"l\", \"L\")\nprint(x)\nprint(y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `hello`, `heLLo` **Explanation:** Strings are immutable. `replace()` returns a new string; `x` is unchanged."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,16 +237,19 @@ EC.receiveLesson({
    "q": "Program 116: A function call — output of `def foo():`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `10` **Explanation:** `x` is found in the global scope via LEGB rule (Local, Enclosing, Global, Built-in)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ndef foo():\n    print(x)\nfoo()",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `10` **Explanation:** `x` is found in the global scope via LEGB rule (Local, Enclosing, Global, Built-in)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -224,16 +257,19 @@ EC.receiveLesson({
    "q": "Program 117: A function call — output of `def foo():` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `20`, `10` **Explanation:** `x = 20` inside the function creates a local variable. The global `x` remains `10`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ndef foo():\n    x = 20\n    print(x)\nfoo()\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `20`, `10` **Explanation:** `x = 20` inside the function creates a local variable. The global `x` remains `10`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -241,16 +277,19 @@ EC.receiveLesson({
    "q": "Program 118: A function call — output of `def foo():` (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `UnboundLocalError: cannot access local variable 'x' where it is not associated with a value` **Explanation:** Python sees `x = 20` and treats `x` as local throughout `foo`. The `print(x)` references it before assignment."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\ndef foo():\n    print(x)\n    x = 20\nfoo()",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `UnboundLocalError: local variable 'x' referenced before assignment` **Explanation:** Python sees `x = 20` and treats `x` as local throughout `foo`. The `print(x)` references it before assignment."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -258,16 +297,19 @@ EC.receiveLesson({
    "q": "Program 119: A sequence built with the * operator — output of `x = [1, 2, 3]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 1, 2, 3]`, `ababab` **Explanation:** `*` operator repeats sequences — both lists and strings."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = [1, 2, 3]\ny = x * 2\nprint(y)\nx = \"ab\"\nz = x * 3\nprint(z)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 1, 2, 3]`, `ababab` **Explanation:** `*` operator repeats sequences — both lists and strings."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -275,16 +317,19 @@ EC.receiveLesson({
    "q": "Program 120: A sequence built with the * operator — output of `a = [[0]] * 3`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[[1], [1], [1]]` **Explanation:** `[[0]] * 3` creates 3 references to the same inner list. Modifying one affects all. Use `[[0] for _ in range(3)]` instead."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = [[0]] * 3\na[0][0] = 1\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[[1], [1], [1]]` **Explanation:** `[[0]] * 3` creates 3 references to the same inner list. Modifying one affects all. Use `[[0] for _ in range(3)]` instead."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -292,16 +337,19 @@ EC.receiveLesson({
    "q": "Program 121: list.append — output of `x = (1, 2, [3, 4])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** Tuples are immutable, but the list inside is mutable. You can modify the list's contents but not reassign `x[2]`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = (1, 2, [3, 4])\nx[2].append(5)\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `(1, 2, [3, 4, 5])` **Explanation:** Tuples are immutable, but the list inside is mutable. You can modify the list's contents but not reassign `x[2]`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -309,16 +357,19 @@ EC.receiveLesson({
    "q": "Program 122: What happens (3)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `TypeError: 'tuple' object does not support item assignment` **Explanation:** You can't reassign tuple elements. The tuple's reference is immutable even though the referenced list is mutable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = (1, 2, [3, 4])\nx[2] = [5, 6]",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `TypeError: 'tuple' object does not support item assignment` **Explanation:** You can't reassign tuple elements. The tuple's reference is immutable even though the referenced list is mutable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -326,16 +377,19 @@ EC.receiveLesson({
    "q": "Program 123: What is the output of `x` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `TypeError` is raised, BUT `x` becomes `(1, 2, [3, 4, 5, 6])` **Explanation:** `+=` on a list calls `extend` (mutating the list) AND then tries to reassign the tuple element (which fails). The list IS modified despite the error."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = (1, 2, [3, 4])\nx[2] += [5, 6]\nprint(x)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `TypeError` is raised, BUT `x` becomes `(1, 2, [3, 4, 5, 6])` **Explanation:** `+=` on a list calls `extend` (mutating the list) AND then tries to reassign the tuple element (which fails). The list IS modified despite the error."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -343,16 +397,19 @@ EC.receiveLesson({
    "q": "Program 124: list.append — output of `a = dict.fromkeys(['a', 'b', 'c'], [])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': [1], 'b': [1], 'c': [1]}` **Explanation:** `fromkeys` uses the same list object as the default value for all keys. All keys reference the same list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "a = dict.fromkeys(['a', 'b', 'c'], [])\na['a'].append(1)\nprint(a)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': [1], 'b': [1], 'c': [1]}` **Explanation:** `fromkeys` uses the same list object as the default value for all keys. All keys reference the same list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -360,16 +417,19 @@ EC.receiveLesson({
    "q": "Program 125: Slicing — output of `x[100:]`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `\"\"` (empty string), `ython` **Explanation:** Slicing doesn't raise errors for out-of-range indices — it gracefully handles boundaries."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = \"Python\"\nprint(x[100:])\nprint(x[1:100])",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `\"\"` (empty string), `ython` **Explanation:** Slicing doesn't raise errors for out-of-range indices — it gracefully handles boundaries."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -377,16 +437,19 @@ EC.receiveLesson({
    "q": "Program 126: What is the output of `x, y`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `4 3` **Explanation:** Python's tuple packing/unpacking enables elegant variable swapping without a temp variable."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 3\ny = 4\nx, y = y, x\nprint(x, y)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `4 3` **Explanation:** Python's tuple packing/unpacking enables elegant variable swapping without a temp variable."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -394,28 +457,25 @@ EC.receiveLesson({
    "q": "Program 127: What happens (4)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True` **Explanation:** `isinstance()` accepts a tuple of types and returns `True` if the object is an instance of any of them."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "x = 10\nprint(isinstance(x, (int, float, str)))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True` **Explanation:** `isinstance()` accepts a tuple of types and returns `True` if the object is an instance of any of them."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "128",
    "q": "Program 128: What is the output of `y, type(y)`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "x = \"42\"\ny = int(x)\nz = float(x)\nw = complex(x)\nprint(y, type(y))\nprint(z, type(z))\nprint(w, type(w))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -430,19 +490,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Python provides built-in functions for type conversion between numeric types and strings."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "x = \"42\"\ny = int(x)\nz = float(x)\nw = complex(x)\nprint(y, type(y))\nprint(z, type(z))\nprint(w, type(w))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "129",
    "q": "Program 129: What is the output of `s.upper()`?",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"Hello, World!\"\nprint(s.upper())\nprint(s.lower())\nprint(s.title())\nprint(s.swapcase())",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -457,19 +520,22 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** String methods return new strings. `swapcase()` inverts the case of each character."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"Hello, World!\"\nprint(s.upper())\nprint(s.lower())\nprint(s.title())\nprint(s.swapcase())",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "130",
    "q": "Program 130: Stripping whitespace — output of `repr(s.strip())`",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "s = \"  hello  \"\nprint(repr(s.strip()))\nprint(repr(s.lstrip()))\nprint(repr(s.rstrip()))",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -484,7 +550,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** `strip()` removes whitespace from both ends, `lstrip()` from left, `rstrip()` from right."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "s = \"  hello  \"\nprint(repr(s.strip()))\nprint(repr(s.lstrip()))\nprint(repr(s.rstrip()))",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -492,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 131: str.join — output of `s = \"apple,banana,cherry\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['apple', 'banana', 'cherry']`, `apple,banana,cherry` **Explanation:** `split()` breaks a string into a list. `join()` concatenates list elements with a separator."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"apple,banana,cherry\"\nresult = s.split(\",\")\nprint(result)\nprint(\",\".join(result))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['apple', 'banana', 'cherry']`, `apple,banana,cherry` **Explanation:** `split()` breaks a string into a list. `join()` concatenates list elements with a separator."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -509,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 132: What is the output of `s.count(\"hello\")`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `2`, `6`, `-1`, `6` **Explanation:** `count()` counts occurrences. `find()` returns `-1` if not found. `index()` raises `ValueError` if not found."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello world hello python\"\nprint(s.count(\"hello\"))\nprint(s.find(\"world\"))\nprint(s.find(\"java\"))\nprint(s.index(\"world\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `2`, `6`, `-1`, `6` **Explanation:** `count()` counts occurrences. `find()` returns `-1` if not found. `index()` raises `ValueError` if not found."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -526,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 133: What happens (5)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `ValueError: substring not found` **Explanation:** Unlike `find()` which returns `-1`, `index()` raises an exception when the substring is not found."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"hello world\"\nprint(s.index(\"java\"))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `ValueError: substring not found` **Explanation:** Unlike `find()` which returns `-1`, `index()` raises an exception when the substring is not found."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -543,16 +627,19 @@ EC.receiveLesson({
    "q": "Program 134: What is the output of `s.startswith(\"Hello\")`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `True` **Explanation:** Both methods accept tuples to check against multiple prefixes/suffixes."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Hello World\"\nprint(s.startswith(\"Hello\"))\nprint(s.endswith(\"World\"))\nprint(s.startswith((\"Hello\", \"Hi\")))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `True` **Explanation:** Both methods accept tuples to check against multiple prefixes/suffixes."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -560,21 +647,24 @@ EC.receiveLesson({
    "q": "Program 135: What is the output of `s.isalpha()`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `False`, `False`, `False`, `True`, `True` **Explanation:** `isalpha()` checks for only letters, `isalnum()` for letters/digits, `isdigit()` for only digits. The dot in \"Python3.9\" makes all three `False`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "s = \"Python3.9\"\nprint(s.isalpha())\nprint(s.isalnum())\nprint(s.isdigit())\nprint(\"Python\".isalpha())\nprint(\"123\".isdigit())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `False`, `False`, `False`, `True`, `True` **Explanation:** `isalpha()` checks for only letters, `isalnum()` for letters/digits, `isdigit()` for only digits. The dot in \"Python3.9\" makes all three `False`."
     }
-   ]
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

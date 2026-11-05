@@ -92,7 +92,7 @@ total = 400 + (25 x 200) = 400 + 5,000 = 5,400 ms`,
 
     { t: "callout", kind: "warn", title: "A p50 of 1 s with a p95 of 12 s is a bad experience for one user in twenty",
       body: [
-        { t: "p", text: "LLM latency distributions have long tails \u2014 variable output length, queueing, cache misses, retries \u2014 and the mean hides them. A mean of 2 s is consistent with almost everyone getting 1 s and one in twenty getting 12 s." },
+        { t: "p", text: "LLM latency distributions have long tails \u2014 variable output length, queueing, cache misses, retries \u2014 and the mean hides them. A mean of 2 s is consistent with almost everyone getting 1 s and one in twenty getting 20 s." },
         { t: "p", text: "One in twenty is not an edge case at volume. At a thousand requests an hour it is fifty people an hour having a bad time, and they are disproportionately the ones who complain and churn." },
         { t: "p", text: "So report **p50 and p95** as a pair, and watch the gap. A widening gap with a stable p50 means the tail is growing while the typical case is fine \u2014 which is exactly the pattern a mean cannot show and 9.16\u2019s confidence intervals cannot either, because they describe the estimate rather than the distribution." }
       ] },
@@ -301,7 +301,7 @@ print("cost/request $%.5f   cost/RESOLVED $%.5f   monthly $%,.0f"
         q: "Why p95 rather than the mean?",
         strong: "A strong answer quantifies who the tail affects.",
         answer: [
-          { t: "p", text: "Because LLM latency distributions have long tails \u2014 variable output length, queueing, cache misses, retries \u2014 and the mean hides them. A mean of two seconds is consistent with almost everyone getting one second and one in twenty getting twelve." },
+          { t: "p", text: "Because LLM latency distributions have long tails \u2014 variable output length, queueing, cache misses, retries \u2014 and the mean hides them. A mean of two seconds is consistent with almost everyone getting one second and one in twenty getting twenty." },
           { t: "p", text: "One in twenty is not an edge case at volume. At a thousand requests an hour that is fifty people an hour having a bad experience, and they are disproportionately the ones who complain and churn." },
           { t: "p", text: "So I would report p50 and p95 as a pair and watch the gap between them. A widening gap with a stable p50 means the tail is growing while the typical case is fine, which is a pattern no single summary statistic shows." },
           { t: "p", text: "One technical caution: I would measure the pipeline end to end rather than adding component p95s. Percentiles do not compose \u2014 three stages each at a p95 of one second give a pipeline p95 well under three, because they rarely hit their tails together, unless something like queueing correlates them." }

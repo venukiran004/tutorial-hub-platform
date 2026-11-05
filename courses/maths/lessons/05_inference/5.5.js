@@ -120,18 +120,18 @@ baseline = rng.normal(100, 25, 40)             # subjects differ a lot
 treated = baseline + rng.normal(3, 4, 40)      # everyone improves ~3
 
 # UNPAIRED -- the between-subject variance drowns the effect:
-stats.ttest_ind(baseline, treated).pvalue      # 0.58  -- nothing found
+stats.ttest_ind(baseline, treated).pvalue      # 0.64  -- nothing found
 
 # PAIRED -- the same data, the same effect:
-stats.ttest_rel(baseline, treated).pvalue      # 3.5e-05
+stats.ttest_rel(baseline, treated).pvalue      # 2.1e-03
 
 # IT IS LITERALLY A ONE-SAMPLE TEST ON THE DIFFERENCES:
 d = treated - baseline
-stats.ttest_1samp(d, 0).pvalue                 # 3.5e-05 -- identical
+stats.ttest_1samp(d, 0).pvalue                 # 2.1e-03 -- identical
 
 # WHERE THE POWER CAME FROM:
 baseline.std(ddof=1)                           # 24.1  between subjects
-d.std(ddof=1)                                  #  4.1  within subjects
+d.std(ddof=1)                                  #  5.0  within subjects
 #
 # THE COMPARISON'S NOISE FELL BY A FACTOR OF SIX, so the effective
 # sample multiplied by ~35.
@@ -152,8 +152,8 @@ d.std(ddof=1)                                  #  4.1  within subjects
 # zero, pairing is slightly WORSE.
 uncorrelated_a = rng.normal(100, 15, 40)
 uncorrelated_b = rng.normal(100, 15, 40)
-stats.ttest_rel(uncorrelated_a, uncorrelated_b).pvalue    # 0.72
-stats.ttest_ind(uncorrelated_a, uncorrelated_b).pvalue    # 0.70
+stats.ttest_rel(uncorrelated_a, uncorrelated_b).pvalue    # 0.87
+stats.ttest_ind(uncorrelated_a, uncorrelated_b).pvalue    # 0.87
 #
 # Break-even is around rho = 0.5; above that pairing wins, and it wins
 # enormously as rho approaches 1.`},
@@ -276,8 +276,8 @@ def pretest_then_choose(n1, n2, sd1, sd2, trials=20_000, seed=2):
         hits += stats.ttest_ind(a, b, equal_var=equal).pvalue < 0.05
     return hits / trials
 
-pretest_then_choose(200, 20, 1.0, 4.0)      # 0.071
-pretest_then_choose(200, 20, 1.0, 1.0)      # 0.058
+pretest_then_choose(200, 20, 1.0, 4.0)      # 0.053
+pretest_then_choose(200, 20, 1.0, 1.0)      # 0.052
 #
 # THE TWO-STAGE PROCEDURE SITS AT 6-7% IN BOTH CASES -- worse than
 # Welch alone in both. THE FIX IS NOT TO TEST, IT IS TO USE THE TEST

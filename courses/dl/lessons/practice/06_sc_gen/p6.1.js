@@ -170,7 +170,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Cycle consistency prevents mode collapse and ensures content is preserved. Two generators + two discriminators. Applications: style transfer, domain adaptation, photo enhancement."
+     "text": "**Explanation:** Cycle consistency discourages mode collapse and helps preserve content. Two generators + two discriminators. Applications: style transfer, domain adaptation, photo enhancement."
     }
    ],
    "kind": ""

@@ -67,8 +67,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`__iter__()`**Returns an iterator object. Called by `iter()`.",
-      "**`__next__()`**Returns the next value or raises `StopIteration`. Called by `next()`."
+      "**`__iter__()`:** Returns an iterator object. Called by `iter()`.",
+      "**`__next__()`:** Returns the next value or raises `StopIteration`. Called by `next()`."
      ]
     },
     {
@@ -651,7 +651,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**When to use:** When you need to make a small number of passes over a moderate-sized iterator. For large data, consider materializing with `list()` or restructuring the algorithm."
+     "text": "**When to use:** When you need to make a small number of passes over a moderate-sized iterator. For large data, consider materialising with `list()` or restructuring the algorithm."
     }
    ]
   },
@@ -667,14 +667,14 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Need random access**Can't index `gen[5]`; use list",
-      "**Need `len()`**Generators don't support `len()`",
-      "**Need multiple passes**Generators are single-use; recreating them may re-execute expensive operations",
-      "**Need to slice**Can't use `gen[2:5]`; need `islice()` which consumes",
-      "**Small data**Overhead of generator protocol may be slower than a list for small collections",
-      "**Need to sort or reverse**These require all data in memory anyway",
-      "**Debugging**Generators are harder to inspect (can't `print` all values without consuming)",
-      "**Concurrent access**Generators are not thread-safe"
+      "**Need random access:** Can't index `gen[5]`; use list",
+      "**Need `len()`:** Generators don't support `len()`",
+      "**Need multiple passes:** Generators are single-use; recreating them may re-execute expensive operations",
+      "**Need to slice:** Can't use `gen[2:5]`; need `islice()` which consumes",
+      "**Small data:** Overhead of generator protocol may be slower than a list for small collections",
+      "**Need to sort or reverse:** These require all data in memory anyway",
+      "**Debugging:** Generators are harder to inspect (can't `print` all values without consuming)",
+      "**Concurrent access:** Generators are not thread-safe"
      ]
     },
     {
@@ -769,7 +769,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Normal behavior:**"
+     "text": "**Normal behaviour:**"
     },
     {
      "t": "code",

@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "1.1",
 
-  lede: "Two pointers is one idea: **when a nested loop is doing redundant work, replace it with two indices that only ever move forwards.** It turns O(n²) into O(n) for a large family of problems, and recognising when it applies is worth more than memorising any individual solution.",
+  lede: "Two pointers is one idea: **when a nested loop is doing redundant work, replace it with two indices that each move in one direction only.** It turns O(n²) into O(n) for a large family of problems, and recognising when it applies is worth more than memorising any individual solution.",
 
   objectives: [
     "Recognise the three two-pointer shapes and when each applies",
@@ -330,10 +330,13 @@ s = "ab",           t = "b"      ->  "b"`},
 
 
 from collections import Counter
+from timeit import timeit
+
+import pytest
 
 
 def min_window(s: str, t: str) -> str:
-    """O(|s| + |t|) time, O(|s| + |t|) space."""
+    """O(|s| + |t|) time, O(|t|) space, plus the returned slice."""
     if not s or not t or len(t) > len(s):
         return ""
 
@@ -440,9 +443,9 @@ def min_window(s: str, t: str) -> str:
 #             |t| to build the Counter
 #             |s| for the scan -- each index enters and leaves once
 #
-#   SPACE:  O(|s| + |t|)
+#   SPACE:  O(|t|)
 #             need   holds at most |t| distinct chars
-#             window holds at most |s| distinct chars
+#             window only ever counts characters that are in need
 #
 #           If the alphabet is fixed -- ASCII, say -- both are O(1)
 #           in the alphabet size, so it is often quoted as O(1)
@@ -518,7 +521,7 @@ def test_linear_time():
             { t: "p", text: "The equivalent phrasing is often clearer: each index enters the window exactly once and leaves at most once, so there are at most 2n pointer movements doing O(1) work each." }
           ]},
           { t: "p", text: "**Characters of `t` absent from `s` need no special case.** `formed` simply never reaches `required` and the function returns `\"\"` — saying so explicitly shows you have reasoned about the invariant rather than reaching for a guard clause." },
-          { t: "p", text: "**State the space assumption rather than just the number.** O(|s| + |t|) in general, or O(1) if the alphabet is fixed — which of those you say is frequently the follow-up question, and giving both pre-empts it." },
+          { t: "p", text: "**State the space assumption rather than just the number.** O(|t|) in general, or O(1) if the alphabet is fixed — which of those you say is frequently the follow-up question, and giving both pre-empts it." },
           { t: "p", text: "**\"Longest substring with at most k distinct characters\" is the same code** with one line changed in the validity condition. Learning the template rather than the solution is what makes the next problem five minutes instead of thirty." }
         ]
       }
@@ -533,7 +536,7 @@ def test_linear_time():
   ],
 
   takeaways: [
-    "**Two pointers replaces a nested loop when the redundant work has a direction** — the pointers only ever move forwards.",
+    "**Two pointers replaces a nested loop when the redundant work has a direction** — each pointer only ever moves one way.",
     "**Opposite ends needs a sorted array**, because sorting is what makes \"too small, move left\" the only valid response.",
     "**A sliding window needs a monotonic validity condition.** With negative numbers, growing can decrease the sum, so the window breaks — use prefix sums.",
     "**Track validity with a single counter, not by comparing dictionaries** — that is the difference between O(n) and O(n × alphabet).",
@@ -555,10 +558,10 @@ def test_linear_time():
       {
         stem: "A sliding window solution has a `while` loop inside a `for` loop. Is it O(n²)?",
         options: [
-          "Yes — nested loops are always quadratic",
-          "No — `left` only increases and is bounded by n, so the inner body runs at most n times across the whole scan",
-          "Only if the window can shrink to zero",
-          "It depends on the alphabet size"
+          "Yes — nested loops are always quadratic, whatever the inner loop's condition",
+          "No — `left` only increases, so the inner body runs at most n times in total",
+          "Only if the window can shrink all the way to zero on a single step",
+          "It depends on the alphabet size, which sets how often the inner loop runs"
         ],
         answer: 1,
         why: "This is the amortised argument, and it is the question interviewers ask when they see the structure. Equivalently: each index enters the window once and leaves at most once, so there are at most 2n pointer movements doing constant work each."
@@ -566,34 +569,34 @@ def test_linear_time():
       {
         stem: "Why does a sliding window fail for \"count subarrays summing to k\" when negatives are allowed?",
         options: [
-          "The sum can exceed integer limits",
-          "Growing the window can decrease the sum, so \"too large, shrink\" is not a valid response — the validity condition is not monotonic",
-          "Negative numbers break the pointer ordering",
-          "It works, but requires sorting first"
+          "The running sum can exceed integer limits once negative values are mixed in",
+          "It works, but only after the array has been sorted",
+          "Negative numbers break the pointer ordering that the window relies on",
+          "Growing the window can lower the sum, so shrinking is not a safe response"
         ],
-        answer: 1,
+        answer: 3,
         why: "The window technique depends on knowing which direction helps. With negatives that inference is invalid, so the right tool is prefix sums with a hash map: if `prefix[j] - prefix[i] == k` then `prefix[i] == prefix[j] - k`, which is a lookup."
       },
       {
         stem: "`for i, x in enumerate(nums): if x == val: del nums[i]` — what goes wrong?",
         options: [
-          "Nothing, though it is slow",
-          "Deleting shifts the tail down while the index moves on, so the element that slid into the vacated slot is never examined",
-          "It raises a RuntimeError",
-          "It only removes the last occurrence"
+          "The element that slides into the vacated slot is never examined",
+          "Nothing, though each deletion is slow because the tail has to shift",
+          "It raises a `RuntimeError`, because the list changed size during iteration",
+          "It only removes the last occurrence, since the iterator is rebuilt after each deletion"
         ],
-        answer: 1,
+        answer: 0,
         why: "`[3, 3, 2]` with `val=3` leaves `[3, 2]`. It is also O(n) per deletion. The fast/slow pointer version examines every element exactly once, allocates nothing, and is the standard answer when the problem requires O(1) space."
       },
       {
         stem: "A minimum-window solution checks validity by comparing two `Counter` objects each step. What is the cost?",
         options: [
-          "It is still O(n) — dictionary comparison is constant time",
-          "O(n × distinct characters), because each comparison scans every key; a single `formed` counter makes it O(1) per step",
-          "It is incorrect for duplicates",
-          "It doubles the space complexity"
+          "It is still O(n), because comparing two dictionaries is a constant-time operation",
+          "It gives wrong answers for duplicates, because `Counter` equality ignores counts",
+          "O(n × distinct characters), since each comparison scans every key",
+          "It doubles the space complexity, because each step keeps both counters"
         ],
-        answer: 1,
+        answer: 2,
         why: "Tracking how many distinct characters currently meet their required count reduces the check to one integer comparison. Incrementing only when a count reaches its requirement exactly — and decrementing only when it falls below — is what keeps duplicates correct."
       }
     ]

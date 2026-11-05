@@ -381,7 +381,7 @@ EC.receiveLesson({
       [
        "Conjugate gradient",
        "Large sparse systems",
-       "\\(O(n\\sqrt{\\kappa})\\) iterations"
+       "\\(O(\\sqrt{\\kappa})\\) iterations, one matrix-vector product each"
       ]
      ]
     }

@@ -764,31 +764,31 @@ def test_the_fake_mailer_rejects_what_the_real_one_would(mailer):
         stem: "`app/client.py` has `from requests import get`. Your test patches `requests.get` and a real HTTP call still happens. Why?",
         options: [
           "`patch` cannot replace third-party functions",
-          "The import bound a separate name in `app.client` that still points at the original function — you must patch `app.client.get`",
           "The patch was applied after the module was imported",
-          "`requests.get` is a C function and cannot be patched"
+          "`requests.get` is implemented in C and therefore cannot be patched from Python",
+          "`app.client` holds its own reference — patch `app.client.get` instead"
         ],
-        answer: 1,
+        answer: 3,
         why: "`from x import y` copies a reference into the importing module's namespace. Replacing `x.y` afterwards does not change the copy your module is holding. Patch where the name is looked up. `import requests` followed by `requests.get(...)` defers the lookup to call time, which is why that style is patchable at either location."
       },
       {
         stem: "A suite is green, but every payment fails in production after the SDK renamed `charge()` to `create_charge()`. What would have caught it?",
         options: [
           "Higher line coverage",
-          "`autospec=True` on the patch, so calling a method the real object does not have raises `AttributeError`",
-          "Running the tests against the real API",
-          "Pinning the SDK version"
+          "Running the tests against the real payment API",
+          "Pinning the SDK version",
+          "`autospec=True`, so missing methods raise"
         ],
-        answer: 1,
+        answer: 3,
         why: "A bare `Mock` auto-creates any attribute, so `mock.charge(...)` succeeds against a method that no longer exists. `autospec` builds the double from the real object's interface, so the dependency bump fails the suite instead of production. Pinning delays the problem; coverage measures that lines ran, not that they did anything real."
       },
       {
         stem: "Why prefer a hand-written fake over a `Mock` for your own repository class?",
         options: [
-          "Fakes are faster to construct",
-          "A fake can be queried, so tests assert on stored state rather than on which methods were called — and it can enforce the same preconditions the real one does",
-          "`Mock` cannot be used for classes",
-          "Fakes are required for integration tests"
+          "Fakes are faster to construct than mocks, which matters in a large suite",
+          "Tests can assert on stored state rather than on calls made",
+          "`Mock` cannot be used to stand in for classes, only for functions",
+          "Fakes are required for integration tests, and mocks are only for unit tests"
         ],
         answer: 1,
         why: "`repo.get(order.id).status == \"paid\"` states what the system believes and survives a refactor of how saving works; `save.assert_called_once()` states only that a method ran and breaks when the implementation changes. A fake that rejects an invalid recipient also catches bugs a mock accepts silently — and it is written once and reused across the suite."
@@ -796,10 +796,10 @@ def test_the_fake_mailer_rejects_what_the_real_one_would(mailer):
       {
         stem: "A checkout test mocks the payment gateway and configures only a successful charge. What does that make impossible to test?",
         options: [
-          "The amount charged",
-          "Every failure path — a declined card is never raised, so the code handling it never runs",
-          "The email template used",
-          "The order in which dependencies are constructed"
+          "The amount that is charged to the card",
+          "Every failure path, such as a decline",
+          "The email template used for the receipt",
+          "The order in which the dependencies are constructed"
         ],
         answer: 1,
         why: "The structure of the test, not its assertions, is what hides the bug: with a mock that always succeeds, no arrangement of assertions can reach the decline branch. A fake that can be configured to decline makes the path reachable in one line — which is how you discover that an order was saved before the payment and left looking fulfilled."

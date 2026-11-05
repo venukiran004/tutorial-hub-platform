@@ -22,7 +22,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "Page Recommendation Query (Meta â€” Data Scientist)",
+   "q": "Page Recommendation Query (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -65,7 +65,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "SQL Frequency Table with JOINs (Meta â€” Data Scientist)",
+   "q": "SQL Frequency Table with JOINs (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -82,12 +82,12 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Handling NULLs â€” Critical patterns:**"
+     "text": "**Handling NULLs — Critical patterns:**"
     },
     {
      "t": "code",
      "lang": "sql",
-     "code": "-- COALESCE for default values\nSELECT COALESCE(column, 'default_value')\n\n-- NULLIF to prevent division by zero\nSELECT revenue / NULLIF(cost, 0)\n\n-- IS NULL vs = NULL (= NULL never works!)\nWHERE column IS NULL  -- âœ… Correct\nWHERE column = NULL   -- âŒ Always false"
+     "code": "-- COALESCE for default values\nSELECT COALESCE(column, 'default_value')\n\n-- NULLIF to prevent division by zero\nSELECT revenue / NULLIF(cost, 0)\n\n-- IS NULL vs = NULL (= NULL never works!)\nWHERE column IS NULL  -- ✅ Correct\nWHERE column = NULL   -- ❌ Always false"
     }
    ],
    "kind": ""
@@ -95,7 +95,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "Friend Request Acceptance Rate (Meta â€” Data Scientist)",
+   "q": "Friend Request Acceptance Rate (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -125,7 +125,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "Cumulative Song Count with INSERT/UPDATE Logic (Meta â€” Data Scientist)",
+   "q": "Cumulative Song Count with INSERT/UPDATE Logic (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -155,7 +155,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "Umbrella Problem â€” Bayesian Reasoning (Meta â€” Data Scientist)",
+   "q": "Umbrella Problem — Bayesian Reasoning (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -182,7 +182,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**P(all say raining | R) â€” actually raining, all tell truth:**"
+     "text": "**P(all say raining | R) — actually raining, all tell truth:**"
     },
     {
      "t": "math",
@@ -190,7 +190,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**P(all say raining | R') â€” not raining, all lie:**"
+     "text": "**P(all say raining | R') — not raining, all lie:**"
     },
     {
      "t": "math",
@@ -214,12 +214,12 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer: P(actually raining) = 8/9 â‰ˆ 88.9%**"
+     "text": "**Answer: P(actually raining) = 8/9 ≈ 88.9%**"
     },
     {
      "t": "code",
      "lang": "python",
-     "code": "# Verification via simulation\nimport random\n\ndef simulate(n_trials=1000000):\n    rain_given_all_say = 0\n    all_say_rain = 0\n\n    for _ in range(n_trials):\n        raining = random.random() < 0.5\n\n        # Each friend says rain if (raining AND truth) or (not raining AND lie)\n        says_rain = []\n        for _ in range(3):\n            lies = random.random() < 1/3\n            if raining:\n                says_rain.append(not lies)  # Truth = says rain\n            else:\n                says_rain.append(lies)       # Lie = says rain\n\n        if all(says_rain):\n            all_say_rain += 1\n            if raining:\n                rain_given_all_say += 1\n\n    return rain_given_all_say / all_say_rain\n\nprint(f\"P(rain | all say rain) = {simulate():.4f}\")  # â‰ˆ 0.8889"
+     "code": "# Verification via simulation\nimport random\n\ndef simulate(n_trials=1000000):\n    rain_given_all_say = 0\n    all_say_rain = 0\n\n    for _ in range(n_trials):\n        raining = random.random() < 0.5\n\n        # Each friend says rain if (raining AND truth) or (not raining AND lie)\n        says_rain = []\n        for _ in range(3):\n            lies = random.random() < 1/3\n            if raining:\n                says_rain.append(not lies)  # Truth = says rain\n            else:\n                says_rain.append(lies)       # Lie = says rain\n\n        if all(says_rain):\n            all_say_rain += 1\n            if raining:\n                rain_given_all_say += 1\n\n    return rain_given_all_say / all_say_rain\n\nprint(f\"P(rain | all say rain) = {simulate():.4f}\")  # ≈ 0.8889"
     }
    ],
    "kind": ""
@@ -227,7 +227,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "Ad Serving Probability (Meta â€” Data Scientist)",
+   "q": "Ad Serving Probability (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -264,12 +264,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Deterministic: exactly 4 ads (100/25)",
-      "Probabilistic: E[X] = n Ã— p = 100 Ã— 0.04 = 4 ads"
+      "Probabilistic: E[X] = n × p = 100 × 0.04 = 4 ads"
      ]
     },
     {
      "t": "p",
-     "text": "**P(exactly 1 ad in first 25 views) â€” Binomial:**"
+     "text": "**P(exactly 1 ad in first 25 views) — Binomial:**"
     },
     {
      "t": "math",
@@ -278,11 +278,11 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from scipy.stats import binom\n\n# P(exactly 1 ad in 25 views)\np_one = binom.pmf(1, n=25, p=0.04)\nprint(f\"P(X=1) = {p_one:.4f}\")  # â‰ˆ 0.3754\n\n# P(0 ads in 100 views)\np_zero = binom.pmf(0, n=100, p=0.04)\nprint(f\"P(X=0) = {p_zero:.4f}\")  # â‰ˆ 0.0169\n\n# Or using Poisson approximation (Î» = np = 4)\nfrom scipy.stats import poisson\np_zero_poisson = poisson.pmf(0, mu=4)\nprint(f\"Poisson P(X=0) = {p_zero_poisson:.4f}\")  # â‰ˆ 0.0183"
+     "code": "from scipy.stats import binom\n\n# P(exactly 1 ad in 25 views)\np_one = binom.pmf(1, n=25, p=0.04)\nprint(f\"P(X=1) = {p_one:.4f}\")  # ≈ 0.3754\n\n# P(0 ads in 100 views)\np_zero = binom.pmf(0, n=100, p=0.04)\nprint(f\"P(X=0) = {p_zero:.4f}\")  # ≈ 0.0169\n\n# Or using Poisson approximation (λ = np = 4)\nfrom scipy.stats import poisson\np_zero_poisson = poisson.pmf(0, mu=4)\nprint(f\"Poisson P(X=0) = {p_zero_poisson:.4f}\")  # ≈ 0.0183"
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Deterministic is predictable (exact placement), probabilistic is flexible but has variance. The probabilistic approach can show 0 ads or cluster multiple ads â€” important for user experience design."
+     "text": "**Key Insight:** Deterministic is predictable (exact placement), probabilistic is flexible but has variance. The probabilistic approach can show 0 ads or cluster multiple ads — important for user experience design."
     }
    ],
    "kind": ""
@@ -290,7 +290,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Stone Game Probability with Dice (Meta â€” Data Scientist)",
+   "q": "Stone Game Probability with Dice (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -311,7 +311,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Find Removed Element from List (Meta â€” Data Scientist)",
+   "q": "Find Removed Element from List (Meta — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -324,7 +324,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Method 1: Sum difference â€” O(n) time, O(1) space\ndef find_removed_sum(a, b):\n    return sum(a) - sum(b)\n\n# Method 2: XOR â€” handles integer overflow better\ndef find_removed_xor(a, b):\n    result = 0\n    for num in a:\n        result ^= num\n    for num in b:\n        result ^= num\n    return result\n\n# Method 3: Counter difference â€” works with non-numeric types\nfrom collections import Counter\ndef find_removed_counter(a, b):\n    diff = Counter(a) - Counter(b)\n    return list(diff.elements())[0]\n\n# Method 4: Sorting â€” O(n log n)\ndef find_removed_sort(a, b):\n    a.sort()\n    b.sort()\n    for x, y in zip(a, b):\n        if x != y:\n            return x\n    return a[-1]\n\n# Test\na = [3, 1, 4, 1, 5, 9]\nb = [3, 1, 4, 5, 9]\nprint(find_removed_xor(a, b))  # 1"
+     "code": "# Method 1: Sum difference — O(n) time, O(1) space\ndef find_removed_sum(a, b):\n    return sum(a) - sum(b)\n\n# Method 2: XOR — handles integer overflow better\ndef find_removed_xor(a, b):\n    result = 0\n    for num in a:\n        result ^= num\n    for num in b:\n        result ^= num\n    return result\n\n# Method 3: Counter difference — works with non-numeric types\nfrom collections import Counter\ndef find_removed_counter(a, b):\n    diff = Counter(a) - Counter(b)\n    return list(diff.elements())[0]\n\n# Method 4: Sorting — O(n log n)\ndef find_removed_sort(a, b):\n    a.sort()\n    b.sort()\n    for x, y in zip(a, b):\n        if x != y:\n            return x\n    return a[-1]\n\n# Test\na = [3, 1, 4, 1, 5, 9]\nb = [3, 1, 4, 5, 9]\nprint(find_removed_xor(a, b))  # 1"
     }
    ],
    "kind": ""
@@ -332,7 +332,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Second Largest Element in BST (LinkedIn â€” Data Scientist)",
+   "q": "Second Largest Element in BST (LinkedIn — Data Scientist)",
    "body": [
     {
      "t": "p",
@@ -345,7 +345,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef second_largest_bst(root):\n    \"\"\"\n    The largest is the rightmost node.\n    The second largest is either:\n    1. Parent of the rightmost node (if rightmost has no left subtree)\n    2. Rightmost node of the left subtree of the largest\n    \"\"\"\n    if not root:\n        return None\n\n    current = root\n    parent = None\n\n    # Find the largest (rightmost) node\n    while current.right:\n        parent = current\n        current = current.right\n\n    # Case 1: Largest node has a left subtree\n    # â†’ Second largest is the rightmost of that left subtree\n    if current.left:\n        node = current.left\n        while node.right:\n            node = node.right\n        return node.val\n\n    # Case 2: Largest node has no left subtree\n    # â†’ Second largest is its parent\n    return parent.val if parent else None\n\n# Alternative: In-order traversal (reverse)\ndef second_largest_inorder(root):\n    stack = []\n    count = 0\n    current = root\n\n    while stack or current:\n        while current:\n            stack.append(current)\n            current = current.right  # Reverse in-order\n\n        current = stack.pop()\n        count += 1\n        if count == 2:\n            return current.val\n        current = current.left\n\n    return None"
+     "code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef second_largest_bst(root):\n    \"\"\"\n    The largest is the rightmost node.\n    The second largest is either:\n    1. Parent of the rightmost node (if rightmost has no left subtree)\n    2. Rightmost node of the left subtree of the largest\n    \"\"\"\n    if not root:\n        return None\n\n    current = root\n    parent = None\n\n    # Find the largest (rightmost) node\n    while current.right:\n        parent = current\n        current = current.right\n\n    # Case 1: Largest node has a left subtree\n    # → Second largest is the rightmost of that left subtree\n    if current.left:\n        node = current.left\n        while node.right:\n            node = node.right\n        return node.val\n\n    # Case 2: Largest node has no left subtree\n    # → Second largest is its parent\n    return parent.val if parent else None\n\n# Alternative: In-order traversal (reverse)\ndef second_largest_inorder(root):\n    stack = []\n    count = 0\n    current = root\n\n    while stack or current:\n        while current:\n            stack.append(current)\n            current = current.right  # Reverse in-order\n\n        current = stack.pop()\n        count += 1\n        if count == 2:\n            return current.val\n        current = current.left\n\n    return None"
     },
     {
      "t": "p",

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c6.1",
  "lede": "**21 programs to write**, on functions and classic routines. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 21 programs on functions and classic routines without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c5.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 666–686.** What this set actually drills, counted from its own problems — 12 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["numbers", "lists", "strings", "functions"], "cells": [[{"text": "4", "tone": "accent"}, "Factorial Using Iteration"], [{"text": "4", "tone": "good"}, "Matrix Addition"], [{"text": "3", "tone": "violet"}, "Reverse a String"], [{"text": "1", "tone": "teal"}, "Power Function Without Built"]], "t": "diagram", "id": "dg-c6_1-top-0"},
   {
    "t": "viz",
    "title": "When a default argument is created",
@@ -260,7 +260,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def multiplication_table(n, upto=10):\n    return [(n, i, n * i) for i in range(1, upto + 1)]\n\nfor a, b, result in multiplication_table(7):\n    print(f\"{a} Ã— {b} = {result}\")",
+     "code": "def multiplication_table(n, upto=10):\n    return [(n, i, n * i) for i in range(1, upto + 1)]\n\nfor a, b, result in multiplication_table(7):\n    print(f\"{a} × {b} = {result}\")",
      "numbered": false
     }
    ]

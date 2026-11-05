@@ -375,9 +375,9 @@ for q, ents in FAILING:
     is_struct, witness = structural_failure(ents, chunks)
     print("%-12s %s" % ("STRUCTURAL" if is_struct else "RANKING", q[:52]))
     if not is_struct:
-        print("             witness: %s" % witness[:60].replace("\n", " "))
+        print("             witness: %s" % witness[:60].replace("\\n", " "))
     structural += is_struct
-print("\nstructural: %d of %d" % (structural, len(FAILING)))`,
+print("\\nstructural: %d of %d" % (structural, len(FAILING)))`,
         out: `  [shape -- the classification depends on your corpus]
 
   STRUCTURAL   What companies did the CEO of the acquirer of Insta

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c23.2",
  "lede": "**18 programs to write**, on resilience, events and observability. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on scaling & resilience without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 18 programs on resilience, events and observability without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c23.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2742–2759.** What this set actually drills, counted from its own problems — 4 of the 18 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["exceptions", "production"], "cells": [[{"text": "2", "tone": "accent"}, "Retry strategies"], [{"text": "2", "tone": "good"}, "Metrics collection"]], "t": "diagram", "id": "dg-c23_2-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -44,7 +44,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q491: Load balancing\")\nprint(\"  Distribute traffic across multiple servers.\")\nprint(\"  Algorithms: round-robin, least-connections, IP hash, weighted\")\nprint(\"  Layer 4 (TCP) vs Layer 7 (HTTP)\")\nprint(\"  Tools: Nginx, HAProxy, AWS ELB/ALB\")\nprint()",
+     "code": "print(\"Load balancing\")\nprint(\"  Distribute traffic across multiple servers.\")\nprint(\"  Algorithms: round-robin, least-connections, IP hash, weighted\")\nprint(\"  Layer 4 (TCP) vs Layer 7 (HTTP)\")\nprint(\"  Tools: Nginx, HAProxy, AWS ELB/ALB\")\nprint()",
      "numbered": false
     },
     {
@@ -54,7 +54,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q491: Load balancing\n  Distribute traffic across multiple servers.\n  Algorithms: round-robin, least-connections, IP hash, weighted\n  Layer 4 (TCP) vs Layer 7 (HTTP)\n  Tools: Nginx, HAProxy, AWS ELB/ALB",
+     "code": "Load balancing\n  Distribute traffic across multiple servers.\n  Algorithms: round-robin, least-connections, IP hash, weighted\n  Layer 4 (TCP) vs Layer 7 (HTTP)\n  Tools: Nginx, HAProxy, AWS ELB/ALB",
      "numbered": false
     }
    ]
@@ -67,7 +67,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q492: Horizontal scaling\")\nprint(\"  Add more machines to handle more load.\")\nprint(\"  Stateless services → easy to scale horizontally\")\nprint(\"  Challenges: session management, data consistency\")\nprint(\"  Use: load balancer + multiple app instances\")\nprint()",
+     "code": "print(\"Horizontal scaling\")\nprint(\"  Add more machines to handle more load.\")\nprint(\"  Stateless services → easy to scale horizontally\")\nprint(\"  Challenges: session management, data consistency\")\nprint(\"  Use: load balancer + multiple app instances\")\nprint()",
      "numbered": false
     },
     {
@@ -77,7 +77,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q492: Horizontal scaling\n  Add more machines to handle more load.\n  Stateless services → easy to scale horizontally\n  Challenges: session management, data consistency\n  Use: load balancer + multiple app instances",
+     "code": "Horizontal scaling\n  Add more machines to handle more load.\n  Stateless services → easy to scale horizontally\n  Challenges: session management, data consistency\n  Use: load balancer + multiple app instances",
      "numbered": false
     }
    ]
@@ -90,7 +90,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q493: Vertical scaling\")\nprint(\"  Add more resources (CPU, RAM) to existing machine.\")\nprint(\"  Simpler but has limits (hardware ceiling).\")\nprint(\"  Good for: databases, single-process applications\")\nprint(\"  Limits: single point of failure, cost curve\")\nprint()",
+     "code": "print(\"Vertical scaling\")\nprint(\"  Add more resources (CPU, RAM) to existing machine.\")\nprint(\"  Simpler but has limits (hardware ceiling).\")\nprint(\"  Good for: databases, single-process applications\")\nprint(\"  Limits: single point of failure, cost curve\")\nprint()",
      "numbered": false
     },
     {
@@ -100,7 +100,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q493: Vertical scaling\n  Add more resources (CPU, RAM) to existing machine.\n  Simpler but has limits (hardware ceiling).\n  Good for: databases, single-process applications\n  Limits: single point of failure, cost curve",
+     "code": "Vertical scaling\n  Add more resources (CPU, RAM) to existing machine.\n  Simpler but has limits (hardware ceiling).\n  Good for: databases, single-process applications\n  Limits: single point of failure, cost curve",
      "numbered": false
     }
    ]
@@ -113,7 +113,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q494: Health checks\")\nprint(\"  Endpoints that report service health.\")\nprint(\"  @app.get('/health')\")\nprint(\"  async def health(): return {'status': 'ok', 'db': check_db()}\")\nprint(\"  Types: liveness (is alive?), readiness (can serve?)\")\nprint(\"  Used by: load balancers, Kubernetes, monitoring\")\nprint()",
+     "code": "print(\"Health checks\")\nprint(\"  Endpoints that report service health.\")\nprint(\"  @app.get('/health')\")\nprint(\"  async def health(): return {'status': 'ok', 'db': check_db()}\")\nprint(\"  Types: liveness (is alive?), readiness (can serve?)\")\nprint(\"  Used by: load balancers, Kubernetes, monitoring\")\nprint()",
      "numbered": false
     },
     {
@@ -123,7 +123,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q494: Health checks\n  Endpoints that report service health.\n  @app.get('/health')\n  async def health(): return {'status': 'ok', 'db': check_db()}\n  Types: liveness (is alive?), readiness (can serve?)\n  Used by: load balancers, Kubernetes, monitoring",
+     "code": "Health checks\n  Endpoints that report service health.\n  @app.get('/health')\n  async def health(): return {'status': 'ok', 'db': check_db()}\n  Types: liveness (is alive?), readiness (can serve?)\n  Used by: load balancers, Kubernetes, monitoring",
      "numbered": false
     }
    ]
@@ -136,7 +136,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q496: Bulkhead pattern\")\nprint(\"  Isolate components so failure in one doesn't affect others.\")\nprint(\"  Like ship bulkheads: compartmentalize resources.\")\nprint(\"  Implementation: separate thread/process pools per service\")\nprint(\"  Example: dedicated connection pool per downstream service\")\nprint()",
+     "code": "print(\"Bulkhead pattern\")\nprint(\"  Isolate components so failure in one doesn't affect others.\")\nprint(\"  Like ship bulkheads: compartmentalize resources.\")\nprint(\"  Implementation: separate thread/process pools per service\")\nprint(\"  Example: dedicated connection pool per downstream service\")\nprint()",
      "numbered": false
     },
     {
@@ -146,7 +146,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q496: Bulkhead pattern\n  Isolate components so failure in one doesn't affect others.\n  Like ship bulkheads: compartmentalize resources.\n  Implementation: separate thread/process pools per service\n  Example: dedicated connection pool per downstream service",
+     "code": "Bulkhead pattern\n  Isolate components so failure in one doesn't affect others.\n  Like ship bulkheads: compartmentalize resources.\n  Implementation: separate thread/process pools per service\n  Example: dedicated connection pool per downstream service",
      "numbered": false
     }
    ]
@@ -159,7 +159,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q497: Retry strategies\")\nprint(\"  Retry failed operations with increasing delays.\")\nprint(\"  Patterns: fixed delay, exponential backoff, jitter\")\nprint(\"  Libraries: tenacity, backoff\")\nprint(\"  from tenacity import retry, stop_after_attempt, wait_exponential\")\nprint(\"  @retry(stop=stop_after_attempt(3), wait=wait_exponential())\")\nprint(\"  def call_api(): ...\")\nprint()",
+     "code": "print(\"Retry strategies\")\nprint(\"  Retry failed operations with increasing delays.\")\nprint(\"  Patterns: fixed delay, exponential backoff, jitter\")\nprint(\"  Libraries: tenacity, backoff\")\nprint(\"  from tenacity import retry, stop_after_attempt, wait_exponential\")\nprint(\"  @retry(stop=stop_after_attempt(3), wait=wait_exponential())\")\nprint(\"  def call_api(): ...\")\nprint()",
      "numbered": false
     },
     {
@@ -169,7 +169,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q497: Retry strategies\n  Retry failed operations with increasing delays.\n  Patterns: fixed delay, exponential backoff, jitter\n  Libraries: tenacity, backoff\n  from tenacity import retry, stop_after_attempt, wait_exponential\n  @retry(stop=stop_after_attempt(3), wait=wait_exponential())\n  def call_api(): ...",
+     "code": "Retry strategies\n  Retry failed operations with increasing delays.\n  Patterns: fixed delay, exponential backoff, jitter\n  Libraries: tenacity, backoff\n  from tenacity import retry, stop_after_attempt, wait_exponential\n  @retry(stop=stop_after_attempt(3), wait=wait_exponential())\n  def call_api(): ...",
      "numbered": false
     }
    ]
@@ -182,7 +182,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q498: Idempotency\")\nprint(\"  Same request produces same result regardless of repetitions.\")\nprint(\"  GET, PUT, DELETE are naturally idempotent.\")\nprint(\"  POST needs idempotency key: X-Idempotency-Key header\")\nprint(\"  Implementation: store request ID, return cached response\")\nprint()",
+     "code": "print(\"Idempotency\")\nprint(\"  Same request produces same result regardless of repetitions.\")\nprint(\"  GET, PUT, DELETE are naturally idempotent.\")\nprint(\"  POST needs idempotency key: X-Idempotency-Key header\")\nprint(\"  Implementation: store request ID, return cached response\")\nprint()",
      "numbered": false
     },
     {
@@ -192,7 +192,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q498: Idempotency\n  Same request produces same result regardless of repetitions.\n  GET, PUT, DELETE are naturally idempotent.\n  POST needs idempotency key: X-Idempotency-Key header\n  Implementation: store request ID, return cached response",
+     "code": "Idempotency\n  Same request produces same result regardless of repetitions.\n  GET, PUT, DELETE are naturally idempotent.\n  POST needs idempotency key: X-Idempotency-Key header\n  Implementation: store request ID, return cached response",
      "numbered": false
     }
    ]
@@ -205,7 +205,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q500: Sagas\")\nprint(\"  Manage distributed transactions across microservices.\")\nprint(\"  Types: Choreography (events) vs Orchestration (central coordinator)\")\nprint(\"  Each step has a compensating action for rollback.\")\nprint(\"  Example: Order → Payment → Inventory → Shipping\")\nprint(\"  If Payment fails → compensate Order (cancel)\")\nprint()\n\nprint(\"=\" * 70)\nprint(\"FILE 9 COMPLETE: Questions 451-500 (Databases, APIs, Backend)\")\nprint(\"=\" * 70)",
+     "code": "print(\"Sagas\")\nprint(\"  Manage distributed transactions across microservices.\")\nprint(\"  Types: Choreography (events) vs Orchestration (central coordinator)\")\nprint(\"  Each step has a compensating action for rollback.\")\nprint(\"  Example: Order → Payment → Inventory → Shipping\")\nprint(\"  If Payment fails → compensate Order (cancel)\")\nprint()\n\nprint(\"=\" * 70)\nprint(\"FILE 9 COMPLETE: Questions 451-500 (Databases, APIs, Backend)\")\nprint(\"=\" * 70)",
      "numbered": false
     },
     {
@@ -215,7 +215,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q500: Sagas\n  Manage distributed transactions across microservices.\n  Types: Choreography (events) vs Orchestration (central coordinator)\n  Each step has a compensating action for rollback.\n  Example: Order → Payment → Inventory → Shipping\n  If Payment fails → compensate Order (cancel)\n\n======================================================================\nFILE 9 COMPLETE: Questions 451-500 (Databases, APIs, Backend)\n======================================================================",
+     "code": "Sagas\n  Manage distributed transactions across microservices.\n  Types: Choreography (events) vs Orchestration (central coordinator)\n  Each step has a compensating action for rollback.\n  Example: Order → Payment → Inventory → Shipping\n  If Payment fails → compensate Order (cancel)\n\n======================================================================\nFILE 9 COMPLETE: Questions 451-500 (Databases, APIs, Backend)\n======================================================================",
      "numbered": false
     }
    ]
@@ -228,7 +228,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q501: Microservices\")\nprint(\"  Architectural style: small, independent, deployable services.\")\nprint(\"  Each service owns its data, communicates via APIs/events.\")\nprint(\"  Benefits: independent deployment, scaling, tech diversity\")\nprint(\"  Challenges: complexity, distributed transactions, debugging\")\nprint()",
+     "code": "print(\"Microservices\")\nprint(\"  Architectural style: small, independent, deployable services.\")\nprint(\"  Each service owns its data, communicates via APIs/events.\")\nprint(\"  Benefits: independent deployment, scaling, tech diversity\")\nprint(\"  Challenges: complexity, distributed transactions, debugging\")\nprint()",
      "numbered": false
     },
     {
@@ -238,7 +238,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q501: Microservices\n  Architectural style: small, independent, deployable services.\n  Each service owns its data, communicates via APIs/events.\n  Benefits: independent deployment, scaling, tech diversity\n  Challenges: complexity, distributed transactions, debugging",
+     "code": "Microservices\n  Architectural style: small, independent, deployable services.\n  Each service owns its data, communicates via APIs/events.\n  Benefits: independent deployment, scaling, tech diversity\n  Challenges: complexity, distributed transactions, debugging",
      "numbered": false
     }
    ]
@@ -251,7 +251,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q502: Monolith vs microservices\")\nprint(\"  Monolith: single deployable unit, shared DB\")\nprint(\"    + Simple, easy debugging, no network overhead\")\nprint(\"    - Hard to scale, deploy, and maintain at large scale\")\nprint(\"  Microservices: multiple independent services\")\nprint(\"    + Scale independently, team autonomy, resilience\")\nprint(\"    - Distributed complexity, operational overhead\")\nprint(\"  Start monolith, extract services when needed.\")\nprint()",
+     "code": "print(\"Monolith vs microservices\")\nprint(\"  Monolith: single deployable unit, shared DB\")\nprint(\"    + Simple, easy debugging, no network overhead\")\nprint(\"    - Hard to scale, deploy, and maintain at large scale\")\nprint(\"  Microservices: multiple independent services\")\nprint(\"    + Scale independently, team autonomy, resilience\")\nprint(\"    - Distributed complexity, operational overhead\")\nprint(\"  Start monolith, extract services when needed.\")\nprint()",
      "numbered": false
     },
     {
@@ -261,7 +261,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q502: Monolith vs microservices\n  Monolith: single deployable unit, shared DB\n    + Simple, easy debugging, no network overhead\n    - Hard to scale, deploy, and maintain at large scale\n  Microservices: multiple independent services\n    + Scale independently, team autonomy, resilience\n    - Distributed complexity, operational overhead\n  Start monolith, extract services when needed.",
+     "code": "Monolith vs microservices\n  Monolith: single deployable unit, shared DB\n    + Simple, easy debugging, no network overhead\n    - Hard to scale, deploy, and maintain at large scale\n  Microservices: multiple independent services\n    + Scale independently, team autonomy, resilience\n    - Distributed complexity, operational overhead\n  Start monolith, extract services when needed.",
      "numbered": false
     }
    ]
@@ -274,7 +274,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q503: Service discovery\")\nprint(\"  How services find each other in dynamic environments.\")\nprint(\"  Client-side: client queries registry (Consul, eureka)\")\nprint(\"  Server-side: load balancer routes (Kubernetes Services)\")\nprint(\"  DNS-based: service.namespace.svc.cluster.local\")\nprint()",
+     "code": "print(\"Service discovery\")\nprint(\"  How services find each other in dynamic environments.\")\nprint(\"  Client-side: client queries registry (Consul, eureka)\")\nprint(\"  Server-side: load balancer routes (Kubernetes Services)\")\nprint(\"  DNS-based: service.namespace.svc.cluster.local\")\nprint()",
      "numbered": false
     },
     {
@@ -284,7 +284,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q503: Service discovery\n  How services find each other in dynamic environments.\n  Client-side: client queries registry (Consul, eureka)\n  Server-side: load balancer routes (Kubernetes Services)\n  DNS-based: service.namespace.svc.cluster.local",
+     "code": "Service discovery\n  How services find each other in dynamic environments.\n  Client-side: client queries registry (Consul, eureka)\n  Server-side: load balancer routes (Kubernetes Services)\n  DNS-based: service.namespace.svc.cluster.local",
      "numbered": false
     }
    ]
@@ -297,7 +297,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q504: Distributed tracing\")\nprint(\"  Track requests across multiple services.\")\nprint(\"  Each request gets a trace ID propagated through all services.\")\nprint(\"  Tools: Jaeger, Zipkin, OpenTelemetry, Datadog APM\")\nprint(\"  Concepts: trace, span, parent span, baggage\")\nprint()",
+     "code": "print(\"Distributed tracing\")\nprint(\"  Track requests across multiple services.\")\nprint(\"  Each request gets a trace ID propagated through all services.\")\nprint(\"  Tools: Jaeger, Zipkin, OpenTelemetry, Datadog APM\")\nprint(\"  Concepts: trace, span, parent span, baggage\")\nprint()",
      "numbered": false
     },
     {
@@ -307,7 +307,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q504: Distributed tracing\n  Track requests across multiple services.\n  Each request gets a trace ID propagated through all services.\n  Tools: Jaeger, Zipkin, OpenTelemetry, Datadog APM\n  Concepts: trace, span, parent span, baggage",
+     "code": "Distributed tracing\n  Track requests across multiple services.\n  Each request gets a trace ID propagated through all services.\n  Tools: Jaeger, Zipkin, OpenTelemetry, Datadog APM\n  Concepts: trace, span, parent span, baggage",
      "numbered": false
     }
    ]
@@ -320,7 +320,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q505: OpenTelemetry\")\nprint(\"  Vendor-neutral observability framework.\")\nprint(\"  Three signals: traces, metrics, logs\")\nprint(\"  from opentelemetry import trace\")\nprint(\"  tracer = trace.get_tracer('myapp')\")\nprint(\"  with tracer.start_as_current_span('operation'):\")\nprint(\"      do_work()\")\nprint(\"  Exporters: Jaeger, Prometheus, OTLP, console\")\nprint()",
+     "code": "print(\"OpenTelemetry\")\nprint(\"  Vendor-neutral observability framework.\")\nprint(\"  Three signals: traces, metrics, logs\")\nprint(\"  from opentelemetry import trace\")\nprint(\"  tracer = trace.get_tracer('myapp')\")\nprint(\"  with tracer.start_as_current_span('operation'):\")\nprint(\"      do_work()\")\nprint(\"  Exporters: Jaeger, Prometheus, OTLP, console\")\nprint()",
      "numbered": false
     },
     {
@@ -330,7 +330,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q505: OpenTelemetry\n  Vendor-neutral observability framework.\n  Three signals: traces, metrics, logs\n  from opentelemetry import trace\n  tracer = trace.get_tracer('myapp')\n  with tracer.start_as_current_span('operation'):\n      do_work()\n  Exporters: Jaeger, Prometheus, OTLP, console",
+     "code": "OpenTelemetry\n  Vendor-neutral observability framework.\n  Three signals: traces, metrics, logs\n  from opentelemetry import trace\n  tracer = trace.get_tracer('myapp')\n  with tracer.start_as_current_span('operation'):\n      do_work()\n  Exporters: Jaeger, Prometheus, OTLP, console",
      "numbered": false
     }
    ]
@@ -343,7 +343,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q506: Metrics collection\")\nprint(\"  Numeric measurements of system behavior over time.\")\nprint(\"  Types: counters, gauges, histograms, summaries\")\nprint(\"  Counter: total requests served (only goes up)\")\nprint(\"  Gauge: current memory usage (goes up and down)\")\nprint(\"  Histogram: request latency distribution\")\nprint()",
+     "code": "print(\"Metrics collection\")\nprint(\"  Numeric measurements of system behavior over time.\")\nprint(\"  Types: counters, gauges, histograms, summaries\")\nprint(\"  Counter: total requests served (only goes up)\")\nprint(\"  Gauge: current memory usage (goes up and down)\")\nprint(\"  Histogram: request latency distribution\")\nprint()",
      "numbered": false
     },
     {
@@ -353,7 +353,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q506: Metrics collection\n  Numeric measurements of system behavior over time.\n  Types: counters, gauges, histograms, summaries\n  Counter: total requests served (only goes up)\n  Gauge: current memory usage (goes up and down)\n  Histogram: request latency distribution",
+     "code": "Metrics collection\n  Numeric measurements of system behavior over time.\n  Types: counters, gauges, histograms, summaries\n  Counter: total requests served (only goes up)\n  Gauge: current memory usage (goes up and down)\n  Histogram: request latency distribution",
      "numbered": false
     }
    ]
@@ -366,7 +366,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q507: Prometheus\")\nprint(\"  Time-series database for metrics + alerting.\")\nprint(\"  Pull-based: Prometheus scrapes /metrics endpoints\")\nprint(\"  PromQL: query language for metrics\")\nprint(\"  Python: prometheus_client library\")\nprint(\"  from prometheus_client import Counter, Histogram\")\nprint(\"  REQUEST_COUNT = Counter('requests_total', 'Total requests')\")\nprint()",
+     "code": "print(\"Prometheus\")\nprint(\"  Time-series database for metrics + alerting.\")\nprint(\"  Pull-based: Prometheus scrapes /metrics endpoints\")\nprint(\"  PromQL: query language for metrics\")\nprint(\"  Python: prometheus_client library\")\nprint(\"  from prometheus_client import Counter, Histogram\")\nprint(\"  REQUEST_COUNT = Counter('requests_total', 'Total requests')\")\nprint()",
      "numbered": false
     },
     {
@@ -376,7 +376,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q507: Prometheus\n  Time-series database for metrics + alerting.\n  Pull-based: Prometheus scrapes /metrics endpoints\n  PromQL: query language for metrics\n  Python: prometheus_client library\n  from prometheus_client import Counter, Histogram\n  REQUEST_COUNT = Counter('requests_total', 'Total requests')",
+     "code": "Prometheus\n  Time-series database for metrics + alerting.\n  Pull-based: Prometheus scrapes /metrics endpoints\n  PromQL: query language for metrics\n  Python: prometheus_client library\n  from prometheus_client import Counter, Histogram\n  REQUEST_COUNT = Counter('requests_total', 'Total requests')",
      "numbered": false
     }
    ]
@@ -389,7 +389,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q508: Grafana\")\nprint(\"  Visualization platform for metrics, logs, traces.\")\nprint(\"  Data sources: Prometheus, Elasticsearch, Loki, InfluxDB\")\nprint(\"  Dashboards with panels, alerts, annotations\")\nprint(\"  Pre-built dashboards for common stacks\")\nprint()",
+     "code": "print(\"Grafana\")\nprint(\"  Visualization platform for metrics, logs, traces.\")\nprint(\"  Data sources: Prometheus, Elasticsearch, Loki, InfluxDB\")\nprint(\"  Dashboards with panels, alerts, annotations\")\nprint(\"  Pre-built dashboards for common stacks\")\nprint()",
      "numbered": false
     },
     {
@@ -399,7 +399,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q508: Grafana\n  Visualization platform for metrics, logs, traces.\n  Data sources: Prometheus, Elasticsearch, Loki, InfluxDB\n  Dashboards with panels, alerts, annotations\n  Pre-built dashboards for common stacks",
+     "code": "Grafana\n  Visualization platform for metrics, logs, traces.\n  Data sources: Prometheus, Elasticsearch, Loki, InfluxDB\n  Dashboards with panels, alerts, annotations\n  Pre-built dashboards for common stacks",
      "numbered": false
     }
    ]
@@ -412,7 +412,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q509: Monitoring strategies\")\nprint(\"  USE method: Utilization, Saturation, Errors (infrastructure)\")\nprint(\"  RED method: Rate, Errors, Duration (services)\")\nprint(\"  Four golden signals: Latency, Traffic, Errors, Saturation\")\nprint(\"  Layers: infrastructure → platform → application → business\")\nprint()",
+     "code": "print(\"Monitoring strategies\")\nprint(\"  USE method: Utilization, Saturation, Errors (infrastructure)\")\nprint(\"  RED method: Rate, Errors, Duration (services)\")\nprint(\"  Four golden signals: Latency, Traffic, Errors, Saturation\")\nprint(\"  Layers: infrastructure → platform → application → business\")\nprint()",
      "numbered": false
     },
     {
@@ -422,7 +422,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q509: Monitoring strategies\n  USE method: Utilization, Saturation, Errors (infrastructure)\n  RED method: Rate, Errors, Duration (services)\n  Four golden signals: Latency, Traffic, Errors, Saturation\n  Layers: infrastructure → platform → application → business",
+     "code": "Monitoring strategies\n  USE method: Utilization, Saturation, Errors (infrastructure)\n  RED method: Rate, Errors, Duration (services)\n  Four golden signals: Latency, Traffic, Errors, Saturation\n  Layers: infrastructure → platform → application → business",
      "numbered": false
     }
    ]
@@ -435,7 +435,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q510: Alerting strategies\")\nprint(\"  Alert on symptoms, not causes.\")\nprint(\"  Severity levels: critical (page), warning (ticket), info (log)\")\nprint(\"  Avoid alert fatigue: meaningful thresholds, grouped alerts\")\nprint(\"  Runbooks: documented response procedures for each alert\")\nprint()",
+     "code": "print(\"Alerting strategies\")\nprint(\"  Alert on symptoms, not causes.\")\nprint(\"  Severity levels: critical (page), warning (ticket), info (log)\")\nprint(\"  Avoid alert fatigue: meaningful thresholds, grouped alerts\")\nprint(\"  Runbooks: documented response procedures for each alert\")\nprint()",
      "numbered": false
     },
     {
@@ -445,7 +445,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q510: Alerting strategies\n  Alert on symptoms, not causes.\n  Severity levels: critical (page), warning (ticket), info (log)\n  Avoid alert fatigue: meaningful thresholds, grouped alerts\n  Runbooks: documented response procedures for each alert",
+     "code": "Alerting strategies\n  Alert on symptoms, not causes.\n  Severity levels: critical (page), warning (ticket), info (log)\n  Avoid alert fatigue: meaningful thresholds, grouped alerts\n  Runbooks: documented response procedures for each alert",
      "numbered": false
     }
    ]

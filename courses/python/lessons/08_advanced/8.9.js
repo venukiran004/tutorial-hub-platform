@@ -665,43 +665,43 @@ def test_memory_does_not_grow_across_cycles() -> None:
       {
         stem: "RSS rises during a batch job and stays at the new level afterwards, across many jobs, without climbing further. What is this?",
         options: [
-          "A slow leak that will eventually exhaust memory",
-          "Fragmentation — arenas held by scattered surviving objects, which Python reuses but cannot return to the OS",
+          "A slow leak that will eventually exhaust memory if the service runs long enough",
+          "Fragmentation — Python reuses the arenas but cannot return them",
           "A reference cycle the collector cannot break",
           "A C-extension leak"
         ],
         answer: 1,
-        why: "The distinguishing feature is that it plateaus rather than climbing across cycles. CPython returns a 256 KB arena only when every object in it is freed, so survivors scattered after a large batch keep arenas resident. The memory is reusable by Python. The response is to avoid the spike — stream or batch — not to hunt for a defect that is not there."
+        why: "The distinguishing feature is that it plateaus rather than climbing across cycles. CPython returns a 1 MiB arena only when every object in it is freed, so survivors scattered after a large batch keep arenas resident. The memory is reusable by Python. The response is to avoid the spike — stream or batch — not to hunt for a defect that is not there."
       },
       {
         stem: "Why does `@lru_cache(maxsize=512)` on a method retain far more than 512 cached values?",
         options: [
           "`maxsize` is only a hint and the cache can exceed it",
-          "The cache lives on the class and `self` is part of every key, so up to 512 instances — and everything they reference — are pinned",
           "Method caches store both arguments and return values twice",
+          "The cache is per class with `self` in each key, so 512 instances stay pinned",
           "The decorator disables garbage collection for the class"
         ],
-        answer: 1,
+        answer: 2,
         why: "The decorator runs once when the class body executes, so all instances share one cache, and each entry holds a strong reference to the instance in its key. Those instances hold connections, buffers and anything else they reference. Memory climbs to a plateau and never falls, which reads as ordinary warm-up — use `cached_property`, or build a per-instance cache in `__init__`."
       },
       {
         stem: "You take a `tracemalloc` snapshot immediately at startup and another after 5,000 requests. Why is the diff misleading?",
         options: [
-          "`tracemalloc` cannot compare snapshots from different times",
-          "Without a warm-up, the diff includes imports, connection pools and lazily-initialised singletons — legitimate one-off allocations",
-          "Snapshots must be taken with `gc` disabled",
-          "The first snapshot is always empty"
+          "`tracemalloc` cannot compare snapshots taken at different times in the same process",
+          "Snapshots must be taken with `gc` disabled, or the collector distorts the counts",
+          "It mixes in one-off startup allocations — imports, pools, lazy singletons",
+          "The first snapshot is always empty, because tracing starts after the first allocation"
         ],
-        answer: 1,
+        answer: 2,
         why: "One-off startup allocations dominate the comparison and hide the per-request accumulation you are looking for. Run a few hundred requests first so everything lazy has initialised, then take the baseline. Grouping by `\"traceback\"` rather than `\"lineno\"` also helps when a shared constructor is called from many places."
       },
       {
         stem: "`self.failures.append(err)` on a long-lived object. What does it actually retain?",
         options: [
-          "Only the exception's message string",
-          "The exception, its traceback, every frame in that traceback, and every local variable in those frames",
-          "A weak reference, so nothing extra",
-          "The exception class only"
+          "Only the exception's message string, since the exception object itself is small",
+          "The exception, its traceback, every frame in it, and their locals",
+          "A weak reference to the exception, so it costs nothing extra once the handler exits",
+          "Only the exception class, which is shared, so the list grows by one pointer each time"
         ],
         answer: 1,
         why: "An exception references `__traceback__`, which references each frame, which references its locals — so a failure retains the request body, any rows loaded, and whatever else was on the stack. Python deletes the `as err` name at the end of an `except` block for exactly this reason. Store the type name, the message and a formatted string instead."

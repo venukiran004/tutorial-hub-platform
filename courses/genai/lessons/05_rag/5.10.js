@@ -150,9 +150,9 @@ RAPTOR  (Recursive Abstractive Processing for Tree-Organized Retrieval)
   then index EVERY level, not just the leaves.
 
         level 2            [ summary of the whole document ]
-                                  /            \
+                                  /            \\
         level 1     [ summary of cluster A ]  [ summary of cluster B ]
-                        /     |     \             /      \
+                        /     |     \\             /      \\
         level 0     chunk   chunk   chunk      chunk    chunk
 
   Retrieval searches all levels at once. "What was the main argument?" matches

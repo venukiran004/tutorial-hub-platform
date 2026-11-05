@@ -2,7 +2,7 @@
    LESSON 8.3 — Jaccard and Cosine Similarity
    Word Jaccard scores the typo pair at exactly 0.0000 where edit distance
    scored 0.8000 — each family fails precisely where the other succeeds
-   (§04) (scratchpad/nlp/n83.py).
+   (§04) (n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.3",

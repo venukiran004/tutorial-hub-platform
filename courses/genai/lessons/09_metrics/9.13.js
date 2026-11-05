@@ -75,7 +75,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Cost per *request* rewards an agent that gives up quickly, since a failed attempt is cheap. Cost per *resolved* task charges the unresolved attempts to the successes, which is what the business actually pays." },
         { t: "p", text: "8.9 measured the size of the difference on a sample run: $0.0218 per request against $0.0266 per resolved task \u2014 a 22% gap that is exactly the attempts you paid for and got nothing from." },
-        { t: "p", text: "It also connects retries to a price. 9.7\u2019s pass@2 of 0.9333 from a pass@1 of 0.7000 looks like a free win, and it is roughly double the cost per success \u2014 worth it or not depending on what a resolved task is worth, which the metric cannot decide." }
+        { t: "p", text: "It also connects retries to a price. 9.7\u2019s pass@2 of 0.9333 from a pass@1 of 0.7000 looks like a free win. It adds 30% per request, and cost per success stays flat only if a second attempt is as likely to succeed as the first. Where failures repeat, cost per success climbs \u2014 worth it or not depending on what a resolved task is worth, which the metric cannot decide." }
       ] },
 
     { t: "h2", n: "03", id: "sample", text: "A single run is a sample",
@@ -245,7 +245,7 @@ print("failures:", dict(m["failures"]))`,
     "**The pass@1-to-pass@5 gap is the instability budget** \u2014 large means flakiness retries will fix, small means incapability they will not.",
     "**n must substantially exceed k**, which is tempting to get wrong for agents because runs are expensive.",
     "**Measure cost and latency per *resolved* task**: measured, $0.0218 per request against $0.0266 per resolved, a 22% gap that is the failed attempts.",
-    "**Retries are a priced trade** \u2014 pass@1 0.70 to pass@2 0.93 roughly doubles the cost per success.",
+    "**Retries are a priced trade** \u2014 one retry at pass@1 0.70 adds 30% per request and holds cost per success flat only while failures are independent.",
     "**Loops and give-ups are both \u201cfailed\u201d and need opposite fixes**, measured at 19 against 11 among 36 failures.",
     "**The discriminator is deterministic**: step cap plus repeated identical tool-and-argument pairs is a loop; early exit with no answer and no error is a give-up.",
     "**Three ways to score a path**: gold-trace matching (penalises a different correct route), trajectory judging (handles several, imports judge bias), outcome only.",
@@ -273,7 +273,7 @@ print("failures:", dict(m["failures"]))`,
           "Per request, with the failure rate reported separately"
         ],
         answer: 1,
-        why: "Using requests as the denominator makes giving up look efficient, since a failed attempt is cheap \u2014 the opposite of the incentive you want. Charging unresolved attempts to the successes reflects what the business pays per outcome. It also prices retries honestly: moving pass@1 of 0.70 to pass@2 of 0.93 roughly doubles cost per success, which is a trade rather than a free win." },
+        why: "Using requests as the denominator makes giving up look efficient, since a failed attempt is cheap \u2014 the opposite of the incentive you want. Charging unresolved attempts to the successes reflects what the business pays per outcome. It also prices retries honestly: one retry at a pass@1 of 0.70 adds 30% per request, and cost per success stays flat only if failures are independent, which makes it a trade rather than a free win." },
 
       { stem: "An agent fails 18% of tasks. Why is that number insufficient to act on?",
         options: [
@@ -327,7 +327,7 @@ print("failures:", dict(m["failures"]))`,
         answer: [
           { t: "p", text: "A gap of 0.24 says this is flakiness rather than incapability \u2014 the agent can do the task and sometimes does not. So retries, a lower temperature, or a verifier-and-resample loop are all likely to pay, where if the gap were near zero none of them would." },
           { t: "p", text: "Before acting I would check n. The pass@k estimator returns 1.0 by boundary condition when there are fewer failures than k, so a pass@5 computed from five runs tells you nothing \u2014 I would want n well above k, and I would verify stability by recomputing at two sample sizes." },
-          { t: "p", text: "Then I would price the retry rather than treat it as free. Getting from 0.70 to roughly 0.93 with one automatic retry roughly doubles cost per resolved task, which is the right trade only if a resolved task is worth it \u2014 and that is a product judgement rather than a metric one." },
+          { t: "p", text: "Then I would price the retry rather than treat it as free. One automatic retry at 0.70 adds 30% per request and holds cost per resolved task flat only if failures are independent; where the same tasks keep failing it climbs. Whether that is the right trade depends on what a resolved task is worth \u2014 and that is a product judgement rather than a metric one." },
           { t: "p", text: "And whether I am even entitled to quote pass@5 depends on whether the product retries. If the user gets one attempt, pass@1 is the number they experience and pass@5 is a flakiness diagnostic \u2014 reporting the larger one as product quality is the error to avoid." }
         ] }
     ]

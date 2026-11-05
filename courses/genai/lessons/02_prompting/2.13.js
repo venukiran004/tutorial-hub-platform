@@ -268,7 +268,7 @@ for static in (3000, 2400, 1650, 900, 300):
       body: [
         { t: "p", text: "**Symptom.** A support assistant's costs rose about 35% over a quarter with no change in traffic, no model change and no prompt-length change that anyone could find. The prompt was 4,200 tokens and had been built deliberately for caching." },
         { t: "p", text: "**The change.** A product ticket had added one line to improve tone, naming the customer and their plan and signup year. It was placed at the top of the system prompt, which is where context about the user obviously belongs." },
-        { t: "p", text: "**Mechanism.** The line is variable per user, and it was the *first* thing in the prompt — so the cache prefix failed at token 8 and all 4,200 tokens were reprocessed at full price on every request, plus the roughly 25% write premium for an entry nothing would match. The hit rate went from 94% to 0 and nobody was alerted because the dashboard tracked spend, not hit rate, and a 35% rise over a quarter looked like growth." },
+        { t: "p", text: "**Mechanism.** The line is variable per user, and it was the *first* thing in the prompt — so the cache prefix failed at token 8 and all 4,200 tokens were reprocessed at full price on every request, plus Anthropic’s roughly 25% write premium for an entry nothing would match. The hit rate went from 94% to 0 and nobody was alerted because the dashboard tracked spend, not hit rate, and a 35% rise over a quarter looked like growth." },
         { t: "p", text: "**Fix.** The line moved below the static block — three positions down in a list, no wording change — and the hit rate returned to 94%. Annualised, the one line had been costing about $40,000. Two durable changes came out of it: `cached_tokens` is now logged and alerted on, and there is a unit test asserting that two requests from different users share their first 4,000 bytes. That test costs nothing to run, needs no model, and would have failed in the pull request that introduced the line." }
       ] }
   ],
@@ -277,7 +277,7 @@ for static in (3000, 2400, 1650, 900, 300):
     "**Prompt layout is a cost decision.** A cache matches a prefix, so static content goes first and variable content last, with nothing in between.",
     "Four constructions break the prefix silently: an over-precise **timestamp**, **personalisation near the top**, **unstable serialisation** of tools or schemas, and **dynamic few-shot examples**.",
     "The first three are mistakes. The fourth is a genuine trade, and it has a middle — a **cached core of examples plus a few retrieved** keeps most of the example tokens in the prefix.",
-    "**A broken cache costs more than no cache**, because you still pay the ~25% write premium on every request for an entry nothing reads.",
+    "**A broken cache can cost more than no cache**, because on Anthropic you still pay the ~25% write premium on every request for an entry nothing reads.",
     "Log `prompt_tokens_details.cached_tokens` from day one, and **assert prefix stability in a test** — it runs without calling a model and catches the regression in the pull request.",
     "Measured across four layouts, **all-static wins at every ratio** — it is the only one whose variable portion is a short query rather than a large example block.",
     "When examples dominate 10:1, layout alone is a **6.6× difference** on the input portion with byte-identical content.",
@@ -292,7 +292,7 @@ for static in (3000, 2400, 1650, 900, 300):
       { stem: "You add a line naming the user and their plan to the top of a 4,200-token system prompt. What happens?",
         options: ["About 8 tokens are added to each request", "The cache prefix fails immediately and all 4,200 tokens are reprocessed at full price, plus the write premium", "Nothing — the cache matches on content, not position", "Only the personalised line is uncached"],
         answer: 1,
-        why: "A prefix cache matches from the start and stops at the first difference, so a variable line at position one invalidates everything behind it — and you continue paying the roughly 25% write premium for cache entries nothing will ever match. The third option describes a cache that can find static content anywhere, which is precisely what a prefix cache cannot do. Moving the same line below the static block costs nothing and restores the hit rate." },
+        why: "A prefix cache matches from the start and stops at the first difference, so a variable line at position one invalidates everything behind it — and on Anthropic you continue paying the roughly 25% write premium for cache entries nothing will ever match. The third option describes a cache that can find static content anywhere, which is precisely what a prefix cache cannot do. Moving the same line below the static block costs nothing and restores the hit rate." },
 
       { stem: "Your examples block is 3,000 tokens and your system prompt is 300. What does layout buy you?",
         options: ["Very little — the static block is too small to protect", "A 6.6× difference on input cost, if the examples can go in the cached prefix", "Nothing, since examples must be dynamic", "It only matters above 10,000 tokens"],

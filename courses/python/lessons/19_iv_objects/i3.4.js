@@ -261,7 +261,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** `List: ~8856 bytes`, `Generator: ~200 bytes`, `Ratio: ~44.3x` **Explanation:** Generators hold only current state (O(1)); the list materializes all elements (O(n))."
+     "text": "**Answer:** `List: ~8856 bytes`, `Generator: ~200 bytes`, `Ratio: ~44.3x` **Explanation:** Generators hold only current state (O(1)); the list materialises all elements (O(n))."
     }
    ]
   },
@@ -904,7 +904,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** `True`; the comprehension is usually fastest, then map, then the manual loop. **Explanation:** Comprehensions are optimized at the bytecode level; `map(lambda ...)` pays per-call overhead."
+     "text": "**Answer:** `True`; the comprehension is usually fastest, then map, then the manual loop. **Explanation:** Comprehensions are optimised at the bytecode level; `map(lambda ...)` pays per-call overhead."
     }
    ]
   },

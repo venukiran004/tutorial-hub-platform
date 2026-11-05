@@ -91,8 +91,8 @@ samples = rng.normal(0, 2, size=(trials, n))
 biased = samples.var(axis=1, ddof=0).mean()      # 3.199
 unbiased = samples.var(axis=1, ddof=1).mean()    # 3.999
 
-biased / TRUE_VAR                                # 0.800 = 4/5 = (n-1)/n
-unbiased / TRUE_VAR                              # 1.000
+biased / TRUE_VAR                                # 0.802 = 4/5 = (n-1)/n
+unbiased / TRUE_VAR                              # 1.002
 #
 # THE BIAS IS EXACTLY (n-1)/n, WHICH IS WHY THE FIX IS EXACTLY n-1.
 # It is not an adjustment chosen to work; it cancels the factor
@@ -295,7 +295,7 @@ for n in (20, 100):
     mad_var = (1.4826*np.median(np.abs(s - np.median(s, axis=1, keepdims=True)),
                                 axis=1)).var()
     print(f"n={n:<5} relative efficiency {sd_var/mad_var:.2f}")
-# n=20    relative efficiency 0.43
+# n=20    relative efficiency 0.41
 # n=100   relative efficiency 0.37
 #
 # So MAD is roughly 37% as efficient. THAT TRADE IS USUALLY WORTH IT
@@ -315,7 +315,7 @@ def robust_z(x):
     return (x - med) / mad
 
 np.abs((dirty - dirty.mean()) / dirty.std(ddof=1)).max()   # 31.6
-np.abs(robust_z(dirty)).max()                              # 660.5
+np.abs(robust_z(dirty)).max()                              # 681.5
 #
 # THE CLASSIC z-SCORE FINDS THE OUTLIER LESS EXTREME, because the
 # outlier itself inflated the standard deviation. That masking effect
@@ -328,7 +328,7 @@ np.abs(robust_z(dirty)).max()                              # 660.5
 
     { t: "h2", n: "04", text: "Comparing across scales", id: "cv" },
 
-    {"kind": "trace", "title": "401 is not bigger than 29.7 when the units differ", "caption": "**Comparing two standard deviations across different quantities is not a comparison at all** — one is in milliseconds and the other in requests per second. Dividing by the mean removes the units, and the ranking reverses: **latency is the more variable of the two, at 14.8% against 8.0%.** The condition in the last row is the one people skip: the coefficient of variation needs a true zero. On Celsius it changes when you switch to Fahrenheit, which makes it an artefact of the scale rather than a property of the data.", "left": "quantity", "codeW": 170, "vars": ["standard deviation", "CV = sd over mean"], "steps": [{"code": "latency, in ms", "state": ["29.7 ms", "0.148"], "tone": "accent"}, {"code": "throughput, in req/s", "state": ["401.0 req/s", "0.080"], "changed": [0, 1], "tone": "accent"}, {"code": "which is more variable?", "state": ["unanswerable - units differ", "latency, clearly"], "changed": [0, 1], "tone": "violet"}, {"code": "but on Celsius", "state": ["fine", "meaningless - no true zero"], "changed": [0, 1], "tone": "crit"}, {"code": "robust version", "state": ["IQR", "IQR over the median"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-04-3"},
+    {"kind": "trace", "title": "396.5 is not bigger than 28.9 when the units differ", "caption": "**Comparing two standard deviations across different quantities is not a comparison at all** — one is in milliseconds and the other in requests per second. Dividing by the mean removes the units, and the ranking reverses: **latency is the more variable of the two, at 14.8% against 8.0%.** The condition in the last row is the one people skip: the coefficient of variation needs a true zero. On Celsius it changes when you switch to Fahrenheit, which makes it an artefact of the scale rather than a property of the data.", "left": "quantity", "codeW": 170, "vars": ["standard deviation", "CV = sd over mean"], "steps": [{"code": "latency, in ms", "state": ["28.9 ms", "0.144"], "tone": "accent"}, {"code": "throughput, in req/s", "state": ["396.5 req/s", "0.080"], "changed": [0, 1], "tone": "accent"}, {"code": "which is more variable?", "state": ["unanswerable - units differ", "latency, clearly"], "changed": [0, 1], "tone": "violet"}, {"code": "but on Celsius", "state": ["fine", "meaningless - no true zero"], "changed": [0, 1], "tone": "crit"}, {"code": "robust version", "state": ["IQR", "IQR over the median"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-4_2-04-3"},
 
     { t: "p", text: "A standard deviation cannot be compared across quantities with different units or magnitudes. **The coefficient of variation divides the spread by the mean**, producing a dimensionless figure — but only where the quantity has a meaningful zero." },
 
@@ -356,12 +356,12 @@ def cv(x, ddof=1):
 latency = rng.normal(200, 30, 1000)          # ms
 throughput = rng.normal(5000, 400, 1000)     # req/s
 
-np.std(latency, ddof=1)                      # 29.7  ms
-np.std(throughput, ddof=1)                   # 401.0 req/s
+np.std(latency, ddof=1)                      # 28.9  ms
+np.std(throughput, ddof=1)                   # 396.5 req/s
 #
-# 401 > 29.7, but that comparison is meaningless -- different units.
+# 396.5 > 28.9, but that comparison is meaningless -- different units.
 
-cv(latency)                                  # 0.148
+cv(latency)                                  # 0.144
 cv(throughput)                               # 0.080
 #
 # LATENCY IS NEARLY TWICE AS VARIABLE, relative to its own level. That
@@ -372,7 +372,7 @@ cv(throughput)                               # 0.080
 #
 # 1. A MEAN NEAR ZERO. CV explodes and means nothing.
 centred = rng.normal(0.01, 1.0, 1000)
-cv(centred)                                  # ~86 -- garbage
+cv(centred)                                  # ~17 -- garbage
 #
 # 2. VALUES THAT CAN BE NEGATIVE. Profit margins, temperature in
 #    Celsius, returns. The ratio has no interpretation because the
@@ -382,7 +382,7 @@ cv(centred)                                  # ~86 -- garbage
 #    classic case: the CV of the same temperatures in Celsius and in
 #    Kelvin differ, because Celsius has an arbitrary zero.
 c = np.array([20.0, 22.0, 25.0, 21.0])
-cv(c), cv(c + 273.15)                        # 0.096, 0.0074
+cv(c), cv(c + 273.15)                        # 0.098, 0.0073
 #
 # THIRTEEN TIMES DIFFERENT FOR THE SAME PHYSICAL DATA. CV requires a
 # meaningful zero, and if the quantity has no true zero, the number is
@@ -399,9 +399,9 @@ def robust_cv(x):
     return float((np.percentile(x, 75) - np.percentile(x, 25)) / med)
 
 heavy = np.exp(rng.normal(3, 1, 5000))
-cv(heavy), robust_cv(heavy)                  # 1.33, 1.54
-cv(np.append(heavy, 1e6))                    # 14.1 -- one value ruins it
-robust_cv(np.append(heavy, 1e6))             # 1.54 -- unmoved
+cv(heavy), robust_cv(heavy)                  # 1.27, 1.47
+cv(np.append(heavy, 1e6))                    # 60.9 -- one value ruins it
+robust_cv(np.append(heavy, 1e6))             # 1.47 -- unmoved
 `,
       hl: [22, 30, 41, 46],
       caption: "**The CV of the same temperatures differs 13× between Celsius and Kelvin.** It needs a meaningful zero — without one, the number is an artefact of the unit you happened to choose."
@@ -792,7 +792,7 @@ def test_needs_clean_history_before_alerting():
         why: "A 14% difference at `n = 8`, from which library you happened to use. Moving a calculation between them during a refactor changes the number with no error and no warning."
       },
       {
-        stem: "The same temperatures give a coefficient of variation of 0.096 in Celsius and 0.0074 in Kelvin. Why?",
+        stem: "The same temperatures give a coefficient of variation of 0.098 in Celsius and 0.0073 in Kelvin. Why?",
         options: [
           "A rounding error",
           "CV needs a meaningful zero — Celsius has an arbitrary one, so the ratio is an artefact of the unit",

@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 12.2 — Vertex AI Agent Engine: Deploying an Agent
    AdkApp, its registered operations and the create() surface were introspected
-   and run locally on vertexai 2.1.3 + google-adk 2.9.2 (scratchpad/adk/d1.py).
+   and run locally on vertexai 2.1.3 + google-adk 2.9.2 (d1.py).
    The deploy call itself needs a Google Cloud project, so it is shown but not
    executed here; everything printed below was.
    ========================================================================= */

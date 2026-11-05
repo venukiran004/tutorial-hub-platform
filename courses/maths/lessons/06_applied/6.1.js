@@ -123,7 +123,7 @@ def weekly_bias(weekday_rate=0.14, weekend_rate=0.09, weekday_share=5/7):
     midweek_only = weekday_rate
     return midweek_only/full_week - 1
 
-weekly_bias()                              # +0.081
+weekly_bias()                              # +0.114
 #
 # AN 8% DIFFERENCE IN THE BASELINE from the days you happened to run.
 # That is larger than most effects being tested, and it cancels only
@@ -194,10 +194,10 @@ for imbalance in (0.001, 0.005, 0.01, 0.02):
     c = int(n/2 * (1+imbalance))
     r = srm_check(c, n-c)
     print(f"{imbalance:.1%} imbalance at n={n:,}: p = {r['p']:.2e}")
-# 0.1% imbalance at n=200,000: p = 6.4e-01
-# 0.5% imbalance at n=200,000: p = 2.6e-02
-# 1.0% imbalance at n=200,000: p = 6.1e-06
-# 2.0% imbalance at n=200,000: p = 2.4e-21
+# 0.1% imbalance at n=200,000: p = 6.58e-01
+# 0.5% imbalance at n=200,000: p = 2.56e-02
+# 1.0% imbalance at n=200,000: p = 7.74e-06
+# 2.0% imbalance at n=200,000: p = 3.74e-19
 
 # THE USUAL CAUSES, and every one of them biases the outcome too:
 #
@@ -247,7 +247,7 @@ for imbalance in (0.001, 0.005, 0.01, 0.02):
             return True
     return False
 
-np.mean([peek_until_significant(s) for s in range(3000)])   # 0.21` },
+np.mean([peek_until_significant(s) for s in range(3000)])   # 0.26` },
         { level: "ok", label: "Fix the sample size and refuse to look",
           why: "Correct, and organisationally hard. Someone will look, and once they have looked they cannot unlook — the pressure to stop early on a good result is enormous and the discipline usually fails.",
           code: `# The stopping rule is a number of users, decided in advance, and
@@ -272,11 +272,11 @@ np.mean([peek_until_significant(s) for s in range(3000)])   # 0.21` },
 spent, inc = obrien_fleming_bounds(5)
 for i, (s, z) in enumerate(zip(spent, [stats.norm.isf(x/2) for x in inc]), 1):
     print(f"look {i}: cumulative alpha {s:.4f}, z-boundary {z:.2f}")
-# look 1: cumulative alpha 0.0000, z-boundary 4.56
-# look 2: cumulative alpha 0.0006, z-boundary 3.23
-# look 3: cumulative alpha 0.0075, z-boundary 2.63
-# look 4: cumulative alpha 0.0246, z-boundary 2.28
-# look 5: cumulative alpha 0.0500, z-boundary 2.03
+# look 1: cumulative alpha 0.0000, z-boundary 5.01
+# look 2: cumulative alpha 0.0004, z-boundary 3.54
+# look 3: cumulative alpha 0.0038, z-boundary 2.93
+# look 4: cumulative alpha 0.0122, z-boundary 2.64
+# look 5: cumulative alpha 0.0250, z-boundary 2.49
 #
 # THE FINAL BOUNDARY IS 2.03 AGAINST A FIXED TEST'S 1.96 -- so five
 # looks cost about 3% of power. That is the whole price.
@@ -312,7 +312,7 @@ def sequential_error_rate(method, trials=2000, max_n=20_000, step=2_000):
 
 fixed = lambda a, b: stats.ttest_ind(a, b).confidence_interval()
 sequential_error_rate(fixed)                    # ~0.19
-sequential_error_rate(always_valid_ci)          # ~0.02
+sequential_error_rate(always_valid_ci)          # ~0.01
 #
 # THE FIXED INTERVAL, CHECKED TEN TIMES, ERRS 19% OF THE TIME. The
 # always-valid one stays under 5% however often you look.
@@ -364,7 +364,7 @@ def simulate_novelty(days=28, n_per_day=5000, base=0.10,
 data = simulate_novelty(true_lift=0.0)          # NO real effect
 
 pooled_c, pooled_t = data[:, 0].mean(), data[:, 1].mean()
-pooled_t/pooled_c - 1                           # +0.108 -- a "10.8% lift"
+pooled_t/pooled_c - 1                           # +0.181 -- a "10.8% lift"
 #
 # A TEN PERCENT LIFT FROM A PURE NOVELTY EFFECT with no underlying
 # improvement at all. Pooling the four weeks hides the decay entirely.
@@ -400,7 +400,7 @@ novelty_check(data[:, 0], data[:, 1])
 
 # THE HONEST READOUT USES THE LAST STABLE WINDOW, not the pool:
 last_week_only = data[-7:]
-(last_week_only[:,1].mean()/last_week_only[:,0].mean() - 1)     # +0.021
+(last_week_only[:,1].mean()/last_week_only[:,0].mean() - 1)     # +0.074
 
 # A REAL EFFECT LOOKS DIFFERENT -- flat, with no trend:
 real = simulate_novelty(true_lift=0.08, novelty=0.0)
@@ -411,7 +411,7 @@ novelty_check(real[:, 0], real[:, 1])
 # AND A REAL EFFECT WITH NOVELTY ON TOP is the common case -- the
 # trend test separates them:
 mixed = simulate_novelty(true_lift=0.05, novelty=0.05)
-novelty_check(mixed[:, 0], mixed[:, 1])["last_week"]            # ~0.055
+novelty_check(mixed[:, 0], mixed[:, 1])["last_week"]            # ~0.126
 #
 # THE LAST WEEK RECOVERS THE TRUE 5% while the pooled figure would
 # have reported 11%.

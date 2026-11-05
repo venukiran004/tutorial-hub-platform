@@ -377,7 +377,8 @@ print(config.maps)
       solution: {
         lang: "python",
         title: "report.py",
-        code: `# ---- the original -------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original -------------------------------------------------------
 
 def build_report(events, window=100):
     by_service = {}
@@ -408,7 +409,6 @@ def build_report(events, window=100):
 
 # ---- the rewrite --------------------------------------------------------
 
-from __future__ import annotations
 
 from collections import Counter, defaultdict, deque
 from collections.abc import Iterable
@@ -588,31 +588,31 @@ if __name__ == "__main__":
         stem: "`counts = defaultdict(int)`. What does `if counts[\"typo\"] > 0:` do?",
         options: [
           "Returns 0 and leaves the dict unchanged",
-          "Returns 0 **and inserts** `\"typo\": 0` — `__missing__` fires on any access, not only assignment",
-          "Raises `KeyError` because the key was never assigned",
+          "Raises `KeyError`, because the key was never assigned and reads do not use the factory",
+          "Returns 0 **and inserts** `\"typo\": 0`, because reads trigger `__missing__` too",
           "Returns `None`, since `int` needs an argument"
         ],
-        answer: 1,
+        answer: 2,
         why: "`__missing__` is called on read as well as write, so probing a key adds it. A later `len()` or iteration then reports data that never really existed, and in a long-lived object the dict grows without bound. Use `counts.get(key, 0)` when you only want to read, and convert to a plain `dict` before returning one from a function."
       },
       {
         stem: "Two levels have equal counts. Why is `Counter.most_common(1)` unsuitable for a report?",
         options: [
-          "It is O(n log n) and too slow for large counters",
-          "Ties are broken by insertion order, so the same data arriving in a different order produces a different answer",
-          "It returns counts rather than keys",
-          "It excludes items with a count below the mean"
+          "Ties are broken by insertion order, so reordered input gives a different answer",
+          "It is O(n log n) on every call, which is too slow for counters built from large datasets",
+          "It returns a list of counts rather than the keys, so the report cannot name the winner",
+          "It silently excludes items whose count is below the mean, so small groups never appear"
         ],
-        answer: 1,
+        answer: 0,
         why: "`most_common` sorts by count and leaves equal counts in first-seen order. That makes the \"top\" item depend on row ordering, which produces reports that change between runs and tests that fail intermittently. `min(counts.items(), key=lambda kv: (-kv[1], kv[0]))` breaks ties on the key itself and is deterministic."
       },
       {
         stem: "A worker dequeues with `jobs.pop(0)` and slows as the backlog grows. What does `deque` change?",
         options: [
           "Nothing — both are O(n) at the front",
-          "`popleft()` is O(1) where `list.pop(0)` shifts every remaining element, so dequeue cost stops growing with queue depth",
+          "`popleft()` is O(1), so dequeue cost no longer grows with the backlog",
           "`deque` batches removals to amortise the cost",
-          "`deque` uses less memory, which is what causes the speedup"
+          "`deque` uses less memory per element, and the smaller footprint is what produces the speed-up"
         ],
         answer: 1,
         why: "A list stores pointers contiguously, so removing the first one moves all the rest — O(n) in the current length. As the backlog grows each dequeue costs more, which slows the worker and grows the backlog further. A deque is a doubly-linked structure of blocks with O(1) at both ends; measured on 100,000 items the difference is roughly 400×."
@@ -620,12 +620,12 @@ if __name__ == "__main__":
       {
         stem: "When is `ChainMap` preferable to `{**defaults, **overrides}`?",
         options: [
-          "When the dictionaries contain nested values",
-          "When the layers change independently, you need to know which layer supplied a value, or you want to push a temporary scope",
-          "When lookup performance is critical",
-          "When the result must be JSON-serialisable"
+          "When the dictionaries contain nested values, because `ChainMap` merges them recursively",
+          "When lookup performance is critical, because a `ChainMap` lookup avoids copying any data",
+          "When the result must be JSON-serialisable, which a merged dict is not",
+          "When layers change independently, provenance matters, or you push temporary scopes"
         ],
-        answer: 1,
+        answer: 3,
         why: "`ChainMap` is a live view rather than a snapshot, so later changes to a layer are visible, `.maps` shows provenance, and `new_child()` adds a temporary scope without copying. Merging is better when you want a stable snapshot, and it is faster — `ChainMap` lookup is O(layers) worst case. Neither handles nesting: both are shallow, so an override shadows an entire subtree."
       }
     ]

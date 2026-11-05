@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c8.1",
  "lede": "**25 programs to write**, on classes, inheritance and testing. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 25 programs on classes, inheritance and testing without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c7.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 920–944.** What this set actually drills, counted from its own problems — 18 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["classes", "decorators", "testing", "generators", "async", "threads"], "cells": [[{"text": "6", "tone": "accent"}, "Class Inheritance"], [{"text": "4", "tone": "good"}, "Property Decorator"], [{"text": "3", "tone": "violet"}, "Unit Testing with pytest"], [{"text": "2", "tone": "teal"}, "Coroutine (send/yield)"], [{"text": "2", "tone": "warn"}, "Async/Await Basics"], [{"text": "1", "tone": "crit"}, "Threading with Lock"]], "t": "diagram", "id": "dg-c8_1-top-0"},
   {
    "t": "viz",
    "title": "Class attribute or instance attribute?",

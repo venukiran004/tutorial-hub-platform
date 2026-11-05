@@ -22,7 +22,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "Design an API Rate Limiter (Atlassian â€” ML Engineer)",
+   "q": "Design an API Rate Limiter (Atlassian — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -31,7 +31,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import time\nfrom collections import defaultdict, deque\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SLIDING WINDOW COUNTER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\nclass SlidingWindowRateLimiter:\n    def __init__(self, max_requests, window_seconds):\n        self.max_requests = max_requests\n        self.window = window_seconds\n        self.requests = defaultdict(deque)  # user_id â†’ timestamps\n\n    def is_allowed(self, user_id):\n        now = time.time()\n        window_start = now - self.window\n\n        # Remove expired requests\n        user_queue = self.requests[user_id]\n        while user_queue and user_queue[0] < window_start:\n            user_queue.popleft()\n\n        # Check limit\n        if len(user_queue) < self.max_requests:\n            user_queue.append(now)\n            return True\n        return False\n\n# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• TOKEN BUCKET ALGORITHM â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n\nclass TokenBucketRateLimiter:\n    def __init__(self, rate, capacity):\n        \"\"\"\n        rate: tokens added per second\n        capacity: max tokens (burst size)\n        \"\"\"\n        self.rate = rate\n        self.capacity = capacity\n        self.buckets = {}  # user_id â†’ (tokens, last_refill)\n\n    def is_allowed(self, user_id):\n        now = time.time()\n\n        if user_id not in self.buckets:\n            self.buckets[user_id] = (self.capacity - 1, now)\n            return True\n\n        tokens, last_refill = self.buckets[user_id]\n\n        # Refill tokens\n        elapsed = now - last_refill\n        tokens = min(self.capacity, tokens + elapsed * self.rate)\n\n        if tokens >= 1:\n            self.buckets[user_id] = (tokens - 1, now)\n            return True\n\n        self.buckets[user_id] = (tokens, now)\n        return False\n\n# Usage\nlimiter = TokenBucketRateLimiter(rate=10, capacity=100)\n# Allows burst of 100 requests, then 10/second sustained"
+     "code": "import time\nfrom collections import defaultdict, deque\n\n# ═══════════════ SLIDING WINDOW COUNTER ═══════════════\n\nclass SlidingWindowRateLimiter:\n    def __init__(self, max_requests, window_seconds):\n        self.max_requests = max_requests\n        self.window = window_seconds\n        self.requests = defaultdict(deque)  # user_id → timestamps\n\n    def is_allowed(self, user_id):\n        now = time.time()\n        window_start = now - self.window\n\n        # Remove expired requests\n        user_queue = self.requests[user_id]\n        while user_queue and user_queue[0] < window_start:\n            user_queue.popleft()\n\n        # Check limit\n        if len(user_queue) < self.max_requests:\n            user_queue.append(now)\n            return True\n        return False\n\n# ═══════════════ TOKEN BUCKET ALGORITHM ═══════════════\n\nclass TokenBucketRateLimiter:\n    def __init__(self, rate, capacity):\n        \"\"\"\n        rate: tokens added per second\n        capacity: max tokens (burst size)\n        \"\"\"\n        self.rate = rate\n        self.capacity = capacity\n        self.buckets = {}  # user_id → (tokens, last_refill)\n\n    def is_allowed(self, user_id):\n        now = time.time()\n\n        if user_id not in self.buckets:\n            self.buckets[user_id] = (self.capacity - 1, now)\n            return True\n\n        tokens, last_refill = self.buckets[user_id]\n\n        # Refill tokens\n        elapsed = now - last_refill\n        tokens = min(self.capacity, tokens + elapsed * self.rate)\n\n        if tokens >= 1:\n            self.buckets[user_id] = (tokens - 1, now)\n            return True\n\n        self.buckets[user_id] = (tokens, now)\n        return False\n\n# Usage\nlimiter = TokenBucketRateLimiter(rate=10, capacity=100)\n# Allows burst of 100 requests, then 10/second sustained"
     },
     {
      "t": "p",
@@ -48,7 +48,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Design an ML Labelling System (Atlassian â€” ML Engineer)",
+   "q": "Design an ML Labelling System (Atlassian — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -61,7 +61,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”\nâ”‚                    ML Labelling System                   â”‚\nâ”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤\nâ”‚  Data Store â”‚  Task Queue  â”‚ Label UI     â”‚ Quality     â”‚\nâ”‚  (S3/GCS)   â”‚  (Celery/    â”‚ (React/      â”‚ Assurance   â”‚\nâ”‚             â”‚   Redis)     â”‚  custom)     â”‚ Engine      â”‚\nâ”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤\nâ”‚             â”‚              â”‚              â”‚             â”‚\nâ”‚ Raw data    â”‚ Task assign  â”‚ Annotation   â”‚ Inter-rater â”‚\nâ”‚ Metadata    â”‚ Priority     â”‚ interface    â”‚ agreement   â”‚\nâ”‚ Versioning  â”‚ Load balance â”‚ Hotkeys      â”‚ Gold sets   â”‚\nâ”‚             â”‚              â”‚ Guidelines   â”‚ Consensus   â”‚\nâ””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜"
+     "code": "┌─────────────────────────────────────────────────────────┐\n│                    ML Labelling System                   │\n├─────────────┬──────────────┬──────────────┬─────────────┤\n│  Data Store │  Task Queue  │ Label UI     │ Quality     │\n│  (S3/GCS)   │  (Celery/    │ (React/      │ Assurance   │\n│             │   Redis)     │  custom)     │ Engine      │\n├─────────────┼──────────────┼──────────────┼─────────────┤\n│             │              │              │             │\n│ Raw data    │ Task assign  │ Annotation   │ Inter-rater │\n│ Metadata    │ Priority     │ interface    │ agreement   │\n│ Versioning  │ Load balance │ Hotkeys      │ Gold sets   │\n│             │              │ Guidelines   │ Consensus   │\n└─────────────┴──────────────┴──────────────┴─────────────┘"
     },
     {
      "t": "p",
@@ -87,7 +87,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "Code Formal Verification (PathAI â€” ML Engineer)",
+   "q": "Code Formal Verification (PathAI — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -152,7 +152,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Forward pass â†’ Compute loss â†’ Backward pass â†’ Update weights**"
+     "text": "**Forward pass → Compute loss → Backward pass → Update weights**"
     },
     {
      "t": "code",
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "Tell me about your projects (ByteDance â€” ML Engineer)",
+   "q": "Tell me about your projects (ByteDance — ML Engineer)",
    "body": [
     {
      "t": "p",
@@ -255,7 +255,7 @@ EC.receiveLesson({
     },
     {
      "t": "quote",
-     "text": "\"At [Company], we needed to reduce customer churn by 20%. I built an XGBoost model on 2M user records with 150 features. Main challenge was class imbalance (5% churn rate) â€” solved with SMOTE + class weights. Deployed on AWS SageMaker with real-time inference. Reduced churn by 23% in Q1, saving $1.2M ARR. Key learning: feature engineering (user engagement patterns) mattered more than model architecture.\""
+     "text": "\"At [Company], we needed to reduce customer churn by 20%. I built an XGBoost model on 2M user records with 150 features. Main challenge was class imbalance (5% churn rate) — solved with SMOTE + class weights. Deployed on AWS SageMaker with real-time inference. Reduced churn by 23% in Q1, saving $1.2M ARR. Key learning: feature engineering (user engagement patterns) mattered more than model architecture.\""
     }
    ],
    "kind": ""

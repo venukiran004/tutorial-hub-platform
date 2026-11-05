@@ -27,7 +27,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from transformers import pipeline\n\n# Text classification\nclassifier = pipeline(\"text-classification\")\n\n# NER\nner = pipeline(\"ner\", grouped_entities=True)\n\n# QA\nqa = pipeline(\"question-answering\")\n\n# Summarization\nsummarizer = pipeline(\"summarization\", model=\"facebook/bart-large-cnn\")\n\n# Translation\ntranslator = pipeline(\"translation_en_to_fr\")\n\n# Text generation\ngenerator = pipeline(\"text-generation\", model=\"meta-llama/Llama-2-7b-chat-hf\")"
+     "code": "from transformers import pipeline\n\n# Text classification\nclassifier = pipeline(\"text-classification\")\n\n# NER\nner = pipeline(\"ner\", aggregation_strategy=\"simple\")\n\n# QA\nqa = pipeline(\"question-answering\")\n\n# Summarization\nsummarizer = pipeline(\"summarization\", model=\"facebook/bart-large-cnn\")\n\n# Translation\ntranslator = pipeline(\"translation_en_to_fr\")\n\n# Text generation\ngenerator = pipeline(\"text-generation\", model=\"meta-llama/Llama-2-7b-chat-hf\")"
     }
    ],
    "kind": ""
@@ -92,7 +92,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from sentence_transformers import SentenceTransformer, InputExample, losses\nfrom torch.utils.data import DataLoader\n\nmodel = SentenceTransformer(\"all-MiniLM-L6-v2\")\n\n# Training examples (anchor, positive, negative)\ntrain_examples = [\n    InputExample(texts=[\"query about Python\", \"Python programming guide\"], label=0.9),\n    InputExample(texts=[\"query about Python\", \"Java tutorial\"], label=0.1),\n]\n\ntrain_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)\ntrain_loss = losses.CosineSimilarityLoss(model)\n\nmodel.fit(\n    train_objectives=[(train_dataloader, train_loss)],\n    epochs=5,\n    warmup_steps=100,\n)"
+     "code": "from sentence_transformers import SentenceTransformer, InputExample, losses\nfrom torch.utils.data import DataLoader\n\nmodel = SentenceTransformer(\"all-MiniLM-L6-v2\")\n\n# Training examples: a sentence pair and its target similarity\ntrain_examples = [\n    InputExample(texts=[\"query about Python\", \"Python programming guide\"], label=0.9),\n    InputExample(texts=[\"query about Python\", \"Java tutorial\"], label=0.1),\n]\n\ntrain_dataloader = DataLoader(train_examples, shuffle=True, batch_size=16)\ntrain_loss = losses.CosineSimilarityLoss(model)\n\nmodel.fit(\n    train_objectives=[(train_dataloader, train_loss)],\n    epochs=5,\n    warmup_steps=100,\n)"
     }
    ],
    "kind": ""

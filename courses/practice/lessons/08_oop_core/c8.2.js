@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c8.2",
  "lede": "**23 programs to write**, on attribute semantics and dunder protocols. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 24 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 23 programs on attribute semantics and dunder protocols without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c8.1"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 945–967.** What this set actually drills, counted from its own problems — 18 of the 23 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["classes", "patterns", "dicts and sets", "decorators"], "cells": [[{"text": "12", "tone": "accent"}, "Class Attributes Are Shared, I"], [{"text": "3", "tone": "good"}, "SOLID: Single Responsibility a"], [{"text": "2", "tone": "violet"}, "A Hash Table Built by Hand"], [{"text": "1", "tone": "teal"}, "__slots__ Saves Memory and Blo"]], "t": "diagram", "id": "dg-c8_2-top-0"},
   {
    "t": "callout",
    "kind": "note",

@@ -567,24 +567,24 @@ def summarise_deploys(records: list[dict]) -> dict[str, dict]:
     for r in {o["region"] for o in orders if o["ok"]}
 }`,
         options: [
+          "It scans `orders` once per region, repeats the filter, and leaves nowhere to inspect a value",
           "Comprehensions are less readable than loops, so a loop is always preferable",
-          "It scans `orders` once per region and repeats the filter condition, and there is nowhere to inspect an intermediate value",
           "Dict comprehensions cannot be used with `sum`, so this will raise a `TypeError`",
           "It should use `map` and `filter` instead, which are the functional idioms"
         ],
-        answer: 1,
-        why: "The objection is three concrete costs, not a general preference: quadratic scanning, the `o[\"ok\"]` filter stated twice so a change to one is a silent behaviour change, and no place to put a breakpoint or print a row count. Option A is the taste answer — comprehensions are the right tool for a map or filter over one iterable. Option C is false; the code runs. Option D swaps one style for another without naming a cost, and `map`/`filter` would be no more debuggable."
+        answer: 0,
+        why: "The objection is three concrete costs, not a general preference: quadratic scanning, the `o[\"ok\"]` filter stated twice so a change to one is a silent behaviour change, and no place to put a breakpoint or print a row count. Option B is the taste answer — comprehensions are the right tool for a map or filter over one iterable. Option C is false; the code runs. Option D swaps one style for another without naming a cost, and `map`/`filter` would be no more debuggable."
       },
       {
         stem: "Which change is justified by test 3 (can a reader predict the failure)?",
         options: [
-          "Replacing `while i < len(items)` with `for item in items`",
-          "Extracting the literal `3` from two places into a named constant",
+          "Replacing `while i < len(items)` with `for item in items`, so an off-by-one cannot happen",
           "Replacing `os.environ.get(\"DATABASE_URL\")` with `os.environ[\"DATABASE_URL\"]` for a required setting",
-          "Renaming `do_process_data` to `process_orders`"
+          "Extracting the literal `3` from two places into a named constant",
+          "Renaming `do_process_data` to `process_orders`, so a reader can tell what the function handles"
         ],
-        answer: 2,
-        why: "Test 3 is about whether the failure is visible at the point of the mistake. A missing required setting read with `.get()` becomes `None` and surfaces later as a confusing error inside a driver; the bracket form raises `KeyError` naming the variable at startup. Option A is test 1 (a re-implemented protocol), option B is test 2 (a fact stated twice), and option D satisfies no test at all — it is a naming preference, and should be marked as one."
+        answer: 1,
+        why: "Test 3 is about whether the failure is visible at the point of the mistake. A missing required setting read with `.get()` becomes `None` and surfaces later as a confusing error inside a driver; the bracket form raises `KeyError` naming the variable at startup. Option A is test 1 (a re-implemented protocol), option C is test 2 (a fact stated twice), and option D satisfies no test at all — it is a naming preference, and should be marked as one."
       },
       {
         stem: "\"Errors should never pass silently. Unless explicitly silenced.\" Which pair of lines is consistent with both halves?",
@@ -595,18 +595,18 @@ def summarise_deploys(records: list[dict]) -> dict[str, dict]:
           "`try: os.remove(p)` / `except: logging.debug(\"oops\")`"
         ],
         answer: 1,
-        why: "`suppress(FileNotFoundError)` names exactly which error is being ignored, which is what \"explicitly silenced\" means. Option A silences every exception including `MemoryError` and `KeyboardInterrupt`, so a real failure disappears. Option C is a check-then-act race: the file can vanish between the check and the call (Lesson 5.3). Option D uses a bare `except`, logs at a level nobody reads, and gives no indication of which error occurred."
+        why: "`suppress(FileNotFoundError)` names exactly which error is being ignored, which is what \"explicitly silenced\" means. Option A silences every ordinary exception — `PermissionError`, `IsADirectoryError`, a typo's `NameError` — so a real failure disappears. Option C is a check-then-act race: the file can vanish between the check and the call (Lesson 5.3). Option D uses a bare `except`, logs at a level nobody reads, and gives no indication of which error occurred."
       },
       {
         stem: "In a profiled hot loop you hoist `append = out.append` into a local variable to avoid repeated attribute lookup. Is this Pythonic?",
         options: [
-          "No — attribute lookups are the idiomatic form, so the change should be rejected in review",
-          "Yes, unconditionally — faster code is better code",
-          "It is a defensible unidiomatic choice, provided the measurement and the reason are written next to it",
-          "Only if the codebase has no linter, since linters forbid this pattern"
+          "No — attribute lookups are the idiomatic form, so the change should be rejected in review whatever it measured",
+          "Yes, unconditionally — faster code is better code, and a hot loop is exactly where speed matters most",
+          "Only if the codebase has no linter, since the common linters flag this pattern as an error",
+          "It is a defensible unidiomatic choice, provided the measurement and the reason are written next to it"
         ],
-        answer: 2,
-        why: "\"Practicality beats purity\" is a real clause, but it is a licence that comes with a burden of proof. The hoist obscures intent for a reader, so it needs the profile result in a comment saying what it bought and where — otherwise the next reader cannot tell a measured optimisation from a habit. Option A rules out a legitimate case; option B ignores that most such hoists are unmeasured and buy nothing; option D confuses tooling with judgement."
+        answer: 3,
+        why: "\"Practicality beats purity\" is a real clause, but it is a licence that comes with a burden of proof. The hoist obscures intent for a reader, so it needs the profile result in a comment saying what it bought and where — otherwise the next reader cannot tell a measured optimisation from a habit. Option A rules out a legitimate case; option B ignores that most such hoists are unmeasured and buy nothing; option C confuses tooling with judgement."
       }
     ]
   },

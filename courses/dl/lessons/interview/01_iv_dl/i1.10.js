@@ -231,7 +231,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Lower = better. Sensitive to both image quality and diversity (contrast to IS which only measures quality)."
+     "text": "Lower = better. Sensitive to both image quality and diversity, and unlike the Inception Score it compares against real images."
     }
    ],
    "kind": ""
@@ -302,10 +302,6 @@ EC.receiveLesson({
     {
      "t": "p",
      "text": "Challenges: load balancing among experts, router collapse."
-    },
-    {
-     "t": "p",
-     "text": "*Last Updated: April 2026* *Topic: Deep Learning Interview Questions*"
     }
    ],
    "kind": ""

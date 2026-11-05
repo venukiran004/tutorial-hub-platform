@@ -280,7 +280,7 @@ send_to_billing({"id": 1})
 # Where it beats a lambda: late binding
 handlers = [partial(handle, n) for n in range(3)]     # each holds its own n
 handlers = [lambda: handle(n) for n in range(3)]      # all see n == 2`},
-        { t: "p", text: "`partial` binds the value **now**; a `lambda` closes over the variable and reads it **later** (Lesson 3.5). In a loop that difference is the classic bug where every callback uses the final value." },
+        { t: "p", text: "`partial` binds the value **now**; a `lambda` closes over the variable and reads it **later** (Lesson 3.6). In a loop that difference is the classic bug where every callback uses the final value." },
         { t: "p", text: "It also survives `pickle`, which a `lambda` does not — so a `partial` can cross a `multiprocessing` boundary and a `lambda` cannot (Lesson 11.4)." }
       ]},
       { label: "reduce", blocks: [
@@ -685,32 +685,32 @@ if __name__ == "__main__":
       {
         stem: "An aggregation using `groupby` reports a third of the true total after an upstream query lost its `ORDER BY`. Why?",
         options: [
-          "`groupby` raises on unsorted input, and the error was swallowed",
-          "`groupby` starts a new group whenever the key changes, so each customer produced several groups and the dict kept only the last",
+          "`groupby` raises on unsorted input, and the error was swallowed by a broad `except` upstream",
           "The sort order affects hashing, so keys collided",
+          "`groupby` starts a new group on every key change, so each customer split into several",
           "`groupby` samples large inputs for performance"
         ],
-        answer: 1,
+        answer: 2,
         why: "`groupby` groups **consecutive runs**, not values — it walks the input once and never looks back. Unsorted input therefore yields the same key in several groups, and building a dict from those keeps only the final one. There is no error and the numbers stay plausible, which is why this class of bug survives for days. Either sort with the same key function, or assert the ordering invariant so a violation fails loudly."
       },
       {
         stem: "Why is `a, b = tee(source)` a poor way to iterate over data twice?",
         options: [
-          "`tee` re-reads the source, so side effects run twice",
-          "It buffers everything one branch has consumed and the other has not — consuming `a` fully holds the entire sequence in memory",
-          "The two branches yield items in different orders",
-          "`tee` only works on sequences, not on generators"
+          "It buffers whatever one branch has read and the other has not — here, the whole sequence",
+          "`tee` re-reads the underlying source for each branch, so any side effects in it run twice",
+          "The two branches yield items in different orders, because each one consumes the source independently",
+          "`tee` only works on sequences, so on a generator it silently returns two empty iterators"
         ],
-        answer: 1,
+        answer: 0,
         why: "`tee` maintains a shared buffer so the lagging branch can still see items the leading one has passed. Used as intended — branches advancing together — the buffer stays small. Used to \"copy\" an iterator for two full passes, peak memory is the whole sequence, from a call that looks free. If you genuinely need the data twice, call `list()`, which at least makes the cost visible."
       },
       {
         stem: "A `Client` class caches with `@lru_cache(maxsize=128)` on a method. Memory grows to a plateau and never falls. Why?",
         options: [
-          "`lru_cache` never evicts when `maxsize` is set",
-          "The cache lives on the class and its keys include `self`, so up to 128 instances are pinned forever",
-          "Each instance creates its own 128-entry cache",
-          "The decorator prevents `__del__` from running"
+          "`lru_cache` never evicts entries when `maxsize` is set, so it grows until the process restarts",
+          "The cache lives on the class with `self` in each key, so 128 instances stay pinned",
+          "Each instance creates its own 128-entry cache, so memory grows with the number of clients",
+          "The decorator prevents `__del__` from running, so cached instances can never be finalised"
         ],
         answer: 1,
         why: "The decorator runs once, when the class body executes, so all instances share one cache. Because `self` is part of the key, every entry holds a strong reference to an instance — along with its connections and buffers — that can never be collected. The plateau is the cache filling to `maxsize`, which is exactly why it looks like normal warm-up. Use `cached_property` when the value depends only on `self`, or build a per-instance cache in `__init__`."
@@ -718,10 +718,10 @@ if __name__ == "__main__":
       {
         stem: "You need to skip comment lines in a log file that also contains comments partway through. Why is `dropwhile` wrong?",
         options: [
-          "`dropwhile` is eager and would read the whole file",
-          "It stops dropping at the first non-comment line and yields everything after it, including later comments",
-          "It cannot take a lambda predicate",
-          "It drops the first matching item only"
+          "`dropwhile` is eager and would read the whole file into memory before yielding anything",
+          "It stops dropping at the first non-comment line, so later comments pass through",
+          "It cannot take a lambda as its predicate, only a named function",
+          "It only drops the first matching line and then yields everything else"
         ],
         answer: 1,
         why: "`dropwhile` removes a **prefix**, not a category: once the predicate fails it stops testing and passes everything through. A mid-file rotation marker then reaches your parser, which either crashes on `split` or, worse, parses the comment as data. A generator with `continue` expresses \"ignore comments\" rather than \"skip a prefix\", and handles both positions."
@@ -748,7 +748,7 @@ if __name__ == "__main__":
         q: "`partial` or a `lambda`?",
         strong: "`partial` binds argument values at creation time; a `lambda` closes over variables and reads them when called. In a loop building callbacks, the `lambda` version has every callback see the final value — `partial` gives each its own.",
         answer: [
-          { t: "p", text: "The late-binding distinction is the substantive part, and it is the same mechanism behind the mutable-default and closure surprises from Lessons 3.2 and 3.5 — worth connecting rather than treating as trivia." },
+          { t: "p", text: "The late-binding distinction is the substantive part, and it is the same mechanism behind the mutable-default and closure surprises from Lessons 3.1 and 3.6 — worth connecting rather than treating as trivia." },
           { t: "p", text: "The picklability point is the one that lands with anyone who has run `multiprocessing`: a `partial` can cross a process boundary and a `lambda` raises." },
           { t: "p", text: "Balance it by conceding where `lambda` wins — a short expression used once, especially as a `key=` argument, where `partial` would be heavier for no gain." }
         ]

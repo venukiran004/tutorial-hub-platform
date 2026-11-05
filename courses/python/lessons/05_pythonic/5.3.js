@@ -260,6 +260,29 @@ except AttributeError:
       { t: "p", text: "This is the general limit of EAFP — an exception type tells you *what* went wrong, not *where*. When the same exception can come from the operation or from deep inside it, narrow the `try` or check first." }
     ]},
 
+    { t: "callout", kind: "trap", title: "`hasattr` turns a bug inside a property into a missing attribute", body: [
+      { t: "p", text: "`hasattr(obj, name)` works by calling `getattr` and catching `AttributeError`. **For a property, that means it runs the property, and any `AttributeError` raised inside it, from a typo or a wrong type, is reported as \"this attribute does not exist\".** Your code takes the fallback branch, and the bug never surfaces." },
+      { t: "code", lang: "python", title: "the property exists, and hasattr says it does not", code: `class Order:
+    def __init__(self, lines: list[dict]) -> None:
+        self.lines = lines
+
+    @property
+    def total(self) -> int:
+        return sum(line.amount for line in self.lines)   # bug: lines are dicts
+
+
+order = Order([{"amount": 10}])
+print(hasattr(order, "total"))          # the property exists...
+print(hasattr(type(order), "total"))    # ...and asking the class does not run it
+order.total`,
+        out: `False
+True
+Traceback (most recent call last):
+  ...
+AttributeError: 'dict' object has no attribute 'amount'` },
+      { t: "p", text: "**When the question is whether an object supports something, ask its type:** `hasattr(type(obj), name)` or `inspect.getattr_static` find the attribute without executing it. When you need the value, access it and let the error propagate. `getattr(obj, name, default)` has the same blind spot as `hasattr`." }
+    ]},
+
     { t: "h2", n: "05", text: "Narrow the try block", id: "narrow" },
 
     { t: "ladder",
@@ -336,7 +359,8 @@ def load_config(path: Path) -> Config:
       solution: {
         lang: "python",
         title: "import_job.py",
-        code: `# ---- the original -------------------------------------------------------
+        code: `from __future__ import annotations
+# ---- the original -------------------------------------------------------
 
 def import_files(paths, db):
     imported = 0
@@ -380,7 +404,6 @@ def import_files(paths, db):
 
 # ---- the fix ------------------------------------------------------------
 
-from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Sequence
@@ -569,10 +592,10 @@ if __name__ == "__main__":
       {
         stem: "Why is `if path.exists(): data = path.read_text()` unsafe even with additional checks added?",
         options: [
-          "`exists()` is unreliable on network filesystems",
-          "The check and the read are separate operations — another process can delete or replace the file in the gap, so more checks shrink the window without closing it",
-          "`read_text` caches the result of the previous `exists()` call",
-          "It is safe as long as `is_file()` and `os.access()` are also checked"
+          "`exists()` is unreliable on network filesystems, where it can report a cached answer from an earlier call",
+          "The check and the read are separate, so the file can change in between however many checks",
+          "`read_text` caches the result of the previous `exists()` call, so a deleted file is reported as present",
+          "It is safe as long as `is_file()` and `os.access()` are also checked, which rules out every failure mode"
         ],
         answer: 1,
         why: "This is the time-of-check-to-time-of-use race. The filesystem is shared state, so a passing check describes a moment that has already passed. No sequence of checks makes the gap zero — only performing the operation and handling its failure gives an answer that describes the action itself. It is also a recognised security vulnerability, since an attacker can replace the checked path with a symlink."
@@ -580,32 +603,32 @@ if __name__ == "__main__":
       {
         stem: "When is LBYL faster than EAFP?",
         options: [
+          "When failure is common — a `try` is nearly free, but raising is expensive",
           "Always — checking is cheaper than setting up a `try` block",
-          "When failure is the common case — entering a `try` is nearly free, but raising an exception is expensive",
           "Never — EAFP is faster in every scenario",
           "Only for dictionary access, where `in` is optimised"
         ],
-        answer: 1,
+        answer: 0,
         why: "Entering a `try` costs almost nothing in modern CPython, so EAFP wins on the success path. Raising and handling an exception is comparatively expensive, so a loop where most attempts fail — parsing a file where most lines are malformed — is faster with a check. The guidance is about which path is *expected*, not a blanket preference."
       },
       {
         stem: "Why is `hasattr(obj, \"close\")` often better than catching `AttributeError` around `obj.close()`?",
         options: [
           "`hasattr` is faster because it avoids exception machinery",
-          "The `except` also catches `AttributeError` raised *inside* `close()`, so a bug in the method is silently swallowed",
-          "`AttributeError` cannot be caught reliably for method calls",
+          "`AttributeError` cannot be caught reliably around a method call, because it is raised during lookup",
+          "The `except` also swallows `AttributeError` raised inside `close()`, hiding a real bug",
           "`hasattr` works on objects that define `__getattr__` and the exception approach does not"
         ],
-        answer: 1,
+        answer: 2,
         why: "An exception type tells you what went wrong, not where. If `close()` exists but references a missing attribute internally, the `except AttributeError` treats that as \"no close method\" and does nothing — hiding a real bug. This is the general limit of EAFP: when the same exception can arise from the operation or from inside it, either narrow the `try` or check first."
       },
       {
         stem: "Two concurrent requests both pass `if not db.exists(email)` and create duplicate users. What is the correct fix?",
         options: [
-          "An application-level lock around the check and the insert",
-          "A unique constraint on the column, and catching the integrity error — only the database can make the check and the write atomic",
-          "Retry the check three times before inserting",
-          "Increase the transaction isolation level to serialisable"
+          "An application-level lock around the check and the insert, so only one request at a time can create a user",
+          "A unique constraint, with the integrity error caught — only the database can be atomic",
+          "Retry the existence check three times before inserting, so a concurrent insert has time to become visible",
+          "Increase the transaction isolation level to serialisable, which makes the check-then-insert behave atomically"
         ],
         answer: 1,
         why: "An application lock only serialises one process, and there are typically several workers. The database owns the state, so it is the only component that can make checking and writing one atomic operation — a unique constraint plus EAFP on the integrity error. Serialisable isolation can also work but is a heavier, less targeted tool. Retrying the check does not help: the race is between check and write, not within the check."

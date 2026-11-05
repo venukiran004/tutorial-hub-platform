@@ -11,6 +11,8 @@ EC.receiveLesson({
     "Apply the fix: run_in_threadpool, per-request sessions, pool sizing, eager loading, atomic updates and row locks, a process pool, a durable queue, idempotency keys, a semaphore, a bounded cache, a rollback-on-exception dependency, streaming queries, graceful shutdown",
     "State the five recurring lessons and map any new incident onto one of them",
     "Choose threads, processes or async for a given endpoint using the decision table"
+,
+    "Diagnose a compound incident by fixing the upstream scenario first, rather than raising the limit the symptom points at"
   ],
 
   prerequisites: ["11.8", "12.7", "13.5", "13.7"],
@@ -43,6 +45,21 @@ async def report():
 @app.get("/report")
 def report():
     return build_report_sync()` },
+
+    { t: "callout", kind: "trap", title: "The thread pool you offload to has 40 seats", body: [
+      { t: "p", text: "`run_in_threadpool`, and every plain `def` endpoint and dependency, runs on AnyIO's worker threads, **and that pool is capped at 40 tokens per process by default.** Offloading a blocking call stops it freezing the event loop; it does not make capacity unlimited. Under load the 41st blocking call waits for a token, and because sync dependencies take tokens too, a burst of slow PDF exports can make every other request wait inside `def get_db()`." },
+      { t: "code", lang: "python", title: "the default, read from the running loop", code: `import anyio
+import anyio.to_thread
+
+
+async def main() -> None:
+    print(anyio.to_thread.current_default_thread_limiter().total_tokens)
+
+
+anyio.run(main)`,
+        out: `40` },
+      { t: "p", text: "**Size it deliberately in the lifespan hook** (`current_default_thread_limiter().total_tokens = 100`), and only after checking that your connection pool and downstream limits can absorb that many concurrent calls. For heavy CPU work the answer is still a process pool or a queue, not a bigger thread pool." }
+    ]},
 
     { t: "h2", n: "02", text: "Sessions are per request, engines are global: scenarios 2, 3 and 13", id: "sessions" },
 
@@ -169,7 +186,13 @@ async def get_user(uid: int, db: AsyncSession = Depends(get_async_db)):
 (c) scenario 2 — one Session across requests; rule 2; a per-request Session
 (d) scenario 12 — unbounded cache; rule 4; lru_cache(maxsize) or TTLCache
 (e) scenario 11 — lost update; rule 3; a version column and UPDATE ... WHERE version = ?`,
-        notes: [{ t: "p", text: "Two of the five are the same rule broken two ways, which is the point of the grouping: the rule is the thing to remember, the scenarios are its symptoms." }] } }
+        notes: [{ t: "p", text: "Two of the five are the same rule broken two ways, which is the point of the grouping: the rule is the thing to remember, the scenarios are its symptoms." }] } },
+
+    { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
+      { t: "p", text: "An orders service on four workers started returning 500s at 11:02 on a sale morning: `QueuePool limit of size 5 overflow 10 reached, connection timed out, timeout 30.00`. The on-call engineer raised `pool_size` to 20. The errors continued, and PostgreSQL began refusing connections outright, because four workers at 30 connections each now exceeded `max_connections`." },
+      { t: "p", text: "**The pool was the symptom, not the cause.** A new `async def` endpoint called a tax service with the synchronous `requests` library while holding a session (scenario 1). Each blocked call froze the worker's event loop for up to two seconds with a connection checked out, so connections were held for the length of someone else's HTTP call (scenario 3)." },
+      { t: "p", text: "**Moving the tax call to `httpx.AsyncClient` with a timeout, and opening the session only after it returned, cleared both, and `pool_size` went back to 5.** When two scenarios appear together, fix the upstream one: exhaustion is almost always a hold-time problem, and raising the limit only moves the failure into the database." }
+    ]}
   ],
 
   takeaways: [
@@ -183,20 +206,20 @@ async def get_user(uid: int, db: AsyncSession = Depends(get_async_db)):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Every endpoint's latency spikes whenever one async endpoint calls a synchronous HTTP library. Why?",
-      options: ["The database is overloaded", "The synchronous call holds the event loop's single thread, so no other coroutine can run until it returns", "The GIL is released", "Too many workers"],
-      answer: 1,
+      options: ["The database is overloaded by the extra queries from the slow endpoint", "The GIL is released during the call, letting other work starve the loop", "The sync call blocks the event loop's only thread", "There are too many workers competing for the same CPU cores"],
+      answer: 2,
       why: "An async server runs all coroutines on one thread; they take turns at await points. A blocking call never awaits, so it holds the thread for its whole duration and every other request — including health checks — waits. run_in_threadpool or an async client fixes it." },
     { stem: "A flash sale of 100 units sells 118. Which fix actually works with eight workers on two machines?",
-      options: ["A threading.Lock around the check", "An asyncio.Lock around the check", "A conditional atomic UPDATE … WHERE stock > 0, checked by rowcount, in the database", "Retrying the request"],
-      answer: 2,
+      options: ["An atomic `UPDATE … WHERE stock > 0` in the database", "A `threading.Lock` around the stock check and the decrement", "An `asyncio.Lock` around the stock check and the decrement", "Retrying the request when the stock check fails"],
+      answer: 0,
       why: "In-process locks serialise only within one process; sixteen workers across two machines still race. The database holds the row and can check and decrement atomically under its own lock, and a CHECK constraint is the backstop. Invariants belong where the data lives." },
     { stem: "What does MissingGreenlet in async SQLAlchemy tell you?",
-      options: ["The database connection was lost", "A lazy relationship was accessed after the awaited query, triggering implicit I/O outside an await", "The session was not committed", "greenlet is not installed"],
+      options: ["The database connection was lost while the query was running", "A lazy load tried to do I/O outside an `await`", "The session was not committed before the object was used", "The `greenlet` package is not installed in the environment"],
       answer: 1,
       why: "Relationships load lazily on first access. In async code that access would need I/O without an await, which the async engine forbids — so it raises. Eager-load with selectinload or joinedload for anything the response serialises; in sync code the same laziness silently becomes N+1 queries." },
     { stem: "Why do FastAPI BackgroundTasks lose work during a deploy?",
-      options: ["They run before the response", "They run in the same process after the response, so they die when the process is replaced and nothing recorded them", "They are rate-limited", "They require Celery"],
-      answer: 1,
+      options: ["They live only in the replaced process, and nothing recorded them", "They run before the response is sent, so a deploy cancels the request", "They are rate-limited, and the queued work is dropped on shutdown", "They require Celery, which is not running during the deploy"],
+      answer: 0,
       why: "BackgroundTasks are convenient for tiny fire-and-forget work, but they exist only in the worker's memory. A rolling deploy replaces the worker mid-task. Durable work — emails, reports, charges — is written to a queue or jobs table before the response returns and processed by a worker that can be restarted." }
   ] },
 

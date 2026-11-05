@@ -172,6 +172,32 @@ result = [x * 2 for x in xs]               # ~18 us
       { t: "p", text: "**Keep data in arrays across steps** rather than converting per operation. Most of the disappointment with `numpy` comes from paying conversion on both ends of every call." }
     ]},
 
+    { t: "callout", kind: "trap", title: "`np.vectorize` is a Python loop with a NumPy signature", body: [
+      { t: "p", text: "The name promises vectorisation, and the NumPy documentation says plainly that it is provided for convenience, not performance. **It calls your Python function once per element, so it pays the interpreter cost the whole technique exists to avoid.** It makes a function accept arrays; it does not make it fast." },
+      { t: "code", lang: "python", title: "one million prices, measured", code: `import timeit
+
+import numpy as np
+
+prices = np.random.default_rng(0).uniform(1, 100, 1_000_000)
+
+
+def with_tax(p: float) -> float:
+    return p * 1.2 if p > 10 else p
+
+
+vec = np.vectorize(with_tax)
+loop = timeit.timeit(lambda: [with_tax(p) for p in prices], number=3) / 3
+npv = timeit.timeit(lambda: vec(prices), number=3) / 3
+real = timeit.timeit(lambda: np.where(prices > 10, prices * 1.2, prices), number=3) / 3
+print(f"list comprehension  {loop * 1000:7.1f} ms")
+print(f"np.vectorize        {npv * 1000:7.1f} ms")
+print(f"np.where            {real * 1000:7.1f} ms")`,
+        out: `list comprehension    659.3 ms
+np.vectorize          590.9 ms
+np.where               28.9 ms` },
+      { t: "p", text: "**The branch has to become array operations:** `np.where`, boolean masks, `np.select` for several conditions. That rewrite is what buys the 20x. If the logic cannot be expressed that way, `np.vectorize` will not save you; a compiled kernel (next section) might." }
+    ]},
+
     { t: "h2", n: "03", text: "Crossing into native code", id: "native" },
 
     {"kind": "compare", "title": "Four routes into native code, and the row that is not about speed", "caption": "**Memory safety is the row that actually differentiates them: Cython and a hand-written C extension are yours to get right, and Rust's is enforced** — which is a correctness argument rather than a performance one, since all three reach similar speeds. The honest ordering by cost: **Cython is annotated Python with a low learning cost, `ctypes`/`cffi` needs no build chain at all because the library already exists, and both C and Rust are a high learning cost plus `cibuildwheel` or `maturin` for every platform.**", "columns": [{"title": "Low cost to adopt", "tone": "good", "items": ["Cython — annotated Python, a compiler, low learning cost", "ctypes / cffi — no build chain; the .so already exists", "both leave memory safety to you", "Cython needs cibuildwheel for wheels; cffi needs nothing"]}, {"title": "High cost, more to show for it", "tone": "violet", "items": ["C extension — the CPython API directly, high learning cost", "Rust + PyO3 — high learning cost, memory safety ENFORCED", "maturin makes Rust wheels well supported", "and all four reach broadly similar speeds"]}], "t": "diagram", "id": "dg-10_6-03-1"},
@@ -194,7 +220,7 @@ result = [x * 2 for x in xs]               # ~18 us
       caption: "**Cython is the cheapest first step** because it starts as your existing Python and gets faster as you add types. **Rust is the right choice for something new**, largely because a memory-safety bug in a C extension is a segfault with no traceback."
     },
 
-    { t: "code", lang: "python", title: "Cython: the same function, typed", code: `
+    { t: "code", lang: "cython", title: "Cython: the same function, typed", code: `
 # hot.pyx — compiled, not interpreted
 cimport cython
 
@@ -238,7 +264,7 @@ def rolling_max(double[:] values, int window):
       rungs: [
         { level: "bad", label: "Rewrite it in Go",
           why: "Takes a quarter, needs a second deployment story, and abandons every library the job depends on. It also fixes the wrong thing if the job is I/O-bound — which, being a batch job over a database, it very likely is.",
-          code: `// six weeks in, reimplementing the CSV quirks
+          lang: "go", code: `// six weeks in, reimplementing the CSV quirks
 // and the date parsing, and the retry logic...` },
         { level: "ok", label: "Scale out",
           why: "If the work divides cleanly, more workers is a configuration change. It costs money for as long as it runs, and does nothing for a single item that is too slow — but it is available today.",
@@ -293,7 +319,7 @@ for order in orders:
       minutes: 28,
       body: [
         { t: "p", text: "A team proposes rewriting a risk-scoring service in Rust. It handles 400 requests per second at p99 = 2.1 s, and the SLO is 500 ms. They estimate a quarter of work and a 40× speed-up of the scoring code." },
-        { t: "code", lang: "python", title: "the profile they attached", numbered: false, code: `
+        { t: "code", lang: "text", title: "the profile they attached", numbered: false, code: `
          12,401,203 function calls in 2.084 seconds
    ncalls  tottime  cumtime  filename:lineno(function)
         1    0.000    2.084  service.py:41(score_request)
@@ -509,32 +535,32 @@ for order in orders:
       {
         stem: "A profile shows Python executing for 9% of a 2-second request. A rewrite promises a 40× speed-up. What is the best possible result?",
         options: [
-          "About 50 ms — a 40× improvement",
-          "About 1.9 seconds — an 8.8% improvement, because the other 91% is untouched",
-          "About 1 second, since the speed-up compounds",
-          "It cannot be estimated without benchmarking"
+          "About 50 ms — a 40× improvement across the whole request",
+          "About 1 second, since the speed-up compounds across the request",
+          "It cannot be estimated without benchmarking the rewrite first",
+          "About 1.9 seconds — the other 91% is untouched"
         ],
-        answer: 1,
+        answer: 3,
         why: "Amdahl's law: `(total - hot) + hot/speedup`. With `hot` at 0.188 s, even an infinite speed-up leaves 1.896 s. If the SLO is 500 ms the rewrite cannot reach it, which turns an argument about languages into arithmetic on the team's own profile — and is worth computing before any code is written."
       },
       {
         stem: "In a profile, one line reads `847  0.004  1.498  psycopg/cursor.py:execute` while every other top-level entry has `ncalls=1`. What does that mean?",
         options: [
-          "The query is slow and needs an index",
-          "847 round trips in one request — an N+1 — and `tottime` of 0.004 shows the driver is waiting, not computing",
-          "The connection pool is exhausted",
-          "The profiler is double-counting recursive calls"
+          "847 round trips — an N+1 — with the driver waiting, not computing",
+          "The query itself is slow and needs an index on the column it filters by",
+          "The connection pool is exhausted, so each call waits for a free connection",
+          "The profiler is double-counting recursive calls into the driver"
         ],
-        answer: 1,
+        answer: 0,
         why: "1.498 s over 847 calls is 1.77 ms each — a fast query executed far too many times. The near-zero `tottime` against a large `cumtime` is the signature of I/O wait, which is why a faster language cannot help. Fixing the N+1 removes 72% of the request in about two days."
       },
       {
         stem: "Why is `np.array([a[i] * 2 + b[i] for i in range(len(a))])` slower than the same loop over plain lists?",
         options: [
-          "`numpy` arrays are stored on disk",
-          "Element-wise indexing boxes each value back into a Python object, so you pay array overhead *and* interpreter overhead",
-          "The array is copied on every index",
-          "`range()` is slower than `zip()`"
+          "`numpy` arrays are memory-mapped from disk, so each index reads from storage",
+          "Indexing boxes every element into a Python object, paying both costs",
+          "The whole array is copied on every index, so each access is O(n)",
+          "`range()` is slower than `zip()` for iterating two sequences together"
         ],
         answer: 1,
         why: "The speed comes from expressing the operation over the whole array — `a * 2 + b` — so the loop runs in C over unboxed memory. Indexing element by element re-boxes every value, which is strictly worse than a list comprehension. It is the most common first-week `numpy` mistake, and the reason \"we tried numpy and it was slower\" is a common report."
@@ -542,12 +568,12 @@ for order in orders:
       {
         stem: "A batch job misses its window. The work is per-customer and independent. What do you try first?",
         options: [
-          "Rewrite the job in a compiled language",
-          "Check the complexity — a quadratic scan made linear is a one-day change that beats any hardware — then scale out the remainder if needed",
+          "Check the complexity first — a quadratic scan made linear beats any hardware",
+          "Rewrite the job in a compiled language, which typically runs this kind of loop ten to fifty times faster",
           "Add more workers immediately",
           "Move the job to a larger machine"
         ],
-        answer: 1,
+        answer: 0,
         why: "A language change buys a constant factor; a complexity change buys a different curve, and the curve wins at every size that matters. Scaling out is the right *second* move here because the work divides and it is reversible within hours — but doing it first means renting machines to run a quadratic algorithm faster."
       }
     ]

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c10.3",
  "lede": "**16 programs to write**, on parsers and creational patterns. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 16 programs on parsers and creational patterns without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c10.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1229–1244.** What this set actually drills, counted from its own problems — 9 of the 16 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["classes", "graphs & trees", "files and paths", "algorithms", "lists", "dicts and sets"], "cells": [[{"text": "3", "tone": "accent"}, "Factory Method"], [{"text": "2", "tone": "good"}, "Trie with Autocomplete"], [{"text": "1", "tone": "violet"}, "Graph"], [{"text": "1", "tone": "teal"}, "A* Search Algorithm"], [{"text": "1", "tone": "warn"}, "Skip List"], [{"text": "1", "tone": "crit"}, "Consistent Hashing"]], "t": "diagram", "id": "dg-c10_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -263,7 +263,17 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "print(\"Q495: Circuit breaker pattern\")\nprint(\"  Prevent cascading failures by stopping calls to failing services.\")\nprint(\"  States: CLOSED (normal) → OPEN (failing) → HALF-OPEN (testing)\")\n\nclass CircuitBreaker:\n    def __init__(self, failure_threshold=3, reset_timeout=10):\n        self.failure_count = 0\n        self.threshold = failure_threshold\n        self.state = \"CLOSED\"\n\n    def call(self, func, *args):\n        if self.state == \"OPEN\":\n            raise RuntimeError(\"Circuit is OPEN\")\n        try:\n            result = func(*args)\n            self.failure_count = 0\n            return result\n        except Exception:\n            self.failure_count += 1\n            if self.failure_count >= self.threshold:\n                self.state = \"OPEN\"\n            raise\n\ncb = CircuitBreaker(failure_threshold=2)\nfor i in range(3):\n    try:\n        cb.call(lambda: 1/0)\n    except (ZeroDivisionError, RuntimeError) as e:\n        print(f\"  Attempt {i+1}: {type(e).__name__} (state={cb.state})\")\nprint()\nQ495: Circuit breaker pattern\n  Prevent cascading failures by stopping calls to failing services.\n  States: CLOSED (normal) → OPEN (failing) → HALF-OPEN (testing)\n  Attempt 1: ZeroDivisionError (state=CLOSED)\n  Attempt 2: ZeroDivisionError (state=OPEN)\n  Attempt 3: RuntimeError (state=OPEN)",
+     "code": "print(\"Circuit breaker pattern\")\nprint(\"  Prevent cascading failures by stopping calls to failing services.\")\nprint(\"  States: CLOSED (normal) → OPEN (failing) → HALF-OPEN (testing)\")\n\nclass CircuitBreaker:\n    def __init__(self, failure_threshold=3, reset_timeout=10):\n        self.failure_count = 0\n        self.threshold = failure_threshold\n        self.state = \"CLOSED\"\n\n    def call(self, func, *args):\n        if self.state == \"OPEN\":\n            raise RuntimeError(\"Circuit is OPEN\")\n        try:\n            result = func(*args)\n            self.failure_count = 0\n            return result\n        except Exception:\n            self.failure_count += 1\n            if self.failure_count >= self.threshold:\n                self.state = \"OPEN\"\n            raise\n\ncb = CircuitBreaker(failure_threshold=2)\nfor i in range(3):\n    try:\n        cb.call(lambda: 1/0)\n    except (ZeroDivisionError, RuntimeError) as e:\n        print(f\"  Attempt {i+1}: {type(e).__name__} (state={cb.state})\")\nprint()",
+     "numbered": false
+    },
+    {
+     "t": "p",
+     "text": "**Output**"
+    },
+    {
+     "t": "code",
+     "lang": "text",
+     "code": "Circuit breaker pattern\n  Prevent cascading failures by stopping calls to failing services.\n  States: CLOSED (normal) → OPEN (failing) → HALF-OPEN (testing)\n  Attempt 1: ZeroDivisionError (state=CLOSED)\n  Attempt 2: ZeroDivisionError (state=OPEN)\n  Attempt 3: RuntimeError (state=OPEN)",
      "numbered": false
     },
     {

@@ -101,6 +101,30 @@ session.commit()                   # no save() -- the change was tracked`,
         { t: "p", text: "If the service is async, the question is not which ORM you prefer but which ones work: SQLAlchemy with an async driver, SQLModel on top of it, or Tortoise. **The Django ORM is synchronous at its core** — its async methods wrap sync calls in a thread pool — and a synchronous driver inside an async handler blocks the whole event loop rather than one request (13.8). Decide the concurrency model first and let it narrow the list, rather than choosing an ORM and discovering the constraint afterwards." }
       ] },
 
+    { t: "callout", kind: "trap", title: "A SQLModel table model does not validate on construction", body: [
+      { t: "p", text: "SQLModel's pitch is one class for the table and the API schema. **A `table=True` model, though, skips Pydantic validation when you construct it directly**, so a constraint declared with `Field(gt=0)` is enforced on a plain model and ignored on the table model. Use the table model as a request body or build it from user input, and a negative quantity reaches the database, stopped only by a `CHECK` constraint if you happened to write one." },
+      { t: "code", lang: "python", title: "the same field, two behaviours", code: `from sqlmodel import Field, SQLModel
+
+
+class OrderIn(SQLModel):
+    quantity: int = Field(gt=0)
+
+
+class Order(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    quantity: int = Field(gt=0)
+
+
+print(Order(quantity=-5))              # table model: no validation
+try:
+    OrderIn(quantity=-5)
+except ValueError as exc:
+    print(type(exc).__name__, exc.errors()[0]["msg"])`,
+        out: `quantity=-5 id=None
+ValidationError Input should be greater than 0` },
+      { t: "p", text: "**Keep input and storage as separate classes, as SQLModel's own tutorial does:** a plain `OrderCreate` for the request body, the `table=True` model for storage, and `Order.model_validate(order_in)` between them, which does validate. The second class is the cost of the validation actually running." }
+    ]},
+
     { t: "h2", n: "04", text: "Schema-first, and what a generated client buys", id: "schema-first" },
 
     {"kind": "trace", "title": "Schema-first against code-first, and the row that settles it for Python", "caption": "**The design is sound and the Python implementation is not current — two separate judgements.** A language-neutral schema generating clients for several languages is the strongest argument for the approach, and it is why the idea came out of a polyglot ecosystem. **But the last row is decisive for new work:** archived April 2025, last release 0.15.0 in August 2024, pinned to engine 5.19.0. Learn the idea; run Prisma from TypeScript if the polyglot schema is the real requirement, and read the database from Python with SQLAlchemy.", "left": "concern", "codeW": 160, "vars": ["schema-first", "code-first"], "steps": [{"code": "source of truth", "state": ["a declarative schema file", "Python classes"], "tone": "accent"}, {"code": "a second language", "state": ["generate another client", "duplicate the definitions"], "changed": [0, 1], "tone": "good"}, {"code": "static checking", "state": ["real symbols, no inference", "Mapped[...] gets close"], "changed": [0, 1], "tone": "good"}, {"code": "migrations", "state": ["diffed from the declaration", "diffed, or hand-written"], "changed": [0, 1], "tone": "accent"}, {"code": "complex queries", "state": ["falls back to raw SQL sooner", "a full expression language"], "changed": [0, 1], "tone": "warn"}, {"code": "build step", "state": ["yes - generate, in CI", "none"], "changed": [0, 1], "tone": "warn"}, {"code": "Python maturity", "state": ["ARCHIVED, unmaintained", "the actively developed mainstream"], "changed": [0, 1], "tone": "crit"}], "t": "diagram", "id": "dg-13_9-04-3"},
@@ -177,6 +201,11 @@ model Order {
 
     { t: "exercise", kind: "practice", title: "Predict the pattern from the behaviour", difficulty: "core", minutes: 20,
       prompt: "Without looking anything up, decide for each: (1) a library where models inherit from a base that needs a configured connection at import time; (2) a library where you can construct a model object in a unit test with no database running and assert on a method; (3) a library where changing an attribute and doing nothing else results in an UPDATE; (4) a library where the same model class validates an HTTP request body. Name the pattern for each and one Python library that fits, then check yourself against section 03. Finally, take a service you know and decide which of section 05's three categories each of its five slowest queries belongs in.",
+      requirements: [
+        "The four libraries described, each with its pattern and one Python library that fits",
+        "For each, the single behaviour that gave the pattern away",
+        "Your service's five slowest queries placed in section 05's three categories, with what each one returns as the evidence"
+      ],
       hints: [
         "The import-time connection requirement is the tell for one pattern.",
         "Number three is the absence of save(), which only one pattern can offer.",
@@ -187,8 +216,13 @@ model Order {
           { t: "p", text: "(1) and (3) are the two halves of the same distinction and people often get them backwards: the import-time connection is Active Record, but the attribute change that writes itself is Data Mapper, because tracking requires a session watching the object. Active Record is the pattern that needs the database *earlier* and does *less* for you at write time." },
           { t: "p", text: "The last part is the one worth doing on a real system, because the usual finding is that the slowest queries are reports returning columns through an object-mapping layer that nothing then uses as objects. That is the cheapest performance win in 13.1, and it is invisible until you ask what each query returns rather than how long it takes." }
         ]
-      } }
+      } },
 
+    { t: "callout", kind: "scenario", title: "Real-world scenario", body: [
+      { t: "p", text: "A nightly finance export ran through the Django ORM: `for order in Order.objects.filter(month=m)`, building a CSV row from three fields of each. It worked for two years. **In the month order volume crossed 1.8 million, the worker was OOM-killed at 3 GB**, because the queryset built a full model instance for every row and held them all in its result cache before the first line was written. The export did not arrive, and nothing alerted, because the job had no non-zero exit path." },
+      { t: "p", text: "**The query wanted columns, not entities, which is section 05's first category.** Rewritten as `.values_list(\"id\", \"total\", \"created_at\").iterator(chunk_size=5000)`, it streamed rows in constant memory and ran in a fifth of the time." },
+      { t: "p", text: "Nothing about the ORM was broken. **The error was routing a report through an object layer that nothing used as objects**, and it stayed invisible until the data grew. The question that finds these before they fail is the one from the exercise: what does each slow query return?" }
+    ]}
   ],
 
   takeaways: [
@@ -212,20 +246,20 @@ model Order {
         stem: "A library requires a configured database connection at import time, and writes happen only when you call `save()`. Which pattern is it, and what follows?",
         options: [
           "Data Mapper — the session tracks changes",
-          "Active Record — persistence lives on the model, so the model depends on the database and unit-testing its logic needs one",
           "Neither — this is a query builder",
-          "Active Record — and it can therefore track changes automatically"
+          "Active Record — and it can therefore track changes to the model automatically",
+          "Active Record — so testing the model's logic needs a database"
         ],
-        answer: 1,
+        answer: 3,
         why: "The two tells point the same way: a model that needs a connection to be imported is carrying persistence itself, and an explicit `save()` is the consequence of having nothing watching the object. Change tracking is what you give up — only a session observing the instance can turn a mutation into an `UPDATE` with no call."
       },
       {
         stem: "Why is the absence of a `save()` method evidence of Data Mapper rather than a missing feature?",
         options: [
-          "Because Data Mapper libraries write immediately on every mutation",
-          "Because a separate session tracks the loaded objects, so a mutation is already scheduled and there is nothing for a save method to do",
-          "Because Data Mapper does not support updates",
-          "Because the model is read-only"
+          "Because Data Mapper libraries write to the database immediately on every attribute mutation",
+          "A session tracks loaded objects, so a mutation is already a scheduled write",
+          "Because Data Mapper does not support updates, only inserts and deletes",
+          "Because models in the Data Mapper pattern are read-only once loaded"
         ],
         answer: 1,
         why: "The session holds an identity map and compares state at flush, which is what makes the write derivable from the mutation. It also explains the surprise in 13.5: autoflush means a query can emit that `UPDATE` before you commit."
@@ -233,45 +267,45 @@ model Order {
       {
         stem: "A new async FastAPI service needs an ORM. Which consideration eliminates the most options first?",
         options: [
-          "Which pattern the team prefers",
-          "Whether the ORM has a genuinely async driver path — a synchronous driver in an async handler blocks the event loop for every request, not just its own",
-          "Whether migrations are auto-generated",
-          "The size of the library's documentation"
+          "Which persistence pattern the team prefers, Active Record or Data Mapper",
+          "Whether the ORM can auto-generate migrations from the models",
+          "Whether it has a real async driver — a sync one blocks the loop",
+          "The size and quality of the library's documentation and community"
         ],
-        answer: 1,
+        answer: 2,
         why: "It is a correctness and throughput constraint rather than a preference, and it rules out the Django ORM for this shape regardless of its other merits. Pattern preference can be satisfied within the surviving list; the concurrency model cannot be satisfied afterwards."
       },
       {
         stem: "What is the strongest argument for a schema-first ORM with a generated client?",
         options: [
-          "Generated clients are faster at runtime",
-          "One language-neutral schema can generate clients for several languages, so a polyglot system has one definition instead of several that drift",
-          "It removes the need to understand SQL",
-          "Migrations become unnecessary"
+          "Generated clients are faster at runtime, because queries are compiled ahead of time",
+          "It removes the need for the team to understand SQL at all",
+          "Migrations become unnecessary, because the schema is the source of truth",
+          "One schema generates clients for every language, so nothing drifts"
         ],
-        answer: 1,
+        answer: 3,
         why: "That is why the approach came out of a polyglot ecosystem. Static checkability without inference is a real second benefit, but it is one that code-first libraries have been closing — SQLAlchemy 2.0's `Mapped[...]` annotations get much of the way there."
       },
       {
         stem: "A team wants to adopt Prisma for a new Python service because of the schema-first workflow. What is the decisive fact?",
         options: [
           "Prisma does not support PostgreSQL",
-          "The Python client is archived and unmaintained — last released August 2024, repository archived April 2025 — so the workflow is available but the client is not a supportable dependency",
           "Schema-first modelling does not work in Python",
+          "Its Python client is archived and no longer maintained",
           "It would be slower than SQLAlchemy"
         ],
-        answer: 1,
+        answer: 2,
         why: "The design is sound and the Python implementation is not current, which are separate judgements. If the polyglot schema is the actual requirement, running Prisma's migrations and reading the database from Python with SQLAlchemy keeps both halves supported."
       },
       {
         stem: "An endpoint returns a 50,000-row monthly aggregate and is the slowest in the service. What is the first thing to change?",
         options: [
-          "Add an index on every column in the query",
-          "Stop returning mapped entities — the aggregate wants columns, and object construction plus identity bookkeeping is pure overhead for rows nothing treats as objects",
-          "Switch ORM",
-          "Increase the connection pool size"
+          "Return plain columns instead of mapped entities — the objects are pure overhead",
+          "Add an index on every column the query touches, so the aggregate can be answered from indexes",
+          "Switch to a faster ORM that constructs objects in compiled code",
+          "Increase the connection pool size, so the query is not waiting for a connection"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is 13.1's point arriving as a performance bug: the cost is per row and entirely wasted, because the result is serialised straight to JSON. Run it as a Core select or hand-written SQL in the same session, and the transaction semantics are unchanged."
       }
     ]

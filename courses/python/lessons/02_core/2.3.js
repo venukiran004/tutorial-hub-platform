@@ -635,44 +635,44 @@ d["a"] = 3
 print(list(d))`,
         options: [
           "`['a', 'b']` — dicts iterate in sorted key order",
+          "`['b', 'a']` — but only in CPython; other implementations are free to order keys differently",
           "`['b', 'a']` — updating `b` kept its position; deleting and re-adding `a` moved it to the end",
-          "`['b', 'a']` — but only in CPython; other implementations may differ",
-          "The order is unspecified and should not be relied on"
+          "The order is unspecified, since dicts are hash tables, and should not be relied on in either direction"
         ],
-        answer: 1,
-        why: "Insertion order has been a language guarantee since 3.7, so it holds across implementations — option C is out of date. Assigning to an existing key updates the value in place and keeps the original position, so `b` stays first. Deleting `a` removes its entry, and re-adding it appends at the end. Order means insertion order, never sorted order."
+        answer: 2,
+        why: "Insertion order has been a language guarantee since 3.7, so it holds across implementations — option B is out of date. Assigning to an existing key updates the value in place and keeps the original position, so `b` stays first. Deleting `a` removes its entry, and re-adding it appends at the end. Order means insertion order, never sorted order."
       },
       {
         stem: "A service reads `db = config.get(\"database_url\", \"sqlite:///local.db\")`. The environment variable is renamed and no longer matches. What happens?",
         options: [
           "The service fails to start, because the default is only used in development",
-          "The service starts and runs against a local SQLite file, appearing healthy while writing to the wrong database",
-          "A `KeyError` is raised on the first database query",
-          "`get` logs a warning when it falls back to a default"
+          "A `KeyError` is raised on the first database query, because the configured URL can no longer be found",
+          "It starts against a local SQLite file and looks healthy while writing to the wrong database",
+          "`get` logs a warning when it falls back to a default, so the rename shows up in the startup logs"
         ],
-        answer: 1,
+        answer: 2,
         why: "`get` with a default cannot distinguish \"not configured\" from \"deliberately absent\", so the service starts happily against the fallback. Health checks pass, writes succeed, and the failure is discovered days later when data is missing. This is the argument for indexing required configuration with `[]`: a crash at startup is a far better outcome than a service that is confidently wrong."
       },
       {
         stem: "Why should a function that builds a `defaultdict` convert it to a plain `dict` before returning it?",
         options: [
+          "Reading a missing key creates it, so a caller's typo adds phantom data instead of raising",
           "`defaultdict` cannot be serialised to JSON",
-          "A missing-key *read* on a `defaultdict` silently creates an entry, so a caller's typo adds phantom data instead of raising",
           "`defaultdict` uses significantly more memory",
           "Plain dicts have faster lookup"
         ],
-        answer: 1,
+        answer: 0,
         why: "`defaultdict.__missing__` fires on any missing-key access, including reads. A caller writing `report[\"unkown_region\"]` gets an empty value back *and* mutates the report by adding that key — a bug with no exception and no log line. `defaultdict` is an excellent accumulator and a poor return value: build with it, hand back a `dict`. It does serialise fine, being a dict subclass."
       },
       {
         stem: "`config = {**defaults}` then `config[\"db\"][\"host\"] = \"prod\"`. What happens to `defaults[\"db\"][\"host\"]`?",
         options: [
-          "It stays unchanged — `{**d}` creates an independent copy",
-          "It becomes `\"prod\"` — the copy is shallow, so both dicts reference the same inner dict",
+          "It stays unchanged — `{**d}` builds an independent copy of the dictionary and everything in it",
           "A `TypeError` is raised, because nested dicts cannot be unpacked",
-          "It stays unchanged, but only until `config` is garbage collected"
+          "It stays unchanged until `config` is garbage collected, at which point the inner dicts are merged",
+          "It becomes `\"prod\"` — the copy is shallow, so both dicts reference the same inner dict"
         ],
-        answer: 1,
+        answer: 3,
         why: "`{**d}`, `dict(d)` and `d.copy()` all build a new outer dict whose values are the *same objects*. The inner dict has two names now, and mutating through either is visible through both — the aliasing model from Lesson 1.4. `copy.deepcopy()` recurses and gives full independence, at the cost of copying the entire structure."
       }
     ]

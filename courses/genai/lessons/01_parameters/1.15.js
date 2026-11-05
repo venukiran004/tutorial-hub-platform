@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-matrix", text: "What each provider accepts",
       sub: "The gaps are small in number and awkward in placement" },
 
-    {"kind": "matrix", "title": "The five differences that are not cosmetic", "caption": "Most of the support matrix is noise — a missing `top_k` on OpenAI is harmless, because top-p is the better rule anyway and there is no value to translate. These five are the ones that cost work. **Missing penalties on Anthropic is the one that bites**: a feature tuned with `frequency_penalty=0.5` to break loops has no equivalent, and the repetition has to be handled in the prompt instead.", "cols": ["Missing on", "What it costs you"], "rows": ["top_k", "Penalties", "seed", "JSON mode", "Batch API"], "cells": [["OpenAI", {"text": "nothing - top-p is better anyway", "tone": "good"}], ["Anthropic", {"text": "a real gap - handle it in the prompt", "tone": "crit"}], ["Anthropic", {"text": "pin a version, use t=0, cache (1.7)", "tone": "warn"}], ["Anthropic", {"text": "forced tool use is equivalent (1.8)", "tone": "accent"}], ["Google", {"text": "the larger discount, on output-heavy work", "tone": "warn"}]], "t": "diagram", "id": "dg-1_15-01-0"},
+    {"kind": "matrix", "title": "The three differences that are not cosmetic", "caption": "Most of the support matrix is noise — a missing `top_k` on OpenAI is harmless, because top-p is the better rule anyway and there is no value to translate. These three are the ones that cost work. **Missing penalties on Anthropic is the one that bites**: a feature tuned with `frequency_penalty=0.5` to break loops has no equivalent, and the repetition has to be handled in the prompt instead.", "cols": ["Missing on", "What it costs you"], "rows": ["top_k", "Penalties", "seed"], "cells": [["OpenAI", {"text": "nothing - top-p is better anyway", "tone": "good"}], ["Anthropic", {"text": "a real gap - handle it in the prompt", "tone": "crit"}], ["Anthropic", {"text": "pin a version, use t=0, cache (1.7)", "tone": "warn"}]], "t": "diagram", "id": "dg-1_15-01-0"},
 
 
 
@@ -57,14 +57,14 @@ EC.receiveLesson({
         ["`max_tokens`", "yes", "yes", "yes", "yes"],
         ["stop sequences", "yes", "yes", "yes", "yes"],
         ["`seed`", "yes", "**no**", "yes", "yes"],
-        ["JSON mode", "yes", "**no** — forced tool use", "yes", "guided decoding"],
+        ["JSON mode", "yes", "structured outputs, or forced tool use", "yes", "guided decoding"],
         ["streaming", "yes", "yes", "yes", "yes"],
         ["tool / function calling", "yes", "yes", "yes", "varies"],
         ["vision", "yes", "yes", "yes", "varies"],
-        ["batch API", "yes", "yes", "**no**", "TGI"],
+        ["batch API", "yes", "yes", "yes", "TGI"],
         ["prompt caching", "automatic", "manual `cache_control`", "yes", "**no**"]
       ],
-      caption: "Five rows have a gap that a naive migration will hit, and three of them change behaviour rather than merely failing." },
+      caption: "Support as of 2024–2025; the batch and structured-output rows were rechecked in November 2026, so check a provider’s docs before relying on a row. A gap in a row is what a naive migration will hit, and some gaps change behaviour rather than merely failing." },
 
     { t: "p", text: "The rows worth internalising are the ones where a parameter is missing on a provider people migrate *to*:" },
 
@@ -72,8 +72,8 @@ EC.receiveLesson({
       ["`top_k` missing on OpenAI", "Harmless in practice — top-p is the better rule anyway (1.3), and there is no equivalent value to translate. Code written against OpenAI and ported outward gains an option it does not need."],
       ["Penalties missing on Anthropic", "This one bites. A feature tuned with `frequency_penalty=0.5` to break loops has no direct equivalent; the repetition has to be handled in the prompt instead. Anything relying on penalty settings will behave differently after the move."],
       ["`seed` missing on Anthropic", "A reproducibility strategy built on seeds does not port. The mitigation is the one 1.7 already argued for: pin a version, use temperature 0, and cache the output if it genuinely must be identical."],
-      ["JSON mode missing on Anthropic", "Not a real gap — forced tool use is equivalent and arguably cleaner (1.8). But the code shape is different enough that it is not a config change."],
-      ["No batch API on Google", "A cost strategy built on batching does not transfer, and on an output-heavy workload that is the larger of the two discounts (1.13)."]
+      ["Structured output on Anthropic", "Not a capability gap — it has structured outputs through `output_config.format`, and forced tool use still works (1.8). But the code shape differs from `response_format`, so it is not a config change."],
+      ["Batch on Google", "The Gemini API now has a Batch API at half price, so a batching strategy transfers. The job format is provider-specific, so it is still a code change (1.13)."]
     ] },
 
     /* ============================================================ 02 */
@@ -177,7 +177,7 @@ def call(provider, *, strict=True, **params):
         ["Ultra-fast (< 500 ms)", "Gemini Flash / GPT-4o-mini", "Latency is the constraint; model size is the lever"],
         ["Long context (100K+)", "Claude (200K) / Gemini (1M+)", "A hard architectural limit, not a preference"],
         ["On-prem / privacy", "Llama 3 / Mistral, self-hosted", "A requirement no hosted model satisfies at any price"],
-        ["Cost-sensitive batches", "Batch API on OpenAI or Anthropic", "Scheduling flexibility, not model choice (1.13)"]
+        ["Cost-sensitive batches", "Batch API on OpenAI, Anthropic or Google", "Scheduling flexibility, not model choice (1.13)"]
       ],
       caption: "The third column is the useful reading: in five of the seven rows the binding constraint is not answer quality at all." },
 
@@ -316,8 +316,8 @@ least portable call site: 'extract' (3 parameters lost in total)`,
   ],
 
   takeaways: [
-    "**`top_k` is not available on OpenAI**; penalties and `seed` are not available on Anthropic; there is **no batch API on Google**; and HuggingFace has no prompt caching.",
-    "Anthropic has **no JSON mode** — forced tool use is the equivalent (1.8), and it is arguably cleaner, but it is a code change rather than a config change.",
+    "**`top_k` is not available on OpenAI**; penalties and `seed` are not available on Anthropic; and HuggingFace has no prompt caching.",
+    "Anthropic’s structured output is `output_config.format` rather than `response_format`, and forced tool use still works (1.8), so moving between them is a code change rather than a config change.",
     "A provider can **reject**, **silently ignore**, or **reinterpret** an unsupported parameter. The middle case is the dangerous one: a successful response with behaviour you did not configure.",
     "**An abstraction that drops unknown parameters is worse than no abstraction.** It must raise, or return an explicit list of what it dropped — \"best effort\" is not an acceptable contract for something that changes model behaviour.",
     "The price spread is **200×** from Gemini Flash at $0.075 per million input tokens to Claude Opus at $15.00 — which is why routing beats almost every other cost optimisation.",
@@ -361,8 +361,8 @@ least portable call site: 'extract' (3 parameters lost in total)`,
         q: "What differs between providers at the API level?",
         strong: "A strong answer names the specific gaps rather than gesturing at differences, and says which ones actually matter.",
         answer: [
-          { t: "p", text: "The specific gaps: OpenAI does not accept `top_k`. Anthropic has no frequency or presence penalty, no `seed`, and no JSON mode — forced tool use is the substitute. Google has no batch API. HuggingFace has no prompt caching." },
-          { t: "p", text: "Which of those matter depends on what you rely on. The `top_k` gap is harmless because top-p is the better rule anyway. The JSON mode gap is a code change but not a capability loss. The ones with no substitute are the penalties and `seed` — a feature tuned with `frequency_penalty` to stop repetition has to solve that in the prompt after moving to Anthropic." },
+          { t: "p", text: "The specific gaps: OpenAI does not accept `top_k`. Anthropic has no frequency or presence penalty and no `seed`, and its structured output uses a different parameter from OpenAI’s. HuggingFace has no prompt caching." },
+          { t: "p", text: "Which of those matter depends on what you rely on. The `top_k` gap is harmless because top-p is the better rule anyway. The structured-output difference is a code change but not a capability loss. The ones with no substitute are the penalties and `seed` — a feature tuned with `frequency_penalty` to stop repetition has to solve that in the prompt after moving to Anthropic." },
           { t: "p", text: "The thing I would flag beyond the matrix is that even the shared parameters are not identical. A `temperature` of 0.7 scales whatever logit gaps the model produces, and those differ between models — so the same value is not the same behaviour, and that is not something a compatibility table can capture." }
         ] },
 

@@ -208,7 +208,7 @@ maximum recursion depth exceeded`
       { t: "code", lang: "python", title: "what it actually does", numbered: false, code: `
 import sys
 sys.setrecursionlimit(100_000)     # tempting, and dangerous`},
-      { t: "p", text: "The limit exists to raise `RecursionError` **before** the real C stack overflows. Past the point the C stack can hold, you do not get an exception — you get a segfault, which kills the process with no traceback, no logging and no chance to clean up." },
+      { t: "p", text: "The limit exists to raise a catchable `RecursionError` instead of exhausting memory or the C stack. Since 3.11, plain Python-to-Python calls stay off the C stack, so a raised limit often survives — measured at depth 500,000. **A call through C code does not:** with `@cache` on the function and the limit raised, 3.13 still raises `RecursionError` and 3.11 kills the process with no traceback, no logging and no chance to clean up." },
       { t: "p", text: "The safe uses are narrow: a known-deep but bounded structure, with a modest increase and a measured thread stack size. **If you do not know the maximum depth, raising the limit converts a catchable error into a crash.** Convert to iteration instead." }
     ]},
 
@@ -361,9 +361,35 @@ cached:   0.000023s`,
     },
 
     { t: "callout", kind: "insight", title: "The real lesson is not about Fibonacci", body: [
-      { t: "p", text: "Nobody computes Fibonacci at work. The pattern generalises: **whenever a recursive function's branches overlap, memoisation collapses exponential work to linear.** That covers edit distance, path counting, knapsack, and most of what is labelled dynamic programming (Lesson 16.6)." },
+      { t: "p", text: "Nobody computes Fibonacci at work. The pattern generalises: **whenever a recursive function's branches overlap, memoisation collapses exponential work to linear.** That covers edit distance, path counting, knapsack, and most of what is labelled dynamic programming ([DSA course, Lesson 3.1](../dsa/lesson.html?id=3.1))." },
       { t: "p", text: "The diagnostic is simple: *does the recursion call itself more than once, on inputs that can coincide?* A tree walk calls itself once per child on disjoint subtrees — no overlap, no benefit from caching. Fibonacci calls itself twice on ranges that overlap almost entirely." },
       { t: "p", text: "One caution: `lru_cache(maxsize=None)` on a recursive function is unbounded, and the cache persists for the life of the process. Fine for a bounded input domain, a memory leak for an unbounded one — the failure mode from Lesson 3.6." }
+    ]},
+
+    { t: "callout", kind: "trap", title: "`@lru_cache` on a method caches `self` too", body: [
+      { t: "p", text: "The cache key is every argument, and for a method the first argument is `self`. **So the cache holds a strong reference to every instance it has ever seen, for the life of the process.** Those objects can never be garbage-collected, and a per-request object with a cached method becomes a slow memory leak. Linters flag it for this reason (Ruff and flake8-bugbear rule B019)." },
+      { t: "code", lang: "python", title: "the instance outlives its last reference", code: `import functools
+import gc
+import weakref
+
+
+class PriceModel:
+    @functools.lru_cache(maxsize=None)
+    def quote(self, sku: str) -> int:
+        return len(sku) * 100
+
+
+model = PriceModel()
+model.quote("A-1")
+ref = weakref.ref(model)
+del model
+gc.collect()
+
+print(ref() is None)                   # False: the cache still holds self
+print(PriceModel.quote.cache_info())`,
+        out: `False
+CacheInfo(hits=0, misses=1, maxsize=None, currsize=1)` },
+      { t: "p", text: "**Cache a module-level function keyed on the values that matter**, or use `functools.cached_property` for a per-instance result: it stores the value on the instance, so it dies with the instance instead of pinning it." }
     ]},
 
     /* ================================================================== */
@@ -560,7 +586,7 @@ lazy:      1`,
           { t: "p", text: "**The string check is not a detail.** `str` is iterable, and iterating a one-character string yields that same one-character string — so a naive `isinstance(item, Iterable)` recurses forever on any text. This is the Lesson 1.8 trap in its most damaging form, and it is why the check tests for `list` and `tuple` specifically rather than for iterability." },
           { t: "p", text: "**Part C changes what the memory is proportional to.** All three versions hold the traversal state; only the eager ones also hold every leaf. `flatten_lazy` uses memory proportional to *depth*, not to *size* — so a flat list of a billion elements costs almost nothing, and only genuinely pathological nesting is expensive." },
           { t: "callout", kind: "insight", title: "The argument against raising the limit, stated precisely", body: [
-            { t: "p", text: "Two separate objections. First, `RecursionError` is a catchable exception thrown *before* the C stack overflows; past that point you get a segfault, which is unrecoverable and leaves no evidence. Second, any limit you choose is a guess about input you have not seen yet." },
+            { t: "p", text: "Two separate objections. First, `RecursionError` is a catchable exception, and raising the limit can replace it with a process crash that leaves no evidence whenever the recursion passes through C code. Second, any limit you choose is a guess about input you have not seen yet." },
             { t: "p", text: "The iterative version contains no such number. That is the real advantage — not that it is faster, but that it removes a parameter you would otherwise have to keep being right about." }
           ]}
         ]
@@ -580,7 +606,7 @@ lazy:      1`,
     "**Write the base case first.** Then make the problem smaller, then assume the recursive call works and combine — do not trace the tree in your head.",
     "Recursion wins when the **data** is recursive: trees, nested JSON, filesystems, expression grammars. A linear sequence is a loop.",
     "Each call allocates a heap frame holding locals and arguments. **The default limit is about 1000**, and it exists so Python raises a catchable `RecursionError` before the C stack overflows.",
-    "**Raising `sys.setrecursionlimit` is almost never the fix.** Past what the C stack holds you get a segfault — no traceback, no logging, no cleanup — and any limit you pick is a guess about future input.",
+    "**Raising `sys.setrecursionlimit` is almost never the fix.** Recursion through C code, such as `@cache`, can still crash the process with no traceback, and any limit you pick is a guess about future input.",
     "**Python has no tail-call optimisation**, deliberately: eliminating frames would destroy tracebacks. Restructuring into tail-recursive form buys nothing.",
     "Any recursion converts to iteration, because **the call stack is a stack**. Push sub-problems onto an explicit list; the `while stack:` loop replaces the base case.",
     "Pushing **iterators** rather than sublists preserves sibling order naturally and avoids copying.",
@@ -597,45 +623,45 @@ lazy:      1`,
       {
         stem: "Why does Python not implement tail-call optimisation?",
         options: [
-          "It is technically impossible in a dynamically typed language",
-          "It is a deliberate design choice — eliminating frames would destroy the traceback, and explicit loops are considered clearer",
-          "It is implemented but disabled by default for compatibility",
-          "The GIL prevents the necessary stack manipulation"
+          "It is technically impossible in a dynamically typed language, since the callee is not known until runtime",
+          "It is implemented in CPython but disabled by default, and can be turned on with an interpreter flag",
+          "The GIL prevents the stack manipulation it needs, because frames are shared between threads",
+          "It is a deliberate choice: it would destroy tracebacks, and loops are considered clearer"
         ],
-        answer: 1,
+        answer: 3,
         why: "Guido van Rossum has stated the reasoning explicitly: Python's stack traces are one of its most valuable debugging features, and a tail-call-optimised recursion would report a single frame with no history of how execution got there. He also considers a loop clearer than recursion for the cases TCO would help. The practical consequence is that restructuring a function into tail-recursive form buys nothing in Python — if depth is the problem, use iteration."
       },
       {
         stem: "A recursive tree walk raises `RecursionError` on deep input. What is the right response?",
         options: [
-          "Call `sys.setrecursionlimit(50_000)` to allow deeper recursion",
-          "Convert to iteration with an explicit stack, which has no depth limit and no number to guess",
-          "Add `@lru_cache` to reduce the number of calls",
-          "Increase the thread stack size and keep the recursion"
+          "Call `sys.setrecursionlimit(50_000)` to allow deeper recursion, sized to the deepest tree you have seen",
+          "Add `@lru_cache` to reduce the number of recursive calls, so the depth stays under the limit",
+          "Increase the thread stack size with `threading.stack_size()` and keep the recursive version",
+          "Convert to iteration with an explicit stack, which has no depth limit and no number to guess"
         ],
-        answer: 1,
-        why: "The recursion limit exists so Python raises a catchable exception *before* the real C stack overflows — past that point you get a segfault with no traceback, no logging and no cleanup. Any limit you set is also a guess about input you have not seen. An explicit stack is bounded by heap rather than stack and contains no such number. Caching helps only when branches overlap, which a tree walk's disjoint subtrees do not."
+        answer: 3,
+        why: "The recursion limit exists so Python raises a catchable exception. Raise it, and recursion through C code, such as `@cache`, can still crash the process with no traceback, no logging and no cleanup. Any limit you set is also a guess about input you have not seen. An explicit stack is bounded by heap rather than stack and contains no such number. Caching helps only when branches overlap, which a tree walk's disjoint subtrees do not."
       },
       {
         stem: "Why does a naive `flatten` that checks `isinstance(item, Iterable)` recurse forever on strings?",
         options: [
-          "Strings are immutable, so the recursion cannot make progress",
-          "`str` is iterable, and iterating a one-character string yields that same one-character string — the input never gets smaller",
-          "Strings raise `StopIteration` inconsistently",
-          "It does not; strings are not iterable in Python 3"
+          "Strings are immutable, so the recursion cannot make progress by modifying the string it was given",
+          "Strings raise `StopIteration` inconsistently, so the recursive call never sees the end of the input",
+          "`str` is iterable, and a one-character string iterates to itself, so it never shrinks",
+          "It does not; strings are not iterable in Python 3, so `isinstance` returns `False` for them"
         ],
-        answer: 1,
+        answer: 2,
         why: "`\"ab\"` iterates to `\"a\"` and `\"b\"`, and `\"a\"` iterates to `\"a\"` — a one-character string contains itself, so the recursive case never reaches a base case. This is the `str`-is-iterable trap from Lesson 1.8 in its most damaging form. The fix is to check for the container types you actually mean, `list` and `tuple`, rather than for iterability in general."
       },
       {
         stem: "When does adding `@lru_cache` to a recursive function help?",
         options: [
-          "Always — caching reduces the number of stack frames",
+          "Always — caching reduces the number of stack frames, so any recursive function benefits from it",
+          "Only for functions returning immutable values, because a cached mutable result could be modified",
           "When the recursion calls itself more than once on inputs that can coincide, so subproblems are recomputed",
-          "Only for functions returning immutable values",
-          "When the recursion depth exceeds the default limit"
+          "When the recursion depth exceeds the default limit, since cached calls return without adding a frame"
         ],
-        answer: 1,
+        answer: 2,
         why: "Memoisation collapses exponential work to linear precisely when branches overlap — Fibonacci calls itself twice on ranges that almost entirely coincide. A tree walk recurses once per child on disjoint subtrees, so nothing is ever recomputed and the cache is pure overhead. Caching also does nothing about depth: `fib(5000)` still exceeds the recursion limit, cached or not."
       }
     ]

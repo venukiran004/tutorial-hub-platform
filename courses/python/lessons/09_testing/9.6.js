@@ -91,7 +91,7 @@ class ReportService:
           ["Risk", "A constructor with eight parameters is a class doing eight things", "Threading a parameter through five layers"]
         ]
       },
-      { t: "p", text: "**A growing constructor is a design signal in its own right.** Six dependencies usually means the class has several responsibilities that want separating (Lesson 4.9) — the injection made an existing problem visible rather than causing it." }
+      { t: "p", text: "**A growing constructor is a design signal in its own right.** Six dependencies usually means the class has several responsibilities that want separating (Lesson 4.11) — the injection made an existing problem visible rather than causing it." }
     ]},
 
     { t: "h2", n: "03", text: "Functional core, imperative shell", id: "core" },
@@ -295,7 +295,7 @@ class Service:
     def __init__(self):
         self._cache = {}                   # owned per instance
 `,
-      caption: "**All four have the same shape**: something the function reaches out to grab rather than being handed. Injecting it is a small change that also documents what the function actually depends on (Lesson 4.2)."
+      caption: "**All four have the same shape**: something the function reaches out to grab rather than being handed. Injecting it is a small change that also documents what the function actually depends on (Lesson 4.11)."
     },
 
     { t: "callout", kind: "tradeoff", title: "The humble object, for code that must touch the world", body: [
@@ -745,7 +745,7 @@ def test_the_suite_takes_no_real_time() -> None:
             { t: "p", text: "The float arithmetic on money and the unbounded `_attempted` set are both real defects. Fixing them during a refactor would mean a behaviour change hidden inside a structural one, and any wrong number afterwards could come from either (Lesson 5.12)." },
             { t: "p", text: "Documenting them in the code, with the reason they were left, is what makes the refactor reviewable — and it means the follow-up change has a test suite to work against, which it did not before." }
           ]},
-          { t: "p", text: "**Compare the two test suites, not the two implementations.** Before: five patches, twenty lines of setup, one weak assertion, and several real seconds of runtime. After: six parametrised boundary cases at ten milliseconds, plus four shell tests using fakes. That difference is the whole argument for the refactor." }
+          { t: "p", text: "**Compare the two test suites, not the two implementations.** Before: five patches, twenty lines of setup, one weak assertion, and several real seconds of runtime. After: six parameterised boundary cases at ten milliseconds, plus four shell tests using fakes. That difference is the whole argument for the refactor." }
         ]
       }
     },
@@ -779,45 +779,45 @@ def test_the_suite_takes_no_real_time() -> None:
       {
         stem: "A test needs four `@patch` decorators. What is that telling you?",
         options: [
-          "The test should be an integration test instead",
-          "The function constructs its own dependencies, so the only substitution point is patching names in its module",
-          "The mocking library is being used incorrectly",
-          "The function is too long and should be split by line count"
+          "The test should be an integration test instead, since it touches four real systems",
+          "The mocking library is being used incorrectly, and one `patch.multiple` would replace all four",
+          "The function is too long and should be split up until each piece needs a single patch",
+          "The function builds its own dependencies, so patching is the only way to swap them"
         ],
-        answer: 1,
+        answer: 3,
         why: "Each patch corresponds to something the function reached out and grabbed — a repository, a mailer, a gateway, the clock. Passing them as parameters removes every patch, makes the dependencies visible in the signature, and leaves production call sites unchanged if the parameters have defaults. The test pain was pointing at a design issue, not a testing one."
       },
       {
         stem: "What does \"functional core, imperative shell\" buy you?",
         options: [
-          "Faster production code, because pure functions optimise better",
-          "The decisions become data-in, data-out functions testable with literals, leaving a thin I/O layer with little left to get wrong",
-          "It removes the need for integration tests",
+          "Faster production code, because pure functions can be optimised and cached by the interpreter",
+          "It removes the need for integration tests, since every decision is covered by pure unit tests",
+          "Decisions become pure functions testable with literals, around a thin I/O layer",
           "It makes the code easier to parallelise"
         ],
-        answer: 1,
+        answer: 2,
         why: "Most of the risk lives in the rules, and pure functions let you test those with a table of values in milliseconds — no database, no clock, no mocks. The shell shrinks to reading, calling the core, and writing, which a handful of integration tests cover. Integration tests are still needed; there are just far fewer of them and they test connection rather than logic."
       },
       {
         stem: "Why is `GRACE_DAYS = int(os.environ[\"GRACE_DAYS\"])` at module level a problem?",
         options: [
-          "Environment variables are always strings",
-          "It runs at import, so it crashes on import when unset and cannot be varied per test",
+          "It runs at import, so it crashes when unset and cannot vary per test",
+          "Environment variables are always strings, so `int()` fails on most values",
           "`int()` is slow at import time",
           "Module-level constants cannot be typed"
         ],
-        answer: 1,
+        answer: 0,
         why: "Import-time work happens before any test can configure anything, so a missing variable becomes an import error in a collector or a linter, and no test can exercise a different value without reimporting the module. Reading it on demand — a function with a default — makes it substitutable and moves the failure to a point where the error message can be useful."
       },
       {
         stem: "A team spends three weeks building mock infrastructure to test a 400-line function and reaches 82% coverage with no bugs caught. What went wrong?",
         options: [
-          "They should have used a mocking framework with autospec",
-          "They engineered around the design signal instead of acting on it — extracting the rules into pure functions would have made the tests trivial",
-          "80% is too low a coverage target",
-          "The function needed integration tests rather than unit tests"
+          "They should have used a mocking framework with autospec, so the mocks matched the real interfaces",
+          "80% is too low a coverage target to catch bugs; the team should have aimed for 100%",
+          "They worked around the design signal instead of extracting the rules into pure functions",
+          "The function needed integration tests against real dependencies rather than unit tests with mocks"
         ],
-        answer: 1,
+        answer: 2,
         why: "Three hundred lines of mock setup verifying that mocks were called catches nothing and must be updated on every change, so the module becomes harder to modify than before it had tests. The difficulty was information: extracting the pricing rules into pure functions turns the highest-risk logic into fast table-driven tests and leaves a shell that is nearly impossible to get wrong."
       }
     ]

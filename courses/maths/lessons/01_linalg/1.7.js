@@ -85,9 +85,9 @@ for n in (4, 8, 12):
     x = np.linalg.solve(H, H @ x_true)         # solve a problem we know
     err = np.max(np.abs(x - x_true))
     print(n, f"{np.linalg.cond(H):.1e}", f"{err:.1e}")
-#   4   1.6e+04   1.3e-13
-#   8   1.5e+10   1.4e-07
-#   12  1.7e+16   1.1e-01     <- 10% error on a problem whose answer is 1
+#   4   1.6e+04   5.4e-14
+#   8   1.5e+10   1.3e-07
+#   12  1.6e+16   2.8e-01     <- 28% error on a problem whose answer is 1
 
 # Nothing went wrong in the code. The n=12 problem simply cannot be
 # solved to better than that in float64 -- the information is not there.
@@ -270,6 +270,8 @@ C_fixed = C + 1e-8 * np.eye(len(C))
 
     { t: "callout", kind: "trap", title: "Four habits that quietly destroy precision", body: [
       { t: "code", lang: "python", title: "each is common and each is avoidable", numbered: false, code: `
+import math
+
 # 1. TESTING FLOATS FOR EQUALITY.
 0.1 + 0.2 == 0.3                       # False
 np.isclose(0.1 + 0.2, 0.3)             # True -- use a tolerance

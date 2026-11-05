@@ -106,7 +106,7 @@ np.add.reduceat(values, [0, 3, 5])    # [6, 9, 21] -- sums of 0:3, 3:5, 5:end
 #
 # CAUTION: a repeated index returns the ELEMENT at that position
 # rather than an empty reduction:
-np.add.reduceat(values, [0, 3, 3, 5])         # [6, 3, 6, 21]
+np.add.reduceat(values, [0, 3, 3, 5])         # [6, 4 9 21]
 #                                             #     ^ values[3], not 0
 
 # REDUCE ON MULTIPLE ARRAYS -- combining a list of masks:

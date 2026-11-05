@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.4 — The Encoder Block
    Parameter split and activation stability through depth measured
-   (scratchpad/dl/d41.py).
+   (d41.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.4",

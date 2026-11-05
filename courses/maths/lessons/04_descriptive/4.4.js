@@ -59,8 +59,8 @@ normal = rng.normal(0, 1, 500_000)
 # THE FOURTH MOMENT OF A NORMAL IS 3, which is why "excess kurtosis"
 # subtracts 3 -- so that a normal reads 0 and the number means
 # "compared with a normal".
-stats.kurtosis(normal)                 # 0.001  (excess, the default)
-stats.kurtosis(normal, fisher=False)   # 3.001  (raw)
+stats.kurtosis(normal)                 # 0.003  (excess, the default)
+stats.kurtosis(normal, fisher=False)   # 3.003  (raw)
 #
 # scipy DEFAULTS TO EXCESS. R's e1071 defaults to raw. Reporting "our
 # kurtosis is 3" is ambiguous without saying which -- it means normal
@@ -170,16 +170,16 @@ contaminated = core.copy()
 idx = rng.choice(n, size=n//100, replace=False)
 contaminated[idx] = rng.normal(0, 6, n//100)
 
-stats.kurtosis(core)                    # 0.003
-stats.kurtosis(contaminated)            # 4.68
+stats.kurtosis(core)                    # -0.006
+stats.kurtosis(contaminated)            # 19.74
 #
 # CHANGING 1% OF THE DATA -- AND NOTHING NEAR THE PEAK -- MOVED
 # KURTOSIS FROM 0 TO 4.7.
 
 # Confirm the peak did not change:
 from scipy.stats import gaussian_kde
-np.histogram(core, bins=[-0.1, 0.1])[0] / n            # 0.0797
-np.histogram(contaminated, bins=[-0.1, 0.1])[0] / n    # 0.0791
+np.histogram(core, bins=[-0.1, 0.1])[0] / n            # 0.0790
+np.histogram(contaminated, bins=[-0.1, 0.1])[0] / n    # 0.0783
 #
 # THE DENSITY AT THE CENTRE IS THE SAME TO THREE DECIMAL PLACES while
 # kurtosis moved by 4.7. "Peakedness" cannot be what it is measuring.
@@ -286,7 +286,7 @@ def shapiro_p(n, deviation=0.0):
     return stats.shapiro(x).pvalue
 
 # GENUINELY NORMAL DATA -- the test behaves as advertised:
-np.mean([shapiro_p(1000) < 0.05 for _ in range(200)])         # ~0.05
+np.mean([shapiro_p(1000) < 0.05 for _ in range(200)])         # ~0.09
 
 # A DEVIATION SO SMALL IT DOES NOT MATTER TO ANY ANALYSIS:
 for n in (30, 100, 1000, 5000):
@@ -327,11 +327,11 @@ def normality_report(x):
         "mean_over_median": float(x.mean() / np.median(x)) if np.median(x) else np.nan,
     }
 
-normality_report(rng.normal(0, 1, 5000))["max_qq_gap_sd"]      # ~0.09
-normality_report(rng.lognormal(0, 1, 5000))["max_qq_gap_sd"]   # ~7.4
+normality_report(rng.normal(0, 1, 5000))["max_qq_gap_sd"]      # ~0.37
+normality_report(rng.lognormal(0, 1, 5000))["max_qq_gap_sd"]   # ~9.4
 #
-# A MAXIMUM QQ GAP OF 0.09 SD IS IRRELEVANT TO ANY ANALYSIS. A gap of
-# 7.4 sd is not. Those two numbers say something a p-value cannot,
+# A MAXIMUM QQ GAP OF 0.37 SD IS IRRELEVANT TO ANY ANALYSIS. A gap of
+# 9.4 sd is not. Those two numbers say something a p-value cannot,
 # because they mean the same thing at every sample size.
 
 # AND THE QUESTION THAT ACTUALLY MATTERS is never "is it normal" but
@@ -355,6 +355,7 @@ normality_report(rng.lognormal(0, 1, 5000))["max_qq_gap_sd"]   # ~7.4
 
 # boxcox RETURNS TWO THINGS: the transformed data and the lambda it chose by
 # maximum likelihood for normality.
+x = np.random.default_rng(0).lognormal(0, 1, 5000)
 y, lam = stats.boxcox(x)                      # x must be strictly positive
 lam.round(3)                                  # e.g. 0.112
 
@@ -374,7 +375,7 @@ y, lam, ci = stats.boxcox(x, alpha=0.05)
 ci                                            # if it contains 0, use the log
 
 # AND THE SKEW BEFORE AND AFTER, which is what the transform was for:
-stats.skew(x).round(3), stats.skew(y).round(3)       # 2.41 -> 0.02`,
+stats.skew(x).round(3), stats.skew(y).round(3)       # 3.617 -> 0.0`,
       caption: "**Read the fitted lambda rather than just applying it: 0.5 is a square root, 0.0 is a log, \u22121 is a reciprocal** \u2014 so a fitted 0.112 is telling you to take the logarithm, which a reader can interpret, instead of a power of 0.112 which nobody can. The confidence interval is the formal version of that argument: when it contains 0, the log is not a simplification but the supported choice." },
     { t: "p", text: "**The hard requirement is strict positivity**, which rules out any column containing a zero \u2014 `stats.yeojohnson` is the variant that accepts zeros and negatives, fitting a power per sign. And the lambda is estimated from the data, which makes it a fitted parameter: estimate it on the training set and apply that same lambda everywhere, or the transform is a different function at training and scoring time." },
 

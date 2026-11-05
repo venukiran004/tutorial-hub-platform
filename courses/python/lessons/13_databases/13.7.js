@@ -735,45 +735,45 @@ def test_no_migration_creates_an_index_without_concurrently():
       {
         stem: "A migration renames a column and the deploy causes 500s for eight minutes. Why?",
         options: [
+          "During the rollout, old code queries the renamed column",
           "The rename locked the table",
-          "During a rolling deploy both versions run; the old code queries a column that no longer exists",
           "The index was rebuilt",
           "Alembic ran the migration twice"
         ],
-        answer: 1,
+        answer: 0,
         why: "The window is the rollout, and it is longer if the rollout fails. The four-step sequence — add, dual-write, switch reads, drop — exists so that no single moment has code and schema disagreeing, and every step before the drop is a redeploy away from rollback."
       },
       {
         stem: "`ALTER TABLE ADD COLUMN` normally takes milliseconds, but caused an eleven-minute outage. What happened?",
         options: [
-          "The table was rewritten",
-          "It queued behind a long-running query, and every subsequent query queued behind the pending lock request",
-          "The default value was computed per row",
-          "Replication lag blocked the change"
+          "The table was rewritten to add the column to every existing row",
+          "The default value was computed separately for each existing row",
+          "Replication lag blocked the change until replicas caught up",
+          "It waited behind a long query, and all else waited on it"
         ],
-        answer: 1,
+        answer: 3,
         why: "A pending `ACCESS EXCLUSIVE` request is a barrier: it blocks everything arriving after it, so a statement that never executed took the table down. `SET lock_timeout = '3s'` turns this into a failed migration and a retry, which is the outcome you want."
       },
       {
         stem: "You need to backfill 40 million rows. Why not do it in the migration?",
         options: [
-          "Alembic cannot execute `UPDATE`",
-          "One huge `UPDATE` holds locks for the duration, writes 40M new row versions, floods WAL, and rolls everything back if it fails near the end",
-          "Migrations run before the schema exists",
-          "It would exceed `statement_timeout`"
+          "Alembic cannot execute an `UPDATE`, only schema changes",
+          "Migrations run before the new column exists in the schema",
+          "It would exceed the migration's `statement_timeout` and abort",
+          "One giant `UPDATE` locks, bloats and rolls back badly"
         ],
-        answer: 1,
+        answer: 3,
         why: "A batched job with small transactions, `SKIP LOCKED` and a pause holds locks for milliseconds and lets replicas keep up. It is also resumable — which matters, because a backfill of that size will be interrupted by a deploy or an operator."
       },
       {
         stem: "Six pods × four workers × (pool_size 10 + overflow 5) against `max_connections = 100`. What happens?",
         options: [
-          "The pools share connections automatically",
-          "Up to 360 connections are attempted against a limit of 100, so under load the service fails with \"too many clients\" — including the migration you run to fix it",
-          "SQLAlchemy caps the total",
-          "Connections queue transparently with no failure"
+          "The pools share connections automatically between workers in the same pod, so the total stays under 100",
+          "SQLAlchemy caps the total number of connections across every process that uses the same URL",
+          "Up to 360 connections against 100, so under load even migrations are refused",
+          "Connections queue transparently at the database, so requests wait briefly but nothing fails"
         ],
-        answer: 1,
+        answer: 2,
         why: "The arithmetic is the whole check, and it must include the batch jobs and admin sessions. Raising `max_connections` trades one failure for another, since each PostgreSQL connection is a process — a pooler in transaction mode is the real fix, with the caveat that it breaks prepared statements and session state."
       }
     ]

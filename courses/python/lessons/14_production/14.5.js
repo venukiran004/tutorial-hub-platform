@@ -212,7 +212,7 @@ docker-compose*.yml
       rungs: [
         { level: "bad", label: "Shell-form CMD",
           why: "`/bin/sh -c` becomes PID 1 and does not forward signals. Docker sends SIGTERM to the shell, which ignores it, waits ten seconds, then SIGKILLs everything — so every in-flight request dies on every deploy.",
-          code: `CMD uvicorn app.main:app --host 0.0.0.0
+          lang: "dockerfile", code: `CMD uvicorn app.main:app --host 0.0.0.0
 
 # In the container:
 #   PID 1  /bin/sh -c uvicorn app.main:app ...
@@ -699,10 +699,10 @@ CMD ["gunicorn", "app.wsgi:application", \\
       {
         stem: "`CMD python -m gunicorn app:app` causes 502s on every deploy. Why?",
         options: [
-          "gunicorn cannot run as PID 1",
-          "Shell form makes `/bin/sh` PID 1, which does not forward SIGTERM — so gunicorn never learns to shut down and is eventually SIGKILLed with requests in flight",
-          "The `-m` flag prevents signal handling",
-          "gunicorn needs an explicit `--graceful-timeout`"
+          "gunicorn cannot run as PID 1, so the container restarts it on every deploy",
+          "Shell form makes `/bin/sh` PID 1, which never passes SIGTERM on to gunicorn",
+          "The `-m` flag prevents Python from installing signal handlers, so SIGTERM is ignored",
+          "gunicorn needs an explicit `--graceful-timeout`, or it drops connections immediately on shutdown"
         ],
         answer: 1,
         why: "Exec form — `CMD [\"gunicorn\", ...]` — makes the process PID 1 so it receives the signal directly, stops accepting connections and drains. Note there is a second, independent source of deploy 502s: Kubernetes removes the pod from endpoints concurrently with SIGTERM, which a `preStop` pause fixes."
@@ -711,7 +711,7 @@ CMD ["gunicorn", "app.wsgi:application", \\
         stem: "A Dockerfile had `ENV SECRET_KEY=...`. You remove the line and rebuild. Is the old image safe?",
         options: [
           "Yes, once the new image is pushed",
-          "No — layers are immutable and additive, so the value remains in every already-pushed image and is readable with `docker history`",
+          "No — the old layer still holds it, readable with `docker history`",
           "Yes, if the tag is overwritten",
           "Only if the registry supports layer deduplication"
         ],
@@ -721,23 +721,23 @@ CMD ["gunicorn", "app.wsgi:application", \\
       {
         stem: "Why is `python:3.12-alpine` often a poor choice for a Python service?",
         options: [
+          "musl means no manylinux wheels, so pip compiles from source and the image grows",
           "Alpine lacks a Python interpreter",
-          "Alpine uses musl libc, so manylinux wheels do not apply and pip compiles from source — slower builds, and often a larger image once compilers are involved",
-          "Alpine images cannot run as non-root",
-          "Alpine has more CVEs than Debian slim"
+          "Alpine images cannot run processes as a non-root user, which most clusters require",
+          "Alpine ships far more known CVEs than Debian slim, so security scanners block the image"
         ],
-        answer: 1,
+        answer: 0,
         why: "The base is genuinely smaller, but that saving is regularly wiped out by needing a compiler toolchain, and installs go from thirty seconds to fifteen minutes. `slim` gets most of the size benefit while keeping the wheel ecosystem working."
       },
       {
         stem: "Your Dockerfile copies the source before installing dependencies. What is the cost?",
         options: [
-          "The image is larger",
-          "Any code change invalidates the install layer, so dependencies reinstall on every build",
-          "Dependencies install into the wrong directory",
-          "The build cannot be cached at all"
+          "The image is larger, because the source is stored in two layers",
+          "Dependencies are installed into the source directory instead of site-packages",
+          "Any code change reinstalls every dependency",
+          "The build cannot be cached at all once source is copied early"
         ],
-        answer: 1,
+        answer: 2,
         why: "Layers are cached by their inputs, and invalidating one invalidates everything after it. Copying only the lockfile first means the expensive install layer is reused until a dependency actually changes — typically the difference between six minutes and a few seconds per build."
       }
     ]

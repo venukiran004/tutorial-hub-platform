@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c21.3",
  "lede": "**21 programs to write**, on search and advanced structures. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 21 programs on search and advanced structures without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c21.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2489–2509.** What this set actually drills, counted from its own problems — 14 of the 21 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "files and paths", "strings", "algorithms", "graphs & trees", "databases"], "cells": [[{"text": "4", "tone": "accent"}, "First and Last Position in Sor"], [{"text": "3", "tone": "good"}, "Longest Path in DAG"], [{"text": "3", "tone": "violet"}, "Longest Common Substring"], [{"text": "2", "tone": "teal"}, "Subset Sum (DP)"], [{"text": "1", "tone": "warn"}, "Segment Tree (Range Sum)"], [{"text": "1", "tone": "crit"}, "Sparse Table (Range Min Query)"]], "t": "diagram", "id": "dg-c21_3-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -104,7 +104,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def kruskal(n, edges):\n    edges.sort(key=lambda x: x[2])\n    uf = UnionFind(n)\n    mst = []\n    total_weight = 0\n    for u, v, w in edges:\n        if uf.union(u, v):\n            mst.append((u, v, w))\n            total_weight += w\n            if len(mst) == n - 1:\n                break\n    return mst, total_weight\n\nedges = [(0,1,4), (0,2,3), (1,2,1), (1,3,2), (2,3,5)]\nmst, weight = kruskal(4, edges)\nprint(f\"MST weight: {weight}\")  # Output: MST weight: 6",
+     "code": "class UnionFind:\n    def __init__(self, n):\n        self.parent = list(range(n))\n\n    def find(self, x):\n        while self.parent[x] != x:\n            self.parent[x] = self.parent[self.parent[x]]\n            x = self.parent[x]\n        return x\n\n    def union(self, a, b):\n        ra, rb = self.find(a), self.find(b)\n        if ra == rb:\n            return False\n        self.parent[ra] = rb\n        return True\n\ndef kruskal(n, edges):\n    edges.sort(key=lambda x: x[2])\n    uf = UnionFind(n)\n    mst = []\n    total_weight = 0\n    for u, v, w in edges:\n        if uf.union(u, v):\n            mst.append((u, v, w))\n            total_weight += w\n            if len(mst) == n - 1:\n                break\n    return mst, total_weight\n\nedges = [(0,1,4), (0,2,3), (1,2,1), (1,3,2), (2,3,5)]\nmst, weight = kruskal(4, edges)\nprint(f\"MST weight: {weight}\")  # Output: MST weight: 6",
      "numbered": false
     }
    ]
@@ -143,7 +143,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def longest_path_dag(graph, n):\n    from collections import deque\n    in_degree = [0] * n\n    for u in graph:\n        for v, w in graph[u]:\n            in_degree[v] += 1\n    dist = [float('-inf')] * n\n    queue = deque()\n    for i in range(n):\n        if in_degree[i] == 0:\n            queue.append(i)\n            dist[i] = 0\n    while queue:\n        u = queue.popleft()\n        for v, w in graph.get(u, []):\n            if dist[u] + w > dist[v]:\n                dist[v] = dist[u] + w\n            in_degree[v] -= 1\n            if in_degree[v] == 0:\n                queue.append(v)\n    return max(dist)\n\ngraph = {0: [(1,3),(2,6)], 1: [(3,4),(2,2)], 2: [(3,1)], 3: []}\nprint(longest_path_dag(graph, 4))  # Output: 9",
+     "code": "def longest_path_dag(graph, n):\n    from collections import deque\n    in_degree = [0] * n\n    for u in graph:\n        for v, w in graph[u]:\n            in_degree[v] += 1\n    dist = [float('-inf')] * n\n    queue = deque()\n    for i in range(n):\n        if in_degree[i] == 0:\n            queue.append(i)\n            dist[i] = 0\n    while queue:\n        u = queue.popleft()\n        for v, w in graph.get(u, []):\n            if dist[u] + w > dist[v]:\n                dist[v] = dist[u] + w\n            in_degree[v] -= 1\n            if in_degree[v] == 0:\n                queue.append(v)\n    return max(dist)\n\ngraph = {0: [(1,3),(2,6)], 1: [(3,4),(2,2)], 2: [(3,1)], 3: []}\nprint(longest_path_dag(graph, 4))  # Output: 7",
      "numbered": false
     }
    ]

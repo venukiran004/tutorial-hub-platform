@@ -297,7 +297,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "This is a well-known Python gotcha. **Never put `return` in `finally`** — it causes: - Silent loss of return values. - Silent suppression of exceptions (bugs become invisible). - Python emits a `SyntaxWarning` in 3.12+ for this pattern."
+     "text": "This is a well-known Python gotcha. **Never put `return` in `finally`** — it causes: - Silent loss of return values. - Silent suppression of exceptions (bugs become invisible). - Python emits a `SyntaxWarning` in 3.14+ for this pattern (PEP 765)."
     },
     {
      "t": "p",
@@ -312,7 +312,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Three ways, with different behaviors:"
+     "text": "Three ways, with different behaviours:"
     },
     {
      "t": "code",
@@ -334,16 +334,16 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Catch specific exceptions**never bare `except:`, prefer named types.",
-      "**Keep try blocks small**only wrap the risky operation.",
-      "**Use `else`**put success logic outside `try` to avoid accidental catches.",
-      "**Don't silence exceptions**at minimum, log them.",
-      "**Use `finally` for cleanup**or better, use context managers.",
-      "**Re-raise with bare `raise`**preserves the original traceback.",
-      "**Use custom exceptions**give your domain meaningful error types.",
-      "**Chain exceptions**use `raise X from Y` to preserve root cause.",
-      "**Document raised exceptions**use `Raises:` section in docstrings.",
-      "**Never return in `finally`**it silently suppresses exceptions."
+      "**Catch specific exceptions:** never bare `except:`, prefer named types.",
+      "**Keep try blocks small:** only wrap the risky operation.",
+      "**Use `else`:** put success logic outside `try` to avoid accidental catches.",
+      "**Don't silence exceptions:** at minimum, log them.",
+      "**Use `finally` for cleanup:** or better, use context managers.",
+      "**Re-raise with bare `raise`:** preserves the original traceback.",
+      "**Use custom exceptions:** give your domain meaningful error types.",
+      "**Chain exceptions:** use `raise X from Y` to preserve root cause.",
+      "**Document raised exceptions:** use `Raises:` section in docstrings.",
+      "**Never return in `finally`:** it silently suppresses exceptions."
      ]
     }
    ]
@@ -388,7 +388,7 @@ EC.receiveLesson({
      "t": "table",
      "head": [
       "Method",
-      "Behavior"
+      "Behaviour"
      ],
      "rows": [
       [
@@ -704,7 +704,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`assert` is a debugging aid, **not** error handling. Assertions are removed when Python runs with `-O` (optimize) flag."
+     "text": "`assert` is a debugging aid, **not** error handling. Assertions are removed when Python runs with `-O` (optimise) flag."
     },
     {
      "t": "code",

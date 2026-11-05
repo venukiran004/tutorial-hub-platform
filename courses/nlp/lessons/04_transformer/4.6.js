@@ -2,7 +2,7 @@
    LESSON 4.6 — Feed-Forward Network and Normalisation
    Both worked norm examples reproduce; the SwiGLU 2/3 budget rule is
    verified to 0.9999; RMSNorm's speed claim did NOT reproduce on CPU; Pre-
-   LN vs Post-LN gradient flow differs by ~780,000x (scratchpad/nlp/n45.py).
+   LN vs Post-LN gradient flow differs by ~780,000x (n45.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.6",

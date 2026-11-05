@@ -596,31 +596,31 @@ if __name__ == "__main__":
         stem: "A class's `__iter__` returns `self`. What breaks?",
         options: [
           "Nothing — that is the standard implementation",
-          "It becomes single-use: the first loop exhausts it and every later loop yields nothing, silently",
           "`for` raises `TypeError` because `__next__` is missing",
+          "It becomes single-use: after the first loop, every later loop yields nothing",
           "Only nested loops over the same object break"
         ],
-        answer: 1,
+        answer: 2,
         why: "Returning `self` makes the object its own iterator, so there is one shared cursor rather than a fresh one per pass. After the first traversal it is exhausted, and subsequent loops complete immediately with no error — the failure is silent output rather than an exception. An iterable's `__iter__` must return a *new* iterator; writing it as a generator does that automatically."
       },
       {
         stem: "Why does the second loop over an open file read nothing?",
         options: [
           "The file handle is closed after the first iteration",
-          "A file object is an iterator, not an iterable — it holds a position and is exhausted after one pass",
           "Buffering discards lines once they are read",
-          "Files require an explicit `readlines()` before iterating"
+          "Files require an explicit `readlines()` before iterating",
+          "A file object is its own iterator, so one pass leaves it at the end"
         ],
-        answer: 1,
+        answer: 3,
         why: "File objects implement `__next__` and return `self` from `__iter__`, making them iterators. The position advances as you read and never resets, so a second pass starts from the end. The same is true of generators, `zip`, `map`, `filter` and database cursors. `f.seek(0)` rewinds a file; for other iterators you must materialise with `list()` or restructure to a single pass."
       },
       {
         stem: "What is the simplest way to write a correct reusable iterable?",
         options: [
-          "Inherit from `collections.abc.Iterable` and implement `__next__`",
-          "Write `__iter__` as a generator function — each call returns a new generator, satisfying the contract automatically",
-          "Return `iter(self)` from `__iter__`",
-          "Implement `__getitem__` and rely on the legacy iteration fallback"
+          "Inherit from `collections.abc.Iterable` and implement `__next__`, which the ABC turns into an iterator",
+          "Write `__iter__` as a generator function, so each call returns a fresh iterator",
+          "Return `iter(self)` from `__iter__`, which builds a fresh iterator over the object each time",
+          "Implement `__getitem__` and rely on the legacy fallback, which creates a new index cursor per loop"
         ],
         answer: 1,
         why: "Calling a generator function creates a fresh generator object every time, and a generator is an iterator — so `__iter__` written with `yield` gives correct reusable semantics with no index bookkeeping, no `StopIteration` and no second class. Option A confuses the two roles, option C is infinite recursion, and option D relies on a Python 2 compatibility path that misbehaves on mapping-like classes (Lesson 4.9)."
@@ -629,11 +629,11 @@ if __name__ == "__main__":
         stem: "A function does `count = len(list(results))` then iterates `results`. It works with lists and produces empty output for a database cursor. Why?",
         options: [
           "Cursors need an explicit `fetchall()` before iteration",
-          "`list(results)` consumed the cursor — an iterator is single-use, while a list survives being materialised",
           "The cursor was closed by the `list()` call",
+          "`list(results)` consumed the cursor, which can only be read once",
           "Cursors do not implement `__iter__`"
         ],
-        answer: 1,
+        answer: 2,
         why: "Every test fixture was a list, which can be traversed any number of times, so the bug never appeared. A cursor is an iterator: materialising it exhausts it, and the following loop sees nothing. Fix it by materialising once and using that list throughout, or by restructuring to a single pass. Annotating the parameter `Iterable[Row]` and testing with a generator makes the single-pass assumption explicit."
       }
     ]

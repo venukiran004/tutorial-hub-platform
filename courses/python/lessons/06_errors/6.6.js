@@ -125,7 +125,7 @@ def process(order):
     },
 
     { t: "callout", kind: "insight", title: "Conditional breakpoints beat stepping 4,000 times", body: [
-      { t: "code", lang: "python", title: "two ways to stop on the one that matters", numbered: false, code: `
+      { t: "code", lang: "text", title: "two ways to stop on the one that matters", numbered: false, code: `
 # In code -- stop only for the bad record
 for record in records:
     if record.id == 8821:
@@ -191,7 +191,7 @@ line = OrderLine(sku='W-1', price=Decimal('9.99'), quantity='2')
         "`pdb.post_mortem` in an `excepthook` does the same, which is why the example above guards on `sys.stdin.isatty()`.",
         "A remote debugger port left open is arbitrary code execution as your service account."
       ]},
-      { t: "p", text: "**Add a CI check.** `ruff`'s `T100` rule flags `breakpoint()` and `pdb` imports, and a failing lint is cheaper than an incident (Lesson 9.7)." }
+      { t: "p", text: "**Add a CI check.** `ruff`'s `T100` rule flags `breakpoint()` and `pdb` imports, and a failing lint is cheaper than an incident (Lesson 14.4)." }
     ]},
 
     { t: "h2", n: "04", text: "A method, not a hunch", id: "method" },
@@ -249,7 +249,7 @@ print("after filter:", len(orders))
 print("total:", total)` },
         { level: "best", label: "Bisect the data, then the code",
           why: "Each step halves the search space, so 40,000 rows are narrowed to one in about sixteen runs — and the answer is a specific input, not an impression. Once you have that input, a conditional breakpoint takes you to the exact frame.",
-          code: `# 1. Bisect the INPUT: does the first half reproduce it?
+          lang: "text", code: `# 1. Bisect the INPUT: does the first half reproduce it?
 total(rows[:20_000])        # correct
 total(rows[20_000:])        # wrong  -> the bad row is in here
 total(rows[20_000:30_000])  # correct
@@ -352,7 +352,7 @@ def build_statement(customer_id, orders, adjustments=[]):
         total += adj.amount
 
     return Statement(customer_id, lines, total)`},
-        { t: "code", lang: "python", title: "the traceback", numbered: false, code: `
+        { t: "code", lang: "text", title: "the traceback", numbered: false, code: `
 Traceback (most recent call last):
   File "nightly.py", line 40, in run
     statement = build_statement(cid, orders)
@@ -579,7 +579,7 @@ def test_hundreds_of_sequential_calls_stay_correct() -> None:
     "**Never leave an interactive debugger reachable in production** — `breakpoint()` in a container hangs the process waiting on stdin. Lint for it with `ruff`'s `T100`.",
     "**Debugging is a search: reproduce, shrink, hypothesise, test one thing, bisect.** A reliable reproduction is most of the work.",
     "**Bisect rather than reason** when hypotheses run out — over input, over the call chain, or over commits with `git bisect run`.",
-    "**\"Works on my machine\" is a list of differences**: versions, environment variables, timezone, filesystem case sensitivity, data shape, concurrency. Eliminate them one at a time.",
+    "**\"Works on my machine\" is a list of differences**: versions, environment variables, time zone, filesystem case sensitivity, data shape, concurrency. Eliminate them one at a time.",
     "**`py-spy dump --pid` reads a live process's stacks without stopping it**, which makes it the only real option for a hung production worker.",
     "**Capture state before restarting.** A restart clears the backlog and destroys the only evidence, which is why some bugs recur for months."
   ],
@@ -591,44 +591,44 @@ def test_hundreds_of_sequential_calls_stay_correct() -> None:
         stem: "A traceback ends in a library file with `TypeError: amount must be numeric`. Where do you start?",
         options: [
           "The deepest frame — that is where the error was raised",
-          "The last frame in code you own, since a `TypeError` inside a library usually means you passed it something wrong",
           "The top frame, which is the entry point",
+          "The last frame you own — a library `TypeError` usually means you passed bad data",
           "The library's source, to check whether it is a known bug"
         ],
-        answer: 1,
+        answer: 2,
         why: "The deepest frame is where the problem *surfaced*; the library is doing exactly what it should by rejecting a bad value. The frame that matters is the last one you control, because that is where the value was passed in — and often the real question is which of your callers produced it, which means reading further up still."
       },
       {
         stem: "A bug appears on the 4,000th iteration of a loop. What is the efficient way in?",
         options: [
-          "Add a print inside the loop and search the output",
-          "Set a conditional breakpoint — `b file:78, record.id == 8821` — so execution stops only on the case that fails",
-          "Step through with `n` until you reach it",
-          "Reduce the input to 100 items and hope it still occurs"
+          "Add a print inside the loop and search the output for the record that fails",
+          "Step through with `n` in pdb until execution reaches the failing iteration",
+          "A conditional breakpoint — `b file:78, record.id == 8821`",
+          "Reduce the input to 100 items, so the bug appears sooner and is easier to watch"
         ],
-        answer: 1,
+        answer: 2,
         why: "A conditional breakpoint evaluates any Python expression in that frame and stops only when it is true, turning an afternoon of stepping into ten seconds. Prints work but produce thousands of lines to correlate by eye and need a re-run per iteration of the idea. Shrinking input is a good instinct generally, but here the condition gets you there without changing the reproduction at all."
       },
       {
         stem: "A production worker hangs: alive, no CPU, no logs. What do you do first?",
         options: [
-          "Restart it to clear the backlog",
-          "Run `py-spy dump --pid <pid>` to capture every thread's stack while the process is still in the broken state",
-          "Add more logging and wait for it to happen again",
-          "Attach `pdb` remotely"
+          "`py-spy dump --pid <pid>`, to capture every thread's stack before anything changes",
+          "Restart it to clear the backlog, then add monitoring so the next hang is detected sooner",
+          "Add more logging around the suspected code, deploy it, and wait for the hang to happen again",
+          "Attach `pdb` to the running process remotely and inspect each thread interactively"
         ],
-        answer: 1,
+        answer: 0,
         why: "Restarting clears the symptom and destroys the only evidence, which is how a bug recurs for months with the investigation resetting each time. `py-spy` attaches by PID without stopping the process or requiring it to cooperate, and the stacks usually name the cause directly — threads blocked in `socket.recv` mean a call with no timeout. Capture state, then restart."
       },
       {
         stem: "Why is `if adj is not None: total += adj.amount` a poor fix for an `AttributeError` on a `None` in a shared list?",
         options: [
-          "It is slower than filtering the list once",
-          "It removes the exception while leaving the underlying corruption in place, converting a loud failure into silently wrong output",
-          "`is not None` does not work for all falsy values",
-          "It should be `try/except AttributeError` instead"
+          "It is slower than filtering the `None` values out of the list once before the loop starts",
+          "`is not None` does not exclude other falsy values, so a zero adjustment is still added",
+          "It silences the symptom and keeps the corruption, turning a crash into wrong output",
+          "It should be a `try/except AttributeError` around the addition instead, which is more Pythonic"
         ],
-        answer: 1,
+        answer: 2,
         why: "The exception was the only signal that anything was wrong. Guarding at the point of use stops the crash and keeps the accumulation that produced the `None`, so statements now go out with quietly incorrect totals — strictly worse than crashing, because nothing detects it. When a fix removes a symptom without explaining it, check whether it has removed your only detector."
       }
     ]
@@ -651,7 +651,7 @@ def test_hundreds_of_sequential_calls_stay_correct() -> None:
       {
         level: "advanced",
         q: "Walk me through debugging something you cannot reproduce locally.",
-        strong: "Turn it into something reproducible. Log the exact inputs with a correlation ID, replay them locally, and the problem becomes ordinary. In parallel, enumerate the differences between environments — versions, env vars, timezone, filesystem case sensitivity, data shape, concurrency — and eliminate them one at a time.",
+        strong: "Turn it into something reproducible. Log the exact inputs with a correlation ID, replay them locally, and the problem becomes ordinary. In parallel, enumerate the differences between environments — versions, env vars, time zone, filesystem case sensitivity, data shape, concurrency — and eliminate them one at a time.",
         answer: [
           { t: "p", text: "\"Make it reproducible\" as the primary move, rather than a list of production tooling, is the answer that holds up — everything else is a way of getting there." },
           { t: "p", text: "`py-spy dump --pid` is the concrete tool for a hung process, and the point that it works without stopping or instrumenting the target is what makes it usable in production." },

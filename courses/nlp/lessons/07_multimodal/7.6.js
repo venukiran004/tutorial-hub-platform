@@ -2,7 +2,7 @@
    LESSON 7.6 — Multimodal Embeddings and RAG
    Cross-modal retrieval is run (3/3), and text-to-text similarity is shown
    to work despite never being a training objective — while absolute scores
-   prove uncomparable across pairs (§03) (scratchpad/nlp/n71.py).
+   prove uncomparable across pairs (§03) (n71.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.6",

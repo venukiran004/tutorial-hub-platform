@@ -625,30 +625,30 @@ def test_output_is_built_by_join_not_concatenation():
       {
         stem: "A loop reads `order.customer.name` for 100 orders and the endpoint takes 200 ms. What is happening?",
         options: [
+          "Each access lazily runs a `SELECT`, so the time is 100 round trips",
           "Attribute access is slow on ORM objects",
-          "Each access lazily issues a `SELECT` — 100 extra round trips, so the cost is network latency rather than Python",
           "The customer objects are being deep-copied",
-          "The ORM is recomputing a property on every access"
+          "The ORM is recomputing a property on every access instead of storing the result"
         ],
-        answer: 1,
+        answer: 0,
         why: "This is the N+1: one query for the orders, then one per order for its customer. It is invisible in review because the loop body reads like an attribute access. Fix it at the query with `selectinload`, or batch a second query and index the results in a dict. Catch it with a test asserting the query count does not grow with row count."
       },
       {
         stem: "`new = [r for r in rows if r.id not in set(known)]` is slower than the list version it replaced. Why?",
         options: [
           "Sets are slower than lists for small collections",
-          "`set(known)` is inside the comprehension, so it is rebuilt on every iteration — O(n) construction per item instead of one O(n) construction",
           "The comprehension copies `rows` first",
-          "`not in` on a set falls back to a linear scan"
+          "`not in` on a set falls back to a linear scan",
+          "`set(known)` is rebuilt for every row, because the `if` runs per item"
         ],
-        answer: 1,
+        answer: 3,
         why: "The expression after `if` is evaluated per item. Building the set once outside — `known_ids = set(known)` — makes the whole operation linear. Hoisting it inside the comprehension while trying to fix the O(n) membership test is a genuinely common regression, and it makes the code slower than the bug it was meant to fix."
       },
       {
         stem: "`logger.debug(f\"rendered {order.to_dict()}\")` runs in a loop with the level set to INFO. What does it cost?",
         options: [
           "Nothing — the level check skips it",
-          "Full price: the f-string is evaluated before `debug()` is called, so `to_dict()` runs on every row and the result is then discarded",
+          "Full price — the f-string and `to_dict()` run before `debug()` checks the level",
           "Only the string formatting, not the method call",
           "It raises because DEBUG is disabled"
         ],
@@ -659,11 +659,11 @@ def test_output_is_built_by_join_not_concatenation():
         stem: "A 12.4-second endpoint has a list comprehension at the top of the profile by `tottime`. Rewriting it saves 50 ms. What went wrong?",
         options: [
           "The comprehension was already optimal",
-          "`tottime` excludes called functions, so I/O-bound work is attributed to the socket read — sorting by `cumtime` would have shown one HTTP call taking 12.18 seconds",
           "The profiler was misconfigured",
-          "Generators are not faster than comprehensions"
+          "Generators are not faster than comprehensions",
+          "`tottime` excludes callees; `cumtime` would have shown a 12-second HTTP call"
         ],
-        answer: 1,
+        answer: 3,
         why: "`tottime` is time in the function body excluding calls, so pure-Python work rises to the top while the actual cost sits inside a call it made. `cumtime` includes callees and points straight at the HTTP request with no timeout, no pooling and no caching. Read `cumtime` first to find where the time goes, then `tottime` to find where it is spent."
       }
     ]

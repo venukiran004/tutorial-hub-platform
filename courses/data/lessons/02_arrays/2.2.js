@@ -204,7 +204,7 @@ np.searchsorted(sorted_vals, 30, side="right")   # 3 -- after the 30
 #
 # THE ARRAY MUST BE SORTED. searchsorted does not check, and on
 # unsorted input it returns confident nonsense:
-np.searchsorted(np.array([3, 1, 2]), 2)   # 1 -- meaningless
+np.searchsorted(np.array([3, 1, 2]), 2)   # 2 -- meaningless
 
 # 1. BUCKETING -- assign values to bins in one pass:
 edges = np.array([0, 18, 35, 65, 200])

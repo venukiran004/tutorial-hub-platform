@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c14.1",
  "lede": "**24 programs to write**, on context managers to classic algorithms. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 24 programs on context managers to classic algorithms without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c13.5"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1607–1630.** What this set actually drills, counted from its own problems — 12 of the 24 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "strings", "graphs & trees", "algorithms", "exceptions", "databases"], "cells": [[{"text": "4", "tone": "accent"}, "Flatten Deeply Nested List"], [{"text": "2", "tone": "good"}, "Context Manager"], [{"text": "2", "tone": "violet"}, "Trie (Prefix Tree)"], [{"text": "2", "tone": "teal"}, "Knapsack Problem (Dynamic Prog"], [{"text": "1", "tone": "warn"}, "Exception Handling"], [{"text": "1", "tone": "crit"}, "LRU Cache"]], "t": "diagram", "id": "dg-c14_1-top-0"},
   {
    "t": "callout",
    "kind": "note",

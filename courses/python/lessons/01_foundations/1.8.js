@@ -290,7 +290,7 @@ def set_limit(n):
         raise TypeError("limit must be an integer")
     return n
 
-print(set_limit(True))             # 1 -- accepted, almost certainly a bug`,
+print(set_limit(True))             # True -- accepted, almost certainly a bug`,
         out: `True
 True`},
       { t: "p", text: "If a boolean is not acceptable, exclude it explicitly: `if isinstance(n, bool) or not isinstance(n, int):`. This matters most when validating deserialised JSON, where `true` and `1` are distinct in the payload and identical after an `isinstance` check." }
@@ -580,33 +580,33 @@ class OrderRow(BaseModel):
         stem: "What is the result of `int(-3.7)`, `round(-3.7)` and `math.floor(-3.7)`?",
         options: [
           "`-4`, `-4`, `-4` — all three round to the nearest integer",
+          "`-3`, `-3`, `-4` — `int` and `round` both cut off the fraction; only `floor` rounds down",
           "`-3`, `-4`, `-4` — `int` truncates toward zero; the other two go to negative infinity",
-          "`-3`, `-3`, `-4` — only `floor` rounds down",
-          "`-4`, `-4`, `-3` — `floor` truncates toward zero"
+          "`-4`, `-4`, `-3` — `floor` truncates toward zero; the other two go to the nearest integer"
         ],
-        answer: 1,
+        answer: 2,
         why: "`int()` truncates toward zero, so `-3.7` becomes `-3`. `round()` goes to the nearest integer, `-4`. `math.floor()` always goes toward negative infinity, also `-4` here — but note that `int()` and `floor()` agree on positives and disagree on negatives, which is why substituting one for the other produces a bug that only appears with negative values."
       },
       {
         stem: "A column in your database contains the literal string `\"None\"` for some rows. What most likely happened?",
         options: [
           "The database driver serialises Python `None` as the string `\"None\"`",
-          "`str()` was applied to a value that was `None`, and `str()` never fails — so the bug became data",
-          "A failed JSON parse fell back to a string representation",
-          "The column has a default value of `\"None\"` in its schema"
+          "A failed JSON parse fell back to the value's string representation instead of raising",
+          "The column was created with a default of `\"None\"`, which fills rows that omit the value",
+          "`str()` was applied to a `None` and, since `str()` never fails, the bug became data"
         ],
-        answer: 1,
+        answer: 3,
         why: "`str()` is a total function: it accepts every object and always succeeds, which is exactly what makes it dangerous. `str(None)` is `\"None\"`, and the same happens with f-string interpolation of a possibly-`None` value. Every other conversion in this lesson can reject bad input; `str()` silently converts a bug into a valid-looking string that then travels through the whole system. Drivers map `None` to SQL `NULL` correctly, so the conversion happened in application code."
       },
       {
         stem: "A function validates `if not isinstance(limit, int): raise TypeError(...)`. A caller passes `True`. What happens?",
         options: [
           "A `TypeError` is raised, since `bool` is not `int`",
-            "It is accepted, because `bool` subclasses `int` — and `True` then behaves as `1`",
-          "It is accepted but converted to `0`",
-          "A `DeprecationWarning` is emitted and the value is coerced"
+            "It is accepted, but converted to `0` because booleans are stored as flags rather than numbers",
+          "A `DeprecationWarning` is emitted and the value is coerced",
+          "It is accepted, because `bool` subclasses `int` — and `True` then behaves as `1`"
         ],
-        answer: 1,
+        answer: 3,
         why: "`bool` is a subclass of `int`, so `isinstance(True, int)` is `True` and the check passes. The value then behaves as `1` throughout the function — plausible enough to go unnoticed. It matters most when validating deserialised JSON, where `true` and `1` are distinct in the payload but indistinguishable after this check. Exclude it explicitly with `isinstance(n, bool) or not isinstance(n, int)`."
       },
       {
@@ -614,8 +614,8 @@ class OrderRow(BaseModel):
         options: [
           "Strings are not iterable, so passing one raises a confusing `TypeError`",
           "A string *is* iterable, so passing one silently iterates characters instead of failing",
-          "The loop cannot detect an empty list and will hang",
-          "Duck typing always requires an explicit `isinstance` guard"
+          "The loop cannot tell an empty list from a missing argument, so it silently does nothing",
+          "Duck typing always requires an explicit `isinstance` guard before a parameter is iterated"
         ],
         answer: 1,
         why: "This is the classic exception to duck typing. `str` quacks like an iterable — it has `__iter__` — but iterating it yields characters, which is almost never what a function expecting a collection of items intends. Because nothing raises, the bug is silent: one call sends nine notifications instead of one. An explicit `isinstance(recipients, str)` guard is justified here, and a `list[str]` hint lets mypy catch it before it runs."

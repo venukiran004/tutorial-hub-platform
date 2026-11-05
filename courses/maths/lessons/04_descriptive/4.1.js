@@ -109,7 +109,7 @@ np.median(pay) * len(pay)     # 484 -- meaningless
 # salary is false for ten of the eleven people.
 
 # THE GAP BETWEEN THEM IS A MEASUREMENT OF SKEW, and it is free:
-pay.mean() / np.median(pay)   # 1.646
+pay.mean() / np.median(pay)   # 1.645
 #
 #   ~1.0   symmetric
 #   >1.2   right-skewed; the mean is being pulled by a tail
@@ -171,8 +171,8 @@ pay.mean() / np.median(pay)   # 1.646
 x = np.array([10.0, 12.0, 11.0, 13.0, 9.0, 11.0, 12.0, 10.0, 14.0, 11.0])
 
 # MEAN -- breakdown point 1/n, which tends to 0. One value suffices.
-np.append(x, 1e9).mean()             # 90,909,101.0
-np.median(np.append(x, 1e9))         # 11.5 -- barely moved
+np.append(x, 1e9).mean()             # 90,909,101.2
+np.median(np.append(x, 1e9))         # 11.0 -- barely moved
 
 # MEDIAN -- breakdown point 50%, the theoretical maximum for a location
 # estimator. You must corrupt half the data before it can be moved
@@ -180,7 +180,7 @@ np.median(np.append(x, 1e9))         # 11.5 -- barely moved
 corrupted = np.append(x, [1e9]*4)    # 4 of 14 = 29% corrupted
 np.median(corrupted)                 # 12.0 -- still sensible
 corrupted = np.append(x, [1e9]*10)   # 10 of 20 = 50%
-np.median(corrupted)                 # 500,000,006 -- now it breaks
+np.median(corrupted)                 # 500,000,007 -- now it breaks
 
 # TRIMMED MEAN -- tune the breakdown point to what you expect:
 for trim in (0.0, 0.05, 0.10, 0.25):
@@ -201,9 +201,9 @@ for trim in (0.0, 0.05, 0.10, 0.25):
 rng = np.random.default_rng(0)
 s = rng.normal(0, 1, (100_000, 25))
 
-s.mean(axis=1).std()                 # 0.2000  = 1/sqrt(25)
-np.median(s, axis=1).std()           # 0.2510
-(0.2510 / 0.2000)**2                 # 1.575 -- 57% more data needed
+s.mean(axis=1).std()                 # 0.2004  = 1/sqrt(25)
+np.median(s, axis=1).std()           # 0.2490
+(0.2490 / 0.2004)**2                 # 1.544 -- 54% more data needed
 #
 # THAT IS THE TRADE, AND IT IS SMALL. You pay 57% efficiency on
 # perfectly clean normal data to gain immunity to arbitrary
@@ -240,7 +240,7 @@ np.mean([1.5, 0.5, 1.5, 0.5])    # 1.0  -- suggests you broke even
 gmean([1.5, 0.5, 1.5, 0.5])      # 0.866
 
 1.5 * 0.5 * 1.5 * 0.5            # 0.5625 -- you LOST 44%
-0.866**4                         # 0.5625 -- the geometric mean recovers it
+0.866**4                         # 0.5624 -- the geometric mean recovers it
 #
 # THE ARITHMETIC MEAN OF RETURNS IS ALWAYS >= THE GEOMETRIC MEAN, and
 # the gap grows with volatility. Quoting the arithmetic mean of returns
@@ -259,7 +259,7 @@ hmean([1,2,4]), gmean([1,2,4]), np.mean([1,2,4])   # 1.714, 2.0, 2.333`},
 
     { t: "h2", n: "04", text: "When no single number is honest", id: "multimodal" },
 
-    {"kind": "trace", "title": "Nothing takes 62 ms, and the percentiles say where the seam is", "caption": "**The mean lands in the empty gap between two populations, describing a request that does not exist.** Seventy per cent of these requests are cache hits near 12 ms and thirty per cent are misses near 180 ms, so the median is also misleading — it says “typical is 16 ms” while a third of traffic takes fifteen times that. **The sixfold jump between p70 and p75 is the signature**, because a smooth distribution cannot rise that fast across five percentiles. The honest report is not a number with a caveat; it is two numbers and a weight.", "left": "statistic", "codeW": 140, "vars": ["value", "what it describes"], "steps": [{"code": "mean", "state": ["62.3 ms", "nothing - the gap between groups"], "tone": "crit"}, {"code": "median", "state": ["15.6 ms", "the hits only"], "changed": [0, 1], "tone": "warn"}, {"code": "p70", "state": ["25.4 ms", "still inside the hits"], "changed": [0, 1], "tone": "good"}, {"code": "p75", "state": ["148.9 ms", "SIX TIMES p70 - the seam"], "changed": [0, 1], "tone": "crit"}, {"code": "p90 and p99", "state": ["205.1 and 273.4 ms", "the misses"], "changed": [0, 1], "tone": "violet"}, {"code": "the honest report", "state": ["70% near 12, 30% near 180", "two numbers and a weight"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_1-04-1"},
+    {"kind": "trace", "title": "Nothing takes 62 ms, and the percentiles say where the seam is", "caption": "**The mean lands in the empty gap between two populations, describing a request that does not exist.** Seventy per cent of these requests are cache hits near 12 ms and thirty per cent are misses near 180 ms, so the median is also misleading — it says “typical is 16 ms” while a third of traffic takes fifteen times that. **The sixfold jump between p70 and p75 is the signature**, because a smooth distribution cannot rise that fast across five percentiles. The honest report is not a number with a caveat; it is two numbers and a weight.", "left": "statistic", "codeW": 140, "vars": ["value", "what it describes"], "steps": [{"code": "mean", "state": ["62.6 ms", "nothing - the gap between groups"], "tone": "crit"}, {"code": "median", "state": ["13.7 ms", "the hits only"], "changed": [0, 1], "tone": "warn"}, {"code": "p70", "state": ["25.4 ms", "still inside the hits"], "changed": [0, 1], "tone": "good"}, {"code": "p75", "state": ["148.9 ms", "SIX TIMES p70 - the seam"], "changed": [0, 1], "tone": "crit"}, {"code": "p90 and p99", "state": ["205.1 and 273.4 ms", "the misses"], "changed": [0, 1], "tone": "violet"}, {"code": "the honest report", "state": ["70% near 12, 30% near 180", "two numbers and a weight"], "changed": [0, 1], "tone": "teal"}], "t": "diagram", "id": "dg-4_1-04-1"},
 
     { t: "p", text: "Sometimes no single number is honest, because the data is a **mixture of distinct populations**. A mean that falls in the empty gap between two groups describes a case that does not exist, and the right response is to report the structure instead." },
 
@@ -279,8 +279,8 @@ hits = rng.normal(12, 3, 7000)
 misses = rng.normal(180, 40, 3000)
 latency = np.concatenate([hits, misses])
 
-latency.mean()                   # 62.3 ms
-np.median(latency)               # 15.6 ms
+latency.mean()                   # 62.6 ms
+np.median(latency)               # 13.7 ms
 #
 # NOTHING TAKES 62 ms. The mean sits in the empty gap between two
 # populations, describing a request that does not exist.
@@ -302,8 +302,8 @@ def bimodality_check(x):
     i = int(np.argmax(ratios))
     return float(ratios[i]), int(5 * (i + 1))
 
-bimodality_check(latency)        # (5.87, 70) -- 5.9x jump at p70
-bimodality_check(rng.normal(60, 20, 10000))   # (1.09, 5) -- smooth
+bimodality_check(latency)        # (5.02, 70) -- 5.0x jump at p70
+bimodality_check(rng.normal(60, 20, 10000))   # (1.25, 5) -- smooth
 
 # THE HONEST SUMMARY REPORTS THE STRUCTURE, not a number:
 #

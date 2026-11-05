@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c5.1",
  "lede": "**30 snippets to read**, on dictionary views and Counter. Predict the output before you open the answer — these are the cases where Python does something people do not expect, and recognising one is the whole skill.",
  "objectives": [
-  "Work through 30 problems on predict the output — scenario questions without looking anything up",
-  "Predict each answer before revealing it",
-  "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "State the output of 30 snippets on dictionary views and Counter before revealing it",
+  "Say why each output is what it is",
+  "Recognise the trap each snippet is built on",
+  "Find the same trap in code you read"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.7"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Problems 567–596.** What this set asks you to predict, counted from its own problems — 19 of the 30 fall into these groups. Say the output aloud before you open the answer; being able to recognise it is not the same skill.", "cols": ["problems", "for example"], "rows": ["dicts and sets", "lists", "strings", "files and paths"], "cells": [[{"text": "15", "tone": "accent"}, "Iterating a dict's views"], [{"text": "2", "tone": "good"}, "A lambda"], [{"text": "1", "tone": "violet"}, "str.split"], [{"text": "1", "tone": "teal"}, "JSON encoding or decoding"]], "t": "diagram", "id": "dg-c5_1-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -37,16 +37,19 @@ EC.receiveLesson({
    "q": "Program 567: Iterating a dict's views — output of `'a' in d`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `False`, `True` **Explanation:** `in` on dict checks keys by default. Use `.values()` to check values."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nprint('a' in d)\nprint(1 in d)\nprint('a' in d.values())\nprint(1 in d.values())",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `False`, `True` **Explanation:** `in` on dict checks keys by default. Use `.values()` to check values."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -54,16 +57,19 @@ EC.receiveLesson({
    "q": "Program 568: A lambda — output of `sorted(d)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['a', 'm', 'z']`, `[('a', 2), ('m', 3), ('z', 1)]`, `[('z', 1), ('a', 2), ('m', 3)]` **Explanation:** `sorted(d)` sorts keys. Custom `key` sorts by value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'z': 1, 'a': 2, 'm': 3}\nprint(sorted(d))\nprint(sorted(d.items()))\nprint(sorted(d.items(), key=lambda x: x[1]))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['a', 'm', 'z']`, `[('a', 2), ('m', 3), ('z', 1)]`, `[('z', 1), ('a', 2), ('m', 3)]` **Explanation:** `sorted(d)` sorts keys. Custom `key` sorts by value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -71,16 +77,19 @@ EC.receiveLesson({
    "q": "Program 569: zip() — output of `d = dict(zip(keys, values))`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}` **Explanation:** `zip()` pairs keys with values. `dict()` converts to dictionary."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "keys = ['a', 'b', 'c']\nvalues = [1, 2, 3]\nd = dict(zip(keys, values))\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}` **Explanation:** `zip()` pairs keys with values. `dict()` converts to dictionary."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -88,16 +97,19 @@ EC.receiveLesson({
    "q": "Program 570: What is the output of `max_key, min_key`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `c a` **Explanation:** `max(d, key=d.get)` finds the key with the maximum value."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nmax_key = max(d, key=d.get)\nmin_key = min(d, key=d.get)\nprint(max_key, min_key)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `c a` **Explanation:** `max(d, key=d.get)` finds the key with the maximum value."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -105,16 +117,19 @@ EC.receiveLesson({
    "q": "Program 571: What is the output of `d`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1: 'true'}`, `1` **Explanation:** `1 == 1.0 == True` and they have the same hash. All map to the same key. Last value wins."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {}\nd[1] = 'one'\nd[1.0] = 'one point zero'\nd[True] = 'true'\nprint(d)\nprint(len(d))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1: 'true'}`, `1` **Explanation:** `1 == 1.0 == True` and they have the same hash. All map to the same key. Last value wins."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -122,16 +137,19 @@ EC.receiveLesson({
    "q": "Program 572: A ChainMap — output of `cm['a']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `2`, `4`, `['b', 'c', 'a']` (order may vary) **Explanation:** `ChainMap` searches dicts in order. First dict takes priority for duplicate keys."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import ChainMap\nd1 = {'a': 1, 'b': 2}\nd2 = {'b': 3, 'c': 4}\ncm = ChainMap(d1, d2)\nprint(cm['a'])\nprint(cm['b'])\nprint(cm['c'])\nprint(list(cm))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `2`, `4`, `['b', 'c', 'a']` (order may vary) **Explanation:** `ChainMap` searches dicts in order. First dict takes priority for duplicate keys."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -139,16 +157,19 @@ EC.receiveLesson({
    "q": "Program 573: What is the output of `d` — dict behaviour",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{}`, `<class 'dict'>` **Explanation:** `clear()` removes all items. The dict object still exists."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nd.clear()\nprint(d)\nprint(type(d))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{}`, `<class 'dict'>` **Explanation:** `clear()` removes all items. The dict object still exists."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -156,16 +177,19 @@ EC.receiveLesson({
    "q": "Program 574: Removing an item with pop() — output of `name, d`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Alice {'age': 30}`, `('age', 30) {}` **Explanation:** `pop()` removes specific key. `popitem()` removes last item."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'name': 'Alice', 'age': 30}\nname = d.pop('name')\nprint(name, d)\nitem = d.popitem()\nprint(item, d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Alice {'age': 30}`, `('age', 30) {}` **Explanation:** `pop()` removes specific key. `popitem()` removes last item."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -173,16 +197,19 @@ EC.receiveLesson({
    "q": "Program 575: What is the output of `d['a']['x']`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `1`, `{'a': {'x': 1, 'z': 3}, 'b': {'y': 2}}` **Explanation:** Nested dictionary access with chained `[]`. Can modify nested dicts directly."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': {'x': 1}, 'b': {'y': 2}}\nprint(d['a']['x'])\nd['a']['z'] = 3\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `1`, `{'a': {'x': 1, 'z': 3}, 'b': {'y': 2}}` **Explanation:** Nested dictionary access with chained `[]`. Can modify nested dicts directly."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -190,16 +217,19 @@ EC.receiveLesson({
    "q": "Program 576: Iterating a dict's views — output of `list(keys_view)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `['a', 'b', 'c', 'd']` **Explanation:** View objects are dynamic — they reflect changes to the dictionary."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nkeys_view = d.keys()\nd['d'] = 4\nprint(list(keys_view))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `['a', 'b', 'c', 'd']` **Explanation:** View objects are dynamic — they reflect changes to the dictionary."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -207,28 +237,25 @@ EC.receiveLesson({
    "q": "Program 577: Identity (is) versus equality (==) — output of `d1 == d2` — equality, dict behaviour",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Dict equality compares key-value pairs regardless of insertion order."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d1 = {'a': 1, 'b': 2}\nd2 = {'a': 1, 'b': 2}\nd3 = {'b': 2, 'a': 1}\nprint(d1 == d2)\nprint(d1 == d3)\nprint(d1 is d2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `True`, `False` **Explanation:** Dict equality compares key-value pairs regardless of insertion order."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
    "n": "578",
    "q": "Program 578: A Counter — output of `c1 + c2` — dict behaviour",
    "body": [
-    {
-     "t": "code",
-     "lang": "python",
-     "code": "from collections import Counter\nc1 = Counter(a=3, b=1)\nc2 = Counter(a=1, b=2)\nprint(c1 + c2)\nprint(c1 - c2)\nprint(c1 & c2)\nprint(c1 | c2)",
-     "numbered": false
-    },
     {
      "t": "p",
      "text": "**Answer:**"
@@ -243,7 +270,16 @@ EC.receiveLesson({
      "t": "p",
      "text": "**Explanation:** Counter supports arithmetic. `-` keeps only positive counts. `&` is min, `|` is max."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from collections import Counter\nc1 = Counter(a=3, b=1)\nc2 = Counter(a=1, b=2)\nprint(c1 + c2)\nprint(c1 - c2)\nprint(c1 & c2)\nprint(c1 | c2)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -251,16 +287,19 @@ EC.receiveLesson({
    "q": "Program 579: What is the output of `d` (2)",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}`, `{'x': 10, 'y': 20}` **Explanation:** Multiple ways to create dicts — keyword args or list of tuples."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = dict(a=1, b=2, c=3)\nprint(d)\nd2 = dict([('x', 10), ('y', 20)])\nprint(d2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'a': 1, 'b': 2, 'c': 3}`, `{'x': 10, 'y': 20}` **Explanation:** Multiple ways to create dicts — keyword args or list of tuples."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -268,16 +307,19 @@ EC.receiveLesson({
    "q": "Program 580: A dict comprehension — output of `result = {k: v for k, v in sorted(d.items(),…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'c': 3, 'b': 2, 'a': 1}` **Explanation:** Sort dict by values descending, then create new ordered dict."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nresult = {k: v for k, v in sorted(d.items(), key=lambda x: x[1], reverse=True)}\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'c': 3, 'b': 2, 'a': 1}` **Explanation:** Sort dict by values descending, then create new ordered dict."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -285,16 +327,19 @@ EC.receiveLesson({
    "q": "Program 581: str.split — output of `word_count[word] = word_count.get(word, 0) + 1`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'hello': 3, 'world': 1, 'python': 1}` **Explanation:** `get()` with default `0` enables clean counting without checking key existence."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "text = \"hello world hello python hello\"\nword_count = {}\nfor word in text.split():\n    word_count[word] = word_count.get(word, 0) + 1\nprint(word_count)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'hello': 3, 'world': 1, 'python': 1}` **Explanation:** `get()` with default `0` enables clean counting without checking key existence."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -302,16 +347,19 @@ EC.receiveLesson({
    "q": "Program 582: A dict comprehension — output of `{v: k for k, v in d.items()}`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1: 'a', 2: 'b', 3: 'c'}` **Explanation:** Dict comprehension to invert (swap keys and values)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nprint({v: k for k, v in d.items()})",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1: 'a', 2: 'b', 3: 'c'}` **Explanation:** Dict comprehension to invert (swap keys and values)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -319,16 +367,19 @@ EC.receiveLesson({
    "q": "Program 583: Identity (is) versus equality (==) — output of `deep_get(nested, ['a', 'b', 'c'])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `42`, `N/A` **Explanation:** Safely traverses nested dicts. Returns default if any key is missing."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "nested = {'a': {'b': {'c': 42}}}\ndef deep_get(d, keys, default=None):\n    for key in keys:\n        d = d.get(key, default)\n        if d is default:\n            return default\n    return d\n\nprint(deep_get(nested, ['a', 'b', 'c']))\nprint(deep_get(nested, ['a', 'x', 'c'], 'N/A'))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `42`, `N/A` **Explanation:** Safely traverses nested dicts. Returns default if any key is missing."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -336,16 +387,19 @@ EC.receiveLesson({
    "q": "Program 584: What is the output of `d3`?",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** Both: `{'a': 1, 'b': 3, 'c': 4}` **Explanation:** `|` creates new dict, `|=` updates in-place. Right side wins for duplicate keys."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "# Python 3.9+\nd1 = {'a': 1, 'b': 2}\nd2 = {'b': 3, 'c': 4}\nd3 = d1 | d2\nd1 |= d2\nprint(d3)\nprint(d1)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** Both: `{'a': 1, 'b': 3, 'c': 4}` **Explanation:** `|` creates new dict, `|=` updates in-place. Right side wins for duplicate keys."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -353,16 +407,19 @@ EC.receiveLesson({
    "q": "Program 585: A dict comprehension — output of `result = {k: v for k, v in d.items() if k not…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'b': 2}` **Explanation:** Dict comprehension with condition to filter out specific keys."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nkeys_to_remove = ['a', 'c']\nresult = {k: v for k, v in d.items() if k not in keys_to_remove}\nprint(result)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'b': 2}` **Explanation:** Dict comprehension with condition to filter out specific keys."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -370,16 +427,19 @@ EC.receiveLesson({
    "q": "Program 586: A defaultdict — output of `d['name']`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Alice`, `unknown`, `{'name': 'Alice', 'age': 'unknown'}` **Explanation:** Lambda provides custom default. Accessing missing key creates it with default."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import defaultdict\nd = defaultdict(lambda: 'unknown')\nd['name'] = 'Alice'\nprint(d['name'])\nprint(d['age'])\nprint(dict(d))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Alice`, `unknown`, `{'name': 'Alice', 'age': 'unknown'}` **Explanation:** Lambda provides custom default. Accessing missing key creates it with default."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -387,16 +447,19 @@ EC.receiveLesson({
    "q": "Program 587: A dict comprehension — output of `d = {i: i**2 for i in range(5) if i % 2 != 0}`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{1: 1, 3: 9}` **Explanation:** Dict comprehension with filter — only odd numbers included."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {i: i**2 for i in range(5) if i % 2 != 0}\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{1: 1, 3: 9}` **Explanation:** Dict comprehension with filter — only odd numbers included."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -404,16 +467,19 @@ EC.receiveLesson({
    "q": "Program 588: A list comprehension — output of `flat = [v for vals in d.values() for v in val…`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[1, 2, 3, 4]` **Explanation:** Nested comprehension flattens dict values into single list."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': [1, 2], 'b': [3, 4]}\nflat = [v for vals in d.values() for v in vals]\nprint(flat)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[1, 2, 3, 4]` **Explanation:** Nested comprehension flattens dict values into single list."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -421,16 +487,19 @@ EC.receiveLesson({
    "q": "Program 589: dict.setdefault — output of `d.setdefault('key', [1, 2, 3])`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{'key': []}` **Explanation:** `setdefault` only sets the value if key doesn't exist. Second call finds key already present."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {}\nd.setdefault('key', [])\nd.setdefault('key', [1, 2, 3])\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{'key': []}` **Explanation:** `setdefault` only sets the value if key doesn't exist. Second call finds key already present."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -438,16 +507,19 @@ EC.receiveLesson({
    "q": "Program 590: A caught KeyError — output of `f\"KeyError: {e}\"`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `KeyError: 'b'` **Explanation:** Accessing non-existent key with `[]` raises `KeyError`."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1}\ntry:\n    d['b']\nexcept KeyError as e:\n    print(f\"KeyError: {e}\")",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `KeyError: 'b'` **Explanation:** Accessing non-existent key with `[]` raises `KeyError`."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -455,16 +527,19 @@ EC.receiveLesson({
    "q": "Program 591: Identity (is) versus equality (==) — output of `d1 == d2` — equality, copying",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `True`, `False`, `False` **Explanation:** `copy()` creates a new dict with same content (shallow). After modification, they differ."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d1 = {'a': 1, 'b': 2}\nd2 = d1.copy()\nprint(d1 == d2)\nprint(d1 is d2)\nd2['c'] = 3\nprint(d1 == d2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `True`, `False`, `False` **Explanation:** `copy()` creates a new dict with same content (shallow). After modification, they differ."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -472,16 +547,19 @@ EC.receiveLesson({
    "q": "Program 592: JSON encoding or decoding — output of `type(json_str)`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `<class 'str'>`, `True` **Explanation:** `json.dumps()` serializes dict to JSON string. `json.loads()` deserializes back."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "import json\nd = {'name': 'Alice', 'age': 30, 'scores': [85, 90, 95]}\njson_str = json.dumps(d, indent=2)\nprint(type(json_str))\nd2 = json.loads(json_str)\nprint(d == d2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `<class 'str'>`, `True` **Explanation:** `json.dumps()` serializes dict to JSON string. `json.loads()` deserializes back."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -489,16 +567,19 @@ EC.receiveLesson({
    "q": "Program 593: A sequence built with the * operator — output of `for i in range(5):`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `{0: 0, 1: 10, 2: 20, 3: 30, 4: 40}`, `{0: 0, 1: 10, 3: 30, 4: 40, 2: 200}` **Explanation:** Deleted key loses its position. Re-adding goes to the end (insertion order)."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {}\nfor i in range(5):\n    d[i] = i * 10\nprint(d)\ndel d[2]\nd[2] = 200\nprint(d)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `{0: 0, 1: 10, 2: 20, 3: 30, 4: 40}`, `{0: 0, 1: 10, 3: 30, 4: 40, 2: 200}` **Explanation:** Deleted key loses its position. Re-adding goes to the end (insertion order)."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -506,16 +587,19 @@ EC.receiveLesson({
    "q": "Program 594: Iterating a dict's views — output of `d = {'a': 1, 'b': 2, 'c': 3}`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `[('a', 1), ('b', 2), ('c', 3)]`, `True` **Explanation:** `items()` returns key-value tuples. `dict()` can reconstruct from tuples."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "d = {'a': 1, 'b': 2, 'c': 3}\nitems = list(d.items())\nprint(items)\nd2 = dict(items)\nprint(d == d2)",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `[('a', 1), ('b', 2), ('c', 3)]`, `True` **Explanation:** `items()` returns key-value tuples. `dict()` can reconstruct from tuples."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -523,16 +607,19 @@ EC.receiveLesson({
    "q": "Program 595: A Counter — output of `from collections import Counter`",
    "body": [
     {
+     "t": "p",
+     "text": "**Answer:** `Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})`, `['a', 'a', 'a', 'a', 'a', 'b', 'b', 'r', 'r', 'c', 'd']` **Explanation:** `elements()` returns an iterator of elements repeated by their count."
+    }
+   ],
+   "prompt": [
+    {
      "t": "code",
      "lang": "python",
      "code": "from collections import Counter\ntext = \"abracadabra\"\nc = Counter(text)\nprint(c)\nprint(list(c.elements()))",
      "numbered": false
-    },
-    {
-     "t": "p",
-     "text": "**Answer:** `Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})`, `['a', 'a', 'a', 'a', 'a', 'b', 'b', 'r', 'r', 'c', 'd']` **Explanation:** `elements()` returns an iterator of elements repeated by their count."
     }
-   ]
+   ],
+   "kind": "predict"
   },
   {
    "t": "drill",
@@ -540,31 +627,34 @@ EC.receiveLesson({
    "q": "Program 596: A Counter — output of `c1 + c2`",
    "body": [
     {
-     "t": "code",
-     "lang": "python",
-     "code": "from collections import Counter\n\nc1 = Counter('aabbccc')\nc2 = Counter('abccdd')\nprint(c1 + c2)\nprint(c1 - c2)\nprint(c1 & c2)\nprint(c1 | c2)",
-     "numbered": false
-    },
-    {
      "t": "p",
      "text": "**Answer:**"
     },
     {
      "t": "code",
      "lang": "text",
-     "code": "Counter({'c': 5, 'a': 3, 'b': 3, 'd': 2})\nCounter({'a': 1, 'b': 1})\nCounter({'c': 2, 'a': 1, 'b': 1})\nCounter({'c': 3, 'a': 2, 'b': 2, 'd': 2})",
+     "code": "Counter({'c': 5, 'a': 3, 'b': 3, 'd': 2})\nCounter({'a': 1, 'b': 1, 'c': 1})\nCounter({'c': 2, 'a': 1, 'b': 1})\nCounter({'c': 3, 'a': 2, 'b': 2, 'd': 2})",
      "numbered": false
     },
     {
      "t": "p",
      "text": "**Explanation:** Counter arithmetic: `+` adds counts, `-` subtracts (drops ≤0), `&` takes min, `|` takes max."
     }
-   ]
+   ],
+   "prompt": [
+    {
+     "t": "code",
+     "lang": "python",
+     "code": "from collections import Counter\n\nc1 = Counter('aabbccc')\nc2 = Counter('abccdd')\nprint(c1 + c2)\nprint(c1 - c2)\nprint(c1 & c2)\nprint(c1 | c2)",
+     "numbered": false
+    }
+   ],
+   "kind": "predict"
   }
  ],
  "takeaways": [
-  "**Write it before you read it** — recognition is not production.",
-  "**Say the complexity out loud**; an interview follow-up always asks.",
-  "**Note the ones you could not produce** and come back to them."
+  "**Commit to an answer before you reveal** — an answer you never said teaches nothing.",
+  "**When you are wrong, find out why**, not just what.",
+  "**Note the ones that surprised you** and come back to them."
  ]
 });

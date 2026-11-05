@@ -2,7 +2,7 @@
    LESSON 8.4 — TF-IDF for Matching
    TF-IDF over character n-grams ranks "Beta Corporation Limited" ABOVE
    "Acme Corp Ltd" when matching "Acme Corporation Limited" — exactly
-   backwards (§04) (scratchpad/nlp/n83.py).
+   backwards (§04) (n83.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.4",
@@ -39,7 +39,7 @@ EC.receiveLesson({
 
     {"kind": "trace", "title": "Acme Corp Ltd ranks fifth, below three companies that are not Acme", "caption": "The ranking is the failure. **`Beta Corporation Limited` scores 0.6615 and `Acme Corp Ltd` scores 0.4017 — so the metric prefers a different company with matching boilerplate over the same company abbreviated.** TF-IDF down-weighted `limited` to 1.1335, **and three shared tokens at low weight still beat one shared token at high weight.** Which is why §03's answer is normalisation rather than a better metric: **no weighting scheme fixes a string that shares almost nothing with its own abbreviation.**", "left": "candidate for 'Acme Corporation Limited'", "codeW": 200, "vars": ["similarity", "same company?"], "steps": [{"code": "Acme Corporation Limited", "state": ["1.0000", "yes"], "tone": "good"}, {"code": "Beta Corporation Limited", "state": ["0.6615", "NO"], "changed": [0, 1], "tone": "crit"}, {"code": "Delta Corporation Limited", "state": ["0.6281", "NO"], "changed": [0], "tone": "crit"}, {"code": "Acme Corp Ltd", "state": ["0.4017", "yes - ranked 5th"], "changed": [0, 1], "tone": "crit"}, {"code": "Acme Holdings Limited", "state": ["0.3853", "probably related"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-8_4-02-1"},
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n83.py — TF-IDF over character n-grams", code:
+    { t: "code", lang: "python", title: "TF-IDF over character n-grams", code:
 "from sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nv = TfidfVectorizer(analyzer=\"char_wb\", ngram_range=(3, 3))\nX = v.fit_transform(corpus)\nS = cosine_similarity(X)",
       caption: "`char_wb` builds character n-grams **within word boundaries**, so n-grams never span two words — it combines n-gram typo tolerance with word structure." },
 

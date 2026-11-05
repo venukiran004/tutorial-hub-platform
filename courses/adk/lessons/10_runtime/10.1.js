@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 10.1 — Async and the Event Loop
    The 0.41s versus 0.83s measurement is executed output from
-   scratchpad/adk/n1.py on google-adk 2.9.2, after a warm-up run.
+   n1.py on google-adk 2.9.2, after a warm-up run.
    ========================================================================= */
 EC.receiveLesson({
   id: "10.1",
@@ -47,7 +47,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Two tools that each sleep for 0.4 seconds. In the first run, the model asks for both in a single response; in the second, it asks for one, gets the answer, and asks for the other." },
 
-    { t: "code", lang: "python", title: "n1.py — the two shapes",
+    { t: "code", lang: "python", title: "the two shapes",
       code: `async def slow_a(city: str) -> dict:
     """Looks up the weather (slow)."""
     await asyncio.sleep(0.4)

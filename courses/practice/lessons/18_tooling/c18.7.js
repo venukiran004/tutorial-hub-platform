@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c18.7",
  "lede": "**19 programs to write**, on contract testing and supply-chain checks. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on advanced testing & build without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 19 programs on contract testing and supply-chain checks without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c18.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2158–2176.** What this set actually drills, counted from its own problems — 11 of the 19 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["testing"], "cells": [[{"text": "11", "tone": "accent"}, "Contract testing"]], "t": "diagram", "id": "dg-c18_7-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -39,7 +39,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q421: Contract testing\")\nprint(\"  Verify API contracts between services.\")\nprint(\"  Tool: Pact (consumer-driven contract testing)\")\nprint(\"  Consumer defines expectations, provider verifies.\")\nprint(\"  Prevents breaking changes in microservices.\")\nprint()",
+     "code": "print(\"Contract testing\")\nprint(\"  Verify API contracts between services.\")\nprint(\"  Tool: Pact (consumer-driven contract testing)\")\nprint(\"  Consumer defines expectations, provider verifies.\")\nprint(\"  Prevents breaking changes in microservices.\")\nprint()",
      "numbered": false
     },
     {
@@ -49,7 +49,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q421: Contract testing\n  Verify API contracts between services.\n  Tool: Pact (consumer-driven contract testing)\n  Consumer defines expectations, provider verifies.\n  Prevents breaking changes in microservices.",
+     "code": "Contract testing\n  Verify API contracts between services.\n  Tool: Pact (consumer-driven contract testing)\n  Consumer defines expectations, provider verifies.\n  Prevents breaking changes in microservices.",
      "numbered": false
     }
    ]
@@ -62,7 +62,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q423: API testing\")\nprint(\"  Test REST APIs with requests/httpx + pytest.\")\nprint(\"  from fastapi.testclient import TestClient\")\nprint(\"  client = TestClient(app)\")\nprint(\"  resp = client.get('/users/1')\")\nprint(\"  assert resp.status_code == 200\")\nprint()",
+     "code": "print(\"API testing\")\nprint(\"  Test REST APIs with requests/httpx + pytest.\")\nprint(\"  from fastapi.testclient import TestClient\")\nprint(\"  client = TestClient(app)\")\nprint(\"  resp = client.get('/users/1')\")\nprint(\"  assert resp.status_code == 200\")\nprint()",
      "numbered": false
     },
     {
@@ -72,7 +72,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q423: API testing\n  Test REST APIs with requests/httpx + pytest.\n  from fastapi.testclient import TestClient\n  client = TestClient(app)\n  resp = client.get('/users/1')\n  assert resp.status_code == 200",
+     "code": "API testing\n  Test REST APIs with requests/httpx + pytest.\n  from fastapi.testclient import TestClient\n  client = TestClient(app)\n  resp = client.get('/users/1')\n  assert resp.status_code == 200",
      "numbered": false
     }
    ]
@@ -85,7 +85,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q424: Database testing\")\nprint(\"  Use test databases (SQLite in-memory, testcontainers).\")\nprint(\"  Fixtures: create/teardown test DB per test/session.\")\nprint(\"  Transactions: rollback after each test for isolation.\")\nprint(\"  Factory Boy: generate test data.\")\nprint()",
+     "code": "print(\"Database testing\")\nprint(\"  Use test databases (SQLite in-memory, testcontainers).\")\nprint(\"  Fixtures: create/teardown test DB per test/session.\")\nprint(\"  Transactions: rollback after each test for isolation.\")\nprint(\"  Factory Boy: generate test data.\")\nprint()",
      "numbered": false
     },
     {
@@ -95,7 +95,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q424: Database testing\n  Use test databases (SQLite in-memory, testcontainers).\n  Fixtures: create/teardown test DB per test/session.\n  Transactions: rollback after each test for isolation.\n  Factory Boy: generate test data.",
+     "code": "Database testing\n  Use test databases (SQLite in-memory, testcontainers).\n  Fixtures: create/teardown test DB per test/session.\n  Transactions: rollback after each test for isolation.\n  Factory Boy: generate test data.",
      "numbered": false
     }
    ]
@@ -108,7 +108,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q425: Performance testing\")\nprint(\"  Measure response times, throughput, resource usage.\")\nprint(\"  Tools: locust, k6, Apache JMeter, pytest-benchmark\")\nprint(\"  Metrics: p50, p95, p99 latency, RPS, error rate\")\nprint()",
+     "code": "print(\"Performance testing\")\nprint(\"  Measure response times, throughput, resource usage.\")\nprint(\"  Tools: locust, k6, Apache JMeter, pytest-benchmark\")\nprint(\"  Metrics: p50, p95, p99 latency, RPS, error rate\")\nprint()",
      "numbered": false
     },
     {
@@ -118,7 +118,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q425: Performance testing\n  Measure response times, throughput, resource usage.\n  Tools: locust, k6, Apache JMeter, pytest-benchmark\n  Metrics: p50, p95, p99 latency, RPS, error rate",
+     "code": "Performance testing\n  Measure response times, throughput, resource usage.\n  Tools: locust, k6, Apache JMeter, pytest-benchmark\n  Metrics: p50, p95, p99 latency, RPS, error rate",
      "numbered": false
     }
    ]
@@ -131,7 +131,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q426: Load testing\")\nprint(\"  Simulate expected production traffic.\")\nprint(\"  Locust: Python-based load testing\")\nprint(\"  from locust import HttpUser, task\")\nprint(\"  class MyUser(HttpUser):\")\nprint(\"      @task\")\nprint(\"      def index(self): self.client.get('/')\")\nprint()",
+     "code": "print(\"Load testing\")\nprint(\"  Simulate expected production traffic.\")\nprint(\"  Locust: Python-based load testing\")\nprint(\"  from locust import HttpUser, task\")\nprint(\"  class MyUser(HttpUser):\")\nprint(\"      @task\")\nprint(\"      def index(self): self.client.get('/')\")\nprint()",
      "numbered": false
     },
     {
@@ -141,7 +141,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q426: Load testing\n  Simulate expected production traffic.\n  Locust: Python-based load testing\n  from locust import HttpUser, task\n  class MyUser(HttpUser):\n      @task\n      def index(self): self.client.get('/')",
+     "code": "Load testing\n  Simulate expected production traffic.\n  Locust: Python-based load testing\n  from locust import HttpUser, task\n  class MyUser(HttpUser):\n      @task\n      def index(self): self.client.get('/')",
      "numbered": false
     }
    ]
@@ -154,7 +154,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q427: Stress testing\")\nprint(\"  Push system beyond normal capacity to find breaking points.\")\nprint(\"  Increase load until failures occur.\")\nprint(\"  Identify: max capacity, failure modes, recovery behavior.\")\nprint()",
+     "code": "print(\"Stress testing\")\nprint(\"  Push system beyond normal capacity to find breaking points.\")\nprint(\"  Increase load until failures occur.\")\nprint(\"  Identify: max capacity, failure modes, recovery behavior.\")\nprint()",
      "numbered": false
     },
     {
@@ -164,7 +164,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q427: Stress testing\n  Push system beyond normal capacity to find breaking points.\n  Increase load until failures occur.\n  Identify: max capacity, failure modes, recovery behavior.",
+     "code": "Stress testing\n  Push system beyond normal capacity to find breaking points.\n  Increase load until failures occur.\n  Identify: max capacity, failure modes, recovery behavior.",
      "numbered": false
     }
    ]
@@ -177,7 +177,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q428: Security testing\")\nprint(\"  bandit: find common security issues in Python code\")\nprint(\"  safety/pip-audit: check dependency vulnerabilities\")\nprint(\"  SAST (Static Application Security Testing)\")\nprint(\"  DAST (Dynamic Application Security Testing)\")\nprint()",
+     "code": "print(\"Security testing\")\nprint(\"  bandit: find common security issues in Python code\")\nprint(\"  safety/pip-audit: check dependency vulnerabilities\")\nprint(\"  SAST (Static Application Security Testing)\")\nprint(\"  DAST (Dynamic Application Security Testing)\")\nprint()",
      "numbered": false
     },
     {
@@ -187,7 +187,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q428: Security testing\n  bandit: find common security issues in Python code\n  safety/pip-audit: check dependency vulnerabilities\n  SAST (Static Application Security Testing)\n  DAST (Dynamic Application Security Testing)",
+     "code": "Security testing\n  bandit: find common security issues in Python code\n  safety/pip-audit: check dependency vulnerabilities\n  SAST (Static Application Security Testing)\n  DAST (Dynamic Application Security Testing)",
      "numbered": false
     }
    ]
@@ -200,7 +200,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q429: Mutation testing\")\nprint(\"  Modify (mutate) code and check if tests catch changes.\")\nprint(\"  Tool: mutmut, cosmic-ray\")\nprint(\"  mutmut run --paths-to-mutate=src/\")\nprint(\"  Measures test quality (not just coverage).\")\nprint()",
+     "code": "print(\"Mutation testing\")\nprint(\"  Modify (mutate) code and check if tests catch changes.\")\nprint(\"  Tool: mutmut, cosmic-ray\")\nprint(\"  mutmut run --paths-to-mutate=src/\")\nprint(\"  Measures test quality (not just coverage).\")\nprint()",
      "numbered": false
     },
     {
@@ -210,7 +210,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q429: Mutation testing\n  Modify (mutate) code and check if tests catch changes.\n  Tool: mutmut, cosmic-ray\n  mutmut run --paths-to-mutate=src/\n  Measures test quality (not just coverage).",
+     "code": "Mutation testing\n  Modify (mutate) code and check if tests catch changes.\n  Tool: mutmut, cosmic-ray\n  mutmut run --paths-to-mutate=src/\n  Measures test quality (not just coverage).",
      "numbered": false
     }
    ]
@@ -223,7 +223,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q430: Test reporting\")\nprint(\"  pytest --junitxml=report.xml  (CI integration)\")\nprint(\"  pytest --html=report.html  (pytest-html)\")\nprint(\"  Allure: rich test reports with history\")\nprint(\"  Coverage: pytest --cov-report=html\")\nprint()",
+     "code": "print(\"Test reporting\")\nprint(\"  pytest --junitxml=report.xml  (CI integration)\")\nprint(\"  pytest --html=report.html  (pytest-html)\")\nprint(\"  Allure: rich test reports with history\")\nprint(\"  Coverage: pytest --cov-report=html\")\nprint()",
      "numbered": false
     },
     {
@@ -233,7 +233,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q430: Test reporting\n  pytest --junitxml=report.xml  (CI integration)\n  pytest --html=report.html  (pytest-html)\n  Allure: rich test reports with history\n  Coverage: pytest --cov-report=html",
+     "code": "Test reporting\n  pytest --junitxml=report.xml  (CI integration)\n  pytest --html=report.html  (pytest-html)\n  Allure: rich test reports with history\n  Coverage: pytest --cov-report=html",
      "numbered": false
     }
    ]
@@ -246,7 +246,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q431: Pytest plugins\")\nprint(\"  pytest-cov: coverage\")\nprint(\"  pytest-xdist: parallel execution (-n auto)\")\nprint(\"  pytest-mock: mocker fixture\")\nprint(\"  pytest-asyncio: async test support\")\nprint(\"  pytest-timeout: test timeouts\")\nprint(\"  pytest-randomly: randomize test order\")\nprint()",
+     "code": "print(\"Pytest plugins\")\nprint(\"  pytest-cov: coverage\")\nprint(\"  pytest-xdist: parallel execution (-n auto)\")\nprint(\"  pytest-mock: mocker fixture\")\nprint(\"  pytest-asyncio: async test support\")\nprint(\"  pytest-timeout: test timeouts\")\nprint(\"  pytest-randomly: randomize test order\")\nprint()",
      "numbered": false
     },
     {
@@ -256,7 +256,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q431: Pytest plugins\n  pytest-cov: coverage\n  pytest-xdist: parallel execution (-n auto)\n  pytest-mock: mocker fixture\n  pytest-asyncio: async test support\n  pytest-timeout: test timeouts\n  pytest-randomly: randomize test order",
+     "code": "Pytest plugins\n  pytest-cov: coverage\n  pytest-xdist: parallel execution (-n auto)\n  pytest-mock: mocker fixture\n  pytest-asyncio: async test support\n  pytest-timeout: test timeouts\n  pytest-randomly: randomize test order",
      "numbered": false
     }
    ]
@@ -269,7 +269,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q432: Tox\")\nprint(\"  Test across multiple Python versions.\")\nprint(\"  tox.ini or [tool.tox] in pyproject.toml\")\nprint(\"  [testenv]\")\nprint(\"  deps = pytest\")\nprint(\"  commands = pytest\")\nprint(\"  Run: tox -e py39,py310,py311,py312\")\nprint()",
+     "code": "print(\"Tox\")\nprint(\"  Test across multiple Python versions.\")\nprint(\"  tox.ini or [tool.tox] in pyproject.toml\")\nprint(\"  [testenv]\")\nprint(\"  deps = pytest\")\nprint(\"  commands = pytest\")\nprint(\"  Run: tox -e py39,py310,py311,py312\")\nprint()",
      "numbered": false
     },
     {
@@ -279,7 +279,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q432: Tox\n  Test across multiple Python versions.\n  tox.ini or [tool.tox] in pyproject.toml\n  [testenv]\n  deps = pytest\n  commands = pytest\n  Run: tox -e py39,py310,py311,py312",
+     "code": "Tox\n  Test across multiple Python versions.\n  tox.ini or [tool.tox] in pyproject.toml\n  [testenv]\n  deps = pytest\n  commands = pytest\n  Run: tox -e py39,py310,py311,py312",
      "numbered": false
     }
    ]
@@ -292,7 +292,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q433: Environment isolation\")\nprint(\"  venv: per-project virtual environments\")\nprint(\"  Docker: container-based isolation\")\nprint(\"  Tox: automated multi-env testing\")\nprint(\"  Nox: flexible session-based testing\")\nprint(\"  conda: environment + package management\")\nprint()",
+     "code": "print(\"Environment isolation\")\nprint(\"  venv: per-project virtual environments\")\nprint(\"  Docker: container-based isolation\")\nprint(\"  Tox: automated multi-env testing\")\nprint(\"  Nox: flexible session-based testing\")\nprint(\"  conda: environment + package management\")\nprint()",
      "numbered": false
     },
     {
@@ -302,7 +302,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q433: Environment isolation\n  venv: per-project virtual environments\n  Docker: container-based isolation\n  Tox: automated multi-env testing\n  Nox: flexible session-based testing\n  conda: environment + package management",
+     "code": "Environment isolation\n  venv: per-project virtual environments\n  Docker: container-based isolation\n  Tox: automated multi-env testing\n  Nox: flexible session-based testing\n  conda: environment + package management",
      "numbered": false
     }
    ]
@@ -315,7 +315,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q434: Build pipelines\")\nprint(\"  Stages: Lint → Type check → Test → Build → Publish\")\nprint(\"  Parallelize independent stages\")\nprint(\"  Cache dependencies for speed\")\nprint(\"  Fail fast: run fast checks first\")\nprint()",
+     "code": "print(\"Build pipelines\")\nprint(\"  Stages: Lint → Type check → Test → Build → Publish\")\nprint(\"  Parallelize independent stages\")\nprint(\"  Cache dependencies for speed\")\nprint(\"  Fail fast: run fast checks first\")\nprint()",
      "numbered": false
     },
     {
@@ -325,7 +325,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q434: Build pipelines\n  Stages: Lint → Type check → Test → Build → Publish\n  Parallelize independent stages\n  Cache dependencies for speed\n  Fail fast: run fast checks first",
+     "code": "Build pipelines\n  Stages: Lint → Type check → Test → Build → Publish\n  Parallelize independent stages\n  Cache dependencies for speed\n  Fail fast: run fast checks first",
      "numbered": false
     }
    ]
@@ -338,7 +338,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q435: Dependency scanning\")\nprint(\"  pip-audit: scan for known vulnerabilities\")\nprint(\"  safety check: check installed packages\")\nprint(\"  Dependabot/Renovate: auto-update PRs\")\nprint(\"  Snyk: comprehensive vulnerability scanning\")\nprint()",
+     "code": "print(\"Dependency scanning\")\nprint(\"  pip-audit: scan for known vulnerabilities\")\nprint(\"  safety check: check installed packages\")\nprint(\"  Dependabot/Renovate: auto-update PRs\")\nprint(\"  Snyk: comprehensive vulnerability scanning\")\nprint()",
      "numbered": false
     },
     {
@@ -348,7 +348,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q435: Dependency scanning\n  pip-audit: scan for known vulnerabilities\n  safety check: check installed packages\n  Dependabot/Renovate: auto-update PRs\n  Snyk: comprehensive vulnerability scanning",
+     "code": "Dependency scanning\n  pip-audit: scan for known vulnerabilities\n  safety check: check installed packages\n  Dependabot/Renovate: auto-update PRs\n  Snyk: comprehensive vulnerability scanning",
      "numbered": false
     }
    ]
@@ -361,7 +361,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q436: Secret scanning\")\nprint(\"  detect-secrets: find secrets in code\")\nprint(\"  truffleHog: scan git history for secrets\")\nprint(\"  GitHub secret scanning: automatic\")\nprint(\"  Pre-commit hooks: prevent committing secrets\")\nprint()",
+     "code": "print(\"Secret scanning\")\nprint(\"  detect-secrets: find secrets in code\")\nprint(\"  truffleHog: scan git history for secrets\")\nprint(\"  GitHub secret scanning: automatic\")\nprint(\"  Pre-commit hooks: prevent committing secrets\")\nprint()",
      "numbered": false
     },
     {
@@ -371,7 +371,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q436: Secret scanning\n  detect-secrets: find secrets in code\n  truffleHog: scan git history for secrets\n  GitHub secret scanning: automatic\n  Pre-commit hooks: prevent committing secrets",
+     "code": "Secret scanning\n  detect-secrets: find secrets in code\n  truffleHog: scan git history for secrets\n  GitHub secret scanning: automatic\n  Pre-commit hooks: prevent committing secrets",
      "numbered": false
     }
    ]
@@ -384,7 +384,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q437: Artifact management\")\nprint(\"  Store build outputs: wheels, docker images, docs\")\nprint(\"  Tools: Artifactory, Nexus, GitHub Packages\")\nprint(\"  Version artifacts with git tags/commits\")\nprint()",
+     "code": "print(\"Artifact management\")\nprint(\"  Store build outputs: wheels, docker images, docs\")\nprint(\"  Tools: Artifactory, Nexus, GitHub Packages\")\nprint(\"  Version artifacts with git tags/commits\")\nprint()",
      "numbered": false
     },
     {
@@ -394,7 +394,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q437: Artifact management\n  Store build outputs: wheels, docker images, docs\n  Tools: Artifactory, Nexus, GitHub Packages\n  Version artifacts with git tags/commits",
+     "code": "Artifact management\n  Store build outputs: wheels, docker images, docs\n  Tools: Artifactory, Nexus, GitHub Packages\n  Version artifacts with git tags/commits",
      "numbered": false
     }
    ]
@@ -407,7 +407,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q438: Version pinning\")\nprint(\"  Lock files: poetry.lock, requirements.txt (pip freeze)\")\nprint(\"  pip-compile: generate pinned requirements\")\nprint(\"  Hash verification: pip install --require-hashes\")\nprint(\"  Pin in CI, use ranges in library pyproject.toml\")\nprint()",
+     "code": "print(\"Version pinning\")\nprint(\"  Lock files: poetry.lock, requirements.txt (pip freeze)\")\nprint(\"  pip-compile: generate pinned requirements\")\nprint(\"  Hash verification: pip install --require-hashes\")\nprint(\"  Pin in CI, use ranges in library pyproject.toml\")\nprint()",
      "numbered": false
     },
     {
@@ -417,7 +417,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q438: Version pinning\n  Lock files: poetry.lock, requirements.txt (pip freeze)\n  pip-compile: generate pinned requirements\n  Hash verification: pip install --require-hashes\n  Pin in CI, use ranges in library pyproject.toml",
+     "code": "Version pinning\n  Lock files: poetry.lock, requirements.txt (pip freeze)\n  pip-compile: generate pinned requirements\n  Hash verification: pip install --require-hashes\n  Pin in CI, use ranges in library pyproject.toml",
      "numbered": false
     }
    ]
@@ -430,7 +430,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q439: Release strategies\")\nprint(\"  Trunk-based: release from main branch\")\nprint(\"  Git flow: develop → release → main\")\nprint(\"  Feature flags: deploy but don't activate\")\nprint(\"  Semantic versioning: MAJOR.MINOR.PATCH\")\nprint()",
+     "code": "print(\"Release strategies\")\nprint(\"  Trunk-based: release from main branch\")\nprint(\"  Git flow: develop → release → main\")\nprint(\"  Feature flags: deploy but don't activate\")\nprint(\"  Semantic versioning: MAJOR.MINOR.PATCH\")\nprint()",
      "numbered": false
     },
     {
@@ -440,7 +440,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q439: Release strategies\n  Trunk-based: release from main branch\n  Git flow: develop → release → main\n  Feature flags: deploy but don't activate\n  Semantic versioning: MAJOR.MINOR.PATCH",
+     "code": "Release strategies\n  Trunk-based: release from main branch\n  Git flow: develop → release → main\n  Feature flags: deploy but don't activate\n  Semantic versioning: MAJOR.MINOR.PATCH",
      "numbered": false
     }
    ]
@@ -453,7 +453,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "print(\"Q440: Production testing strategies\")\nprint(\"  Canary: deploy to small % of traffic first\")\nprint(\"  Blue-green: switch between two environments\")\nprint(\"  Shadow: mirror production traffic to test env\")\nprint(\"  Chaos engineering: inject failures deliberately\")\nprint()",
+     "code": "print(\"Production testing strategies\")\nprint(\"  Canary: deploy to small % of traffic first\")\nprint(\"  Blue-green: switch between two environments\")\nprint(\"  Shadow: mirror production traffic to test env\")\nprint(\"  Chaos engineering: inject failures deliberately\")\nprint()",
      "numbered": false
     },
     {
@@ -463,7 +463,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "text",
-     "code": "Q440: Production testing strategies\n  Canary: deploy to small % of traffic first\n  Blue-green: switch between two environments\n  Shadow: mirror production traffic to test env\n  Chaos engineering: inject failures deliberately",
+     "code": "Production testing strategies\n  Canary: deploy to small % of traffic first\n  Blue-green: switch between two environments\n  Shadow: mirror production traffic to test env\n  Chaos engineering: inject failures deliberately",
      "numbered": false
     }
    ]

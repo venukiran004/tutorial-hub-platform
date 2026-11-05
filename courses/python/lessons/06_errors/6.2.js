@@ -741,44 +741,44 @@ def test_gateway_timeout_reaches_the_caller_and_commits_nothing():
         stem: "A function's `try` block ends with `return int(raw)` and its `finally` block contains `return -1`. What does the function return for the input `\"abc\"`?",
         options: [
           "It raises `ValueError`, because `finally` cannot change the outcome",
-          "`-1`, and the `ValueError` is silently discarded",
           "`None`, because the `try` block never completed",
-          "`-1`, and the `ValueError` is re-raised after the return"
+          "`-1`, and the `ValueError` is silently discarded",
+          "`-1`, and then the `ValueError` is re-raised after the return"
         ],
-        answer: 1,
+        answer: 2,
         why: "Leaving `finally` by a `return` replaces whatever exit was pending, so the exception is discarded entirely — no traceback, no log, nothing for a caller to detect. The exception is not deferred or re-raised afterwards; it ceases to exist. `None` would be the answer only if the `finally` had no `return` and the exception had been caught somewhere without a value, which is not the case here. This is the mechanism behind the `B012` lint rule."
       },
       {
         stem: "Why move the success path into an `else` clause instead of leaving it at the end of the `try` block?",
         options: [
-          "It runs faster, because the `else` body is not inside the exception-handling machinery",
-          "Because code in `try` is protected by the `except` clauses, so a failure on the success path can be caught and misreported as the failure you were expecting",
-          "Because `else` runs before `finally`, and cleanup must happen last",
-          "It has no functional effect; it is purely a readability convention"
+          "Code in `try` is covered by the `except`, so a later bug can be misreported as that error",
+          "It runs faster, because the `else` body sits outside the exception-handling machinery and skips its checks",
+          "Because `else` runs before `finally`, and moving the success path there guarantees that cleanup happens last",
+          "It has no functional effect; it is purely a readability convention that separates the risky line from the rest"
         ],
-        answer: 1,
+        answer: 0,
         why: "The `else` clause is outside the protected region, so a `KeyError` raised while using a successfully fetched record is no longer claimed by the handler written for \"record not found\". That is a correctness difference, not a convention, and it is the whole reason the clause exists. There is no measurable speed difference — entering a `try` is nearly free in modern CPython — and while `else` does run before `finally`, that ordering is true of the `try` body too and is not the reason to use it."
       },
       {
         stem: "Which of these will prevent a `finally` block from running?",
         options: [
-          "An unhandled exception propagating out of the `try` block",
-          "A `sys.exit()` call inside the `try` block",
+          "An unhandled exception propagating out of the `try`",
           "`os._exit(1)` inside the `try` block",
-          "A `KeyboardInterrupt` from Ctrl-C during the `try` block"
+          "A `sys.exit()` call inside the `try` block",
+          "A `KeyboardInterrupt` from Ctrl-C during the `try`"
         ],
-        answer: 2,
+        answer: 1,
         why: "`os._exit` terminates the process immediately at the OS level: no unwinding, no `finally`, no `atexit` handlers, and no flushed buffers. The other three all unwind normally — `sys.exit()` raises `SystemExit` and Ctrl-C raises `KeyboardInterrupt`, and because both are ordinary exceptions travelling up the stack, every `finally` on the way runs. That is precisely why cleanup belongs in `finally` rather than in an `except` clause, which only runs when its class matches."
       },
       {
         stem: "A team wraps a whole request handler in `try: ... except Exception: return None`, then adds `with` blocks inside for the database and HTTP client. A missing config file still crashes the process at startup. Why?",
         options: [
-          "`with` suppresses exceptions, so the handler never sees them",
-          "The config file is opened at import time, outside the handler's `try` — and an exception raised while *acquiring* a resource is not caught by a handler inside the `with` body",
-          "`except Exception` cannot catch `FileNotFoundError`, which is an `OSError`",
-          "`return None` inside `except` re-raises the original exception"
+          "`with` suppresses exceptions raised inside it, so the outer handler never sees them and the process crashes instead",
+          "`except Exception` cannot catch `FileNotFoundError`, because `OSError` subclasses inherit directly from `BaseException`",
+          "`return None` inside an `except` block re-raises the original exception once the handler finishes running",
+          "The config is opened at import, outside the `try`, and an error acquiring a resource escapes the `with` body"
         ],
-        answer: 1,
+        answer: 3,
         why: "Two things are true and both matter: module-level code runs at import, long before any request handler's `try` exists, and `with open(path)` raises from the `open` call itself — before the block is entered — so any handler written inside the block is unreachable for that failure. `with` does not suppress exceptions unless `__exit__` returns true, which the standard managers never do. `FileNotFoundError` is an `OSError` and therefore very much an `Exception`, and `return None` in a handler ends the handler; it re-raises nothing."
       }
     ]

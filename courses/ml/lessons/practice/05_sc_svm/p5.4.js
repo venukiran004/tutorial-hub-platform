@@ -254,7 +254,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Euclidean distance on one-hot features equals counting mismatches (like Hamming)."
+     "text": "**Explanation:** Squared Euclidean distance on one-hot features is proportional to the number of mismatches (like Hamming)."
     }
    ],
    "kind": ""

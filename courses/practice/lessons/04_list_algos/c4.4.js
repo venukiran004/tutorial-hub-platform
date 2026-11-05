@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.4",
  "lede": "**26 programs to write**, on sorting patterns and prefix sums. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 26 programs on sorting patterns and prefix sums without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.3"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 486–511.** What this set actually drills, counted from its own problems — 12 of the 26 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "graphs & trees", "files and paths"], "cells": [[{"text": "10", "tone": "accent"}, "Wave Sort"], [{"text": "1", "tone": "good"}, "Spiral Order Traversal"], [{"text": "1", "tone": "violet"}, "Shortest Path in Grid (BFS)"]], "t": "diagram", "id": "dg-c4_4-top-0"},
   {
    "t": "callout",
    "kind": "note",
@@ -169,7 +169,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def num_islands(grid):\n    if not grid: return 0\n    rows, cols = len(grid), len(grid[0])\n    count = 0\n    \n    def dfs(r, c):\n        if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] != 1:\n            return\n        grid[r][c] = 0\n        dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    \n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 1:\n                dfs(r, c)\n                count += 1\n    return count\n\ngrid = [[1,1,0,0],[1,0,0,1],[0,0,1,1],[0,0,0,0]]\nprint(num_islands(grid))  # Output: 3",
+     "code": "def num_islands(grid):\n    if not grid: return 0\n    rows, cols = len(grid), len(grid[0])\n    count = 0\n    \n    def dfs(r, c):\n        if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] != 1:\n            return\n        grid[r][c] = 0\n        dfs(r+1, c); dfs(r-1, c); dfs(r, c+1); dfs(r, c-1)\n    \n    for r in range(rows):\n        for c in range(cols):\n            if grid[r][c] == 1:\n                dfs(r, c)\n                count += 1\n    return count\n\ngrid = [[1,1,0,0],[1,0,0,1],[0,0,1,1],[0,0,0,0]]\nprint(num_islands(grid))  # Output: 2",
      "numbered": false
     }
    ]
@@ -182,7 +182,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from collections import deque\n\ndef shortest_path(grid):\n    rows, cols = len(grid), len(grid[0])\n    if grid[0][0] == 1 or grid[rows-1][cols-1] == 1:\n        return -1\n    queue = deque([(0, 0, 1)])\n    visited = {(0, 0)}\n    while queue:\n        r, c, dist = queue.popleft()\n        if r == rows-1 and c == cols-1:\n            return dist\n        for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:\n            nr, nc = r+dr, c+dc\n            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0 and (nr,nc) not in visited:\n                visited.add((nr, nc))\n                queue.append((nr, nc, dist+1))\n    return -1\n\ngrid = [[0,0,0],[1,1,0],[0,0,0],[0,1,1],[0,0,0]]\nprint(shortest_path(grid))  # Output: 9",
+     "code": "from collections import deque\n\ndef shortest_path(grid):\n    rows, cols = len(grid), len(grid[0])\n    if grid[0][0] == 1 or grid[rows-1][cols-1] == 1:\n        return -1\n    queue = deque([(0, 0, 1)])\n    visited = {(0, 0)}\n    while queue:\n        r, c, dist = queue.popleft()\n        if r == rows-1 and c == cols-1:\n            return dist\n        for dr, dc in [(0,1),(0,-1),(1,0),(-1,0)]:\n            nr, nc = r+dr, c+dc\n            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 0 and (nr,nc) not in visited:\n                visited.add((nr, nc))\n                queue.append((nr, nc, dist+1))\n    return -1\n\ngrid = [[0,0,0],[1,1,0],[0,0,0],[0,1,1],[0,0,0]]\nprint(shortest_path(grid))  # Output: 11",
      "numbered": false
     }
    ]
@@ -330,7 +330,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def closest_pair(lst, target):\n    lst.sort()\n    left, right = 0, len(lst) - 1\n    best_pair = None\n    best_diff = float('inf')\n    while left < right:\n        s = lst[left] + lst[right]\n        diff = abs(s - target)\n        if diff < best_diff:\n            best_diff = diff\n            best_pair = (lst[left], lst[right])\n        if s < target: left += 1\n        elif s > target: right -= 1\n        else: return best_pair\n    return best_pair\n\nprint(closest_pair([1, 3, 5, 7, 9], 8))  # (3, 5) sum=8\nprint(closest_pair([1, 3, 5, 7, 9], 11))  # (3, 7) or (5, 7)",
+     "code": "def closest_pair(lst, target):\n    lst.sort()\n    left, right = 0, len(lst) - 1\n    best_pair = None\n    best_diff = float('inf')\n    while left < right:\n        s = lst[left] + lst[right]\n        diff = abs(s - target)\n        if diff < best_diff:\n            best_diff = diff\n            best_pair = (lst[left], lst[right])\n        if s < target: left += 1\n        elif s > target: right -= 1\n        else: return best_pair\n    return best_pair\n\nprint(closest_pair([1, 3, 5, 7, 9], 8))  # (1, 7) sum=8\nprint(closest_pair([1, 3, 5, 7, 9], 11))  # (1, 9) sum=10",
      "numbered": false
     }
    ]
@@ -369,7 +369,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "def find_extrema(lst):\n    local_min = []\n    local_max = []\n    for i in range(1, len(lst) - 1):\n        if lst[i] < lst[i-1] and lst[i] < lst[i+1]:\n            local_min.append((i, lst[i]))\n        elif lst[i] > lst[i-1] and lst[i] > lst[i+1]:\n            local_max.append((i, lst[i]))\n    return local_min, local_max\n\nmins, maxs = find_extrema([5, 2, 8, 1, 9, 3, 7])\nprint(f\"Local minima: {mins}\")   # [(1, 2), (3, 1), (5, 3)]\nprint(f\"Local maxima: {maxs}\")   # [(2, 8), (4, 9), (6, 7)]",
+     "code": "def find_extrema(lst):\n    local_min = []\n    local_max = []\n    for i in range(1, len(lst) - 1):\n        if lst[i] < lst[i-1] and lst[i] < lst[i+1]:\n            local_min.append((i, lst[i]))\n        elif lst[i] > lst[i-1] and lst[i] > lst[i+1]:\n            local_max.append((i, lst[i]))\n    return local_min, local_max\n\nmins, maxs = find_extrema([5, 2, 8, 1, 9, 3, 7])\nprint(f\"Local minima: {mins}\")   # [(1, 2), (3, 1), (5, 3)]\nprint(f\"Local maxima: {maxs}\")   # [(2, 8), (4, 9)]",
      "numbered": false
     }
    ]

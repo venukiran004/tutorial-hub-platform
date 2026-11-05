@@ -282,7 +282,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "G(S) = 1 - \\sum_{c=1}^C p_c^2 = \\sum_{c\\neq c'} p_c p_{c'} = \\text{probability of misclassification}"
+     "tex": "G(S) = 1 - \\sum_{c=1}^C p_c^2 = \\sum_{c\\neq c'} p_c p_{c'} = \\text{probability of misclassifying a random point labelled at random from the node}"
     },
     {
      "t": "p",
@@ -463,7 +463,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theoretical guarantee (Cover & Hart 1967):** As \\(n\\to\\infty\\) with \\(k\\to\\infty\\) and \\(k/n\\to 0\\):"
+     "text": "**Theoretical guarantee (Cover & Hart 1967), for 1-NN as \\(n\\to\\infty\\):**"
     },
     {
      "t": "math",
@@ -471,7 +471,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "where \\(\\epsilon^*\\) = Bayes error. So 1-NN error ≤ twice the Bayes error — remarkable!"
+     "text": "where \\(\\epsilon^*\\) = Bayes error. So 1-NN error ≤ twice the Bayes error — remarkable! With \\(k\\to\\infty\\) and \\(k/n\\to 0\\), KNN approaches the Bayes error itself."
     },
     {
      "t": "p",
@@ -737,7 +737,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Reconstruction error:** \\(||\\mathbf{X}_c - \\tilde{\\mathbf{X}}\\mathbf{V}_r^T||_F^2 = \\sum_{k=r+1}^d \\lambda_k\\) (sum of discarded eigenvalues)."
+     "text": "**Reconstruction error:** \\(||\\mathbf{X}_c - \\tilde{\\mathbf{X}}\\mathbf{V}_r^T||_F^2 = (n-1)\\sum_{k=r+1}^d \\lambda_k\\) (proportional to the sum of discarded eigenvalues)."
     }
    ],
    "kind": ""
@@ -924,7 +924,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "\\epsilon_T = \\sum_{k > T/2}\\binom{T}{k}p^k(1-p)^{T-k}"
+     "tex": "\\epsilon_T = \\sum_{k > T/2}\\binom{T}{k}(1-p)^k p^{T-k}"
     },
     {
      "t": "p",
@@ -1085,7 +1085,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "ELBO becomes: \\(\\mathcal{L} = Q(\\boldsymbol\\theta|\\boldsymbol\\theta^{old}) - H[q^*]\\) where \\(Q = E_{q^*}[\\log p(\\mathbf{X},\\mathbf{Z}|\\boldsymbol\\theta)]\\)"
+     "text": "ELBO becomes: \\(\\mathcal{L} = Q(\\boldsymbol\\theta|\\boldsymbol\\theta^{old}) + H[q^*]\\) where \\(Q = E_{q^*}[\\log p(\\mathbf{X},\\mathbf{Z}|\\boldsymbol\\theta)]\\)"
     },
     {
      "t": "p",
@@ -1232,7 +1232,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Gradient: \\(\\nabla = \\frac{2}{n}\\sum_i(y_i-\\hat{y}_i)\\) (proportional to error)",
+      "Gradient: \\(\\nabla_{\\hat{y}} = \\frac{2}{n}\\sum_i(\\hat{y}_i-y_i)\\) (proportional to error)",
       "Differentiable everywhere → smooth optimization",
       "Penalizes large errors quadratically → sensitive to outliers",
       "Maximum Likelihood under \\(\\epsilon_i\\sim\\mathcal{N}(0,\\sigma^2)\\)"
@@ -1322,7 +1322,7 @@ EC.receiveLesson({
     },
     {
      "t": "math",
-     "tex": "EI(\\mathbf{x}) = E[\\max(0, f(\\mathbf{x})-f^*)] = \\sigma_n(\\mathbf{x})\\left[\\phi(Z)Z + \\varphi(Z)\\right]"
+     "tex": "EI(\\mathbf{x}) = E[\\max(0, f(\\mathbf{x})-f^*)] = \\sigma_n(\\mathbf{x})\\left[\\Phi(Z)Z + \\varphi(Z)\\right]"
     },
     {
      "t": "p",
@@ -1369,7 +1369,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Gradient is the true full gradient → deterministic convergence",
-      "For strictly convex: linear convergence rate \\(O(\\rho^t)\\) where \\(\\rho < 1\\)"
+      "For strongly convex: linear convergence rate \\(O(\\rho^t)\\) where \\(\\rho < 1\\)"
      ]
     },
     {
@@ -1380,7 +1380,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Gradient is noisy unbiased estimate of true gradient",
-      "Convergence rate: \\(O(1/\\sqrt{T})\\) for convex, \\(O(1/T)\\) with variance reduction",
+      "Convergence rate: \\(O(1/\\sqrt{T})\\) for convex, \\(O(1/T)\\) for strongly convex",
       "Robbins-Monro conditions: \\(\\sum_t \\eta_t = \\infty\\), \\(\\sum_t \\eta_t^2 < \\infty\\) (e.g., \\(\\eta_t = 1/t\\))",
       "Noise acts as implicit regularizer — SGD finds flatter minima with better generalization"
      ]

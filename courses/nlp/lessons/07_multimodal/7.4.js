@@ -2,7 +2,7 @@
    LESSON 7.4 — Image Generation
    The diffusion forward process is implemented and the latent compression
    computed at 48x; classifier-free guidance is shown to EXTRAPOLATE past
-   the model's own conditional prediction (§05) (scratchpad/nlp/n74.py).
+   the model's own conditional prediction (§05) (n74.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "7.4",

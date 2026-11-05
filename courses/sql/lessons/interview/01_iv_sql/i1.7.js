@@ -4,7 +4,7 @@
    ========================================================================= */
 EC.receiveLesson({
  "id": "i1.7",
- "lede": "**15 questions** from NumPy and Pandas Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
+ "lede": "**15 questions** from the SQL Interview Bank. Each answer is folded away until you ask for it — attempt it first, because reading an answer feels like learning and is not.",
  "objectives": [
   "Answer each question as you would in the interview, then compare against the worked answer",
   "Lead with the definition and the formula, then the trade-off",
@@ -21,7 +21,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "186",
+   "n": "87",
    "q": "Write SQL to compute feature statistics for ML.",
    "body": [
     {
@@ -34,33 +34,33 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "187",
+   "n": "88",
    "q": "Create train/test split in SQL.",
    "body": [
     {
      "t": "code",
      "lang": "sql",
-     "code": "WITH numbered AS (\n    SELECT *, ROW_NUMBER() OVER (ORDER BY RANDOM()) AS rn,\n           COUNT(*) OVER () AS total\n    FROM dataset\n)\nSELECT *, CASE WHEN rn <= total * 0.8 THEN 'train' ELSE 'test' END AS split\nFROM numbered;"
+     "code": "WITH numbered AS (\n    SELECT *, ROW_NUMBER() OVER (ORDER BY RANDOM()) AS rn,\n           COUNT(*) OVER () AS total\n    FROM dataset\n)\nSELECT *, CASE WHEN rn <= total * 0.8 THEN 'train' ELSE 'test' END AS split\nFROM numbered;\n-- Not reproducible, and it splits rows, not entities.\n-- Lesson 7.4 hashes the entity id, which fixes both."
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "188",
+   "n": "89",
    "q": "Detect target leakage in features.",
    "body": [
     {
      "t": "code",
      "lang": "sql",
-     "code": "-- Features shouldn't have near-perfect correlation with target\nSELECT feature_name,\n       CORR(feature_value, target) AS correlation\nFROM features_unpivoted\nGROUP BY feature_name\nHAVING ABS(CORR(feature_value, target)) > 0.95\nORDER BY ABS(correlation) DESC;"
+     "code": "-- Features shouldn't have near-perfect correlation with target\nSELECT feature_name,\n       CORR(feature_value, target) AS correlation\nFROM features_unpivoted\nGROUP BY feature_name\nHAVING ABS(CORR(feature_value, target)) > 0.95\nORDER BY ABS(CORR(feature_value, target)) DESC;"
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "189",
+   "n": "90",
    "q": "Compute time-based features for ML.",
    "body": [
     {
@@ -73,7 +73,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "190",
+   "n": "91",
    "q": "Compute class distribution and check imbalance.",
    "body": [
     {
@@ -86,7 +86,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "191",
+   "n": "92",
    "q": "Stratified sampling in SQL.",
    "body": [
     {
@@ -99,7 +99,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "192",
+   "n": "93",
    "q": "Find correlated features using SQL.",
    "body": [
     {
@@ -112,7 +112,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "193",
+   "n": "94",
    "q": "Create lagged features for time series.",
    "body": [
     {
@@ -125,7 +125,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "194",
+   "n": "95",
    "q": "Compute confusion matrix in SQL.",
    "body": [
     {
@@ -138,20 +138,20 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "195",
+   "n": "96",
    "q": "Detect data drift with SQL.",
    "body": [
     {
      "t": "code",
      "lang": "sql",
-     "code": "-- Compare distribution of a feature between two time periods\nWITH current_stats AS (\n    SELECT AVG(feature) AS mean, STDDEV(feature) AS std\n    FROM data WHERE date >= CURRENT_DATE - 7\n),\nhistorical_stats AS (\n    SELECT AVG(feature) AS mean, STDDEV(feature) AS std\n    FROM data WHERE date BETWEEN CURRENT_DATE - 37 AND CURRENT_DATE - 7\n)\nSELECT\n    ABS(c.mean - h.mean) / NULLIF(h.std, 0) AS z_score_drift,\n    CASE WHEN ABS(c.mean - h.mean) / NULLIF(h.std, 0) > 2 THEN 'DRIFT' ELSE 'OK' END AS status\nFROM current_stats c, historical_stats h;"
+     "code": "-- Compare distribution of a feature between two time periods\nWITH current_stats AS (\n    SELECT AVG(feature) AS mean, STDDEV(feature) AS std\n    FROM data WHERE date >= CURRENT_DATE - 7\n),\nhistorical_stats AS (\n    SELECT AVG(feature) AS mean, STDDEV(feature) AS std\n    FROM data WHERE date >= CURRENT_DATE - 37 AND date < CURRENT_DATE - 7\n)\nSELECT\n    ABS(c.mean - h.mean) / NULLIF(h.std, 0) AS z_score_drift,\n    CASE WHEN ABS(c.mean - h.mean) / NULLIF(h.std, 0) > 2 THEN 'DRIFT' ELSE 'OK' END AS status\nFROM current_stats c, historical_stats h;"
     }
    ],
    "kind": ""
   },
   {
    "t": "drill",
-   "n": "196",
+   "n": "97",
    "q": "Handle missing values analysis in SQL.",
    "body": [
     {
@@ -164,7 +164,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "197",
+   "n": "98",
    "q": "Text-to-SQL: explain the concept.",
    "body": [
     {
@@ -176,7 +176,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "198",
+   "n": "99",
    "q": "Write SQL for customer RFM analysis.",
    "body": [
     {
@@ -189,7 +189,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "199",
+   "n": "100",
    "q": "Compute AUC-ROC components in SQL.",
    "body": [
     {
@@ -202,7 +202,7 @@ EC.receiveLesson({
   },
   {
    "t": "drill",
-   "n": "200",
+   "n": "101",
    "q": "Optimize a feature engineering query running on millions of rows.",
    "body": [
     {

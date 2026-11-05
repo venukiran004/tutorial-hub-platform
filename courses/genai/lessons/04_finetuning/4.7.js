@@ -75,11 +75,11 @@ EC.receiveLesson({
     { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. The usual choice is six examples to demonstrate and notes that real tasks need 500\u20131,000; I used sixteen, which is still far below that and enough to see the behaviour transfer." },
 
     { t: "code", lang: "python", title: "g47.py \u2014 formatting each pair as one training string", code: `def to_text(q, a):
-    return "User: %s\nAssistant: %s%s" % (q, a, tok.eos_token)
+    return "User: %s\\nAssistant: %s%s" % (q, a, tok.eos_token)
 
 rows = [tok(to_text(q, a), return_tensors="pt").input_ids[0] for q, a in PAIRS]`,
       out: `  gpt2 has no chat template, so the roles are written out explicitly:
-    "User: Hello, how are you?\nAssistant: Ahoy! I be doin' grand, matey! Arrr!<|endoftext|>"
+    "User: Hello, how are you?\\nAssistant: Ahoy! I be doin' grand, matey! Arrr!<|endoftext|>"
   16 examples, 22 to 31 tokens each, 427 tokens total`,
       caption: "An instruct model would supply this structure through apply_chat_template. GPT-2 has none, so the convention is written by hand \u2014 and must then be used identically at inference." },
 

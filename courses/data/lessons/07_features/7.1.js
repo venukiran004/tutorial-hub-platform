@@ -205,9 +205,9 @@ n = 10_000
 # a product column with a long tail: a few common, many rare
 products = rng.choice([f"p{i}" for i in range(300)], n, p=np.random.default_rng(1).dirichlet(np.ones(300) * 0.3))
 df = pd.DataFrame({"product": products})
-df["product"].nunique()                           # ~280
+df["product"].nunique()                           # ~222
 df["product"].value_counts().head(3)              # p17 900, p5 700, p42 500
-(df["product"].value_counts() < 10).sum()         # ~150 products with < 10 rows
+(df["product"].value_counts() < 10).sum()         # ~88 products with < 10 rows
 
 # FREQUENCY ENCODING: replace the label with how often it appears.
 freq = df["product"].value_counts(normalize=True)
@@ -229,7 +229,7 @@ def rare_to_other(s, min_count=30, other="__other__"):
     return s.where(s.isin(keep), other), keep
 
 df["product_grouped"], kept = rare_to_other(df["product"])
-df["product_grouped"].nunique()                   # ~60, from 280
+df["product_grouped"].nunique()                   # ~84 from 222
 #
 # CLAIM: a category with 8 rows cannot be estimated, and "rare" is
 # itself informative. The threshold is a judgement: 30 rows is
@@ -243,10 +243,10 @@ df["product_grouped"].nunique()                   # ~60, from 280
 
 # BINARY ENCODING: ordinal code, written in binary, one column per bit.
 codes = pd.factorize(df["product"])[0]
-n_bits = int(np.ceil(np.log2(codes.max() + 1)))          # 9 bits for 280
+n_bits = int(np.ceil(np.log2(codes.max() + 1)))          # 8 bits for 222
 binary = pd.DataFrame({f"bit{b}": (codes >> b) & 1 for b in range(n_bits)})
 #
-# 280 categories in 9 columns instead of 280. CLAIM: none, really --
+# 222 categories in 8 columns instead of 222. CLAIM: none, really --
 # the bits are arbitrary, and a linear model on them learns
 # coefficients about binary digits. For TREES it is a compact way to
 # make every category reachable in a few splits. Use it only there.
@@ -258,7 +258,7 @@ hashed = hasher.transform([[p] for p in df["product"]])   # sparse (n, 64)
 #
 # CLAIM: collisions are acceptable. Two different products landing in
 # the same bucket become indistinguishable, and you cannot tell which
-# collided. With 280 categories in 64 buckets, most buckets hold
+# collided. With 222 categories in 64 buckets, most buckets hold
 # several. With 100,000 categories in 2^18 buckets, collisions are
 # rare and the encoding is the only one that fits.
 #

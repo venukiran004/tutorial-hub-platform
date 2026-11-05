@@ -39,7 +39,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "the mask, from scratch", code: `IGNORE = -100                      # PyTorch cross-entropy ignores this index
 
-prompt_ids   = tok("<|user|>\nSummarise this email.\n<|assistant|>\n").input_ids
+prompt_ids   = tok("<|user|>\\nSummarise this email.\\n<|assistant|>\\n").input_ids
 response_ids = tok("Here is the summary: ...<|end|>").input_ids
 
 input_ids = prompt_ids + response_ids
@@ -67,7 +67,7 @@ loss = F.cross_entropy(
   1    ':'            IGNORE     no
   2    ' What'        IGNORE     no
   ...
-  9    '\n'           IGNORE     no
+  9    '\\n'           IGNORE     no
   10   'Assistant'    IGNORE     no
   11   ':'            IGNORE     no
   12   ' The'         383        YES

@@ -291,7 +291,7 @@ acme_billing = ["py.typed", "templates/*.html", "schema/*.json"]`},
       rungs: [
         { level: "bad", label: "Upload from a laptop with a stored token",
           why: "The token is long-lived, has upload rights to every project on the account, and lives in a file or shell history. Anyone who gets it can publish a release with your name on it, and the artefact came from an environment nobody can inspect.",
-          code: `# ~/.pypirc
+          lang: "text", code: `# ~/.pypirc
 [pypi]
 username = __token__
 password = pypi-AgEIcHlwaS5vcmc...      # never expires
@@ -299,7 +299,7 @@ password = pypi-AgEIcHlwaS5vcmc...      # never expires
 twine upload dist/*` },
         { level: "ok", label: "A project-scoped token in CI",
           why: "Scoped to one project and stored as a secret rather than on a laptop, so the blast radius is smaller and the build is reproducible. Still a long-lived credential that a compromised workflow can exfiltrate.",
-          code: `# .github/workflows/release.yml
+          lang: "yaml", code: `# .github/workflows/release.yml
 - run: python -m build
 - run: twine upload dist/*
   env:
@@ -307,7 +307,7 @@ twine upload dist/*` },
     TWINE_PASSWORD: \${{ secrets.PYPI_TOKEN }}` },
         { level: "best", label: "Trusted publishing (OIDC)",
           why: "No stored credential exists. PyPI verifies a short-lived identity token proving the build came from a specific workflow in a specific repository, and issues an upload token valid for minutes. There is nothing to leak, rotate, or steal.",
-          code: `# Configure once on PyPI: repo, workflow file, and environment name.
+          lang: "yaml", code: `# Configure once on PyPI: repo, workflow file, and environment name.
 
 name: release
 on:
@@ -633,32 +633,32 @@ include = ["src/", "tests/", "README.md", "LICENSE", "CHANGELOG.md"]
       {
         stem: "A package installs successfully but `import reportkit` raises `ModuleNotFoundError`. The project uses `src/` layout. What happened?",
         options: [
-          "`src/` layout is not supported by wheels",
-          "The backend was not told where the package lives, so it built an empty wheel — and local testing passed because the source tree was on `sys.path`",
-          "The package name and import name differ",
-          "`__init__.py` is missing"
+          "The build found no package and shipped an empty wheel; tests used the source tree",
+          "`src/` layout is not supported by wheels, so the build silently fell back to an sdist",
+          "The distribution name and the import name differ, so `pip` installed it under another name",
+          "`__init__.py` is missing from the package directory, so Python does not recognise it as a package"
         ],
-        answer: 1,
+        answer: 0,
         why: "With `src/` layout the backend needs one line — `packages = [\"src/reportkit\"]` for hatchling, or `where = [\"src\"]` for setuptools. Without it, discovery finds nothing at the project root and produces a wheel containing only metadata. The build succeeds, so nothing fails until a user installs it. `python -m zipfile --list dist/*.whl` shows the empty package in one command."
       },
       {
         stem: "A fully annotated library gets \"missing library stubs\" from users' type checkers. Why?",
         options: [
           "The annotations use syntax their Python version does not support",
-          "There is no `py.typed` marker inside the installed package, so PEP 561 requires checkers to ignore the inline annotations",
           "Annotations are stripped from wheels",
+          "The package has no `py.typed` marker, so checkers ignore its annotations",
           "The `Typing :: Typed` classifier is missing"
         ],
-        answer: 1,
+        answer: 2,
         why: "PEP 561 makes inline annotations opt-in through an empty `py.typed` file inside the package. Without it, every hour spent annotating produces nothing for users. The file must also reach the wheel, which means declaring it as package data — creating it and forgetting the declaration gives the identical symptom, so the CI check should grep the built artefact."
       },
       {
         stem: "Why put `pytest` and `mypy` in `[dependency-groups]` rather than a `dev` extra?",
         options: [
-          "Extras cannot contain more than one package",
-          "An extra is published metadata — anyone can `pip install yourpkg[dev]`, and security scanners see your linter as part of your supply chain",
-          "Dependency groups install faster",
-          "Extras are deprecated"
+          "Extras cannot contain more than one package, so a set of development tools needs a group",
+          "An extra is published metadata that users can install and scanners will see",
+          "Dependency groups install faster, because they are resolved separately from the main dependencies",
+          "Extras are deprecated by PEP 735, and new versions of pip will stop installing them"
         ],
         answer: 1,
         why: "Extras are part of your public interface: a user can request them, and the metadata travels in the wheel permanently. Dependency groups (PEP 735) never leave the repository, which is exactly right for tools that only contributors need. The `dev` extra was standard practice before groups existed, so it appears in plenty of projects — it is legacy, not a pattern to copy."
@@ -666,12 +666,12 @@ include = ["src/", "tests/", "README.md", "LICENSE", "CHANGELOG.md"]
       {
         stem: "What does trusted publishing (OIDC) give you over a project-scoped API token in CI?",
         options: [
-          "Faster uploads",
-          "No long-lived credential exists — the index verifies a short-lived identity token proving the build came from a specific workflow, so there is nothing to leak or rotate",
-          "It allows reusing version numbers",
-          "It signs the artefacts cryptographically"
+          "Faster uploads, because the identity token skips the index's authentication round trip",
+          "It allows a version number to be re-uploaded after a failed or broken release",
+          "It signs every uploaded artefact cryptographically, so users can verify where it was built",
+          "No long-lived secret exists — each upload uses a short-lived identity token"
         ],
-        answer: 1,
+        answer: 3,
         why: "A stored token is a secret that can be exfiltrated by any code running in the workflow, and it usually outlives everyone's memory of creating it. With OIDC, the workflow proves its identity and receives an upload token valid for minutes. Combined with separate build and publish jobs, the job holding the identity never executes project code at all."
       }
     ]

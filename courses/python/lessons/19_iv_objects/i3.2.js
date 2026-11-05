@@ -150,7 +150,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Threads help I/O-bound work (GIL released during waits) but not CPU-bound work (GIL serializes bytecode). For CPU work, use processes."
+     "text": "**Key takeaway:** Threads help I/O-bound work (GIL released during waits) but not CPU-bound work (GIL serialises bytecode). For CPU work, use processes."
     }
    ]
   },
@@ -223,7 +223,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Any non-atomic update to shared state needs synchronization (a `Lock`) or you'll silently lose updates."
+     "text": "**Key takeaway:** Any non-atomic update to shared state needs synchronisation (a `Lock`) or you'll silently lose updates."
     }
    ]
   },
@@ -303,7 +303,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `Event` for signaling, `Semaphore` for limiting concurrency, `Condition` for predicate-based waiting (producer/consumer), `Barrier` for phase synchronization."
+     "text": "**Key takeaway:** `Event` for signaling, `Semaphore` for limiting concurrency, `Condition` for predicate-based waiting (producer/consumer), `Barrier` for phase synchronisation."
     }
    ]
   },
@@ -383,7 +383,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "On Windows and macOS the default start method is **spawn**: a new process re-imports your module to recreate the target. Without the guard, module-level code that starts processes runs again on import — causing infinite recursive process creation."
+     "text": "On Windows and macOS the default start method is **spawn**: a new process re-imports your module to recreate the target. `forkserver`, the Linux default from 3.14, needs the guard too. Without the guard, module-level code that starts processes runs again on import — causing infinite recursive process creation."
     },
     {
      "t": "code",
@@ -585,9 +585,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Coroutine**the object from calling an `async def` function; does nothing until awaited/scheduled.",
-      "**Task**a coroutine wrapped and scheduled to run concurrently (`asyncio.create_task`).",
-      "**Future**a low-level awaitable representing an eventual result; Tasks are a Future subclass."
+      "**Coroutine:** the object from calling an `async def` function; does nothing until awaited/scheduled.",
+      "**Task:** a coroutine wrapped and scheduled to run concurrently (`asyncio.create_task`).",
+      "**Future:** a low-level awaitable representing an eventual result; Tasks are a Future subclass."
      ]
     },
     {
@@ -868,7 +868,7 @@ EC.receiveLesson({
      "body": [
       {
        "t": "p",
-       "text": "**Answer:**"
+       "text": "**The same failure in a database:**"
       },
       {
        "t": "p",
@@ -949,7 +949,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Only the executor/asyncio layers surface worker exceptions automatically; bare threads silently swallow them, so capture explicitly."
+     "text": "**Key takeaway:** Only the executor/asyncio layers surface worker exceptions automatically; bare threads only print them to stderr, so capture explicitly."
     }
    ]
   },
@@ -1136,7 +1136,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Threads → synchronize shared state and order locks; processes → keep args picklable and guard the entry point; asyncio → never block the loop, bound concurrency, and always await/inspect tasks."
+     "text": "**Key takeaway:** Threads → synchronise shared state and order locks; processes → keep args picklable and guard the entry point; asyncio → never block the loop, bound concurrency, and always await/inspect tasks."
     }
    ]
   },
@@ -1157,7 +1157,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A read-write lock lets **many readers** access shared data concurrently but gives a **writer exclusive** access. It improves throughput on read-heavy workloads where plain mutual exclusion would needlessly serialize readers."
+     "text": "A read-write lock lets **many readers** access shared data concurrently but gives a **writer exclusive** access. It improves throughput on read-heavy workloads where plain mutual exclusion would needlessly serialise readers."
     },
     {
      "t": "code",
@@ -1189,7 +1189,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A **latch** is a one-shot gate initialized to N: callers `count_down()`, and `wait()` unblocks once the count hits 0. A **barrier** makes N threads rendezvous and is **reusable**."
+     "text": "A **latch** is a one-shot gate initialised to N: callers `count_down()`, and `wait()` unblocks once the count hits 0. A **barrier** makes N threads rendezvous and is **reusable**."
     },
     {
      "t": "code",
@@ -1224,14 +1224,14 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use a latch when one (or more) threads must wait for a fixed number of events; use a barrier when a group of threads must repeatedly synchronize at phase boundaries."
+     "text": "**Key takeaway:** Use a latch when one (or more) threads must wait for a fixed number of events; use a barrier when a group of threads must repeatedly synchronise at phase boundaries."
     }
    ]
   },
   {
    "t": "drill",
    "n": "37",
-   "q": "How do you ensure an initializer runs exactly once across threads?",
+   "q": "How do you ensure an initialiser runs exactly once across threads?",
    "terms": [
     "Answer",
     "double-checked locking",
@@ -1244,7 +1244,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Use **double-checked locking**: a fast lock-free check, then a re-check under the lock so only the first thread runs the initializer."
+     "text": "Use **double-checked locking**: a fast lock-free check, then a re-check under the lock so only the first thread runs the initialiser."
     },
     {
      "t": "code",
@@ -1254,7 +1254,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** The outer check avoids locking once initialized; the inner check prevents two threads both running `func()` during the race. This is the same pattern behind the thread-safe singleton and lazy per-key initialization."
+     "text": "**Key takeaway:** The outer check avoids locking once initialised; the inner check prevents two threads both running `func()` during the race. This is the same pattern behind the thread-safe singleton and lazy per-key initialisation."
     }
    ]
   },
@@ -1278,8 +1278,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Debounce**collapse a burst of calls into one: only the **last** call within a quiet window fires (cancel the pending timer on each new call).",
-      "**Throttle**cap how many run **at once** (or per period), e.g. via a semaphore."
+      "**Debounce:** collapse a burst of calls into one: only the **last** call within a quiet window fires (cancel the pending timer on each new call).",
+      "**Throttle:** cap how many run **at once** (or per period), e.g. via a semaphore."
      ]
     },
     {

@@ -154,10 +154,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Atomicity**all-or-nothing; partial work is rolled back.",
-      "**Consistency**constraints/invariants hold before and after.",
-      "**Isolation**concurrent transactions don't see each other's uncommitted state.",
-      "**Durability**committed data survives a crash."
+      "**Atomicity:** all-or-nothing; partial work is rolled back.",
+      "**Consistency:** constraints/invariants hold before and after.",
+      "**Isolation:** concurrent transactions don't see each other's uncommitted state.",
+      "**Durability:** committed data survives a crash."
      ]
     },
     {
@@ -356,7 +356,7 @@ EC.receiveLesson({
    "q": "How does an ORM protect against SQL injection?",
    "terms": [
     "Answer",
-    "parameterized queries",
+    "parameterised queries",
     "Key takeaway"
    ],
    "body": [
@@ -366,7 +366,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "ORMs (and the DBAPI) use **parameterized queries** (bind parameters): the SQL structure and the data are sent separately, so user input is never interpreted as SQL."
+     "text": "ORMs (and the DBAPI) use **parameterised queries** (bind parameters): the SQL structure and the data are sent separately, so user input is never interpreted as SQL."
     },
     {
      "t": "code",
@@ -376,7 +376,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Always pass values as parameters, never via f-strings/concatenation — parameterization is what neutralizes SQL injection. See [[best-practices-security]]."
+     "text": "**Key takeaway:** Always pass values as parameters, never via f-strings/concatenation — parameterisation is what neutralizes SQL injection. See [[best-practices-security]]."
     }
    ]
   },
@@ -439,8 +439,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**`joinedload`**emits **one** query with a `JOIN`. Great for one-to-one / small one-to-many; can multiply rows (and bytes) for large collections.",
-      "**`selectinload`**emits **two** queries (parent, then children via `WHERE id IN (...)`). Better for large one-to-many because it avoids row duplication."
+      "**`joinedload`:** emits **one** query with a `JOIN`. Great for one-to-one / small one-to-many; can multiply rows (and bytes) for large collections.",
+      "**`selectinload`:** emits **two** queries (parent, then children via `WHERE id IN (...)`). Better for large one-to-many because it avoids row duplication."
      ]
     },
     {
@@ -481,10 +481,10 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "What is normalization vs denormalization?",
+   "q": "What is normalisation vs denormalization?",
    "terms": [
     "Answer",
-    "Normalization",
+    "Normalisation",
     "Denormalization",
     "Key takeaway"
    ],
@@ -496,13 +496,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Normalization** organizes tables to eliminate redundancy (each fact stored once), reducing update anomalies — the default for transactional (OLTP) systems.",
+      "**Normalisation** organises tables to eliminate redundancy (each fact stored once), reducing update anomalies — the default for transactional (OLTP) systems.",
       "**Denormalization** deliberately duplicates data to avoid joins and speed up reads — common in reporting/analytics (OLAP) and read-heavy systems."
      ]
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Normalize for write integrity, denormalize for read performance; it's a deliberate trade-off, not a default."
+     "text": "**Key takeaway:** Normalise for write integrity, denormalize for read performance; it's a deliberate trade-off, not a default."
     }
    ]
   },
@@ -525,7 +525,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Lazy loading** (default) — related objects are fetched only when first accessed. Convenient, but accessing them in a loop causes the N+1 problem.",
-      "**Eager loading**related objects are fetched up front in the same operation (`joinedload`/`selectinload`), avoiding extra round-trips."
+      "**Eager loading:** related objects are fetched up front in the same operation (`joinedload`/`selectinload`), avoiding extra round-trips."
      ]
     },
     {
@@ -594,8 +594,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Identity map**within one Session, each database row is represented by **exactly one** Python object, keyed by primary key. Querying the same row twice returns the *same* object, so changes are consistent and there's no duplicate state.",
-      "**Unit of work**the Session **tracks all changes** to those objects and emits the minimal set of SQL in the correct order at flush/commit, instead of you writing each statement."
+      "**Identity map:** within one Session, each database row is represented by **exactly one** Python object, keyed by primary key. Querying the same row twice returns the *same* object, so changes are consistent and there's no duplicate state.",
+      "**Unit of work:** the Session **tracks all changes** to those objects and emits the minimal set of SQL in the correct order at flush/commit, instead of you writing each statement."
      ]
     },
     {
@@ -870,7 +870,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Don't touch lazy attributes on an object whose Session has closed — materialize what you need (eager-load or serialize) before the session ends, or keep attributes alive with `expire_on_commit=False`."
+     "text": "**Key takeaway:** Don't touch lazy attributes on an object whose Session has closed — materialise what you need (eager-load or serialise) before the session ends, or keep attributes alive with `expire_on_commit=False`."
     }
    ]
   },
@@ -890,7 +890,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "With `AsyncSession` / `create_async_engine` (and an async driver like `asyncpg`), every database operation must be `await`ed, and you **cannot rely on implicit lazy loading** — touching an un-loaded relationship outside an awaited call raises `MissingGreenlet`. So you must **eager-load** (`selectinload`/`joinedload`) anything you'll access, including for serialization."
+     "text": "With `AsyncSession` / `create_async_engine` (and an async driver like `asyncpg`), every database operation must be `await`ed, and you **cannot rely on implicit lazy loading** — touching an un-loaded relationship outside an awaited call raises `MissingGreenlet`. So you must **eager-load** (`selectinload`/`joinedload`) anything you'll access, including for serialisation."
     },
     {
      "t": "code",

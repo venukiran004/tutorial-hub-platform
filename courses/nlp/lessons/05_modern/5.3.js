@@ -2,7 +2,7 @@
    LESSON 5.3 — Inference Optimisations
    Speculative decoding is implemented and its acceptance rate measured (it
    came out SLOWER than greedy on CPU — §03), and the quantisation
-   arithmetic is verified (scratchpad/nlp/n53.py).
+   arithmetic is verified (n53.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "5.3",
@@ -32,7 +32,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Decoding is sequential because token `t+1` needs token `t`. Speculative decoding attacks that dependency: a small draft model proposes `K` tokens cheaply, and the large model verifies **all K in a single forward pass**, because verification is parallel even though generation is not." },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n53.py — the full loop", code:
+    { t: "code", lang: "python", title: "the full loop", code:
 "@torch.no_grad()\ndef speculative(prompt_ids, n_new=48, K=4):\n    ids = prompt_ids.clone()\n    while ids.shape[1] - prompt_ids.shape[1] < n_new:\n        # 1. draft K tokens with the small model\n        d = ids.clone()\n        for _ in range(K):\n            nxt = draft(d).logits[:, -1].argmax(-1, keepdim=True)\n            d = torch.cat([d, nxt], 1)\n        cand = d[:, ids.shape[1]:]\n\n        # 2. ONE forward pass of the big model scores every position\n        lg = big(d).logits\n\n        # 3. accept the longest prefix where the big model agrees\n        n_acc = 0\n        for j in range(K):\n            if lg[0, ids.shape[1] - 1 + j].argmax().item() == cand[0, j].item():\n                n_acc += 1\n            else:\n                break\n\n        if n_acc == K:\n            ids = torch.cat([ids, cand], 1)\n        else:\n            # the big model's own token replaces the first rejection\n            corrected = lg[0, ids.shape[1] - 1 + n_acc].argmax().view(1, 1)\n            ids = torch.cat([ids, cand[:, :n_acc], corrected], 1)\n    return ids",
       caption: "Step 3 is what makes it lossless: on a rejection you take the **target** model's token, so the output distribution is exactly the target's. Even zero accepted tokens still yields one correct token per pass." },
 

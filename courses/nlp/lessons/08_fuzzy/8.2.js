@@ -2,7 +2,7 @@
    LESSON 8.2 — Jaro-Winkler Similarity
    Jaro and Jaro-Winkler implemented from scratch; the canonical values
    reproduce (MARTHA/MARHTA 0.9444 → 0.9611), and a full reversal still
-   scores 0.5000 (§05) (scratchpad/nlp/n81.py).
+   scores 0.5000 (§05) (n81.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "8.2",
@@ -66,7 +66,7 @@ EC.receiveLesson({
 
     {"kind": "flow", "title": "One `break` is the difference between a correct implementation and an inflated one", "caption": "**Each character in `s2` can only be consumed once — so the `break` after a match is essential, or repeated letters would match many times and inflate the score.** The rest of the implementation is two passes: **find matches inside the window with a flag array per string, then walk the matched positions in order and count how many are out of place, halving the result.** And the Winkler wrapper is six lines: **count the common prefix capped at 4, then `j + prefix · p · (1 − j)` with `p = 0.1`.**", "cols": 3, "nodes": [{"id": "w", "label": "Pass 1: match inside the window", "sub": "two flag arrays", "tone": "good"}, {"id": "b", "label": "break after each match", "sub": "consume each s2 char ONCE", "tone": "crit"}, {"id": "t", "label": "Pass 2: count out-of-order matches", "sub": "then halve", "tone": "good"}, {"id": "j", "label": "Combine the three terms", "sub": "divide by 3", "tone": "good"}, {"id": "p", "label": "Winkler: prefix capped at 4, p = 0.1", "sub": "six more lines", "tone": "accent"}], "edges": [["w", "b"], ["b", "t"], ["t", "j"], ["j", "p"]], "t": "diagram", "id": "dg-8_2-04-3"},
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n81.py — Jaro", code:
+    { t: "code", lang: "python", title: "Jaro", code:
 "def jaro(s1, s2):\n    if s1 == s2:\n        return 1.0\n    l1, l2 = len(s1), len(s2)\n    if l1 == 0 or l2 == 0:\n        return 0.0\n\n    window = max(max(l1, l2) // 2 - 1, 0)\n    f1, f2 = [False] * l1, [False] * l2\n    matches = 0\n\n    for i in range(l1):                          # find matches within the window\n        for j in range(max(0, i - window), min(i + window + 1, l2)):\n            if not f2[j] and s1[i] == s2[j]:\n                f1[i] = f2[j] = True\n                matches += 1\n                break\n    if matches == 0:\n        return 0.0\n\n    k = trans = 0                                # count transpositions\n    for i in range(l1):\n        if f1[i]:\n            while not f2[k]:\n                k += 1\n            if s1[i] != s2[k]:\n                trans += 1\n            k += 1\n    trans //= 2\n\n    return (matches/l1 + matches/l2 + (matches - trans)/matches) / 3",
       caption: "The `break` after a match is essential — each character in `s2` can only be consumed once, or repeated letters would match many times and inflate the score." },
 

@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c23.7",
  "lede": "**20 programs to write**, on Topic-wise scenario sets · twenty topics end to end. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 20 problems on topic-wise coding questions without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on Topic-wise scenario sets · twenty topics end to end without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c23.6"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 2863–2882.** What this set actually drills, counted from its own problems — 9 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["decorators", "generators", "functions", "dicts and sets", "classes", "exceptions"], "cells": [[{"text": "2", "tone": "accent"}, "1. Data Types, Mutability & Me"], [{"text": "2", "tone": "good"}, "4. Comprehensions & Generators"], [{"text": "2", "tone": "violet"}, "5. Functions"], [{"text": "1", "tone": "teal"}, "3. Lists, Tuples, Sets, Dictio"], [{"text": "1", "tone": "warn"}, "7. OOP"], [{"text": "1", "tone": "crit"}, "8. Exception Handling"]], "t": "diagram", "id": "dg-c23_7-top-0"},
   {
    "t": "viz",
    "title": "How to work a mixed question set",
@@ -3313,7 +3313,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "# Search for a prime in a list\nnumbers = [4, 6, 8, 9, 11, 15]\n\nfor n in numbers:\n    if is_prime(n):\n        print(f\"Found prime: {n}\")\n        break\nelse:\n    print(\"No primes found\")",
+     "code": "# Search for a prime in a list\ndef is_prime(n):\n    return n > 1 and all(n % d for d in range(2, int(n ** 0.5) + 1))\n\nnumbers = [4, 6, 8, 9, 11, 15]\n\nfor n in numbers:\n    if is_prime(n):\n        print(f\"Found prime: {n}\")\n        break\nelse:\n    print(\"No primes found\")",
      "numbered": false
     },
     {

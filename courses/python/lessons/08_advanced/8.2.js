@@ -266,8 +266,8 @@ class Service:
     def fetch(self, path): ...
 
 Service().fetch("/x")
-# TypeError: fetch() missing 1 required positional argument: 'path'`,
-        out: `TypeError: fetch() missing 1 required positional argument: 'path'`},
+# TypeError: Service.fetch() missing 1 required positional argument: 'path'`,
+        out: `TypeError: Service.fetch() missing 1 required positional argument: 'path'`},
       { t: "p", text: "A plain function is a descriptor: `instance.method` triggers `__get__`, which binds `self`. A `CountCalls` **instance** is not, so `Service().fetch` returns the object itself with no binding — and `self` is never passed." },
       { t: "code", lang: "python", title: "two fixes", numbered: false, code: `
 # 1. Add __get__ -- make the class a descriptor
@@ -705,8 +705,8 @@ def test_threshold_suppresses_fast_calls(caplog) -> None:
       {
         stem: "An `@audit` decorator is added everywhere, and the API's generated schema starts showing every endpoint as `(*args, **kwargs)`. Why?",
         options: [
-          "The decorator changed the functions' actual parameters",
-          "It lacks `functools.wraps`, so `__wrapped__` is not set and `inspect.signature` reports the wrapper's own parameters",
+          "The decorator changed the functions' actual parameters, replacing them with `*args` and `**kwargs`",
+          "It lacks `functools.wraps`, so `inspect.signature` sees the wrapper's own parameters",
           "The framework caches schemas and the cache is stale",
           "Decorators are not supported on route handlers"
         ],
@@ -716,10 +716,10 @@ def test_threshold_suppresses_fast_calls(caplog) -> None:
       {
         stem: "Why does `@instrumented` (a closure) work on a method while a class-based `@Instrumented` does not?",
         options: [
-          "Classes cannot be used as decorators",
-          "A function is a descriptor, so attribute access binds `self`; an instance of a decorator class is not, so `self` is never passed",
-          "The class version runs at the wrong time",
-          "`functools.wraps` only works on functions"
+          "Classes cannot be used as decorators on methods, only on module-level functions",
+          "A function is a descriptor that binds `self`; a decorator class instance is not",
+          "The class version runs at the wrong time — when the method is called rather than when it is defined",
+          "`functools.wraps` only works on functions, so the class version loses the method's signature"
         ],
         answer: 1,
         why: "`instance.method` triggers the function's `__get__`, which produces a bound method. Replacing the class attribute with an ordinary object skips that entirely, so calling it passes only the explicit arguments — hence \"missing 1 required positional argument\". Adding `__get__` returning a `functools.partial` fixes it, at which point the closure would have been simpler."
@@ -727,21 +727,21 @@ def test_threshold_suppresses_fast_calls(caplog) -> None:
       {
         stem: "Why must options in an optional-argument decorator be keyword-only?",
         options: [
-          "Positional arguments are slower to bind",
-          "So the only positional argument can ever be the function, making `fn is None` a reliable test for \"called with options\"",
-          "Because `functools.wraps` requires it",
-          "To allow the decorator to be pickled"
+          "So the function is the only possible positional argument, making `fn is None` reliable",
+          "Positional arguments are slower to bind, and the decorator runs on every call to the wrapped function",
+          "Because `functools.wraps` requires the decorator's options to be passed by keyword",
+          "To allow the decorated function to be pickled, which fails when options are bound positionally"
         ],
-        answer: 1,
+        answer: 0,
         why: "The whole pattern rests on distinguishing `@retry` (the function arrives positionally) from `@retry(attempts=5)` (nothing arrives, so `fn` is `None`). If `attempts` could be passed positionally, `@retry(5)` would bind `5` to `fn` and the decorator would try to wrap an integer — with a confusing error somewhere later."
       },
       {
         stem: "What does typing a decorator as `Callable[P, R] -> Callable[P, R]` with `ParamSpec` achieve?",
         options: [
           "It makes the wrapper faster",
-          "The checker knows the wrapper takes exactly the wrapped function's parameters, so call sites are still type-checked after decoration",
+          "The wrapper keeps the wrapped function's exact parameters for the type checker",
           "It removes the need for `functools.wraps`",
-          "It allows the decorator to change the return type"
+          "It allows the decorator to change the wrapped function's return type without a cast"
         ],
         answer: 1,
         why: "An untyped decorator makes everything it touches `Callable[..., Any]`, so argument checking and the return type are lost at every call site — one decorator can erase types across a codebase. `ParamSpec` captures the parameter list so `charge(\"nope\")` is still an error after decoration. `Concatenate[Connection, P]` extends this to decorators that inject an argument."

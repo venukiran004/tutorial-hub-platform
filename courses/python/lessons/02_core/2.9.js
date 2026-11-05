@@ -218,6 +218,8 @@ print(order.address.city)               # plain attribute access from now on
       { t: "p", text: "The failure mode of skipping this decision is *defensive access everywhere*: every function that touches the data re-checks the same fields, no function can state what it requires, and a missing field produces `None` twelve frames away from where it went missing." }
     ]},
 
+    {"t": "diagram", "kind": "compare", "title": "How far does this data travel?", "caption": "**The distance the data travels decides the technique.** A `get` chain is fine inside one function; a path helper states the missing-field handling once for a module; anything that crosses a boundary or is stored should be parsed into typed objects at the edge, so nothing downstream needs to be defensive at all.", "columns": [{"title": "one function", "tone": "accent", "items": ["a few lines of use", "get(...) or {} chain", "a model would be ceremony"]}, {"title": "one module", "tone": "warn", "items": ["several functions", "a dig() path helper", "one place for defaults"]}, {"title": "across boundaries", "tone": "good", "items": ["services, storage", "parse at the edge", "fails naming the field"]}]},
+
     /* ================================================================== */
     { t: "h2", n: "03", text: "Reshaping", id: "reshaping" },
 
@@ -561,10 +563,10 @@ if __name__ == "__main__":
       {
         stem: "`data = {\"customer\": {\"address\": None}}`. What does `data.get(\"customer\", {}).get(\"address\", {}).get(\"city\")` do?",
         options: [
-          "Returns `None` — the chain handles the null correctly",
-          "Raises `AttributeError`, because `address` is present with the value `None`, so `get` returns `None` rather than the `{}` default",
-          "Returns `{}` — the default is used whenever the value is falsy",
-          "Raises `KeyError` on `\"city\"`"
+          "Returns `None` — the `{}` defaults make each step safe, so the chain handles the null correctly",
+          "Raises `AttributeError` — `address` exists with value `None`, so the `{}` default is not used",
+          "Returns `{}` — `get` uses its default whenever the stored value is falsy, and `None` is falsy",
+          "Raises `KeyError` on `\"city\"`, because the last `get` has no default and the key is absent"
         ],
         answer: 1,
         why: "`get(key, default)` returns the default only when the key is **absent**. Here `address` is present, so `get` returns its actual value, `None` — and `None.get(\"city\")` raises `AttributeError: 'NoneType' object has no attribute 'get'`. The fix is `(chain or {}).get(\"city\")`, which handles both missing and null. This distinction is the single most common bug in defensive JSON traversal."
@@ -573,18 +575,18 @@ if __name__ == "__main__":
         stem: "`{**{\"db\": {\"host\": \"localhost\", \"port\": 5432}}, **{\"db\": {\"host\": \"prod\"}}}` produces what?",
         options: [
           "`{\"db\": {\"host\": \"prod\", \"port\": 5432}}` — nested dicts are merged key by key",
-          "`{\"db\": {\"host\": \"prod\"}}` — the merge is shallow, so the whole `db` subtree is replaced and `port` is lost",
           "A `TypeError`, because nested dicts cannot be unpacked",
-          "`{\"db\": {\"host\": \"localhost\", \"port\": 5432}}` — the first value wins"
+          "`{\"db\": {\"host\": \"localhost\", \"port\": 5432}}` — when keys collide, the first value wins",
+          "`{\"db\": {\"host\": \"prod\"}}` — the merge is shallow, so `port` is lost"
         ],
-        answer: 1,
+        answer: 3,
         why: "Unpacking operates on the top level only. Both dicts have a `db` key, so the right-hand value replaces the left-hand one entirely — `port` disappears. In a real configuration this means overriding one field silently removes every sibling, and the failure surfaces at connection time rather than at config load. A recursive merge or per-field typed settings is required for layered configuration."
       },
       {
         stem: "When should nested API data be parsed into typed objects rather than accessed with `get` chains?",
         options: [
           "Always — `get` chains are never acceptable",
-          "When the data crosses a module or service boundary, or is persisted — anywhere defensive access would otherwise be repeated in many places",
+          "When it crosses a module or service boundary, or is stored — wherever access would repeat",
           "Only when the payload exceeds a certain size",
           "Only when the API provides an OpenAPI schema"
         ],
@@ -594,12 +596,12 @@ if __name__ == "__main__":
       {
         stem: "Why does a JSON `qty` field need an explicit `isinstance(qty, bool)` check before `isinstance(qty, int)`?",
         options: [
-          "JSON booleans are decoded as strings, not integers",
-          "`bool` subclasses `int`, so `True` passes an `int` check and would silently become a quantity of 1",
-          "`isinstance` cannot distinguish numeric types without it",
-          "It is only needed when the value comes from a database"
+          "JSON booleans are decoded as the strings `\"true\"` and `\"false\"`, which an `int` check would reject",
+          "`isinstance` cannot distinguish numeric types without it, because it compares values rather than types",
+          "It is only needed when the value comes from a database",
+          "`bool` subclasses `int`, so `True` passes an `int` check and would silently become a quantity of 1"
         ],
-        answer: 1,
+        answer: 3,
         why: "Python's `bool` is a subclass of `int`, so `isinstance(True, int)` is `True`. JSON distinguishes `true` from `1`, but an unguarded `isinstance` check does not — a payload sending `\"qty\": true` would be accepted as a quantity of 1. Validating deserialised JSON is the situation where this trap most often has real consequences."
       }
     ]

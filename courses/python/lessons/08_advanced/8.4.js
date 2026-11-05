@@ -92,7 +92,7 @@ class Closeable(Protocol):
 
 isinstance(some_object, Closeable)     # only with @runtime_checkable
 `,
-      caption: "**The protocol lives with the consumer, not the implementations.** That inverts the dependency: your function declares what it needs, and anything meeting it qualifies — including classes written before your protocol existed (Lesson 4.9)."
+      caption: "**The protocol lives with the consumer, not the implementations.** That inverts the dependency: your function declares what it needs, and anything meeting it qualifies — including classes written before your protocol existed (Lesson 4.6)."
     },
 
     { t: "callout", kind: "warn", title: "`runtime_checkable` checks names, not signatures", body: [
@@ -108,7 +108,7 @@ class Wrong:
 
 isinstance(Wrong(), Reader)            # True. Only the NAME is checked.`,
         out: `True`},
-      { t: "p", text: "`isinstance` against a runtime-checkable protocol verifies that the attributes exist — nothing about their signatures, and for non-method members nothing at all until 3.12. It is a weaker check than it looks." },
+      { t: "p", text: "`isinstance` against a runtime-checkable protocol verifies that the attributes exist — nothing about their signatures or their types. It is a weaker check than it looks." },
       { t: "p", text: "**Use it sparingly.** The static check is the real one; a runtime `isinstance` on a protocol is appropriate for a plugin loader validating something it just imported, and misleading almost everywhere else." }
     ]},
 
@@ -198,7 +198,7 @@ add(1, Decimal(2))           # mypy: cannot infer -- and correctly so,
 #   T = TypeVar("T", bound=Comparable)      -- bound
 #   T = TypeVar("T", int, Decimal)          -- constrained
 `,
-      caption: "**A bound accepts subclasses; constraints do not.** `T: (int, Decimal)` means T is `int` *or* `Decimal` and never a union of them — which is exactly what you want for money arithmetic (Lesson 2.6)."
+      caption: "**A bound accepts subclasses; constraints do not.** `T: (int, Decimal)` means T is `int` *or* `Decimal` and never a union of them — which is exactly what you want for money arithmetic (Lesson 1.5)."
     },
 
     { t: "h2", n: "03", text: "Variance", id: "variance" },
@@ -704,7 +704,7 @@ def test_builder_keeps_the_subclass_through_a_chain() -> None:
       { t: "p", text: "A platform team publishes an ABC, `BaseStorageBackend`, that every storage plugin must subclass. Two years later they have eleven backends and a persistent complaint: teams cannot use the SDK objects their cloud provider ships, because those classes cannot inherit from an internal base." },
       { t: "p", text: "**Every team writes an adapter class** that subclasses the ABC and forwards each method to the SDK object. Eleven adapters, all identical in shape, all needing updating whenever the ABC gains a method." },
       { t: "p", text: "**Replacing the ABC with a `Protocol` deleted all eleven.** The SDK objects already had `upload`, `download` and `delete` with compatible signatures — they simply were not allowed to say so. The protocol describes what the platform *needs*, and anything with that shape now qualifies." },
-      { t: "p", text: "**The ABC was not wrong, it was misplaced.** It stayed, as an optional base providing shared retry and logging behaviour for teams who wanted it — but the *interface* the platform depends on became structural. Depend on shape at boundaries you do not control; use inheritance for behaviour you are choosing to share (Lesson 4.9)." }
+      { t: "p", text: "**The ABC was not wrong, it was misplaced.** It stayed, as an optional base providing shared retry and logging behaviour for teams who wanted it — but the *interface* the platform depends on became structural. Depend on shape at boundaries you do not control; use inheritance for behaviour you are choosing to share (Lesson 4.8)." }
     ]}
   ],
 
@@ -729,45 +729,45 @@ def test_builder_keeps_the_subclass_through_a_chain() -> None:
       {
         stem: "Why does a `Protocol` remove the adapter classes an ABC requires for third-party objects?",
         options: [
-          "Protocols are checked at runtime and ABCs are not",
-          "A Protocol matches on structure, so an SDK class that already has the right methods qualifies without importing or inheriting anything",
-          "Protocols allow multiple inheritance",
-          "ABCs cannot declare abstract methods with arguments"
+          "A Protocol matches structure, so an SDK class with the right methods already fits",
+          "Protocols are checked at runtime when an object is passed in, so no adapter is needed to convert it",
+          "Protocols allow multiple inheritance from third-party classes, which ABCs forbid",
+          "ABCs cannot declare abstract methods that take arguments, so an adapter must supply them"
         ],
-        answer: 1,
+        answer: 0,
         why: "An ABC demands ancestry, and you cannot make a cloud provider's SDK class inherit from your internal base — so every team writes a forwarding adapter. A Protocol describes what the consumer needs, so anything with matching methods satisfies it. The ABC is still right for sharing behaviour among classes you own; it is the wrong tool for an interface at a boundary you do not control."
       },
       {
         stem: "Why is `list[Dog]` not acceptable where `list[Animal]` is expected?",
         options: [
           "Because Python containers are untyped at runtime",
-          "A function taking `list[Animal]` may append a `Cat`, which would corrupt the caller's `list[Dog]` — mutable containers must be invariant",
           "Because `Dog` and `Animal` have different memory layouts",
-          "It is accepted; only the reverse is rejected"
+          "It is accepted; only the reverse is rejected",
+          "A `list[Animal]` parameter could append a `Cat` into the caller's `list[Dog]`"
         ],
-        answer: 1,
+        answer: 3,
         why: "A mutable container both produces and consumes its element type, so allowing subtype substitution would let a legal `append` insert the wrong type into the caller's list. `Sequence[T]` is covariant precisely because it is read-only: `Sequence[Dog]` *is* a `Sequence[Animal]`, which is the deep reason to prefer `Sequence` in parameters."
       },
       {
         stem: "A class has `def export(self, a, b, c, d)`. Does `isinstance(obj, MyRuntimeCheckableProtocol)` pass?",
         options: [
+          "Yes — it only checks that the named attributes exist",
           "No — the signature does not match",
-          "Yes — `isinstance` against a protocol checks only that the named attributes exist, not their signatures",
-          "No — protocols cannot be used with `isinstance` at all",
+          "No — protocols cannot be used with `isinstance` at all, even when marked runtime-checkable",
           "Only if the protocol declares `__slots__`"
         ],
-        answer: 1,
+        answer: 0,
         why: "`runtime_checkable` enables a name-based check and nothing more. It is useful as a smoke test for a plugin you just imported by name — turning a confusing `AttributeError` deep in a run into a clear error at load time — and it is not verification. The static protocol is the real contract."
       },
       {
         stem: "When is a `TypedDict` the right choice over a dataclass?",
         options: [
-          "Whenever the object has more than five fields",
-          "For data you receive and forward rather than construct — parsed JSON, a message in transit — where a plain dict at runtime is what you actually want",
+          "For data you receive and pass on, where a plain dict is what you want",
+          "Whenever the object has more than five fields, because a dataclass constructor gets unwieldy",
           "When the data must be validated at runtime",
           "When the fields are all strings"
         ],
-        answer: 1,
+        answer: 0,
         why: "A `TypedDict` is a plain dict with no class, no cost and no validation, so it types data that arrives already in dict form and gets passed on. Construct your own domain objects as dataclasses, where you get attribute access, methods and `__post_init__`. At a trust boundary you need something that validates at runtime — an annotation does not stop `{\"total\": \"free\"}` from being a string."
       }
     ]

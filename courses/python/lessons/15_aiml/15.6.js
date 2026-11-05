@@ -600,7 +600,7 @@ def train_and_register(cutoff: date) -> ModelCard:
         cv_score_std=scores.std,
         holdout_score=scores.holdout,
         metric="roc_auc",
-        ...
+        # ...and the rest of the run metadata
     )
 
     # 3. Save EVERYTHING together, in one immutable directory.
@@ -731,44 +731,44 @@ def test_every_deployed_model_has_a_live_training_script():
         stem: "`joblib.load` fails with `Can't get attribute '_RemainderColsList'`. What happened?",
         options: [
           "The file is corrupted",
-          "Pickle stores class references by module path, and that internal sklearn class no longer exists in the installed version",
-          "The model was saved with a different Python version",
+          "The model was saved with a different Python version, whose pickle format is incompatible",
+          "Pickle stores the class's import path, and that class no longer exists",
           "joblib requires the original numpy version"
         ],
-        answer: 1,
+        answer: 2,
         why: "Unpickling imports the recorded path and looks the name up, so any rename, move or removal in the library breaks the load with no migration path. The same applies to your own custom transformers — moving the module that defines one invalidates every saved pipeline containing it."
       },
       {
         stem: "Why is pickle unsuitable for models received from outside your team?",
         options: [
-          "It produces larger files than ONNX",
+          "Pickle produces much larger files than ONNX, which matters when models are downloaded",
+          "Pickle cannot represent scikit-learn pipelines that contain custom transformers",
           "Unpickling executes arbitrary code by design, so loading an untrusted file is running it",
-          "It cannot represent scikit-learn pipelines",
-          "It is slower to deserialise"
+          "Pickle is slower to deserialise than the alternatives, which delays service startup"
         ],
-        answer: 1,
+        answer: 2,
         why: "`__reduce__` returns a callable and its arguments, which unpickling invokes — that is the format's design, not a flaw to be patched. A model downloaded from a hub or restored from an unverified backup is untrusted input; ONNX is a computation graph with no code execution."
       },
       {
         stem: "You set every seed and retrain six months later. The score differs. What is the most likely cause?",
         options: [
           "A seed was missed somewhere",
-          "The training data changed — late-arriving rows, corrections and retention all alter what the same query returns",
           "Floating-point non-determinism",
+          "The training data changed: late rows, corrections and retention",
           "The hyperparameters were not recorded"
         ],
-        answer: 1,
+        answer: 2,
         why: "This is the failure a snapshot exists to prevent. A query is a description of what you meant to select; on any table with late-arriving data it returns something different each time it runs. Materialising once, with a checksum, makes \"the data used\" a specific object."
       },
       {
         stem: "A Slack message records \"AUC 0.89\" from six months ago. What is it worth as a baseline?",
         options: [
           "It is the target the retrained model must beat",
-          "Very little — the methodology is unknown and class balance shifts, so it is not comparable; the honest baseline is current live performance",
           "It is valid provided the same metric is used",
+          "Very little — its method is unknown, so use current live performance",
           "It can be adjusted for drift and reused"
         ],
-        answer: 1,
+        answer: 2,
         why: "AUC at a 0.1% positive rate and at 0.5% are not the same quantity, and the message says nothing about the split, the number of configurations tried, or whether it was cross-validated. Live performance measured from logged predictions and realised outcomes is a number you can actually defend."
       }
     ]

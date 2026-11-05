@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 7.2 — Agentic RAG: Planning, Correction and Self-Reflection
    The two-query recovery, its query list and the three model requests are
-   executed output from scratchpad/adk/r1.py on google-adk 2.9.2.
+   executed output from r1.py on google-adk 2.9.2.
    ========================================================================= */
 EC.receiveLesson({
   id: "7.2",
@@ -24,7 +24,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Same corpus and same tool as the previous lesson. The user's words do not appear in any document — they say \"my laptop broke\" and the document says \"hardware\" and \"warranty\" — so the first query returns nothing." },
 
-    { t: "code", lang: "python", title: "r1.py — the instruction that makes the difference",
+    { t: "code", lang: "python", title: "the instruction that makes the difference",
       code: `agent = LlmAgent(name="support", model=llm, tools=[tool],
                  instruction="Answer only from the documents. If nothing matches, "
                              "rephrase the query and search again before giving up.")` },

@@ -94,7 +94,7 @@ EC.receiveLesson({
         if used + t > max_context_tokens:
             break                          # budget reached -> stop adding
         context.append(ch.text); used += t
-    return "\n\n".join(context), used`,
+    return "\\n\\n".join(context), used`,
       hl: [6, 7],
       caption: "A hard cap, not a target. `break` rather than `continue` \u2014 which matters, and see the caveat below." },
 
@@ -203,7 +203,7 @@ EC.receiveLesson({
     if not hits or hits[0].score < rel_threshold:                # relevance gate
         return "I don't have enough information to answer that."
 
-    context = "\n\n".join(f"[doc {h.id}] {h.text}" for h in hits)  # delimited = untrusted
+    context = "\\n\\n".join(f"[doc {h.id}] {h.text}" for h in hits)  # delimited = untrusted
     answer = llm.generate(grounded_prompt(query, context))
 
     if not is_faithful(answer, context):     # output groundedness guardrail

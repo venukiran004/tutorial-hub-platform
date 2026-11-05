@@ -551,32 +551,32 @@ def test_aggregate_is_cpu_bound():
       {
         stem: "A function reports `wall 8.40s, cpu 0.21s`. What does that tell you?",
         options: [
+          "It is I/O-bound — it spent 98% of the time waiting, so concurrency helps",
           "It is CPU-bound and needs more cores",
-          "It is I/O-bound — 2% of the elapsed time was computing, so the rest was waiting and concurrency will help",
           "The measurement is faulty; CPU time cannot be lower than wall time",
           "The process was starved by other work on the machine"
         ],
-        answer: 1,
+        answer: 0,
         why: "`cpu / wall` near zero means the process spent almost all its time asleep waiting for something external — a socket, a disk, a lock. That waiting is what concurrency overlaps, so threads or `asyncio` will help substantially. `multiprocessing` would also work and would pay for a full interpreter per worker to solve a problem that was never about CPU."
       },
       {
         stem: "Adding eight threads to a pure-Python parsing loop makes it 5% slower. Why?",
         options: [
           "Thread creation dominates the runtime",
-          "Only one thread can execute bytecode at a time, so there is no extra throughput — just GIL contention and a context switch every 5 ms",
           "The parser is not thread-safe",
-          "The list being written to needs a lock"
+          "The list being written to needs a lock",
+          "Only one thread runs bytecode at a time, so threads add contention and no throughput"
         ],
-        answer: 1,
+        answer: 3,
         why: "In CPython a thread must hold the GIL to run bytecode. For CPU-bound pure-Python work that means no parallelism is possible, while `sys.getswitchinterval()` forces a handoff every five milliseconds that buys nothing. The same pool around an I/O stage would give a large speed-up, because a thread waiting on a socket releases the lock."
       },
       {
         stem: "Hashing 10,000 files with `hashlib` is CPU-heavy, yet threads give a 5× speed-up. Why?",
         options: [
-          "The files are cached, so it is really I/O-bound",
+          "The files are cached by the OS after the first read, so the job is really I/O-bound and threads overlap the waits",
           "`hashlib` releases the GIL around the digest, so the C code computes in parallel while other threads run Python",
-          "`hashlib` uses processes internally",
-          "SHA-256 is implemented in pure Python and is therefore interruptible"
+          "`hashlib` uses a pool of processes internally, so each thread hands its work to a separate core",
+          "SHA-256 is implemented in pure Python and is therefore interruptible between every bytecode"
         ],
         answer: 1,
         why: "The GIL only protects the interpreter, so a C extension can release it while doing work that touches no Python objects. `hashlib`, `zlib`, `numpy` and most compression and crypto libraries do exactly that. This is why \"CPU-bound means processes\" is a rule about *pure Python* computation and misleads on anything that spends its time in C."
@@ -584,12 +584,12 @@ def test_aggregate_is_cpu_bound():
       {
         stem: "A task takes 30 µs per item. Running it across 8 processes is slower than serial. What is the explanation?",
         options: [
-          "Eight processes exceed the core count",
-          "Pickling each item to a worker and the result back costs more than the 30 µs of work, so the boundary dominates",
+          "Pickling each item across the boundary costs more than the 30 µs of work",
+          "Eight processes exceed the machine's core count, so they spend their time context-switching",
           "The GIL is shared between processes",
-          "`ProcessPoolExecutor` runs tasks sequentially by default"
+          "`ProcessPoolExecutor` runs tasks sequentially by default unless `max_workers` is set explicitly"
         ],
-        answer: 1,
+        answer: 0,
         why: "Every process boundary crossing serialises the argument, sends it over a pipe, and deserialises the result on the way back — on the order of tens of microseconds. When the work per item is smaller than that, more workers means more overhead. Chunking amortises it, but the better question is whether the total runtime justifies any of the machinery."
       }
     ]

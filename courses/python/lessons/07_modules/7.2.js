@@ -79,7 +79,7 @@ with Path("bad.csv").open("w", encoding="utf-8") as f:
 # between every row, and readers that trust the file see empty records.
 print(repr(Path("bad.csv").read_bytes()))
 `,
-        out: `b'id,note\\r\\r\\n1,"line one\\r\\r\\nline two"\\r\\r\\n'`},
+        out: `b'id,note\\r\\r\\n1,"line one\\r\\nline two"\\r\\r\\n'`},
       { t: "p", text: "The correct form, on every platform, for both reading and writing:" },
       { t: "code", lang: "python", title: "the correct form", numbered: false, code: `
 with path.open("r", encoding="utf-8", newline="") as f:
@@ -683,7 +683,7 @@ line,column,reason
         stem: "A CSV writer opened without `newline=\"\"` produces a file with a blank line between every row when run on Windows. Why?",
         options: [
           "The `csv` module writes `\\n` and Windows requires `\\r\\n`, so a translation is missing",
-          "The `csv` module writes `\\r\\n` itself, and text mode then translates the `\\n` again, producing `\\r\\r\\n`",
+          "`csv` writes `\\r\\n` and text mode turns its `\\n` into `\\r\\n` again",
           "`DictWriter.writeheader()` emits a trailing newline that must be suppressed",
           "The file needs `encoding=\"utf-8-sig\"`; the BOM is being read as a blank line"
         ],
@@ -694,33 +694,33 @@ line,column,reason
         stem: "`data = {1: \"a\", \"1\": \"b\"}` is written with `json.dumps` and read back with `json.loads`. What comes back?",
         options: [
           "`{1: \"a\", \"1\": \"b\"}` — keys round-trip because JSON preserves the original types",
-          "`{\"1\": \"b\"}` — the integer key was encoded as the string `\"1\"`, colliding with the existing one",
           "A `TypeError`, because JSON object keys must be strings and `1` is not",
-          "`{\"1\": \"a\"}` — the first value wins when keys collide"
+          "`{\"1\": \"b\"}` — `1` was encoded as `\"1\"` and collided",
+          "`{\"1\": \"a\"}` — when two keys collide on decoding, the first value is kept"
         ],
-        answer: 1,
+        answer: 2,
         why: "JSON object keys are strings only, so the encoder converts `1` to `\"1\"` rather than raising — that conversion is documented behaviour, not an error. The output text therefore contains the key `\"1\"` twice, and the decoder builds the dict by assigning each pair in order, so the later value overwrites the earlier one: last write wins, giving `{\"1\": \"b\"}`. This is silent data loss with no warning anywhere, which is why non-string dict keys should be converted deliberately before encoding rather than left to the encoder."
       },
       {
         stem: "A Python service sends a JSON payload built from a pandas DataFrame. The browser reports `SyntaxError: Unexpected token N in JSON`. The same payload parses fine in a Python test. What is happening?",
         options: [
           "The response is missing a `Content-Type` header so the browser is parsing it as text",
-          "A missing numeric value became `NaN`, which Python's encoder emits as a bare literal and which is not valid JSON",
-          "The payload exceeds the browser's maximum JSON document size",
-          "The encoding is cp1252 and the browser expects UTF-8"
+          "The payload exceeds the browser's maximum JSON document size, so parsing stops partway through a value",
+          "The response is encoded as cp1252 and the browser expects UTF-8, so a byte decodes as the letter N",
+          "A missing value became `NaN`, which Python writes but JSON does not allow"
         ],
-        answer: 1,
+        answer: 3,
         why: "The token `N` names it exactly: `NaN`. A blank cell in a numeric pandas column is `NaN`, and Python's `json` encoder writes `NaN`, `Infinity` and `-Infinity` as bare literals even though the JSON specification has no such values. Its own decoder accepts them, so every Python-side test passes and the bug is invisible until a spec-compliant parser sees it — the browser, Go, or PostgreSQL's `jsonb`. `allow_nan=False` moves the failure into your process where you can fix it. An encoding mismatch would corrupt characters rather than produce the token `N`, and size limits raise a different error."
       },
       {
         stem: "A CSV importer coerces an `account` column with `int(row[\"account\"])` because it always looks numeric. What breaks?",
         options: [
           "Nothing, provided every account number fits in a 64-bit integer",
-          "Accounts with leading zeros lose them — `00071` becomes `71` — and no exception is raised",
           "`int()` raises `ValueError` on leading zeros, so the import fails fast",
+          "Leading zeros vanish — `00071` becomes `71` — with no error",
           "The values are fine but sort incorrectly, because integers sort numerically"
         ],
-        answer: 1,
+        answer: 2,
         why: "`int(\"00071\")` is `71`: leading zeros are legal in a decimal string literal passed to `int()` and are simply discarded. Nothing raises, so the wrong account number is written to the database and only surfaces when a lookup fails or a payment is misapplied. Python 3 integers are arbitrary precision, so width is not the issue. The rule to carry: identifiers that happen to be made of digits — account numbers, postcodes, SKUs, phone numbers — are strings, and the test is whether you would ever do arithmetic on them."
       }
     ]

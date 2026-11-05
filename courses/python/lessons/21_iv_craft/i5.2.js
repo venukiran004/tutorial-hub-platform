@@ -168,7 +168,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Mapping patterns** match a **subset**`case {\"type\": \"click\"}` matches any dict containing that key; extra keys are ignored.",
+      "**Mapping patterns** match a **subset:** `case {\"type\": \"click\"}` matches any dict containing that key; extra keys are ignored.",
       "**Sequence patterns** match the **whole length** unless you use a star: `case [a, b]` requires exactly two items; `case [a, *rest]` captures the remainder."
      ]
     },
@@ -210,7 +210,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Purely syntactic — runtime behavior is unchanged, but multi-resource blocks are far cleaner."
+     "text": "**Key takeaway:** Purely syntactic — runtime behaviour is unchanged, but multi-resource blocks are far cleaner."
     }
    ]
   },
@@ -380,7 +380,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "from enum import StrEnum\nclass Env(StrEnum): DEV = \"dev\"; PROD = \"prod\"\nprint(Env.PROD == \"prod\")   # True\nprint(Env(\"dev\"))           # Env.DEV\n# Env(\"stage\")              # ValueError",
+     "code": "from enum import StrEnum\nclass Env(StrEnum): DEV = \"dev\"; PROD = \"prod\"\nprint(Env.PROD == \"prod\")   # True\nprint(Env(\"dev\"))           # dev\n# Env(\"stage\")              # ValueError",
      "numbered": false
     },
     {
@@ -563,7 +563,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Sub-interpreters can each own a **separate GIL**, enabling true parallelism inside one process. The C API landed in 3.12; the Python API matures in 3.13."
+     "text": "Sub-interpreters can each own a **separate GIL**, enabling true parallelism inside one process. The C API landed in 3.12; the Python API, `concurrent.interpreters`, arrived in 3.14."
     },
     {
      "t": "table",
@@ -586,7 +586,7 @@ EC.receiveLesson({
       [
        "Data sharing",
        "pickle/pipes",
-       "shared memory"
+       "queues, with most objects copied"
       ]
      ]
     },
@@ -625,15 +625,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**How it works:** reference counting switches to atomic operations, with a **biased reference counting** scheme that minimizes overhead for single-threaded objects; garbage collection is redesigned for thread safety."
+     "text": "**How it works:** reference counting switches to atomic operations, with a **biased reference counting** scheme that minimises overhead for single-threaded objects; garbage collection is redesigned for thread safety."
     },
     {
      "t": "p",
-     "text": "**Trade-offs:** ~5% single-threaded overhead from atomic refcounting; many C extensions aren't thread-safe yet; not production-ready. `PYTHON_GIL=1` restores the GIL."
+     "text": "**Trade-offs:** a single-threaded cost from atomic refcounting (roughly 5–10% by 3.14, larger in 3.13); many C extensions aren't thread-safe yet. `PYTHON_GIL=1` restores the GIL."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Long term it removes the need for `multiprocessing` in CPU-bound workloads, but in 3.13 it's strictly opt-in/experimental."
+     "text": "**Key takeaway:** Long term it removes the need for `multiprocessing` in CPU-bound workloads, but it is opt-in: experimental in 3.13, and a supported, still optional build from 3.14 (PEP 779)."
     }
    ]
   },
@@ -665,7 +665,7 @@ EC.receiveLesson({
       [
        "Compile speed",
        "very fast",
-       "slow (trace + optimize)"
+       "slow (trace + optimise)"
       ],
       [
        "Code quality",
@@ -686,7 +686,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Modest gains in 3.13 (0–9%), off by default (`PYTHON_JIT=1`); it's a foundation for bigger 3.14+ optimizations."
+     "text": "**Key takeaway:** Modest gains in 3.13 (0–9%), off by default (`PYTHON_JIT=1`); it's a foundation for bigger 3.14+ optimisations."
     }
    ]
   },
@@ -705,7 +705,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "PEP 594 removed 19 \"dead battery\" modules. The high-impact ones: - `distutils` → use `setuptools` / `build`. - `imghdr` → use Pillow / `filetype`, or check magic bytes. - `telnetlib` → `paramiko` / sockets; `cgi`/`cgitb` → a real web framework."
+     "text": "PEP 594 removed 19 \"dead battery\" modules. The high-impact ones: - `imghdr` → use Pillow / `filetype`, or check magic bytes. - `telnetlib` → `paramiko` / sockets; `cgi`/`cgitb` → a real web framework. (`distutils` went earlier, in 3.12, under PEP 632.)"
     },
     {
      "t": "code",
@@ -715,7 +715,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Audit imports *before* upgrading — `distutils` removal silently breaks many old `setup.py` builds."
+     "text": "**Key takeaway:** Audit imports *before* upgrading — a removed module fails at import, often in a dependency you did not write."
     }
    ]
   },
@@ -739,7 +739,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Incremental hops:** 3.10 → 3.11 → 3.12 → 3.13, not a single jump.",
-      "**Per hop:**3.11: low risk, free ~25% speedup; adopt `TaskGroup`, `StrEnum`. - 3.12: migrate `TypeAlias` → `type`; audit walrus-in-comprehension scope; drop `distutils`. - 3.13: audit removed modules (PEP 594); test all C extensions; keep free-threaded mode out of prod.",
+      "**Per hop:** 3.11: low risk, free ~25% speedup; adopt `TaskGroup`, `StrEnum`. - 3.12: migrate `TypeAlias` → `type`; drop `distutils`. - 3.13: audit removed modules (PEP 594); test all C extensions; keep free-threaded mode out of prod.",
       "**CI:** test current + next version; pin `requires-python`.",
       "**Compatibility:** use `sys.version_info` guards or `typing_extensions` to backport new typing features."
      ]
@@ -753,7 +753,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "Did the walrus operator's behavior change in 3.12?",
+   "q": "Did the walrus operator's scope change in 3.12?",
    "terms": [
     "Answer",
     "inside a comprehension",
@@ -767,17 +767,17 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Yes — a subtle scope change. A walrus assignment **inside a comprehension** now leaks its binding to the **enclosing** scope (a side effect of comprehension inlining)."
+     "text": "No. A walrus assignment **inside a comprehension** has bound in the **enclosing** scope since it was introduced in 3.8 (PEP 572), on purpose. What changed in 3.12 is comprehension inlining (PEP 709), which is invisible to this behaviour."
     },
     {
      "t": "code",
      "lang": "python",
-     "code": "# 3.12+: 'last' is visible after the comprehension\nresult = [last := x * 2 for x in range(5)]\nprint(last)   # 8",
+     "code": "# Since 3.8: 'last' is visible after the comprehension\nresult = [last := x * 2 for x in range(5)]\nprint(last)   # 8",
      "numbered": false
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Mostly harmless, but it can shadow an outer variable unexpectedly — review such comprehensions when upgrading to 3.12."
+     "text": "**Key takeaway:** The loop variable stays private to the comprehension; the walrus target does not, and that is by design."
     }
    ]
   },
@@ -828,7 +828,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`TypeVarTuple` (PEP 646, 3.10) enables **variadic generics** — generics parameterized by an arbitrary number of types, the basis for shape-typed tensors/arrays."
+     "text": "`TypeVarTuple` (PEP 646, 3.11) enables **variadic generics** — generics parameterised by an arbitrary number of types, the basis for shape-typed tensors/arrays."
     },
     {
      "t": "code",

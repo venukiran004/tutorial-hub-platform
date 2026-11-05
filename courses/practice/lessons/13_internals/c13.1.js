@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c13.1",
  "lede": "**20 programs to write**, on nested data and bit counting. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 20 programs on nested data and bit counting without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c12.4"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 1500–1519.** What this set actually drills, counted from its own problems — 15 of the 20 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["dicts and sets", "lists", "strings", "generators", "regex"], "cells": [[{"text": "6", "tone": "accent"}, "Flatten Dictionary"], [{"text": "4", "tone": "good"}, "Chunk a List"], [{"text": "3", "tone": "violet"}, "Minimum Window Substring"], [{"text": "1", "tone": "teal"}, "Sliding Window Generator"], [{"text": "1", "tone": "warn"}, "String Pattern Matching (KMP)"]], "t": "diagram", "id": "dg-c13_1-top-0"},
   {
    "t": "viz",
    "title": "When a generator's body actually runs",

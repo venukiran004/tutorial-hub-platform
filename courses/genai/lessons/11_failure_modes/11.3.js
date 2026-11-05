@@ -228,7 +228,7 @@ says exactly this: 'validate cited ids AND entailment'.
   check 2: cited chunk entails the claim    <- 11.4, per sentence
 
 note the malformed case also fails, because [refund-policy] contains a
-hyphen and \w does not match it -- so a human-readable citation style
+hyphen and \\w does not match it -- so a human-readable citation style
 silently fails a validator written for opaque ids.`,
         notes: [
           { t: "p", text: "**The check does one job well**: a fabricated id and a mixed answer citing one real and one invented chunk are both rejected. That is scenario 2 caught, and it is four lines of code with no model call." },

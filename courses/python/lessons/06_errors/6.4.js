@@ -217,7 +217,7 @@ log.debug("payload: %s", payload)
 # And the message stays a CONSTANT, so an aggregator can group
 # "payload: %s" as one event with a varying argument.`},
       { t: "p", text: "The performance argument is real when the argument is expensive — a `json.dumps` on a hot path costs the same whether the line is emitted or not. The grouping argument matters more: tools like Sentry and Datadog fingerprint on the raw message, and an f-string produces a distinct message per call, so one recurring problem becomes ten thousand unique events." },
-      { t: "p", text: "**Linters enforce this**: `ruff`'s `G` rules and pylint's `logging-fstring-interpolation` both flag it (Lesson 9.7)." }
+      { t: "p", text: "**Linters enforce this**: `ruff`'s `G` rules and pylint's `logging-fstring-interpolation` both flag it (Lesson 14.4)." }
     ]},
 
     { t: "h2", n: "03", text: "Structured output", id: "structured" },
@@ -341,7 +341,7 @@ import re
 
 SECRET_PATTERN = re.compile(
     r"(?i)(authorization|api[_-]?key|password|token|secret)"
-    r"([\\\"':=\\s]+)([^\\\"'\\s,}]+)"
+    r"([\\\\"':=\\s]+)([^\\\\"'\\s,}]+)"
 )
 
 
@@ -586,7 +586,7 @@ import sys
 
 SECRET_PATTERN = re.compile(
     r"(?i)\\b(authorization|api[_-]?key|password|secret|card_token)\\b"
-    r"([\\\"':=\\s]+)(\\S+)"
+    r"([\\\\"':=\\s]+)(\\S+)"
 )
 
 
@@ -752,31 +752,31 @@ if __name__ == "__main__":
       {
         stem: "Why should a library module never call `logging.basicConfig()`?",
         options: [
-          "It is slow at import time",
-          "It adds a handler to the root logger at import, so the application's configuration is duplicated or overridden depending on import order",
-          "It is deprecated in favour of `dictConfig`",
-          "It forces the DEBUG level on every logger"
+          "It is slow at import time, because it scans the environment for logging configuration",
+          "It is deprecated in favour of `dictConfig`, and calling it emits a `DeprecationWarning`",
+          "It forces the DEBUG level on every logger in the process, including third-party ones",
+          "It configures the shared root logger at import, clashing with the application's setup"
         ],
-        answer: 1,
+        answer: 3,
         why: "`basicConfig` configures the **root** logger, which is shared by the whole process. When a library does it at import time, whichever module imported first wins on format and level, and the application's own handler then produces a second copy of every line. A library should only call `logging.getLogger(__name__)` — plus, at package level, a `NullHandler` to avoid the no-handlers warning."
       },
       {
         stem: "Why `log.info(\"order failed\", extra={\"order_id\": oid})` rather than an f-string?",
         options: [
-          "f-strings cannot contain variables in logging calls",
-          "The message stays a constant that aggregators group and count, and the value becomes a queryable field rather than a substring",
-          "`extra` output is compressed",
-          "f-strings break the `%` formatter"
+          "f-strings cannot contain variables inside logging calls, because the message is formatted twice",
+          "`extra` fields are compressed by the handler, so the log line is smaller on disk",
+          "The message stays constant so it groups, and the id becomes a queryable field",
+          "f-strings break the `%` formatter, which then raises when the message contains a percent sign"
         ],
-        answer: 1,
+        answer: 2,
         why: "Error trackers fingerprint on the raw message, so an f-string turns one recurring problem into thousands of unique events — grouping breaks and rate alerting becomes impossible. The field also makes \"how many distinct customers were affected\" a count rather than a regex over exported logs. The deferred-evaluation performance gain is real but secondary."
       },
       {
         stem: "A payment is declined because the customer's card expired. What level?",
         options: [
-          "ERROR — the payment did not go through",
-          "WARNING — the system worked correctly and no engineer needs to act, but someone may want to see the rate",
-          "CRITICAL — revenue is affected",
+          "ERROR — the payment did not go through, so the customer-facing operation failed",
+          "WARNING — nothing is broken and nobody acts, but the rate is worth seeing",
+          "CRITICAL — revenue is affected directly, so the on-call engineer should hear about it",
           "DEBUG — it is routine"
         ],
         answer: 1,
@@ -785,12 +785,12 @@ if __name__ == "__main__":
       {
         stem: "You need a request ID on every log line in a concurrent service. What is the right mechanism?",
         options: [
-          "Pass it as a parameter through every function that logs",
           "A `ContextVar` read by a logging `Filter`, set per request and reset in a `finally`",
+          "Pass it as a parameter through every function that logs",
           "A module-level global assigned at the start of each request",
           "A thread-local, since asyncio tasks share threads safely"
         ],
-        answer: 1,
+        answer: 0,
         why: "A filter can modify records, so one object attaches the ID to every line without touching a single call site. A `ContextVar` is isolated per task and per thread, where a module-level global would return whichever request wrote to it last — confidently wrong attribution, which is worse than none. The `reset()` in a `finally` matters: without it the value persists into whatever runs next on that task."
       }
     ]

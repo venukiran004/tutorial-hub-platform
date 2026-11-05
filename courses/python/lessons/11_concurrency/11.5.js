@@ -655,19 +655,19 @@ def test_results_stream_rather_than_batching():
       {
         stem: "A nightly job uses `list(pool.map(fetch, records))`. One record returns a 500 and the job imports nothing. Why?",
         options: [
-          "The pool shuts down when a worker raises",
-          "`map` re-raises the first exception during iteration, so results computed after that item are discarded — even though they succeeded",
-          "`map` retries the failing item until the pool is exhausted",
-          "The exception corrupted the executor's internal queue"
+          "`map` re-raises the first exception, discarding every later successful result",
+          "The pool shuts down as soon as any worker raises, cancelling every task still queued",
+          "`map` retries the failing item until the pool is exhausted, so nothing else completes",
+          "The exception corrupted the executor's internal queue, so the remaining results were lost"
         ],
-        answer: 1,
+        answer: 0,
         why: "The remaining tasks still run, but the iteration stops at the first failure and everything after it is lost. `as_completed` with a `{future: input}` dict turns this from a total failure into a partial one: 9,999 records imported and one logged with its id. Choose `map` only when the batch really is all-or-nothing."
       },
       {
         stem: "`future.result(timeout=5)` raises `TimeoutError`. What happened to the task?",
         options: [
-          "It was cancelled and its resources released",
-          "Nothing — it is still running and still holding its worker; only the caller stopped waiting",
+          "It was cancelled when the timeout expired, and its resources were released",
+          "Nothing — it is still running; only the caller stopped waiting",
           "It was moved to the back of the queue",
           "It will be retried automatically"
         ],
@@ -677,23 +677,23 @@ def test_results_stream_rather_than_batching():
       {
         stem: "Why does submitting ten million tasks with a list comprehension exhaust memory?",
         options: [
-          "The executor pre-allocates a thread per task",
-          "`submit` never blocks, so every task is queued immediately and every argument is held in memory before any work completes",
-          "`Future` objects are never garbage collected",
-          "The results accumulate in the executor"
+          "The executor pre-allocates a thread for every submitted task, so ten million threads are created",
+          "`Future` objects are never garbage collected while the executor is running, so they accumulate",
+          "The results accumulate in the executor",
+          "`submit` never blocks, so every task and argument is queued in memory at once"
         ],
-        answer: 1,
+        answer: 3,
         why: "There is no backpressure: the executor's internal queue accepts everything. Either use `map` with a generator, which consumes lazily, or keep a bounded window of in-flight futures topped up one submission per completion — which keeps `as_completed`'s per-item error handling while bounding memory by the window."
       },
       {
         stem: "Why is a 200-thread pool against a single host usually worse than 20?",
         options: [
           "Python cannot create more than 100 threads",
-          "The remote host is the limit — 200 concurrent requests produce 429s or a ban — and the HTTP client's connection pool caps real concurrency anyway",
-          "Thread creation dominates the runtime at that count",
-          "The GIL serialises them, so extra threads do nothing"
+          "Thread creation dominates the runtime at that count, so the pool spends its time starting up",
+          "The GIL serialises the threads, so beyond about twenty the extra threads do nothing at all",
+          "The remote host is the real limit, and the client's pool caps concurrency anyway"
         ],
-        answer: 1,
+        answer: 3,
         why: "Threads cost about 8 MB of stack address space each, and `requests`' default adapter allows ten connections per host — so most of those threads block inside the library and the concurrency is imaginary. Little's law gives the honest number: target throughput times average latency. If you genuinely need thousands in flight, that is an `asyncio` problem."
       }
     ]

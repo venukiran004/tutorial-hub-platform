@@ -147,7 +147,7 @@ n = 200_000
 x = rng.uniform(-1, 1, n)
 y = x**2
 
-np.corrcoef(x, y)[0, 1]              # -0.0006  -- essentially zero
+np.corrcoef(x, y)[0, 1]              # -0.0042  -- essentially zero
 #
 # Knowing x tells you y EXACTLY. Correlation reports nothing, because
 # the relationship is symmetric about zero: the positive and negative
@@ -157,7 +157,7 @@ np.corrcoef(x, y)[0, 1]              # -0.0006  -- essentially zero
 theta = rng.uniform(0, 2*np.pi, n)
 cx, cy = np.cos(theta), np.sin(theta)
 
-np.corrcoef(cx, cy)[0, 1]            # 0.0009
+np.corrcoef(cx, cy)[0, 1]            # 0.0001
 #
 # Perfectly constrained -- cx^2 + cy^2 = 1 always -- and uncorrelated.
 
@@ -166,7 +166,7 @@ g = rng.integers(0, 2, n)
 a = rng.normal(0, 1, n)
 b = np.where(g == 0, a, -a) + rng.normal(0, 0.1, n)
 
-np.corrcoef(a, b)[0, 1]              # 0.002 overall
+np.corrcoef(a, b)[0, 1]              # -0.001 overall
 np.corrcoef(a[g == 0], b[g == 0])[0, 1]   # 0.995
 np.corrcoef(a[g == 1], b[g == 1])[0, 1]   # -0.995
 #
@@ -186,7 +186,7 @@ np.corrcoef(a[g == 1], b[g == 1])[0, 1]   # -0.995
 from scipy import stats
 
 # Spearman catches any MONOTONIC relationship, linear or not.
-stats.spearmanr(x, y).statistic       # -0.001  -- still misses x^2
+stats.spearmanr(x, y).statistic       # -0.004  -- still misses x^2
 stats.spearmanr(x, np.exp(x)).statistic  # 1.0  -- catches monotone
 #
 # Neither correlation catches the parabola, because it is not monotonic.
@@ -202,12 +202,12 @@ stats.spearmanr(x, np.exp(x)).statistic  # 1.0  -- catches monotone
 height_cm = rng.normal(170, 10, n)
 weight_kg = 0.5 * height_cm + rng.normal(0, 5, n)
 
-np.cov(height_cm, weight_kg)[0, 1]      # 50.1  -- units: cm x kg
-np.corrcoef(height_cm, weight_kg)[0, 1] # 0.707 -- dimensionless
+np.cov(height_cm, weight_kg)[0, 1]      # 50.2  -- units: cm x kg
+np.corrcoef(height_cm, weight_kg)[0, 1] # 0.709 -- dimensionless
 
 # CHANGING UNITS CHANGES THE COVARIANCE AND NOT THE CORRELATION:
-np.cov(height_cm/100, weight_kg)[0, 1]      # 0.501  -- 100x smaller
-np.corrcoef(height_cm/100, weight_kg)[0,1]  # 0.707  -- identical
+np.cov(height_cm/100, weight_kg)[0, 1]      # 0.502  -- 100x smaller
+np.corrcoef(height_cm/100, weight_kg)[0,1]  # 0.709  -- identical
 
 # CORRELATION SAYS NOTHING ABOUT THE SLOPE. Both of these have r = 1.0:
 a = np.array([1.0, 2.0, 3.0, 4.0])
@@ -269,18 +269,18 @@ true / naive                             # 1.478
 # w^T S w is one line and always correct; sum(w^2 * var) is a shortcut
 # that is right only under independence.
 
-(np.column_stack([A, B, C]) @ w).var()   # 0.4940 -- confirms w^T S w
+(np.column_stack([A, B, C]) @ w).var()   # 0.4903 -- confirms w^T S w
 
 # THE MATRIX ALSO ANSWERS "HOW MANY INDEPENDENT THINGS ARE HERE":
 eig = np.linalg.eigvalsh(S)
-np.round(eig, 3)                         # [0.284 1.003 1.722]
+np.round(eig, 3)                         # [0.281 0.993 1.712]
 #
 # One large eigenvalue (the shared driver), one middling (C), one small
 # (what is left of A and B once the driver is removed). The effective
 # dimensionality is closer to 2 than to 3, and PCA is exactly this
 # eigendecomposition (lesson 1.7).
 
-eig.max() / eig.min()                    # 6.07 -- the condition number
+eig.max() / eig.min()                    # 6.09 -- the condition number
 #
 # A high condition number here means MULTICOLLINEARITY: the variables
 # carry overlapping information, regression coefficients become
@@ -290,9 +290,9 @@ eig.max() / eig.min()                    # 6.07 -- the condition number
 # MINIMUM-VARIANCE WEIGHTS use the whole matrix:
 inv = np.linalg.inv(S)
 w_min = inv @ np.ones(3) / (np.ones(3) @ inv @ np.ones(3))
-np.round(w_min, 3)                       # [0.204 0.207 0.589]
+np.round(w_min, 3)                       # [0.262 0.275 0.463]
 
-w_min @ S @ w_min                        # 0.2947 vs 0.4941 equal-weight
+w_min @ S @ w_min                        # 0.4592 vs 0.4903 equal-weight
 #
 # 40% LESS VARIANCE, entirely from putting more weight on the
 # uncorrelated asset. The information that made that possible lives
@@ -379,8 +379,8 @@ mix /= mix.sum()                                  # [0.510, 0.490]
 rate = lambda d: np.array([d["mild"][0]/d["mild"][1],
                            d["severe"][0]/d["severe"][1]])
 
-rate(A) @ mix                      # 0.832
-rate(B) @ mix                      # 0.780
+rate(A) @ mix                      # 0.833
+rate(B) @ mix                      # 0.779
 #
 # ON A COMMON CASE MIX, A WINS -- which reverses the naive overall
 # comparison and matches every subgroup. This is direct

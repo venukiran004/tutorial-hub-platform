@@ -2,7 +2,7 @@
    LESSON 12.3 — Invoking a Deployed Agent
    The whole Python surface below was EXECUTED locally against AdkApp — the
    same wrapper Agent Engine deploys — on vertexai 2.1.3 + google-adk 2.9.2
-   (scratchpad/adk/d1.py). The REST section is the same operations over HTTP
+   (d1.py). The REST section is the same operations over HTTP
    and is the one part not run here, since it needs a live engine.
    ========================================================================= */
 EC.receiveLesson({

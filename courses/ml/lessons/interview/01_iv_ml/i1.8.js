@@ -262,7 +262,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`method=\"isotonic\"` for non-monotone calibration."
+     "text": "`method=\"isotonic\"` fits a flexible, non-parametric monotonic mapping instead, and needs more data."
     }
    ],
    "kind": ""

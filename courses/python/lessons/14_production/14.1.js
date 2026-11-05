@@ -82,6 +82,16 @@ testpaths = ["tests"]
       caption: "**One `pyproject.toml` configures the build, the tests, the linter and the type checker.** Scattered `setup.cfg`, `.flake8` and `pytest.ini` files are a migration nobody has finished."
     },
 
+    { t: "callout", kind: "trap", title: "Running a module by path imports your package twice", body: [
+      { t: "p", text: "`python src/orders/cli.py` puts `src/orders/` on `sys.path`, not `src/`. **Inside that process, `cli.py` is the module `__main__`, and if anything imports `orders.cli` it is loaded a second time as a separate module object.** Two copies mean two module-level registries, two caches, and two classes with the same name: `isinstance` fails against an exception class you plainly raised, and a handler registered in one copy is missing from the other." },
+      { t: "code", lang: "text", title: "the two invocations", numbered: false, code: `python src/orders/cli.py     # sys.path[0] = src/orders   -> 'orders' may not even import
+                             # cli.py runs as __main__, and again as orders.cli if imported
+
+python -m orders.cli         # sys.path[0] = cwd, package resolved from the installed copy
+orders-cli                   # console script from [project.scripts]: the same, and nicer` },
+      { t: "p", text: "**Run code inside a package with `-m`, or through a `[project.scripts]` entry point**, never by file path. With the `src/` layout and an editable install, both resolve to the one installed copy, so each module exists exactly once." }
+    ]},
+
     { t: "h2", n: "02", text: "Layering", id: "layering" },
 
     {"kind": "layers", "title": "Layering, with the dependencies pointing inward", "caption": "The domain knows nothing about the web or the database; the application layer orchestrates it; adapters translate to and from the outside world. Imports go downward only — an import from the API layer inside the domain is the smell to catch.", "items": [{"label": "interfaces: FastAPI routers, CLI", "sub": "parse, call, serialise", "tone": "warn"}, {"label": "application: use cases / services", "sub": "orchestrate the domain, own transactions", "tone": "accent"}, {"label": "domain: entities, rules, pure functions", "sub": "no framework imports", "tone": "good"}, {"label": "adapters: repositories, HTTP clients", "sub": "implement interfaces the domain declares", "tone": "violet"}], "t": "diagram", "id": "dg-14_1-02-3"},
@@ -806,44 +816,44 @@ def test_the_risk_score_is_never_serialised(client):
         stem: "What class of bug does the src layout prevent?",
         options: [
           "Circular imports",
-          "\"Works locally, fails on install\" — with a flat layout, tests import the source directory rather than the installed package, so packaging mistakes are invisible",
           "Namespace collisions between dependencies",
-          "Slow test collection"
+          "Slow test collection",
+          "\"Works locally, fails on install\" — tests stop seeing the source tree instead of the package"
         ],
-        answer: 1,
+        answer: 3,
         why: "Running pytest from the repository root puts `.` on `sys.path`, so `import myproject` finds the source tree. A missing package entry or an omitted data file then passes every test and fails for the first user who installs the wheel. With `src/`, the only resolvable import is the installed distribution."
       },
       {
         stem: "A team estimates two weeks to add a CLI that places orders. What does that estimate reveal?",
         options: [
-          "CLIs are inherently expensive in Python",
-          "The business rules live inside HTTP handlers, so the CLI would have to reimplement them — the estimate is the cost of the coupling",
-          "The database schema needs changing",
-          "Click requires significant boilerplate"
+          "CLIs are inherently expensive to build in Python, because argument parsing and packaging take most of the time",
+          "The database schema needs changing to support a second client, which is where most of the two weeks would go",
+          "The rules live in HTTP handlers, so a CLI must duplicate them — the cost of the coupling",
+          "Click requires significant boilerplate for each command, and an order CLI needs a dozen of them"
         ],
-        answer: 1,
+        answer: 2,
         why: "With rules in pure domain functions and orchestration in a service, a CLI is thirty lines calling the same service the API calls. The estimate measures how far the logic has spread into the delivery mechanism, which is exactly what layering is meant to prevent."
       },
       {
         stem: "Two service modules import each other and you get a partially-initialised module error. What is the best first response?",
         options: [
-          "Wrap one import in `TYPE_CHECKING`",
+          "Wrap one of the two imports in `if TYPE_CHECKING:` so it only runs for the type checker",
+          "Move the import inside the function that needs it, so it runs after both modules have loaded",
           "Find the concept both modules are reaching for and move it into a module below both",
-          "Move the import inside the function that needs it",
-          "Merge the two modules"
+          "Merge the two modules into one, since they clearly belong together"
         ],
-        answer: 1,
+        answer: 2,
         why: "A cycle means two modules share ownership of something neither owns. `TYPE_CHECKING` and function-level imports silence the error while leaving the coupling, and the error is a useful signal — it appears only for whichever module is imported first, which is why it looks intermittent."
       },
       {
         stem: "Why does `create_engine()` at module level make a codebase hard to test?",
         options: [
           "It is slow to construct",
-          "Importing the module then requires a database URL and opens a pool, so every test, script and CLI inherits that requirement",
           "SQLAlchemy engines are not thread-safe",
-          "It prevents dependency injection frameworks from working"
+          "It prevents dependency injection frameworks from working",
+          "Importing it then needs a database URL, so every test, script and CLI inherits that"
         ],
-        answer: 1,
+        answer: 3,
         why: "Importing a module should do nothing observable. Moving construction into a composition root means `import domain.rules` costs nothing, a test supplies a fake in one line, and the module can be used from a CLI without production credentials present."
       }
     ]

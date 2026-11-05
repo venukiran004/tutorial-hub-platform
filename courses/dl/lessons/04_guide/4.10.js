@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 4.10 — Project: Time-Series Forecasting
    The random-split leakage test gave a smaller effect than expected and is
-   reported as measured (scratchpad/dl/d410.py).
+   reported as measured (d410.py).
    ========================================================================= */
 EC.receiveLesson({
   id: "4.10",

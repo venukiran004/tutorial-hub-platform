@@ -100,35 +100,35 @@ x = rng.uniform(0, 10, n)
 # A CLEAN LINEAR RELATIONSHIP -- all three agree:
 y_lin = 2 * x + rng.normal(0, 2, n)
 pd.Series(x).corr(pd.Series(y_lin))                     # 0.95  Pearson
-pd.Series(x).corr(pd.Series(y_lin), method="spearman")  # 0.95
+pd.Series(x).corr(pd.Series(y_lin), method="spearman")  # 0.96
 pd.Series(x).corr(pd.Series(y_lin), method="kendall")   # 0.81  (always smaller)
 
 # A MONOTONIC BUT CURVED RELATIONSHIP -- Pearson understates:
 y_exp = np.exp(x / 2) + rng.normal(0, 5, n)
-pd.Series(x).corr(pd.Series(y_exp))                     # 0.78  -- "moderate"
-pd.Series(x).corr(pd.Series(y_exp), method="spearman")  # 0.98  -- nearly perfect
+pd.Series(x).corr(pd.Series(y_exp))                     # 0.85  -- "moderate"
+pd.Series(x).corr(pd.Series(y_exp), method="spearman")  # 0.94  -- nearly perfect
 #
-# y is a perfect function of x. Pearson says 0.78 because the
-# function is not a line. Spearman says 0.98 because y rises
+# y is a perfect function of x. Pearson says 0.85 because the
+# function is not a line. Spearman says 0.94 because y rises
 # whenever x does. "How strongly are these related" is usually the
 # Spearman question.
 
 # A NON-MONOTONIC RELATIONSHIP -- both miss it:
 y_u = (x - 5) ** 2 + rng.normal(0, 2, n)
-pd.Series(x).corr(pd.Series(y_u))                       # ~0.0
-pd.Series(x).corr(pd.Series(y_u), method="spearman")    # ~0.0
+pd.Series(x).corr(pd.Series(y_u))                       # ~0.1
+pd.Series(x).corr(pd.Series(y_u), method="spearman")    # ~0.1
 #
 # A perfect U. Both coefficients say "no relationship". Mutual
 # information (next section) says otherwise. The plot says so first.
 
 # ONE OUTLIER -- Pearson moves, Spearman does not:
 y_out = 0.1 * x + rng.normal(0, 1, n)
-pd.Series(x).corr(pd.Series(y_out))                     # 0.28
+pd.Series(x).corr(pd.Series(y_out))                     # 0.26
 y_out[0], x_out = 200.0, x.copy(); x_out[0] = 100.0
-pd.Series(x_out).corr(pd.Series(y_out))                 # 0.93  -- one point
-pd.Series(x_out).corr(pd.Series(y_out), method="spearman")   # 0.29
+pd.Series(x_out).corr(pd.Series(y_out))                 # 0.84  -- one point
+pd.Series(x_out).corr(pd.Series(y_out), method="spearman")   # 0.25
 #
-# One row moved Pearson from 0.28 to 0.93. Spearman's ranks barely
+# One row moved Pearson from 0.26 to 0.84. Spearman's ranks barely
 # noticed. On real data with a few extreme values -- which is all
 # real data -- Pearson on raw values is a coefficient about the
 # extremes.
@@ -163,7 +163,7 @@ stats.spearmanr(x, y_lin)              # statistic=0.95, pvalue=0.0
 # matters. A coefficient alone is a number without a denominator.
 `,
       hl: [15, 26, 34, 62],
-      caption: "**One row moved Pearson from 0.28 to 0.93; Spearman went from 0.29 to 0.29.** On real data — which always has extreme values — Pearson on raw values is a coefficient about the extremes."
+      caption: "**One row moved Pearson from 0.26 to 0.84; Spearman went from 0.25 to 0.25.** On real data — which always has extreme values — Pearson on raw values is a coefficient about the extremes."
     },
 
     { t: "callout", kind: "trap", title: "r = 0 does not mean unrelated", body: [
@@ -228,7 +228,7 @@ pd.crosstab(cat["region"], cat["tier"], normalize="index")
 
 # CHI-SQUARE: "is the table's pattern distinguishable from independence"
 chi2, p, dof, expected = stats.chi2_contingency(ct)
-chi2, p                     # 130.4, 1e-27 -- yes, overwhelmingly
+chi2, p                     # 424.8, 9e-92 -- yes, overwhelmingly
 #
 # expected is what the table WOULD look like under independence. The
 # test compares observed to expected. p tells you the pattern is
@@ -242,7 +242,7 @@ def cramers_v(x, y):
     r, k = ct.shape
     return float(np.sqrt(chi2 / (n * (min(r, k) - 1))))
 
-cramers_v(cat["region"], cat["tier"])         # 0.51 -- a strong association
+cramers_v(cat["region"], cat["tier"])         # 0.46 -- a strong association
 #
 #   0.0        independent
 #   0.1        weak
@@ -257,11 +257,11 @@ cramers_v(cat["region"], cat["tier"])         # 0.51 -- a strong association
 # MUTUAL INFORMATION: how much knowing x reduces uncertainty about y.
 # Works for ANY pair -- categorical, numeric, or mixed -- and detects
 # ANY dependency, including the U-shape correlation missed.
-mutual_info_score(cat["region"], cat["tier"])     # 0.16 nats
+mutual_info_score(cat["region"], cat["tier"])     # 0.11 nats
 #
 # THE UNITS ARE NOT INTUITIVE. Normalise to 0..1:
 from sklearn.metrics import normalized_mutual_info_score
-normalized_mutual_info_score(cat["region"], cat["tier"])   # 0.15
+normalized_mutual_info_score(cat["region"], cat["tier"])   # 0.11
 
 # MI FOR NUMERIC x AGAINST A TARGET -- the U-shape, found:
 mi = mutual_info_regression(np.column_stack([x, y_lin]), y_u, random_state=0)
@@ -361,7 +361,7 @@ exp_ = np.where(dept == "A", rng.uniform(0, 5, n), rng.uniform(5, 10, n))
 pay = np.where(dept == "A", 60 + 3 * exp_, 30 + 3 * exp_) + rng.normal(0, 2, n)
 s = pd.DataFrame({"dept": dept, "exp": exp_, "pay": pay})
 
-s[["exp", "pay"]].corr().iloc[0, 1]                          # -0.44  overall: NEGATIVE
+s[["exp", "pay"]].corr().iloc[0, 1]                          # -0.50  overall: NEGATIVE
 s.groupby("dept")[["exp", "pay"]].corr().iloc[0::2, 1]       # A: +0.93, B: +0.93
 #
 # "Experience is negatively correlated with pay" is true of the
@@ -389,7 +389,7 @@ ice = 20 * temp + rng.normal(0, 40, n)
 drown = 0.5 * temp + rng.normal(0, 3, n)
 w = pd.DataFrame({"temp": temp, "ice": ice, "drown": drown})
 
-w[["ice", "drown"]].corr().iloc[0, 1]            # 0.55  -- "ice cream causes drowning"
+w[["ice", "drown"]].corr().iloc[0, 1]            # 0.75  -- "ice cream causes drowning"
 partial_corr(w, "ice", "drown", "temp")          # ~0.0  -- not once temp is held fixed
 #
 # Partial correlation is the one-variable-at-a-time version of "put
@@ -728,7 +728,7 @@ def test_label_encoded_correlation_is_meaningless():
 
   takeaways: [
     "**Pearson measures how well a straight line fits; Spearman measures whether y rises with x** — the second is usually the question.",
-    "**One extreme row can move Pearson from 0.28 to 0.93** while Spearman barely notices.",
+    "**One extreme row can move Pearson from 0.26 to 0.84** while Spearman barely notices.",
     "**r = 0 does not mean unrelated**: a perfect U has zero Pearson and zero Spearman.",
     "**Mutual information detects any dependency**, at the cost of being an estimate with unintuitive units.",
     "**Correlation is undefined for two categoricals**; label-encoding them and correlating measures the arbitrary encoding.",

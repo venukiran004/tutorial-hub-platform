@@ -140,6 +140,25 @@ def classify(fn, *args) -> str:
       caption: "**Row six is the one people skip.** Deduplicating 200 API calls down to 12, or adding an index, is usually a bigger win than any concurrency model and carries none of the complexity (Lesson 10.5)."
     },
 
+    { t: "callout", kind: "trap", title: "A process pool without the `__main__` guard works on one machine only", body: [
+      { t: "p", text: "Under the `spawn` and `forkserver` start methods, each worker imports your script afresh to find the function it should run. **If the pool is created at module level, every worker tries to create a pool of its own while it is still starting up.** `spawn` is the default on Windows and macOS, and from Python 3.14 Linux defaults to `forkserver`. So code written on a Linux laptop under the old `fork` default breaks on a colleague's Mac, in a Windows CI runner, or after an interpreter upgrade." },
+      { t: "code", lang: "python", title: "report.py, with no guard", code: `from concurrent.futures import ProcessPoolExecutor
+
+
+def score(n: int) -> int:
+    return sum(i * i for i in range(n))
+
+
+with ProcessPoolExecutor(max_workers=2) as pool:     # no __main__ guard
+    print(list(pool.map(score, [10_000] * 4)))`,
+        out: `RuntimeError:
+        An attempt has been made to start a new process before the
+        current process has finished its bootstrapping phase.
+  ...
+concurrent.futures.process.BrokenProcessPool: A process in the process pool was terminated abruptly while the future was running or pending.` },
+      { t: "p", text: "**Put the pool under `if __name__ == \"__main__\":`, and keep worker functions at module top level** so they can be pickled by name. Then the choice of start method stops mattering, which is the only safe assumption when you do not control where the code runs." }
+    ]},
+
     { t: "h2", n: "02", text: "Four systems", id: "worked" },
 
     { t: "tabs", items: [
@@ -283,6 +302,8 @@ def run(path: str) -> int:
         { t: "p", text: "**Note what is not here: no threads, no asyncio.** The write is I/O, but it happens in the parent as a stream of batches, and overlapping it would complicate the job for a few per cent. Reach for a second model only when the measurement says the first one is not enough." }
       ]}
     ]},
+
+    {"t": "diagram", "kind": "compare", "title": "Four systems, four answers", "caption": "**The measurement chooses the model, and a mixed pipeline gets more than one.** Where time is spent waiting, threads or asyncio overlap the waits; where it is spent computing, processes use the cores. The batch job's lesson is the one most often missed: when a single model is enough, adding a second is cost without benefit.", "columns": [{"title": "web scraper", "tone": "accent", "items": ["180 ms network", "2 ms parse", "asyncio fan-out"]}, {"title": "image pipeline", "tone": "violet", "items": ["I/O and resize", "threads for transfer", "processes for resize"]}, {"title": "API gateway", "tone": "warn", "items": ["5k req/s fan-out", "asyncio", "one blocking call kills it"]}, {"title": "batch ETL", "tone": "good", "items": ["50M rows of parsing", "processes only", "no threads, no asyncio"]}]},
 
     { t: "h2", n: "03", text: "Signals you chose wrong", id: "signals" },
 
@@ -617,32 +638,32 @@ interp.exec("import math; print(math.factorial(20))")
       {
         stem: "A Flask service handles 200 req/s; each request takes 11 ms, mostly a database write. A team proposes an `asyncio` rewrite. What does Little's law say?",
         options: [
-          "200 concurrent operations are needed, so async is justified",
-          "About 2.2 concurrent operations — the ceiling threads provide is nowhere near being approached, so the rewrite buys nothing",
-          "Concurrency cannot be estimated without profiling the ORM",
-          "11,000 concurrent operations, since latency compounds"
+          "200 concurrent operations are needed, one per request each second, so async is justified",
+          "Concurrency cannot be estimated without profiling the ORM first",
+          "11,000 concurrent operations, since latency compounds across the requests",
+          "About 2.2 in flight — threads have huge headroom, so the rewrite buys nothing"
         ],
-        answer: 1,
+        answer: 3,
         why: "Throughput × latency is 200 × 0.011 ≈ 2.2 in flight. Threaded workers handle that with enormous headroom, so converting 40,000 lines of Flask — plus the driver and every test — raises a limit that is not binding. The right answer is a revisit trigger: reconsider above roughly 2,000 req/s, where thread counts start to matter."
       },
       {
         stem: "A nightly job is 95% CPU, but the hot work is `numpy` and a PDF library. Which model?",
         options: [
-          "Processes — CPU-bound work always needs processes",
-          "Threads, because both libraries release the GIL, so they parallelise without paying to pickle arrays and buffers",
-          "asyncio, since the job also reads from a database",
-          "None — CPU-bound work cannot be parallelised in Python"
+          "Threads, because both libraries release the GIL",
+          "Processes — CPU-bound work always needs processes, whatever library is doing it",
+          "asyncio, since the job also reads from a database and the reads can overlap",
+          "None — CPU-bound work cannot be parallelised in Python because of the GIL"
         ],
-        answer: 1,
+        answer: 0,
         why: "\"CPU-bound means processes\" is a rule about *pure Python*. A C extension that releases the GIL achieves real parallelism with threads, and avoids pickling a numpy array and a PDF buffer per item. Verify it rather than assuming — a benchmark-marked test asserting the threaded version is meaningfully faster catches a library upgrade that changes the behaviour."
       },
       {
         stem: "A chat backend needs 30,000 concurrent WebSocket connections. Why is `asyncio` not merely preferable but required?",
         options: [
           "WebSockets can only be implemented with asyncio",
-          "30,000 threads is roughly 240 GB of stack address space; 30,000 tasks is about 150 MB",
+          "30,000 threads need ~240 GB of stack; tasks need ~150 MB",
           "Threads cannot hold a socket open indefinitely",
-          "The GIL prevents threads from handling network I/O"
+          "The GIL prevents threads from handling network I/O concurrently"
         ],
         answer: 1,
         why: "A thread costs about 8 MB of stack address space and a kernel object; a task costs a few kilobytes. At this connection count no other model in Python fits in one process. Because the choice is forced, the disciplines it demands — async drivers throughout, a loop-blocking test in CI, no CPU work in handlers — should be adopted from the first commit."
@@ -651,11 +672,11 @@ interp.exec("import math; print(math.factorial(20))")
         stem: "An ingester must handle 80,000 lines/second. Each line costs 40 µs to parse and 1 ms for a Redis lookup. What does the arithmetic show?",
         options: [
           "asyncio will handle it, since the Redis lookup dominates",
-          "The budget is 12.5 µs per line and the cost is ~1,040 µs — 83× short, so batching the lookups and speeding the parser come before any concurrency model",
           "A process pool with one worker per core is sufficient",
-          "It is achievable with threads because Redis releases the GIL"
+          "It is achievable with threads, because the Redis client releases the GIL while it waits for each reply",
+          "The budget is 12.5 µs a line against ~1,040 µs of cost — fix the work first"
         ],
-        answer: 1,
+        answer: 3,
         why: "One second divided by 80,000 gives the per-item budget. Comparing it with the measured cost rules out every single-process design immediately. Batching 1,000 lookups into one `MGET` removes 99% of the cost, and a faster parser removes most of the rest — after which ordinary partitioning across processes is enough. Concurrency was not the first question."
       }
     ]

@@ -319,7 +319,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Why harmonic mean? It's the lowest of the two — if either is 0, F1=0. Arithmetic mean would allow a trivially high value from one high component."
+     "text": "Why harmonic mean? It is pulled toward the lower of the two — if either is 0, F1=0. Arithmetic mean would allow a trivially high value from one high component."
     },
     {
      "t": "p",
@@ -502,7 +502,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "where \\(\\mathbf{X}_{\\sigma_j}\\) has feature \\(j\\) shuffled. Model-agnostic; unbiased; slower."
+     "text": "where \\(\\mathbf{X}_{\\sigma_j}\\) has feature \\(j\\) shuffled. Model-agnostic; slower; can understate features that are correlated with others."
     },
     {
      "t": "p",

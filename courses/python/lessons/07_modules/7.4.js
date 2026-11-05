@@ -109,7 +109,7 @@ EC.receiveLesson({
 import sys
 
 import json
-print(json in sys.modules.values())          # False -- keyed by NAME
+print(json in sys.modules.values())          # True, but a scan -- it is keyed by NAME
 print("json" in sys.modules)                 # True
 print(sys.modules["json"] is json)           # True
 
@@ -239,7 +239,7 @@ random.randint(1, 10)
 
 
 
-    { t: "code", lang: "python", title: "prefer absolute", code: `
+    { t: "code", lang: "text", title: "prefer absolute", code: `
 myapp/
   __init__.py
   models/
@@ -328,7 +328,7 @@ module 'customer' (most likely due to a circular import)
 #   5. "order" IS in sys.modules -- returns the EMPTY module from step 1
 #   6. "from order import Order" -> Order does not exist yet. Boom.`,
       hl: [5, 6],
-      caption: "**Step 5 is the key.** The cache returns a module object that exists but has not finished executing, so the names defined below the import statement are not there yet. The error message names this exactly: *partially initialized module*."
+      caption: "**Step 5 is the key.** The cache returns a module object that exists but has not finished executing, so the names defined below the import statement are not there yet. The error message names this exactly: *partially initialised module*."
     },
 
     { t: "ladder",
@@ -410,7 +410,7 @@ if importlib.util.find_spec("orjson") is not None:
         { t: "p", text: "**Validate `name` against an allowlist.** `import_module` with user input executes arbitrary module code, which makes it a code-execution vector as surely as `eval`." }
       ]},
       { label: "Namespace packages", blocks: [
-        { t: "code", lang: "python", title: "a directory with no __init__.py", numbered: false, code: `
+        { t: "code", lang: "text", title: "a directory with no __init__.py", numbered: false, code: `
 myapp/
   plugins/                # no __init__.py -- a namespace package
     a.py
@@ -434,7 +434,7 @@ myapp/
       minutes: 28,
       body: [
         { t: "p", text: "A colleague's project runs when started one way and fails another, and a new test file broke imports across the whole suite. There are four separate import problems." },
-        { t: "code", lang: "python", title: "the layout and the errors", numbered: false, code: `
+        { t: "code", lang: "text", title: "the layout and the errors", numbered: false, code: `
 shop/
   __init__.py            # from shop.api import app
   api.py                 # from shop.services import checkout
@@ -691,7 +691,7 @@ if __name__ == "__main__":
     test_no_module_shadows_the_standard_library()
     print("no stdlib shadowing")`,
         notes: [
-          { t: "p", text: "**Read the circular-import message the right way round.** \"cannot import name X from partially initialized module M\" means *M was already running* — so the cycle started somewhere above, and M is the module whose body has not reached the definition of X yet. People instinctively investigate M's importer; the useful question is what began importing M." },
+          { t: "p", text: "**Read the circular-import message the right way round.** \"cannot import name X from partially initialised module M\" means *M was already running* — so the cycle started somewhere above, and M is the module whose body has not reached the definition of X yet. People instinctively investigate M's importer; the useful question is what began importing M." },
           { t: "p", text: "**The `smtplib` traceback is the memorable one.** A file called `email.py` in a directory that lands on `sys.path` breaks an absolute import made by the standard library itself, so the error blames code you have never opened. `python -c \"import email; print(email.__file__)\"` settles it in one line." },
           { t: "p", text: "**Fixing the cycle by moving the price rule onto the model is the real answer.** A function-level import or an `import shop.services` would both make the error go away and leave two modules that genuinely need each other. The cycle was telling the truth: pricing is part of the domain, not a service on top of it." },
           { t: "callout", kind: "insight", title: "Why `src/` layout prevents a whole category", body: [
@@ -720,7 +720,7 @@ if __name__ == "__main__":
     "**`sys.path` is searched in order and your directory is first**, so a local `email.py` or `random.py` shadows the standard library — sometimes breaking a dependency deep inside itself.",
     "**Diagnose shadowing with `module.__file__`.** If the path is inside your project, that is the bug.",
     "**Prefer absolute imports.** They survive files being moved and say where a name comes from without counting dots.",
-    "**A circular import fails when one module needs a name from another that is still executing** — the error says \"partially initialized module\", and names the module that was already running.",
+    "**A circular import fails when one module needs a name from another that is still executing** — the error says \"partially initialised module\", and names the module that was already running.",
     "**Importing the module rather than the name defers the lookup** and often breaks a cycle; but a cycle usually indicates two modules that are really one concept.",
     "**`if TYPE_CHECKING:` imports do not exist at runtime**, which removes cycles that exist only for annotations — it needs `from __future__ import annotations` or quoted types.",
     "**A package's `__init__.py` runs before anything else in that package**, so every import it makes is a tax on every use of the package."
@@ -732,21 +732,21 @@ if __name__ == "__main__":
       {
         stem: "`ImportError: cannot import name 'price_for' from partially initialized module 'shop.services'`. What does this tell you?",
         options: [
-          "`shop.services` does not define `price_for` at all",
-          "`shop.services` was already executing when something imported it again, and `price_for` is defined below the line that started the cycle",
-          "The file has a syntax error before that definition",
-          "`shop.services` was imported under two different names"
+          "`shop.services` does not define `price_for` at all — the name was removed or misspelled in a refactor",
+          "The file has a syntax error before that definition, so Python stopped executing the module partway",
+          "`shop.services` was imported under two different names, so Python created two separate module objects",
+          "It was re-imported mid-execution, before the line defining `price_for` ran"
         ],
-        answer: 1,
+        answer: 3,
         why: "The cache returns the module object as soon as execution begins, so a re-entrant import gets a real module that is only partly populated. Names defined below the import statement that triggered the cycle do not exist yet. The useful question is not what `shop.services` looks like — it is what started importing it, because that is where the cycle begins."
       },
       {
         stem: "`python run.py` works but `python -m shop.run` says `No module named 'shop'`. Why?",
         options: [
-          "`-m` does not support packages",
-          "`-m` puts the current working directory on `sys.path` rather than the script's directory, and the command was run from inside `shop/`",
-          "`run.py` is missing a `__main__` guard",
-          "`shop/__init__.py` is empty"
+          "`-m` does not support packages, only single top-level modules, so `shop.run` cannot be addressed",
+          "`-m` puts the working directory on `sys.path`, and you ran it inside `shop/`",
+          "`run.py` is missing a `__main__` guard, so `-m` refuses to execute it as a program",
+          "`shop/__init__.py` is empty, and `-m` needs it to declare the package's modules before it can import them"
         ],
         answer: 1,
         why: "`python x.py` prepends the *script's* directory; `python -m` prepends the *working* directory. Run from inside `shop/`, the path contains `/project/shop`, so the package's contents are importable but the package itself is not. Running from the project root fixes it, and installing with `pip install -e .` removes the dependence on which directory you happen to be in."
@@ -755,22 +755,22 @@ if __name__ == "__main__":
         stem: "A traceback shows `smtplib.py` failing at `import email.utils` with `cannot import name 'utils' from 'shop.email'`. What happened?",
         options: [
           "The standard library installation is corrupted",
-          "A local `shop/email.py` is earlier on `sys.path` than the stdlib, so an absolute `import email` from inside the standard library finds your file",
-          "`smtplib` requires a package that is not installed",
-          "The virtual environment is not active"
+          "`smtplib` requires an optional package that is not installed in the current environment",
+          "The virtual environment is not active",
+          "Your `shop/email.py` shadows the stdlib `email` for every importer"
         ],
-        answer: 1,
+        answer: 3,
         why: "`sys.path` is searched in order and your directory is first, so shadowing affects everyone's absolute imports — including the standard library's own. That is why the traceback blames a file you have never opened. Confirm with `python -c \"import email; print(email.__file__)\"`, and rename the offender; `sys.stdlib_module_names` makes a four-line test that prevents recurrence."
       },
       {
         stem: "Why should a package's `__init__.py` usually stay empty?",
         options: [
-          "Python does not execute it anyway",
-          "It runs before anything else in the package, so every import it makes is paid on every use — a CLI can spend seconds loading dependencies before `main()` starts",
-          "Re-exports break type checkers",
-          "It prevents the package from being installed"
+          "Python does not execute `__init__.py` anyway; it only marks the directory as a package",
+          "Re-exports from `__init__.py` break type checkers, which cannot follow the indirection",
+          "It runs on every import of the package, so each import in it is paid by everyone",
+          "Code in `__init__.py` prevents the package from being installed as a wheel"
         ],
-        answer: 1,
+        answer: 2,
         why: "`import mypkg.anything` executes `mypkg/__init__.py` first. Convenience re-exports accumulate, one of them eventually reaches a heavy dependency, and then a command that formats a date loads a deep learning framework to do it. The same mechanism turns one circular import into a package-wide one, since every import now runs the whole graph."
       }
     ]
@@ -793,7 +793,7 @@ if __name__ == "__main__":
       {
         level: "advanced",
         q: "How do you fix a circular import?",
-        strong: "First understand it: one module needs a name from another that is still executing, which is why the error says \"partially initialized\". The tactical fixes are importing the module rather than the name, or deferring the import into a function. The real fix is usually to remove the cycle.",
+        strong: "First understand it: one module needs a name from another that is still executing, which is why the error says \"partially initialised\". The tactical fixes are importing the module rather than the name, or deferring the import into a function. The real fix is usually to remove the cycle.",
         answer: [
           { t: "p", text: "Treating the cycle as a design signal is what separates a good answer: two modules that each need the other are generally one concept split in the wrong place, or both missing a layer beneath them." },
           { t: "p", text: "`if TYPE_CHECKING:` deserves a mention because a large share of real cycles exist only for annotations, and that import genuinely does not exist at runtime." },

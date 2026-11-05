@@ -1,7 +1,7 @@
 /* ============================================================================
    LESSON 2.12 — Production Deployment
    Every export was actually performed and every number measured on torch
-   2.10 + onnxruntime (scratchpad/dl/d212.py). Two current-version gotchas
+   2.10 + onnxruntime (d212.py). Two current-version gotchas
    found and reported.
    ========================================================================= */
 EC.receiveLesson({

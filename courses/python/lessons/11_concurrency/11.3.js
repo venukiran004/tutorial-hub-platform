@@ -706,20 +706,20 @@ def test_producer_failure_still_shuts_the_pool_down():
         stem: "A worker thread raises `ValueError`. The parent calls `join()` and continues normally. Why?",
         options: [
           "`join()` swallows exceptions by design and returns the traceback",
-          "The threading machinery prints the traceback and discards it — `join()` has no mechanism to re-raise, so the parent cannot tell",
           "The exception is re-raised on the next `start()`",
-          "`ValueError` is not propagated across threads; other exceptions are"
+          "`ValueError` is not propagated across threads; other exceptions are",
+          "The thread's traceback is printed and dropped; `join()` cannot re-raise it"
         ],
-        answer: 1,
+        answer: 3,
         why: "A failed worker is indistinguishable from a successful one, so a job that processed nothing reports success. `ThreadPoolExecutor` fixes this: the exception is captured in the `Future` and re-raised on `.result()`, which is how it would behave in ordinary code. Failing that, catch inside the thread and put the error somewhere the parent reads."
       },
       {
         stem: "A pool starts eight workers and the producer calls `work.put(None)` once at the end. What happens?",
         options: [
-          "All eight workers see the sentinel and exit",
-          "One worker exits; the other seven block forever in `get()`, and `queue.join()` never returns",
-          "The queue raises on the second `get()` after the sentinel",
-          "The sentinel is broadcast to every consumer"
+          "All eight workers see the sentinel and exit, because `None` is treated as a broadcast",
+          "One worker exits and seven block forever, so `queue.join()` never returns",
+          "The queue raises `Empty` on the second `get()` after the sentinel is consumed",
+          "The sentinel is broadcast to every consumer, and each one exits in turn"
         ],
         answer: 1,
         why: "A queue item is consumed by exactly one getter. You need one sentinel per worker, and it belongs in a `finally` so a producer exception still shuts the pool down. With `daemon=True` this bug is *hidden*: the process exits despite seven blocked threads and reports success."
@@ -727,23 +727,23 @@ def test_producer_failure_still_shuts_the_pool_down():
       {
         stem: "A consumer calls `work.task_done()` at the end of its loop body, and `transform(item)` sometimes raises. What is the consequence?",
         options: [
+          "That item is never marked done, so `queue.join()` waits forever",
           "The failing item is silently retried",
-          "The unfinished count is never decremented for that item, so `queue.join()` waits forever — a hang whose cause is an exception logged elsewhere",
           "The queue raises `ValueError` on the next `get()`",
           "Nothing — `task_done()` is optional"
         ],
-        answer: 1,
+        answer: 0,
         why: "`Queue.join()` blocks until `task_done()` has been called once per `put()`. An exception that skips the call leaves the count permanently high. Putting it in a `finally` fixes it, and the same exception also kills the worker, so the pool silently shrinks — two failures from one missing `try`."
       },
       {
         stem: "Why is `daemon=True` on a worker that writes files a data-loss risk rather than a tidiness issue?",
         options: [
-          "Daemon threads cannot open files",
-          "They are killed abruptly at interpreter exit and their `finally` blocks do not run, so a worker mid-write leaves a partial record and an unflushed buffer",
-          "Daemon threads run at a lower priority and fall behind",
-          "The GIL is released differently for daemon threads"
+          "They are killed at exit without running `finally`, leaving partial writes behind",
+          "Daemon threads cannot open files, so every write is silently dropped",
+          "Daemon threads run at a lower priority than normal threads and fall behind the producer",
+          "The GIL is released differently for daemon threads, so their writes can interleave"
         ],
-        answer: 1,
+        answer: 0,
         why: "A daemon thread is terminated rather than asked to stop, so cleanup is skipped entirely — files unclosed, buffers unflushed, locks released only because the process died. It also masks hangs: a pool with blocked workers exits cleanly and reports success. Use `daemon=True` only for genuinely disposable background work, and an `Event` to signal a clean stop."
       }
     ]

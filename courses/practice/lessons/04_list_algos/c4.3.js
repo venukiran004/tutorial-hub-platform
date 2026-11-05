@@ -7,15 +7,15 @@ EC.receiveLesson({
  "id": "c4.3",
  "lede": "**25 programs to write**, on subsequences and rearrangement. Each solution is folded away: write yours first, because recognising a solution and producing one are different skills.",
  "objectives": [
-  "Work through 30 problems on programs without looking anything up",
-  "Predict each answer before revealing it",
+  "Write 25 programs on subsequences and rearrangement without looking anything up",
   "Recognise the pattern each problem belongs to",
-  "Explain your solution out loud, including its complexity"
+  "Explain your solution out loud, including its complexity",
+  "Compare your solution with the one shown and with its edge cases"
  ],
- "prerequisites": [],
+ "prerequisites": [
+  "c4.2"
+ ],
  "blocks": [
-
-    {"kind": "matrix", "title": "What this set drills", "caption": "**Programs 461–485.** What this set actually drills, counted from its own problems — 15 of the 25 fall into these groups. Work the group you are weakest at first; the answers are folded away so you have to produce one rather than recognise it.", "cols": ["problems", "for example"], "rows": ["lists", "threads", "graphs & trees"], "cells": [[{"text": "12", "tone": "accent"}, "Largest Number from List"], [{"text": "2", "tone": "good"}, "List as Queue (FIFO)"], [{"text": "1", "tone": "violet"}, "Implement Min Heap"]], "t": "diagram", "id": "dg-c4_3-top-0"},
   {
    "t": "callout",
    "kind": "note",

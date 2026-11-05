@@ -1,6 +1,6 @@
 /* ============================================================================
    LESSON 4.3 — Multi-Head Attention and Positional Encoding
-   Head-count parameter invariance measured (scratchpad/dl/d41.py); PE
+   Head-count parameter invariance measured (d41.py); PE
    properties from d37.py.
    ========================================================================= */
 EC.receiveLesson({

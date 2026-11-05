@@ -51,7 +51,7 @@ EC.receiveLesson({
     { t: "out", text:
 "the tiny corpus, characters plus an end marker\n\n  5 x  l o w </w>\n  2 x  l o w e s t </w>\n  6 x  n e w e r </w>\n  3 x  w i d e r </w>" },
 
-    { t: "code", lang: "python", title: "scratchpad/nlp/n48.py — counting pairs and merging", code:
+    { t: "code", lang: "python", title: "counting pairs and merging", code:
 "def pair_counts(vocab):\n    c = collections.Counter()\n    for word, n in vocab.items():\n        for i in range(len(word) - 1):\n            c[(word[i], word[i+1])] += n      # weighted by word frequency\n    return c\n\ndef merge(vocab, pair):\n    new = {}\n    for word, n in vocab.items():\n        i, w = 0, []\n        while i < len(word):\n            if i < len(word) - 1 and (word[i], word[i+1]) == pair:\n                w.append(word[i] + word[i+1]); i += 2\n            else:\n                w.append(word[i]); i += 1\n        new[tuple(w)] = n\n    return new",
       caption: "Train by repeating: count pairs, merge the most frequent, record the rule. The **order** of the rules is part of the trained artefact." },
 

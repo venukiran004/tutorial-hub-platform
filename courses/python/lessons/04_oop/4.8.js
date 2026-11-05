@@ -23,7 +23,7 @@ EC.receiveLesson({
 
     { t: "viz",
       title: "Three ways to state a contract",
-      caption: "They differ in when the failure appears. A plain convention fails at run time on the missing method; an ABC fails at instantiation; a Protocol fails in the type checker, before anything runs.",
+      caption: "They differ in when the failure appears. A plain convention fails at runtime on the missing method; an ABC fails at instantiation; a Protocol fails in the type checker, before anything runs.",
       svg: `<svg viewBox="0 0 880 240" role="img" aria-label="Convention, abstract base class and Protocol compared by when each detects a missing method">
   <g style="stroke-width:2">
     <rect x="24"  y="46" width="260" height="140" rx="8" style="fill:var(--crit);fill-opacity:.09;stroke:var(--crit)"/>
@@ -341,12 +341,15 @@ class Serialiser(ABC):
     def dumps(self, obj: object) -> str: ...
 
 
-import json
+class LegacyCodec:                 # someone else's class: no inheritance
+    def dumps(self, obj: object) -> str:
+        return repr(obj)
 
-Serialiser.register(json)          # a MODULE, registered as a subclass
 
-print(issubclass(json, Serialiser))
-print(isinstance(json, Serialiser))
+Serialiser.register(LegacyCodec)   # now treated as a subclass
+
+print(issubclass(LegacyCodec, Serialiser))
+print(isinstance(LegacyCodec(), Serialiser))
 `,
       out: `True
 True`,
@@ -692,32 +695,32 @@ if __name__ == "__main__":
       {
         stem: "When does `abstractmethod` actually prevent something?",
         options: [
+          "At instantiation — creating an instance raises `TypeError` naming the missing methods",
           "At class definition — defining a subclass without the method raises immediately",
-          "At instantiation — the class can be defined, but creating an instance raises `TypeError` naming the missing methods",
-          "At import time, when `ABCMeta` scans the module",
-          "At the first call to the missing method"
+          "At import time, when `ABCMeta` scans the module for subclasses that are incomplete",
+          "At the first call to the missing method, which raises `NotImplementedError` from the base"
         ],
-        answer: 1,
+        answer: 0,
         why: "`ABCMeta` collects abstract names into `__abstractmethods__`, and `object.__new__` refuses to allocate while that set is non-empty. So defining `class Broken(Base): pass` succeeds and `Broken()` raises. That is later than a compiler would catch it and far earlier than the first call — and the message names the missing methods. Note it only checks that the *name* exists; a wrong signature satisfies the ABC and fails at the call site."
       },
       {
         stem: "A base class has three abstract methods, no concrete methods, and all implementations are yours and well tested. What should it be?",
         options: [
-          "An ABC — it defines an interface, which is what ABCs are for",
-          "A `Protocol` — with no shared implementation and no need for instantiation-time enforcement, the ABC only adds an inheritance requirement",
-          "A regular base class with methods raising `NotImplementedError`",
-          "A module of free functions"
+          "A `Protocol` — with nothing to share, the ABC only adds an inheritance requirement",
+          "An ABC — it defines an interface, which is exactly what abstract base classes exist for",
+          "A regular base class whose methods raise `NotImplementedError`, which avoids the metaclass",
+          "A module of free functions, since there is no state to keep in an object"
         ],
-        answer: 1,
+        answer: 0,
         why: "An ABC with only abstract methods is a `Protocol` that also demands inheritance. Since there is nothing to hand down and the implementations are already exercised by tests, the runtime enforcement buys little — while the inheritance requirement couples every provider to the interface and makes third-party or test classes conform only by subclassing. A protocol gives the same mypy checking with none of that."
       },
       {
         stem: "`Base.register(MyClass)` makes `issubclass(MyClass, Base)` return `True`. What has been verified?",
         options: [
-          "That `MyClass` implements every abstract method",
-          "Nothing — `register` is an unchecked assertion, and the class may lack every required method",
-          "That `MyClass` has a compatible constructor signature",
-          "That `MyClass` does not conflict with the base's MRO"
+          "That `MyClass` implements every abstract method that `Base` declares",
+          "Nothing — `register` is an unchecked claim",
+          "That `MyClass` has a constructor signature compatible with the base's",
+          "That `MyClass` does not create a conflict in the base's MRO"
         ],
         answer: 1,
         why: "`register` records a virtual-subclass relationship for `isinstance`/`issubclass` and performs no verification at all — a class with no methods can be registered and will pass every guard until something calls a missing method. It also inherits no concrete mixin methods. It gives up an ABC's only real advantage over a protocol while keeping the coupling, which is why reaching for it usually means structural typing was the right tool."
@@ -725,12 +728,12 @@ if __name__ == "__main__":
       {
         stem: "Which situation genuinely justifies an ABC over a `Protocol`?",
         options: [
-          "You want mypy to check that implementations have the right methods",
           "A base `run()` method owns a transaction and guaranteed rollback that subclasses must not be able to skip",
-          "You want `isinstance` checks to work at runtime",
-          "The interface has more than three methods"
+          "You want mypy to check that every implementation provides the right methods with the right signatures",
+          "You want `isinstance` checks against the interface to work at runtime, not only in the type checker",
+          "The interface has more than three methods, which is too many to describe structurally"
         ],
-        answer: 1,
+        answer: 0,
         why: "That is the template method pattern: real shared implementation the base hands down, plus an invariant subclasses cannot break because they never see the code. Protocols check types just as well, `@runtime_checkable` provides `isinstance` (loosely), and method count is irrelevant. Shared implementation and instantiation-time enforcement are the only two things an ABC uniquely provides."
       }
     ]
