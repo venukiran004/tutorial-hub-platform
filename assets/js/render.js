@@ -272,7 +272,7 @@
   var QUIZ_ORD = ["first", "second", "third", "fourth", "fifth"];
   // An explanation that points at an option in a way quizWhy cannot rewrite,
   // so the question keeps its authored order.
-  var QUIZ_KEEP = /(?:^|[.;:—]\s+)(?:the |your )?(?:first|second|third|fourth|last)\b(?! options?\b)(?! and (?:second|third|fourth|last) options\b)|\boptions? [A-D1-4]\b|\b[A-D], [A-D]\b|\b[A-D] and [A-D]\b|\bOnly [A-D]\b|\([A-D]\)/i;
+  var QUIZ_KEEP = /(?:^|[.;:—]\s+)(?:[Tt]he |[Yy]our )?(?:[Ff]irst|[Ss]econd|[Tt]hird|[Ff]ourth|[Ll]ast)\b(?! options?\b)(?! and (?:second|third|fourth|last) options\b)|\b[Oo]ptions? [A-D1-4]\b|\b[A-D], [A-D]\b|\b[A-D] and [A-D]\b|\bOnly [A-D]\b|\([A-D]\)/;
 
   // Authored answers cluster on one position, so options are shuffled. Seeded
   // from the stem so the order survives a reload.
