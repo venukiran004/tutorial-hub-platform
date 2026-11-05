@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Recognise the cases where a cache write costs more than it saves"
   ],
 
-  prerequisites: ["1.5", "1.14"],
+  prerequisites: ["1.5"],
 
   blocks: [
 

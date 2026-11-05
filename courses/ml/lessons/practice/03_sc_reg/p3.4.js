@@ -29,7 +29,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "We maximize log-likelihood (equivalently minimize negative log-likelihood = log loss)."
+     "text": "We maximise log-likelihood (equivalently minimise negative log-likelihood = log loss)."
     },
     {
      "t": "p",
@@ -84,7 +84,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Suspiciously high AUC often indicates leakage. Also check if model generalizes across subgroups."
+     "text": "**Explanation:** Suspiciously high AUC often indicates leakage. Also check if model generalises across subgroups."
     }
    ],
    "kind": ""
@@ -359,15 +359,15 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Logistic regression doesn't maximize margin directly (unlike SVM). It maximizes likelihood."
+     "text": "**Answer:** Logistic regression doesn't maximise margin directly (unlike SVM). It maximises likelihood."
     },
     {
      "t": "p",
-     "text": "**With strong regularization:** Logistic regression's solution approaches maximum margin solution."
+     "text": "**With strong regularisation:** Logistic regression's solution approaches maximum margin solution."
     },
     {
      "t": "p",
-     "text": "**Explanation:** SVM explicitly maximizes margin. LR with L2 regularization implicitly encourages margin but optimizes probability."
+     "text": "**Explanation:** SVM explicitly maximises margin. LR with L2 regularisation implicitly encourages margin but optimises probability."
     }
    ],
    "kind": ""
@@ -384,7 +384,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "SGD or mini-batch optimization",
+      "SGD or mini-batch optimisation",
       "Online learning (partial_fit)",
       "Sparse data format (CSR matrix)",
       "Feature hashing",
@@ -534,7 +534,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** For 3 classes, true=[0,1,0], pred=[0.1, 0.8, 0.1]: L = -log(0.8) = 0.22. Penalizes low probability for true class."
+     "text": "**Explanation:** For 3 classes, true=[0,1,0], pred=[0.1, 0.8, 0.1]: L = -log(0.8) = 0.22. Penalises low probability for true class."
     }
    ],
    "kind": ""
@@ -565,7 +565,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "99",
-   "q": "What is the effect of regularization on logistic regression coefficients?",
+   "q": "What is the effect of regularisation on logistic regression coefficients?",
    "body": [
     {
      "t": "p",
@@ -574,14 +574,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**No regularization:** Coefficients can be arbitrarily large, especially with separable data (coefficients → infinity)",
+      "**No regularisation:** Coefficients can be arbitrarily large, especially with separable data (coefficients → infinity)",
       "**L2:** Shrinks all coefficients proportionally",
       "**L1:** Shrinks some to exactly zero (sparse solution)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** With perfectly separable data, unregularized LR diverges. Regularization ensures finite solution."
+     "text": "**Explanation:** With perfectly separable data, unregularized LR diverges. Regularisation ensures finite solution."
     }
    ],
    "kind": ""

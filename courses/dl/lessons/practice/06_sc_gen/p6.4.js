@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "76",
-   "q": "What is the difference between VAE and normalizing flows?",
+   "q": "What is the difference between VAE and normalising flows?",
    "body": [
     {
      "t": "p",
@@ -27,7 +27,7 @@ EC.receiveLesson({
      "head": [
       "Feature",
       "VAE",
-      "Normalizing Flow"
+      "Normalising Flow"
      ],
      "rows": [
       [
@@ -54,7 +54,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Normalizing flows: chain of invertible transformations that map simple distribution to complex one. Exact log-likelihood. No reconstruction/KL trade-off. But: requires invertible architecture (restrictive)."
+     "text": "**Explanation:** Normalising flows: chain of invertible transformations that map simple distribution to complex one. Exact log-likelihood. No reconstruction/KL trade-off. But: requires invertible architecture (restrictive)."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "77",
-   "q": "What is a normalizing flow?",
+   "q": "What is a normalising flow?",
    "body": [
     {
      "t": "p",
@@ -104,7 +104,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Innovation:** Invertible 1×1 conv generalizes channel permutation (learned). ActNorm replaces batch norm."
+     "text": "**Innovation:** Invertible 1×1 conv generalises channel permutation (learned). ActNorm replaces batch norm."
     },
     {
      "t": "p",
@@ -120,7 +120,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Core building block of normalizing flows:"
+     "text": "**Answer:** Core building block of normalising flows:"
     },
     {
      "t": "code",
@@ -179,7 +179,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Learn compressed representation Z that is maximally predictive of target Y while being maximally compressed from input X. Generalizes VAE to supervised setting. β controls compression-prediction trade-off."
+     "text": "**Explanation:** Learn compressed representation Z that is maximally predictive of target Y while being maximally compressed from input X. Generalises VAE to supervised setting. β controls compression-prediction trade-off."
     }
    ],
    "kind": ""
@@ -425,7 +425,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard RNN is deterministic given input. VRNN adds stochasticity → better modeling of uncertainty in sequential data. Captures variability in time series, speech, handwriting."
+     "text": "**Explanation:** Standard RNN is deterministic given input. VRNN adds stochasticity → better modelling of uncertainty in sequential data. Captures variability in time series, speech, handwriting."
     }
    ],
    "kind": ""
@@ -651,7 +651,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Latent diffusion:** AE + diffusion = Stable Diffusion (dominant approach)",
-      "**Tokenization:** VQ-VAE converts continuous data to discrete tokens for LLM processing",
+      "**Tokenisation:** VQ-VAE converts continuous data to discrete tokens for LLM processing",
       "**Multi-modal:** Encode/decode across modalities",
       "**World models:** AE learns compressed world state for decision-making",
       "**Scientific discovery:** Latent spaces for protein structure, molecular design"

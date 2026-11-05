@@ -136,7 +136,7 @@ EC.receiveLesson({
         { t: "p", text: "And the cost is genuinely low. 10.10 priced full tracing at this volume in single-digit dollars a month, and 10.11 priced a stratified judge at about 5% of the inference bill. Neither of those is a budget conversation." }
       ] },
 
-    { t: "ladder", title: "Four states of observability maturity",
+    { t: "ladder", lang: "text", title: "Four states of observability maturity",
       rungs: [
         { level: "bad", label: "Uptime and latency only", why: "The classical stack, complete and silent. Every signal describes the machinery and none describes the output, so a quality incident is invisible until a customer reports it.", code: `http_5xx  0.0%
 p95       1842 ms

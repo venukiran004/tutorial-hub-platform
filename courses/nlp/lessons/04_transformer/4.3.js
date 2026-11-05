@@ -152,7 +152,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Nothing in the five steps refers to position. Shuffle the input rows and the output rows shuffle identically — the operation cannot tell *the cat sat* from *sat cat the*. That is precisely why positional encoding exists and why it is added to the input rather than being part of attention: the mechanism is deliberately order-blind, and order is injected into the representation beforehand. Lesson 4.5 takes that apart." }] },
 
     { t: "exercise", title: "Rebuild it and break it",
-      tasks: [
+      requirements: [
         "Implement scaled dot-product attention in twelve lines of NumPy and check it against `torch.nn.functional.scaled_dot_product_attention`.",
         "Recompute the output rows yourself and confirm which entries are wrong.",
         "Sweep d_k from 4 to 1024, measuring score variance, and confirm it tracks d_k.",

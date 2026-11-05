@@ -149,7 +149,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1603",
-   "q": "Program 1603: CPU optimization",
+   "q": "Program 1603: CPU optimisation",
    "body": [
     {
      "t": "code",
@@ -172,7 +172,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1604",
-   "q": "Program 1604: Memory optimization",
+   "q": "Program 1604: Memory optimisation",
    "body": [
     {
      "t": "code",

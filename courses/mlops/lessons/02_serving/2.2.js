@@ -163,7 +163,7 @@ n_model = n_for_proportion(0.7167, 0.7667)    # accuracy -5 points`,
         "A label delay you cannot state in days is the finding, not an obstacle to the exercise."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The two usual discoveries: the label delay is far longer than anyone says out loud, and at least one existing alert is computed on a window with power well under 0.5 — which explains an alert that has a reputation for being flaky without anyone having diagnosed why." },
           { t: "p", text: "The useful output is a table of four times. It makes the design argument for you: the signals fast enough to page on are the ones that cannot establish harm, so paging and retraining need separate triggers, and the prediction log is what makes the slow one usable at all." }
         ]

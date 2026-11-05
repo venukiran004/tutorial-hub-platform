@@ -436,7 +436,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`__del__` is a finalizer called when an object is about to be destroyed. Avoid relying on it because: (1) timing is **non-deterministic** — you can't predict *when* it runs; (2) exceptions raised inside it are silently ignored; (3) before Python 3.4 it made cyclic objects uncollectable. Use **context managers** (`__enter__`/`__exit__`) or `contextlib`/`weakref.finalize` for deterministic cleanup."
+     "text": "`__del__` is a finaliser called when an object is about to be destroyed. Avoid relying on it because: (1) timing is **non-deterministic** — you can't predict *when* it runs; (2) exceptions raised inside it are silently ignored; (3) before Python 3.4 it made cyclic objects uncollectable. Use **context managers** (`__enter__`/`__exit__`) or `contextlib`/`weakref.finalize` for deterministic cleanup."
     },
     {
      "t": "code",
@@ -754,7 +754,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Locals are stored in a per-frame array and accessed by index via `LOAD_FAST` (O(1), no hashing). Globals and builtins are looked up by name in dictionaries via `LOAD_GLOBAL`. In tight loops, binding a global or built-in to a local (`_len = len`) is a real micro-optimization."
+     "text": "Locals are stored in a per-frame array and accessed by index via `LOAD_FAST` (O(1), no hashing). Globals and builtins are looked up by name in dictionaries via `LOAD_GLOBAL`. In tight loops, binding a global or built-in to a local (`_len = len`) is a real micro-optimisation."
     },
     {
      "t": "code",

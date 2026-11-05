@@ -117,10 +117,11 @@ async def chat(req: ChatRequest) -> StreamingResponse:
                     yield f"data: {json.dumps({'delta': text})}\\n\\n"
 
                 final = await stream.get_final_message()
-                yield f"data: {json.dumps({
+                done = json.dumps({
                     'done': True,
                     'usage': final.usage.model_dump(),
-                })}\\n\\n"
+                })
+                yield f"data: {done}\\n\\n"
 
         except asyncio.CancelledError:
             # The client went away. Log what we have and re-raise --

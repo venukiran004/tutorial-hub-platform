@@ -364,7 +364,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2056",
-   "q": "Program 2056: Log Analyzer",
+   "q": "Program 2056: Log Analyser",
    "body": [
     {
      "t": "code",

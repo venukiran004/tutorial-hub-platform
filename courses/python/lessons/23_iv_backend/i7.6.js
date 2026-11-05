@@ -63,7 +63,7 @@ EC.receiveLesson({
     "Answer",
     "Authentication (AuthN)",
     "401 Unauthorized",
-    "Authorization (AuthZ)",
+    "Authorisation (AuthZ)",
     "403 Forbidden",
     "Key takeaway"
    ],
@@ -76,7 +76,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Authentication (AuthN)** = *\"who are you?\"* — verifying identity (password, token, MFA). Failure → **401 Unauthorized**.",
-      "**Authorization (AuthZ)** = *\"what are you allowed to do?\"* — checking permissions for a resource/action (RBAC, scopes, ownership). Failure → **403 Forbidden**."
+      "**Authorisation (AuthZ)** = *\"what are you allowed to do?\"* — checking permissions for a resource/action (RBAC, scopes, ownership). Failure → **403 Forbidden**."
      ]
     },
     {
@@ -403,7 +403,7 @@ EC.receiveLesson({
    "q": "Which OAuth2 grant type do you use for an SPA/mobile app vs a backend service?",
    "terms": [
     "Answer",
-    "Authorization Code + PKCE",
+    "Authorisation Code + PKCE",
     "Client Credentials",
     "Refresh Token",
     "Implicit",
@@ -417,7 +417,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Authorization Code + PKCE:** for user login from a public client (SPA/mobile/web). PKCE prevents auth-code interception and is mandatory for public clients.",
+      "**Authorisation Code + PKCE:** for user login from a public client (SPA/mobile/web). PKCE prevents auth-code interception and is mandatory for public clients.",
       "**Client Credentials:** for machine-to-machine (no user); the service authenticates with its own id/secret.",
       "**Refresh Token:** to renew access tokens.",
       "Avoid **Implicit** (deprecated) and **Password/ROPC** (legacy; first-party only)."
@@ -425,7 +425,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Authorization Code + PKCE for users, Client Credentials for service-to-service."
+     "text": "**Key takeaway:** Authorisation Code + PKCE for users, Client Credentials for service-to-service."
     }
    ]
   },
@@ -453,7 +453,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The most-forgotten check is **object-level (ownership) authorisation** — confirming the user owns *this specific* record, not just that their role can read \"some\" records. It's OWASP's #1 (\"Broken Object Level Authorization\")."
+     "text": "The most-forgotten check is **object-level (ownership) authorisation** — confirming the user owns *this specific* record, not just that their role can read \"some\" records. It's OWASP's #1 (\"Broken Object Level Authorisation\")."
     },
     {
      "t": "code",
@@ -511,11 +511,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`pickle.loads()` on untrusted data and `yaml.load()` (full loader) can **execute arbitrary code** during deserialization. Use data-only formats: `json.loads()`, or `yaml.safe_load()`. Never unpickle anything you didn't produce yourself."
+     "text": "`pickle.loads()` on untrusted data and `yaml.load()` (full loader) can **execute arbitrary code** during deserialisation. Use data-only formats: `json.loads()`, or `yaml.safe_load()`. Never unpickle anything you didn't produce yourself."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Insecure deserialization = remote code execution; prefer JSON / `yaml.safe_load`, never `pickle` untrusted input."
+     "text": "**Key takeaway:** Insecure deserialisation = remote code execution; prefer JSON / `yaml.safe_load`, never `pickle` untrusted input."
     }
    ]
   },
@@ -729,7 +729,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Revision tip:** the whole topic reduces to three questions at every trust boundary — *who are you?* (hash passwords, validate tokens), *what may you do?* (per-object authz), and *is this input safe?* (parameterise, allow-list, never deserialize untrusted data) — with secrets kept out of code and crypto left to vetted libraries."
+     "text": "**Revision tip:** the whole topic reduces to three questions at every trust boundary — *who are you?* (hash passwords, validate tokens), *what may you do?* (per-object authz), and *is this input safe?* (parameterise, allow-list, never deserialise untrusted data) — with secrets kept out of code and crypto left to vetted libraries."
     }
    ]
   }

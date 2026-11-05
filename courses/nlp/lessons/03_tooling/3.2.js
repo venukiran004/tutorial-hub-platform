@@ -221,7 +221,7 @@ fd.plot(20, cumulative=True)`,
     { t: "p", text: "The weakness is the same as its strength: a fixed lexicon means **a domain word carrying strong sentiment in your data has no entry at all** — \u201csick\u201d in a product review, \u201cflat\u201d in a drinks review — and VADER scores those neutral. `FreqDist.hapaxes()` is worth running early for a related reason: the single-occurrence words are usually most of the vocabulary, and that number decides whether a count-based model has any chance." },
 
     { t: "exercise", title: "Break the normalisers",
-      tasks: [
+      requirements: [
         "Find five more word triples that Porter conflates into one stem the way it does universal, university and universe.",
         "Lemmatise a document twice — once with the default noun assumption, once feeding real POS tags from `pos_tag`. Count how many lemmas differ.",
         "Walk the hypernym path from a domain term of yours up to `entity` and note where it stops being useful.",

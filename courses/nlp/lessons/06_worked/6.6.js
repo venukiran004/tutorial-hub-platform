@@ -95,7 +95,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The encoder has no loss of its own. It is trained entirely by gradient flowing backwards through **cross-attention** — the decoder's queries meeting the encoder's keys and values is the only path connecting the two. So the encoder learns to produce representations that happen to be useful for the decoder's cross-attention, which is a purely indirect signal. That is worth appreciating: nothing ever tells the encoder what a good source representation is, only whether the decoder managed to translate from it." }] },
 
     { t: "exercise", title: "Compute and compare",
-      tasks: [
+      requirements: [
         "Run the script and confirm the loss of 2.532 to three decimals.",
         "Compute ln(vocab_size) and verify the model is worse than uniform.",
         "Compute the per-position loss and identify which position contributes most.",

@@ -117,7 +117,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "108",
-   "q": "How do you normalize and standardize data in Pandas without sklearn?",
+   "q": "How do you normalise and standardise data in Pandas without sklearn?",
    "body": [
     {
      "t": "code",

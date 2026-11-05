@@ -42,12 +42,12 @@ EC.receiveLesson({
       "\\(P(A|B)\\): **Posterior** — updated belief after observing evidence \\(B\\)",
       "\\(P(B|A)\\): **Likelihood** — probability of evidence given hypothesis",
       "\\(P(A)\\): **Prior** — initial belief",
-      "\\(P(B)\\): **Evidence (marginal likelihood)** — normalizing constant"
+      "\\(P(B)\\): **Evidence (marginal likelihood)** — normalising constant"
      ]
     },
     {
      "t": "p",
-     "text": "**ML applications:** Naive Bayes classifier, Bayesian optimization, posterior inference, spam filtering."
+     "text": "**ML applications:** Naive Bayes classifier, Bayesian optimisation, posterior inference, spam filtering."
     }
    ],
    "kind": ""
@@ -87,7 +87,7 @@ EC.receiveLesson({
       [
        "Prior info",
        "Not used",
-       "Explicitly modeled"
+       "Explicitly modelled"
       ],
       [
        "Typical output",
@@ -96,8 +96,8 @@ EC.receiveLesson({
       ],
       [
        "Overfitting",
-       "Regularization as add-on",
-       "Priors naturally regularize"
+       "Regularisation as add-on",
+       "Priors naturally regularise"
       ]
      ]
     }
@@ -229,7 +229,7 @@ EC.receiveLesson({
       [
        "Uniform",
        "\\(a, b\\)",
-       "Random initialization, exploration"
+       "Random initialisation, exploration"
       ]
      ]
     }
@@ -322,7 +322,7 @@ EC.receiveLesson({
       "**Expectation:** \\(E[X] = \\sum x \\cdot P(x)\\) or \\(\\int x \\cdot f(x)\\,dx\\) — the \"average\" value",
       "**Variance:** \\(\\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2\\) — spread",
       "**Covariance:** \\(\\text{Cov}(X, Y) = E[(X-\\mu_X)(Y-\\mu_Y)]\\) — linear relationship",
-      "**Correlation:** \\(\\rho_{XY} = \\frac{\\text{Cov}(X,Y)}{\\sigma_X \\sigma_Y} \\in [-1, 1]\\) — normalized covariance"
+      "**Correlation:** \\(\\rho_{XY} = \\frac{\\text{Cov}(X,Y)}{\\sigma_X \\sigma_Y} \\in [-1, 1]\\) — normalised covariance"
      ]
     }
    ],
@@ -355,7 +355,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** MLE finds parameters that maximize the probability of observed data:"
+     "text": "**Answer:** MLE finds parameters that maximise the probability of observed data:"
     },
     {
      "t": "math",
@@ -367,7 +367,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Properties:** Consistent, asymptotically efficient, asymptotically normal. But can overfit with small data (no regularization)."
+     "text": "**Properties:** Consistent, asymptotically efficient, asymptotically normal. But can overfit with small data (no regularisation)."
     }
    ],
    "kind": ""
@@ -394,12 +394,12 @@ EC.receiveLesson({
      "items": [
       "\\(D_{KL} \\geq 0\\) (Gibbs' inequality)",
       "\\(D_{KL}(P \\| Q) \\neq D_{KL}(Q \\| P)\\) — not symmetric (not a true distance)",
-      "Minimizing cross-entropy = minimizing KL divergence (since \\(H(P, Q) = H(P) + D_{KL}(P\\|Q)\\))"
+      "Minimising cross-entropy = minimising KL divergence (since \\(H(P, Q) = H(P) + D_{KL}(P\\|Q)\\))"
      ]
     },
     {
      "t": "p",
-     "text": "**ML uses:** VAE loss (ELBO), knowledge distillation, policy optimization (PPO/TRPO)."
+     "text": "**ML uses:** VAE loss (ELBO), knowledge distillation, policy optimisation (PPO/TRPO)."
     }
    ],
    "kind": ""
@@ -443,7 +443,7 @@ EC.receiveLesson({
       ],
       [
        "Handles missing features?",
-       "Yes (marginalize)",
+       "Yes (marginalise)",
        "Poorly"
       ]
      ]

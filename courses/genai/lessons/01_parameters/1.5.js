@@ -143,14 +143,14 @@ the claim: 1 token ~ 4 characters (English) ~ 0.75 words
     { t: "ol", items: [
       "**The rule is right for the case it was measured on and wrong elsewhere.** 4.43 against a claimed 4 is fine. 1.95 for UUIDs is not — a log line full of identifiers costs more than twice what the estimate says, and a retrieval corpus of such lines will overflow a budget you thought had headroom.",
       "**Words per token is the weaker rule.** It is commonly said 0.75; English prose measured **0.89**, and JSON measured 0.31. The word count of a document tells you very little about what it will cost.",
-      "**The tokenizer matters as much as the text.** French took 73 tokens under `cl100k_base` and **57** under `o200k_base` — a 22% reduction for the same text, because the newer vocabulary has more non-English subwords. Estimating with the wrong encoding is a different error from estimating with the wrong rule."
+      "**The tokeniser matters as much as the text.** French took 73 tokens under `cl100k_base` and **57** under `o200k_base` — a 22% reduction for the same text, because the newer vocabulary has more non-English subwords. Estimating with the wrong encoding is a different error from estimating with the wrong rule."
     ] },
 
     { t: "callout", kind: "good", title: "When an estimate is fine, and when it is not",
       body: [
         { t: "p", text: "**Fine:** sizing a budget in a design document, deciding roughly how many documents fit, capacity planning a month ahead. Being wrong by 30% does not change the decision." },
         { t: "p", text: "**Not fine:** anything that decides whether a request is sent. Truncating a prompt to fit, choosing how many retrieved chunks to include, enforcing a per-user token quota — all of these need the exact count, because the failure mode of a 30% underestimate is a rejected request or a silently truncated document." },
-        { t: "p", text: "`tiktoken` runs locally, costs nothing, and takes microseconds. There is no good reason to estimate on the hot path. For non-OpenAI models the equivalent is the model's own tokenizer from HuggingFace, and the counts will differ — 1.14 covers the cross-provider case." }
+        { t: "p", text: "`tiktoken` runs locally, costs nothing, and takes microseconds. There is no good reason to estimate on the hot path. For non-OpenAI models the equivalent is the model's own tokeniser from HuggingFace, and the counts will differ — 1.14 covers the cross-provider case." }
       ] },
 
     /* ============================================================ 03 */
@@ -339,7 +339,7 @@ most optimistic estimate: logline, off by 66.7%
         notes: [
           { t: "p", text: "Prose is the only sample where the estimate is pessimistic — it over-counts by 10%, which is harmless. Every other sample goes the other way, and the log line is off by 66.7%: the estimate promises 4,740 of them fit in the window and only 2,844 do. A UUID, a timestamp and an ISO-8601 string are all dense in tokens and sparse in characters, so a log line is close to the worst case for the rule — and it is exactly the content a retrieval corpus over infrastructure data is made of." },
           { t: "p", text: "The direction is what makes this dangerous rather than merely inaccurate. A pessimistic estimate wastes some window; an optimistic one builds a prompt that does not fit, and the failure surfaces as a rejected request or — worse, depending on the provider — a silently truncated one. You find out in production, on the long inputs, which are the ones you tested least." },
-          { t: "p", text: "Note also that the exact counts here come from `o200k_base`. A system talking to two providers has two tokenizers and two answers, and neither is authoritative for the other. If you enforce a budget, enforce it with the tokenizer of the model you are about to call — which means the budget code has to know which model it is building for." }
+          { t: "p", text: "Note also that the exact counts here come from `o200k_base`. A system talking to two providers has two tokenisers and two answers, and neither is authoritative for the other. If you enforce a budget, enforce it with the tokeniser of the model you are about to call — which means the budget code has to know which model it is building for." }
         ] } },
 
     /* ============================================================ scenario */
@@ -355,10 +355,10 @@ most optimistic estimate: logline, off by 66.7%
   takeaways: [
     "The **context window** covers prompt and output together. `max_tokens` caps the output only, and cannot buy space the prompt has already spent: `max_tokens ≤ window − input_tokens`.",
     "Providers differ on what happens when you overflow — some reject the request, some silently truncate the prompt and answer anyway. The second is worse, because the answer looks fine.",
-    "**Count with a tokenizer; do not estimate on the hot path.** `tiktoken` runs locally in microseconds.",
+    "**Count with a tokeniser; do not estimate on the hot path.** `tiktoken` runs locally in microseconds.",
     "The 4-characters-per-token rule measured **4.43** on English prose — and **2.77** on JSON and **1.95** on UUIDs, which is wrong by a factor of 2.3 on the payloads production systems actually send.",
     "The words-per-token rule is weaker still: it is commonly said 0.75, English prose measured **0.89**, and JSON measured 0.31.",
-    "**The tokenizer matters as much as the text.** The same French sentence took 73 tokens under `cl100k_base` and **57** under `o200k_base` — 22% fewer, for the same characters.",
+    "**The tokeniser matters as much as the text.** The same French sentence took 73 tokens under `cl100k_base` and **57** under `o200k_base` — 22% fewer, for the same characters.",
     "A truncated response and a short response are textually identical. **`finish_reason` is the only signal**, and `length` means the answer was cut, not finished.",
     "`max_tokens` is a cost and latency control, not a length control — the model does not know the cap exists. Ask for brevity in the prompt and set the cap above it as a safety net.",
     "Reserve output space before building the prompt, and log how many chunks got dropped. A retrieval system that silently drops context invalidates its own recall measurements."

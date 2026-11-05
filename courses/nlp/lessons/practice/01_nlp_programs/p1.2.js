@@ -106,7 +106,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "731",
-   "q": "Tokenization Comparison",
+   "q": "Tokenisation Comparison",
    "body": [
     {
      "t": "code",
@@ -142,7 +142,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "733",
-   "q": "CRF Layer for Sequence Labeling",
+   "q": "CRF Layer for Sequence Labelling",
    "body": [
     {
      "t": "code",
@@ -196,7 +196,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "736",
-   "q": "Stemming and Lemmatization",
+   "q": "Stemming and Lemmatisation",
    "body": [
     {
      "t": "code",

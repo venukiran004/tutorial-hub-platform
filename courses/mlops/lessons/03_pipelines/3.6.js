@@ -66,7 +66,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "trap", title: "A rollback nobody has run is not a rollback",
       body: [
-        { t: "p", text: "The usual failure is discovering during an incident that the previous model's artifact was pruned, or that it cannot be deserialized under the current library versions, or that the serving config names a tag which has been overwritten rather than an immutable version id." },
+        { t: "p", text: "The usual failure is discovering during an incident that the previous model's artifact was pruned, or that it cannot be deserialised under the current library versions, or that the serving config names a tag which has been overwritten rather than an immutable version id." },
         { t: "p", text: "All three are found in five minutes by rolling back on a Tuesday afternoon and rolling forward again. Lesson 14.3 covers the serving-side mechanics — fallbacks, circuit breakers and what the service does when the model is simply unavailable." }
       ] },
 
@@ -119,7 +119,7 @@ EC.receiveLesson({
         "If rollback has never been exercised, that is the cheapest high-value thing on the list to fix: do it on a quiet afternoon."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The most common profile is a log that records requests but not the score or the model version, a gate with an undocumented threshold, and a rollback nobody has run. All three are cheap to fix and each converts a future incident from archaeology into a lookup." },
           { t: "p", text: "The honest version of this exercise usually finds that signals are wired backwards — drift pages and nothing gates a retrain — which is exactly the arrangement lesson 1.1's measurements argue against, and rewiring it costs a configuration change rather than a project." }
         ]

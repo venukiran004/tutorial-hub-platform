@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** **(1) Data collection**: reviews with metadata (text, rating, timestamp, reviewer profile, purchase history), **(2) Label acquisition**: human-annotated sample + known fake campaigns, **(3) Feature engineering**: (a) Text: sentiment inconsistency (5-star text sounds negative), duplicate/near-duplicate text, (b) Behavioral: burst of reviews in short time, reviewer reviews many unrelated products, all 5-star or all 1-star, (c) Network: coordinated review clusters (same reviewer group targets same products), (d) Profile: new account, no purchase history, (4) Model: ensemble of text model (fine-tuned BERT) + behavioral model (XGBoost) + graph model (reviewer-product graph anomalies), **(5) Decision**: score → high risk auto-remove, medium → human review queue, **(6) Feedback loop**: reviewer appeals, human review decisions flow back, **(7) Adversarial**: fake reviewers adapt → regularly retrain, monitor for new patterns."
+     "text": "**Answer:** **(1) Data collection**: reviews with metadata (text, rating, timestamp, reviewer profile, purchase history), **(2) Label acquisition**: human-annotated sample + known fake campaigns, **(3) Feature engineering**: (a) Text: sentiment inconsistency (5-star text sounds negative), duplicate/near-duplicate text, (b) Behavioural: burst of reviews in short time, reviewer reviews many unrelated products, all 5-star or all 1-star, (c) Network: coordinated review clusters (same reviewer group targets same products), (d) Profile: new account, no purchase history, (4) Model: ensemble of text model (fine-tuned BERT) + behavioural model (XGBoost) + graph model (reviewer-product graph anomalies), **(5) Decision**: score → high risk auto-remove, medium → human review queue, **(6) Feedback loop**: reviewer appeals, human review decisions flow back, **(7) Adversarial**: fake reviewers adapt → regularly retrain, monitor for new patterns."
     }
    ],
    "kind": ""
@@ -38,11 +38,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "452",
-   "q": "Design a real-time pricing optimization system for a ride-sharing service (dynamic pricing / surge pricing).",
+   "q": "Design a real-time pricing optimisation system for a ride-sharing service (dynamic pricing / surge pricing).",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** **(1) Inputs**: current demand (ride requests per zone per minute), current supply (available drivers per zone), weather, events, time-of-day, **(2) Demand forecasting**: predict demand 15-30 min ahead per zone using LSTM or gradient boosting, **(3) Supply estimation**: driver availability prediction, ETA calculations, **(4) Pricing model**: price multiplier = f(demand/supply ratio, elasticity estimates), **(5) Elasticity learning**: how much does demand drop when price increases? Learn from historical data, **(6) Constraints**: max multiplier cap (e.g., 3x), minimum driver earnings guarantee, **(7) Optimization**: maximize total completed rides (or revenue) subject to constraints, **(8) Fairness**: cap pricing during emergencies, equity across neighborhoods, **(9) A/B testing**: test pricing strategies on randomized zones, **(10) Latency**: < 200ms for pricing decision."
+     "text": "**Answer:** **(1) Inputs**: current demand (ride requests per zone per minute), current supply (available drivers per zone), weather, events, time-of-day, **(2) Demand forecasting**: predict demand 15-30 min ahead per zone using LSTM or gradient boosting, **(3) Supply estimation**: driver availability prediction, ETA calculations, **(4) Pricing model**: price multiplier = f(demand/supply ratio, elasticity estimates), **(5) Elasticity learning**: how much does demand drop when price increases? Learn from historical data, **(6) Constraints**: max multiplier cap (e.g., 3x), minimum driver earnings guarantee, **(7) Optimisation**: maximise total completed rides (or revenue) subject to constraints, **(8) Fairness**: cap pricing during emergencies, equity across neighbourhoods, **(9) A/B testing**: test pricing strategies on randomised zones, **(10) Latency**: < 200ms for pricing decision."
     },
     {
      "t": "p",
@@ -58,7 +58,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** **(1) Offline store**: data warehouse (BigQuery/Snowflake/Delta Lake) — historical feature values for training, **(2) Online store**: low-latency key-value store (Redis/DynamoDB) — latest feature values for serving, **(3) Dual write**: batch pipeline writes to offline store, streaming pipeline updates online store, **(4) Point-in-time joins**: offline store supports temporal queries to prevent leakage, **(5) Feature registry**: catalog of all features with metadata (owner, description, freshness SLA), **(6) SDK**: `fs.get_features(entity_ids, feature_list)` works for both batch and online, **(7) Materialization**: scheduled jobs to sync offline → online, **(8) Tools**: Feast (open source), Tecton (managed), Databricks Feature Store."
+     "text": "**Answer:** **(1) Offline store**: data warehouse (BigQuery/Snowflake/Delta Lake) — historical feature values for training, **(2) Online store**: low-latency key-value store (Redis/DynamoDB) — latest feature values for serving, **(3) Dual write**: batch pipeline writes to offline store, streaming pipeline updates online store, **(4) Point-in-time joins**: offline store supports temporal queries to prevent leakage, **(5) Feature registry**: catalog of all features with metadata (owner, description, freshness SLA), **(6) SDK**: `fs.get_features(entity_ids, feature_list)` works for both batch and online, **(7) Materialisation**: scheduled jobs to sync offline → online, **(8) Tools**: Feast (open source), Tecton (managed), Databricks Feature Store."
     }
    ],
    "kind": ""
@@ -70,7 +70,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Tiered processing: (a) critical data: real-time streaming, (b) important: hourly batches, (c) historical: daily batches, **(2) Partitioning**: only process new/changed partitions (incremental), **(3) Columnar format**: Parquet/ORC — process only needed columns, **(4) Compression**: Snappy for balanced speed/size, Zstd for max compression, **(5) Compute optimization**: spot instances (70% cheaper) for non-critical jobs, **(6) Data lifecycle**: hot (SSD, 30 days) → warm (HDD, 1 year) → cold (archive, long-term), **(7) Query optimization**: materialized views for repeated queries, **(8) Cost monitoring**: per-pipeline cost attribution, alert on anomalies."
+     "text": "**Answer:** (1) Tiered processing: (a) critical data: real-time streaming, (b) important: hourly batches, (c) historical: daily batches, **(2) Partitioning**: only process new/changed partitions (incremental), **(3) Columnar format**: Parquet/ORC — process only needed columns, **(4) Compression**: Snappy for balanced speed/size, Zstd for max compression, **(5) Compute optimisation**: spot instances (70% cheaper) for non-critical jobs, **(6) Data lifecycle**: hot (SSD, 30 days) → warm (HDD, 1 year) → cold (archive, long-term), **(7) Query optimisation**: materialised views for repeated queries, **(8) Cost monitoring**: per-pipeline cost attribution, alert on anomalies."
     },
     {
      "t": "p",
@@ -94,11 +94,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "456",
-   "q": "You're building a topic modeling system for customer support tickets. LDA gives incoherent topics. What alternatives work better?",
+   "q": "You're building a topic modelling system for customer support tickets. LDA gives incoherent topics. What alternatives work better?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) BERTopic: cluster BERT embeddings + extract topic words — much more coherent, (2) Top2Vec: learns topic and word embeddings jointly, (3) pre-processing: clean tickets better — remove greetings, signatures, auto-replies, (4) hyperparameter tuning: LDA — try different number of topics, alpha/beta priors, (5) representation: TF-IDF with n-grams (bigrams capture \"credit card\" as unit), (6) supervised: if you have categories, use them as initial guidance, (7) evaluation: topic coherence score (C_v), human evaluation of top words per topic, (8) practical: visualize with pyLDAvis, share with domain experts for validation."
+     "text": "**Answer:** (1) BERTopic: cluster BERT embeddings + extract topic words — much more coherent, (2) Top2Vec: learns topic and word embeddings jointly, (3) pre-processing: clean tickets better — remove greetings, signatures, auto-replies, (4) hyperparameter tuning: LDA — try different number of topics, alpha/beta priors, (5) representation: TF-IDF with n-grams (bigrams capture \"credit card\" as unit), (6) supervised: if you have categories, use them as initial guidance, (7) evaluation: topic coherence score (C_v), human evaluation of top words per topic, (8) practical: visualise with pyLDAvis, share with domain experts for validation."
     },
     {
      "t": "p",
@@ -114,7 +114,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Debugging steps: **(1)** Check input data: are features loading correctly in production? (schema mismatch?), **(2)** Compare one sample: pull same input locally vs. production — are features identical?, **(3)** Serialization: model pickle may not restore correctly across different library versions, **(4)** Numpy/Pandas version: behavior differences in NaN handling, **(5)** Feature order: if model expects features in specific order, column reordering produces garbage, **(6)** Null propagation: new nulls in production data → NaN features → NaN predictions, **(7)** Fix: add assertion checking predictions are valid before writing, (8) Root cause: usually one feature returns all NaN due to a failed upstream dependency."
+     "text": "**Answer:** Debugging steps: **(1)** Check input data: are features loading correctly in production? (schema mismatch?), **(2)** Compare one sample: pull same input locally vs. production — are features identical?, **(3)** Serialisation: model pickle may not restore correctly across different library versions, **(4)** Numpy/Pandas version: behaviour differences in NaN handling, **(5)** Feature order: if model expects features in specific order, column reordering produces garbage, **(6)** Null propagation: new nulls in production data → NaN features → NaN predictions, **(7)** Fix: add assertion checking predictions are valid before writing, (8) Root cause: usually one feature returns all NaN due to a failed upstream dependency."
     }
    ],
    "kind": ""
@@ -130,7 +130,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Statistical Modeling**"
+     "text": "**Theme: Statistical Modelling**"
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't use t-test: ordinal data violates assumptions of continuous distribution, (2) Wilcoxon signed-rank test: non-parametric, works for paired ordinal data (same customers), (3) Mann-Whitney U: if different customers before/after, (4) ordinal logistic regression: model the probability of each rating level, (5) proportional assessment: compare % of 4-5 ratings before/after, (6) bootstrap: resample and compute difference in median/distribution, (7) practical: with large samples, mean comparisons are often still informative, but report medians and distributions, (8) visualization: stacked bar chart of rating distributions, not just means."
+     "text": "**Answer:** (1) Don't use t-test: ordinal data violates assumptions of continuous distribution, (2) Wilcoxon signed-rank test: non-parametric, works for paired ordinal data (same customers), (3) Mann-Whitney U: if different customers before/after, (4) ordinal logistic regression: model the probability of each rating level, (5) proportional assessment: compare % of 4-5 ratings before/after, (6) bootstrap: resample and compute difference in median/distribution, (7) practical: with large samples, mean comparisons are often still informative, but report medians and distributions, (8) visualisation: stacked bar chart of rating distributions, not just means."
     }
    ],
    "kind": ""
@@ -166,11 +166,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "461",
-   "q": "Your company has 10 data scientists but no centralized data science strategy. How do you establish one?",
+   "q": "Your company has 10 data scientists but no centralised data science strategy. How do you establish one?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Audit current state: what projects exist, their business impact, tech stack, (2) align with business strategy: what are the company's top 3-5 priorities? Where does DS add value?, (3) platform: standardize tools, compute, data access (reduce time on infrastructure), (4) prioritization framework: score projects by impact, feasibility, strategic alignment, (5) team structure: centralized (center of excellence) vs. embedded (in business units) vs. hybrid, (6) hiring: define competency gaps, hire strategically, (7) knowledge sharing: regular demo days, internal talks, code reviews, (8) metrics: track DS team impact on business KPIs, not just model metrics, (9) roadmap: quarterly planning with stakeholder input."
+     "text": "**Answer:** (1) Audit current state: what projects exist, their business impact, tech stack, (2) align with business strategy: what are the company's top 3-5 priorities? Where does DS add value?, (3) platform: standardise tools, compute, data access (reduce time on infrastructure), (4) prioritisation framework: score projects by impact, feasibility, strategic alignment, (5) team structure: centralised (centre of excellence) vs. embedded (in business units) vs. hybrid, (6) hiring: define competency gaps, hire strategically, (7) knowledge sharing: regular demo days, internal talks, code reviews, (8) metrics: track DS team impact on business KPIs, not just model metrics, (9) roadmap: quarterly planning with stakeholder input."
     }
    ],
    "kind": ""
@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Hamming loss: fraction of incorrect labels (per-label accuracy), (2) subset accuracy: exact match of entire label set (very strict), (3) micro-F1: aggregate TP/FP/FN across all labels globally, (4) macro-F1: average F1 across labels (gives equal weight to rare labels), (5) per-label metrics: F1 for each label separately, (6) ranking: if outputs are ranked, use NDCG or mean average precision, (7) calibration: per-label probability calibration matters, (8) threshold: each label needs its own decision threshold (optimized separately)."
+     "text": "**Answer:** (1) Hamming loss: fraction of incorrect labels (per-label accuracy), (2) subset accuracy: exact match of entire label set (very strict), (3) micro-F1: aggregate TP/FP/FN across all labels globally, (4) macro-F1: average F1 across labels (gives equal weight to rare labels), (5) per-label metrics: F1 for each label separately, (6) ranking: if outputs are ranked, use NDCG or mean average precision, (7) calibration: per-label probability calibration matters, (8) threshold: each label needs its own decision threshold (optimised separately)."
     }
    ],
    "kind": ""
@@ -226,7 +226,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Features: rolling returns (20/60/200 day), volatility (realized, implied), yield curve slope, credit spreads, momentum indicators, volume, (2) Hidden Markov Model: learn latent states (regimes) from observable market data, (3) change-point detection: PELT algorithm for identifying regime boundaries, (4) clustering: k-means on rolling market statistics → each cluster is a regime, (5) neural: LSTM autoencoders learn regime-dependent patterns, (6) labeling: if supervised, define regimes by return and volatility thresholds, (7) application: adjust portfolio allocation, risk parameters based on detected regime, (8) real-time: sliding window regime detection for timely response."
+     "text": "**Answer:** (1) Features: rolling returns (20/60/200 day), volatility (realised, implied), yield curve slope, credit spreads, momentum indicators, volume, (2) Hidden Markov Model: learn latent states (regimes) from observable market data, (3) change-point detection: PELT algorithm for identifying regime boundaries, (4) clustering: k-means on rolling market statistics → each cluster is a regime, (5) neural: LSTM autoencoders learn regime-dependent patterns, (6) labelling: if supervised, define regimes by return and volatility thresholds, (7) application: adjust portfolio allocation, risk parameters based on detected regime, (8) real-time: sliding window regime detection for timely response."
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data analysis: how much training data per region? US likely over-represented, (2) feature investigation: which features behave differently by region?, (3) options: (a) single global model with region features — simple but may underfit, (b) region-specific models — best performance but maintenance overhead, (c) global model + regional fine-tuning — balanced approach, (4) transfer learning: pre-train on global data, fine-tune on regional data, (5) evaluation: mandatory per-region metrics (not just global), (6) data collection: invest in data quality for underperforming regions, (7) cultural factors: user behavior, data patterns may fundamentally differ."
+     "text": "**Answer:** (1) Data analysis: how much training data per region? US likely over-represented, (2) feature investigation: which features behave differently by region?, (3) options: (a) single global model with region features — simple but may underfit, (b) region-specific models — best performance but maintenance overhead, (c) global model + regional fine-tuning — balanced approach, (4) transfer learning: pre-train on global data, fine-tune on regional data, (5) evaluation: mandatory per-region metrics (not just global), (6) data collection: invest in data quality for underperforming regions, (7) cultural factors: user behaviour, data patterns may fundamentally differ."
     }
    ],
    "kind": ""
@@ -322,7 +322,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Problem: model learns and amplifies historical hiring bias, (2) pre-processing: remove gender-correlated features (name, university type), (3) in-processing: adversarial debiasing — train to predict hiring but NOT predict gender, (4) post-processing: equalize selection rates across groups, (5) alternative: redefine target — predict job PERFORMANCE, not historical hiring DECISION, (6) audit: test model on synthetic candidates identical except for protected attributes, (7) human-in-the-loop: model suggests candidates, humans make final decisions, (8) legal: disparate impact testing is legally required, (9) radical option: don't use ML for initial screening — there's enough bias risk."
+     "text": "**Answer:** (1) Problem: model learns and amplifies historical hiring bias, (2) pre-processing: remove gender-correlated features (name, university type), (3) in-processing: adversarial debiasing — train to predict hiring but NOT predict gender, (4) post-processing: equalise selection rates across groups, (5) alternative: redefine target — predict job PERFORMANCE, not historical hiring DECISION, (6) audit: test model on synthetic candidates identical except for protected attributes, (7) human-in-the-loop: model suggests candidates, humans make final decisions, (8) legal: disparate impact testing is legally required, (9) radical option: don't use ML for initial screening — there's enough bias risk."
     }
    ],
    "kind": ""
@@ -346,7 +346,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "474",
-   "q": "You have transaction data and need to create features that capture user behavior changes over time. What patterns do you use?",
+   "q": "You have transaction data and need to create features that capture user behaviour changes over time. What patterns do you use?",
    "body": [
     {
      "t": "p",

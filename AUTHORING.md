@@ -1,7 +1,9 @@
 # Authoring contract
 
 Read this **and** `courses/python/lessons/01_foundations/1.4.js` before writing anything.
-1.4 is the reference lesson — match its depth, tone and structure.
+1.4 is the reference lesson — match its depth, tone and structure. The contract
+applies to the taught track of every course; practice and interview tracks are
+drill sets and are judged on their drills.
 
 ---
 
@@ -20,6 +22,10 @@ code: `
 `
 ```
 
+The same goes for `${`, which is how shell and GitHub Actions write a variable.
+Inside a template literal it is evaluated by JavaScript: the file parses, then
+throws at load. Write `\${PIPESTATUS[0]}`.
+
 Use `'single quotes'` or `"double quotes"` inside Python code. Backticks are fine
 in prose fields (`text:`, `caption:`, `note:`, `why:`) because those are ordinary
 double-quoted JS strings — there they render as inline code, which is desirable.
@@ -33,12 +39,12 @@ bash .build/check.sh
 This runs `node --check` on every file then renders every published lesson.
 It must print `PASS - all checks green`. **Do not report success until it does.**
 
-Do NOT edit `courses/python/curriculum.js` — the `published` array is regenerated
-from disk by `.build/sync-published.js`, which `check.sh` calls.
+Do NOT edit the `published` array in a `curriculum.js` — it is regenerated from
+disk by `.build/sync-published.js`, which `check.sh` calls.
 
 ### 3. One file per lesson, in the module's folder
 
-`courses/python/lessons/<NN>_<module-id>/<lesson-id>.js`
+`courses/<course>/lessons/<NN>_<module-id>/<lesson-id>.js`
 
 The id must match the filename and the id in `curriculum.js` exactly.
 
@@ -61,7 +67,8 @@ EC.receiveLesson({
                             // can perform: "Explain", "Predict", "Choose",
                             // "Diagnose". Never "Understand" or "Learn about".
 
-  prerequisites: ["4.1"],   // lesson ids only, must exist in curriculum.js
+  prerequisites: ["4.1"],   // lesson ids only, must exist in curriculum.js and
+                            // come earlier on the reader's path
 
   blocks: [ ... ],          // the lesson body — see block types below
 
@@ -116,6 +123,14 @@ EC.receiveLesson({
               notes: [ ...blocks... ] } }
 ```
 
+**The renderer silently ignores keys it does not know**, so the names above are
+not a suggestion. An exercise states its task under `body` or `prompt`, with its
+steps under `requirements`, and its solution under `solution.code` and
+`solution.notes`. `tasks` and `solution.body` are not fields: they rendered as an
+empty box and an empty reveal for 90 exercises before the gate learnt to fail on
+them. A `code` block with `out` and no `code` is allowed, and renders the output
+alone under its title.
+
 Callout kinds carry meaning — use the right one:
 `trap` a mistake people actually make · `tradeoff` no single right answer ·
 `insight` how this appears in real systems · `mental` a model to hold ·
@@ -138,10 +153,13 @@ Every lesson must have **all** of:
   its mechanism, and the fix.
 - **6-11 takeaways**, **4 quiz questions**, **3-4 interview questions**.
 
-Quiz questions: 4 options, `answer` is the 0-based index, `why` is 60+ chars and
-must explain why the *wrong* answers are wrong, not just why the right one is right.
+Quiz questions: `stem`, 4 `options`, `answer` is the 0-based index, `why` is 60+
+chars and must explain why the *wrong* answers are wrong, not just why the right
+one is right. Write the distractors to the same length and specificity as the
+answer: if the correct option is always the longest, the quiz tests nothing.
 
-Interview questions: `q`, `level` ("core" | "advanced" | "expert"), `strong` (what
+Interview questions: `q`, `level` ("core" | "advanced" | "expert"; "mid", "Senior"
+and "Staff" also take a colour and keep their wording), `strong` (what
 a strong answer sounds like), `answer` (array of blocks — the coaching), and
 optionally `weak` (what weak answers do).
 

@@ -672,7 +672,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "223",
-   "q": "Program 223: Capitalize the first letter of each word",
+   "q": "Program 223: Capitalise the first letter of each word",
    "body": [
     {
      "t": "code",

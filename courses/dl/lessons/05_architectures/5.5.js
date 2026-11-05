@@ -75,7 +75,7 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "PyTorch's update gate means the opposite of the",
       body: [{ t: "p", text: "It is commonly written `h_t = (1−z)h_{t−1} + z·h̃`, so `z` near 1 means *take the new candidate*. PyTorch computes `h_t = (1−z)·h̃ + z·h_{t−1}`, so `z` near 1 means *keep the old state* — exactly reversed. Both train identically, since the network learns whichever sign it needs. But if you implement from a paper and validate against `nn.GRU`, or inspect gate statistics from a trained model expecting one convention, every number will read backwards. Check which convention your source uses before concluding anything from a gate value." }] },
 
-    { t: "h2", n: "04b", text: "The reset gate", id: "reset" },
+    { t: "h2", n: "05", text: "The reset gate", id: "reset" },
 
     {"kind": "flow", "title": "The reset gate, which is the part people forget", "caption": "The update gate z gets all the attention; the reset gate r is what lets the candidate **ignore the previous state**. With r near zero the candidate is computed from the input alone, which is how a GRU starts a fresh representation at a sequence boundary — a sentence break, a new session — without needing anything to clear the state for it.", "cols": 3, "nodes": [{"id": "r", "label": "Reset gate r", "sub": "applied to h before the candidate", "tone": "accent"}, {"id": "o", "label": "r near 1", "sub": "candidate uses the past", "tone": "good"}, {"id": "z", "label": "r near 0", "sub": "candidate ignores it entirely", "tone": "good"}, {"id": "f", "label": "A fresh start, learned", "sub": "at a sentence or session boundary", "tone": "violet"}, {"id": "u", "label": "z then decides how much to take", "sub": "the two gates are sequential", "tone": "accent"}, {"id": "n", "label": "No explicit reset needed", "sub": "the network learns when", "tone": "teal"}], "edges": [["r", "o"], ["r", "z"], ["z", "f"], ["f", "u"], ["u", "n"]], "t": "diagram", "id": "dg-5_5-04b-4"},
 
@@ -91,7 +91,7 @@ EC.receiveLesson({
       ["Why it is separate from the update gate", "The update gate decides how much of the old state to *keep*; the reset gate decides how much of it the *new candidate* may look at. A cell can therefore retain its history while computing a fresh candidate that ignores it."]
     ] },
 
-    { t: "h2", n: "05", text: "Diagnosis", id: "failures" },
+    { t: "h2", n: "06", text: "Diagnosis", id: "failures" },
 
     {"kind": "matrix", "title": "Diagnosing a GRU", "caption": "Mostly the RNN list, with one GRU-specific entry: there is no forget-gate bias to set, so the 3.3 fix does not apply — which cuts both ways, since it also means a GRU cannot be broken in that particular way.", "cols": ["Symptom", "First check"], "rows": ["Slower than the LSTM", "No long-range learning", "Results vary with batching", "Worse than an LSTM", "Final state wrong"], "cells": [[{"text": "expected on CPU", "tone": "accent"}, "section 03: it is the kernel"], [{"text": "truncation, or the task", "tone": "warn"}, "no forget bias to fix here"], [{"text": "padding not packed", "tone": "crit"}, "3.11"], [{"text": "the coupled gate, perhaps", "tone": "accent"}, "try the LSTM with its bias set"], [{"text": "h_n's shape", "tone": "warn"}, "5.3's table; no c_n here"]], "t": "diagram", "id": "dg-5_5-05-5"},
 
@@ -107,7 +107,7 @@ EC.receiveLesson({
         ["Hand implementation does not match `nn.GRU`", "Reset gate applied in the wrong place", "`r` multiplies the recurrent term *inside* the tanh, not `h` beforehand"]
       ] },
 
-    { t: "h2", n: "06", text: "Choosing", id: "choosing" },
+    { t: "h2", n: "07", text: "Choosing", id: "choosing" },
 
     { t: "diagram", kind: "compare", title: "GRU or LSTM",
       caption: "Chung et al. (2014) found neither consistently better. The gap between either and a vanilla RNN is far larger than the gap between them.",

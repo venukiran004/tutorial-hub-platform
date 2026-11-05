@@ -144,7 +144,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The threshold on `score_best − score_null` sets where your system says \"I don't know\", and there is no correct value in the abstract. A support bot that answers wrongly erodes trust faster than one that declines, so it should abstain readily. A research assistant whose users can check the cited source should surface a low-confidence answer with its citation and let the reader judge. Set the threshold from the cost of a wrong answer in your setting, and measure it: report accuracy on answered questions and abstention rate separately, because a single accuracy number hides which one you traded away." }] },
 
     { t: "exercise", title: "Build and probe a QA system",
-      tasks: [
+      requirements: [
         "Run the span search on a passage of your own and print the top five candidate spans with their scores, not just the best.",
         "Ask five questions the passage cannot answer and record the null score for each. Find the threshold that separates them from your answerable questions.",
         "Remove the `max_span` cap and find a question where the model returns an absurdly long span.",

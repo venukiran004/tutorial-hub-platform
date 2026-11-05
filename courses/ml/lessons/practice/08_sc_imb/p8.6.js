@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "126",
-   "q": "What is Approximate Nearest Neighbor (ANN) search and why is it important for recommendations?",
+   "q": "What is Approximate Nearest Neighbour (ANN) search and why is it important for recommendations?",
    "body": [
     {
      "t": "p",
@@ -161,7 +161,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** User preferences evolve. Weekend vs weekday behavior differs. Seasonal trends exist. Models must capture temporal patterns."
+     "text": "**Explanation:** User preferences evolve. Weekend vs weekday behaviour differs. Seasonal trends exist. Models must capture temporal patterns."
     }
    ],
    "kind": ""
@@ -185,7 +185,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Marketplace platforms must balance user satisfaction with supplier fairness. Pure relevance optimization may be unfair to new or minority suppliers."
+     "text": "**Explanation:** Marketplace platforms must balance user satisfaction with supplier fairness. Pure relevance optimisation may be unfair to new or minority suppliers."
     }
    ],
    "kind": ""
@@ -201,7 +201,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Captures long-term user engagement vs short-term clicks. Can learn policies that maximize lifetime value. Deep Q-Networks (DQN) and policy gradient methods used."
+     "text": "**Explanation:** Captures long-term user engagement vs short-term clicks. Can learn policies that maximise lifetime value. Deep Q-Networks (DQN) and policy gradient methods used."
     }
    ],
    "kind": ""
@@ -227,7 +227,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Run 2-4 weeks minimum. Monitor engagement metrics AND business metrics. Include guardrail metrics (latency, coverage). User-level randomization."
+     "text": "**Explanation:** Run 2-4 weeks minimum. Monitor engagement metrics AND business metrics. Include guardrail metrics (latency, coverage). User-level randomisation."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Centralized repository for computed features used across models. Serves features consistently for training and serving."
+     "text": "**Answer:** Centralised repository for computed features used across models. Serves features consistently for training and serving."
     },
     {
      "t": "p",
@@ -294,7 +294,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Model user-item interactions as bipartite graph. GNNs learn representations by aggregating information from graph neighbors."
+     "text": "**Answer:** Model user-item interactions as bipartite graph. GNNs learn representations by aggregating information from graph neighbours."
     },
     {
      "t": "p",
@@ -338,7 +338,7 @@ EC.receiveLesson({
       "Federated learning (model trained on-device, only model updates shared)",
       "Differential privacy (add noise to protect individual data)",
       "On-device recommendations",
-      "Anonymization of interaction data",
+      "Anonymisation of interaction data",
       "GDPR compliance (right to be forgotten)"
      ]
     },
@@ -356,7 +356,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Optimization must serve multiple parties:"
+     "text": "**Answer:** Optimisation must serve multiple parties:"
     },
     {
      "t": "ol",
@@ -368,7 +368,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pure user optimization may harm suppliers. Multi-objective optimization or constrained optimization addresses this."
+     "text": "**Explanation:** Pure user optimisation may harm suppliers. Multi-objective optimisation or constrained optimisation addresses this."
     }
    ],
    "kind": ""
@@ -434,7 +434,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Matrix factorization (O(k(n+m)) parameters)",
-      "ANN search for nearest neighbors",
+      "ANN search for nearest neighbours",
       "Distributed computing (Spark ALS)",
       "Two-tower + embedding lookup"
      ]
@@ -459,12 +459,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Item-to-item:** Given current item, recommend similar items (product page \"related items\")",
-      "**User-to-item:** Given user profile, recommend personalized items (homepage feed)"
+      "**User-to-item:** Given user profile, recommend personalised items (homepage feed)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Item-to-item: context-dependent, no user needed. User-to-item: personalized, requires user data. Both coexist in most systems."
+     "text": "**Explanation:** Item-to-item: context-dependent, no user needed. User-to-item: personalised, requires user data. Both coexist in most systems."
     }
    ],
    "kind": ""
@@ -522,7 +522,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Transductive:** Model specific users/items seen during training (can't handle new ones)",
-      "**Inductive:** Model generalizes to new users/items using features"
+      "**Inductive:** Model generalises to new users/items using features"
      ]
     },
     {
@@ -548,7 +548,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Multi-stage pipeline, not a single model. Each stage optimizes different objectives. Continuous iteration and experimentation drive improvement."
+     "text": "**Explanation:** Multi-stage pipeline, not a single model. Each stage optimises different objectives. Continuous iteration and experimentation drive improvement."
     }
    ],
    "kind": ""

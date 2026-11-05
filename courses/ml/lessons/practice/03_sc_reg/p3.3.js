@@ -97,7 +97,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** When y=1: penalizes low ŷ (log(ŷ) → -∞). When y=0: penalizes high ŷ (log(1-ŷ) → -∞). Perfect prediction = 0 loss."
+     "text": "**Explanation:** When y=1: penalises low ŷ (log(ŷ) → -∞). When y=0: penalises high ŷ (log(1-ŷ) → -∞). Perfect prediction = 0 loss."
     }
    ],
    "kind": ""
@@ -235,7 +235,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** AUC is threshold-independent, summarizes model's discriminative ability across all thresholds."
+     "text": "**Explanation:** AUC is threshold-independent, summarises model's discriminative ability across all thresholds."
     }
    ],
    "kind": ""
@@ -275,7 +275,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Macro penalizes bad performance on rare classes. Micro favors majority class. Weighted balances both."
+     "text": "**Explanation:** Macro penalises bad performance on rare classes. Micro favours majority class. Weighted balances both."
     }
    ],
    "kind": ""
@@ -324,7 +324,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Generalization of sigmoid to multi-class. Each class gets a probability. Largest probability → predicted class."
+     "text": "**Explanation:** Generalisation of sigmoid to multi-class. Each class gets a probability. Largest probability → predicted class."
     }
    ],
    "kind": ""
@@ -348,12 +348,12 @@ EC.receiveLesson({
      "items": [
       "Assign higher weight to minority class (fraud)",
       "Lower classification threshold to catch more fraud",
-      "Optimize recall over precision"
+      "Optimise recall over precision"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Business cost determines metric priority. Here: maximize recall at acceptable precision."
+     "text": "**Explanation:** Business cost determines metric priority. Here: maximise recall at acceptable precision."
     }
    ],
    "kind": ""
@@ -422,15 +422,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "69",
-   "q": "What regularization does `LogisticRegression(C=0.01)` apply?",
+   "q": "What regularisation does `LogisticRegression(C=0.01)` apply?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** C = 1/λ, so C=0.01 means λ=100 → very strong regularization. Coefficients will be very small."
+     "text": "**Answer:** C = 1/λ, so C=0.01 means λ=100 → very strong regularisation. Coefficients will be very small."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Smaller C → stronger regularization → simpler model. C=1 is default. Use cross-validation to tune C."
+     "text": "**Explanation:** Smaller C → stronger regularisation → simpler model. C=1 is default. Use cross-validation to tune C."
     }
    ],
    "kind": ""
@@ -453,7 +453,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** In medicine, Type II is usually more costly → optimize for recall (sensitivity). Screening tests prioritize recall."
+     "text": "**Explanation:** In medicine, Type II is usually more costly → optimise for recall (sensitivity). Screening tests prioritise recall."
     }
    ],
    "kind": ""

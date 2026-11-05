@@ -186,7 +186,7 @@ for epoch in range(100):
     { t: "table", head: ["", "Keras", "PyTorch"],
       rows: [
         ["Model", "Sequential list of layers", "nn.Module subclass with a forward()"],
-        ["Loss and optimiser", "compile(optimizer, loss, metrics)", "Objects you call yourself"],
+        ["Loss and optimiser", "compile(optimiser, loss, metrics)", "Objects you call yourself"],
         ["Training loop", "fit() — hidden", "Written out: zero_grad, forward, loss, backward, step"],
         ["Early stopping, LR on plateau, checkpoints", "Callbacks", "Code in the loop (lessons 1.7, 1.9)"],
         ["Train/eval modes", "Handled by fit() and predict()", "model.train() / model.eval(), your responsibility"],
@@ -254,7 +254,7 @@ model.load_state_dict(torch.load("best.pt")); model.eval()
       options: ["PyTorch cannot apply sigmoids", "BCEWithLogitsLoss applies the sigmoid inside the loss, numerically stably, so the model outputs a raw logit", "The sigmoid is in the DataLoader", "Because batch norm replaces it"],
       answer: 1,
       why: "Combining sigmoid and binary cross-entropy in one operation lets the loss use the log-sum-exp trick and never evaluate log(0) for an extreme logit. The model therefore ends in nn.Linear; at inference you apply torch.sigmoid yourself to get probabilities." },
-    { stem: "What does optimizer.zero_grad() do, and why is it needed every step?",
+    { stem: "What does optimiser.zero_grad() do, and why is it needed every step?",
       options: ["It resets the learning rate", "It clears the .grad buffers, which otherwise accumulate across backward() calls", "It re-initialises the weights", "It disables dropout"],
       answer: 1,
       why: "PyTorch adds each backward pass's gradients into the parameters' .grad tensors rather than replacing them, so that gradient accumulation across micro-batches is possible. For an ordinary step you must clear them first, or the update uses the sum of this and every previous batch's gradient." },

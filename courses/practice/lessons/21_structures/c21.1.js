@@ -99,7 +99,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2444",
-   "q": "Program 2444: Generate Gray Code",
+   "q": "Program 2444: Generate Grey Code",
    "body": [
     {
      "t": "code",

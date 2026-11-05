@@ -34,7 +34,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Randomly shuffling time series destroys temporal structure. Special methods required for splitting, feature engineering, and modeling."
+     "text": "**Explanation:** Randomly shuffling time series destroys temporal structure. Special methods required for splitting, feature engineering, and modelling."
     }
    ],
    "kind": ""
@@ -461,7 +461,7 @@ EC.receiveLesson({
      "items": [
       "**MAPE:** Mean Absolute Percentage Error (scale-independent)",
       "**sMAPE:** Symmetric MAPE (better for near-zero values)",
-      "**RMSE:** Root Mean Squared Error (penalizes large errors)",
+      "**RMSE:** Root Mean Squared Error (penalises large errors)",
       "**MAE:** Mean Absolute Error (robust)",
       "**MASE:** Mean Absolute Scaled Error (compares to naive baseline)"
      ]
@@ -530,7 +530,7 @@ EC.receiveLesson({
       "**Classical decomposition:** Separate trend, seasonal, residual",
       "**Differencing:** First difference (trend) + seasonal difference",
       "**STL decomposition:** Robust decomposition handling outliers",
-      "**Direct modeling:** Prophet, SARIMA, state space models"
+      "**Direct modelling:** Prophet, SARIMA, state space models"
      ]
     },
     {

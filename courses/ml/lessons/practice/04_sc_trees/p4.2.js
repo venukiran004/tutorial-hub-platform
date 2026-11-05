@@ -177,7 +177,7 @@ EC.receiveLesson({
       "Need fully interpretable model (regulatory requirements)",
       "Very small dataset",
       "Need fast prediction with minimal resources (edge devices)",
-      "Visualization of decision logic required"
+      "Visualisation of decision logic required"
      ]
     },
     {
@@ -337,7 +337,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Larger min_samples_leaf = simpler, smoother model. Good regularization technique."
+     "text": "**Explanation:** Larger min_samples_leaf = simpler, smoother model. Good regularisation technique."
     }
    ],
    "kind": ""
@@ -345,7 +345,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "How would you visualize a decision tree?",
+   "q": "How would you visualise a decision tree?",
    "body": [
     {
      "t": "p",
@@ -454,7 +454,7 @@ EC.receiveLesson({
       "Reduce n_estimators (fewer trees)",
       "Limit max_depth",
       "Use tree pruning",
-      "Quantize/compress trees",
+      "Quantise/compress trees",
       "Use feature selection (fewer features → faster traversal)"
      ]
     },
@@ -550,7 +550,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Priority:** max_depth and min_samples_leaf (regularization) → max_features → n_estimators."
+     "text": "**Priority:** max_depth and min_samples_leaf (regularisation) → max_features → n_estimators."
     }
    ],
    "kind": ""

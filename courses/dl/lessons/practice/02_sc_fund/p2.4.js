@@ -83,7 +83,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Super-convergence — trains faster with higher accuracy. Found by Leslie Smith. Large LR in middle acts as regularizer. fastai implements this. Train for fewer epochs at higher LR."
+     "text": "**Explanation:** Super-convergence — trains faster with higher accuracy. Found by Leslie Smith. Large LR in middle acts as regulariser. fastai implements this. Train for fewer epochs at higher LR."
     }
    ],
    "kind": ""
@@ -91,7 +91,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "79",
-   "q": "What is progressive resizing as regularization?",
+   "q": "What is progressive resizing as regularisation?",
    "body": [
     {
      "t": "p",
@@ -104,7 +104,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Regularization effect:** Different resolutions = different views of data. Low resolution → forces learning of coarse, generalizable features."
+     "text": "**Regularisation effect:** Different resolutions = different views of data. Low resolution → forces learning of coarse, generalisable features."
     },
     {
      "t": "p",
@@ -116,7 +116,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "80",
-   "q": "What is the difference between loss landscape flatness and generalization?",
+   "q": "What is the difference between loss landscape flatness and generalisation?",
    "body": [
     {
      "t": "p",
@@ -125,13 +125,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Sharp minimum:** Small weight perturbation → large loss increase → poor generalization",
-      "**Flat minimum:** Weight perturbation → small loss change → good generalization"
+      "**Sharp minimum:** Small weight perturbation → large loss increase → poor generalisation",
+      "**Flat minimum:** Weight perturbation → small loss change → good generalisation"
      ]
     },
     {
      "t": "p",
-     "text": "**SAM optimizer:** Explicitly seeks flat minima."
+     "text": "**SAM optimiser:** Explicitly seeks flat minima."
     },
     {
      "t": "p",
@@ -139,7 +139,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Flat minima are more robust to: distribution shift, weight quantization, noise. Sharp minima are overfit to specific training data patterns."
+     "text": "**Explanation:** Flat minima are more robust to: distribution shift, weight quantisation, noise. Sharp minima are overfit to specific training data patterns."
     }
    ],
    "kind": ""
@@ -168,11 +168,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "82",
-   "q": "What is the effect of optimizer state when resuming training?",
+   "q": "What is the effect of optimiser state when resuming training?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Must save AND load optimizer state, not just model weights:"
+     "text": "**Answer:** Must save AND load optimiser state, not just model weights:"
     },
     {
      "t": "code",
@@ -189,7 +189,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "83",
-   "q": "What is the Lookahead optimizer?",
+   "q": "What is the Lookahead optimiser?",
    "body": [
     {
      "t": "p",
@@ -202,7 +202,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Fast weights explore, slow weights stabilize. Reduces variance of inner optimizer. Can wrap any optimizer. Typically k=5-10, α=0.5-0.8. Marginal improvement in most cases."
+     "text": "**Explanation:** Fast weights explore, slow weights stabilise. Reduces variance of inner optimiser. Can wrap any optimiser. Typically k=5-10, α=0.5-0.8. Marginal improvement in most cases."
     }
    ],
    "kind": ""
@@ -210,7 +210,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "What is regularization through early stopping?",
+   "q": "What is regularisation through early stopping?",
    "body": [
     {
      "t": "p",
@@ -227,7 +227,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Equivalent to L2 regularization in some cases (Goodfellow et al.). No hyperparameter to tune (except patience). Always use it."
+     "text": "**Explanation:** Equivalent to L2 regularisation in some cases (Goodfellow et al.). No hyperparameter to tune (except patience). Always use it."
     }
    ],
    "kind": ""
@@ -248,7 +248,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Behavior:** Linear warmup → inverse square root decay."
+     "text": "**Behaviour:** Linear warmup → inverse square root decay."
     },
     {
      "t": "p",
@@ -260,7 +260,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "86",
-   "q": "What is the difference between implicit and explicit regularization?",
+   "q": "What is the difference between implicit and explicit regularisation?",
    "body": [
     {
      "t": "p",
@@ -273,7 +273,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** SGD's gradient noise is a powerful implicit regularizer. Larger learning rate = more noise = more regularization. This partly explains why SGD generalizes better than exact gradient descent."
+     "text": "**Explanation:** SGD's gradient noise is a powerful implicit regulariser. Larger learning rate = more noise = more regularisation. This partly explains why SGD generalises better than exact gradient descent."
     }
    ],
    "kind": ""
@@ -294,7 +294,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Per-sample (each sample may skip different blocks). Regularizes deep transformers. Drop rate increases for deeper layers. Used in DeiT, Swin Transformer, ConvNeXt."
+     "text": "**Explanation:** Per-sample (each sample may skip different blocks). Regularises deep transformers. Drop rate increases for deeper layers. Used in DeiT, Swin Transformer, ConvNeXt."
     }
    ],
    "kind": ""
@@ -302,11 +302,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "88",
-   "q": "What is knowledge distillation as regularization?",
+   "q": "What is knowledge distillation as regularisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Teacher's soft labels provide regularization signal:"
+     "text": "**Answer:** Teacher's soft labels provide regularisation signal:"
     },
     {
      "t": "code",
@@ -315,7 +315,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why regularization:** Teacher's soft labels encode inter-class relationships (dog is more similar to cat than car). This smooth target distribution prevents overconfident predictions."
+     "text": "**Why regularisation:** Teacher's soft labels encode inter-class relationships (dog is more similar to cat than car). This smooth target distribution prevents overconfident predictions."
     },
     {
      "t": "p",
@@ -327,7 +327,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "89",
-   "q": "What is the Ranger optimizer?",
+   "q": "What is the Ranger optimiser?",
    "body": [
     {
      "t": "p",
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "90",
-   "q": "How does batch size affect generalization?",
+   "q": "How does batch size affect generalisation?",
    "body": [
     {
      "t": "p",
@@ -361,7 +361,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Fix large batch generalization:** Linear scaling rule, warmup, LARS/LAMB, SWA."
+     "text": "**Fix large batch generalisation:** Linear scaling rule, warmup, LARS/LAMB, SWA."
     },
     {
      "t": "p",
@@ -386,11 +386,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Benefit:** Helps explore loss landscape. Can escape local minima. Acts as regularizer."
+     "text": "**Benefit:** Helps explore loss landscape. Can escape local minima. Acts as regulariser."
     },
     {
      "t": "p",
-     "text": "**Explanation:** SGD already has natural gradient noise (from mini-batch sampling). Additional noise can help for deterministic-gradient methods. Used in certain RL and optimization settings."
+     "text": "**Explanation:** SGD already has natural gradient noise (from mini-batch sampling). Additional noise can help for deterministic-gradient methods. Used in certain RL and optimisation settings."
     }
    ],
    "kind": ""
@@ -398,11 +398,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "92",
-   "q": "What is the relationship between data augmentation and regularization?",
+   "q": "What is the relationship between data augmentation and regularisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Data augmentation is the most effective regularizer for deep learning:"
+     "text": "**Answer:** Data augmentation is the most effective regulariser for deep learning:"
     },
     {
      "t": "code",
@@ -411,11 +411,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Stronger augmentation = stronger regularization:** AutoAugment, RandAugment, TrivialAugment find optimal policies."
+     "text": "**Stronger augmentation = stronger regularisation:** AutoAugment, RandAugment, TrivialAugment find optimal policies."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unlike L2/dropout which reduce model capacity, augmentation increases effective data diversity. An entire 30-layer model can memorize 50K images but not millions of augmented versions."
+     "text": "**Explanation:** Unlike L2/dropout which reduce model capacity, augmentation increases effective data diversity. An entire 30-layer model can memorise 50K images but not millions of augmented versions."
     }
    ],
    "kind": ""
@@ -423,7 +423,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "93",
-   "q": "What is the impact of initialization on optimization?",
+   "q": "What is the impact of initialisation on optimisation?",
    "body": [
     {
      "t": "p",
@@ -436,7 +436,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Initialization determines: starting point in loss landscape, initial gradient magnitudes, whether training can begin at all. Modern networks are less sensitive due to batch norm, skip connections."
+     "text": "**Explanation:** Initialisation determines: starting point in loss landscape, initial gradient magnitudes, whether training can begin at all. Modern networks are less sensitive due to batch norm, skip connections."
     }
    ],
    "kind": ""
@@ -444,7 +444,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "94",
-   "q": "What is R-Drop and how is it different from standard dropout regularization?",
+   "q": "What is R-Drop and how is it different from standard dropout regularisation?",
    "body": [
     {
      "t": "p",
@@ -478,7 +478,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Plot training AND validation curves together. Divergence = overfitting. Neither decreasing = underfitting. Use gap between them as guide for regularization strength."
+     "text": "**Explanation:** Plot training AND validation curves together. Divergence = overfitting. Neither decreasing = underfitting. Use gap between them as guide for regularisation strength."
     }
    ],
    "kind": ""
@@ -486,7 +486,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "96",
-   "q": "What is the Lookahead optimizer strategy?",
+   "q": "What is the Lookahead optimiser strategy?",
    "body": [
     {
      "t": "p",
@@ -528,7 +528,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "98",
-   "q": "What is the LION optimizer?",
+   "q": "What is the LION optimiser?",
    "body": [
     {
      "t": "p",
@@ -545,7 +545,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Found by program search (AutoML for optimizers). Less memory than Adam (no second moment). Competitive or better, especially for vision transformers. Requires different hyperparameters than Adam."
+     "text": "**Explanation:** Found by program search (AutoML for optimisers). Less memory than Adam (no second moment). Competitive or better, especially for vision transformers. Requires different hyperparameters than Adam."
     }
    ],
    "kind": ""
@@ -574,7 +574,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "100",
-   "q": "How do you combine multiple regularization techniques effectively?",
+   "q": "How do you combine multiple regularisation techniques effectively?",
    "body": [
     {
      "t": "p",
@@ -587,7 +587,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Regularizers interact. Too much → underfitting. Start with standard amounts, tune based on validation curves. Different regularizers address different aspects."
+     "text": "**Explanation:** Regularisers interact. Too much → underfitting. Start with standard amounts, tune based on validation curves. Different regularisers address different aspects."
     }
    ],
    "kind": ""

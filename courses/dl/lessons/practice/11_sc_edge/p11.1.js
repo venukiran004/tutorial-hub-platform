@@ -56,7 +56,7 @@ EC.receiveLesson({
      "items": [
       "**Vanishing gradients:** Gradient shrinks exponentially with depth → early layers don't learn",
       "**Degradation:** Deeper networks perform WORSE than shallower ones (not just overfitting)",
-      "**Optimization difficulty:** Loss landscape becomes very rough"
+      "**Optimisation difficulty:** Loss landscape becomes very rough"
      ]
     },
     {
@@ -91,7 +91,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Causes: large learning rate, large negative bias, poor initialization. Solutions: Leaky ReLU, ELU, GELU, careful initialization (He init for ReLU)."
+     "text": "**Explanation:** Causes: large learning rate, large negative bias, poor initialisation. Solutions: Leaky ReLU, ELU, GELU, careful initialisation (He init for ReLU)."
     }
    ],
    "kind": ""
@@ -121,7 +121,7 @@ EC.receiveLesson({
        "Very low"
       ],
       [
-       "Generalization",
+       "Generalisation",
        "Often good",
        "Good",
        "Can be worse (sharp minima)"
@@ -148,7 +148,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Large batch → sharp minima → worse generalization (Keskar et al.). Warmup + linear LR scaling partially mitigates this. Small batch noise acts as regularization."
+     "text": "**Explanation:** Large batch → sharp minima → worse generalisation (Keskar et al.). Warmup + linear LR scaling partially mitigates this. Small batch noise acts as regularisation."
     }
    ],
    "kind": ""
@@ -192,7 +192,7 @@ EC.receiveLesson({
      "items": [
       "Learning rate too high → gradient explosion → overflow",
       "Log of zero: `log(0) = -inf` → NaN",
-      "Division by zero in normalization",
+      "Division by zero in normalisation",
       "Unstable attention: `exp(large_number) = inf`",
       "Mixed precision: FP16 overflow (values > 65504)"
      ]
@@ -216,7 +216,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "What is the difference between He and Xavier initialization?",
+   "q": "What is the difference between He and Xavier initialisation?",
    "body": [
     {
      "t": "p",
@@ -229,7 +229,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Initialization maintains activation variance across layers. Wrong init → either vanishing or exploding activations from the very first forward pass."
+     "text": "**Explanation:** Initialisation maintains activation variance across layers. Wrong init → either vanishing or exploding activations from the very first forward pass."
     }
    ],
    "kind": ""
@@ -292,7 +292,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Hard labels force model to output extreme probabilities → overconfident. Soft labels encourage model to maintain uncertainty → better generalization and calibration."
+     "text": "**Explanation:** Hard labels force model to output extreme probabilities → overconfident. Soft labels encourage model to maintain uncertainty → better generalisation and calibration."
     }
    ],
    "kind": ""
@@ -368,7 +368,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** At the interpolation threshold (model just fits training data), test error peaks. Beyond it (overparameterized), error decreases again. This explains why huge models generalize well despite overfitting theory."
+     "text": "**Explanation:** At the interpolation threshold (model just fits training data), test error peaks. Beyond it (overparameterized), error decreases again. This explains why huge models generalise well despite overfitting theory."
     }
    ],
    "kind": ""
@@ -436,7 +436,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Discriminator too strong → generator finds one safe output",
-      "Loss doesn't penalize lack of diversity"
+      "Loss doesn't penalise lack of diversity"
      ]
     },
     {
@@ -447,7 +447,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Wasserstein loss (WGAN) — smoother gradients",
-      "Spectral normalization — stabilize discriminator",
+      "Spectral normalisation — stabilise discriminator",
       "Mini-batch discrimination — discriminator sees diversity",
       "Diversity-promoting losses"
      ]
@@ -496,7 +496,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Dropout in different positions has different effects. Too much dropout → underfitting. Combine with other regularization carefully."
+     "text": "**Explanation:** Dropout in different positions has different effects. Too much dropout → underfitting. Combine with other regularisation carefully."
     }
    ],
    "kind": ""
@@ -517,7 +517,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** The model memorizes first, then eventually learns the generalizable algorithm. Shows that training much longer (even after apparent convergence) can suddenly improve generalization."
+     "text": "**Explanation:** The model memorises first, then eventually learns the generalisable algorithm. Shows that training much longer (even after apparent convergence) can suddenly improve generalisation."
     }
    ],
    "kind": ""
@@ -546,7 +546,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "What is neural network pruning at initialization?",
+   "q": "What is neural network pruning at initialisation?",
    "body": [
     {
      "t": "p",
@@ -588,7 +588,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "What is the spectral normalization technique?",
+   "q": "What is the spectral normalisation technique?",
    "body": [
     {
      "t": "p",
@@ -601,7 +601,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Spectral normalization is the key to stable GAN training. SNGAN showed it's sufficient for high-quality image generation without other tricks."
+     "text": "**Explanation:** Spectral normalisation is the key to stable GAN training. SNGAN showed it's sufficient for high-quality image generation without other tricks."
     }
    ],
    "kind": ""

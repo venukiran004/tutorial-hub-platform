@@ -17,9 +17,11 @@ done
 echo "courses: ${COURSES[*]}"
 echo
 
-for f in assets/js/*.js courses/*/curriculum.js courses/*/lessons/*/*.js; do
+# Every lesson, at any depth: the practice and interview tracks nest one level
+# further down, and a flat glob left all 219 of them out of this pass.
+while IFS= read -r f; do
   node --check "$f"
-done
+done < <(find assets/js courses -name '*.js')
 echo "syntax: all files parse"
 
 for course in "${COURSES[@]}"; do

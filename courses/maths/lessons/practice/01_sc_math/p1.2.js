@@ -20,7 +20,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Statistical Modeling",
+   "text": "Statistical Modelling",
    "id": "set"
   },
   {
@@ -49,7 +49,7 @@ EC.receiveLesson({
      "items": [
       "**Exploding gradients:** Gradient magnitudes grow exponentially → weights overflow to inf → inf × 0 = NaN",
       "**Log of zero/negative:** `log(softmax(x))` when softmax output underflows to 0",
-      "**Division by zero:** Normalization with zero variance, empty batches",
+      "**Division by zero:** Normalisation with zero variance, empty batches",
       "**Large learning rate:** Updates overshoot → loss oscillates → diverges"
      ]
     },
@@ -93,7 +93,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Features have very different scales → **standardize first** (PCA on correlation matrix)",
+      "Features have very different scales → **standardise first** (PCA on correlation matrix)",
       "Data has nonlinear structure → PCA (linear) can't capture it",
       "Many independent signals (genomics, text embeddings often have this property)"
      ]
@@ -110,7 +110,7 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "Standardize + PCA",
+       "Standardise + PCA",
        "Features have different scales"
       ],
       [
@@ -119,7 +119,7 @@ EC.receiveLesson({
       ],
       [
        "t-SNE / UMAP",
-       "Visualization (non-linear)"
+       "Visualisation (non-linear)"
       ],
       [
        "Autoencoders",
@@ -188,11 +188,11 @@ EC.receiveLesson({
       ],
       [
        "Ridge regression (L2)",
-       "Stabilize coefficients without dropping features"
+       "Stabilise coefficients without dropping features"
       ],
       [
        "Elastic Net",
-       "Combine L1 (selection) + L2 (stabilization)"
+       "Combine L1 (selection) + L2 (stabilisation)"
       ],
       [
        "Domain-driven combination",
@@ -351,7 +351,7 @@ EC.receiveLesson({
       "**Too strong a prior:** Prior variance is much smaller than likelihood — prior dominates. **Fix:** Use wider (less informative) priors.",
       "**Too little data:** Likelihood is too weak to update the prior. **Fix:** Collect more data.",
       "**Likelihood misspecification:** Model doesn't capture data-generating process. **Fix:** Check model fit.",
-      "**Parameter not identifiable:** Multiple parameter values produce the same likelihood. **Fix:** Reparameterize or add constraints."
+      "**Parameter not identifiable:** Multiple parameter values produce the same likelihood. **Fix:** Reparameterise or add constraints."
      ]
     },
     {
@@ -364,7 +364,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Regularization Strength Selection",
+   "q": "Regularisation Strength Selection",
    "body": [
     {
      "t": "p",
@@ -381,7 +381,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "\\(\\lambda \\to 0\\): Approaches OLS (no regularization, may overfit)",
+      "\\(\\lambda \\to 0\\): Approaches OLS (no regularisation, may overfit)",
       "\\(\\lambda \\to \\infty\\): All coefficients → 0 (underfitting)"
      ]
     },
@@ -393,7 +393,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Cross-validation:** Try \\(\\lambda \\in \\{10^{-4}, 10^{-3}, \\dots, 10^{4}\\}\\), pick lowest CV error",
-      "**Generalized Cross-Validation (GCV):** Efficient leave-one-out approximation",
+      "**Generalised Cross-Validation (GCV):** Efficient leave-one-out approximation",
       "**Bayesian view:** \\(\\lambda = \\sigma^2_\\epsilon / \\sigma^2_\\theta\\) (noise variance / prior variance)"
      ]
     },
@@ -492,7 +492,7 @@ EC.receiveLesson({
       ],
       [
        "Feature scaling",
-       "Equalizes curvature across dimensions"
+       "Equalises curvature across dimensions"
       ],
       [
        "Second-order methods (L-BFGS)",

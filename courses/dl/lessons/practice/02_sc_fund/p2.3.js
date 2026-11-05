@@ -16,19 +16,19 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "51",
-   "q": "Why is regularization essential in deep learning?",
+   "q": "Why is regularisation essential in deep learning?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Deep networks have millions of parameters → can memorize training data perfectly. Regularization prevents overfitting by constraining model complexity."
+     "text": "**Answer:** Deep networks have millions of parameters → can memorise training data perfectly. Regularisation prevents overfitting by constraining model complexity."
     },
     {
      "t": "p",
-     "text": "**Evidence:** Deep networks achieve 0% training error even on random labels (Zhang et al., 2017). Without regularization, generalization is not guaranteed."
+     "text": "**Evidence:** Deep networks achieve 0% training error even on random labels (Zhang et al., 2017). Without regularisation, generalisation is not guaranteed."
     },
     {
      "t": "p",
-     "text": "**Explanation:** DL regularization differs from traditional ML: dropout, batch norm, data augmentation are more important than L1/L2 penalties."
+     "text": "**Explanation:** DL regularisation differs from traditional ML: dropout, batch norm, data augmentation are more important than L1/L2 penalties."
     }
    ],
    "kind": ""
@@ -81,7 +81,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** DropConnect is more general (dropout is a special case). More granular regularization. Higher computational cost. Less commonly used in practice."
+     "text": "**Explanation:** DropConnect is more general (dropout is a special case). More granular regularisation. Higher computational cost. Less commonly used in practice."
     }
    ],
    "kind": ""
@@ -114,7 +114,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "55",
-   "q": "How does weight decay differ from L2 regularization in Adam?",
+   "q": "How does weight decay differ from L2 regularisation in Adam?",
    "body": [
     {
      "t": "p",
@@ -152,7 +152,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deep networks have redundant layers. Randomly skipping layers: (1) regularizes, (2) speeds up training, (3) simulates training ensemble of networks of different depths. Linear decay: drop more at deeper layers."
+     "text": "**Explanation:** Deep networks have redundant layers. Randomly skipping layers: (1) regularises, (2) speeds up training, (3) simulates training ensemble of networks of different depths. Linear decay: drop more at deeper layers."
     }
    ],
    "kind": ""
@@ -194,11 +194,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Effects:** Regularization, smoother decision boundaries, better calibration, reduced overconfident predictions."
+     "text": "**Effects:** Regularisation, smoother decision boundaries, better calibration, reduced overconfident predictions."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Linear interpolation between samples and labels. Prevents memorization. Improves calibration (confidence matches accuracy). Simple to implement, significant gains."
+     "text": "**Explanation:** Linear interpolation between samples and labels. Prevents memorisation. Improves calibration (confidence matches accuracy). Simple to implement, significant gains."
     }
    ],
    "kind": ""
@@ -231,7 +231,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "60",
-   "q": "Compare SGD, Adam, AdamW, and LAMB optimizers.",
+   "q": "Compare SGD, Adam, AdamW, and LAMB optimisers.",
    "body": [
     {
      "t": "p",
@@ -240,14 +240,14 @@ EC.receiveLesson({
     {
      "t": "table",
      "head": [
-      "Optimizer",
+      "Optimiser",
       "Key Feature",
       "Best For"
      ],
      "rows": [
       [
        "SGD+Momentum",
-       "Simple, good generalization",
+       "Simple, good generalisation",
        "CNN training with tuning"
       ],
       [
@@ -269,7 +269,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** AdamW is default for transformers. SGD+Momentum often generalizes better for CNNs with proper LR schedule. LAMB enables batch sizes of 32K+ without quality loss."
+     "text": "**Explanation:** AdamW is default for transformers. SGD+Momentum often generalises better for CNNs with proper LR schedule. LAMB enables batch sizes of 32K+ without quality loss."
     }
    ],
    "kind": ""
@@ -332,7 +332,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Use at test time:** EMA model is smoother, often better generalization."
+     "text": "**Use at test time:** EMA model is smoother, often better generalisation."
     },
     {
      "t": "p",
@@ -357,7 +357,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Benefit:** Finds wider optima → better generalization. Free accuracy improvement."
+     "text": "**Benefit:** Finds wider optima → better generalisation. Free accuracy improvement."
     },
     {
      "t": "p",
@@ -369,11 +369,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "65",
-   "q": "What is the SAM (Sharpness-Aware Minimization) optimizer?",
+   "q": "What is the SAM (Sharpness-Aware Minimisation) optimiser?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Finds parameters in flat loss regions (better generalization):"
+     "text": "**Answer:** Finds parameters in flat loss regions (better generalisation):"
     },
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard optimizers find any minimum (sharp or flat). Sharp minima generalize poorly. SAM actively seeks flat minima. Consistent ~0.5-2% accuracy improvement. 2× compute cost."
+     "text": "**Explanation:** Standard optimisers find any minimum (sharp or flat). Sharp minima generalise poorly. SAM actively seeks flat minima. Consistent ~0.5-2% accuracy improvement. 2× compute cost."
     }
    ],
    "kind": ""
@@ -411,7 +411,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Larger batch → more accurate gradient estimate → can take larger steps. Maintains similar optimization dynamics."
+     "text": "**Explanation:** Larger batch → more accurate gradient estimate → can take larger steps. Maintains similar optimisation dynamics."
     }
    ],
    "kind": ""
@@ -438,8 +438,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Prevents overconfidence → better calibration",
-      "Regularization effect → better generalization",
-      "Penalizes logit gaps → smoother features"
+      "Regularisation effect → better generalisation",
+      "Penalises logit gaps → smoother features"
      ]
     },
     {
@@ -452,11 +452,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "68",
-   "q": "What is spectral normalization as regularization?",
+   "q": "What is spectral normalisation as regularisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalize weight matrices by their spectral norm:"
+     "text": "**Answer:** Normalise weight matrices by their spectral norm:"
     },
     {
      "t": "code",
@@ -469,7 +469,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Controls how much output changes per unit input change. Stabilizes training. Originally for GANs but applicable to any network. Power iteration method estimates σ efficiently."
+     "text": "**Explanation:** Controls how much output changes per unit input change. Stabilises training. Originally for GANs but applicable to any network. Power iteration method estimates σ efficiently."
     }
    ],
    "kind": ""
@@ -477,7 +477,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "69",
-   "q": "What is the effect of depth on optimization difficulty?",
+   "q": "What is the effect of depth on optimisation difficulty?",
    "body": [
     {
      "t": "p",
@@ -490,7 +490,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deeper = more vanishing gradient risk, harder optimization landscape, more local minima. Skip connections, batch norm, proper initialization solve many issues."
+     "text": "**Explanation:** Deeper = more vanishing gradient risk, harder optimisation landscape, more local minima. Skip connections, batch norm, proper initialisation solve many issues."
     }
    ],
    "kind": ""
@@ -498,7 +498,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "70",
-   "q": "What is noise injection as regularization?",
+   "q": "What is noise injection as regularisation?",
    "body": [
     {
      "t": "p",
@@ -511,7 +511,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Noise prevents model from memorizing exact patterns. Makes model robust to perturbations. Different injection points regularize different aspects."
+     "text": "**Explanation:** Noise prevents model from memorising exact patterns. Makes model robust to perturbations. Different injection points regularise different aspects."
     }
    ],
    "kind": ""
@@ -519,7 +519,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "71",
-   "q": "What is the R-Drop regularization?",
+   "q": "What is the R-Drop regularisation?",
    "body": [
     {
      "t": "p",
@@ -540,7 +540,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "72",
-   "q": "What is the difference between first-order and second-order optimizers?",
+   "q": "What is the difference between first-order and second-order optimisers?",
    "body": [
     {
      "t": "p",
@@ -559,7 +559,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** K-FAC approximates Hessian as Kronecker product → tractable for DL. Sophia optimizer uses diagonal Hessian for LLM training."
+     "text": "**Explanation:** K-FAC approximates Hessian as Kronecker product → tractable for DL. Sophia optimiser uses diagonal Hessian for LLM training."
     }
    ],
    "kind": ""
@@ -611,7 +611,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Random classification head produces large initial gradients",
-      "Adam moments are uninitialized (biased early estimates)",
+      "Adam moments are uninitialised (biased early estimates)",
       "Large batch training needs warmup to avoid divergence"
      ]
     },
@@ -625,7 +625,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "75",
-   "q": "What is the LARS optimizer?",
+   "q": "What is the LARS optimiser?",
    "body": [
     {
      "t": "p",
@@ -642,7 +642,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Enables training with batch sizes of 32K+. Without LARS, large batches → poor convergence. Normalized gradient step per layer maintains stable training."
+     "text": "**Explanation:** Enables training with batch sizes of 32K+. Without LARS, large batches → poor convergence. Normalised gradient step per layer maintains stable training."
     }
    ],
    "kind": ""

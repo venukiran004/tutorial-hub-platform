@@ -122,7 +122,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "This lesson covers the architectural patterns as they appear in the transformer reference. Module 7 — *Multimodal AI* — takes the full treatment: CLIP training in detail, vision-language models, diffusion, audio and speech, video understanding, multimodal RAG and document AI. What matters here is the structural point: making a transformer multimodal is a **tokenisation** problem, not an architecture problem, which is the same conclusion lesson 5.7 reached about ViT." }] },
 
     { t: "exercise", title: "Measure the multimodal budget",
-      tasks: [
+      requirements: [
         "Load CLIP and verify that the text and vision towers share no parameters and never cross-attend.",
         "Embed a set of captions and check the similarity ordering matches your semantic expectation.",
         "Compute visual token counts for the resolutions your application needs, as a fraction of your context window.",

@@ -341,7 +341,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2585",
-   "q": "Program 2585: Graph Coloring",
+   "q": "Program 2585: Graph Colouring",
    "body": [
     {
      "t": "code",
@@ -458,7 +458,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2594",
-   "q": "Program 2594: Traveling Salesman (DP with Bitmask)",
+   "q": "Program 2594: Travelling Salesman (DP with Bitmask)",
    "body": [
     {
      "t": "code",

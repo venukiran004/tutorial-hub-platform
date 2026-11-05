@@ -43,7 +43,7 @@ EC.receiveLesson({
       rows: [
         ["Cache", "Hit costs nothing (5.13)", "Exact match, then semantic", "**First** \u2014 the cheapest request is one that never runs"],
         ["Embed query", "Inside the 11 ms (5.1)", "Smaller model, batch, cache", "Rarely \u2014 it is ~1% of the request"],
-        ["Vector search", "11 ms; 9.2 ms at 200k HNSW (5.5)", "Replicas, shard, tune `ef`/`nprobe`, quantize", "For **memory**, not latency \u2014 6.2's finding"],
+        ["Vector search", "11 ms; 9.2 ms at 200k HNSW (5.5)", "Replicas, shard, tune `ef`/`nprobe`, quantise", "For **memory**, not latency \u2014 6.2's finding"],
         ["Re-rank", "**2,405 ms** for 20 candidates on CPU (5.9)", "Shallower shortlist, smaller model, skip under load", "**This is the lever** \u2014 75% of the request"],
         ["LLM generate", "Hundreds of ms (3.1)", "Route simple queries to a smaller model, stream, compress context", "**Yes** \u2014 and streaming changes perceived latency most"],
         ["Boundary", "\u2014", "Per-tenant rate limit, backpressure with 429", "**Yes** \u2014 it is what makes a spike degrade instead of collapse"]

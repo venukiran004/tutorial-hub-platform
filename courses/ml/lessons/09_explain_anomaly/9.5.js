@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Set a threshold from review capacity, evaluate without labels, handle streaming drift, and design a fraud system that combines unsupervised triage with supervised learning on reviewed labels"
   ],
 
-  prerequisites: ["9.4", "6.2", "11.6"],
+  prerequisites: ["9.4", "6.2"],
 
   blocks: [
 

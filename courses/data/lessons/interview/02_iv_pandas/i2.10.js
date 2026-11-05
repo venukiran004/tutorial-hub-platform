@@ -321,7 +321,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "181",
-   "q": "What is `pd.DataFrame.memory_usage` and optimization strategies?",
+   "q": "What is `pd.DataFrame.memory_usage` and optimisation strategies?",
    "body": [
     {
      "t": "code",

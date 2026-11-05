@@ -114,7 +114,7 @@ EC.receiveLesson({
       caption: "`fid.update` twice, then `compute` once — the API itself says it is a set-level metric." },
     { t: "p", text: "The shape of the FID interface is the thing to notice: **`update` accumulates feature statistics and `compute` returns a single number, so there is no per-image FID to report** — §01’s point enforced by the library. In practice it needs **thousands** of images to be stable, and **a FID computed on 100 images is noise with a plausible-looking value.** `feature=2048` selects the Inception-v3 pool layer, and changing it changes the number, so **two FIDs are comparable only at the same feature setting.**" },
     { t: "exercise", title: "Test the metrics",
-      tasks: [
+      requirements: [
         "Compute CLIPScore for a correct caption and a wrong-count variant on your own images, and record the gap.",
         "Check whether CLIPScore rises with caption length independently of accuracy.",
         "Compute FID on two samples drawn from the same real dataset and see how far from 0 it lands.",

@@ -578,7 +578,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Integer: 10`, `String: HELLO`, `List: 3 items`, `Unknown: 3.14` **Explanation:** `singledispatch` dispatches to specialized functions based on first argument type."
+     "text": "**Answer:** `Integer: 10`, `String: HELLO`, `List: 3 items`, `Unknown: 3.14` **Explanation:** `singledispatch` dispatches to specialised functions based on first argument type."
     }
    ],
    "prompt": [

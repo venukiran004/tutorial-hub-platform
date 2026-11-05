@@ -75,19 +75,19 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Overfitting — model memorized training data. Likely causes:"
+     "text": "**Answer:** Overfitting — model memorised training data. Likely causes:"
     },
     {
      "t": "ol",
      "items": [
       "Too many features relative to samples",
-      "Polynomial features without regularization",
+      "Polynomial features without regularisation",
       "Outliers in training data"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** High train R² + low test R² is classic overfitting. Add regularization (Ridge/Lasso) or reduce features."
+     "text": "**Explanation:** High train R² + low test R² is classic overfitting. Add regularisation (Ridge/Lasso) or reduce features."
     }
    ],
    "kind": ""
@@ -105,7 +105,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**R²:** Proportion of variance explained, always increases with more features",
-      "**Adjusted R²:** Penalizes for additional features, can decrease if added feature isn't useful"
+      "**Adjusted R²:** Penalises for additional features, can decrease if added feature isn't useful"
      ]
     },
     {
@@ -264,7 +264,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Regularization (adding λI to X^T X) fixes singularity. Use gradient descent for large-scale problems."
+     "text": "**Explanation:** Regularisation (adding λI to X^T X) fixes singularity. Use gradient descent for large-scale problems."
     }
    ],
    "kind": ""
@@ -272,7 +272,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "What is Ridge regression (L2 regularization)?",
+   "q": "What is Ridge regression (L2 regularisation)?",
    "body": [
     {
      "t": "p",
@@ -285,7 +285,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Shrinks coefficients toward zero (but never exactly zero). Controls model complexity. λ controls regularization strength. Higher λ → simpler model."
+     "text": "**Explanation:** Shrinks coefficients toward zero (but never exactly zero). Controls model complexity. λ controls regularisation strength. Higher λ → simpler model."
     }
    ],
    "kind": ""
@@ -293,7 +293,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "What is Lasso regression (L1 regularization)?",
+   "q": "What is Lasso regression (L1 regularisation)?",
    "body": [
     {
      "t": "p",
@@ -314,7 +314,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "What is the difference between L1 and L2 regularization geometrically?",
+   "q": "What is the difference between L1 and L2 regularisation geometrically?",
    "body": [
     {
      "t": "p",
@@ -341,7 +341,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Combination of L1 and L2 regularization:"
+     "text": "**Answer:** Combination of L1 and L2 regularisation:"
     },
     {
      "t": "code",
@@ -366,7 +366,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Must standardize features before comparing coefficient magnitudes. After standardization, coefficients reflect relative importance."
+     "text": "**Explanation:** Must standardise features before comparing coefficient magnitudes. After standardisation, coefficients reflect relative importance."
     }
    ],
    "kind": ""
@@ -399,7 +399,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**MSE:** Mean of squared errors — penalizes large errors more",
+      "**MSE:** Mean of squared errors — penalises large errors more",
       "**MAE:** Mean of absolute errors — robust to outliers",
       "**RMSE:** Square root of MSE — same units as target"
      ]
@@ -426,7 +426,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** MAPE is scale-independent but asymmetric — penalizes under-predictions more than over-predictions."
+     "text": "**Explanation:** MAPE is scale-independent but asymmetric — penalises under-predictions more than over-predictions."
     }
    ],
    "kind": ""
@@ -483,7 +483,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Despite being \"polynomial,\" it's linear in the polynomial features. Overfits easily — use regularization."
+     "text": "**Explanation:** Despite being \"polynomial,\" it's linear in the polynomial features. Overfits easily — use regularisation."
     }
    ],
    "kind": ""

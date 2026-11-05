@@ -58,7 +58,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "Feature Importance Visualization",
+   "q": "Feature Importance Visualisation",
    "body": [
     {
      "t": "code",
@@ -148,7 +148,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "t-SNE Visualization",
+   "q": "t-SNE Visualisation",
    "body": [
     {
      "t": "code",
@@ -274,7 +274,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "Randomized Search",
+   "q": "Randomised Search",
    "body": [
     {
      "t": "code",
@@ -436,7 +436,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "49",
-   "q": "Bayesian Optimization with Optuna",
+   "q": "Bayesian Optimisation with Optuna",
    "body": [
     {
      "t": "code",

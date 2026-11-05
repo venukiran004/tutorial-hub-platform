@@ -33,7 +33,7 @@ EC.receiveLesson({
      "items": [
       "**Demographic parity:** \\(P(\\hat{Y}=1|A=0) = P(\\hat{Y}=1|A=1)\\) — equal positive prediction rates.",
       "**Equal opportunity:** Equal true positive rates across groups.",
-      "**Equalized odds:** Equal TPR and FPR across groups.",
+      "**Equalised odds:** Equal TPR and FPR across groups.",
       "**Calibration:** Equal calibration across groups."
      ]
     },
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "182",
-   "q": "What is uplift modeling (heterogeneous treatment effect estimation)?",
+   "q": "What is uplift modelling (heterogeneous treatment effect estimation)?",
    "body": [
     {
      "t": "p",
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Training ML models across distributed devices without centralizing data:"
+     "text": "Training ML models across distributed devices without centralising data:"
     },
     {
      "t": "ol",
@@ -179,7 +179,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Query the human labeler only for the most informative unlabeled examples:"
+     "text": "Query the human labeler only for the most informative unlabelled examples:"
     },
     {
      "t": "ul",
@@ -191,7 +191,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Reduces labeling cost dramatically."
+     "text": "Reduces labelling cost dramatically."
     }
    ],
    "kind": ""
@@ -203,14 +203,14 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Use large amounts of unlabeled data together with small amounts of labeled data:"
+     "text": "Use large amounts of unlabelled data together with small amounts of labelled data:"
     },
     {
      "t": "ul",
      "items": [
-      "**Pseudo-labeling:** Train on labeled data, predict on unlabeled, add high-confidence predictions as labels, retrain.",
+      "**Pseudo-labelling:** Train on labelled data, predict on unlabelled, add high-confidence predictions as labels, retrain.",
       "**Label spreading/Label propagation:** Propagate labels through a graph of similar examples.",
-      "**Self-training:** Iterative pseudo-labeling."
+      "**Self-training:** Iterative pseudo-labelling."
      ]
     }
    ],
@@ -243,7 +243,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Train a single model on multiple related tasks simultaneously. Shared representations generalize better than task-specific models:"
+     "text": "Train a single model on multiple related tasks simultaneously. Shared representations generalise better than task-specific models:"
     },
     {
      "t": "code",
@@ -311,7 +311,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Concept learning:** Learn a Boolean function (concept) from positive and negative examples.",
-      "**Inductive learning:** Generalize from specific examples to a general rule."
+      "**Inductive learning:** Generalise from specific examples to a general rule."
      ]
     },
     {
@@ -328,7 +328,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A framework for analyzing the sample complexity of learning algorithms:"
+     "text": "A framework for analysing the sample complexity of learning algorithms:"
     },
     {
      "t": "ul",
@@ -374,7 +374,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A more refined measure of model capacity than VC dimension. Measures how well a hypothesis class fits random noise labels. Lower Rademacher complexity → better generalization guarantees."
+     "text": "A more refined measure of model capacity than VC dimension. Measures how well a hypothesis class fits random noise labels. Lower Rademacher complexity → better generalisation guarantees."
     }
    ],
    "kind": ""
@@ -392,7 +392,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Reinforcement Learning NAS:** LSTM controller generates architectures; trained on architecture performance.",
-      "**Differentiable NAS (DARTS):** Relax discrete architecture choice to continuous; gradient-based optimization.",
+      "**Differentiable NAS (DARTS):** Relax discrete architecture choice to continuous; gradient-based optimisation.",
       "**Evolutionary NAS:** Genetic algorithms to evolve architectures."
      ]
     }
@@ -431,7 +431,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**EWC (Elastic Weight Consolidation):** Penalize changes to important weights.",
+      "**EWC (Elastic Weight Consolidation):** Penalise changes to important weights.",
       "**Progressive neural networks:** Add new columns per task.",
       "**Replay buffers:** Store and interleave old data."
      ]
@@ -446,7 +446,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Frankle & Carlin (2019): \"A randomly initialized dense NN contains a sparse subnetwork (lottery ticket) that, when trained in isolation from the original initialization, can match the performance of the full network.\" Implications for pruning and model compression."
+     "text": "Frankle & Carlin (2019): \"A randomly initialised dense NN contains a sparse subnetwork (lottery ticket) that, when trained in isolation from the original initialisation, can match the performance of the full network.\" Implications for pruning and model compression."
     }
    ],
    "kind": ""
@@ -507,7 +507,7 @@ EC.receiveLesson({
       "**Establish baseline:** Majority class, simple heuristic.",
       "**Feature engineering:** Domain-driven transformations.",
       "**Model selection:** Start simple (Logistic/RF), then complex.",
-      "**Tune:** Bayesian optimization on validation set.",
+      "**Tune:** Bayesian optimisation on validation set.",
       "**Evaluate:** Multiple metrics + fairness + calibration.",
       "**Deploy:** Shadow mode → canary → full rollout.",
       "**Monitor:** Drift detection, performance dashboards."
@@ -538,7 +538,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key relationship** — for **L2-normalized** vectors (\\(\\|\\mathbf{a}\\|=\\|\\mathbf{b}\\|=1\\)) they are monotonically equivalent:"
+     "text": "**Key relationship** — for **L2-normalised** vectors (\\(\\|\\mathbf{a}\\|=\\|\\mathbf{b}\\|=1\\)) they are monotonically equivalent:"
     },
     {
      "t": "math",
@@ -546,7 +546,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "So on normalized vectors, ranking by **smallest L2 = largest cosine = largest dot product**. This is exactly why vector DBs normalize embeddings and search by fast dot product."
+     "text": "So on normalised vectors, ranking by **smallest L2 = largest cosine = largest dot product**. This is exactly why vector DBs normalise embeddings and search by fast dot product."
     },
     {
      "t": "code",
@@ -576,7 +576,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Rule of thumb:** for embeddings, normalize and use cosine (≡ dot product). For raw feature vectors where scale matters, use Euclidean — but **standardize features first** so one large-scale feature doesn't dominate the distance."
+     "text": "**Rule of thumb:** for embeddings, normalise and use cosine (≡ dot product). For raw feature vectors where scale matters, use Euclidean — but **standardise features first** so one large-scale feature doesn't dominate the distance."
     }
    ],
    "kind": ""

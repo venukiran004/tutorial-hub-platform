@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Machine Learning Concepts · Product & Business Sense · A/B Testing & Experimentation · System Design for DS · Behavioral · Additional SQL & Data Analysis",
+   "text": "Machine Learning Concepts · Product & Business Sense · A/B Testing & Experimentation · System Design for DS · Behavioural · Additional SQL & Data Analysis",
    "id": "set"
   },
   {
@@ -44,7 +44,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "When would you use L1 vs L2 regularization?",
+   "q": "When would you use L1 vs L2 regularisation?",
    "body": [
     {
      "t": "table",
@@ -109,7 +109,7 @@ EC.receiveLesson({
      "head": [
       "Metric",
       "Formula",
-      "Optimize When..."
+      "Optimise When..."
      ],
      "rows": [
       [
@@ -185,7 +185,7 @@ EC.receiveLesson({
        "\"Adding feature X will increase metric Y by Z%\""
       ],
       [
-       "**Randomization**",
+       "**Randomisation**",
        "User-level (not session-level) to avoid spillover"
       ],
       [
@@ -216,7 +216,7 @@ EC.receiveLesson({
       "**Peeking:** Checking results before planned duration → inflated false positive rate",
       "**Multiple comparisons:** Testing many metrics → Bonferroni correction",
       "**Novelty effect:** New features get initial engagement spike → wait for steady state",
-      "**Network effects:** Social products → use cluster randomization"
+      "**Network effects:** Social products → use cluster randomisation"
      ]
     },
     {
@@ -265,7 +265,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Common behavioral questions at data science interviews",
+   "q": "Common behavioural questions at data science interviews",
    "body": [
     {
      "t": "table",
@@ -280,7 +280,7 @@ EC.receiveLesson({
       ],
       [
        "**Meta**",
-       "How do you prioritize multiple data requests?"
+       "How do you prioritise multiple data requests?"
       ],
       [
        "**LinkedIn**",
@@ -414,7 +414,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** UNION to normalize bidirectional friendships. Set intersection for mutual friends. O(min(|friends_A|, |friends_B|)) with hash sets."
+     "text": "**Key Insight:** UNION to normalise bidirectional friendships. Set intersection for mutual friends. O(min(|friends_A|, |friends_B|)) with hash sets."
     }
    ],
    "kind": ""

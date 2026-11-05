@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Additional Math & Optimization · Additional Behavioral & ML Projects · Additional Model Deployment & Serving",
+   "text": "Additional Math & Optimisation · Additional Behavioural & ML Projects · Additional Model Deployment & Serving",
    "id": "set"
   },
   {
@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Implement Adam optimizer from scratch and explain the intuition behind momentum and adaptive learning rates."
+     "text": "**Question:** Implement Adam optimiser from scratch and explain the intuition behind momentum and adaptive learning rates."
     },
     {
      "t": "p",
@@ -47,7 +47,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "32",
-   "q": "Behavioral questions for ML Engineers (Various — All Levels)",
+   "q": "Behavioural questions for ML Engineers (Various — All Levels)",
    "body": [
     {
      "t": "table",
@@ -110,7 +110,7 @@ EC.receiveLesson({
       [
        "11",
        "**NVIDIA**",
-       "Describe how you optimized model inference time by >50%"
+       "Describe how you optimised model inference time by >50%"
       ],
       [
        "12",

@@ -34,11 +34,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "You need to anonymize PII (names, emails, phone numbers) before sharing data with a team. What's your approach?",
+   "q": "You need to anonymise PII (names, emails, phone numbers) before sharing data with a team. What's your approach?",
    "body": [
     {
      "t": "p",
-     "text": "For names: replace with consistent pseudonyms using a hash-based mapping (same name always maps to same pseudonym). For emails: replace with `user_{hash}@example.com`. For phone numbers: replace with random but format-valid numbers. For addresses: generalize to zip code or city level. Use differential privacy for aggregate statistics. Never use simple masking (XXX) — it's reversible with context. Keep the mapping in a secure, access-controlled location for potential re-identification if legally required."
+     "text": "For names: replace with consistent pseudonyms using a hash-based mapping (same name always maps to same pseudonym). For emails: replace with `user_{hash}@example.com`. For phone numbers: replace with random but format-valid numbers. For addresses: generalise to zip code or city level. Use differential privacy for aggregate statistics. Never use simple masking (XXX) — it's reversible with context. Keep the mapping in a secure, access-controlled location for potential re-identification if legally required."
     }
    ],
    "kind": ""
@@ -70,11 +70,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "30",
-   "q": "You have a table with 50 address columns from a legacy system (address_line_1, address_line_2, city, state, zip, country, etc.) and need to clean and standardize all of them. How do you approach this?",
+   "q": "You have a table with 50 address columns from a legacy system (address_line_1, address_line_2, city, state, zip, country, etc.) and need to clean and standardise all of them. How do you approach this?",
    "body": [
     {
      "t": "p",
-     "text": "Parse addresses using a library like `usaddress` (US) or `postal` (international). Validate against postal code databases. Standardize abbreviations (St → Street, Ave → Avenue). Geocode a sample to verify accuracy. Create a standardized address schema (line1, line2, city, state, postal_code, country_code). Build address-specific cleaning functions (strip unit/apartment numbers, normalize directions N/S/E/W). Profile completeness per field and track quality metrics."
+     "text": "Parse addresses using a library like `usaddress` (US) or `postal` (international). Validate against postal code databases. Standardise abbreviations (St → Street, Ave → Avenue). Geocode a sample to verify accuracy. Create a standardised address schema (line1, line2, city, state, postal_code, country_code). Build address-specific cleaning functions (strip unit/apartment numbers, normalise directions N/S/E/W). Profile completeness per field and track quality metrics."
     }
    ],
    "kind": ""
@@ -82,11 +82,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "31",
-   "q": "Your dataset has multi-label columns where a single cell contains comma-separated values (e.g., \"action,comedy,drama\" in a genre column). How do you handle this for modeling?",
+   "q": "Your dataset has multi-label columns where a single cell contains comma-separated values (e.g., \"action,comedy,drama\" in a genre column). How do you handle this for modelling?",
    "body": [
     {
      "t": "p",
-     "text": "Split into individual values with `df['genre'].str.split(',')`. Then either: (1) MultiLabelBinarizer to create one-hot columns per unique value, (2) count vectorization if order/frequency matters, (3) embedding-based approach for high cardinality. Handle inconsistencies first (whitespace, case, synonyms). Check cardinality — if too many unique values, group rare ones. For tree models, multi-hot encoding works well. For deep learning, use learned embeddings."
+     "text": "Split into individual values with `df['genre'].str.split(',')`. Then either: (1) MultiLabelBinarizer to create one-hot columns per unique value, (2) count vectorisation if order/frequency matters, (3) embedding-based approach for high cardinality. Handle inconsistencies first (whitespace, case, synonyms). Check cardinality — if too many unique values, group rare ones. For tree models, multi-hot encoding works well. For deep learning, use learned embeddings."
     }
    ],
    "kind": ""
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Create a versioned schema map documenting changes per time period: which columns were added, renamed, removed, or had their types changed. Build version-specific preprocessing functions. Apply the correct preprocessor based on the record's timestamp. Harmonize to the latest schema — map old column names to new ones, fill newly added columns with NaN for old records. Test by comparing distributions of unified features across time periods to catch mapping errors."
+     "text": "Create a versioned schema map documenting changes per time period: which columns were added, renamed, removed, or had their types changed. Build version-specific preprocessing functions. Apply the correct preprocessor based on the record's timestamp. Harmonise to the latest schema — map old column names to new ones, fill newly added columns with NaN for old records. Test by comparing distributions of unified features across time periods to catch mapping errors."
     }
    ],
    "kind": ""
@@ -134,7 +134,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Don't rely on simple keyword matching — it misses paraphrases (\"prior medical condition\", \"condition diagnosed before policy start\"). Use: (1) keyword list with domain variants, (2) regex patterns for common phrasings, (3) for higher accuracy, a fine-tuned text classifier. Validate with a labeled sample (manually check 200 positive and 200 negative cases). Report precision and recall of the extraction. Consider using NER models for entity extraction if the information is entity-based."
+     "text": "Don't rely on simple keyword matching — it misses paraphrases (\"prior medical condition\", \"condition diagnosed before policy start\"). Use: (1) keyword list with domain variants, (2) regex patterns for common phrasings, (3) for higher accuracy, a fine-tuned text classifier. Validate with a labelled sample (manually check 200 positive and 200 negative cases). Report precision and recall of the extraction. Consider using NER models for entity extraction if the information is entity-based."
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Standardize all timestamps to UTC before joining. For user timestamps: if user timezone is known, convert with `pytz` using `localize()` then `astimezone(pytz.utc)`. If timezone is unknown, infer from user's registered location or IP geolocation. After conversion, check for anomalies (events \"before\" user signup, midnight spikes from timezone miscounting). Document the timezone convention in the data dictionary. This is a common source of training-serving skew."
+     "text": "Standardise all timestamps to UTC before joining. For user timestamps: if user timezone is known, convert with `pytz` using `localize()` then `astimezone(pytz.utc)`. If timezone is unknown, infer from user's registered location or IP geolocation. After conversion, check for anomalies (events \"before\" user signup, midnight spikes from timezone miscounting). Document the timezone convention in the data dictionary. This is a common source of training-serving skew."
     }
    ],
    "kind": ""
@@ -158,7 +158,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Analyze the bimodal distribution — if values cluster around both 0-1 and 0-100, they're mixed formats. Heuristic: values > 1 are likely in the 0-100 format. But be careful with edge cases (is 1.5 a 150% or 1.5%?). Check by batch or source — often one source uses one format and another uses the other. Convert all to 0-1 by dividing values > 1 by 100 (if values never legitimately exceed 100). Validate with domain knowledge and downstream metrics."
+     "text": "Analyse the bimodal distribution — if values cluster around both 0-1 and 0-100, they're mixed formats. Heuristic: values > 1 are likely in the 0-100 format. But be careful with edge cases (is 1.5 a 150% or 1.5%?). Check by batch or source — often one source uses one format and another uses the other. Convert all to 0-1 by dividing values > 1 by 100 (if values never legitimately exceed 100). Validate with domain knowledge and downstream metrics."
     }
    ],
    "kind": ""
@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "You cannot simply combine them — different definitions mean the same label represents different behaviors. Options: (1) recalculate the target variable using a single, agreed-upon definition across all data (preferred), (2) train separate models per business unit, (3) include the definition as a feature and let the model learn the difference. Option 1 is best but requires access to raw activity data. Document the chosen definition clearly and get stakeholder buy-in."
+     "text": "You cannot simply combine them — different definitions mean the same label represents different behaviours. Options: (1) recalculate the target variable using a single, agreed-upon definition across all data (preferred), (2) train separate models per business unit, (3) include the definition as a feature and let the model learn the difference. Option 1 is best but requires access to raw activity data. Document the chosen definition clearly and get stakeholder buy-in."
     }
    ],
    "kind": ""
@@ -226,7 +226,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "43",
-   "q": "Your classification target has labeling inconsistencies — different annotators labeled the same examples differently. How do you handle noisy labels?",
+   "q": "Your classification target has labelling inconsistencies — different annotators labelled the same examples differently. How do you handle noisy labels?",
    "body": [
     {
      "t": "p",
@@ -250,11 +250,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "45",
-   "q": "You're working with medical data where different hospitals use different coding systems (ICD-9 vs ICD-10 for diagnoses). How do you harmonize?",
+   "q": "You're working with medical data where different hospitals use different coding systems (ICD-9 vs ICD-10 for diagnoses). How do you harmonise?",
    "body": [
     {
      "t": "p",
-     "text": "Use official crosswalk tables (CMS provides ICD-9 to ICD-10 mappings). Note that mappings are often one-to-many (one ICD-9 code maps to multiple ICD-10 codes). Decide on target coding system (usually ICD-10 as it's current). For ambiguous mappings, use the most common/general target code. Group codes into clinical categories (CCS categories) for analysis. Validate mapping quality by checking prevalence rates of common conditions before and after harmonization."
+     "text": "Use official crosswalk tables (CMS provides ICD-9 to ICD-10 mappings). Note that mappings are often one-to-many (one ICD-9 code maps to multiple ICD-10 codes). Decide on target coding system (usually ICD-10 as it's current). For ambiguous mappings, use the most common/general target code. Group codes into clinical categories (CCS categories) for analysis. Validate mapping quality by checking prevalence rates of common conditions before and after harmonisation."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Process separately then combine: (1) clean and encode structured features as usual, (2) preprocess text (clean, tokenize), (3) extract text features — TF-IDF vectors, pre-trained embeddings (BERT), or topic model scores, (4) create a combined feature matrix by horizontally concatenating structured features with text features. For deep learning: use dual-input architecture (tabular MLP + text encoder, concatenate before final layers). Ensure no data leakage between the two modalities."
+     "text": "Process separately then combine: (1) clean and encode structured features as usual, (2) preprocess text (clean, tokenise), (3) extract text features — TF-IDF vectors, pre-trained embeddings (BERT), or topic model scores, (4) create a combined feature matrix by horizontally concatenating structured features with text features. For deep learning: use dual-input architecture (tabular MLP + text encoder, concatenate before final layers). Ensure no data leakage between the two modalities."
     }
    ],
    "kind": ""
@@ -298,7 +298,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "49",
-   "q": "You have a feature engineering pipeline that takes 4 hours to run. A change in one feature shouldn't require recomputing all features. How do you optimize?",
+   "q": "You have a feature engineering pipeline that takes 4 hours to run. A change in one feature shouldn't require recomputing all features. How do you optimise?",
    "body": [
     {
      "t": "p",

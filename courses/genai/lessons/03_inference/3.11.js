@@ -345,7 +345,7 @@ owners = {rid for _, rid, _ in worst[:int(0.01 * len(all_gaps)) + 1]}`,
 
     { t: "callout", kind: "warn", title: "The usual suggestion is alerting when GPU utilisation drops below 50%",
       body: [
-        { t: "p", text: "Its monitoring table lists \"GPU utilization < 50% sustained → scale down / consolidate\" and an 80% target for the autoscaler. As a *cost* signal that is reasonable: 3.12's arithmetic makes utilisation the dominant term in cost per token, and sustained 40% utilisation genuinely means you are paying for idle hardware." },
+        { t: "p", text: "Its monitoring table lists \"GPU utilisation < 50% sustained → scale down / consolidate\" and an 80% target for the autoscaler. As a *cost* signal that is reasonable: 3.12's arithmetic makes utilisation the dominant term in cost per token, and sustained 40% utilisation genuinely means you are paying for idle hardware." },
         { t: "p", text: "As a *health* signal it is misleading in both directions. Low utilisation with a bad tail is the signature of a scheduling problem, not of spare capacity — 3.5's scenario is exactly that — and scaling down in response would make it worse. And high utilisation tells you nothing, because a correctly configured server is at 100% whenever anything is queued." },
         { t: "p", text: "The fix is small: keep the metric, move it from the alerting dashboard to the cost dashboard, and put queue depth in its place." }
       ] },
@@ -484,7 +484,7 @@ print(len({rid for _, rid in worst[:int(0.01 * len(all_gaps)) + 1]}), len(reqs))
         options: [
           "Prefill — enable chunked prefill and FlashAttention",
           "Admission and capacity, since 98.9% of the TTFT is queue wait",
-          "The tokenizer, which dominates short-prompt handling",
+          "The tokeniser, which dominates short-prompt handling",
           "Output length limits, to free capacity sooner"
         ],
         answer: 1,

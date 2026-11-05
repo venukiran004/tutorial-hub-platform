@@ -150,7 +150,7 @@ EC.receiveLesson({
     { t: "p", text: "The striking thing is the convergence. Three architectural families branched immediately from the 2017 paper, and by 2023 the decoder-only line had absorbed most of the attention and most of the funding — not because encoder-only models are worse at what they do, but because next-token prediction turned out to be a training objective that scales without needing labelled data. Lesson 5.1 covers what each family is still genuinely better at." },
 
     { t: "exercise", title: "Measure the crossover yourself",
-      tasks: [
+      requirements: [
         "Reproduce the LSTM-against-attention benchmark on your hardware and find the sequence length where they cross.",
         "Re-run it on a GPU if you have one and see how far the crossover moves.",
         "Time the backward pass as well as the forward. The gap should widen in attention's favour — explain why.",

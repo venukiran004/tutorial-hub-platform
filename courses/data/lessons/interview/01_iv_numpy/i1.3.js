@@ -39,7 +39,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Computes the least-squares solution to Ax ≈ b, minimizing ||Ax − b||². Used for overdetermined systems (more equations than unknowns) — e.g., linear regression from scratch:"
+     "text": "Computes the least-squares solution to Ax ≈ b, minimising ||Ax − b||². Used for overdetermined systems (more equations than unknowns) — e.g., linear regression from scratch:"
     },
     {
      "t": "code",

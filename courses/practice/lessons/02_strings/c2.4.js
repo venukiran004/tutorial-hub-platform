@@ -48,7 +48,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** `<` left-aligns, `>` right-aligns, `^` centers within the specified width."
+     "text": "**Explanation:** `<` left-aligns, `>` right-aligns, `^` centres within the specified width."
     }
    ],
    "prompt": [
@@ -88,7 +88,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `False`, `4 5`, `True` **Explanation:** `é` can be represented as one character or as `e` + combining accent. Normalization makes them comparable."
+     "text": "**Answer:** `False`, `4 5`, `True` **Explanation:** `é` can be represented as one character or as `e` + combining accent. Normalisation makes them comparable."
     }
    ],
    "prompt": [

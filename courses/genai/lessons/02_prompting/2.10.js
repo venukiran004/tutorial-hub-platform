@@ -92,7 +92,7 @@ EC.receiveLesson({
 
 
 
-    { t: "ladder", title: "From a label to a boundary", rungs: [
+    { t: "ladder", lang: "text", title: "From a label to a boundary", rungs: [
       { level: "bad", label: "A restatement of the name",
         why: "Adds nothing the name did not already say",
         code: `"description": "Gets the weather"`,

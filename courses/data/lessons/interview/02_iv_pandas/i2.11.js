@@ -97,7 +97,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**10-100× faster** than Pandas for large datasets.",
-      "**Lazy evaluation** with query optimization (`df.lazy().filter().collect()`).",
+      "**Lazy evaluation** with query optimisation (`df.lazy().filter().collect()`).",
       "**No GIL:** True multi-threaded parallel execution."
      ]
     },

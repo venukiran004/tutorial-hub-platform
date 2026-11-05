@@ -69,7 +69,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Model selects which unlabeled samples would be most informative to label next."
+     "text": "**Answer:** Model selects which unlabelled samples would be most informative to label next."
     },
     {
      "t": "p",
@@ -78,8 +78,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Labeling is expensive (medical images, legal documents)",
-      "Large pool of unlabeled data available",
+      "Labelling is expensive (medical images, legal documents)",
+      "Large pool of unlabelled data available",
       "Limited annotation budget"
      ]
     },
@@ -89,7 +89,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces labeling cost by 50-80% compared to random sampling."
+     "text": "**Explanation:** Reduces labelling cost by 50-80% compared to random sampling."
     }
    ],
    "kind": ""
@@ -205,7 +205,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "83",
-   "q": "What is Bayesian optimization intuition?",
+   "q": "What is Bayesian optimisation intuition?",
    "body": [
     {
      "t": "p",
@@ -270,14 +270,14 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Defense:**"
+     "text": "**Defence:**"
     },
     {
      "t": "ol",
      "items": [
       "Robust training methods",
       "Data sanitization",
-      "Certified defense guarantees"
+      "Certified defence guarantees"
      ]
     },
     {
@@ -294,7 +294,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Training ML models across decentralized devices/data sources without centralizing data."
+     "text": "**Answer:** Training ML models across decentralised devices/data sources without centralising data."
     },
     {
      "t": "code",
@@ -510,7 +510,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Replay:** Mix old data with new data during training",
-      "**EWC:** Penalize changes to weights important for old tasks",
+      "**EWC:** Penalise changes to weights important for old tasks",
       "**Progressive:** Add new modules, freeze old ones",
       "**Distillation:** Maintain knowledge from old model"
      ]
@@ -568,7 +568,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** scikit-learn upgrade can change model behavior. Pin versions AND test before upgrading. Different projects can have conflicting requirements."
+     "text": "**Explanation:** scikit-learn upgrade can change model behaviour. Pin versions AND test before upgrading. Different projects can have conflicting requirements."
     }
    ],
    "kind": ""
@@ -597,7 +597,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** XGBoost may be best on average for tabular data, but specific datasets may favor other algorithms."
+     "text": "**Explanation:** XGBoost may be best on average for tabular data, but specific datasets may favour other algorithms."
     }
    ],
    "kind": ""

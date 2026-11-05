@@ -62,7 +62,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1571",
-   "q": "Program 1571: Parameterized decorators",
+   "q": "Program 1571: Parameterised decorators",
    "body": [
     {
      "t": "code",

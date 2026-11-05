@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "76",
-   "q": "What is the role of layer normalization in Transformers?",
+   "q": "What is the role of layer normalisation in Transformers?",
    "body": [
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Shared representations across tasks",
-      "Regularization — prevents overfitting to any single task",
+      "Regularisation — prevents overfitting to any single task",
       "Improved performance on low-resource tasks"
      ]
     },
@@ -126,7 +126,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Instruction tuning bridges the gap between \"predict next token\" and \"follow user instructions\". RLHF further aligns model behavior with human preferences."
+     "text": "**Explanation:** Instruction tuning bridges the gap between \"predict next token\" and \"follow user instructions\". RLHF further aligns model behaviour with human preferences."
     }
    ],
    "kind": ""
@@ -134,7 +134,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "80",
-   "q": "How does causal language modeling differ from masked language modeling?",
+   "q": "How does causal language modelling differ from masked language modelling?",
    "body": [
     {
      "t": "p",
@@ -281,7 +281,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "What is the difference between sequence labeling and sequence classification?",
+   "q": "What is the difference between sequence labelling and sequence classification?",
    "body": [
     {
      "t": "p",
@@ -292,7 +292,7 @@ EC.receiveLesson({
      "items": [
       "**Sequence classification:** One label for entire sequence",
       "— \"I love this movie!\" → Positive sentiment",
-      "**Sequence labeling:** One label per token",
+      "**Sequence labelling:** One label per token",
       "— \"John lives in Paris\" → B-PER O O B-LOC"
      ]
     },
@@ -304,12 +304,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Classification: [CLS] embedding → linear layer",
-      "Labeling: Each token embedding → linear layer (+ CRF for dependencies)"
+      "Labelling: Each token embedding → linear layer (+ CRF for dependencies)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** POS tagging, NER, chunking are sequence labeling. Sentiment, topic, intent are sequence classification."
+     "text": "**Explanation:** POS tagging, NER, chunking are sequence labelling. Sentiment, topic, intent are sequence classification."
     }
    ],
    "kind": ""
@@ -344,7 +344,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Toxic content → model generates toxic text",
-      "Duplicates → model memorizes and regurgitates",
+      "Duplicates → model memorises and regurgitates",
       "Biased data → biased outputs"
      ]
     },
@@ -537,11 +537,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "92",
-   "q": "What is the role of tokenizer alignment in NLP models?",
+   "q": "What is the role of tokeniser alignment in NLP models?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Different tokenizers produce different subword splits — model MUST use same tokenizer for training and inference."
+     "text": "**Answer:** Different tokenisers produce different subword splits — model MUST use same tokeniser for training and inference."
     },
     {
      "t": "p",
@@ -550,8 +550,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Using wrong tokenizer for pre-trained model",
-      "Vocabulary mismatch between tokenizer versions",
+      "Using wrong tokeniser for pre-trained model",
+      "Vocabulary mismatch between tokeniser versions",
       "Not handling special tokens correctly for the specific model"
      ]
     },
@@ -562,7 +562,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Using GPT tokenizer with BERT model will produce garbage. Always check tokenizer-model compatibility."
+     "text": "**Explanation:** Using GPT tokeniser with BERT model will produce garbage. Always check tokeniser-model compatibility."
     }
    ],
    "kind": ""
@@ -589,7 +589,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Loss:** InfoNCE / NT-Xent — maximize similarity of positive pairs, minimize for negatives."
+     "text": "**Loss:** InfoNCE / NT-Xent — maximise similarity of positive pairs, minimise for negatives."
     },
     {
      "t": "p",
@@ -717,7 +717,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** RLHF aligns model behavior with human preferences — less toxic, more helpful, more truthful. Key to ChatGPT's success."
+     "text": "**Explanation:** RLHF aligns model behaviour with human preferences — less toxic, more helpful, more truthful. Key to ChatGPT's success."
     }
    ],
    "kind": ""

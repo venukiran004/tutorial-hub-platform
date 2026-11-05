@@ -142,7 +142,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "Batch Normalization Effect",
+   "q": "Batch Normalisation Effect",
    "body": [
     {
      "t": "code",
@@ -160,7 +160,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "Dropout Regularization",
+   "q": "Dropout Regularisation",
    "body": [
     {
      "t": "code",
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Weight Initialization",
+   "q": "Weight Initialisation",
    "body": [
     {
      "t": "code",

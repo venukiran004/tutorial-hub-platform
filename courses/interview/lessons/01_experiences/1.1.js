@@ -544,7 +544,7 @@ timing, n = 20,000:
         options: [
           "top_p is applied before temperature",
           "Temperature reshapes the distribution that top_p then measures — flattening it spreads probability mass, so more tokens are needed to reach 0.9",
-          "The tokenizer changed",
+          "The tokeniser changed",
           "Because top_p is a token count, not a probability mass"
         ],
         answer: 1,

@@ -302,7 +302,7 @@ EC.receiveLesson({
      "items": [
       "**Padding:** Pad shorter sequences with zeros to max length",
       "**Packing:** Use `pack_padded_sequence` to skip padding in computation",
-      "**Bucketing:** Group similar-length sequences to minimize padding"
+      "**Bucketing:** Group similar-length sequences to minimise padding"
      ]
     },
     {
@@ -380,7 +380,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Training:** On large text corpus, minimize negative log-likelihood of next token prediction."
+     "text": "**Training:** On large text corpus, minimise negative log-likelihood of next token prediction."
     },
     {
      "t": "p",
@@ -417,7 +417,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard evaluation metric for language models. Not directly comparable across different tokenizations or vocabularies."
+     "text": "**Explanation:** Standard evaluation metric for language models. Not directly comparable across different tokenisations or vocabularies."
     }
    ],
    "kind": ""
@@ -441,7 +441,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Subword tokenization (BPE) is now standard — handles OOV while keeping sequence length manageable."
+     "text": "**Explanation:** Subword tokenisation (BPE) is now standard — handles OOV while keeping sequence length manageable."
     }
    ],
    "kind": ""
@@ -470,7 +470,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pre-trained embeddings provide good initialization. Fine-tuning during training adapts to specific task. Replaced by contextual embeddings (BERT, GPT)."
+     "text": "**Explanation:** Pre-trained embeddings provide good initialisation. Fine-tuning during training adapts to specific task. Replaced by contextual embeddings (BERT, GPT)."
     }
    ],
    "kind": ""
@@ -540,7 +540,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Each layer captures different abstraction level. 2-4 layers common. More layers need more data and regularization (inter-layer dropout). Deeper ≠ always better for RNNs."
+     "text": "**Explanation:** Each layer captures different abstraction level. 2-4 layers common. More layers need more data and regularisation (inter-layer dropout). Deeper ≠ always better for RNNs."
     }
    ],
    "kind": ""
@@ -565,7 +565,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Beam search finds better sequences than greedy. k=5-10 typical. Larger k = better but slower. Length normalization prevents bias toward shorter sequences."
+     "text": "**Explanation:** Beam search finds better sequences than greedy. k=5-10 typical. Larger k = better but slower. Length normalisation prevents bias toward shorter sequences."
     }
    ],
    "kind": ""

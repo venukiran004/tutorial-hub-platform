@@ -145,7 +145,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Five of the seven are lossless, and most teams have not taken all of them. Caching, Flash, continuous batching and paged memory are engineering changes with no evaluation burden — adopt them before touching anything that changes outputs. Then quantisation, which is lossy but usually the biggest single lever. Speculative decoding last, because as this lesson measured it can be **negative** if the draft model is not dramatically cheaper, and it is the only one here whose payoff depends on a property of your specific model pair rather than on your infrastructure." }] },
 
     { t: "exercise", title: "Measure before adopting",
-      tasks: [
+      requirements: [
         "Implement speculative decoding and measure acceptance rate at K = 2, 4 and 8 for your model pair.",
         "Compute your draft-to-target cost ratio and check whether expected tokens per pass exceeds 1 + K·c.",
         "Quantise your model to INT8 and INT4 and report per-class metrics, not just accuracy.",

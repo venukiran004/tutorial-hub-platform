@@ -137,7 +137,7 @@ lsh.query(signature(new_doc))  # candidates above ~0.8, in sub-linear time
     { t: "p", text: "**The shingle size is the other decision, and it is the one that decides what \u201csimilar\u201d means.** Character shingles of four or five catch near-duplicate text through typos and reformatting; word shingles catch reuse of phrasing and ignore spelling. For near-duplicate detection at corpus scale this pair — MinHash for the signature, LSH for the lookup — is the standard answer, and the exact re-score on the shortlist is what makes it precise." },
 
     { t: "exercise", title: "Measure both families",
-      tasks: [
+      requirements: [
         "Compute word Jaccard and 3-gram Jaccard on 50 known-match pairs from your data and compare the distributions.",
         "Strip punctuation and lowercase, then re-measure. Record how much of the gain came from normalisation alone.",
         "Sweep n from 2 to 5 and find where typo tolerance and discrimination balance for your field lengths.",

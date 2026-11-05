@@ -150,7 +150,7 @@ EC.receiveLesson({
       ],
       [
        "**Map-reduce**",
-       "Summarize each chunk → combine summaries",
+       "Summarise each chunk → combine summaries",
        "Practical",
        "Multi-hop loss"
       ]
@@ -235,8 +235,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Continued pre-training:** Train on domain corpus (medical, legal, financial) with MLM objective",
-      "**Domain-specific vocabulary:** Extend tokenizer with domain terms",
-      "**Fine-tuning:** Train on labeled domain data",
+      "**Domain-specific vocabulary:** Extend tokeniser with domain terms",
+      "**Fine-tuning:** Train on labelled domain data",
       "**Adapter layers:** Small domain-specific modules (8-16M params), keep base frozen",
       "**Examples:** BioBERT (biomedical), LegalBERT (legal), FinBERT (financial), SciBERT (scientific)"
      ]
@@ -247,7 +247,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "70",
-   "q": "What is topic modeling and how does LDA work?",
+   "q": "What is topic modelling and how does LDA work?",
    "body": [
     {
      "t": "p",
@@ -492,7 +492,7 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "Limited labeled data",
+       "Limited labelled data",
        "Data augmentation, active learning, few-shot learning"
       ],
       [
@@ -505,7 +505,7 @@ EC.receiveLesson({
       ],
       [
        "Domain-specific vocabulary",
-       "Extended tokenizer, continued pre-training"
+       "Extended tokeniser, continued pre-training"
       ],
       [
        "Evaluation",

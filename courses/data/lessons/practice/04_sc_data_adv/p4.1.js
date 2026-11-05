@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Separate models: one for normal periods, one for peak events, (2) event features: binary \"is_black_friday\" + \"days_to_event\" + \"days_from_event\", (3) holiday uplift modeling: estimate multiplicative effect of each event, (4) use previous years' event data as reference (same-event last year), (5) exogenous variables: marketing spend, promotion details during events, (6) post-event analysis: decompose actual vs. forecast to calibrate future event effects, (7) ensemble: base forecast × event multiplier."
+     "text": "**Answer:** (1) Separate models: one for normal periods, one for peak events, (2) event features: binary \"is_black_friday\" + \"days_to_event\" + \"days_from_event\", (3) holiday uplift modelling: estimate multiplicative effect of each event, (4) use previous years' event data as reference (same-event last year), (5) exogenous variables: marketing spend, promotion details during events, (6) post-event analysis: decompose actual vs. forecast to calibrate future event effects, (7) ensemble: base forecast × event multiplier."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Content-based: recommend based on user profile (demographics, stated preferences), (2) onboarding quiz: ask preferences during signup, (3) popularity-based: recommend trending/popular items, (4) bandits: explore-exploit with Thompson Sampling — learn preferences quickly, (5) transfer: use behavior from similar platforms (same company), (6) hybrid: weighted combination of content-based and collaborative, shifting weight as interactions accumulate, (7) session-based: use in-session clicks to adapt recommendations immediately."
+     "text": "**Answer:** (1) Content-based: recommend based on user profile (demographics, stated preferences), (2) onboarding quiz: ask preferences during signup, (3) popularity-based: recommend trending/popular items, (4) bandits: explore-exploit with Thompson Sampling — learn preferences quickly, (5) transfer: use behaviour from similar platforms (same company), (6) hybrid: weighted combination of content-based and collaborative, shifting weight as interactions accumulate, (7) session-based: use in-session clicks to adapt recommendations immediately."
     }
    ],
    "kind": ""
@@ -102,11 +102,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Your recommendation model optimizes for clicks but business cares about revenue. How do you realign?",
+   "q": "Your recommendation model optimises for clicks but business cares about revenue. How do you realign?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multi-objective optimization: combine click prediction and purchase prediction, (2) value-weighted ranking: score = P(click) × P(purchase|click) × item_value, (3) business rules overlay: boost high-margin items in recommendations, (4) A/B test different objective functions: measure downstream revenue, (5) calibration: ensure click probabilities are well-calibrated for value computation, (6) long-term value: optimize for customer lifetime value, not just immediate revenue, (7) diversity: avoid recommending only expensive items — user experience matters."
+     "text": "**Answer:** (1) Multi-objective optimisation: combine click prediction and purchase prediction, (2) value-weighted ranking: score = P(click) × P(purchase|click) × item_value, (3) business rules overlay: boost high-margin items in recommendations, (4) A/B test different objective functions: measure downstream revenue, (5) calibration: ensure click probabilities are well-calibrated for value computation, (6) long-term value: optimise for customer lifetime value, not just immediate revenue, (7) diversity: avoid recommending only expensive items — user experience matters."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Maximal Marginal Relevance (MMR): balance relevance with diversity, (2) category-based diversity: limit recommendations per category, (3) submodular optimization: select diverse relevant subset, (4) exploration-exploitation: include some exploratory recommendations, (5) user-defined diversity: let users set preference diversity level, (6) temporal diversity: avoid recommending similar items in consecutive sessions, (7) intra-list diversity metric: average pairwise distance between recommended items, (8) serendipity: occasionally include unexpected but potentially interesting items."
+     "text": "**Answer:** (1) Maximal Marginal Relevance (MMR): balance relevance with diversity, (2) category-based diversity: limit recommendations per category, (3) submodular optimisation: select diverse relevant subset, (4) exploration-exploitation: include some exploratory recommendations, (5) user-defined diversity: let users set preference diversity level, (6) temporal diversity: avoid recommending similar items in consecutive sessions, (7) intra-list diversity metric: average pairwise distance between recommended items, (8) serendipity: occasionally include unexpected but potentially interesting items."
     },
     {
      "t": "p",
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Lambda architecture: batch layer (comprehensive) + speed layer (real-time), (2) move critical features to streaming pipeline (Kafka → feature computation → feature store), (3) Kappa architecture: single streaming pipeline for everything, (4) pre-compute what you can: daily/hourly aggregates in batch, only delta in real-time, (5) feature store with online serving: Feast, Tecton, (6) materialized views updated via CDC (Change Data Capture), (7) prioritize: which features actually need to be real-time? Many don't."
+     "text": "**Answer:** (1) Lambda architecture: batch layer (comprehensive) + speed layer (real-time), (2) move critical features to streaming pipeline (Kafka → feature computation → feature store), (3) Kappa architecture: single streaming pipeline for everything, (4) pre-compute what you can: daily/hourly aggregates in batch, only delta in real-time, (5) feature store with online serving: Feast, Tecton, (6) materialised views updated via CDC (Change Data Capture), (7) prioritise: which features actually need to be real-time? Many don't."
     }
    ],
    "kind": ""
@@ -154,11 +154,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "11",
-   "q": "Your data warehouse has inconsistent naming conventions (some tables use snake_case, some camelCase, some have prefixes). How do you standardize for analytics?",
+   "q": "Your data warehouse has inconsistent naming conventions (some tables use snake_case, some camelCase, some have prefixes). How do you standardise for analytics?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Create an analytics/mart layer with standardized views/tables, (2) dbt models as the standardization layer: raw → staging (renamed, typed) → marts (business logic), (3) naming convention document: snake_case, prefixes by domain (fact_, dim_), (4) automated linting in CI/CD: reject non-conforming models, (5) data catalog: document canonical names and sources, (6) don't try to rename source tables — build clean layers on top."
+     "text": "**Answer:** (1) Create an analytics/mart layer with standardised views/tables, (2) dbt models as the standardisation layer: raw → staging (renamed, typed) → marts (business logic), (3) naming convention document: snake_case, prefixes by domain (fact_, dim_), (4) automated linting in CI/CD: reject non-conforming models, (5) data catalog: document canonical names and sources, (6) don't try to rename source tables — build clean layers on top."
     },
     {
      "t": "p",
@@ -174,7 +174,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** PCA: (1) linear dimensionality reduction, (2) preserves maximum variance, (3) unsupervised, (4) good for decorrelating features, (5) components are not interpretable. Feature selection: (1) keeps original features (interpretable), (2) L1 regularization, mutual information, RFE, (3) better when some features are clearly irrelevant. Autoencoders: (1) non-linear dimensionality reduction, (2) can capture complex patterns, (3) more powerful but less interpretable, (4) need more data and compute. Rule of thumb: try feature selection first (interpretable), then PCA (quick), then autoencoders (complex data)."
+     "text": "**Answer:** PCA: (1) linear dimensionality reduction, (2) preserves maximum variance, (3) unsupervised, (4) good for decorrelating features, (5) components are not interpretable. Feature selection: (1) keeps original features (interpretable), (2) L1 regularisation, mutual information, RFE, (3) better when some features are clearly irrelevant. Autoencoders: (1) non-linear dimensionality reduction, (2) can capture complex patterns, (3) more powerful but less interpretable, (4) need more data and compute. Rule of thumb: try feature selection first (interpretable), then PCA (quick), then autoencoders (complex data)."
     }
    ],
    "kind": ""
@@ -194,11 +194,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "You need to visualize 1000 data points in 50 dimensions. What visualization technique do you use and why?",
+   "q": "You need to visualise 1000 data points in 50 dimensions. What visualisation technique do you use and why?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) t-SNE: great for visualization, preserves local structure, reveals clusters, but slow for very large datasets, (2) UMAP: faster than t-SNE, preserves both local and global structure better, (3) PCA (first 2-3 components): fast, deterministic, but may miss non-linear structure, (4) recommendation: start with UMAP for exploration, PCA for quick overview, (5) for 1000 points: any method is fast enough, (6) color points by class/cluster to reveal patterns, (7) don't use for distance interpretation in t-SNE — only neighborhood relationships are meaningful."
+     "text": "**Answer:** (1) t-SNE: great for visualisation, preserves local structure, reveals clusters, but slow for very large datasets, (2) UMAP: faster than t-SNE, preserves both local and global structure better, (3) PCA (first 2-3 components): fast, deterministic, but may miss non-linear structure, (4) recommendation: start with UMAP for exploration, PCA for quick overview, (5) for 1000 points: any method is fast enough, (6) colour points by class/cluster to reveal patterns, (7) don't use for distance interpretation in t-SNE — only neighbourhood relationships are meaningful."
     },
     {
      "t": "p",
@@ -214,7 +214,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Compare respondents vs. non-respondents on available variables (demographics, purchase history), (2) weighting: adjust by inverse propensity of responding (weight under-represented groups up), (3) post-stratification weighting: match sample distributions to known population, (4) Heckman selection model for modeling selection bias, (5) sensitivity analysis: how different would results be if non-respondents had different opinions?, (6) improve response rate: incentives, shorter survey, multiple channels, (7) non-response follow-up: contact a sample of non-respondents with a shorter version."
+     "text": "**Answer:** (1) Compare respondents vs. non-respondents on available variables (demographics, purchase history), (2) weighting: adjust by inverse propensity of responding (weight under-represented groups up), (3) post-stratification weighting: match sample distributions to known population, (4) Heckman selection model for modelling selection bias, (5) sensitivity analysis: how different would results be if non-respondents had different opinions?, (6) improve response rate: incentives, shorter survey, multiple channels, (7) non-response follow-up: contact a sample of non-respondents with a shorter version."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "You're designing a multi-armed bandit experiment for website optimization (5 landing pages). What algorithm do you choose?",
+   "q": "You're designing a multi-armed bandit experiment for website optimisation (5 landing pages). What algorithm do you choose?",
    "body": [
     {
      "t": "p",
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Cost-sensitive classification: pass cost matrix to model, (2) threshold adjustment: lower threshold from 0.5 to 0.005 (reflecting 200:1 cost ratio), (3) sample weights: weight fraud samples 200x more, (4) expected cost minimization: for each prediction, choose class with lowest expected cost, (5) custom metric: total cost = FN × $10,000 + FP × $50, (6) in XGBoost: `scale_pos_weight = cost_FN / cost_FP`, (7) evaluate with cost curve, not just ROC, (8) optimal threshold: where marginal cost of FP = marginal benefit of catching fraud."
+     "text": "**Answer:** (1) Cost-sensitive classification: pass cost matrix to model, (2) threshold adjustment: lower threshold from 0.5 to 0.005 (reflecting 200:1 cost ratio), (3) sample weights: weight fraud samples 200x more, (4) expected cost minimisation: for each prediction, choose class with lowest expected cost, (5) custom metric: total cost = FN × $10,000 + FP × $50, (6) in XGBoost: `scale_pos_weight = cost_FN / cost_FP`, (7) evaluate with cost curve, not just ROC, (8) optimal threshold: where marginal cost of FP = marginal benefit of catching fraud."
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is uplift modeling / causal ML: (1) train to predict the incremental effect of the offer, not just purchase probability, (2) T-learner: model P(purchase|treated) - P(purchase|control), (3) S-learner: single model with treatment indicator, (4) classes of customers: (a) sure things: buy regardless — don't offer, (b) persuadables: buy only with offer — target these, (c) lost causes: won't buy regardless — don't offer, (d) sleeping dogs: offer causes negative reaction — don't offer, (5) use randomized control group data for training, (6) optimize: offer to those where uplift × $100 > $5."
+     "text": "**Answer:** This is uplift modelling / causal ML: (1) train to predict the incremental effect of the offer, not just purchase probability, (2) T-learner: model P(purchase|treated) - P(purchase|control), (3) S-learner: single model with treatment indicator, (4) classes of customers: (a) sure things: buy regardless — don't offer, (b) persuadables: buy only with offer — target these, (c) lost causes: won't buy regardless — don't offer, (d) sleeping dogs: offer causes negative reaction — don't offer, (5) use randomised control group data for training, (6) optimise: offer to those where uplift × $100 > $5."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Reject option / abstaining classifier: three outputs — approve, reject, review, (2) define cost structure: auto-approve bad loan = C1 (highest), auto-reject good loan = C2, manual review = C3, (3) threshold-based: approve if P(good) > t1, reject if P(good) < t2, review otherwise (t2 < t1), (4) optimize t1, t2 on validation set to minimize total cost, (5) capacity constraint: only send k% to manual review (analyst bandwidth), (6) risk-based: adjust thresholds based on loan amount."
+     "text": "**Answer:** (1) Reject option / abstaining classifier: three outputs — approve, reject, review, (2) define cost structure: auto-approve bad loan = C1 (highest), auto-reject good loan = C2, manual review = C3, (3) threshold-based: approve if P(good) > t1, reject if P(good) < t2, review otherwise (t2 < t1), (4) optimise t1, t2 on validation set to minimise total cost, (5) capacity constraint: only send k% to manual review (analyst bandwidth), (6) risk-based: adjust thresholds based on loan amount."
     },
     {
      "t": "p",
@@ -330,11 +330,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "24",
-   "q": "You've analyzed customer churn and found 5 insights. How do you structure a presentation for the executive team?",
+   "q": "You've analysed customer churn and found 5 insights. How do you structure a presentation for the executive team?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Structure: (1) **Hook**: \"We're losing $2M/quarter to preventable churn,\" (2) **Context**: current churn rate, trend, benchmark vs. industry, (3) **Key finding**: \"Customers who don't engage within first 14 days are 5x more likely to churn,\" (4) **Supporting evidence**: 2-3 visualizations (survival curve, segment comparison), (5) **Root cause**: why are customers disengaging?, (6) **Recommendation**: specific, actionable — \"implement a day-7 engagement campaign targeting inactive users,\" (7) **Expected impact**: \"reducing 14-day inactive rate by 20% saves $400K/quarter,\" (8) **Ask**: resources needed, timeline. Keep to 10 slides max."
+     "text": "**Answer:** Structure: (1) **Hook**: \"We're losing $2M/quarter to preventable churn,\" (2) **Context**: current churn rate, trend, benchmark vs. industry, (3) **Key finding**: \"Customers who don't engage within first 14 days are 5x more likely to churn,\" (4) **Supporting evidence**: 2-3 visualisations (survival curve, segment comparison), (5) **Root cause**: why are customers disengaging?, (6) **Recommendation**: specific, actionable — \"implement a day-7 engagement campaign targeting inactive users,\" (7) **Expected impact**: \"reducing 14-day inactive rate by 20% saves $400K/quarter,\" (8) **Ask**: resources needed, timeline. Keep to 10 slides max."
     }
    ],
    "kind": ""

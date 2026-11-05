@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1",
-   "q": "What is the difference between tokenization, stemming, and lemmatization?",
+   "q": "What is the difference between tokenisation, stemming, and lemmatisation?",
    "body": [
     {
      "t": "p",
@@ -25,14 +25,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Tokenization:** Splitting text into units (words, subwords, characters)",
+      "**Tokenisation:** Splitting text into units (words, subwords, characters)",
       "**Stemming:** Reducing to root form by rule-based suffix removal (\"running\" → \"run\", \"better\" → \"bet\")",
-      "**Lemmatization:** Reducing to dictionary base form using linguistic rules (\"better\" → \"good\", \"running\" → \"run\")"
+      "**Lemmatisation:** Reducing to dictionary base form using linguistic rules (\"better\" → \"good\", \"running\" → \"run\")"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Lemmatization is more accurate but slower. Stemming is faster but can produce non-words. Both reduce vocabulary for simpler models."
+     "text": "**Explanation:** Lemmatisation is more accurate but slower. Stemming is faster but can produce non-words. Both reduce vocabulary for simpler models."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**TF (Term Frequency):** How often word appears in a document",
-      "**IDF (Inverse Document Frequency):** log(total_docs / docs_containing_word) — penalizes common words",
+      "**IDF (Inverse Document Frequency):** log(total_docs / docs_containing_word) — penalises common words",
       "**TF-IDF:** TF × IDF — high for distinctive words in a document"
      ]
     },
@@ -317,7 +317,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Identifying and classifying named entities in text: persons, organizations, locations, dates, quantities, etc."
+     "text": "**Answer:** Identifying and classifying named entities in text: persons, organisations, locations, dates, quantities, etc."
     },
     {
      "t": "p",
@@ -358,7 +358,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "15",
-   "q": "What is the difference between word-level and subword tokenization?",
+   "q": "What is the difference between word-level and subword tokenisation?",
    "body": [
     {
      "t": "p",
@@ -374,7 +374,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Modern models (BERT, GPT) use subword tokenization. Balances vocabulary size with morphological coverage. No OOV problem."
+     "text": "**Explanation:** Modern models (BERT, GPT) use subword tokenisation. Balances vocabulary size with morphological coverage. No OOV problem."
     }
    ],
    "kind": ""
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "What is topic modeling and how does LDA work?",
+   "q": "What is topic modelling and how does LDA work?",
    "body": [
     {
      "t": "p",
@@ -426,7 +426,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Coherence and perplexity can disagree. Coherence better correlates with human judgment. Try different topic counts, pick highest coherence."
+     "text": "**Explanation:** Coherence and perplexity can disagree. Coherence better correlates with human judgement. Try different topic counts, pick highest coherence."
     }
    ],
    "kind": ""
@@ -434,7 +434,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "What is text summarization?",
+   "q": "What is text summarisation?",
    "body": [
     {
      "t": "p",
@@ -465,7 +465,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Applications:** Translation, summarization, question answering."
+     "text": "**Applications:** Translation, summarisation, question answering."
     },
     {
      "t": "p",
@@ -505,11 +505,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Components:** Multi-head self-attention, feed-forward layers, positional encoding, layer normalization."
+     "text": "**Components:** Multi-head self-attention, feed-forward layers, positional encoding, layer normalisation."
     },
     {
      "t": "p",
-     "text": "**Explanation:** No recurrence → parallelizable, efficient. Self-attention captures long-range dependencies. Base of BERT, GPT, T5, and all modern NLP."
+     "text": "**Explanation:** No recurrence → parallelisable, efficient. Self-attention captures long-range dependencies. Base of BERT, GPT, T5, and all modern NLP."
     }
    ],
    "kind": ""
@@ -554,7 +554,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**BERT:** Encoder-only, bidirectional, good for understanding (classification, NER, QA)",
-      "**GPT:** Decoder-only, left-to-right, good for generation (text completion, summarization)"
+      "**GPT:** Decoder-only, left-to-right, good for generation (text completion, summarisation)"
      ]
     },
     {
@@ -592,7 +592,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Pre-train large language model on massive text corpus (unsupervised), then fine-tune on specific task with smaller labeled dataset."
+     "text": "**Answer:** Pre-train large language model on massive text corpus (unsupervised), then fine-tune on specific task with smaller labelled dataset."
     },
     {
      "t": "code",
@@ -601,7 +601,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pre-training learns general language understanding. Fine-tuning adapts to specific task. Enables high performance with limited labeled data."
+     "text": "**Explanation:** Pre-training learns general language understanding. Fine-tuning adapts to specific task. Enables high performance with limited labelled data."
     }
    ],
    "kind": ""

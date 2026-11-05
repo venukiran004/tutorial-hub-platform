@@ -42,7 +42,7 @@ EC.receiveLesson({
       "**PCA:** Eigenvectors of the covariance matrix define principal components; eigenvalues indicate variance explained",
       "**PageRank:** Dominant eigenvector of the link matrix gives page importance",
       "**Spectral clustering:** Eigenvectors of the graph Laplacian define cluster structure",
-      "**Stability analysis:** Eigenvalues of the Hessian determine convergence of optimization"
+      "**Stability analysis:** Eigenvalues of the Hessian determine convergence of optimisation"
      ]
     }
    ],
@@ -82,7 +82,7 @@ EC.receiveLesson({
      "rows": [
       [
        "PCA",
-       "SVD on centered data gives principal components directly"
+       "SVD on centreed data gives principal components directly"
       ],
       [
        "Recommender systems",
@@ -184,7 +184,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Fix:** Feature scaling, regularization, or SVD-based pseudoinverse."
+     "text": "**Fix:** Feature scaling, regularisation, or SVD-based pseudoinverse."
     }
    ],
    "kind": ""
@@ -282,7 +282,7 @@ EC.receiveLesson({
      "items": [
       "SVD components (\\(U\\) and \\(V\\))",
       "QR decomposition for numerical stability",
-      "Orthogonal initialization of neural network weights (reduces vanishing/exploding gradients)",
+      "Orthogonal initialisation of neural network weights (reduces vanishing/exploding gradients)",
       "Rotation matrices in computer vision"
      ]
     }
@@ -331,7 +331,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**ML uses:** Nuclear norm (sum of singular values) for matrix completion, Frobenius norm in regularization, trace in Fisher information matrix."
+     "text": "**ML uses:** Nuclear norm (sum of singular values) for matrix completion, Frobenius norm in regularisation, trace in Fisher information matrix."
     }
    ],
    "kind": ""
@@ -473,7 +473,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Given centered data matrix \\(X\\) (\\(n\\) samples × \\(d\\) features):"
+     "text": "**Answer:** Given centreed data matrix \\(X\\) (\\(n\\) samples × \\(d\\) features):"
     },
     {
      "t": "ol",

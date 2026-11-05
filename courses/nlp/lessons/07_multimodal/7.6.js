@@ -106,7 +106,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "PDF text extraction destroys exactly what makes documents comprehensible: table structure becomes a jumble of cells, figures vanish, column layout interleaves, and a chart's meaning disappears entirely. ColPali skips it — render the page, embed the image, retrieve on that. The document is preserved as it appears. This inverts the usual instinct that text is the canonical representation and images are a degraded form; for documents, **the rendered page is the canonical form** and the extracted text is the degradation. The cost is storage and compute per page, and that the retrieval model must be strong at reading text in images — which lesson 7.2 identified as one of CLIP's weakest areas, hence the specialised models." }] },
 
     { t: "exercise", title: "Build and probe an index",
-      tasks: [
+      requirements: [
         "Run cross-modal retrieval on your own images and check the gap between the correct match and the best distractor.",
         "Compute text-to-text similarity for pairs you understand, and confirm the ordering holds while absolute values do not compare across pairs.",
         "Caption 100 images with a VLM and count how many captions are accurate enough to index.",

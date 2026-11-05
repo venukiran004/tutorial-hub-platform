@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) EDA automation: \"describe this dataset, identify anomalies,\" (2) code generation: generate feature engineering code from natural language descriptions, (3) documentation: auto-generate docstrings, README files, model cards, (4) data quality: natural language rules → validation code, (5) SQL generation: business questions → SQL queries, (6) insight extraction: summarize model results in plain English, (7) limitations: LLMs can hallucinate statistics, can't replace rigorous analysis, (8) best use: augment, not replace — human reviews LLM-generated code and insights."
+     "text": "**Answer:** (1) EDA automation: \"describe this dataset, identify anomalies,\" (2) code generation: generate feature engineering code from natural language descriptions, (3) documentation: auto-generate docstrings, README files, model cards, (4) data quality: natural language rules → validation code, (5) SQL generation: business questions → SQL queries, (6) insight extraction: summarise model results in plain English, (7) limitations: LLMs can hallucinate statistics, can't replace rigorous analysis, (8) best use: augment, not replace — human reviews LLM-generated code and insights."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use vector DB when: (1) similarity search: finding nearest neighbors in embedding space, (2) recommendation: similar items/users based on learned representations, (3) RAG: retrieving relevant document chunks for LLM, (4) image/text search: semantic search beyond keyword matching. Use traditional DB when: (5) exact lookups: user features by ID, (6) aggregations: sum, count, average by group, (7) structured queries: SQL-based filtering, joining, (8) transactional: ACID compliance needed. Hybrid: (9) many systems use both — structured features from PostgreSQL, embeddings from Pinecone/Weaviate."
+     "text": "**Answer:** Use vector DB when: (1) similarity search: finding nearest neighbours in embedding space, (2) recommendation: similar items/users based on learned representations, (3) RAG: retrieving relevant document chunks for LLM, (4) image/text search: semantic search beyond keyword matching. Use traditional DB when: (5) exact lookups: user features by ID, (6) aggregations: sum, count, average by group, (7) structured queries: SQL-based filtering, joining, (8) transactional: ACID compliance needed. Hybrid: (9) many systems use both — structured features from PostgreSQL, embeddings from Pinecone/Weaviate."
     }
    ],
    "kind": ""
@@ -78,11 +78,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "405",
-   "q": "You want to run an A/B test but it's impractical to randomize at the user level (network effects — users influence each other). How do you experiment?",
+   "q": "You want to run an A/B test but it's impractical to randomise at the user level (network effects — users influence each other). How do you experiment?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Cluster randomization: randomize at group level (city, school, office), (2) switchback experiments: alternate treatment/control over time for same units, (3) synthetic control: create synthetic control group from untreated units, (4) ego-network randomization: randomize at user's network neighborhood level, (5) interference modeling: explicitly model spillover effects, (6) geographical randomization: treat some regions, keep others as control, (7) pre/post with diff-in-diff: compare before/after accounting for trends, (8) larger sample needed: cluster randomization reduces effective sample size."
+     "text": "**Answer:** (1) Cluster randomisation: randomise at group level (city, school, office), (2) switchback experiments: alternate treatment/control over time for same units, (3) synthetic control: create synthetic control group from untreated units, (4) ego-network randomisation: randomise at user's network neighbourhood level, (5) interference modelling: explicitly model spillover effects, (6) geographical randomisation: treat some regions, keep others as control, (7) pre/post with diff-in-diff: compare before/after accounting for trends, (8) larger sample needed: cluster randomisation reduces effective sample size."
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Novelty effect: treatment excitement wears off → long-term behavior reverts or worsens, (2) selection effect: treatment retained low-quality users in week 1 who then naturally churn later, (3) delayed negative effect: treatment has a genuine negative long-term impact, (4) analysis: cohort-based survival curve — plot retention over time for both groups, (5) check: is the treatment simply delaying churn, not preventing it?, (6) decision: need full customer lifecycle data before declaring winner, (7) recommendation: extend test duration to capture steady-state behavior."
+     "text": "**Answer:** (1) Novelty effect: treatment excitement wears off → long-term behaviour reverts or worsens, (2) selection effect: treatment retained low-quality users in week 1 who then naturally churn later, (3) delayed negative effect: treatment has a genuine negative long-term impact, (4) analysis: cohort-based survival curve — plot retention over time for both groups, (5) check: is the treatment simply delaying churn, not preventing it?, (6) decision: need full customer lifecycle data before declaring winner, (7) recommendation: extend test duration to capture steady-state behaviour."
     },
     {
      "t": "p",
@@ -118,11 +118,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "408",
-   "q": "You receive data where timestamps are in different timezones but the timezone isn't recorded. How do you harmonize?",
+   "q": "You receive data where timestamps are in different timezones but the timezone isn't recorded. How do you harmonise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Investigate: check data sources — each source likely uses a consistent timezone, (2) heuristics: look at patterns — if events cluster at 9am-5pm, infer local business hours, (3) metadata: check system documentation for timezone conventions, (4) UTC normalization: convert all to UTC once timezone is determined, (5) store both: original timestamp + UTC conversion for debugging, (6) edge cases: DST transitions create ambiguous hours, (7) validation: cross-reference with known events (if you know a meeting was at 2pm ET, check the timestamp), (8) going forward: mandate UTC storage with timezone offset."
+     "text": "**Answer:** (1) Investigate: check data sources — each source likely uses a consistent timezone, (2) heuristics: look at patterns — if events cluster at 9am-5pm, infer local business hours, (3) metadata: check system documentation for timezone conventions, (4) UTC normalisation: convert all to UTC once timezone is determined, (5) store both: original timestamp + UTC conversion for debugging, (6) edge cases: DST transitions create ambiguous hours, (7) validation: cross-reference with known events (if you know a meeting was at 2pm ET, check the timestamp), (8) going forward: mandate UTC storage with timezone offset."
     }
    ],
    "kind": ""
@@ -134,7 +134,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Regex patterns: detect emails, phone numbers, SSNs with pattern matching, (2) NER models: detect names, addresses, organizations using SpaCy/Presidio, (3) replacement: replace PII with tokens — \"[EMAIL]\", \"[PHONE]\", \"[NAME]\", (4) tools: Microsoft Presidio (free), Amazon Comprehend (managed), (5) validation: sample and manually check de-identification quality, (6) iterative: start aggressive (over-redact), refine rules to reduce false positives, (7) logging: track what was redacted for audit, (8) pipeline: de-identify before any downstream processing."
+     "text": "**Answer:** (1) Regex patterns: detect emails, phone numbers, SSNs with pattern matching, (2) NER models: detect names, addresses, organisations using SpaCy/Presidio, (3) replacement: replace PII with tokens — \"[EMAIL]\", \"[PHONE]\", \"[NAME]\", (4) tools: Microsoft Presidio (free), Amazon Comprehend (managed), (5) validation: sample and manually check de-identification quality, (6) iterative: start aggressive (over-redact), refine rules to reduce false positives, (7) logging: track what was redacted for audit, (8) pipeline: de-identify before any downstream processing."
     }
    ],
    "kind": ""
@@ -155,7 +155,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Specialized ML Techniques**"
+     "text": "**Theme: Specialised ML Techniques**"
     }
    ],
    "kind": ""
@@ -167,7 +167,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Beta regression: natural distribution for proportions — statsmodels GLM with Beta family, (2) quasi-binomial: handles over-dispersion in proportion data, (3) logit transformation: transform proportion to log-odds, fit linear regression, (4) zero-one inflated beta: if many observations are exactly 0 or 1, (5) generalized additive model: smooth fit with beta distribution, (6) practical: for ML — XGBoost with square root or logit-transformed target, inverse-transform predictions, (7) evaluation: use appropriate loss (beta negative log-likelihood, RMSE on logit scale), (8) clip predictions to [0, 1] range."
+     "text": "**Answer:** (1) Beta regression: natural distribution for proportions — statsmodels GLM with Beta family, (2) quasi-binomial: handles over-dispersion in proportion data, (3) logit transformation: transform proportion to log-odds, fit linear regression, (4) zero-one inflated beta: if many observations are exactly 0 or 1, (5) generalised additive model: smooth fit with beta distribution, (6) practical: for ML — XGBoost with square root or logit-transformed target, inverse-transform predictions, (7) evaluation: use appropriate loss (beta negative log-likelihood, RMSE on logit scale), (8) clip predictions to [0, 1] range."
     }
    ],
    "kind": ""
@@ -179,7 +179,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Spatial autocorrelation: nearby properties have similar values (Tobler's law), (2) features: distance to landmarks (school, transit, city center), neighborhood statistics, (3) spatial cross-validation: don't train/test on nearby properties — spatial block CV, (4) kriging: geostatistical method that models spatial correlation, (5) spatial lag features: average price of k-nearest neighbor properties, (6) geographically weighted regression: coefficients vary by location, (7) encoding lat/lon: don't use raw coords — use geohash, H3, or learned embeddings, (8) evaluation: check residuals for spatial patterns (Moran's I)."
+     "text": "**Answer:** (1) Spatial autocorrelation: nearby properties have similar values (Tobler's law), (2) features: distance to landmarks (school, transit, city centre), neighbourhood statistics, (3) spatial cross-validation: don't train/test on nearby properties — spatial block CV, (4) kriging: geostatistical method that models spatial correlation, (5) spatial lag features: average price of k-nearest neighbour properties, (6) geographically weighted regression: coefficients vary by location, (7) encoding lat/lon: don't use raw coords — use geohash, H3, or learned embeddings, (8) evaluation: check residuals for spatial patterns (Moran's I)."
     }
    ],
    "kind": ""
@@ -207,7 +207,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Alignment: agree on what the model predicts, what actions the product takes, (2) API contract: define input/output format, latency requirements, error handling, (3) edge cases: what happens when model returns low confidence? Fallback behavior?, (4) A/B test plan: test product feature with model vs. baseline collaboratively, (5) monitoring: shared dashboard — product metrics + model metrics, (6) iteration: regular sync to review results and refine, (7) documentation: model card + product spec aligned, (8) timeline: model readiness vs. product development timeline."
+     "text": "**Answer:** (1) Alignment: agree on what the model predicts, what actions the product takes, (2) API contract: define input/output format, latency requirements, error handling, (3) edge cases: what happens when model returns low confidence? Fallback behaviour?, (4) A/B test plan: test product feature with model vs. baseline collaboratively, (5) monitoring: shared dashboard — product metrics + model metrics, (6) iteration: regular sync to review results and refine, (7) documentation: model card + product spec aligned, (8) timeline: model readiness vs. product development timeline."
     }
    ],
    "kind": ""
@@ -219,11 +219,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Lawful basis for processing: consent, legitimate interest, or contract?, (2) data minimization: only collect features necessary for the model, (3) purpose limitation: model used only for stated purpose, (4) right to explanation: automated decisions must be explainable (Article 22), (5) right to erasure: can you remove a person's data from training?, (6) data protection impact assessment: required for high-risk processing, (7) cross-border: if data moves outside EU, additional safeguards needed, (8) data retention: how long are training data and predictions kept?, (9) profiling: if model profiles individuals, specific GDPR requirements apply."
+     "text": "**Answer:** (1) Lawful basis for processing: consent, legitimate interest, or contract?, (2) data minimisation: only collect features necessary for the model, (3) purpose limitation: model used only for stated purpose, (4) right to explanation: automated decisions must be explainable (Article 22), (5) right to erasure: can you remove a person's data from training?, (6) data protection impact assessment: required for high-risk processing, (7) cross-border: if data moves outside EU, additional safeguards needed, (8) data retention: how long are training data and predictions kept?, (9) profiling: if model profiles individuals, specific GDPR requirements apply."
     },
     {
      "t": "p",
-     "text": "**Theme: Performance Optimization Patterns**"
+     "text": "**Theme: Performance Optimisation Patterns**"
     }
    ],
    "kind": ""
@@ -231,11 +231,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "416",
-   "q": "Your pandas code runs too slowly on 10M rows. What optimization strategies do you try, in order?",
+   "q": "Your pandas code runs too slowly on 10M rows. What optimisation strategies do you try, in order?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Vectorization: replace loops with vectorized operations (10-100x speedup), (2) dtypes: downcast int64 → int32/int16, float64 → float32 (reduces memory, faster), (3) categorical: convert string columns to pd.Categorical (huge memory savings), (4) query/eval: `df.query(\"col > 5\")` uses numexpr (faster than boolean indexing for large DataFrames), (5) chunking: process in chunks if memory-bound, (6) switch to Polars/DuckDB: 5-20x faster than pandas on large data, (7) database: push operations to SQL if data is in DB (let DB engine optimize), (8) Dask/Vaex: lazy evaluation for out-of-core computation."
+     "text": "**Answer:** (1) Vectorisation: replace loops with vectorised operations (10-100x speedup), (2) dtypes: downcast int64 → int32/int16, float64 → float32 (reduces memory, faster), (3) categorical: convert string columns to pd.Categorical (huge memory savings), (4) query/eval: `df.query(\"col > 5\")` uses numexpr (faster than boolean indexing for large DataFrames), (5) chunking: process in chunks if memory-bound, (6) switch to Polars/DuckDB: 5-20x faster than pandas on large data, (7) database: push operations to SQL if data is in DB (let DB engine optimise), (8) Dask/Vaex: lazy evaluation for out-of-core computation."
     }
    ],
    "kind": ""
@@ -247,7 +247,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Spark UI: check stage durations — which stage is slow?, (2) data skew: one partition has much more data → salting or pre-aggregation, (3) shuffles: reduce joins and groupBys that trigger expensive shuffles, (4) broadcast join: if one table is small (<100MB), broadcast it, (5) partitioning: repartition to appropriate number (too few = underutilized, too many = overhead), (6) caching: `df.cache()` if same DataFrame used multiple times, (7) serialization: use Kryo serializer (faster than Java default), (8) resources: increase executor memory/cores if underpowered, (9) AQE: enable Adaptive Query Execution for automatic optimization."
+     "text": "**Answer:** (1) Spark UI: check stage durations — which stage is slow?, (2) data skew: one partition has much more data → salting or pre-aggregation, (3) shuffles: reduce joins and groupBys that trigger expensive shuffles, (4) broadcast join: if one table is small (<100MB), broadcast it, (5) partitioning: repartition to appropriate number (too few = underutilized, too many = overhead), (6) caching: `df.cache()` if same DataFrame used multiple times, (7) serialisation: use Kryo serialiser (faster than Java default), (8) resources: increase executor memory/cores if underpowered, (9) AQE: enable Adaptive Query Execution for automatic optimisation."
     },
     {
      "t": "p",
@@ -263,7 +263,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Segments aren't actionable: technically valid clusters but no clear marketing action per cluster, (2) wrong features: clustered on demographic features but behavior drives response, (3) no stability: customer segments change frequently → inconsistent strategies, (4) wrong number of segments: too many (can't act on each) or too few (too generic), (5) misalignment: marketing can't differentiate channels/messages by segment, (6) fix: involve marketing in defining what a \"useful segment\" looks like before clustering, (7) better approach: segment on behavioral/attitudinal data, validate with A/B testing that strategies differ by segment."
+     "text": "**Answer:** (1) Segments aren't actionable: technically valid clusters but no clear marketing action per cluster, (2) wrong features: clustered on demographic features but behaviour drives response, (3) no stability: customer segments change frequently → inconsistent strategies, (4) wrong number of segments: too many (can't act on each) or too few (too generic), (5) misalignment: marketing can't differentiate channels/messages by segment, (6) fix: involve marketing in defining what a \"useful segment\" looks like before clustering, (7) better approach: segment on behavioural/attitudinal data, validate with A/B testing that strategies differ by segment."
     }
    ],
    "kind": ""
@@ -287,7 +287,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model predicts accurately but predictions don't change actions — no incremental value, (2) implementation gap: model predictions not being used correctly downstream, (3) user behavior: users ignore model suggestions (recommendation not compelling), (4) cannibalization: model improves one metric but hurts another, (5) time lag: business impact takes months to materialize, (6) attribution: business impact affected by other simultaneous changes, (7) wrong metric: model optimizes for clicks but business wants purchases, (8) investigation: follow the full chain — prediction → action → user behavior → outcome."
+     "text": "**Answer:** (1) Model predicts accurately but predictions don't change actions — no incremental value, (2) implementation gap: model predictions not being used correctly downstream, (3) user behaviour: users ignore model suggestions (recommendation not compelling), (4) cannibalization: model improves one metric but hurts another, (5) time lag: business impact takes months to materialise, (6) attribution: business impact affected by other simultaneous changes, (7) wrong metric: model optimises for clicks but business wants purchases, (8) investigation: follow the full chain — prediction → action → user behaviour → outcome."
     },
     {
      "t": "p",
@@ -299,11 +299,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "421",
-   "q": "You're modeling rare events (< 0.01% occurrence). Normal statistical tests don't work well. What approaches do you use?",
+   "q": "You're modelling rare events (< 0.01% occurrence). Normal statistical tests don't work well. What approaches do you use?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Extreme value theory: model the tails of distributions specifically, (2) Poisson regression: for count of rare events, (3) exact tests: Fisher's exact test instead of chi-squared for small counts, (4) Bayesian methods: prior helps with sparse data, (5) zero-inflated models: if excess zeros in count data, (6) survival analysis: time-to-event modeling handles rare events naturally, (7) simulation: Monte Carlo for estimating rare event probabilities, (8) importance sampling: bias sampling toward rare events, then correct, (9) aggregate: if per-user events are rare, aggregate to cohort level."
+     "text": "**Answer:** (1) Extreme value theory: model the tails of distributions specifically, (2) Poisson regression: for count of rare events, (3) exact tests: Fisher's exact test instead of chi-squared for small counts, (4) Bayesian methods: prior helps with sparse data, (5) zero-inflated models: if excess zeros in count data, (6) survival analysis: time-to-event modelling handles rare events naturally, (7) simulation: Monte Carlo for estimating rare event probabilities, (8) importance sampling: bias sampling toward rare events, then correct, (9) aggregate: if per-user events are rare, aggregate to cohort level."
     }
    ],
    "kind": ""
@@ -365,7 +365,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Event time vs. processing time: always track when event happened, not when it arrived, (2) watermarking: define how long to wait for late data before finalizing, (3) reprocessing: when late data arrives, trigger re-computation of affected aggregations, (4) append-only: always insert, never overwrite — allows reprocessing, (5) versioned outputs: each reprocessing creates new version of aggregated data, (6) dashboards: show \"data completeness\" indicator, (7) model training: use event time for temporal splits (not arrival time), (8) monitoring: track late arrival rates and patterns."
+     "text": "**Answer:** (1) Event time vs. processing time: always track when event happened, not when it arrived, (2) watermarking: define how long to wait for late data before finalising, (3) reprocessing: when late data arrives, trigger re-computation of affected aggregations, (4) append-only: always insert, never overwrite — allows reprocessing, (5) versioned outputs: each reprocessing creates new version of aggregated data, (6) dashboards: show \"data completeness\" indicator, (7) model training: use event time for temporal splits (not arrival time), (8) monitoring: track late arrival rates and patterns."
     },
     {
      "t": "p",

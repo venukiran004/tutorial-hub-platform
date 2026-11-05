@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Challenge: prices respond to demand (endogeneity — prices increase when demand is high). Solutions: (1) natural experiments: unexpected price changes (supply shock), (2) instrumental variable: cost of raw materials (affects price, not demand directly), (3) regression discontinuity: price tiers create quasi-experiments, (4) A/B test with random price assignment (the gold standard), (5) panel data with fixed effects to control for unobserved heterogeneity, (6) structural equation modeling."
+     "text": "**Answer:** Challenge: prices respond to demand (endogeneity — prices increase when demand is high). Solutions: (1) natural experiments: unexpected price changes (supply shock), (2) instrumental variable: cost of raw materials (affects price, not demand directly), (3) regression discontinuity: price tiers create quasi-experiments, (4) A/B test with random price assignment (the gold standard), (5) panel data with fixed effects to control for unobserved heterogeneity, (6) structural equation modelling."
     }
    ],
    "kind": ""
@@ -70,11 +70,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "330",
-   "q": "You ran an RCT (randomized controlled trial) but 20% of the treatment group didn't actually use the treatment. How do you analyze this?",
+   "q": "You ran an RCT (randomised controlled trial) but 20% of the treatment group didn't actually use the treatment. How do you analyse this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Intent-to-Treat (ITT): analyze as randomized regardless of compliance — conservative but valid, (2) Per-Protocol: analyze only compliers — biased (non-compliers differ from compliers), (3) CACE/LATE: Complier Average Causal Effect using IV — randomization as instrument for actual treatment, (4) CACE = ITT / compliance rate, (5) ITT is the primary analysis (preserves randomization benefits), CACE is supplementary, (6) investigate why non-compliance occurred."
+     "text": "**Answer:** (1) Intent-to-Treat (ITT): analyse as randomised regardless of compliance — conservative but valid, (2) Per-Protocol: analyse only compliers — biased (non-compliers differ from compliers), (3) CACE/LATE: Complier Average Causal Effect using IV — randomisation as instrument for actual treatment, (4) CACE = ITT / compliance rate, (5) ITT is the primary analysis (preserves randomisation benefits), CACE is supplementary, (6) investigate why non-compliance occurred."
     },
     {
      "t": "p",
@@ -102,7 +102,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) H3 hexagonal grid: uniform area cells at various resolutions, (2) administrative boundaries: zip codes, census tracts, (3) custom polygons: business-defined territories, (4) Voronoi tessellation around key points (stores, centers), (5) DBSCAN clustering of GPS points to find natural regions, (6) KD-tree or R-tree for efficient spatial queries, (7) grid cells (square) for simple aggregation, (8) use GeoPandas for spatial joins and aggregation."
+     "text": "**Answer:** (1) H3 hexagonal grid: uniform area cells at various resolutions, (2) administrative boundaries: zip codes, census tracts, (3) custom polygons: business-defined territories, (4) Voronoi tessellation around key points (stores, centres), (5) DBSCAN clustering of GPS points to find natural regions, (6) KD-tree or R-tree for efficient spatial queries, (7) grid cells (square) for simple aggregation, (8) use GeoPandas for spatial joins and aggregation."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Optimization**"
+     "text": "**Theme: Optimisation**"
     }
    ],
    "kind": ""
@@ -126,11 +126,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "334",
-   "q": "Your supply chain team wants to minimize shipping costs while meeting delivery time constraints. How do you formulate this?",
+   "q": "Your supply chain team wants to minimise shipping costs while meeting delivery time constraints. How do you formulate this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Linear programming: (1) decision variables: quantity shipped from warehouse i to customer j, (2) objective: minimize Σ(cost_ij × quantity_ij), (3) constraints: supply ≤ warehouse capacity, demand ≥ customer requirement, delivery time ≤ SLA, (4) solve with PuLP, OR-Tools, or Gurobi, (5) sensitivity analysis: how much does cost change if SLA relaxed by 1 day?, (6) for large-scale: decomposition methods or heuristics."
+     "text": "**Answer:** Linear programming: (1) decision variables: quantity shipped from warehouse i to customer j, (2) objective: minimise Σ(cost_ij × quantity_ij), (3) constraints: supply ≤ warehouse capacity, demand ≥ customer requirement, delivery time ≤ SLA, (4) solve with PuLP, OR-Tools, or Gurobi, (5) sensitivity analysis: how much does cost change if SLA relaxed by 1 day?, (6) for large-scale: decomposition methods or heuristics."
     }
    ],
    "kind": ""
@@ -138,11 +138,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "335",
-   "q": "You need to allocate a $1M marketing budget across 5 channels to maximize conversions. How?",
+   "q": "You need to allocate a $1M marketing budget across 5 channels to maximise conversions. How?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model response curves per channel: conversions = f(spend), typically diminishing returns, (2) constrained optimization: maximize Σ conversions(spend_i) subject to Σ spend_i ≤ $1M, (3) use historical data to estimate response functions, (4) consider channel interactions (attribution), (5) multi-touch attribution model to understand channel synergies, (6) Bayesian optimization for unknown response curves, (7) simulate and A/B test allocation changes incrementally."
+     "text": "**Answer:** (1) Model response curves per channel: conversions = f(spend), typically diminishing returns, (2) constrained optimisation: maximise Σ conversions(spend_i) subject to Σ spend_i ≤ $1M, (3) use historical data to estimate response functions, (4) consider channel interactions (attribution), (5) multi-touch attribution model to understand channel synergies, (6) Bayesian optimisation for unknown response curves, (7) simulate and A/B test allocation changes incrementally."
     },
     {
      "t": "p",
@@ -182,7 +182,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) K-anonymity: ensure each record matches at least K-1 others on quasi-identifiers, (2) L-diversity: each group has at least L distinct sensitive values, (3) differential privacy: add calibrated noise to queries/model, (4) generalize quasi-identifiers (exact age → age range), (5) suppress rare combinations, (6) test re-identification risk: attempt linkage attacks on your data, (7) use synthetic data for development/testing."
+     "text": "**Answer:** (1) K-anonymity: ensure each record matches at least K-1 others on quasi-identifiers, (2) L-diversity: each group has at least L distinct sensitive values, (3) differential privacy: add calibrated noise to queries/model, (4) generalise quasi-identifiers (exact age → age range), (5) suppress rare combinations, (6) test re-identification risk: attempt linkage attacks on your data, (7) use synthetic data for development/testing."
     },
     {
      "t": "p",
@@ -234,7 +234,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Yes, this is expected and common: (1) hyperparameter tuning optimizes for CV performance → some overfitting to validation data, (2) the gap should be small (1-3%) — if large, you may have too many hyperparameter combinations or data leakage, (3) use nested cross-validation: outer loop for evaluation, inner loop for tuning, (4) this is why you keep a final test set — it gives unbiased estimate after all decisions are made, (5) report test set performance, not CV performance."
+     "text": "**Answer:** Yes, this is expected and common: (1) hyperparameter tuning optimises for CV performance → some overfitting to validation data, (2) the gap should be small (1-3%) — if large, you may have too many hyperparameter combinations or data leakage, (3) use nested cross-validation: outer loop for evaluation, inner loop for tuning, (4) this is why you keep a final test set — it gives unbiased estimate after all decisions are made, (5) report test set performance, not CV performance."
     }
    ],
    "kind": ""
@@ -246,7 +246,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This happens when: (1) model predicts majority class with high confidence for everyone, getting high accuracy on imbalanced data, (2) but it doesn't rank positive examples higher than negatives (low AUC), (3) example: 99% negative class → model predicts all negative → 99% accuracy, AUC=0.5, (4) the model hasn't learned to discriminate — it's just leveraging class imbalance, (5) fix: use class weights, SMOTE, or optimize for AUC directly in training, (6) report both metrics — they measure different things."
+     "text": "**Answer:** This happens when: (1) model predicts majority class with high confidence for everyone, getting high accuracy on imbalanced data, (2) but it doesn't rank positive examples higher than negatives (low AUC), (3) example: 99% negative class → model predicts all negative → 99% accuracy, AUC=0.5, (4) the model hasn't learned to discriminate — it's just leveraging class imbalance, (5) fix: use class weights, SMOTE, or optimise for AUC directly in training, (6) report both metrics — they measure different things."
     }
    ],
    "kind": ""
@@ -294,11 +294,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "347",
-   "q": "You're asked to build a model for a problem where collecting labels is extremely expensive ($100 per label). How do you maximize model quality per dollar?",
+   "q": "You're asked to build a model for a problem where collecting labels is extremely expensive ($100 per label). How do you maximise model quality per dollar?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Active learning: model identifies most informative samples to label, (2) semi-supervised learning: use abundant unlabeled data with few labels, (3) self-training: train on labeled, predict on unlabeled, add confident predictions, iterate, (4) transfer learning: pre-train on related task with cheap/free labels, (5) weak supervision (Snorkel): use labeling functions instead of per-sample labels, (6) few-shot learning with pre-trained models, (7) crowdsourcing with quality control for cheaper labeling."
+     "text": "**Answer:** (1) Active learning: model identifies most informative samples to label, (2) semi-supervised learning: use abundant unlabelled data with few labels, (3) self-training: train on labelled, predict on unlabelled, add confident predictions, iterate, (4) transfer learning: pre-train on related task with cheap/free labels, (5) weak supervision (Snorkel): use labelling functions instead of per-sample labels, (6) few-shot learning with pre-trained models, (7) crowdsourcing with quality control for cheaper labelling."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Lambda/Kappa architecture: (1) streaming layer: real-time feature computation (Kafka + Flink) for structured queries, (2) batch layer: daily aggregation (Spark) for complex analytics, (3) serving layer: feature store for model serving + OLAP database for analysis, (4) separate read/write paths: write to event stream, read from materialized views, (5) cache hot features in Redis, (6) use Feast/Tecton as feature store bridging online and offline, (7) data catalog for discoverability."
+     "text": "**Answer:** Lambda/Kappa architecture: (1) streaming layer: real-time feature computation (Kafka + Flink) for structured queries, (2) batch layer: daily aggregation (Spark) for complex analytics, (3) serving layer: feature store for model serving + OLAP database for analysis, (4) separate read/write paths: write to event stream, read from materialised views, (5) cache hot features in Redis, (6) use Feast/Tecton as feature store bridging online and offline, (7) data catalog for discoverability."
     }
    ],
    "kind": ""

@@ -147,7 +147,7 @@ EC.receiveLesson({
       caption: "`warmup_ratio=0.1` above is this: `num_warmup_steps = 0.1 × num_training_steps`." },
     { t: "p", text: "Two things become visible once the loop is explicit. **The schedule needs `num_training_steps` up front, so `warmup_ratio` cannot be honoured without knowing the dataset length** — which is why a streaming dataset breaks it. And **`GradScaler` exists only for fp16: bf16’s dynamic range makes loss scaling unnecessary**, so the `bf16=True` recommendation above also deletes a component, not just a flag." },
     { t: "exercise", title: "Measure the savings",
-      tasks: [
+      requirements: [
         "Compute LoRA trainable parameters for your own model at ranks 4, 8, 16 and 64, and plot against downstream accuracy.",
         "Measure peak training memory with full fine-tuning and with LoRA, and attribute the difference to gradients against optimiser state.",
         "Take a fine-tuned model, compute ΔW against the base, and examine its singular value spectrum to see whether it really is low-rank.",

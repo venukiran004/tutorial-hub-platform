@@ -342,9 +342,9 @@ smallest gap: 1.566e-02 at position 29
     title: "Check yourself",
     questions: [
       { stem: "You set `temperature=0`, pin a dated model version, and send the same prompt twice an hour apart. What can still differ?",
-        options: ["Nothing — those two settings are sufficient", "The logits, because batch composition and hardware change the floating-point summation order", "Only the response latency", "The tokenization of the prompt"],
+        options: ["Nothing — those two settings are sufficient", "The logits, because batch composition and hardware change the floating-point summation order", "Only the response latency", "The tokenisation of the prompt"],
         answer: 1,
-        why: "Greedy removes the sampling draw and a pinned version removes weight drift, but neither touches the arithmetic: the measured run showed a batch of 4 shifting the logits by 1.984e-04 against a batch of 1, with identical weights in one process. Where the top-two gap is smaller than that, the argmax flips and the responses diverge completely. The first option is the belief the lesson is against. Latency does vary but is not the interesting answer. Tokenization is deterministic given the same text and tokenizer version, so the fourth is wrong." },
+        why: "Greedy removes the sampling draw and a pinned version removes weight drift, but neither touches the arithmetic: the measured run showed a batch of 4 shifting the logits by 1.984e-04 against a batch of 1, with identical weights in one process. Where the top-two gap is smaller than that, the argmax flips and the responses diverge completely. The first option is the belief the lesson is against. Latency does vary but is not the interesting answer. Tokenisation is deterministic given the same text and tokeniser version, so the fourth is wrong." },
 
       { stem: "What does a change in `system_fingerprint` tell you?",
         options: ["Your request was malformed", "The backend configuration changed, so the same seed no longer implies the same output", "The model is overloaded", "Your seed was ignored"],

@@ -78,7 +78,7 @@ for stop in (",", " purple", "\\n"):
 
     { t: "p", text: "There is a second consequence of matching on decoded text rather than on token ids, and it is the one that produces surprising behaviour: **a stop string need not line up with token boundaries.**" },
 
-    { t: "code", lang: "python", title: "g13b.py — stop strings against the tokenizer", code: `for s in (",", " purple", ".\\n\\n", "END"):
+    { t: "code", lang: "python", title: "g13b.py — stop strings against the tokeniser", code: `for s in (",", " purple", ".\\n\\n", "END"):
     t = tok(s).input_ids
     print("%-9r -> %d token(s): %s" % (s, len(t), [tok.decode([x]) for x in t]))`,
       out: `  ','       -> 1 token(s): [',']
@@ -251,7 +251,7 @@ response = client.chat.completions.create(
     logprobs=True,                  # the score comes free
 )
 label = response.choices[0].message.content`,
-      caption: "Each label must be a single token for this to work — check with the tokenizer first, and pick label words that are, which is why `\" positive\"` beats `\" positive sentiment\"`. 8.6 uses the returned logprob as a confidence, with the caveats from 1.1." },
+      caption: "Each label must be a single token for this to work — check with the tokeniser first, and pick label words that are, which is why `\" positive\"` beats `\" positive sentiment\"`. 8.6 uses the returned logprob as a confidence, with the caveats from 1.1." },
 
     /* ============================================================ exercise */
     { t: "exercise", kind: "Challenge", title: "Find the bias that flips the argmax",
@@ -317,7 +317,7 @@ token           logit        gap  p(baseline) p(at threshold)   flips?
       body: [
         { t: "p", text: "**Symptom.** A support-reply generator began producing sentences with words missing — \"we have shipped your\" with nothing after it, or replies that referred to \"the item\" where the product name should have been. It affected roughly one account in forty, and nobody could reproduce it on demand." },
         { t: "p", text: "**Configuration.** A 600-entry `logit_bias` map at −100, assembled a year earlier from a list of words the brand did not want to appear, built by tokenising each word and taking the first id." },
-        { t: "p", text: "**Mechanism.** Two of the banned words shared a first token with a legitimate product name — the tokenizer split the product name so that its opening subword was the same id as an unrelated banned word. At −100 that id was effectively zero, so the model could not begin the product name at all. It did what a model does when the token it wants is unavailable: it produced the most likely alternative, which was sometimes a pronoun and sometimes nothing coherent at all." },
+        { t: "p", text: "**Mechanism.** Two of the banned words shared a first token with a legitimate product name — the tokeniser split the product name so that its opening subword was the same id as an unrelated banned word. At −100 that id was effectively zero, so the model could not begin the product name at all. It did what a model does when the token it wants is unavailable: it produced the most likely alternative, which was sometimes a pronoun and sometimes nothing coherent at all." },
         { t: "p", text: "**Fix.** The bias map was reduced to the thirty tokens that were unambiguous, and the rest moved to an output guardrail that checks the finished text (11.14) — where a word is a word rather than an id. Two durable lessons. First, a bias map is a list of *token ids*, and ids are shared between words in ways no one reviewing the word list will notice. Second, the map had been built once and never re-derived; when the team later moved from `cl100k_base` to `o200k_base`, every id in it meant something different. 12.4 is about that class of breakage." }
       ] }
   ],

@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is expected behavior — uncertainty compounds over time. Communicate by: (1) showing confidence intervals visually, (2) recommending shorter forecast horizons for high-stakes decisions, (3) providing point estimates with explicit uncertainty ranges, (4) re-forecasting frequently with updated data."
+     "text": "**Answer:** This is expected behaviour — uncertainty compounds over time. Communicate by: (1) showing confidence intervals visually, (2) recommending shorter forecast horizons for high-stakes decisions, (3) providing point estimates with explicit uncertainty ranges, (4) re-forecasting frequently with updated data."
     }
    ],
    "kind": ""
@@ -78,7 +78,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use hierarchical/grouped forecasting: (1) cluster SKUs by behavior patterns, (2) train models per cluster, (3) use global models like DeepAR or N-BEATS that learn across all series, (4) apply reconciliation to ensure forecasts are coherent across hierarchy levels."
+     "text": "**Answer:** Use hierarchical/grouped forecasting: (1) cluster SKUs by behaviour patterns, (2) train models per cluster, (3) use global models like DeepAR or N-BEATS that learn across all series, (4) apply reconciliation to ensure forecasts are coherent across hierarchy levels."
     }
    ],
    "kind": ""
@@ -122,11 +122,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "159",
-   "q": "You're forecasting inventory for perishable goods. Overstock means waste, understock means lost sales. How do you optimize?",
+   "q": "You're forecasting inventory for perishable goods. Overstock means waste, understock means lost sales. How do you optimise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use asymmetric loss functions: (1) define cost of overstock vs. understock (e.g., overstock costs 30% of item price, understock costs 100%), (2) optimize for the specific cost ratio using quantile regression, (3) forecast demand distribution not just point estimate, (4) use service level targets (e.g., 95% fill rate) to set order quantities."
+     "text": "**Answer:** Use asymmetric loss functions: (1) define cost of overstock vs. understock (e.g., overstock costs 30% of item price, understock costs 100%), (2) optimise for the specific cost ratio using quantile regression, (3) forecast demand distribution not just point estimate, (4) use service level targets (e.g., 95% fill rate) to set order quantities."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This causes contamination/crossover bias, diluting treatment effects. Fix by: (1) use user-level (not session-level) randomization, (2) implement sticky bucketing (user always sees same variant), (3) analyze first-exposure data only, (4) use intent-to-treat analysis, (5) adjust for crossover using instrumental variable methods."
+     "text": "**Answer:** This causes contamination/crossover bias, diluting treatment effects. Fix by: (1) use user-level (not session-level) randomisation, (2) implement sticky bucketing (user always sees same variant), (3) analyse first-exposure data only, (4) use intent-to-treat analysis, (5) adjust for crossover using instrumental variable methods."
     }
    ],
    "kind": ""
@@ -190,7 +190,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is a metrics tradeoff requiring business judgment: (1) determine which metric is the North Star, (2) analyze if engagement drop indicates long-term risk (users leaving?), (3) check if revenue gain is from few high-value conversions vs. broad improvement, (4) segment analysis — who is hurt?, (5) consider guardrail metrics (retention, satisfaction), (6) run longer to see if engagement recovers."
+     "text": "**Answer:** This is a metrics tradeoff requiring business judgement: (1) determine which metric is the North Star, (2) analyse if engagement drop indicates long-term risk (users leaving?), (3) check if revenue gain is from few high-value conversions vs. broad improvement, (4) segment analysis — who is hurt?, (5) consider guardrail metrics (retention, satisfaction), (6) run longer to see if engagement recovers."
     }
    ],
    "kind": ""
@@ -226,7 +226,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Sample Ratio Mismatch (SRM) — a critical issue: (1) check randomization logic for bugs, (2) check if certain users are filtered differently per variant, (3) check for bot traffic affecting one variant, (4) investigate if the variant causes page crashes (users drop before logging), (5) DO NOT trust the results until SRM is resolved — the test is likely biased."
+     "text": "**Answer:** Sample Ratio Mismatch (SRM) — a critical issue: (1) check randomisation logic for bugs, (2) check if certain users are filtered differently per variant, (3) check for bot traffic affecting one variant, (4) investigate if the variant causes page crashes (users drop before logging), (5) DO NOT trust the results until SRM is resolved — the test is likely biased."
     }
    ],
    "kind": ""
@@ -234,7 +234,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "168",
-   "q": "Your company can't do randomized A/B tests because all users must get the same experience. What alternatives exist?",
+   "q": "Your company can't do randomised A/B tests because all users must get the same experience. What alternatives exist?",
    "body": [
     {
      "t": "p",
@@ -290,7 +290,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Multi-step approach: (1) remove zero/near-zero variance features, (2) remove one of each pair with correlation > 0.95, (3) use VIF to detect multicollinearity (remove VIF > 10), (4) use Lasso (L1) regularization — zero coefficients indicate removable features, (5) tree-based feature importance, (6) SHAP values for model-specific importance, (7) forward/backward stepwise selection with cross-validation."
+     "text": "**Answer:** Multi-step approach: (1) remove zero/near-zero variance features, (2) remove one of each pair with correlation > 0.95, (3) use VIF to detect multicollinearity (remove VIF > 10), (4) use Lasso (L1) regularisation — zero coefficients indicate removable features, (5) tree-based feature importance, (6) SHAP values for model-specific importance, (7) forward/backward stepwise selection with cross-validation."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Create behavioral features: (1) amount relative to user's average, (2) amount z-score within user history, (3) amount percentile within merchant category, (4) ratio to user's max historical amount, (5) rolling average amount (7d, 30d) and deviation, (6) time since last similar-amount transaction, (7) amount rounded indicator (fraudsters often use round numbers), (8) amount relative to time of day average."
+     "text": "**Answer:** Create behavioural features: (1) amount relative to user's average, (2) amount z-score within user history, (3) amount percentile within merchant category, (4) ratio to user's max historical amount, (5) rolling average amount (7d, 30d) and deviation, (6) time since last similar-amount transaction, (7) amount rounded indicator (fraudsters often use round numbers), (8) amount relative to time of day average."
     }
    ],
    "kind": ""

@@ -153,7 +153,7 @@ SELECT * FROM recent WHERE customer_id = 3;                                     
         ["CTE", "One statement", "None, or a temp result if materialised", "No", "Estimates only", "Several steps, reuse within the statement, readability"],
         ["View", "Until dropped", "None — re-executed on each use", "No (indexes on base tables apply)", "Estimates only", "A shared definition many queries use; access control"],
         ["Materialised view (6.6)", "Until dropped; data until refreshed", "Yes", "Yes", "Yes", "An expensive aggregate read often and refreshed on a schedule"],
-        ["Temporary table", "The session", "Yes", "Yes", "Yes, after ANALYZE", "A large intermediate reused across statements, or one that needs an index"]
+        ["Temporary table", "The session", "Yes", "Yes", "Yes, after AnalysE", "A large intermediate reused across statements, or one that needs an index"]
       ]
     },
 
@@ -191,7 +191,7 @@ SELECT * FROM repriced ORDER BY product_id;
       caption: "RETURNING is the piece that makes this work: it turns a write into a row source. Without it, archive-then-delete is two statements that must be wrapped in a transaction and must agree on the WHERE — the same predicate typed twice, which is one edit away from archiving different rows than were deleted."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "A four-step report",
       rungs: [
         { level: "bad", label: "Nested derived tables", code: `SELECT segment, COUNT(*) FROM (SELECT c.name, CASE WHEN t.revenue >= 130 THEN 'high' ... END AS segment
@@ -302,7 +302,7 @@ SELECT * FROM promoted ORDER BY customer_id;
     "**Every CTE should be runnable on its own** — `SELECT * FROM step` is how a pipeline is debugged.",
     "**Referenced once, a CTE is usually inlined; referenced several times, materialised** — PostgreSQL 12+ decides by reference count, and MATERIALIZED / NOT MATERIALIZED overrides.",
     "**Materialisation is an optimisation fence**: the outer WHERE cannot reach inside, and the base table's index goes unused.",
-    "**A materialised CTE has no statistics**; a temporary table with ANALYZE does, and can carry an index — the fix for a bad estimate mid-pipeline.",
+    "**A materialised CTE has no statistics**; a temporary table with AnalysE does, and can carry an index — the fix for a bad estimate mid-pipeline.",
     "**Derived table, CTE, view, temp table** differ by lifetime and by whether the planner knows the intermediate's size.",
     "**A view is a saved query, re-run each time; a materialised view is stored and refreshed.**",
     "**Data-modifying CTEs (PostgreSQL) turn a write into a row source with RETURNING** — archive-and-delete in one atomic statement.",
@@ -328,7 +328,7 @@ SELECT * FROM promoted ORDER BY customer_id;
         stem: "Why might a temporary table beat a CTE for a large intermediate result?",
         options: [
           "Temporary tables are always faster",
-          "A temporary table can be indexed and ANALYZEd, so the planner has real row counts for the later steps; a materialised CTE has neither",
+          "A temporary table can be indexed and AnalysEd, so the planner has real row counts for the later steps; a materialised CTE has neither",
           "CTEs cannot hold more than a million rows",
           "Temporary tables are transactional"
         ],
@@ -386,7 +386,7 @@ SELECT * FROM promoted ORDER BY customer_id;
       {
         level: "core",
         q: "What is the difference between a CTE, a view and a temporary table?",
-        strong: "Lifetime and storage. A CTE lives for one statement and stores nothing unless the engine materialises it for that statement. A view lives in the schema, stores nothing, and is re-executed every time it is used — it is a shared definition, and a place to put access control. A temporary table lives for the session and is real storage: it can be indexed and ANALYZEd, which is why it is the fix when a multi-step query's plan goes wrong on a bad estimate for an intermediate. A materialised view is the fourth option: stored, refreshed on a schedule, indexed, for an expensive aggregate read often.",
+        strong: "Lifetime and storage. A CTE lives for one statement and stores nothing unless the engine materialises it for that statement. A view lives in the schema, stores nothing, and is re-executed every time it is used — it is a shared definition, and a place to put access control. A temporary table lives for the session and is real storage: it can be indexed and AnalysEd, which is why it is the fix when a multi-step query's plan goes wrong on a bad estimate for an intermediate. A materialised view is the fourth option: stored, refreshed on a schedule, indexed, for an expensive aggregate read often.",
         answer: [
           { t: "p", text: "The 'statistics and an index' point for temp tables is the practical detail interviewers are listening for." }
         ]

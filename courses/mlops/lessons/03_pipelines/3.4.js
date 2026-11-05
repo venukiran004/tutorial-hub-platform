@@ -74,7 +74,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "trap", title: "Comparing one metric is not a reproducibility check",
       body: [
-        { t: "p", text: "Two of the three torch runs agree on AUC to ten decimal places and disagree on their predictions. AUC is a rank statistic over 6,000 values — an enormous amount of per-prediction movement can leave it untouched, exactly as lesson 2.3's int8 quantization moved individual probabilities by 0.045 while accuracy moved 0.0007." },
+        { t: "p", text: "Two of the three torch runs agree on AUC to ten decimal places and disagree on their predictions. AUC is a rank statistic over 6,000 values — an enormous amount of per-prediction movement can leave it untouched, exactly as lesson 2.3's int8 quantisation moved individual probabilities by 0.045 while accuracy moved 0.0007." },
         { t: "p", text: "Check a **hash of the full prediction vector**. It is one line, it is unambiguous, and it is the only comparison that means what you want it to mean." }
       ] },
 
@@ -178,7 +178,7 @@ mu_b, sd_b = Xtr[perm].mean(0), Xtr[perm].std(0)
         "Writing down the tolerance is the part that matters: 'reproducible' with no number attached is unfalsifiable."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The `list(set(...))` grep usually finds something, and it is the highest-value fix in the exercise because the failure is structural rather than numerical — a column permutation between training and serving produces garbage predictions with no error anywhere." },
           { t: "p", text: "The tolerance statement is the other durable output. Once 'reproduced' means 'agrees on every decision and matches within 0.17 AUC points', a rebuild that fails is a real signal and one that passes is genuinely reassuring — and the three fingerprints from 1.2 tell you which input moved." }
         ]
@@ -212,7 +212,7 @@ mu_b, sd_b = Xtr[perm].mean(0), Xtr[perm].std(0)
           "No — any two runs of the same code must differ"
         ],
         answer: 1,
-        why: "AUC over 6,000 values can be identical while individual probabilities differ, the same way int8 quantization in lesson 2.3 moved probabilities by 0.045 while accuracy moved 0.0007. Compare a hash of the whole prediction vector; it is one line and it is unambiguous."
+        why: "AUC over 6,000 values can be identical while individual probabilities differ, the same way int8 quantisation in lesson 2.3 moved probabilities by 0.045 while accuracy moved 0.0007. Compare a hash of the whole prediction vector; it is one line and it is unambiguous."
       },
       {
         stem: "A feature list is built with `list({\"income\", \"dti\", \"credit_score\", \"tenure\"})`. What is the risk?",

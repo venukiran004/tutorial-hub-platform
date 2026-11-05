@@ -17,7 +17,7 @@ EC.receiveLesson({
     "Recognise what crosses the boundary and what does not"
   ],
 
-  prerequisites: ["8.3", "2.5"],
+  prerequisites: ["2.5"],
 
   blocks: [
 

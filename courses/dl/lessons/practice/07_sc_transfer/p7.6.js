@@ -46,7 +46,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "127",
-   "q": "What is task-aware batch normalization?",
+   "q": "What is task-aware batch normalisation?",
    "body": [
     {
      "t": "p",
@@ -59,7 +59,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Different tasks may have different feature distributions. Shared conv weights + task-specific BN is an effective lightweight approach to task specialization."
+     "text": "**Explanation:** Different tasks may have different feature distributions. Shared conv weights + task-specific BN is an effective lightweight approach to task specialisation."
     }
    ],
    "kind": ""
@@ -107,7 +107,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unlike MAML (optimization-based), neural processes directly learn the mapping from support set to prediction function. Faster at test time."
+     "text": "**Explanation:** Unlike MAML (optimisation-based), neural processes directly learn the mapping from support set to prediction function. Faster at test time."
     }
    ],
    "kind": ""
@@ -185,7 +185,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "MAML learns initialization that adapts quickly",
+      "MAML learns initialisation that adapts quickly",
       "Pre-training learns features that transfer well",
       "Both achieve few-shot adaptation"
      ]
@@ -216,7 +216,7 @@ EC.receiveLesson({
       "**Shared policy:** One policy for all tasks (with task conditioning)",
       "**Distillation:** Train specialists, distill into generalist",
       "**Hindsight:** Relabel trajectories for different tasks (HER - Hindsight Experience Replay)",
-      "**Universal value function:** V(s, g) — state + goal parameterized"
+      "**Universal value function:** V(s, g) — state + goal parameterised"
      ]
     },
     {
@@ -269,7 +269,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Replay meta-episodes from old task distributions",
-      "Regularize meta-parameters toward old values",
+      "Regularise meta-parameters toward old values",
       "Progressive expansion of meta-learner"
      ]
     },
@@ -283,11 +283,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "136",
-   "q": "What is learning to optimize (L2O)?",
+   "q": "What is learning to optimise (L2O)?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use meta-learning to learn an optimization algorithm itself."
+     "text": "**Answer:** Use meta-learning to learn an optimisation algorithm itself."
     },
     {
      "t": "code",
@@ -296,7 +296,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Learned optimizers can outperform hand-designed ones for specific problem classes. But hard to generalize to very different problems."
+     "text": "**Explanation:** Learned optimisers can outperform hand-designed ones for specific problem classes. But hard to generalise to very different problems."
     }
    ],
    "kind": ""
@@ -361,7 +361,7 @@ EC.receiveLesson({
      "items": [
       "**Meta-SGD:** Learn per-parameter learning rates",
       "**Meta-dropout:** Learn optimal dropout rates",
-      "**BOHB:** Bayesian optimization + HyperBand for meta-hyperparameter search",
+      "**BOHB:** Bayesian optimisation + HyperBand for meta-hyperparameter search",
       "**AutoML-Zero:** Evolve entire learning algorithms"
      ]
     },
@@ -417,7 +417,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "142",
-   "q": "What is the difference between inner and outer optimization in meta-learning?",
+   "q": "What is the difference between inner and outer optimisation in meta-learning?",
    "body": [
     {
      "t": "p",
@@ -430,7 +430,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bilevel optimization. Outer loop learns θ that makes inner loop effective. The inner loop tests θ on each task. The outer loop improves θ based on inner loop results."
+     "text": "**Explanation:** Bilevel optimisation. Outer loop learns θ that makes inner loop effective. The inner loop tests θ on each task. The outer loop improves θ based on inner loop results."
     }
    ],
    "kind": ""
@@ -472,7 +472,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Expands task distribution for meta-training. Similar to Mixup but at task level. Helps meta-learner generalize to broader task space."
+     "text": "**Explanation:** Expands task distribution for meta-training. Similar to Mixup but at task level. Helps meta-learner generalise to broader task space."
     }
    ],
    "kind": ""
@@ -498,7 +498,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Transductive advantage:** Uses unlabeled test data distribution. Can refine prototypes using query statistics."
+     "text": "**Transductive advantage:** Uses unlabelled test data distribution. Can refine prototypes using query statistics."
     },
     {
      "t": "p",
@@ -606,7 +606,7 @@ EC.receiveLesson({
       "**Foundation models as meta-learners:** GPT-4, CLIP perform in-context learning",
       "**Automated MTL architecture design:** NAS for optimal sharing patterns",
       "**Continual meta-learning:** Adapt to evolving task distributions",
-      "**Efficient meta-learning:** Reduce computational cost of bilevel optimization",
+      "**Efficient meta-learning:** Reduce computational cost of bilevel optimisation",
       "**Large-scale MTL:** Hundreds of tasks simultaneously (Google's multi-task models)",
       "**Cross-modal MTL:** Share knowledge across vision, language, audio",
       "**Theory:** Understanding when/why MTL and meta-learning work"

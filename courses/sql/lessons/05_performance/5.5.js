@@ -209,7 +209,7 @@ DROP TABLE events_2024_03;                     -- a month of data gone in millis
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "A nightly 'revenue by customer segment' report over five years",
       rungs: [
         { level: "bad", label: "Everything joined, then grouped", code: `SELECT c.tier, DATE_TRUNC('month', o.placed_at), SUM(oi.qty * oi.unit_price)
@@ -303,7 +303,7 @@ SELECT category, SUM(revenue) FROM daily_summary WHERE day >= CURRENT_DATE - 90 
           options: [
             "Partitioning does not support timestamps",
             "The partition key is inside a function, so the planner cannot compare the predicate with the partition bounds; write a half-open range on the bare column and only April's partition is opened",
-            "The partitions need ANALYZE",
+            "The partitions need AnalysE",
             "DATE_TRUNC forces a sequential scan"
           ],
           answer: 1,

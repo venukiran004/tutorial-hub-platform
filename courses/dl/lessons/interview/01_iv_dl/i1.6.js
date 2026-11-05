@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Encodes inputs to a latent distribution \\(q(z|x) = \\mathcal{N}(\\mu, \\sigma^2)\\) rather than a point. Trained to maximize ELBO:"
+     "text": "Encodes inputs to a latent distribution \\(q(z|x) = \\mathcal{N}(\\mu, \\sigma^2)\\) rather than a point. Trained to maximise ELBO:"
     },
     {
      "t": "math",
@@ -214,7 +214,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Reconstruction loss + KL regularization toward standard normal prior. Enables smooth interpolation and generation."
+     "text": "Reconstruction loss + KL regularisation toward standard normal prior. Enables smooth interpolation and generation."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "112",
-   "q": "What is the reparameterization trick in VAEs?",
+   "q": "What is the reparameterisation trick in VAEs?",
    "body": [
     {
      "t": "p",
@@ -284,7 +284,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Learn an invertible transformation \\(f: x \\leftrightarrow z\\) (bijection between data and latent space). Exact log-likelihood computation via change of variables formula. Examples: Glow, RealNVP, Normalizing Flows. Samples in one pass, but invertibility limits the architecture and sample quality usually trails diffusion."
+     "text": "Learn an invertible transformation \\(f: x \\leftrightarrow z\\) (bijection between data and latent space). Exact log-likelihood computation via change of variables formula. Examples: Glow, RealNVP, Normalising Flows. Samples in one pass, but invertibility limits the architecture and sample quality usually trails diffusion."
     }
    ],
    "kind": ""
@@ -308,7 +308,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Extends neural networks to graph-structured data. Message passing: each node aggregates information from neighbors:"
+     "text": "Extends neural networks to graph-structured data. Message passing: each node aggregates information from neighbours:"
     },
     {
      "t": "math",
@@ -329,9 +329,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**GCN (Graph Convolutional Network):** Averages neighbor features with fixed symmetric normalization.",
-      "**GAT (Graph Attention Network):** Learns importance weights for each neighbor via attention.",
-      "**GraphSAGE:** Samples a fixed number of neighbors, then aggregates — scales to millions of nodes."
+      "**GCN (Graph Convolutional Network):** Averages neighbour features with fixed symmetric normalisation.",
+      "**GAT (Graph Attention Network):** Learns importance weights for each neighbour via attention.",
+      "**GraphSAGE:** Samples a fixed number of neighbours, then aggregates — scales to millions of nodes."
      ]
     }
    ],
@@ -344,7 +344,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Parameterizes the derivative of hidden state with a neural network:"
+     "text": "Parameterises the derivative of hidden state with a neural network:"
     },
     {
      "t": "math",
@@ -352,7 +352,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Hidden state is the ODE solution at time T. Memory-efficient (O(1) memory for backprop). Applications: continuous normalizing flows, time-series modeling."
+     "text": "Hidden state is the ODE solution at time T. Memory-efficient (O(1) memory for backprop). Applications: continuous normalising flows, time-series modelling."
     }
    ],
    "kind": ""

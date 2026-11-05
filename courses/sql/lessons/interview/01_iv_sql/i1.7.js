@@ -203,14 +203,14 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "101",
-   "q": "Optimize a feature engineering query running on millions of rows.",
+   "q": "Optimise a feature engineering query running on millions of rows.",
    "body": [
     {
      "t": "ul",
      "items": [
       "Use appropriate indexes on join and filter columns",
       "Partition table by date if time-based",
-      "Pre-aggregate where possible (materialized views)",
+      "Pre-aggregate where possible (materialised views)",
       "Use window functions instead of correlated subqueries",
       "Compute features incrementally (only new data)",
       "Consider approximate functions (APPROX_PERCENTILE) for large datasets",

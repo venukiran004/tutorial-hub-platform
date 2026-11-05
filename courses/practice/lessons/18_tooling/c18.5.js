@@ -471,7 +471,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2133",
-   "q": "Program 2133: Import organization",
+   "q": "Program 2133: Import organisation",
    "body": [
     {
      "t": "code",

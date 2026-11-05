@@ -158,7 +158,7 @@ EC.receiveLesson({
       caption: "`AutoModelForCausalLM` adds the LM head; `AutoModel` would return only `last_hidden_state`." },
     { t: "p", text: "The two `output_*` flags are what made §03 possible, and they are off by default for a reason: **`output_hidden_states=True` returns 13 tensors and `output_attentions=True` returns 12 more, so a long sequence materialises every attention matrix at once** — which is exactly the `O(n²)` memory FlashAttention exists to avoid. Useful for inspection, and not something to leave on in a serving path." },
     { t: "exercise", title: "Trace your own prompt",
-      tasks: [
+      requirements: [
         "Push a prompt through a model with `output_hidden_states=True` and plot residual-stream RMS against layer depth.",
         "Find the layer where RMS grows fastest, and check what the final LayerNorm reduces it to.",
         "Print the top-10 next tokens for a factual prompt and check whether the model actually prefers the right answer.",

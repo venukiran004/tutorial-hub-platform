@@ -155,7 +155,7 @@ volumes:
         "If no pod sets a securityContext, the namespace label is the one change that fixes all of them at once."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The create-pods finding is the one worth escalating: it is a routine grant that most teams do not realise is equivalent to read on every Secret in the namespace, and it is the reason high-stakes credentials belong in an external store with workload identity rather than in a Secret." },
           { t: "p", text: "The securityContext audit usually comes back empty, because every field defaults to the insecure value and nothing warns. The fix is one namespace label rather than a change to every manifest, which makes it unusually cheap for the surface it removes." }
         ]

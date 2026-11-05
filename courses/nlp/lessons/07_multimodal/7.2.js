@@ -110,7 +110,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "It is excellent at recognising photographed objects, scenes and styles, because that is what web alt-text describes. It is weak at **reading text in images**, **counting**, **spatial relations** (*left of*, *above*) and **fine-grained distinctions** within a category — and all four weaknesses trace to the same source: captions rarely state those things. \"A photo of three cats on the left of a sofa\" is not how people caption images, so the training signal for counting and position is thin. That is worth knowing before deploying it: CLIP's failures are not random, they are a shadow of its training distribution." }] },
 
     { t: "exercise", title: "Probe the alignment",
-      tasks: [
+      requirements: [
         "Implement the contrastive loss and verify it approaches 0 on perfectly aligned data and exceeds ln(batch) on random data.",
         "Sweep batch size from 8 to 1024 on the same data and observe how the loss scales.",
         "Run zero-shot classification on your own images and find a category where it fails.",

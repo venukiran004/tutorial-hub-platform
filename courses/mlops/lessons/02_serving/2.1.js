@@ -139,7 +139,7 @@ def healthz():
         { label: "474/s: one row per request", desc: "Full framework cost per prediction: socket, ASGI, validation, JSON. 2.109 ms each, of which 0.58 ms is the model." },
         { label: "27,807/s: 100 rows per request", desc: "Fixed cost divided by 100, and the model vectorises over the batch. 59x, for a change to the client." },
         { label: "88,678/s: 1000 rows per request", desc: "Diminishing: the fixed cost is already amortised away, so only vectorisation remains to win." },
-        { label: "406,190/s: in-process", desc: "No serialization and no network. The ceiling, and what a batch job or an embedded model actually gets." }
+        { label: "406,190/s: in-process", desc: "No serialisation and no network. The ceiling, and what a batch job or an embedded model actually gets." }
       ] },
 
     { t: "p", text: "Two honest qualifications, because *just batch it* is not available as often as the numbers suggest." },
@@ -176,7 +176,7 @@ def healthz():
         "'The user expects it to be live' is not an input that fails to exist until request time."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual finding is the one measured here: the model is a minority of the request, often a small one, and the team's planned optimisation was aimed at the minority. The header is a permanent fix for that — it turns the question from an argument into a dashboard panel." },
           { t: "p", text: "The second question has a real answer surprisingly often. Scores recomputed per request for entities whose features change daily are the commonest case, and moving them to a nightly table removes an autoscaler, an SLO and a pager rotation at once." }
         ]

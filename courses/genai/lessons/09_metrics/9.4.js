@@ -200,16 +200,16 @@ print()
 p, r, f = rouge_n(REF, "the cat sat on mat", 1)
 print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
         out: `  worked pair      R1 0.9091  R2 0.6667  RL 0.9091
-  REORDERED        R1 0.9091  R2 0.2500  RL 0.7273
-  inner omission   R1 0.9091  R2 0.4444  RL 0.9091
+  REORDERED        R1 0.9091  R2 0.2222  RL 0.7273
+  inner omission   R1 0.9091  R2 0.6667  RL 0.9091
 
   ROUGE-1 precision 1.0000  recall 0.8333  F1 0.9091`,
         notes: [
           { t: "p", text: "**ROUGE-1 is 0.9091 on all three candidates**, which is the blind spot stated as a measurement. Reordering the tokens and omitting a different token both leave the bag of unigrams identical, so a unigram metric cannot distinguish any of them \u2014 including one that scrambles the sentence." },
-          { t: "p", text: "**ROUGE-2 separates them sharply**: 0.6667, 0.2500 and 0.4444. The reordering destroys most bigrams while preserving every unigram, which is precisely the signal higher orders exist to capture." },
+          { t: "p", text: "**ROUGE-2 isolates the reordering**: 0.2222 against 0.6667 for both omissions. The reordering destroys most bigrams while preserving every unigram, which is precisely the signal higher orders exist to capture." },
           { t: "p", text: "**ROUGE-L catches the reordering and tolerates the omission**, at 0.7273 against 0.9091. That is the intended behaviour for summarisation \u2014 an omission that preserves order is fine, a scramble is not \u2014 and it is why ROUGE-L is the variant worth reporting alongside ROUGE-1." },
           { t: "p", text: "**Report precision and recall, not only F1.** Here precision is 1.0000 and recall 0.8333, and the difference tells you the candidate added nothing and omitted something \u2014 which F1 of 0.9091 conceals entirely." },
-          { t: "p", text: "One caveat on the inner-omission row: it scores identically to the worked pair on ROUGE-1 and ROUGE-L while differing on ROUGE-2, which is a reminder that no single variant orders candidates the way a reader would. The practical answer is reporting ROUGE-1 and ROUGE-L together and gating quality on a faithfulness check that can see meaning." }
+          { t: "p", text: "One caveat on the inner-omission row: it scores identically to the worked pair on all three variants although it dropped a different word, which is a reminder that no single variant orders candidates the way a reader would. The practical answer is reporting ROUGE-1 and ROUGE-L together and gating quality on a faithfulness check that can see meaning." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
@@ -224,7 +224,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
         { t: "p", text: "One formula with the unit swapped. Overlap over reference n-grams is recall, overlap over candidate n-grams is precision, and F1 is the harmonic mean \u2014 with matches clipped to the count, exactly as in BLEU." },
         { t: "p", text: "On \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019: ROUGE-1 overlap is 5, so recall 5/6, precision 5/5, F1 0.9091. ROUGE-2 overlap is 3 of 5 reference bigrams and 4 candidate bigrams, giving F1 0.6667. ROUGE-L uses the longest common subsequence, which is 5 here, so 0.9091 again." },
         { t: "p", text: "The gap between ROUGE-1 and ROUGE-2 is worth explaining because it is the whole reason variants exist. Dropping one token removes one unigram but destroys two bigrams \u2014 `on-the` and `the-mat` \u2014 and introduces one that is not in the reference. Every token sits in up to two bigrams, so a single edit has roughly double the effect at that order." },
-        { t: "p", text: "Which to report: ROUGE-1 and ROUGE-L together, with precision and recall rather than only F1. ROUGE-1 alone cannot see a reordering \u2014 I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 while ROUGE-L dropped to 0.7273 and ROUGE-2 to 0.2500. LCS is order-sensitive where a bag of unigrams is not." },
+        { t: "p", text: "Which to report: ROUGE-1 and ROUGE-L together, with precision and recall rather than only F1. ROUGE-1 alone cannot see a reordering \u2014 I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 while ROUGE-L dropped to 0.7273 and ROUGE-2 to 0.2222. LCS is order-sensitive where a bag of unigrams is not." },
         { t: "p", text: "And I would never report it alone, because it cannot see meaning. On a different pair I measured a sentence with two figures swapped \u2014 asserting the opposite of the reference \u2014 scoring ROUGE-1 and ROUGE-2 of exactly 1.0000, tying the exact copy, while a correct paraphrase scored 0.2581. Swapping two tokens preserves the unigram multiset by construction." },
         { t: "p", text: "So: ROUGE as a cheap deterministic regression signal on a frozen reference set, a reference-free faithfulness check as the actual quality gate, and mean summary length tracked alongside \u2014 because a recall-oriented metric is gameable by producing more text." }
       ] }
@@ -238,7 +238,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
     "**A single dropped token costs one unigram and two bigrams**, because every token sits in up to two bigrams \u2014 hence ROUGE-2's harshness.",
     "**ROUGE-L is a subsequence, not a substring** \u2014 gaps are allowed, which is why an omission preserving order scores well.",
     "**ROUGE-1 and ROUGE-L coincide when word order is preserved**, and diverge the moment it is not \u2014 which is the signature of a reordering.",
-    "**ROUGE-1 cannot see a reordering at all**: a scrambled candidate scored exactly 0.9091 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2500.",
+    "**ROUGE-1 cannot see a reordering at all**: a scrambled candidate scored exactly 0.9091 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2222.",
     "**Report precision and recall, not only F1**, since 1.0000 and 0.8333 say the candidate added nothing and omitted something where F1 says neither.",
     "**8.3 measured an inverted sentence scoring ROUGE-1 = 1.0000**, so \u201cscores well\u201d understates it \u2014 it can score perfectly.",
     "**Pair it with a reference-free faithfulness check**, which needs no gold summary and so is not bounded by annotation effort.",
@@ -300,7 +300,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
         answer: [
           { t: "p", text: "Same formula, different unit. ROUGE-1 counts unigram overlap, which measures content. ROUGE-2 counts bigrams, which adds local word order. ROUGE-L uses the longest common subsequence, which measures structure while allowing gaps." },
           { t: "p", text: "On one pair I worked \u2014 \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019 \u2014 ROUGE-1 F1 is 0.9091, ROUGE-2 is 0.6667 and ROUGE-L is 0.9091. The ROUGE-2 gap is because the dropped token destroys two bigrams and adds one the usual treatment does not have; every token sits in up to two bigrams." },
-          { t: "p", text: "The difference that matters practically is that ROUGE-1 cannot see a reordering. I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 \u2014 it depends only on the bag of unigrams \u2014 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2500." },
+          { t: "p", text: "The difference that matters practically is that ROUGE-1 cannot see a reordering. I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 \u2014 it depends only on the bag of unigrams \u2014 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2222." },
           { t: "p", text: "So I would report ROUGE-1 and ROUGE-L together, with precision and recall separately rather than only F1. Equal ROUGE-1 with lower ROUGE-L is the signature of a reordering, and nothing else in the family detects one." }
         ] },
 

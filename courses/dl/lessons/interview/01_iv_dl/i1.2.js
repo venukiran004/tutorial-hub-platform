@@ -295,7 +295,7 @@ EC.receiveLesson({
      "head": [
       "Strategy",
       "Layers frozen",
-      "Labeled data",
+      "Labelled data",
       "Use case"
      ],
      "rows": [
@@ -370,11 +370,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Feature map visualization — methods and interpretability.",
+   "q": "Feature map visualisation — methods and interpretability.",
    "body": [
     {
      "t": "p",
-     "text": "**Activation maximization:** Find input \\(\\mathbf{x}^*\\) that maximises neuron \\(n_{l,k}\\):"
+     "text": "**Activation maximisation:** Find input \\(\\mathbf{x}^*\\) that maximises neuron \\(n_{l,k}\\):"
     },
     {
      "t": "math",

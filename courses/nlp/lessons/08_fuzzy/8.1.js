@@ -133,7 +133,7 @@ Levenshtein.distance(a, b, score_cutoff=1)     # returns 2 immediately`,
     { t: "p", text: "**`score_cutoff` is where the speed comes from when screening at scale:** the computation abandons a pair as soon as the distance exceeds the threshold, so a million comparisons against a cutoff of 2 cost far less than a million full distances. Set thresholds on the normalised forms rather than on raw edit counts, or the same cutoff means something different for a postcode and for a company name." },
 
     { t: "exercise", title: "Implement and probe",
-      tasks: [
+      requirements: [
         "Implement Levenshtein with two rows and verify all three reference values.",
         "Print the full matrix for a pair of your own and check one cell by hand.",
         "Add the transposition case and find a pair where Damerau and Levenshtein differ by 1.",

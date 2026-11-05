@@ -34,11 +34,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "127",
-   "q": "Your data science team uses different tools and approaches. One uses R, another Python, another SAS. How do you standardize?",
+   "q": "Your data science team uses different tools and approaches. One uses R, another Python, another SAS. How do you standardise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't force immediate standardization — it kills productivity, (2) standardize gradually on ML approach: Python (most packages, community, deployment), (3) keep R for specialized statistical analysis if needed, (4) phase out SAS: migrate to Python equivalent, (5) standard environment: Docker, shared compute, (6) shared code library for common tasks (data loading, feature engineering), (7) MLflow for experiment tracking (language-agnostic), (8) training investment: workshops for team members switching tools, (9) new hires: require Python proficiency."
+     "text": "**Answer:** (1) Don't force immediate standardisation — it kills productivity, (2) standardise gradually on ML approach: Python (most packages, community, deployment), (3) keep R for specialised statistical analysis if needed, (4) phase out SAS: migrate to Python equivalent, (5) standard environment: Docker, shared compute, (6) shared code library for common tasks (data loading, feature engineering), (7) MLflow for experiment tracking (language-agnostic), (8) training investment: workshops for team members switching tools, (9) new hires: require Python proficiency."
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model artifact: serialized model file (pickle, ONNX, joblib), (2) serving: Flask/FastAPI endpoint wrapping model.predict(), (3) containerized: Docker (reproducible environment), (4) input validation: check incoming features for type, range, nulls, (5) logging: log every prediction (input, output, latency, timestamp), (6) health check endpoint: /health, (7) basic monitoring: prediction volume, error rate, latency (Prometheus/CloudWatch), (8) version tracking: which model version is deployed, (9) rollback plan: ability to revert to previous version, (10) NOT needed for MVP: A/B testing, feature store, auto-retraining."
+     "text": "**Answer:** (1) Model artifact: serialised model file (pickle, ONNX, joblib), (2) serving: Flask/FastAPI endpoint wrapping model.predict(), (3) containerised: Docker (reproducible environment), (4) input validation: check incoming features for type, range, nulls, (5) logging: log every prediction (input, output, latency, timestamp), (6) health check endpoint: /health, (7) basic monitoring: prediction volume, error rate, latency (Prometheus/CloudWatch), (8) version tracking: which model version is deployed, (9) rollback plan: ability to revert to previous version, (10) NOT needed for MVP: A/B testing, feature store, auto-retraining."
     },
     {
      "t": "p",
@@ -118,11 +118,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "133",
-   "q": "You need to efficiently process a DataFrame where operations vary by group. How do you optimize group-level operations?",
+   "q": "You need to efficiently process a DataFrame where operations vary by group. How do you optimise group-level operations?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) `df.groupby('group').apply(custom_func)` — flexible but slow, (2) faster: use built-in aggregations where possible, (3) `transform`: returns same-sized output, great for group-level normalization:"
+     "text": "**Answer:** (1) `df.groupby('group').apply(custom_func)` — flexible but slow, (2) faster: use built-in aggregations where possible, (3) `transform`: returns same-sized output, great for group-level normalisation:"
     },
     {
      "t": "code",
@@ -131,7 +131,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "(4) numba: JIT compile custom functions for speed, (5) for large data: Polars groupby is 10-100x faster, (6) avoid: loop over groups with itertools — use vectorized operations."
+     "text": "(4) numba: JIT compile custom functions for speed, (5) for large data: Polars groupby is 10-100x faster, (6) avoid: loop over groups with itertools — use vectorised operations."
     }
    ],
    "kind": ""
@@ -176,7 +176,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Week 5-6 — Modeling**: (8) baseline: logistic regression, (9) try: gradient boosting, random forest, (10) cross-validation with temporal splits, (11) feature importance analysis."
+     "text": "**Week 5-6 — Modelling**: (8) baseline: logistic regression, (9) try: gradient boosting, random forest, (10) cross-validation with temporal splits, (11) feature importance analysis."
     },
     {
      "t": "p",
@@ -184,7 +184,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Week 8-9 — Deployment**: (15) containerize model in Docker, (16) REST API for real-time scoring, (17) batch scoring daily for marketing team."
+     "text": "**Week 8-9 — Deployment**: (15) containerise model in Docker, (16) REST API for real-time scoring, (17) batch scoring daily for marketing team."
     },
     {
      "t": "p",
@@ -216,7 +216,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Classical decomposition: trend + seasonal + residual (additive or multiplicative), (2) STL (Seasonal and Trend decomposition using LOESS): robust to outliers, handles changing seasonality, (3) Prophet decomposition: trend + multiple seasonalities + holidays + regressors, (4) for multiple seasonal periods: MSTL, (5) wavelet decomposition: captures irregularities at different scales, (6) EMD (Empirical Mode Decomposition): adaptive, data-driven decomposition, (7) visualize each component to understand what drives the series."
+     "text": "**Answer:** (1) Classical decomposition: trend + seasonal + residual (additive or multiplicative), (2) STL (Seasonal and Trend decomposition using LOESS): robust to outliers, handles changing seasonality, (3) Prophet decomposition: trend + multiple seasonalities + holidays + regressors, (4) for multiple seasonal periods: MSTL, (5) wavelet decomposition: captures irregularities at different scales, (6) EMD (Empirical Mode Decomposition): adaptive, data-driven decomposition, (7) visualise each component to understand what drives the series."
     }
    ],
    "kind": ""
@@ -268,7 +268,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Out-of-fold (OOF) predictions for training: each fold only uses models trained without that fold's data → no leakage, (2) test predictions: average models from all folds for each base model, (3) alternative: blend (split training into two sets: base model training + meta-learner training), (4) multi-level stacking: repeat the process for multiple layers, (5) caution: OOF predictions may overfit if too many base models or too many stacking layers, (6) regularize meta-learner: simple model (linear) to prevent overfitting."
+     "text": "**Answer:** (1) Out-of-fold (OOF) predictions for training: each fold only uses models trained without that fold's data → no leakage, (2) test predictions: average models from all folds for each base model, (3) alternative: blend (split training into two sets: base model training + meta-learner training), (4) multi-level stacking: repeat the process for multiple layers, (5) caution: OOF predictions may overfit if too many base models or too many stacking layers, (6) regularise meta-learner: simple model (linear) to prevent overfitting."
     }
    ],
    "kind": ""
@@ -280,7 +280,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Resist going straight to ML — first analyze: is ML even needed for this volume?, (2) if yes: migrate from Google Sheet to a proper database, (3) intermediate: Google Sheets API → Python script → predictions written back, (4) data validation: add constraints to prevent bad data entry, (5) automated pipeline: scheduled script pulls data, runs model, writes predictions, (6) long-term: build a simple web application with proper data entry forms, (7) pragmatic approach: start with spreadsheet integration, evolve as value is proven."
+     "text": "**Answer:** (1) Resist going straight to ML — first analyse: is ML even needed for this volume?, (2) if yes: migrate from Google Sheet to a proper database, (3) intermediate: Google Sheets API → Python script → predictions written back, (4) data validation: add constraints to prevent bad data entry, (5) automated pipeline: scheduled script pulls data, runs model, writes predictions, (6) long-term: build a simple web application with proper data entry forms, (7) pragmatic approach: start with spreadsheet integration, evolve as value is proven."
     }
    ],
    "kind": ""
@@ -313,7 +313,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** LLMs appropriate when: (1) zero/few-shot needed (no labeled data), (2) task requires understanding nuance, context, world knowledge, (3) multiple related tasks (LLM handles many vs. one model per task), (4) rapid prototyping (no training infrastructure needed). Traditional ML better when: (5) large labeled dataset available, (6) latency critical (<10ms), (7) cost matters (LLM API calls expensive at scale), (8) task is well-defined classification with clear features, (9) regulatory requirement for deterministic, auditable model. Hybrid: (10) LLM for labeling → train traditional ML on LLM labels."
+     "text": "**Answer:** LLMs appropriate when: (1) zero/few-shot needed (no labelled data), (2) task requires understanding nuance, context, world knowledge, (3) multiple related tasks (LLM handles many vs. one model per task), (4) rapid prototyping (no training infrastructure needed). Traditional ML better when: (5) large labelled dataset available, (6) latency critical (<10ms), (7) cost matters (LLM API calls expensive at scale), (8) task is well-defined classification with clear features, (9) regulatory requirement for deterministic, auditable model. Hybrid: (10) LLM for labelling → train traditional ML on LLM labels."
     }
    ],
    "kind": ""
@@ -337,7 +337,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Understand their concerns: latency, memory, dependencies, maintenance?, (2) simplify: (a) feature reduction — fewer features = simpler pipeline, (b) model distillation: train simpler model on complex model's predictions, (c) ONNX export for framework-agnostic serving, (3) compromise on complexity: remove the bottom 30% of features (usually minimal impact), (4) containerize: Docker handles dependency concerns, (5) pre-compute: batch predictions instead of real-time, (6) collaborate: pair with engineer from design phase next time."
+     "text": "**Answer:** (1) Understand their concerns: latency, memory, dependencies, maintenance?, (2) simplify: (a) feature reduction — fewer features = simpler pipeline, (b) model distillation: train simpler model on complex model's predictions, (c) ONNX export for framework-agnostic serving, (3) compromise on complexity: remove the bottom 30% of features (usually minimal impact), (4) containerise: Docker handles dependency concerns, (5) pre-compute: batch predictions instead of real-time, (6) collaborate: pair with engineer from design phase next time."
     }
    ],
    "kind": ""
@@ -345,11 +345,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "147",
-   "q": "How do you handle a situation where your model needs retraining but you can't get new labeled data?",
+   "q": "How do you handle a situation where your model needs retraining but you can't get new labelled data?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Semi-supervised: use model's confident predictions on unlabeled data as pseudo-labels, (2) active learning: have the model identify the most informative examples to label, (3) weak supervision: programmatic labeling rules (Snorkel), (4) data augmentation on existing labeled data, (5) transfer learning: fine-tune a pre-trained model, (6) LLM labeling: use GPT-4 to label examples (with human validation on sample), (7) crowdsourcing: Amazon Mechanical Turk for simple labeling, (8) self-training: iterative pseudo-labeling with confidence thresholds."
+     "text": "**Answer:** (1) Semi-supervised: use model's confident predictions on unlabelled data as pseudo-labels, (2) active learning: have the model identify the most informative examples to label, (3) weak supervision: programmatic labelling rules (Snorkel), (4) data augmentation on existing labelled data, (5) transfer learning: fine-tune a pre-trained model, (6) LLM labelling: use GPT-4 to label examples (with human validation on sample), (7) crowdsourcing: Amazon Mechanical Turk for simple labelling, (8) self-training: iterative pseudo-labelling with confidence thresholds."
     }
    ],
    "kind": ""
@@ -361,7 +361,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) SHAP: compute for every prediction, store in database, (2) top-k features per prediction: summarize as \"predicted due to A, B, C,\" (3) batch compute: SHAP is slow — compute overnight in batch, (4) TreeSHAP for tree-based models: fast, exact, (5) pre-compute explanation templates: \"if feature X > threshold → generates explanation Y,\" (6) rules extraction: convert model to approximate rule set for audit, (7) LIME for sample-specific explanations, (8) audit dashboard: random sample with full explanations for compliance review."
+     "text": "**Answer:** (1) SHAP: compute for every prediction, store in database, (2) top-k features per prediction: summarise as \"predicted due to A, B, C,\" (3) batch compute: SHAP is slow — compute overnight in batch, (4) TreeSHAP for tree-based models: fast, exact, (5) pre-compute explanation templates: \"if feature X > threshold → generates explanation Y,\" (6) rules extraction: convert model to approximate rule set for audit, (7) LIME for sample-specific explanations, (8) audit dashboard: random sample with full explanations for compliance review."
     }
    ],
    "kind": ""
@@ -373,7 +373,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Purpose: identification should lead to **support**, not punishment, (2) bias: does the model disproportionately flag certain demographics?, (3) features: avoid proxies for protected attributes (zip code → race/income), (4) transparency: students should know the system exists, (5) consent: opt-in/opt-out mechanism, (6) data minimization: only use necessary data, (7) human-in-the-loop: academic advisors review, not automated actions, (8) appeal process: students can dispute, (9) evaluation: does intervention actually help flagged students?, (10) sunset: re-evaluate model's value annually."
+     "text": "**Answer:** (1) Purpose: identification should lead to **support**, not punishment, (2) bias: does the model disproportionately flag certain demographics?, (3) features: avoid proxies for protected attributes (zip code → race/income), (4) transparency: students should know the system exists, (5) consent: opt-in/opt-out mechanism, (6) data minimisation: only use necessary data, (7) human-in-the-loop: academic advisors review, not automated actions, (8) appeal process: students can dispute, (9) evaluation: does intervention actually help flagged students?, (10) sunset: re-evaluate model's value annually."
     }
    ],
    "kind": ""
@@ -385,7 +385,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Communication: translating technical findings to business impact, (2) business acumen: understanding how the company makes money, (3) product thinking: framing ML solutions around user needs, (4) stakeholder management: setting expectations, handling feedback, (5) project management: scoping work, estimating timelines, (6) critical thinking: questioning data, methodology, results, (7) intellectual curiosity: continuously learning new methods, (8) empathy: understanding end-user perspective, (9) prioritization: knowing when \"good enough\" beats \"perfect,\" (10) writing: clear documentation, reports, model cards."
+     "text": "**Answer:** (1) Communication: translating technical findings to business impact, (2) business acumen: understanding how the company makes money, (3) product thinking: framing ML solutions around user needs, (4) stakeholder management: setting expectations, handling feedback, (5) project management: scoping work, estimating timelines, (6) critical thinking: questioning data, methodology, results, (7) intellectual curiosity: continuously learning new methods, (8) empathy: understanding end-user perspective, (9) prioritisation: knowing when \"good enough\" beats \"perfect,\" (10) writing: clear documentation, reports, model cards."
     }
    ],
    "kind": ""

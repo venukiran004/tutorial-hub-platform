@@ -344,12 +344,16 @@ def send_all(recipients):
         print("sending to", r)
 
 send_all(["a@x.com", "b@x.com"])    # 2 emails
-send_all("a@x.com")                 # 9 "emails", one per character`,
+send_all("a@x.com")                 # 7 "emails", one per character`,
         out: `sending to a@x.com
 sending to b@x.com
 sending to a
 sending to @
-sending to x`},
+sending to x
+sending to .
+sending to c
+sending to o
+sending to m`},
       { t: "p", text: "This is the classic case where duck typing is too permissive: `str` quacks like an iterable but means something entirely different. An explicit `isinstance(recipients, str)` guard is justified here — and a type hint of `list[str]` lets mypy catch it before it runs." }
     ]},
 
@@ -618,7 +622,7 @@ class OrderRow(BaseModel):
           "Duck typing always requires an explicit `isinstance` guard before a parameter is iterated"
         ],
         answer: 1,
-        why: "This is the classic exception to duck typing. `str` quacks like an iterable — it has `__iter__` — but iterating it yields characters, which is almost never what a function expecting a collection of items intends. Because nothing raises, the bug is silent: one call sends nine notifications instead of one. An explicit `isinstance(recipients, str)` guard is justified here, and a `list[str]` hint lets mypy catch it before it runs."
+        why: "This is the classic exception to duck typing. `str` quacks like an iterable — it has `__iter__` — but iterating it yields characters, which is almost never what a function expecting a collection of items intends. Because nothing raises, the bug is silent: one call sends seven notifications instead of one. An explicit `isinstance(recipients, str)` guard is justified here, and a `list[str]` hint lets mypy catch it before it runs."
       }
     ]
   },
@@ -643,7 +647,7 @@ class OrderRow(BaseModel):
         strong: "Rarely. The default is duck typing: accept anything that can do what you need, and let the operation raise naturally. The justified exceptions are trust boundaries where you want a precise early error, functions whose behaviour genuinely differs by type, and the `str`-is-iterable case where duck typing silently does the wrong thing.",
         answer: [
           { t: "p", text: "Interviewers use this to check whether you write Python or write another language in Python. Defensive `isinstance` checks at the top of every function are a Java habit that makes Python code less useful without making it safer." },
-          { t: "p", text: "The strongest single example is the string case: `send_all(\"a@x.com\")` iterates characters and sends nine notifications, with no error anywhere. That is the situation where a check earns its place, and naming it shows you have a principle rather than a preference." },
+          { t: "p", text: "The strongest single example is the string case: `send_all(\"a@x.com\")` iterates characters and sends seven notifications, with no error anywhere. That is the situation where a check earns its place, and naming it shows you have a principle rather than a preference." },
           { t: "p", text: "Worth adding: at a genuine trust boundary the answer is usually not `isinstance` at all — it is Pydantic or an equivalent, which validates, coerces and produces error messages you can return to a caller." }
         ],
         weak: "Answering \"always check types for safety\". It rejects valid inputs, adds no protection against the errors that actually occur, and signals unfamiliarity with how Python code is normally written."

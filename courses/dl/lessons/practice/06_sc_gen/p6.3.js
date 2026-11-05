@@ -50,7 +50,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** KL term regularizes latent space to be close to N(0,1). Enables generation: sample z ~ N(0,1) → decode → new data. Smooth, continuous latent space allows interpolation."
+     "text": "**Explanation:** KL term regularises latent space to be close to N(0,1). Enables generation: sample z ~ N(0,1) → decode → new data. Smooth, continuous latent space allows interpolation."
     }
    ],
    "kind": ""
@@ -58,7 +58,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "53",
-   "q": "What is the reparameterization trick?",
+   "q": "What is the reparameterisation trick?",
    "body": [
     {
      "t": "p",
@@ -125,7 +125,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Higher β forces more information through bottleneck via structured latent space → each latent dimension captures a single factor of variation (size, color, orientation). Used for disentangled representation learning."
+     "text": "**Explanation:** Higher β forces more information through bottleneck via structured latent space → each latent dimension captures a single factor of variation (size, colour, orientation). Used for disentangled representation learning."
     }
    ],
    "kind": ""
@@ -167,7 +167,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Forces each neuron to specialize. Different subsets of neurons activate for different inputs. Learns interpretable, overcomplete representations (can have more latent dimensions than input, but sparsity prevents trivial encoding)."
+     "text": "**Explanation:** Forces each neuron to specialise. Different subsets of neurons activate for different inputs. Learns interpretable, overcomplete representations (can have more latent dimensions than input, but sparsity prevents trivial encoding)."
     }
    ],
    "kind": ""
@@ -188,7 +188,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Penalizes sensitivity to input changes → learns smooth representations. Small changes in input → small changes in latent space. Related to denoising AE (both learn robust features) but approaches from different angle."
+     "text": "**Explanation:** Penalises sensitivity to input changes → learns smooth representations. Small changes in input → small changes in latent space. Related to denoising AE (both learn robust features) but approaches from different angle."
     }
    ],
    "kind": ""
@@ -196,7 +196,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "59",
-   "q": "What is VQ-VAE (Vector Quantized VAE)?",
+   "q": "What is VQ-VAE (Vector Quantised VAE)?",
    "body": [
     {
      "t": "p",
@@ -213,7 +213,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Avoids \"posterior collapse\" (latent ignoring). Discrete tokens enable autoregressive modeling on top. VQ-VAE-2 generates high-quality images by autoregressive sampling of discrete codes."
+     "text": "**Explanation:** Avoids \"posterior collapse\" (latent ignoring). Discrete tokens enable autoregressive modelling on top. VQ-VAE-2 generates high-quality images by autoregressive sampling of discrete codes."
     }
    ],
    "kind": ""
@@ -259,7 +259,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Prevents posterior collapse by first letting encoder/decoder learn useful representations, then gradually regularizing latent space. Cyclical annealing (reset β periodically) can also help."
+     "text": "**Explanation:** Prevents posterior collapse by first letting encoder/decoder learn useful representations, then gradually regularising latent space. Cyclical annealing (reset β periodically) can also help."
     }
    ],
    "kind": ""
@@ -291,7 +291,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** We can't compute p(x) directly. ELBO is a tractable lower bound. Maximizing ELBO maximizes a lower bound on data likelihood. VAE training = maximizing ELBO."
+     "text": "**Explanation:** We can't compute p(x) directly. ELBO is a tractable lower bound. Maximising ELBO maximises a lower bound on data likelihood. VAE training = maximising ELBO."
     }
    ],
    "kind": ""
@@ -573,7 +573,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Entangled: z₁ affects both size and color. Disentangled: each z controls exactly one attribute. Debate exists on whether unsupervised disentanglement is achievable."
+     "text": "**Explanation:** Entangled: z₁ affects both size and colour. Disentangled: each z controls exactly one attribute. Debate exists on whether unsupervised disentanglement is achievable."
     }
    ],
    "kind": ""

@@ -222,7 +222,7 @@ doc._.coref_chains.resolve(doc[13])           # [migration]
     { t: "p", text: "`coreferee` works over spaCy's existing parse, so the resolver inherits whatever the dependency parse got wrong; the transformer pipeline is worth the cost here for that reason. **The practical pattern is to keep the resolution as an annotation rather than a rewrite** — store the chains alongside the original text, so a later step can see both what was written and what the model thought it meant." },
 
     { t: "exercise", title: "Map the failure surface",
-      tasks: [
+      requirements: [
         "Run the extractor on twenty sentences from your own domain and classify every failure by type. Rank the types by frequency.",
         "Add passive-voice handling by walking the `agent` edge, then find a new sentence it still fails on.",
         "Add negation detection using `dep_ == \"neg\"` and check the subtree, not just the root verb's children.",

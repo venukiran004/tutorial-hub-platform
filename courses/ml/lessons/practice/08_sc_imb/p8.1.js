@@ -33,7 +33,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Model never learns meaningful patterns for the minority class. Must use specialized techniques."
+     "text": "**Explanation:** Model never learns meaningful patterns for the minority class. Must use specialised techniques."
     }
    ],
    "kind": ""
@@ -52,7 +52,7 @@ EC.receiveLesson({
      "items": [
       "**Data-level:** Oversampling minority, undersampling majority, SMOTE",
       "**Algorithm-level:** Class weights, cost-sensitive learning",
-      "**Threshold adjustment:** Optimize classification threshold",
+      "**Threshold adjustment:** Optimise classification threshold",
       "**Ensemble methods:** Balanced bagging, EasyEnsemble",
       "**Evaluation:** Use appropriate metrics (F1, PR-AUC, MCC)"
      ]
@@ -80,7 +80,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Overfitting — model memorizes duplicated samples",
+      "Overfitting — model memorises duplicated samples",
       "No new information added",
       "Decision boundary overfits to exactly duplicated points"
      ]
@@ -132,9 +132,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Find its k nearest minority neighbors",
-      "Pick one neighbor randomly",
-      "Create new sample along the line connecting them: x_new = x + rand(0,1) × (neighbor - x)"
+      "Find its k nearest minority neighbours",
+      "Pick one neighbour randomly",
+      "Create new sample along the line connecting them: x_new = x + rand(0,1) × (neighbour - x)"
      ]
     },
     {
@@ -159,7 +159,7 @@ EC.receiveLesson({
       "**SMOTE:** Basic synthetic oversampling",
       "**Borderline-SMOTE:** Only oversample minority samples near the decision boundary",
       "**SMOTE-Tomek:** SMOTE + remove Tomek links (ambiguous pairs)",
-      "**SMOTE-ENN:** SMOTE + Edited Nearest Neighbors (clean noise)",
+      "**SMOTE-ENN:** SMOTE + Edited Nearest Neighbours (clean noise)",
       "**ADASYN:** Adaptive — generates more samples near harder minority regions"
      ]
     },
@@ -181,7 +181,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Density-based weighting: if minority point has many majority neighbors → more synthetic samples generated there. Focuses synthesis where it matters most."
+     "text": "**Explanation:** Density-based weighting: if minority point has many majority neighbours → more synthetic samples generated there. Focuses synthesis where it matters most."
     }
    ],
    "kind": ""
@@ -198,7 +198,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Data leakage — SMOTE applied before train-test split. Synthetic samples in test set may be based on training data neighbors."
+     "text": "**Answer:** Data leakage — SMOTE applied before train-test split. Synthetic samples in test set may be based on training data neighbours."
     },
     {
      "t": "p",
@@ -268,12 +268,12 @@ EC.receiveLesson({
       "Class weights (loss weighting)",
       "Cost matrix integration",
       "MetaCost (relabeling based on expected cost)",
-      "Threshold optimization post-training"
+      "Threshold optimisation post-training"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Goes beyond simple oversampling/undersampling. Directly incorporates business costs into optimization."
+     "text": "**Explanation:** Goes beyond simple oversampling/undersampling. Directly incorporates business costs into optimisation."
     }
    ],
    "kind": ""
@@ -291,7 +291,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**PR-AUC:** Precision-Recall area under curve (best for high imbalance)",
-      "**F1/F2 score:** Harmonic mean emphasizing recall",
+      "**F1/F2 score:** Harmonic mean emphasising recall",
       "**MCC:** Matthews Correlation Coefficient (balanced measure)",
       "**Balanced accuracy:** Average of per-class recall",
       "**Specificity-Sensitivity:** At chosen threshold",
@@ -300,7 +300,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** PR-AUC focuses entirely on minority class performance. F2 emphasizes recall. Report confusion matrix alongside any summary metric."
+     "text": "**Explanation:** PR-AUC focuses entirely on minority class performance. F2 emphasises recall. Report confusion matrix alongside any summary metric."
     }
    ],
    "kind": ""
@@ -349,7 +349,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** A Tomek link is a pair of opposite-class samples that are each other's nearest neighbors. Removing the majority class sample from Tomek links cleans the decision boundary."
+     "text": "**Answer:** A Tomek link is a pair of opposite-class samples that are each other's nearest neighbours. Removing the majority class sample from Tomek links cleans the decision boundary."
     },
     {
      "t": "p",
@@ -361,11 +361,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "What is Edited Nearest Neighbors (ENN)?",
+   "q": "What is Edited Nearest Neighbours (ENN)?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Removes samples whose class differs from the majority class of their k nearest neighbors. Cleans noisy and borderline samples."
+     "text": "**Answer:** Removes samples whose class differs from the majority class of their k nearest neighbours. Cleans noisy and borderline samples."
     },
     {
      "t": "p",
@@ -526,7 +526,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Anomaly detection doesn't need labeled minority data. Trains on \"normal\" data, flags deviations. Methods: Isolation Forest, One-Class SVM, Autoencoders."
+     "text": "**Explanation:** Anomaly detection doesn't need labelled minority data. Trains on \"normal\" data, flags deviations. Methods: Isolation Forest, One-Class SVM, Autoencoders."
     }
    ],
    "kind": ""
@@ -565,7 +565,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** No need for labeled minority data. Learns the \"normal\" distribution. New samples too far from normal → flagged. Useful when minority examples are scarce or evolving (new types of fraud)."
+     "text": "**Explanation:** No need for labelled minority data. Learns the \"normal\" distribution. New samples too far from normal → flagged. Useful when minority examples are scarce or evolving (new types of fraud)."
     }
    ],
    "kind": ""

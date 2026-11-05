@@ -44,7 +44,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Approximate nearest neighbor search using hash functions that map similar items to same bucket."
+     "text": "**Answer:** Approximate nearest neighbour search using hash functions that map similar items to same bucket."
     },
     {
      "t": "ul",
@@ -88,7 +88,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Distance-weighted voting:** Closer neighbors count more",
+      "**Distance-weighted voting:** Closer neighbours count more",
       "**Adjust K:** Use smaller K for minority class",
       "**Over/under-sampling:** Balance classes before applying KNN",
       "**Class-specific K:** Different K for different classes"
@@ -96,7 +96,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Problem:** With imbalanced data, most neighbors are from majority class."
+     "text": "**Problem:** With imbalanced data, most neighbours are from majority class."
     }
    ],
    "kind": ""
@@ -124,7 +124,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Organizes data into nested hyperspheres:"
+     "text": "**Answer:** Organises data into nested hyperspheres:"
     },
     {
      "t": "ol",
@@ -156,9 +156,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Condensed Nearest Neighbor:** Keep only boundary points",
+      "**Condensed Nearest Neighbour:** Keep only boundary points",
       "**K-means + KNN:** Use cluster centroids as prototypes",
-      "**Edited Nearest Neighbor:** Remove noisy points"
+      "**Edited Nearest Neighbour:** Remove noisy points"
      ]
     },
     {
@@ -212,11 +212,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "85",
-   "q": "What is the radius-based nearest neighbor?",
+   "q": "What is the radius-based nearest neighbour?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Instead of fixed K, consider all neighbors within a fixed radius ε."
+     "text": "**Answer:** Instead of fixed K, consider all neighbours within a fixed radius ε."
     },
     {
      "t": "code",
@@ -225,11 +225,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Advantage:** Variable number of neighbors — more in dense regions, fewer in sparse."
+     "text": "**Advantage:** Variable number of neighbours — more in dense regions, fewer in sparse."
     },
     {
      "t": "p",
-     "text": "**Risk:** Empty neighborhood → no prediction possible."
+     "text": "**Risk:** Empty neighbourhood → no prediction possible."
     }
    ],
    "kind": ""
@@ -271,8 +271,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Classifier:** Returns mode (most common class) of K neighbors",
-      "**Regressor:** Returns mean (or weighted mean) of K neighbors' target values"
+      "**Classifier:** Returns mode (most common class) of K neighbours",
+      "**Regressor:** Returns mean (or weighted mean) of K neighbours' target values"
      ]
     },
     {
@@ -295,7 +295,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**K=1:** Very sensitive — one noisy point creates wrong prediction",
-      "**Large K:** Smooths out noise — one noisy point diluted by other neighbors"
+      "**Large K:** Smooths out noise — one noisy point diluted by other neighbours"
      ]
     },
     {
@@ -378,7 +378,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "91",
-   "q": "What is the condensed nearest neighbor (CNN) algorithm?",
+   "q": "What is the condensed nearest neighbour (CNN) algorithm?",
    "body": [
     {
      "t": "p",
@@ -407,7 +407,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Semi-supervised method — propagates labels from labeled to unlabeled points through graph of nearest neighbors."
+     "text": "**Answer:** Semi-supervised method — propagates labels from labelled to unlabelled points through graph of nearest neighbours."
     },
     {
      "t": "p",
@@ -417,14 +417,14 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Build KNN graph",
-      "Assign labels to labeled points",
+      "Assign labels to labelled points",
       "Propagate labels through graph edges",
       "Repeat until convergence"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Uses neighborhood structure to leverage unlabeled data. Related to KNN but works with limited labels."
+     "text": "**Explanation:** Uses neighbourhood structure to leverage unlabelled data. Related to KNN but works with limited labels."
     }
    ],
    "kind": ""
@@ -468,7 +468,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Distance-based:** Points where average KNN distance is large are anomalies",
-      "**Local Outlier Factor (LOF):** Compare local density to neighbors' density"
+      "**Local Outlier Factor (LOF):** Compare local density to neighbours' density"
      ]
     },
     {
@@ -527,7 +527,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "96",
-   "q": "What is the difference between hard and soft nearest neighbor predictions?",
+   "q": "What is the difference between hard and soft nearest neighbour predictions?",
    "body": [
     {
      "t": "p",
@@ -606,7 +606,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "99",
-   "q": "How would you optimize KNN for very large datasets?",
+   "q": "How would you optimise KNN for very large datasets?",
    "body": [
     {
      "t": "p",
@@ -619,7 +619,7 @@ EC.receiveLesson({
       "**Reduce training set:** Prototype selection, CNN",
       "**Reduce dimensions:** PCA, UMAP before KNN",
       "**Use BallTree/KDTree:** For exact but faster search",
-      "**Quantization:** Reduce feature precision"
+      "**Quantisation:** Reduce feature precision"
      ]
     },
     {
@@ -649,7 +649,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** If priors are uniform, MAP reduces to MLE (Maximum Likelihood Estimation) → just maximize likelihood."
+     "text": "**Explanation:** If priors are uniform, MAP reduces to MLE (Maximum Likelihood Estimation) → just maximise likelihood."
     }
    ],
    "kind": ""

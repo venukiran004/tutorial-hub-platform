@@ -102,7 +102,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Abstractive: T5 and BART", id: "abstractive" },
 
-    {"kind": "trace", "title": "Seven times the parameters, five times the latency, two percent more compression", "caption": "`bart-large-cnn` has **406M parameters against t5-small's 61M and takes 115.2s against 23.1s** — and produces **60% compression against 58%**, on output that differs mainly in capitalisation. Which is worth measuring before choosing: **the big model's advantage here is not visible in either number this lesson can compute**, and §05 is about to show that neither output is doing what “abstractive” implies. Note the interface difference too: **T5 needs the `summarize: ` prefix and BART does not.**", "left": "model", "codeW": 190, "vars": ["params", "time", "compression"], "steps": [{"code": "t5-small", "state": ["61M", "23.1s", "58%"], "tone": "good", "note": "needs 'summarize: '"}, {"code": "facebook/bart-large-cnn", "state": ["406M", "115.2s", "60%"], "changed": [0, 1, 2], "tone": "warn", "note": "no prefix"}, {"code": "ratio", "state": ["6.7x", "5.0x", "+2 points"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-2_6-04-1"},
+    {"kind": "trace", "title": "Seven times the parameters, five times the latency, two percent more compression", "caption": "`bart-large-cnn` has **406M parameters against t5-small's 61M and takes 115.2s against 23.1s** — and produces **60% compression against 58%**, on output that differs mainly in capitalisation. Which is worth measuring before choosing: **the big model's advantage here is not visible in either number this lesson can compute**, and §05 is about to show that neither output is doing what “abstractive” implies. Note the interface difference too: **T5 needs the `summarize: ` prefix and BART does not.**", "left": "model", "codeW": 190, "vars": ["params", "time", "compression"], "steps": [{"code": "t5-small", "state": ["61M", "23.1s", "58%"], "tone": "good", "note": "needs 'summarise: '"}, {"code": "facebook/bart-large-cnn", "state": ["406M", "115.2s", "60%"], "changed": [0, 1, 2], "tone": "warn", "note": "no prefix"}, {"code": "ratio", "state": ["6.7x", "5.0x", "+2 points"], "changed": [0, 1, 2], "tone": "crit"}], "t": "diagram", "id": "dg-2_6-04-1"},
 
 
 
@@ -221,7 +221,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "In a regulated setting — medical, legal, financial — extraction is often the correct answer not because it reads better but because a summary that cannot invent a fact needs no factuality review. Every sentence traces to a source offset you can cite. The moment you generate, you inherit a verification problem: you need either a human in the loop or an entailment check of each summary sentence against the source. Pick the architecture that matches the review budget you actually have." }] },
 
     { t: "exercise", title: "Measure your own copy rate",
-      tasks: [
+      requirements: [
         "Run the TF-IDF scorer on a document of your own and check whether the top-scoring sentence is the one you would have picked. Note what it ranked above it.",
         "Normalise the sentence scores by token count and see which sentences change rank. Decide which normalisation you would ship.",
         "Run `bart-large-cnn` over ten documents from your domain and compute the copy rate and longest verbatim run for each.",

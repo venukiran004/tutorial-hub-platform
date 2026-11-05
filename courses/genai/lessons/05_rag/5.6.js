@@ -94,7 +94,7 @@ R_l2  = np.argsort(d2, axis=1)`,
       body: [
         { t: "p", text: "To show where the metrics diverge I encoded the corpus with `normalize_embeddings=False` and compared again. All three metrics agreed perfectly, which is not what should happen." },
         { t: "p", text: "The tell was in a line I had printed almost as an afterthought: **chunk vector norms: min 1.000, median 1.000, max 1.000**. Every vector was unit length despite asking for no normalisation." },
-        { t: "p", text: "The cause is that a `SentenceTransformer` is a pipeline, and these models ship with a **Normalize module as the final step**. The `normalize_embeddings` argument controls an additional normalisation the wrapper can apply \u2014 it cannot undo one baked into the model\u2019s own architecture. My comparison measured the library, not the mathematics." },
+        { t: "p", text: "The cause is that a `SentenceTransformer` is a pipeline, and these models ship with a **Normalise module as the final step**. The `normalize_embeddings` argument controls an additional normalisation the wrapper can apply \u2014 it cannot undo one baked into the model\u2019s own architecture. My comparison measured the library, not the mathematics." },
         { t: "p", text: "The fix was to stop using the wrapper: load the transformer directly, mean-pool the token embeddings, and skip the pooling pipeline\u2019s final step. That produces genuinely unnormalised vectors, and everything below is measured on those." }
       ] },
 
@@ -319,7 +319,7 @@ R_l2  = np.argsort(((QV[:, None, :] - E[None, :, :]) ** 2).sum(-1), axis=1)`,
           { t: "p", text: "**Unnormalised, dot product collapses to 30% at k=1 and shares 15% of its top hits with cosine.** It is not a slightly different ranking, it is mostly a different one. L2 holds up far better at 70% and 95% agreement, because its magnitude terms add rather than multiply." },
           { t: "p", text: "**The mechanism is visible in one number: \u22120.85.** Mean pooling over more tokens averages components away, so long chunks have small vectors \u2014 almost deterministically. Dot product multiplies by that magnitude, so it awards a bonus for being short, and retrieved chunks averaging 169 characters against a corpus mean of 347." },
           { t: "p", text: "**L2 degrading gracefully is the more dangerous outcome.** A 45-point collapse gets investigated immediately; a five-point one ships. The rule that removes the whole question is to normalise at index time, normalise the query, and use inner product." },
-          { t: "p", text: "**And print your norms once.** My first attempt at this comparison found all three metrics agreeing on supposedly unnormalised vectors, because the SentenceTransformer pipeline ends in a Normalize module that the `normalize_embeddings=False` argument does not remove. The min/median/max line was what exposed it." }
+          { t: "p", text: "**And print your norms once.** My first attempt at this comparison found all three metrics agreeing on supposedly unnormalised vectors, because the SentenceTransformer pipeline ends in a Normalise module that the `normalize_embeddings=False` argument does not remove. The min/median/max line was what exposed it." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
@@ -343,7 +343,7 @@ R_l2  = np.argsort(((QV[:, None, :] - E[None, :, :]) ** 2).sum(-1), axis=1)`,
     "**On unit vectors the three metrics are one ranking.** Measured: identical recall and 100% top-1 agreement, which the algebra requires.",
     "**Cosine is the dot product when both magnitudes are 1**, and squared L2 is `2 \u2212 2a\u00b7b`, a monotone transform of it \u2014 so all three sort the same way.",
     "**The metric question is really a normalisation question**, usually argued without either party saying so.",
-    "**My first attempt measured the library.** `normalize_embeddings=False` still returned unit vectors, because the SentenceTransformer pipeline ends in a Normalize module \u2014 caught by printing the norms.",
+    "**My first attempt measured the library.** `normalize_embeddings=False` still returned unit vectors, because the SentenceTransformer pipeline ends in a Normalise module \u2014 caught by printing the norms.",
     "**With genuinely unnormalised vectors the norms vary 3.93\u00d7** (1.43 to 5.63) and the metrics diverge violently.",
     "**Dot product collapsed to 30% recall@1 against cosine's 75%**, agreeing on the top hit only 15% of the time and sharing 39% of its top-10.",
     "**Because magnitude is an artefact of pooling, not relevance**: chunk length correlates **\u22120.85** with vector norm, since averaging more tokens cancels more components.",
@@ -368,7 +368,7 @@ R_l2  = np.argsort(((QV[:, None, :] - E[None, :, :]) ** 2).sum(-1), axis=1)`,
       { stem: "A comparison of metrics on \u201cunnormalised\u201d vectors shows all three agreeing perfectly. What is the most likely explanation?",
         options: [
           "The corpus is too homogeneous for the metrics to diverge",
-          "The vectors are normalised anyway \u2014 many sentence-transformer models end in a Normalize module the argument does not remove",
+          "The vectors are normalised anyway \u2014 many sentence-transformer models end in a Normalise module the argument does not remove",
           "The evaluation set is too small to show a difference",
           "Dot product and cosine were computed with the same code path"
         ],

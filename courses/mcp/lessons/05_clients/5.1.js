@@ -8,7 +8,7 @@ EC.receiveLesson({
 
   objectives: [
     "Open a client session and explain what each context manager owns",
-    "Say why initialize must precede everything and happens once",
+    "Say why initialise must precede everything and happens once",
     "Hold several servers in one process with a session group",
     "Resolve a tool-name collision deliberately",
     "Avoid the leak that a per-request client produces"
@@ -277,7 +277,7 @@ async def ask(q: Query):
       {
         level: "mid",
         q: "Walk me through writing an MCP client.",
-        strong: "Two nested context managers: stdio_client spawns the server and yields read and write streams, and ClientSession runs the protocol over them. Then initialize once, before anything else, and keep the result because that is where the server's capabilities arrive. ClientSession is transport-agnostic, so the same code works over streamable HTTP. For more than one server, ClientSessionGroup does the fan-out and holds every subprocess under one exit stack.",
+        strong: "Two nested context managers: stdio_client spawns the server and yields read and write streams, and ClientSession runs the protocol over them. Then initialise once, before anything else, and keep the result because that is where the server's capabilities arrive. ClientSession is transport-agnostic, so the same code works over streamable HTTP. For more than one server, ClientSessionGroup does the fan-out and holds every subprocess under one exit stack.",
         answer: [
           { t: "p", text: "Naming what each manager owns is the part that matters, because it explains why the nesting is not stylistic." },
           { t: "p", text: "Keeping the initialize result rather than discarding it is a small signal of having read the handshake properly rather than copying a quickstart." }

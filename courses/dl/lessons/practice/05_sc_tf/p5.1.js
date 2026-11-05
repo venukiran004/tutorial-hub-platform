@@ -129,7 +129,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Without positional encoding, \"cat chased dog\" = \"dog chased cat\" (permutation invariant). Sinusoidal encoding can generalize to unseen sequence lengths. RoPE (used in LLaMA, GPT-NeoX) encodes relative positions."
+     "text": "**Explanation:** Without positional encoding, \"cat chased dog\" = \"dog chased cat\" (permutation invariant). Sinusoidal encoding can generalise to unseen sequence lengths. RoPE (used in LLaMA, GPT-NeoX) encodes relative positions."
     }
    ],
    "kind": ""
@@ -148,7 +148,7 @@ EC.receiveLesson({
      "items": [
       "**Encoder-only (BERT):** Bidirectional. Good for understanding (classification, NER). Can't generate.",
       "**Decoder-only (GPT):** Unidirectional (causal mask). Good for generation. Can also do classification.",
-      "**Encoder-decoder (T5, BART):** Full architecture. Good for seq2seq (translation, summarization)."
+      "**Encoder-decoder (T5, BART):** Full architecture. Good for seq2seq (translation, summarisation)."
      ]
     },
     {
@@ -228,11 +228,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "What is Layer Normalization in Transformers?",
+   "q": "What is Layer Normalisation in Transformers?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalizes across the feature dimension (not batch dimension like batch norm):"
+     "text": "**Answer:** Normalises across the feature dimension (not batch dimension like batch norm):"
     },
     {
      "t": "code",
@@ -425,7 +425,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Decays attention naturally with distance. Generalizes to longer sequences than seen in training (with some degradation). Used in LLaMA, GPT-NeoX, PaLM. Superior to absolute positional embeddings."
+     "text": "**Explanation:** Decays attention naturally with distance. Generalises to longer sequences than seen in training (with some degradation). Used in LLaMA, GPT-NeoX, PaLM. Superior to absolute positional embeddings."
     }
    ],
    "kind": ""
@@ -450,7 +450,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bottleneck is memory bandwidth, not FLOPs. Flash Attention fuses operations, uses tiling and recomputation to minimize GPU memory transfers. Essential for training large models."
+     "text": "**Explanation:** Bottleneck is memory bandwidth, not FLOPs. Flash Attention fuses operations, uses tiling and recomputation to minimise GPU memory transfers. Essential for training large models."
     }
    ],
    "kind": ""
@@ -547,8 +547,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Pre-training:** Learn from massive unlabeled data. Expensive. Done once.",
-      "**Fine-tuning:** Adapt to specific task with labeled data. Moderate cost.",
+      "**Pre-training:** Learn from massive unlabelled data. Expensive. Done once.",
+      "**Fine-tuning:** Adapt to specific task with labelled data. Moderate cost.",
       "**Prompting:** Use model as-is with carefully crafted input. Zero/few-shot. No training."
      ]
     },
@@ -587,7 +587,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** 10,000× fewer trainable parameters for LLMs. QLoRA: combine with 4-bit quantization for even more efficiency. Standard for fine-tuning large models."
+     "text": "**Explanation:** 10,000× fewer trainable parameters for LLMs. QLoRA: combine with 4-bit quantisation for even more efficiency. Standard for fine-tuning large models."
     }
    ],
    "kind": ""
@@ -637,7 +637,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Aligns model behavior with human preferences. Key component of ChatGPT's training. Alternatives: DPO (Direct Preference Optimization) — simpler, no reward model needed."
+     "text": "**Explanation:** Aligns model behaviour with human preferences. Key component of ChatGPT's training. Alternatives: DPO (Direct Preference Optimisation) — simpler, no reward model needed."
     }
    ],
    "kind": ""
@@ -645,7 +645,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "What is tokenization in Transformers?",
+   "q": "What is tokenisation in Transformers?",
    "body": [
     {
      "t": "p",
@@ -665,7 +665,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Subword tokenization handles any word (no OOV). Vocabulary size: 32K-100K typical. Affects sequence length, efficiency, and multilingual capability."
+     "text": "**Explanation:** Subword tokenisation handles any word (no OOV). Vocabulary size: 32K-100K typical. Affects sequence length, efficiency, and multilingual capability."
     }
    ],
    "kind": ""

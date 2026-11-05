@@ -72,7 +72,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** A loss function measures how far model predictions are from true values. It defines what the model optimizes."
+     "text": "**Answer:** A loss function measures how far model predictions are from true values. It defines what the model optimises."
     },
     {
      "t": "p",
@@ -88,7 +88,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Wrong loss function → wrong model behavior. Cross-entropy works better than MSE for classification because its gradient doesn't vanish when predictions are confident."
+     "text": "**Explanation:** Wrong loss function → wrong model behaviour. Cross-entropy works better than MSE for classification because its gradient doesn't vanish when predictions are confident."
     }
    ],
    "kind": ""
@@ -150,7 +150,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Solutions:** ReLU activation, skip connections (ResNet), batch normalization, LSTM/GRU for sequences, proper initialization."
+     "text": "**Solutions:** ReLU activation, skip connections (ResNet), batch normalisation, LSTM/GRU for sequences, proper initialisation."
     }
    ],
    "kind": ""
@@ -172,8 +172,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Gradient clipping:** Cap gradient norms, `torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)`",
-      "**Proper initialization** (He, Xavier)",
-      "**Batch normalization**",
+      "**Proper initialisation** (He, Xavier)",
+      "**Batch normalisation**",
       "**Learning rate scheduling**"
      ]
     },
@@ -231,7 +231,7 @@ EC.receiveLesson({
        "Yes (x→±∞)"
       ],
       [
-       "Zero-centered",
+       "Zero-centreed",
        "No",
        "No",
        "Yes"
@@ -252,7 +252,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** ReLU is default for hidden layers. Sigmoid for binary output. Tanh when zero-centered output needed. Leaky ReLU fixes dead neuron problem."
+     "text": "**Explanation:** ReLU is default for hidden layers. Sigmoid for binary output. Tanh when zero-centreed output needed. Leaky ReLU fixes dead neuron problem."
     }
    ],
    "kind": ""
@@ -309,7 +309,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Mini-batch GD is standard. Batch size affects: convergence speed, generalization, GPU utilization. Noisy gradients from SGD can help escape local minima."
+     "text": "**Explanation:** Mini-batch GD is standard. Batch size affects: convergence speed, generalisation, GPU utilisation. Noisy gradients from SGD can help escape local minima."
     }
    ],
    "kind": ""
@@ -353,7 +353,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "What is the difference between SGD and Adam optimizer?",
+   "q": "What is the difference between SGD and Adam optimiser?",
    "body": [
     {
      "t": "p",
@@ -374,7 +374,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Adam converges faster initially. SGD with momentum often generalizes better with proper tuning. Use Adam for quick prototyping, SGD+momentum for final training."
+     "text": "**Explanation:** Adam converges faster initially. SGD with momentum often generalises better with proper tuning. Use Adam for quick prototyping, SGD+momentum for final training."
     }
    ],
    "kind": ""
@@ -406,7 +406,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "What is weight initialization and why does it matter?",
+   "q": "What is weight initialisation and why does it matter?",
    "body": [
     {
      "t": "p",
@@ -433,7 +433,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Proper initialization ensures activations and gradients neither explode nor vanish at the start of training. Sets the model up for smooth optimization."
+     "text": "**Explanation:** Proper initialisation ensures activations and gradients neither explode nor vanish at the start of training. Sets the model up for smooth optimisation."
     }
    ],
    "kind": ""
@@ -473,7 +473,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Model memorizes training data instead of learning generalizable patterns."
+     "text": "**Answer:** Model memorises training data instead of learning generalisable patterns."
     },
     {
      "t": "p",
@@ -487,15 +487,15 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "More data / data augmentation",
-      "Regularization (L1/L2, dropout, weight decay)",
+      "Regularisation (L1/L2, dropout, weight decay)",
       "Early stopping",
       "Simpler architecture",
-      "Batch normalization"
+      "Batch normalisation"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deep networks have millions of parameters — they can memorize entire datasets. Regularization is essential, not optional."
+     "text": "**Explanation:** Deep networks have millions of parameters — they can memorise entire datasets. Regularisation is essential, not optional."
     }
    ],
    "kind": ""
@@ -524,11 +524,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "20",
-   "q": "What is batch normalization?",
+   "q": "What is batch normalisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalize activations within each mini-batch to have zero mean and unit variance, then apply learnable scale (γ) and shift (β):"
+     "text": "**Answer:** Normalise activations within each mini-batch to have zero mean and unit variance, then apply learnable scale (γ) and shift (β):"
     },
     {
      "t": "code",
@@ -537,7 +537,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces internal covariate shift (changing distribution of layer inputs during training). Allows higher learning rates, acts as mild regularizer. At test time, uses running mean/variance from training."
+     "text": "**Explanation:** Reduces internal covariate shift (changing distribution of layer inputs during training). Allows higher learning rates, acts as mild regulariser. At test time, uses running mean/variance from training."
     }
    ],
    "kind": ""
@@ -554,8 +554,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Batch Norm:** Normalizes across batch dimension. Good for CNNs, fixed-size inputs.",
-      "**Layer Norm:** Normalizes across feature dimension. Good for RNNs, Transformers, variable sequence lengths."
+      "**Batch Norm:** Normalises across batch dimension. Good for CNNs, fixed-size inputs.",
+      "**Layer Norm:** Normalises across feature dimension. Good for RNNs, Transformers, variable sequence lengths."
      ]
     },
     {
@@ -564,7 +564,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Transformers exclusively use Layer Norm. CNNs typically use Batch Norm. Both stabilize training."
+     "text": "**Explanation:** Transformers exclusively use Layer Norm. CNNs typically use Batch Norm. Both stabilise training."
     }
    ],
    "kind": ""
@@ -601,7 +601,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "23",
-   "q": "What is the difference between L1 and L2 regularization in deep learning?",
+   "q": "What is the difference between L1 and L2 regularisation in deep learning?",
    "body": [
     {
      "t": "p",
@@ -637,7 +637,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Simple and effective regularization. Prevents overfitting without modifying the model. Always restore best checkpoint."
+     "text": "**Explanation:** Simple and effective regularisation. Prevents overfitting without modifying the model. Always restore best checkpoint."
     }
    ],
    "kind": ""
@@ -654,17 +654,17 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Parameters:** Learned by the model (weights, biases). Updated by optimizer during training.",
+      "**Parameters:** Learned by the model (weights, biases). Updated by optimiser during training.",
       "**Hyperparameters:** Set by the practitioner before training. Not learned."
      ]
     },
     {
      "t": "p",
-     "text": "**Examples of hyperparameters:** Learning rate, batch size, number of layers, dropout rate, optimizer choice, activation function."
+     "text": "**Examples of hyperparameters:** Learning rate, batch size, number of layers, dropout rate, optimiser choice, activation function."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Hyperparameters control the learning process. Tuned via grid search, random search, or Bayesian optimization."
+     "text": "**Explanation:** Hyperparameters control the learning process. Tuned via grid search, random search, or Bayesian optimisation."
     }
    ],
    "kind": ""

@@ -160,7 +160,7 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
         "The SLO-boundary change is free at instrumentation time and makes the alerting ratio exact rather than interpolated."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The wrong-order aggregation is common because it reads naturally and the numbers look plausible — understating the tail by 46% does not produce an obviously absurd graph, it produces a reassuring one. That is what makes it worth grepping for rather than eyeballing." },
           { t: "p", text: "The bucket-versus-measurement comparison usually finds default boundaries designed for hundred-millisecond web requests on a service whose p50 is a couple of milliseconds, which is the 31.6% p50 error measured here. Re-bucketing loses history, so it is worth doing once, deliberately, with the SLO boundary included." }
         ]

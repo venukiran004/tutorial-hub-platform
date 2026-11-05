@@ -198,7 +198,7 @@ for n_extra in (1000, 5000, 20000):
     { t: "dl", items: [
       { k: "Causes", v: "The index grew past memory \u2014 HNSW graphs are RAM-hungry; `ef_search` or `nprobe` tuned up for accuracy at the cost of latency; no replicas, so all QPS lands on one node; metadata filtering scanning too much." },
       { k: "Immediate", v: "Lower `ef_search` or `nprobe` to trade recall for latency; add read replicas; cap `top_k`." },
-      { k: "Permanent", v: "Quantization to fit memory, sharding, replicas for read scaling, and capacity tests at projected QPS \u2014 tuning the recall-latency knob against the eval set rather than by guesswork." }
+      { k: "Permanent", v: "Quantisation to fit memory, sharding, replicas for read scaling, and capacity tests at projected QPS \u2014 tuning the recall-latency knob against the eval set rather than by guesswork." }
     ] },
 
     { t: "callout", kind: "insight", title: "6.2 measured exactly why memory arrives first",

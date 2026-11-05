@@ -188,7 +188,7 @@ END $$;
       { t: "p", text: "A wide table with a column per category needs an ALTER TABLE for every new category and stores a cell for every combination whether or not anything happened. A long table gains a category by gaining a row and stores only observations. **Long is the schema; wide is a view of it** — a pivot in the report query, a `pivot_table` in the notebook, a materialised view (6.6) if the wide form is read constantly. The one wide table worth storing is the feature matrix, and that is built, not maintained." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Event counts per customer by type",
       rungs: [
         { level: "bad", label: "A wide events table", code: `CREATE TABLE customer_events (customer_id INT, views INT, carts INT, checkouts INT);

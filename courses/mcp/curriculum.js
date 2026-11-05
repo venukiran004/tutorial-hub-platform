@@ -29,7 +29,7 @@
     short: "MCP",
     tagline: "The protocol read off the wire: the handshake, the three primitives, servers built two ways, the three transports, and the security surface a published server hands its callers.",
 
-    blurb: "MCP turns M tools times N frameworks into M plus N. This course takes the protocol apart: hosts, clients and servers; tools, resources and prompts; the initialize handshake and capability negotiation; a server written with FastMCP and the same one written against the low-level API; stdio, SSE and streamable HTTP; the injection surface, per-user identity, in-process testing, and versioning an interface other teams depend on.",
+    blurb: "MCP turns M tools times N frameworks into M plus N. This course takes the protocol apart: hosts, clients and servers; tools, resources and prompts; the initialise handshake and capability negotiation; a server written with FastMCP and the same one written against the low-level API; stdio, SSE and streamable HTTP; the injection surface, per-user identity, in-process testing, and versioning an interface other teams depend on.",
 
     published: ["1.1", "1.2", "1.3", "1.4", "2.1", "2.2", "2.3", "2.4", "3.1", "3.2", "4.1", "4.2", "4.3", "4.4", "5.1", "5.2"],
 
@@ -44,14 +44,14 @@
         dir: "01_protocol",
         phase: "Phase 1 · The protocol",
         title: "Roles, Handshake and Primitives",
-        blurb: "What MCP is and the integration problem it exists to solve; host, client and server as three separate roles that people routinely conflate; the initialize exchange and what capability negotiation actually settles; and the three primitives, which are three different answers rather than three names for tools.",
-        outcome: "You can name the three roles in a running system, read an initialize response, and say whether a given capability should be a tool, a resource or a prompt.",
+        blurb: "What MCP is and the integration problem it exists to solve; host, client and server as three separate roles that people routinely conflate; the initialise exchange and what capability negotiation actually settles; and the three primitives, which are three different answers rather than three names for tools.",
+        outcome: "You can name the three roles in a running system, read an initialise response, and say whether a given capability should be a tool, a resource or a prompt.",
         lessons: [
           { id: "1.1", title: "What MCP Is, and the Three Roles", difficulty: "core", minutes: 28, tier: "must",
             summary: "The M times N integration problem and how a protocol turns it into M plus N; host, client and server distinguished precisely; the one-client-per-server rule; and an honest list of what MCP does not solve.",
             keywords: ["mcp", "model context protocol", "host", "client", "server", "integration", "n times m"] },
           { id: "1.2", title: "The Handshake, Executed", difficulty: "core", minutes: 30, tier: "must",
-            summary: "A real initialize exchange: protocol revision 2025-11-25, serverInfo, instructions and the capability flags both sides declare — then the whole method catalogue, the JSON-RPC error codes beneath isError, and the _meta field that carries progress tokens and cancellation.",
+            summary: "A real initialise exchange: protocol revision 2025-11-25, serverInfo, instructions and the capability flags both sides declare — then the whole method catalogue, the JSON-RPC error codes beneath isError, and the _meta field that carries progress tokens and cancellation.",
             keywords: ["initialize", "handshake", "capabilities", "protocol version", "serverinfo", "negotiation", "listchanged"] },
           { id: "1.3", title: "Tools, Resources and Prompts", difficulty: "core", minutes: 32, tier: "must",
             summary: "Three primitives and the question each answers: a tool is model-controlled, a resource is application-controlled, a prompt is user-controlled. Resource templates, URI schemes, and why putting read-only data behind a tool wastes a model call.",
@@ -150,7 +150,7 @@
         outcome: "You can write a client, manage several servers in one process without leaking them, and wire a third-party server into an agent with a filter you can justify in review.",
         lessons: [
           { id: "5.1", title: "Writing a Client", difficulty: "core", minutes: 30, tier: "must",
-            summary: "ClientSession over stdio, the initialize-then-use lifecycle, and the context managers that own the subprocess. Several servers at once with a session group, and the leak that happens when a web handler constructs a client per request.",
+            summary: "ClientSession over stdio, the initialise-then-use lifecycle, and the context managers that own the subprocess. Several servers at once with a session group, and the leak that happens when a web handler constructs a client per request.",
             keywords: ["clientsession", "stdio_client", "lifecycle", "context manager", "sessiongroup", "leak", "shutdown"] },
           { id: "5.2", title: "Consuming From Any Host", difficulty: "core", minutes: 28, tier: "should",
             summary: "The same server from a desktop host's JSON config, from an agent framework's toolset object, and from your own code — with the tool filter, the name prefix and the review question that should precede all three.",

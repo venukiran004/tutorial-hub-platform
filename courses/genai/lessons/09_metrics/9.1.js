@@ -175,7 +175,7 @@ print("family counts:", {f: sum(1 for v in FAMILY.values() if v[0] == f)
   family counts: {1: 1, 2: 2, 3: 1, 4: 3}`,
         notes: [
           { t: "p", text: "**The UNVALIDATED flag is the finding.** A family-3 metric with no measured agreement against humans is reporting a number from an instrument nobody checked, and 8.6 measured how far that can go wrong \u2014 95.1% raw agreement with zero skill." },
-          { t: "p", text: "**Perplexity sitting in a product dashboard is usually a misfiling.** It is a family-1 metric, so it compares models rather than outputs; its valid use is a training run on a fixed tokenizer and corpus, which a product dashboard is not." },
+          { t: "p", text: "**Perplexity sitting in a product dashboard is usually a misfiling.** It is a family-1 metric, so it compares models rather than outputs; its valid use is a training run on a fixed tokeniser and corpus, which a product dashboard is not." },
           { t: "p", text: "**The blind-spot column is what makes the table actionable.** \u2018Why a miss happened\u2019 for recall@6 is why 8.8 insisted on the branch-point check; \u2018the path taken\u2019 for task success is why 8.9 evaluates trajectories." },
           { t: "p", text: "**A healthy spread leans on families 2 and 4**, with family 3 used sparingly and validated. Three family-4 metrics here is a good sign, since those are the ones grounded in a checkable outcome." },
           { t: "p", text: "One addition worth making to your own version: a column for whether you can compute the metric by hand. Anything that only arrives via a library call has a convention hidden in a default argument \u2014 and 9.8 shows NDCG's two conventions differing by 1.5 points on identical data." }
@@ -228,13 +228,13 @@ print("family counts:", {f: sum(1 for v in FAMILY.values() if v[0] == f)
 
       { stem: "Perplexity appears on a product quality dashboard. What is wrong with that?",
         options: [
-          "Nothing, provided the tokenizer is held constant across comparisons",
+          "Nothing, provided the tokeniser is held constant across comparisons",
           "It is a family-1 metric \u2014 it compares models using their own probabilities and cannot see whether an answer is true, useful or on-topic",
           "It should be reported as bits-per-byte instead",
           "It cannot be computed for instruction-tuned models"
         ],
         answer: 1,
-        why: "Intrinsic metrics measure the model's surprise at text, which is a property of the model rather than of an answer's usefulness \u2014 a model can be confidently fluent and wrong with excellent perplexity. Its valid use is comparing checkpoints during training on a fixed tokenizer and corpus. Holding the tokenizer constant fixes comparability but not relevance, and bits-per-byte is the right form for cross-tokenizer comparison rather than a fix for this misfiling." },
+        why: "Intrinsic metrics measure the model's surprise at text, which is a property of the model rather than of an answer's usefulness \u2014 a model can be confidently fluent and wrong with excellent perplexity. Its valid use is comparing checkpoints during training on a fixed tokeniser and corpus. Holding the tokeniser constant fixes comparability but not relevance, and bits-per-byte is the right form for cross-tokeniser comparison rather than a fix for this misfiling." },
 
       { stem: "What makes family 4 (behavioural) usable on a system you did not build?",
         options: [

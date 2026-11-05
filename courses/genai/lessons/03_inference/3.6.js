@@ -451,10 +451,10 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
           "The acceptance rate is too low for the size ratio",
           "At production batch size the arithmetic units are already busy, so verification is no longer riding on idle capacity",
           "Speculative decoding degrades output quality, causing retries",
-          "The draft and target tokenizers disagree"
+          "The draft and target tokenisers disagree"
         ],
         answer: 1,
-        why: "The cost model predicts 2.73× for those figures, so the gap is in its assumptions rather than its inputs. Speculative decoding trades arithmetic for weight loads and is only free when arithmetic is idle — true at batch 1, false at batch 64, where verification competes with the other rows. A 14 GB draft eating KV cache budget is the other strong candidate. Quality is unchanged by construction, and a tokenizer mismatch would break correctness, not throughput." }
+        why: "The cost model predicts 2.73× for those figures, so the gap is in its assumptions rather than its inputs. Speculative decoding trades arithmetic for weight loads and is only free when arithmetic is idle — true at batch 1, false at batch 64, where verification competes with the other rows. A 14 GB draft eating KV cache budget is the other strong candidate. Quality is unchanged by construction, and a tokeniser mismatch would break correctness, not throughput." }
     ]
   },
 

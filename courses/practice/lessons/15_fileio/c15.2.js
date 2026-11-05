@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `True`, `<class 'list'>` **Explanation:** JSON serialization/deserialization preserves data structure."
+     "text": "**Answer:** `True`, `<class 'list'>` **Explanation:** JSON serialisation/deserialization preserves data structure."
     }
    ],
    "prompt": [
@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `{\"x\": 3, \"y\": 4, \"__type__\": \"Point\"}` **Explanation:** Custom JSON encoder for non-serializable objects."
+     "text": "**Answer:** `{\"x\": 3, \"y\": 4, \"__type__\": \"Point\"}` **Explanation:** Custom JSON encoder for non-serialisable objects."
     }
    ],
    "prompt": [
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1759",
-   "q": "Program 1759: Pickle serialization — output of `loaded == data`",
+   "q": "Program 1759: Pickle serialisation — output of `loaded == data`",
    "body": [
     {
      "t": "p",
@@ -528,7 +528,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `a\\c\\d` (or `a/c/d`), `docs`, `/home/user` (or `\\home\\user`) **Explanation:** Path normalization, relative path computation, and common path extraction."
+     "text": "**Answer:** `a\\c\\d` (or `a/c/d`), `docs`, `/home/user` (or `\\home\\user`) **Explanation:** Path normalisation, relative path computation, and common path extraction."
     }
    ],
    "prompt": [
@@ -608,7 +608,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `{\"created\": \"2024-01-15T10:30:00\", \"birthday\": \"1990-05-20\"}` **Explanation:** Custom encoder handles datetime serialization to ISO format."
+     "text": "**Answer:** `{\"created\": \"2024-01-15T10:30:00\", \"birthday\": \"1990-05-20\"}` **Explanation:** Custom encoder handles datetime serialisation to ISO format."
     }
    ],
    "prompt": [

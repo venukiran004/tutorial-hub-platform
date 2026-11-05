@@ -220,7 +220,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Preserves pre-trained model's generation capability. Zero initialization means ControlNet starts by doing nothing → gradually learns to add control. Very successful for guided generation."
+     "text": "**Explanation:** Preserves pre-trained model's generation capability. Zero initialisation means ControlNet starts by doing nothing → gradually learns to add control. Very successful for guided generation."
     }
    ],
    "kind": ""
@@ -468,7 +468,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard DDPM uses Euler discretization (slow). DPM-Solver uses exponential integrator (analytically solves the linear part). Much faster convergence with same quality. Standard in production."
+     "text": "**Explanation:** Standard DDPM uses Euler discretisation (slow). DPM-Solver uses exponential integrator (analytically solves the linear part). Much faster convergence with same quality. Standard in production."
     }
    ],
    "kind": ""
@@ -493,7 +493,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Personalization without fine-tuning model. Very parameter-efficient. Combined with DreamBooth for better quality."
+     "text": "**Explanation:** Personalisation without fine-tuning model. Very parameter-efficient. Combined with DreamBooth for better quality."
     }
    ],
    "kind": ""

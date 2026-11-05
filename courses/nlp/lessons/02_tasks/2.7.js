@@ -185,7 +185,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "These bands are a rough guide, not a scale. BLEU depends on the number of references, the tokenisation, the domain, and the language pair — Chinese-English BLEU is systematically lower than French-English without the translations being worse. A score of 34 on your data and 34 in a paper are not the same measurement. Use `sacrebleu`, which fixes tokenisation and prints a signature describing the exact configuration, and only ever compare systems on identical data. Current practice supplements it with COMET or BLEURT, which are learned metrics that score meaning and do catch the paraphrase case." }] },
 
     { t: "exercise", title: "Break the metric yourself",
-      tasks: [
+      requirements: [
         "Translate ten sentences to French and back, and compute round-trip BLEU for each. Find one where a high score hides a bad translation.",
         "Write a candidate that scores above 0.5 against a reference while meaning something different. Note what you had to preserve.",
         "Compute corpus BLEU over 100 sentence pairs and then the mean of their sentence BLEUs. Explain the gap.",

@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "51",
-   "q": "How does K-Nearest Neighbors (KNN) make predictions?",
+   "q": "How does K-Nearest Neighbours (KNN) make predictions?",
    "body": [
     {
      "t": "p",
@@ -27,8 +27,8 @@ EC.receiveLesson({
      "items": [
       "Compute distance from query point to all training points",
       "Find K closest training points",
-      "Classification: majority vote among K neighbors",
-      "Regression: average of K neighbors' values"
+      "Classification: majority vote among K neighbours",
+      "Regression: average of K neighbours' values"
      ]
     },
     {
@@ -45,12 +45,12 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Assigns query point to the class of its single nearest neighbor."
+     "text": "**Answer:** Assigns query point to the class of its single nearest neighbour."
     },
     {
      "t": "ul",
      "items": [
-      "Training accuracy = 100% (each point is its own nearest neighbor)",
+      "Training accuracy = 100% (each point is its own nearest neighbour)",
       "Very sensitive to noise — one noisy point affects predictions",
       "Decision boundary is highly complex (Voronoi diagram)"
      ]
@@ -149,7 +149,7 @@ EC.receiveLesson({
      "items": [
       "**Euclidean:** √Σ(x_i - y_i)² — default, works for continuous",
       "**Manhattan:** Σ|x_i - y_i| — robust to outliers",
-      "**Minkowski:** (Σ|x_i - y_i|^p)^(1/p) — generalization",
+      "**Minkowski:** (Σ|x_i - y_i|^p)^(1/p) — generalisation",
       "**Cosine:** 1 - cos(θ) — for text/sparse data",
       "**Hamming:** for categorical features"
      ]
@@ -168,7 +168,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** In high dimensions, all points become approximately equidistant → nearest neighbor becomes meaningless."
+     "text": "**Answer:** In high dimensions, all points become approximately equidistant → nearest neighbour becomes meaningless."
     },
     {
      "t": "p",
@@ -192,7 +192,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Give closer neighbors more voting power:"
+     "text": "**Answer:** Give closer neighbours more voting power:"
     },
     {
      "t": "code",
@@ -203,12 +203,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Weight = 1/distance",
-      "Closer neighbors have more influence"
+      "Closer neighbours have more influence"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces effect of distant (less relevant) neighbors. Helps when K is large."
+     "text": "**Explanation:** Reduces effect of distant (less relevant) neighbours. Helps when K is large."
     }
    ],
    "kind": ""
@@ -352,7 +352,7 @@ EC.receiveLesson({
      "items": [
       "Only needs to rank classes correctly (not calibrated probabilities)",
       "Dependence between words doesn't change the winning class much",
-      "High-dimensional text → independence assumption is a good regularizer",
+      "High-dimensional text → independence assumption is a good regulariser",
       "Very fast — can handle huge vocabulary"
      ]
     },
@@ -519,7 +519,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Use GaussianNB for continuous features",
-      "Discretize continuous features into bins",
+      "Discretise continuous features into bins",
       "Use ComplementNB for text with TF-IDF values"
      ]
     },

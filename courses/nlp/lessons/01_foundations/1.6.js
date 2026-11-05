@@ -161,7 +161,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "good", title: "FastText's subwords are the reason it survives OOV",
-      body: [{ t: "p", text: "Word2Vec and GloVe both learn one vector per word type, so a word not in the training vocabulary has no vector at all — and morphological variants are unrelated, so knowing `run` teaches nothing about `running`. FastText represents a word as the sum of its character n-gram vectors, which means an unseen word still assembles a vector from pieces it knows, and `running` shares most of its n-grams with `run`. That is the same argument that motivated subword tokenization in lesson 1.3, arriving from a different direction, and it matters most for morphologically rich languages where the type count explodes." }] },
+      body: [{ t: "p", text: "Word2Vec and GloVe both learn one vector per word type, so a word not in the training vocabulary has no vector at all — and morphological variants are unrelated, so knowing `run` teaches nothing about `running`. FastText represents a word as the sum of its character n-gram vectors, which means an unseen word still assembles a vector from pieces it knows, and `running` shares most of its n-grams with `run`. That is the same argument that motivated subword tokenisation in lesson 1.3, arriving from a different direction, and it matters most for morphologically rich languages where the type count explodes." }] },
 
     { t: "h2", n: "06", text: "The analogy, honestly", id: "analogy" },
 

@@ -171,7 +171,7 @@ model = FSDP(
     { t: "p", text: "**The strategies are a memory-against-communication dial, and the right setting depends on your interconnect.** `FULL_SHARD` holds the least and communicates the most, so it is right on NVLink and often wrong across a slow network, where `SHARD_GRAD_OP` keeps parameters resident and halves the traffic. `CPUOffload` is the option that makes an impossible model merely slow, with the PCIe link as the new bottleneck." },
 
     { t: "exercise", title: "Size a long-context deployment",
-      tasks: [
+      requirements: [
         "Compute your model's KV cache at your target context, and note whether the figure assumes MHA or GQA.",
         "Work out how many devices ring attention would need to fit that cache, and whether your interconnect supports the ring.",
         "For a sliding-window model, compute layers × window and compare it against the advertised context.",

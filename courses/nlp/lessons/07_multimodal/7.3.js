@@ -128,7 +128,7 @@ EC.receiveLesson({
     { t: "code", lang: "python", title: "A VLM, as two classes",
       code: 'from transformers import AutoProcessor, LlavaForConditionalGeneration\n\nproc = AutoProcessor.from_pretrained("llava-hf/llava-1.5-7b-hf")\nmodel = LlavaForConditionalGeneration.from_pretrained(\n    "llava-hf/llava-1.5-7b-hf", torch_dtype=torch.float16)\n\ninputs = proc(images=image, text="USER: <image>\\nWhat is this? ASSISTANT:",\n              return_tensors="pt")\nout = model.generate(**inputs, max_new_tokens=64)\nproc.decode(out[0], skip_special_tokens=True)',
       caption: "`<image>` in the prompt is a real token — the projected patches are substituted at its position." },
-    { t: "p", text: "`AutoProcessor` is the detail worth knowing: **it bundles the image transform and the tokenizer into one object, because the two have to agree about the `<image>` placeholder** — how many visual tokens the projector will produce and where they go. Use a tokenizer alone and the placeholder is one token where the model expects 576, which fails as a shape error rather than as a bad answer. And the prompt template is model-specific: **LLaVA’s `USER:`/`ASSISTANT:` format is part of the checkpoint, not a convention.**" },
+    { t: "p", text: "`AutoProcessor` is the detail worth knowing: **it bundles the image transform and the tokeniser into one object, because the two have to agree about the `<image>` placeholder** — how many visual tokens the projector will produce and where they go. Use a tokeniser alone and the placeholder is one token where the model expects 576, which fails as a shape error rather than as a bad answer. And the prompt template is model-specific: **LLaVA’s `USER:`/`ASSISTANT:` format is part of the checkpoint, not a convention.**" },
     { t: "code", lang: "python", title: "BLIP-2 in code, and the bridge that is the only thing trained",
       code: `import torch
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
@@ -157,7 +157,7 @@ processor.decode(model.generate(**inputs, max_new_tokens=10)[0], skip_special_to
     { t: "p", text: "**The prompt format belongs to the checkpoint rather than to the task.** The OPT-based variants were trained with `Question: ... Answer:` and degrade visibly without it, while the Flan-T5 variants expect their own instruction phrasing — so a model card is not documentation here, it is part of the interface. The same asymmetry shows up in the failure mode: BLIP-2 answers fluently about an image it has partly misread, because the language model is doing the writing." },
 
     { t: "exercise", title: "Probe a VLM's limits",
-      tasks: [
+      requirements: [
         "Caption five images from your domain unconditionally and count how many are accurate.",
         "Ask the same question three ways and measure how often the answers agree.",
         "Find a prefix that reliably gets a correct count, and one that reliably fails.",

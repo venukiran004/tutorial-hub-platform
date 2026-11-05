@@ -1,13 +1,13 @@
 EC.receiveLesson({
   id: "8.2",
 
-  lede: "Perplexity is the exponential of average per-token cross-entropy, and the usual warning is that it \u201cisn\u2019t comparable across tokenizers\u201d. That warning understates the size of the problem. Holding the model, the text and the **total measured surprise** fixed at 245.05 nats, perplexity would read **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s \u2014 a 2.13\u00d7 range produced by nothing but how the text was split. Bits-per-byte removes it, because its denominator is bytes rather than tokens.",
+  lede: "Perplexity is the exponential of average per-token cross-entropy, and the usual warning is that it \u201cisn\u2019t comparable across tokenisers\u201d. That warning understates the size of the problem. Holding the model, the text and the **total measured surprise** fixed at 245.05 nats, perplexity would read **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s \u2014 a 2.13\u00d7 range produced by nothing but how the text was split. Bits-per-byte removes it, because its denominator is bytes rather than tokens.",
 
   objectives: [
     "Compute perplexity from token log-probabilities",
     "Interpret a perplexity value as an effective branching factor",
     "Quantify how much tokenisation alone moves perplexity",
-    "Compute bits-per-byte and explain why it is tokenizer-independent",
+    "Compute bits-per-byte and explain why it is tokeniser-independent",
     "State what perplexity is and is not valid for"
   ],
 
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "definition", text: "The definition, computed",
       sub: "Cross-entropy, exponentiated" },
 
-    {"kind": "trace", "title": "Perplexity is the pretraining loss with an exponential on the front", "caption": "7.2's loss, exponentiated. `H` is the mean negative log-probability per token — in nats for natural log — and perplexity is e^H. The reading that makes it intuitive: **the model is choosing among about 165 equally-likely options per token** on this text. Which also means a perplexity of 165 is not a quality statement on its own; it is a statement about this model's uncertainty on this particular text, with this particular tokenizer.", "left": "quantity", "codeW": 200, "vars": ["value"], "steps": [{"code": "text", "state": ["244 chars, 48 gpt2 tokens"], "tone": "accent"}, {"code": "cross-entropy H", "state": ["5.1052 nats/token"], "tone": "accent"}, {"code": "perplexity e^H", "state": ["164.8829"], "changed": [0], "tone": "violet"}, {"code": "reading", "state": ["~165 equally-likely options"], "tone": "good"}], "t": "diagram", "id": "dg-8_2-01-0"},
+    {"kind": "trace", "title": "Perplexity is the pretraining loss with an exponential on the front", "caption": "7.2's loss, exponentiated. `H` is the mean negative log-probability per token — in nats for natural log — and perplexity is e^H. The reading that makes it intuitive: **the model is choosing among about 165 equally-likely options per token** on this text. Which also means a perplexity of 165 is not a quality statement on its own; it is a statement about this model's uncertainty on this particular text, with this particular tokeniser.", "left": "quantity", "codeW": 200, "vars": ["value"], "steps": [{"code": "text", "state": ["244 chars, 48 gpt2 tokens"], "tone": "accent"}, {"code": "cross-entropy H", "state": ["5.1052 nats/token"], "tone": "accent"}, {"code": "perplexity e^H", "state": ["164.8829"], "changed": [0], "tone": "violet"}, {"code": "reading", "state": ["~165 equally-likely options"], "tone": "good"}], "t": "diagram", "id": "dg-8_2-01-0"},
 
 
 
@@ -50,8 +50,8 @@ ppl = math.exp(H)`,
     { t: "callout", kind: "insight", title: "165 is high, and the reason is informative",
       body: [
         { t: "p", text: "My test text is about retrieval-augmented generation and cross-encoder latency. gpt2 is from 2019 and has never seen that vocabulary in that arrangement, so it is genuinely surprised \u2014 a perplexity of 165 means it is effectively choosing among 165 options per token." },
-        { t: "p", text: "That is the metric working correctly, and it illustrates the dependence nobody mentions alongside the tokenizer one: perplexity is a property of a **model and a corpus together**. The same model on 2019 news text would score far lower, and reporting a perplexity without saying on what is reporting half a number." },
-        { t: "p", text: "The valid use \u2014 comparing checkpoints on the *same* tokenizer and dataset \u2014 holds both of those fixed, which is exactly why it is the valid use." }
+        { t: "p", text: "That is the metric working correctly, and it illustrates the dependence nobody mentions alongside the tokeniser one: perplexity is a property of a **model and a corpus together**. The same model on 2019 news text would score far lower, and reporting a perplexity without saying on what is reporting half a number." },
+        { t: "p", text: "The valid use \u2014 comparing checkpoints on the *same* tokeniser and dataset \u2014 holds both of those fixed, which is exactly why it is the valid use." }
       ] },
 
     { t: "code", lang: "python", title: "the one-liner, which is the whole metric", code: `import math
@@ -59,10 +59,10 @@ def perplexity(token_logprobs):     # logprobs of the actual next tokens, natura
     return math.exp(-sum(token_logprobs) / len(token_logprobs))`,
       caption: "Note it takes log-probabilities of the *realised* tokens. Everything hard is in producing that list." },
 
-    { t: "h2", n: "02", id: "tokenizer", text: "The tokenizer problem, measured",
+    { t: "h2", n: "02", id: "tokenizer", text: "The tokeniser problem, measured",
       sub: "A bigger effect than most model differences" },
 
-    {"kind": "trace", "title": "Same model, same text, same surprise — perplexity from 86 to 184", "caption": "The denominator is a **token count**, and token count is a property of the tokenizer rather than of the text. Holding the model's total surprise fixed at 245.0513 nats and only changing how the text is split, perplexity reads anywhere from **86.0973 to 183.8017 — a 2.13× range from tokenisation alone**. Nothing about the model or the text changed. Which is why cross-tokenizer perplexity comparisons are meaningless and bits-per-byte exists.", "left": "tokenised as", "codeW": 190, "vars": ["tokens", "PPL would read"], "steps": [{"code": "t5-small", "state": ["55", "86.0973"], "tone": "good"}, {"code": "roberta-base", "state": ["50", "134.4277"], "changed": [1], "tone": "accent"}, {"code": "gpt2 (actual)", "state": ["48", "164.8829"], "tone": "violet"}, {"code": "bert-base-uncased", "state": ["47", "183.8017"], "changed": [1], "tone": "crit", "note": "2.13x range"}, {"code": "total surprise", "state": ["245.0513 nats", "identical throughout"], "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-1"},
+    {"kind": "trace", "title": "Same model, same text, same surprise — perplexity from 86 to 184", "caption": "The denominator is a **token count**, and token count is a property of the tokeniser rather than of the text. Holding the model's total surprise fixed at 245.0513 nats and only changing how the text is split, perplexity reads anywhere from **86.0973 to 183.8017 — a 2.13× range from tokenisation alone**. Nothing about the model or the text changed. Which is why cross-tokeniser perplexity comparisons are meaningless and bits-per-byte exists.", "left": "tokenised as", "codeW": 190, "vars": ["tokens", "PPL would read"], "steps": [{"code": "t5-small", "state": ["55", "86.0973"], "tone": "good"}, {"code": "roberta-base", "state": ["50", "134.4277"], "changed": [1], "tone": "accent"}, {"code": "gpt2 (actual)", "state": ["48", "164.8829"], "tone": "violet"}, {"code": "bert-base-uncased", "state": ["47", "183.8017"], "changed": [1], "tone": "crit", "note": "2.13x range"}, {"code": "total surprise", "state": ["245.0513 nats", "identical throughout"], "tone": "good"}], "t": "diagram", "id": "dg-8_2-02-1"},
 
 
 
@@ -75,9 +75,9 @@ def perplexity(token_logprobs):     # logprobs of the actual next tokens, natura
 
 
 
-    { t: "p", text: "The denominator in perplexity is a token count, and token count is a property of the tokenizer rather than of the text. So the same text splits differently and the average is taken over a different number of items." },
+    { t: "p", text: "The denominator in perplexity is a token count, and token count is a property of the tokeniser rather than of the text. So the same text splits differently and the average is taken over a different number of items." },
 
-    { t: "code", lang: "python", title: "g82.py \u00a7B \u2014 the same text under five tokenizers", code: `for name in ("gpt2", "bert-base-uncased", "t5-small",
+    { t: "code", lang: "python", title: "g82.py \u00a7B \u2014 the same text under five tokenisers", code: `for name in ("gpt2", "bert-base-uncased", "t5-small",
              "distilbert-base-uncased", "roberta-base"):
     n = len(AutoTokenizer.from_pretrained(name)(TEXT)["input_ids"])`,
       out: `  tokenizer                              tokens    chars/token
@@ -95,7 +95,7 @@ def perplexity(token_logprobs):     # logprobs of the actual next tokens, natura
       body: [
         { t: "p", text: "The information content of a passage is a property of the passage and the model, not of how you chop it up. gpt2 assigns this text **245.05 nats** in total \u2014 that is the measured quantity and it does not change if you rename the pieces." },
         { t: "p", text: "Perplexity divides that fixed total by a token count that varies by 17%. So a model that encodes text *equally well* reports a **higher** perplexity when it uses fewer tokens, because the same surprise is spread over fewer items." },
-        { t: "p", text: "Which inverts the naive reading in a way worth holding on to: an efficient tokenizer that uses fewer tokens per character makes a model look *worse* on perplexity while being strictly better at serving, since 7.2\u2019s inference cost is per token." }
+        { t: "p", text: "Which inverts the naive reading in a way worth holding on to: an efficient tokeniser that uses fewer tokens per character makes a model look *worse* on perplexity while being strictly better at serving, since 7.2\u2019s inference cost is per token." }
       ] },
 
     { t: "code", lang: "python", title: "g82.py \u00a7B \u2014 one measured total NLL, five tokenisations", code: `total_nll = H * n_tok          # 245.0513 nats, measured from gpt2
@@ -116,9 +116,9 @@ for name, n in counts.items():
 
     { t: "callout", kind: "trap", title: "Be clear about what is measured here and what is arithmetic",
       body: [
-        { t: "p", text: "The 245.05 nats is measured \u2014 gpt2\u2019s actual total negative log-probability for that passage. The five token counts are measured \u2014 real tokenizers on the same string. The PPL column is then **arithmetic**: what perplexity would read if that fixed total were averaged over each count." },
-        { t: "p", text: "What it is *not* is five models evaluated. A different tokenizer usually comes with a different model, which would also change the total NLL \u2014 so a real cross-tokenizer comparison confounds the two effects rather than isolating this one." },
-        { t: "p", text: "Isolating it is the point. The comparison shows that **before any model difference**, the reporting convention alone spans 2.13\u00d7, which is why the two effects cannot be untangled from a perplexity number and why the metric is not comparable across tokenizers." }
+        { t: "p", text: "The 245.05 nats is measured \u2014 gpt2\u2019s actual total negative log-probability for that passage. The five token counts are measured \u2014 real tokenisers on the same string. The PPL column is then **arithmetic**: what perplexity would read if that fixed total were averaged over each count." },
+        { t: "p", text: "What it is *not* is five models evaluated. A different tokeniser usually comes with a different model, which would also change the total NLL \u2014 so a real cross-tokeniser comparison confounds the two effects rather than isolating this one." },
+        { t: "p", text: "Isolating it is the point. The comparison shows that **before any model difference**, the reporting convention alone spans 2.13\u00d7, which is why the two effects cannot be untangled from a perplexity number and why the metric is not comparable across tokenisers." }
       ] },
 
     { t: "h2", n: "03", id: "bpb", text: "Bits-per-byte",
@@ -183,7 +183,7 @@ for name, n in counts.items():
     { t: "h2", n: "04", id: "validity", text: "What perplexity is for",
       sub: "A narrow but real use" },
 
-    {"kind": "matrix", "title": "Four valid uses and three invalid ones", "caption": "Perplexity is sound wherever **both confounds are held fixed** — same tokenizer, same held-out set — which is exactly comparing checkpoints of one run. It is invalid across tokenizers, measured above at a 2.13× range; invalid across corpora, because it is a model-and-corpus property; and invalid on a chat model, because **low perplexity is not helpfulness, safety or correctness**. Where you need a cross-tokenizer comparison, use bits-per-byte: the denominator is bytes, which nothing can game.", "cols": ["Valid?", "Why"], "rows": ["Checkpoints of one run", "Two models, one tokenizer", "Different tokenizers", "Same model, other corpora", "An instruction-tuned model", "Cross-tokenizer, properly"], "cells": [[{"text": "yes", "tone": "good"}, "both confounds held fixed"], [{"text": "yes", "tone": "good"}, "the intended use"], [{"text": "no", "tone": "crit"}, "2.13x range from tokenisation alone"], [{"text": "no", "tone": "crit"}, "it is a model-and-corpus property"], [{"text": "no", "tone": "crit"}, "low perplexity is not helpfulness"], [{"text": "use BPB", "tone": "violet"}, "bytes, which nothing can game"]], "t": "diagram", "id": "dg-8_2-04-2"},
+    {"kind": "matrix", "title": "Four valid uses and three invalid ones", "caption": "Perplexity is sound wherever **both confounds are held fixed** — same tokeniser, same held-out set — which is exactly comparing checkpoints of one run. It is invalid across tokenisers, measured above at a 2.13× range; invalid across corpora, because it is a model-and-corpus property; and invalid on a chat model, because **low perplexity is not helpfulness, safety or correctness**. Where you need a cross-tokeniser comparison, use bits-per-byte: the denominator is bytes, which nothing can game.", "cols": ["Valid?", "Why"], "rows": ["Checkpoints of one run", "Two models, one tokeniser", "Different tokenisers", "Same model, other corpora", "An instruction-tuned model", "Cross-tokeniser, properly"], "cells": [[{"text": "yes", "tone": "good"}, "both confounds held fixed"], [{"text": "yes", "tone": "good"}, "the intended use"], [{"text": "no", "tone": "crit"}, "2.13x range from tokenisation alone"], [{"text": "no", "tone": "crit"}, "it is a model-and-corpus property"], [{"text": "no", "tone": "crit"}, "low perplexity is not helpfulness"], [{"text": "use BPB", "tone": "violet"}, "bytes, which nothing can game"]], "t": "diagram", "id": "dg-8_2-04-2"},
 
 
 
@@ -199,12 +199,12 @@ for name, n in counts.items():
     { t: "table",
       head: ["Use", "Valid?", "Why"],
       rows: [
-        ["Comparing checkpoints of one training run", "**Yes**", "Same tokenizer, same held-out set \u2014 both confounds held fixed"],
-        ["Comparing two models with the same tokenizer on the same data", "**Yes**", "The intended use"],
-        ["Comparing models with different tokenizers", "**No**", "Measured above: 2.13\u00d7 range from tokenisation alone"],
+        ["Comparing checkpoints of one training run", "**Yes**", "Same tokeniser, same held-out set \u2014 both confounds held fixed"],
+        ["Comparing two models with the same tokeniser on the same data", "**Yes**", "The intended use"],
+        ["Comparing models with different tokenisers", "**No**", "Measured above: 2.13\u00d7 range from tokenisation alone"],
         ["Comparing the same model on different corpora", "**No**", "Perplexity is a model-and-corpus property; 165 here reflects unfamiliar vocabulary"],
         ["Judging an instruction-tuned chat model", "**No**", "Low perplexity is not helpfulness, safety or correctness"],
-        ["Tokenizer-independent comparison", "Use **BPB**", "Denominator is bytes, which nothing can game"]
+        ["Tokeniser-independent comparison", "Use **BPB**", "Denominator is bytes, which nothing can game"]
       ] },
 
     { t: "callout", kind: "warn", title: "The chat-model exclusion is the one that matters commercially",
@@ -215,12 +215,12 @@ for name, n in counts.items():
       ] },
 
     { t: "exercise", kind: "build", title: "Compute perplexity and bits-per-byte on your own data", difficulty: "core", minutes: 30,
-      body: "Compute perplexity and bits-per-byte for a model on a held-out sample of your own text, then quantify the tokenisation sensitivity by counting tokens for the same text under several tokenizers and reporting what perplexity would read under each.",
+      body: "Compute perplexity and bits-per-byte for a model on a held-out sample of your own text, then quantify the tokenisation sensitivity by counting tokens for the same text under several tokenisers and reporting what perplexity would read under each.",
       requirements: [
         "Compute cross-entropy and perplexity from the definition, not from a library helper",
         "Report token count, byte count and characters per token",
         "Compute bits-per-byte and reconcile it back to perplexity",
-        "Count tokens under at least three tokenizers and report the implied PPL range",
+        "Count tokens under at least three tokenisers and report the implied PPL range",
         "State which comparisons your numbers support and which they do not"
       ],
       hint: "Reconcile BPB back to perplexity as a check. If the round trip does not land on your original figure, something is wrong with a log base or a token count.",
@@ -261,26 +261,26 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
   bert-base-uncased       47 tokens -> PPL would read 183.8017
   t5-small                55 tokens -> PPL would read  86.0973`,
         notes: [
-          { t: "p", text: "**`total_nats` is the quantity to think in.** It is a property of the model and the text, and everything else in the dictionary is that number renormalised \u2014 per token for perplexity, per byte for BPB. Once you hold that, the tokenizer problem is obvious rather than a rule to remember." },
+          { t: "p", text: "**`total_nats` is the quantity to think in.** It is a property of the model and the text, and everything else in the dictionary is that number renormalised \u2014 per token for perplexity, per byte for BPB. Once you hold that, the tokeniser problem is obvious rather than a rule to remember." },
           { t: "p", text: "**The round-trip check earns its place.** Recovering 164.8829 exactly confirms the log base and the token count are consistent; a mismatch there is the most common bug in hand-rolled perplexity code, usually a stray factor of ln 2." },
           { t: "p", text: "**The compression framing is worth reporting.** 1.45 bits per byte against 8 is a 5.5\u00d7 compression, which makes it concrete that a language model is a compressor and that better modelling *is* better compression." },
           { t: "p", text: "**The last three lines are the finding to show anyone quoting cross-model perplexity.** A 2.13\u00d7 spread arises before any model difference, from the reporting convention alone \u2014 and published perplexity gaps between models are routinely smaller than that." },
-          { t: "p", text: "One caveat on the last block, stated in the lesson too: those are *arithmetic*, not five models evaluated. A different tokenizer normally comes with a different model, which would change the total nats as well \u2014 so a real comparison confounds the two effects, which is exactly the reason the metric does not transfer." }
+          { t: "p", text: "One caveat on the last block, stated in the lesson too: those are *arithmetic*, not five models evaluated. A different tokeniser normally comes with a different model, which would change the total nats as well \u2014 so a real comparison confounds the two effects, which is exactly the reason the metric does not transfer." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Think in **total nats**, not perplexity. Total surprise is a property of a model and a text; perplexity divides it by a token count and bits-per-byte divides it by a byte count. Only the second denominator is a property of the text." },
-        { t: "p", text: "So perplexity is valid for comparing checkpoints on a fixed tokenizer and dataset, and invalid for almost everything else \u2014 including chat models, where instruction tuning *raises* it and preferring low perplexity would select the least aligned model." }
+        { t: "p", text: "So perplexity is valid for comparing checkpoints on a fixed tokeniser and dataset, and invalid for almost everything else \u2014 including chat models, where instruction tuning *raises* it and preferring low perplexity would select the least aligned model." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
       body: [
         { t: "p", text: "**\u201cModel A has perplexity 8.2 and model B has 11.4. Is A better?\u201d**" },
-        { t: "p", text: "Not necessarily, and I would want three things before answering: the same tokenizer, the same held-out dataset, and confirmation that neither is instruction-tuned." },
-        { t: "p", text: "The tokenizer is the one that usually invalidates the comparison, and the size of the effect surprised me when I measured it. I took one model, one passage, and its real total surprise of 245.05 nats, then divided by the token counts five real tokenizers produce for that same string. Perplexity would read 86.10 under T5\u2019s tokenisation and 183.80 under BERT\u2019s \u2014 a 2.13\u00d7 range with no model difference at all, which is larger than most published gaps between models." },
-        { t: "p", text: "And it inverts in a way people do not expect: an efficient tokenizer uses fewer tokens, so the same total surprise is spread over fewer items and perplexity looks *worse* \u2014 while the model is cheaper to serve, since inference cost is per token." },
-        { t: "p", text: "The fix for a cross-tokenizer comparison is bits-per-byte: total negative log-probability in bits divided by bytes of text. The denominator is a property of the string, so nothing can game it. On my example that was 1.4489 bits per byte, and I would check it round-trips back to the perplexity figure to make sure no log base went astray." },
+        { t: "p", text: "Not necessarily, and I would want three things before answering: the same tokeniser, the same held-out dataset, and confirmation that neither is instruction-tuned." },
+        { t: "p", text: "The tokeniser is the one that usually invalidates the comparison, and the size of the effect surprised me when I measured it. I took one model, one passage, and its real total surprise of 245.05 nats, then divided by the token counts five real tokenisers produce for that same string. Perplexity would read 86.10 under T5\u2019s tokenisation and 183.80 under BERT\u2019s \u2014 a 2.13\u00d7 range with no model difference at all, which is larger than most published gaps between models." },
+        { t: "p", text: "And it inverts in a way people do not expect: an efficient tokeniser uses fewer tokens, so the same total surprise is spread over fewer items and perplexity looks *worse* \u2014 while the model is cheaper to serve, since inference cost is per token." },
+        { t: "p", text: "The fix for a cross-tokeniser comparison is bits-per-byte: total negative log-probability in bits divided by bytes of text. The denominator is a property of the string, so nothing can game it. On my example that was 1.4489 bits per byte, and I would check it round-trips back to the perplexity figure to make sure no log base went astray." },
         { t: "p", text: "The dataset matters too, because perplexity is a model-and-corpus property. My figure of 165 on that passage was high because the text was about retrieval and cross-encoders and gpt2 is from 2019 \u2014 genuine surprise, correctly measured, and meaningless against a number from a different corpus." },
         { t: "p", text: "If either model is instruction-tuned I would drop perplexity entirely. Instruction tuning concentrates mass on assistant-style continuations and so usually raises perplexity on generic text \u2014 I measured a base model putting 33.84% on a newline after a question, which is excellent perplexity and useless behaviour. Choosing on perplexity there systematically prefers the least aligned model." }
       ] }
@@ -291,14 +291,14 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
     "**Read it as an effective branching factor**: 164.88 means the model is choosing among about 165 equally-likely options per token.",
     "**Think in total nats instead.** Total surprise is a property of a model and a text; perplexity and BPB are that number with different denominators.",
     "**Tokenisation alone spans 2.13\u00d7**: a measured 245.05 nats reads as PPL 86.10 under T5's split and 183.80 under BERT's.",
-    "**Token counts varied 17% on identical text** across five real tokenizers, before any model was compared.",
-    "**So an efficient tokenizer reports worse perplexity while being cheaper to serve**, since inference cost is per token.",
-    "**That column is arithmetic, not five models evaluated** \u2014 a real cross-tokenizer comparison also changes the total nats, which is why the two effects cannot be separated.",
+    "**Token counts varied 17% on identical text** across five real tokenisers, before any model was compared.",
+    "**So an efficient tokeniser reports worse perplexity while being cheaper to serve**, since inference cost is per token.",
+    "**That column is arithmetic, not five models evaluated** \u2014 a real cross-tokeniser comparison also changes the total nats, which is why the two effects cannot be separated.",
     "**Bits-per-byte fixes it**: total bits over bytes of text, with a denominator nothing can game \u2014 1.4489 here, a 5.5\u00d7 compression against 8 bits.",
     "**Reconcile BPB back to perplexity as a check**, since a stray factor of ln 2 is the usual bug in hand-rolled code.",
     "**Perplexity is also a corpus property** \u2014 165 was high because gpt2 has never seen this vocabulary, which is the metric working correctly.",
     "**Never use it to judge a chat model**: instruction tuning raises perplexity, so preferring low perplexity selects the least aligned model.",
-    "**Valid use is narrow** \u2014 checkpoints or models sharing a tokenizer and a held-out set, where both confounds are held fixed."
+    "**Valid use is narrow** \u2014 checkpoints or models sharing a tokeniser and a held-out set, where both confounds are held fixed."
   ],
 
   quiz: {
@@ -307,17 +307,17 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
       { stem: "Holding one model, one text and a measured total of 245.05 nats fixed, perplexity reads 86.10 under T5's tokenisation and 183.80 under BERT's. What causes this?",
         options: [
           "T5 models the text better, producing lower surprise per token",
-          "Perplexity divides a fixed total surprise by a token count that varies with the tokenizer \u2014 fewer tokens means the same surprise spread over fewer items, so higher perplexity",
-          "The tokenizers produce different text after decoding, changing what is measured",
+          "Perplexity divides a fixed total surprise by a token count that varies with the tokeniser \u2014 fewer tokens means the same surprise spread over fewer items, so higher perplexity",
+          "The tokenisers produce different text after decoding, changing what is measured",
           "BERT is bidirectional, so its perplexity is not comparable in principle"
         ],
         answer: 1,
-        why: "Total information content is a property of the model and the string, not of how it is chopped up \u2014 and the five real tokenizers varied by 17% in token count on identical text. T5's 55 tokens spread 245.05 nats more thinly than BERT's 47, so T5's split reports a lower average. No model difference is involved: this is one model's measured total, renormalised five ways, which is why the metric cannot transfer across tokenizers." },
+        why: "Total information content is a property of the model and the string, not of how it is chopped up \u2014 and the five real tokenisers varied by 17% in token count on identical text. T5's 55 tokens spread 245.05 nats more thinly than BERT's 47, so T5's split reports a lower average. No model difference is involved: this is one model's measured total, renormalised five ways, which is why the metric cannot transfer across tokenisers." },
 
       { stem: "Why is bits-per-byte comparable across models with different vocabularies?",
         options: [
-          "Because it uses base-2 logarithms, which are tokenizer-independent",
-          "Because its denominator is bytes of text \u2014 a property of the string that no tokenizer choice can change",
+          "Because it uses base-2 logarithms, which are tokeniser-independent",
+          "Because its denominator is bytes of text \u2014 a property of the string that no tokeniser choice can change",
           "Because it averages over a larger number of units, reducing variance",
           "Because it normalises by model size as well as text length"
         ],
@@ -328,7 +328,7 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
         options: [
           "A regression \u2014 the fine-tuning damaged the model's language modelling",
           "The expected outcome \u2014 instruction tuning concentrates probability on assistant-style continuations rather than on whatever the corpus does next",
-          "A tokenizer mismatch introduced during fine-tuning",
+          "A tokeniser mismatch introduced during fine-tuning",
           "Overfitting to the instruction dataset"
         ],
         answer: 1,
@@ -338,11 +338,11 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
         options: [
           "The model is poor, since competent models score in single digits",
           "Little without knowing the corpus \u2014 perplexity is a model-and-corpus property, and 165 reflects genuinely unfamiliar vocabulary for a 2019-era model",
-          "The tokenizer is splitting technical terms inefficiently",
+          "The tokeniser is splitting technical terms inefficiently",
           "The text is too short for a reliable estimate"
         ],
         answer: 1,
-        why: "Single-digit perplexities are quoted on standard corpora that models were trained to fit; a 2019-era model on 2025 technical vocabulary is legitimately surprised, and the metric is reporting that correctly. This is the second confound alongside tokenisation, and it is why the valid use holds both fixed \u2014 comparing checkpoints or models on the same tokenizer *and* the same held-out set. A perplexity quoted without its corpus is half a number." }
+        why: "Single-digit perplexities are quoted on standard corpora that models were trained to fit; a 2019-era model on 2025 technical vocabulary is legitimately surprised, and the metric is reporting that correctly. This is the second confound alongside tokenisation, and it is why the valid use holds both fixed \u2014 comparing checkpoints or models on the same tokeniser *and* the same held-out set. A perplexity quoted without its corpus is half a number." }
     ]
   },
 
@@ -361,7 +361,7 @@ for name in ("gpt2", "bert-base-uncased", "t5-small"):
         ] },
 
       { level: "advanced",
-        q: "Why can't you compare perplexity across tokenizers, and what would you use instead?",
+        q: "Why can't you compare perplexity across tokenisers, and what would you use instead?",
         strong: "A strong answer quantifies the effect and notes the inversion.",
         answer: [
           { t: "p", text: "Because the denominator is a token count, which is a property of the tokenizer rather than of the text. Total surprise is fixed by the model and the string; dividing it by a different number of pieces gives a different average." },

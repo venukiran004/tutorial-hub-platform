@@ -154,7 +154,7 @@ EC.receiveLesson({
       [
        "",
        "Ridge/Lasso",
-       "Regularized regression",
+       "Regularised regression",
        "alpha"
       ],
       [
@@ -190,7 +190,7 @@ EC.receiveLesson({
       [
        "",
        "t-SNE",
-       "Visualization (2D/3D)",
+       "Visualisation (2D/3D)",
        "perplexity"
       ],
       [
@@ -247,7 +247,7 @@ EC.receiveLesson({
        "XGBoost (handles natively)"
       ],
       [
-       "Normalization",
+       "Normalisation",
        "Distance-based methods",
        "Tree-based methods"
       ]
@@ -337,7 +337,7 @@ EC.receiveLesson({
        "Multiple layers + activation"
       ],
       [
-       "**Convex optimization**",
+       "**Convex optimisation**",
        "Yes (global optimum)",
        "No (local optima)"
       ],

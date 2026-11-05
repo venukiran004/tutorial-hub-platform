@@ -165,7 +165,7 @@ phi > 8        noisy (±250 ms, busy VM)                            0           
         ] },
         { title: "Consensus registry (etcd, ZooKeeper)", tone: "good", items: [
           "a small group of 3–5 decides",
-          "one agreed, linearizable view",
+          "one agreed, linearisable view",
           "every change pays a majority round trip",
           "unavailable to a minority partition",
           "for: leaders, locks, configuration, primaries"

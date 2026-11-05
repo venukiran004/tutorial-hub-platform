@@ -567,7 +567,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Data parallelism:** Each GPU holds a copy of the model; data is sharded. Gradient synchronization via all-reduce: \\(O(W)\\) communication."
+     "text": "**Data parallelism:** Each GPU holds a copy of the model; data is sharded. Gradient synchronisation via all-reduce: \\(O(W)\\) communication."
     },
     {
      "t": "p",
@@ -587,12 +587,12 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**ZeRO (DeepSpeed):** Partition states (optimizer, gradients, params) across GPUs."
+     "text": "**ZeRO (DeepSpeed):** Partition states (optimiser, gradients, params) across GPUs."
     },
     {
      "t": "ul",
      "items": [
-      "Stage 1: Optimizer state partitioned → \\(4\\times\\) memory reduction",
+      "Stage 1: Optimiser state partitioned → \\(4\\times\\) memory reduction",
       "Stage 2: + Gradient partition → \\(8\\times\\)",
       "Stage 3: + Parameter partition → \\(N_{gpu}\\times\\)"
      ]
@@ -669,7 +669,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Loss scaling** (FP16): Multiply loss by scale \\(S\\) before backward; divide gradients by \\(S\\) before optimizer step. Prevents underflow in gradients."
+     "text": "**Loss scaling** (FP16): Multiply loss by scale \\(S\\) before backward; divide gradients by \\(S\\) before optimiser step. Prevents underflow in gradients."
     },
     {
      "t": "p",
@@ -745,7 +745,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A fine-tuning pipeline: (1) Supervised Fine-Tuning on demonstrations; (2) Train a Reward Model on human preference rankings; (3) Optimize with PPO to maximize reward while penalizing KL divergence from the SFT model."
+     "text": "A fine-tuning pipeline: (1) Supervised Fine-Tuning on demonstrations; (2) Train a Reward Model on human preference rankings; (3) Optimise with PPO to maximise reward while penalising KL divergence from the SFT model."
     }
    ],
    "kind": ""

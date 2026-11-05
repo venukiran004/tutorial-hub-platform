@@ -548,7 +548,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Decorator wraps function with additional behavior before and after."
+     "text": "**Explanation:** Decorator wraps function with additional behaviour before and after."
     }
    ],
    "prompt": [

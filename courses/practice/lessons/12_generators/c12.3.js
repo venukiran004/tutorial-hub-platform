@@ -448,7 +448,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Comprehension is typically fastest, followed by map, then loop. **Explanation:** List comprehension is optimized at bytecode level. Map has function call overhead."
+     "text": "**Answer:** Comprehension is typically fastest, followed by map, then loop. **Explanation:** List comprehension is optimised at bytecode level. Map has function call overhead."
     }
    ],
    "prompt": [
@@ -608,7 +608,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `in` is typically fastest **Explanation:** `in` operator is C-optimized for lists. `any()` has generator overhead. Loop is pure Python."
+     "text": "**Answer:** `in` is typically fastest **Explanation:** `in` operator is C-optimised for lists. `any()` has generator overhead. Loop is pure Python."
     }
    ],
    "prompt": [

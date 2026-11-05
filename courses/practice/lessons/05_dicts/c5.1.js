@@ -548,7 +548,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `<class 'str'>`, `True` **Explanation:** `json.dumps()` serializes dict to JSON string. `json.loads()` deserializes back."
+     "text": "**Answer:** `<class 'str'>`, `True` **Explanation:** `json.dumps()` serialises dict to JSON string. `json.loads()` deserialises back."
     }
    ],
    "prompt": [

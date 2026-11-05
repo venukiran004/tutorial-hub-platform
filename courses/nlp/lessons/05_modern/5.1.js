@@ -158,7 +158,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Decoder-only won because one stack trained on one objective scales cleanly, prompt and output share a single sequence, and **in-context learning emerged** — one model performs any task described in the prompt, with no head to train. That removed an entire engineering category. But it did not win on every axis. Encoder-only models remain better and far cheaper for embeddings and reranking, where you want one bidirectional representation rather than a generation. Encoder-decoder still wins where a distinct source needs a clean bidirectional read before any output is produced, which is why Whisper is encoder-decoder and why translation systems often still are." }] },
 
     { t: "exercise", title: "Probe the families yourself",
-      tasks: [
+      requirements: [
         "Extract attention weights from an encoder and a decoder on the same sentence and confirm the future-attention maximum is 0 for one and not the other.",
         "Ask BERT to fill one mask, then two, then five, and record where the output stops being coherent.",
         "Take a single GPT-2 forward pass and print the next-token distribution at every position, verifying they all come from one pass.",

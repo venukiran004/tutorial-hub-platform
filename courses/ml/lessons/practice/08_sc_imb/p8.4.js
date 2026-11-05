@@ -117,7 +117,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** ADF test determines type. Trend-stationary: trend is predictable. Difference-stationary: trend is random walk. Different modeling approaches."
+     "text": "**Explanation:** ADF test determines type. Trend-stationary: trend is predictable. Difference-stationary: trend is random walk. Different modelling approaches."
     }
    ],
    "kind": ""
@@ -340,7 +340,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Classification often uses feature extraction (shape, statistics) or specialized algorithms (DTW + KNN, rocket transform, InceptionTime)."
+     "text": "**Explanation:** Classification often uses feature extraction (shape, statistics) or specialised algorithms (DTW + KNN, rocket transform, InceptionTime)."
     }
    ],
    "kind": ""
@@ -476,7 +476,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Match frequency to business need. Aggregate noisy high-frequency data before modeling. Hourly demand → daily aggregation may suffice."
+     "text": "**Explanation:** Match frequency to business need. Aggregate noisy high-frequency data before modelling. Hourly demand → daily aggregation may suffice."
     }
    ],
    "kind": ""
@@ -494,14 +494,14 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Convert all timestamps to UTC for storage",
-      "Apply time zone conversion for feature engineering (local hour matters for behavior)",
+      "Apply time zone conversion for feature engineering (local hour matters for behaviour)",
       "Handle daylight saving time transitions",
       "Be consistent within pipeline"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** User behavior depends on local time. Store in UTC, compute features in local time. DST creates 23- and 25-hour days."
+     "text": "**Explanation:** User behaviour depends on local time. Store in UTC, compute features in local time. DST creates 23- and 25-hour days."
     }
    ],
    "kind": ""

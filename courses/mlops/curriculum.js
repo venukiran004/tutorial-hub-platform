@@ -18,7 +18,7 @@
      Phase 6  Process              SDLC, and how it bends for ML
      Phase 7  LLMOps               what changes when the model is a prompt
 
-   Phase 5 is the heart of the course. The other phases exist so that its six
+   Phase 5 is the heart of the course. The other phases exist so that its seven
    incident classes can be read as engineering rather than as folklore.
 
    On execution: this course is written against what the machine can actually
@@ -52,9 +52,9 @@
     short: "MLOps",
     tagline: "The job after the model is accurate: version it, serve it, watch it drift, and get it back when it breaks — with the drift statistics, the latency percentiles and the skew bugs all measured rather than asserted.",
 
-    blurb: "A model that scores 0.94 offline is not a deployed model. This course covers what stands between the two: experiment tracking and lineage, data and model versioning, feature stores and the point-in-time join that silently leaks labels, containers and Kubernetes, CI/CD that tests data as well as code, and the six incident classes that take ML systems down — drift, latency, training-serving skew, scaling failures, lost reproducibility and blind observability. It ends with LLMOps, where the artifact is a prompt and the index is a deployable.",
+    blurb: "A model that scores 0.94 offline is not a deployed model. This course covers what stands between the two: experiment tracking and lineage, data and model versioning, feature stores and the point-in-time join that silently leaks labels, containers and Kubernetes, CI/CD that tests data as well as code, and the seven incident classes that take ML systems down — drift, latency, training-serving skew, scaling failures, lost reproducibility, blind observability and misread experiments. It ends with LLMOps, where the artifact is a prompt and the index is a deployable.",
 
-    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "7.3", "7.4"],
+    published: ["1.1", "1.2", "1.3", "1.4", "1.5", "2.1", "2.2", "2.3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6", "4.1", "4.2", "4.3", "4.4", "4.5", "5.1", "5.2", "5.3", "5.4", "5.5", "6.1", "6.2", "6.3", "6.4", "7.1", "7.2", "7.3", "7.4", "8.1", "8.2", "8.3", "8.4", "8.5"],
 
     modules: [
 
@@ -95,7 +95,7 @@
         phase: "Phase 1 · The lifecycle",
         title: "Serving, Monitoring and Compression",
         blurb: "Getting the model behind an endpoint, knowing what it is doing there, and making it cheaper. The serving patterns compared on the axis that decides between them, a monitoring stack that separates the four things that can go wrong, and compression measured on a real model rather than quoted.",
-        outcome: "You can choose between online, batch and streaming serving from the latency and freshness requirements, say what a monitoring stack must emit for an incident to be diagnosable, and quantify what quantization costs in accuracy and buys in size.",
+        outcome: "You can choose between online, batch and streaming serving from the latency and freshness requirements, say what a monitoring stack must emit for an incident to be diagnosable, and quantify what quantisation costs in accuracy and buys in size.",
         lessons: [
           { id: "2.1", title: "Four Ways to Serve a Model", difficulty: "core", minutes: 30, tier: "must",
             summary: "Online, batch, streaming and embedded, separated by the question each answers rather than by the tool. A real FastAPI endpoint around a trained model, with the three things a prediction response should carry and the model-version header that makes an incident traceable.",
@@ -103,8 +103,8 @@
           { id: "2.2", title: "What to Monitor, and in Which Order", difficulty: "core", minutes: 30, tier: "must",
             summary: "The four layers of an ML monitoring stack — infrastructure, traffic, data and model — and why teams buy the fourth and neglect the third. The metrics each layer emits, and the delay that makes model quality the slowest signal you have.",
             keywords: ["monitoring", "observability", "four layers", "slo", "latency", "data quality", "model quality", "feedback delay"] },
-          { id: "2.3", title: "Compression: Quantization and Distillation", difficulty: "advanced", minutes: 32, tier: "should",
-            summary: "A model converted to ONNX and quantized, with size, latency and accuracy all measured on the same inputs before and after. Distillation and pruning described against the same baseline, and the honest answer to when compression is not worth it.",
+          { id: "2.3", title: "Compression: Quantisation and Distillation", difficulty: "advanced", minutes: 32, tier: "should",
+            summary: "A model converted to ONNX and quantised, with size, latency and accuracy all measured on the same inputs before and after. Distillation and pruning described against the same baseline, and the honest answer to when compression is not worth it.",
             keywords: ["quantization", "onnx", "onnxruntime", "distillation", "pruning", "int8", "model size", "latency"] }
         ]
       },
@@ -280,8 +280,8 @@
         dir: "09_protocols",
         phase: "Phase 3 · The ground floor",
         title: "REST and gRPC for Inference",
-        blurb: "How a prediction request gets to the model. REST's resource model and its costs, gRPC's contract-first schema and streaming, and a measurement of the serialization and transport difference on prediction-shaped payloads — because the usual claim is quoted far more often than it is checked.",
-        outcome: "You can choose a protocol from the payload shape and the caller, state what a proto contract buys over an OpenAPI schema, and quote a serialization overhead you measured rather than one you read.",
+        blurb: "How a prediction request gets to the model. REST's resource model and its costs, gRPC's contract-first schema and streaming, and a measurement of the serialisation and transport difference on prediction-shaped payloads — because the usual claim is quoted far more often than it is checked.",
+        outcome: "You can choose a protocol from the payload shape and the caller, state what a proto contract buys over an OpenAPI schema, and quote a serialisation overhead you measured rather than one you read.",
         lessons: [
           { id: "9.1", title: "REST, and What It Costs", difficulty: "core", minutes: 26, tier: "must",
             summary: "Resources, verbs, status codes and content negotiation, then the costs for inference specifically: JSON number parsing, the absence of a schema at runtime, and what a float array actually weighs as text. Measured on a real feature vector.",
@@ -311,7 +311,7 @@
             summary: "SageMaker, Vertex AI and Azure ML mapped onto the same lifecycle, so the comparison is about the pieces rather than the brochures. What is genuinely differentiated, what is a renamed equivalent, and the portability cost of each.",
             keywords: ["sagemaker", "vertex ai", "azure ml", "databricks", "platform", "lock-in", "managed", "comparison"] },
           { id: "10.2", title: "Sizing a GPU", difficulty: "advanced", minutes: 30, tier: "must",
-            summary: "The memory arithmetic that decides the instance: parameters, gradients, optimizer state and activations, computed for real model sizes. Then the instance families, what the numbers mean, and the check that tells you whether you are compute-bound or memory-bound.",
+            summary: "The memory arithmetic that decides the instance: parameters, gradients, optimiser state and activations, computed for real model sizes. Then the instance families, what the numbers mean, and the check that tells you whether you are compute-bound or memory-bound.",
             keywords: ["gpu", "vram", "memory", "a100", "t4", "batch size", "mixed precision", "compute bound", "instance type"] },
           { id: "10.3", title: "Spot Instances and Checkpointing", difficulty: "advanced", minutes: 28, tier: "should",
             summary: "Why spot is 60-90% cheaper and what it demands in return: a two-minute warning, checkpoint frequency chosen against interruption rate, and a resume path that is actually tested. The arithmetic of when spot is cheaper in wall-clock terms too.",
@@ -365,7 +365,7 @@
         outcome: "You can decompose a request's latency into its stages from a measurement, identify queueing from the shape of the distribution, and say which optimisation to try first for a given bottleneck.",
         lessons: [
           { id: "12.1", title: "Where the Time Goes", difficulty: "core", minutes: 30, tier: "must",
-            summary: "One prediction request measured stage by stage: deserialize, fetch features, transform, infer, serialize. The result is usually surprising — inference is rarely the largest term — and it determines everything you do next.",
+            summary: "One prediction request measured stage by stage: deserialise, fetch features, transform, infer, serialise. The result is usually surprising — inference is rarely the largest term — and it determines everything you do next.",
             keywords: ["latency", "profiling", "breakdown", "inference time", "feature fetch", "serialization", "overhead", "p50"] },
           { id: "12.2", title: "Cold Starts and Queueing", difficulty: "advanced", minutes: 32, tier: "must",
             summary: "Two causes of a tail that look identical on a dashboard and need opposite fixes. A cold start measured on first load; then queueing, with the utilisation arithmetic showing why latency explodes past about 70% and why adding a replica beats optimising the model.",
@@ -395,10 +395,10 @@
             summary: "A feature that is available in the training table and not at prediction time, and the offline score it inflates. The point-in-time discipline from 1.4 applied as a test, and the leak types that survive a random train/test split.",
             keywords: ["leakage", "target leakage", "point in time", "lookahead", "split", "temporal", "inflated score"] },
           { id: "13.3", title: "Environment and Version Skew", difficulty: "core", minutes: 26, tier: "should",
-            summary: "The same pickle, a different library version, a different answer — with a real case where a serialized transformer loads and silently behaves differently. Pinning, lockfiles, image digests, and the serialization boundary that should be versioned.",
+            summary: "The same pickle, a different library version, a different answer — with a real case where a serialised transformer loads and silently behaves differently. Pinning, lockfiles, image digests, and the serialisation boundary that should be versioned.",
             keywords: ["version skew", "pickle", "lockfile", "pinning", "digest", "serialization", "compatibility", "environment"] },
           { id: "13.4", title: "Prevention and Detection", difficulty: "core", minutes: 28, tier: "must",
-            summary: "One code path to both consumers, a serialized pipeline rather than a reimplemented one, and an integration test that asserts offline and online agree on the same row. Then detection: comparing feature and prediction distributions across the boundary.",
+            summary: "One code path to both consumers, a serialised pipeline rather than a reimplemented one, and an integration test that asserts offline and online agree on the same row. Then detection: comparing feature and prediction distributions across the boundary.",
             keywords: ["prevention", "shared code", "pipeline", "integration test", "golden row", "distribution comparison", "detection"] }
         ]
       },

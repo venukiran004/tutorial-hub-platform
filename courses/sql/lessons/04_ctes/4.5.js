@@ -310,7 +310,7 @@ CREATE INDEX orders_meta_gin ON orders_meta USING GIN (doc jsonb_path_ops); -- s
         options: [
           "GIN indexes are read-only",
           "GIN serves containment and existence operators (`@>`, `?`), not text extraction; write `doc @> '{\"channel\": \"web\"}'`, or add an expression index on `(doc->>'channel')`",
-          "The index needs ANALYZE",
+          "The index needs AnalysE",
           "->> is not indexable at all"
         ],
         answer: 1,

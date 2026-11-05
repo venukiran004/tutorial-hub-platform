@@ -538,7 +538,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `['Hello', 'World', 'Python']` **Explanation:** Chain methods in lambda: lowercase then capitalize."
+     "text": "**Answer:** `['Hello', 'World', 'Python']` **Explanation:** Chain methods in lambda: lowercase then capitalise."
     }
    ],
    "prompt": [

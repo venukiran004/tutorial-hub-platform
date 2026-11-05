@@ -161,7 +161,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The trade is real: because the residual stream is never normalised, its magnitude *grows* with depth in a Pre-LN model, and the relative contribution of later blocks shrinks. Some work finds Post-LN reaches slightly better final quality when you can afford to tune the warmup carefully. The reason Pre-LN won is not that it produces better models but that it produces models that train reliably without a schedule you have to get right — which at scale, where a diverged run costs weeks, matters more. Hybrids exist, and some recent models normalise in both places." }] },
 
     { t: "exercise", title: "Measure the block yourself",
-      tasks: [
+      requirements: [
         "Compute LayerNorm and RMSNorm by hand on a vector and check both against PyTorch, including the eps term.",
         "Benchmark LayerNorm against nn.RMSNorm on your hardware and backend, and record which is faster.",
         "Compute the SwiGLU d_ff for a model you use and check it against the published hidden size.",

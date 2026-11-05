@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A single model is trained on multiple related tasks simultaneously, sharing representations. Often improves generalization compared to training separate models for each task."
+     "text": "A single model is trained on multiple related tasks simultaneously, sharing representations. Often improves generalisation compared to training separate models for each task."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Training a model across multiple decentralized devices/servers holding local data, without sharing raw data with a central server. Preserves privacy; used in mobile (Gboard, iOS)."
+     "text": "Training a model across multiple decentralised devices/servers holding local data, without sharing raw data with a central server. Preserves privacy; used in mobile (Gboard, iOS)."
     }
    ],
    "kind": ""
@@ -220,7 +220,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "97",
-   "q": "What is stacking (stacked generalization)?",
+   "q": "What is stacking (stacked generalisation)?",
    "body": [
     {
      "t": "p",
@@ -232,11 +232,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "98",
-   "q": "What is the role of a validation set during Bayesian hyperparameter optimization?",
+   "q": "What is the role of a validation set during Bayesian hyperparameter optimisation?",
    "body": [
     {
      "t": "p",
-     "text": "The validation set provides the objective function score that the Bayesian optimizer uses to build its surrogate model. It must be held out from training to provide unbiased feedback about hyperparameter configurations."
+     "text": "The validation set provides the objective function score that the Bayesian optimiser uses to build its surrogate model. It must be held out from training to provide unbiased feedback about hyperparameter configurations."
     }
    ],
    "kind": ""

@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Off-policy actor-critic with entropy regularization:"
+     "text": "**Answer:** Off-policy actor-critic with entropy regularisation:"
     },
     {
      "t": "code",
@@ -66,7 +66,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "What is reward modeling?",
+   "q": "What is reward modelling?",
    "body": [
     {
      "t": "p",
@@ -79,7 +79,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Humans can compare but can't assign numerical rewards easily. Reward model learns from comparisons. Used in RLHF pipeline. Overoptimization risk: agent finds inputs that score high on RM but are actually bad."
+     "text": "**Explanation:** Humans can compare but can't assign numerical rewards easily. Reward model learns from comparisons. Used in RLHF pipeline. Overoptimisation risk: agent finds inputs that score high on RM but are actually bad."
     }
    ],
    "kind": ""
@@ -197,7 +197,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Agent finds unintended way to maximize reward without intended behavior:"
+     "text": "**Answer:** Agent finds unintended way to maximise reward without intended behaviour:"
     },
     {
      "t": "code",
@@ -311,7 +311,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "What is Proximal Policy Optimization (PPO) - Clipping?",
+   "q": "What is Proximal Policy Optimisation (PPO) - Clipping?",
    "body": [
     {
      "t": "p",
@@ -339,7 +339,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "38",
-   "q": "What is Generalized Advantage Estimation (GAE)?",
+   "q": "What is Generalised Advantage Estimation (GAE)?",
    "body": [
     {
      "t": "p",
@@ -389,11 +389,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "What is opponent modeling in competitive RL?",
+   "q": "What is opponent modelling in competitive RL?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Model and predict opponent's behavior:"
+     "text": "**Answer:** Model and predict opponent's behaviour:"
     },
     {
      "t": "code",
@@ -402,7 +402,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** In competitive games, optimal play depends on opponent. Fixed (non-adaptive) policy can be exploited. Opponent modeling: predict opponent → best-respond. Self-play is a special case (opponent = self)."
+     "text": "**Explanation:** In competitive games, optimal play depends on opponent. Fixed (non-adaptive) policy can be exploited. Opponent modelling: predict opponent → best-respond. Self-play is a special case (opponent = self)."
     }
    ],
    "kind": ""
@@ -504,7 +504,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "45",
-   "q": "What is world modeling in RL?",
+   "q": "What is world modelling in RL?",
    "body": [
     {
      "t": "p",
@@ -521,7 +521,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Data-efficient (one real interaction generates many imagined ones). World models can generalize to new situations. Foundation for model-based RL. Connects to LLM world understanding."
+     "text": "**Explanation:** Data-efficient (one real interaction generates many imagined ones). World models can generalise to new situations. Foundation for model-based RL. Connects to LLM world understanding."
     }
    ],
    "kind": ""
@@ -608,7 +608,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "49",
-   "q": "What is GRPO (Group Relative Policy Optimization)?",
+   "q": "What is GRPO (Group Relative Policy Optimisation)?",
    "body": [
     {
      "t": "p",

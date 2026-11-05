@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Content demand modeling: predict viewership based on genre, cast, concept (comparison to similar shows), (2) subscriber retention: how does new content affect churn? (engagement → retention), (3) acquisition: will this show attract new subscribers? (marketing appeal analysis), (4) competitive analysis: what are competitors releasing in the same genre/period?, (5) A/B test on promotional materials: which concept resonates most?, (6) financial model: predicted viewership × subscription value → ROI, (7) risk assessment: Monte Carlo simulation over viewership uncertainty, (8) portfolio effect: how does this show fill gaps in content library?"
+     "text": "**Answer:** (1) Content demand modelling: predict viewership based on genre, cast, concept (comparison to similar shows), (2) subscriber retention: how does new content affect churn? (engagement → retention), (3) acquisition: will this show attract new subscribers? (marketing appeal analysis), (4) competitive analysis: what are competitors releasing in the same genre/period?, (5) A/B test on promotional materials: which concept resonates most?, (6) financial model: predicted viewership × subscription value → ROI, (7) risk assessment: Monte Carlo simulation over viewership uncertainty, (8) portfolio effect: how does this show fill gaps in content library?"
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Spatial decomposition: city divided into hex zones, predict per zone, (2) features: historical demand (same hour/day last week), current demand, weather, events, time features, (3) temporal: LSTM or transformer on recent demand sequences per zone, (4) spatial: graph neural network capturing spatial relationships between zones, (5) exogenous: concerts, sports events, weather forecasts, transit disruptions, (6) resolution: 5-minute intervals × hex zones, (7) output: expected demand + uncertainty per zone, (8) optimization: position drivers in high-demand zones ahead of time."
+     "text": "**Answer:** (1) Spatial decomposition: city divided into hex zones, predict per zone, (2) features: historical demand (same hour/day last week), current demand, weather, events, time features, (3) temporal: LSTM or transformer on recent demand sequences per zone, (4) spatial: graph neural network capturing spatial relationships between zones, (5) exogenous: concerts, sports events, weather forecasts, transit disruptions, (6) resolution: 5-minute intervals × hex zones, (7) output: expected demand + uncertainty per zone, (8) optimisation: position drivers in high-demand zones ahead of time."
     }
    ],
    "kind": ""
@@ -66,7 +66,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Technical: (1) time-series vital signs (irregular intervals), (2) missing data (lab tests not ordered = informative missingness), (3) small datasets (ICU patients are few), (4) high stakes: must be very reliable. Ethical: (5) don't use to deny care — use to prioritize resources, (6) bias: model should perform equally across demographics, (7) transparency: clinicians must understand and trust the model, (8) human-in-the-loop: model advises, doctor decides, (9) calibration critical: predicted 50% risk should mean 50% actual risk, (10) regulatory: FDA clearance required for clinical decision support."
+     "text": "**Answer:** Technical: (1) time-series vital signs (irregular intervals), (2) missing data (lab tests not ordered = informative missingness), (3) small datasets (ICU patients are few), (4) high stakes: must be very reliable. Ethical: (5) don't use to deny care — use to prioritise resources, (6) bias: model should perform equally across demographics, (7) transparency: clinicians must understand and trust the model, (8) human-in-the-loop: model advises, doctor decides, (9) calibration critical: predicted 50% risk should mean 50% actual risk, (10) regulatory: FDA clearance required for clinical decision support."
     }
    ],
    "kind": ""
@@ -74,11 +74,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "180",
-   "q": "Amazon wants to optimize warehouse inventory levels. How does data science help?",
+   "q": "Amazon wants to optimise warehouse inventory levels. How does data science help?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Demand forecasting: per-SKU, per-warehouse, daily/weekly, (2) lead time prediction: supplier reliability, shipping times, (3) safety stock optimization: buffer stock = f(demand variability, lead time variability, service level), (4) reorder point: when to order = expected demand during lead time + safety stock, (5) EOQ (Economic Order Quantity): minimize total cost (ordering + holding), (6) seasonal preparation: pre-stock for peaks, (7) slow-moving inventory: identify and reduce via markdown/clearance, (8) simulation: Monte Carlo for inventory scenarios."
+     "text": "**Answer:** (1) Demand forecasting: per-SKU, per-warehouse, daily/weekly, (2) lead time prediction: supplier reliability, shipping times, (3) safety stock optimisation: buffer stock = f(demand variability, lead time variability, service level), (4) reorder point: when to order = expected demand during lead time + safety stock, (5) EOQ (Economic Order Quantity): minimise total cost (ordering + holding), (6) seasonal preparation: pre-stock for peaks, (7) slow-moving inventory: identify and reduce via markdown/clearance, (8) simulation: Monte Carlo for inventory scenarios."
     },
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model-business metric gap: model optimizes accuracy, business cares about revenue, (2) threshold choice: production threshold differs from evaluation threshold, (3) incomplete adoption: not all decisions use the model yet, (4) treatment effect: model identifies but intervention is ineffective, (5) counterfactual: without the model, would KPIs have been even worse?, (6) lag: business KPIs take time to respond, (7) cannibalization: model helps one area but hurts another, (8) instrumentation: are you measuring the right KPI correctly?"
+     "text": "**Answer:** (1) Model-business metric gap: model optimises accuracy, business cares about revenue, (2) threshold choice: production threshold differs from evaluation threshold, (3) incomplete adoption: not all decisions use the model yet, (4) treatment effect: model identifies but intervention is ineffective, (5) counterfactual: without the model, would KPIs have been even worse?, (6) lag: business KPIs take time to respond, (7) cannibalization: model helps one area but hurts another, (8) instrumentation: are you measuring the right KPI correctly?"
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Standardize early: convert all currencies to base currency (USD) using exchange rate at transaction time, (2) timestamps: convert to UTC, add local time features (hour_local, is_business_hours_local), (3) measurement units: normalize to SI units, (4) create features that are unit-invariant: ratios, percentages, z-scores, (5) exchange rate as a separate feature (captures economic environment), (6) purchasing power parity: $100 means different things in different countries, (7) document normalization decisions, (8) test: model should learn same patterns regardless of units."
+     "text": "**Answer:** (1) Standardise early: convert all currencies to base currency (USD) using exchange rate at transaction time, (2) timestamps: convert to UTC, add local time features (hour_local, is_business_hours_local), (3) measurement units: normalise to SI units, (4) create features that are unit-invariant: ratios, percentages, z-scores, (5) exchange rate as a separate feature (captures economic environment), (6) purchasing power parity: $100 means different things in different countries, (7) document normalisation decisions, (8) test: model should learn same patterns regardless of units."
     }
    ],
    "kind": ""
@@ -130,7 +130,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Anomaly detection: learn \"normal,\" flag deviations (no need for labeled breaches), (2) one-class SVM: learn a boundary around normal data, (3) autoencoders: high reconstruction error = anomaly, (4) isolation forest: isolate anomalies via random splits, (5) change point detection: monitor streams for sudden changes, (6) combine: anomaly score + rule-based filters, (7) don't try to learn from 10 positive examples — use unsupervised methods, (8) if some labels exist: semi-supervised approach."
+     "text": "**Answer:** (1) Anomaly detection: learn \"normal,\" flag deviations (no need for labelled breaches), (2) one-class SVM: learn a boundary around normal data, (3) autoencoders: high reconstruction error = anomaly, (4) isolation forest: isolate anomalies via random splits, (5) change point detection: monitor streams for sudden changes, (6) combine: anomaly score + rule-based filters, (7) don't try to learn from 10 positive examples — use unsupervised methods, (8) if some labels exist: semi-supervised approach."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Quick wins: solve a visible business problem with data (dashboard showing key metrics), (2) executive sponsorship: get a leader who champions data, (3) single source of truth: centralize key metrics, (4) self-service analytics: Looker, Tableau — let people explore data, (5) data literacy training: teach basic SQL, chart interpretation, (6) embed data in decisions: require data backing for proposals, (7) celebrate wins: share data-driven success stories, (8) incremental: don't build ML before basic analytics is solid, (9) measure: track decision quality and speed improvement."
+     "text": "**Answer:** (1) Quick wins: solve a visible business problem with data (dashboard showing key metrics), (2) executive sponsorship: get a leader who champions data, (3) single source of truth: centralise key metrics, (4) self-service analytics: Looker, Tableau — let people explore data, (5) data literacy training: teach basic SQL, chart interpretation, (6) embed data in decisions: require data backing for proposals, (7) celebrate wins: share data-driven success stories, (8) incremental: don't build ML before basic analytics is solid, (9) measure: track decision quality and speed improvement."
     },
     {
      "t": "p",
@@ -158,7 +158,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Focus on tail risk: predict 95th/99th percentile, not just mean, (2) quantile regression: directly predict demand at different risk levels, (3) asymmetric loss function: heavily penalize underestimation, (4) ensemble of forecasts: take the maximum for safety, (5) weather integration: temperature is the strongest predictor (AC/heating), (6) special events: industrial schedules, holidays, sports events, (7) reserve margin: always over-provision by X% above forecast, (8) real-time adjustment: update forecast every 15 minutes."
+     "text": "**Answer:** (1) Focus on tail risk: predict 95th/99th percentile, not just mean, (2) quantile regression: directly predict demand at different risk levels, (3) asymmetric loss function: heavily penalise underestimation, (4) ensemble of forecasts: take the maximum for safety, (5) weather integration: temperature is the strongest predictor (AC/heating), (6) special events: industrial schedules, holidays, sports events, (7) reserve margin: always over-provision by X% above forecast, (8) real-time adjustment: update forecast every 15 minutes."
     }
    ],
    "kind": ""
@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) VAR (Vector Autoregression): model all variables jointly with lags, (2) Granger causality: test if one variable helps predict another, (3) dynamic factor models: find common factors driving multiple series, (4) graph neural network: model variables as nodes, learn relationships, (5) temporal fusion transformer: attention-based, handles multiple series with different characteristics, (6) dimensionality reduction: PCA on the multivariate series first, (7) start simple: analyze pairwise correlations, build complexity gradually."
+     "text": "**Answer:** (1) VAR (Vector Autoregression): model all variables jointly with lags, (2) Granger causality: test if one variable helps predict another, (3) dynamic factor models: find common factors driving multiple series, (4) graph neural network: model variables as nodes, learn relationships, (5) temporal fusion transformer: attention-based, handles multiple series with different characteristics, (6) dimensionality reduction: PCA on the multivariate series first, (7) start simple: analyse pairwise correlations, build complexity gradually."
     },
     {
      "t": "p",
@@ -206,7 +206,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "190",
-   "q": "You need to validate that your model generalizes to a new geographic market before launching there. How?",
+   "q": "You need to validate that your model generalises to a new geographic market before launching there. How?",
    "body": [
     {
      "t": "p",
@@ -222,7 +222,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Threshold-based rejection: if max softmax probability < threshold → \"unknown,\" (2) OpenMAX: replace softmax with openmax calibrated for unknown rejection, (3) distance-based: if embedding distance to training data > threshold → unknown, (4) outlier detection layer: autoencoder + threshold on reconstruction error, (5) class hierarchy: classify to broader known parent category, (6) zero-shot: CLIP-like models can recognize unseen categories from descriptions, (7) monitoring: track frequency of \"unknown\" classifications — too high signals systematic issue."
+     "text": "**Answer:** (1) Threshold-based rejection: if max softmax probability < threshold → \"unknown,\" (2) OpenMAX: replace softmax with openmax calibrated for unknown rejection, (3) distance-based: if embedding distance to training data > threshold → unknown, (4) outlier detection layer: autoencoder + threshold on reconstruction error, (5) class hierarchy: classify to broader known parent category, (6) zero-shot: CLIP-like models can recognise unseen categories from descriptions, (7) monitoring: track frequency of \"unknown\" classifications — too high signals systematic issue."
     }
    ],
    "kind": ""
@@ -294,7 +294,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Package version differences: pin all versions with requirements.txt or conda environment, (2) path separators: Mac uses /, same for Linux, but watch for hardcoded paths, (3) random seed behavior: may differ across OS, (4) floating point precision: depends on CPU/BLAS implementation, (5) locale: date parsing, number formatting (decimal point vs. comma), (6) case sensitivity: Mac filesystem is case-insensitive by default, Linux isn't, (7) line endings: \\n vs. \\r\\n in data files, (8) solution: develop in Docker that matches production environment."
+     "text": "**Answer:** (1) Package version differences: pin all versions with requirements.txt or conda environment, (2) path separators: Mac uses /, same for Linux, but watch for hardcoded paths, (3) random seed behaviour: may differ across OS, (4) floating point precision: depends on CPU/BLAS implementation, (5) locale: date parsing, number formatting (decimal point vs. comma), (6) case sensitivity: Mac filesystem is case-insensitive by default, Linux isn't, (7) line endings: \\n vs. \\r\\n in data files, (8) solution: develop in Docker that matches production environment."
     }
    ],
    "kind": ""
@@ -318,7 +318,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Analyze: are weekends genuinely different patterns or just low volume (high variance)?, (2) separate models: weekday model + weekend model, (3) time features: is_weekend, is_holiday as features in the model, (4) model interaction: feature × is_weekend interactions, (5) dynamic thresholds: different decision boundaries for different periods, (6) more data: accumulate more weekend samples if low volume is the issue, (7) transfer learning: share most patterns from weekday model, fine-tune for weekends."
+     "text": "**Answer:** (1) Analyse: are weekends genuinely different patterns or just low volume (high variance)?, (2) separate models: weekday model + weekend model, (3) time features: is_weekend, is_holiday as features in the model, (4) model interaction: feature × is_weekend interactions, (5) dynamic thresholds: different decision boundaries for different periods, (6) more data: accumulate more weekend samples if low volume is the issue, (7) transfer learning: share most patterns from weekday model, fine-tune for weekends."
     }
    ],
    "kind": ""

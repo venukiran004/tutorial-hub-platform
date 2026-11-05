@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "8. Performance & Optimization · 9. Database Design & Theory",
+   "text": "8. Performance & Optimisation · 9. Database Design & Theory",
    "id": "set"
   },
   {
@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Enable slow query log. Use EXPLAIN ANALYZE. Check: sequential scans on large tables, missing indexes, large sorts, many row estimates being wrong."
+     "text": "Enable slow query log. Use EXPLAIN AnalysE. Check: sequential scans on large tables, missing indexes, large sorts, many row estimates being wrong."
     }
    ],
    "kind": ""
@@ -58,7 +58,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "79",
-   "q": "Explain query optimization techniques.",
+   "q": "Explain query optimisation techniques.",
    "body": [
     {
      "t": "code",
@@ -75,7 +75,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Database stores execution plans for reuse. Parameterized queries benefit from plan caching. Dynamic SQL may not. Plan cache bloat can be a problem."
+     "text": "Database stores execution plans for reuse. Parameterised queries benefit from plan caching. Dynamic SQL may not. Plan cache bloat can be a problem."
     }
    ],
    "kind": ""
@@ -95,7 +95,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "82",
-   "q": "What is normalization? Explain 1NF through 3NF.",
+   "q": "What is normalisation? Explain 1NF through 3NF.",
    "body": [
     {
      "t": "p",
@@ -107,7 +107,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "83",
-   "q": "When is denormalization appropriate?",
+   "q": "When is denormalisation appropriate?",
    "body": [
     {
      "t": "p",

@@ -117,7 +117,7 @@ EC.receiveLesson({
         "The GPU version pair is worth writing into the image's labels, so a mismatch is readable without running it."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The thread-count mismatch is nearly universal and the cheapest to fix. Setting `OMP_NUM_THREADS` to the CPU limit typically improves tail latency measurably, because the contention it removes was never buying any parallelism." },
           { t: "p", text: "The `/dev/shm` check only matters if DataLoader workers are in use, but when it does matter the failure is so cryptic — a bus error naming a worker pid — that recognising it is worth more than most container knowledge." }
         ]

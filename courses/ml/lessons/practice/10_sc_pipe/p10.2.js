@@ -233,7 +233,7 @@ EC.receiveLesson({
       "**Horizontal scaling:** Multiple model replicas behind load balancer",
       "**Auto-scaling:** Scale based on request rate/latency (Kubernetes HPA)",
       "**Batch prediction:** Process many inputs at once",
-      "**Model optimization:** Quantization, distillation for faster per-request inference",
+      "**Model optimisation:** Quantisation, distillation for faster per-request inference",
       "**Caching:** Cache frequent predictions (Redis, Memcached)"
      ]
     },
@@ -247,7 +247,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "35",
-   "q": "What is the difference between model training and model inference optimization?",
+   "q": "What is the difference between model training and model inference optimisation?",
    "body": [
     {
      "t": "p",
@@ -256,8 +256,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Training optimization:** Faster convergence (optimizer, lr schedule, data loading, distributed training)",
-      "**Inference optimization:** Faster prediction (quantization, pruning, batching, hardware acceleration)"
+      "**Training optimisation:** Faster convergence (optimiser, lr schedule, data loading, distributed training)",
+      "**Inference optimisation:** Faster prediction (quantisation, pruning, batching, hardware acceleration)"
      ]
     },
     {
@@ -332,7 +332,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Pruning:** Remove unnecessary weights",
-      "**Quantization:** Reduce precision (FP32 → INT8)",
+      "**Quantisation:** Reduce precision (FP32 → INT8)",
       "**Knowledge distillation:** Train smaller student model",
       "**Low-rank factorization:** Decompose weight matrices",
       "**Architecture search:** Design efficient architectures (MobileNet, EfficientNet)"
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Feedback can be: explicit (user rates prediction), implicit (user behavior after prediction), or delayed (label becomes available later). Active learning: model requests labels for uncertain predictions."
+     "text": "**Explanation:** Feedback can be: explicit (user rates prediction), implicit (user behaviour after prediction), or delayed (label becomes available later). Active learning: model requests labels for uncertain predictions."
     }
    ],
    "kind": ""
@@ -562,7 +562,7 @@ EC.receiveLesson({
      "items": [
       "**Fallback model:** Simple model (rules, heuristics) if primary model fails",
       "**Cached predictions:** Serve last known good prediction",
-      "**Degraded service:** Return default/popular items instead of personalized",
+      "**Degraded service:** Return default/popular items instead of personalised",
       "**Circuit breaker:** Stop sending requests to failing model"
      ]
     },
@@ -592,7 +592,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Most organizations are Level 0-1. Level 2 requires significant infrastructure investment. Progress incrementally."
+     "text": "**Explanation:** Most organisations are Level 0-1. Level 2 requires significant infrastructure investment. Progress incrementally."
     }
    ],
    "kind": ""
@@ -641,7 +641,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Startups: optimize for speed (managed services, simple pipelines). Enterprise: optimize for reliability, security, governance (formal MLOps platform)."
+     "text": "**Explanation:** Startups: optimise for speed (managed services, simple pipelines). Enterprise: optimise for reliability, security, governance (formal MLOps platform)."
     }
    ],
    "kind": ""

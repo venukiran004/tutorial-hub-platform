@@ -528,7 +528,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`pyproject.toml` (PEP 518/621) is the standardized single config file. It replaces `setup.py`, `setup.cfg`, and per-tool configs (`.flake8`, `mypy.ini`, `tox.ini`) with one declarative TOML file that every tool reads. Benefits: declarative (no arbitrary code execution), standardized, and centralized. `setup.py` is legacy and risky because it runs arbitrary Python on install."
+     "text": "`pyproject.toml` (PEP 518/621) is the standardised single config file. It replaces `setup.py`, `setup.cfg`, and per-tool configs (`.flake8`, `mypy.ini`, `tox.ini`) with one declarative TOML file that every tool reads. Benefits: declarative (no arbitrary code execution), standardised, and centralised. `setup.py` is legacy and risky because it runs arbitrary Python on install."
     },
     {
      "t": "p",

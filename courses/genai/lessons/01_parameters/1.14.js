@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "1.14",
 
-  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokenizer that is right for the wrong model, and a reference figure that contradicts the price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
+  lede: "Token counting is the arithmetic underneath every other lesson in this module — the budget in 1.5, the cache saving in 1.13, the bill in 11.7. It is also where a small, systematic error compounds: the chat envelope nobody counts, the tokeniser that is right for the wrong model, and a reference figure that contradicts the price table by a factor of two. This lesson counts everything properly and builds the estimator you would actually put in a codebase.",
 
   objectives: [
     "Count tokens exactly with the right encoding for a given model",
@@ -64,14 +64,14 @@ for name, s in samples:
       hl: [7],
       caption: "English is identical between the two encodings. French is **73 tokens in `cl100k_base` and 57 in `o200k_base`** — a 22% reduction for the same characters, because the newer vocabulary carries more non-English subwords." },
 
-    { t: "callout", kind: "insight", title: "The tokenizer is a cost decision for non-English traffic",
+    { t: "callout", kind: "insight", title: "The tokeniser is a cost decision for non-English traffic",
       body: [
         { t: "p", text: "A 22% token reduction is a 22% cost reduction on the input side, for changing nothing but the model family. For a product serving mostly French, German or Spanish text, that is a larger saving than most prompt engineering will produce." },
         { t: "p", text: "It gets more dramatic further from English. Languages written in non-Latin scripts — Japanese, Arabic, Hindi — historically tokenised extremely inefficiently, sometimes at more than one token per character, and newer vocabularies have improved this substantially. If your traffic is not English, measure it on your own text before assuming the English figures transfer." },
         { t: "p", text: "The same argument applies to model choice across providers. Two models quoted at the same price per million tokens are not the same price per *document* if one tokenises your language better." }
       ] },
 
-    { t: "p", text: "For a non-OpenAI model there is no `tiktoken` encoding at all, and the answer comes from the model's own tokenizer:" },
+    { t: "p", text: "For a non-OpenAI model there is no `tiktoken` encoding at all, and the answer comes from the model's own tokeniser:" },
 
     { t: "code", lang: "python", title: "count.py — one function, several providers", code: `from functools import lru_cache
 import tiktoken
@@ -92,7 +92,7 @@ def count(text, model):
 # Anthropic exposes a count endpoint instead of publishing a tokenizer:
 #   client.messages.count_tokens(model=..., messages=[...])
 # It is a network call, so cache aggressively or estimate and verify.`,
-      caption: "The `lru_cache` matters: constructing a HuggingFace tokenizer takes tens of milliseconds, which is fine once and catastrophic per request in a loop." },
+      caption: "The `lru_cache` matters: constructing a HuggingFace tokeniser takes tens of milliseconds, which is fine once and catastrophic per request in a loop." },
 
     /* ============================================================ 02 */
     { t: "h2", n: "02", id: "the-envelope", text: "The chat envelope nobody counts",
@@ -289,7 +289,7 @@ def estimate(messages, model, *, max_output):
         { t: "p", text: "Build the derivation, using a local chat template as the stand-in for a provider you can call." }
       ],
       requirements: [
-        "Take a chat-template-bearing tokenizer and a set of message lists of varying lengths",
+        "Take a chat-template-bearing tokeniser and a set of message lists of varying lengths",
         "For each, compute the content-only token count and the templated count",
         "Fit the per-message and fixed overheads from the difference",
         "Report the fitted constants and the residual error",
@@ -339,8 +339,8 @@ print("residuals: %s" % [round(y - (a * x + b), 2) for x, y in zip(xs, ys)])`,
 fitted: 16.36 tokens per message + 9.50 fixed
 residuals: [0.14, -0.21, 0.07]`,
         notes: [
-          { t: "p", text: "The fit is 16.36 tokens per message plus 9.50 fixed, with residuals under 0.25 — so the linear model is an excellent description and the constants are recoverable from three conversations. They are nowhere near 3 and 3, and the reason is instructive: GPT-2's tokenizer has never seen `<|im_start|>` as a special token, so it shatters into about seven ordinary pieces per occurrence. On a real chat model those markers are single tokens, which is the entire difference between 16 and 3." },
-          { t: "p", text: "That is the real lesson rather than a defect of the exercise. The constant is a property of the **template and the tokenizer together**, not of either alone — which this exercise demonstrates at an extreme, since pairing a real chat template with a tokenizer that lacks its special tokens inflates the overhead fivefold. Any figure you read, including the 3 in §02, is specific to one model family and must be re-derived when you change." },
+          { t: "p", text: "The fit is 16.36 tokens per message plus 9.50 fixed, with residuals under 0.25 — so the linear model is an excellent description and the constants are recoverable from three conversations. They are nowhere near 3 and 3, and the reason is instructive: GPT-2's tokeniser has never seen `<|im_start|>` as a special token, so it shatters into about seven ordinary pieces per occurrence. On a real chat model those markers are single tokens, which is the entire difference between 16 and 3." },
+          { t: "p", text: "That is the real lesson rather than a defect of the exercise. The constant is a property of the **template and the tokeniser together**, not of either alone — which this exercise demonstrates at an extreme, since pairing a real chat template with a tokeniser that lacks its special tokens inflates the overhead fivefold. Any figure you read, including the 3 in §02, is specific to one model family and must be re-derived when you change." },
           { t: "p", text: "Against a hosted provider the derivation is the same and easier: send two short requests with different message counts, read `usage.prompt_tokens` from each, and solve the two equations. It costs a fraction of a penny and closes a class of silent budgeting error permanently. Do it once per model family and store the constants beside the rates." }
         ] } },
 
@@ -358,11 +358,11 @@ residuals: [0.14, -0.21, 0.07]`,
     "**The encoding is part of the answer.** `cl100k_base` is GPT-4 and GPT-3.5; `o200k_base` is GPT-4o and later, and they disagree.",
     "English is identical between them. **French measured 73 tokens under `cl100k_base` and 57 under `o200k_base`** — a 22% reduction for the same characters, which is a 22% input-cost reduction for non-English traffic.",
     "Two models at the same price per million tokens are **not the same price per document** if one tokenises your language better.",
-    "Non-OpenAI models need their own tokenizer, and Anthropic exposes a count endpoint rather than publishing one. Cache tokenizer construction — it is tens of milliseconds.",
+    "Non-OpenAI models need their own tokeniser, and Anthropic exposes a count endpoint rather than publishing one. Cache tokeniser construction — it is tens of milliseconds.",
     "**The chat envelope is not free**: roughly 3 tokens per message plus 3 to prime the reply on recent OpenAI chat models. That was 69% overhead on two short messages and 13% on a 50-turn conversation.",
     "The envelope scales with the **number** of messages, not their length, so it hurts most on conversations made of many short turns.",
     "Reconcile your counter against `usage.prompt_tokens` once per model family. It is one request and it closes a class of silent arithmetic error.",
-    "The envelope constant is a property of the **template and the tokenizer together** — pairing a chat template with a tokenizer that lacks its special tokens fitted at 16.36 per message plus 9.50 fixed, not 3 and 3.",
+    "The envelope constant is a property of the **template and the tokeniser together** — pairing a chat template with a tokeniser that lacks its special tokens fitted at 16.36 per message plus 9.50 fixed, not 3 and 3.",
     "**The \"30× cheaper\" claim contradicts its own price table**, which gives 2.50/0.15 = 16.7× on input and 10.00/0.60 = 16.7× on output. Verify a ratio before repeating it.",
     "Estimation errors in metering are **systematically optimistic** — the envelope, the tools and the schema are all things a naive counter forgets, and all of them add tokens."
   ],

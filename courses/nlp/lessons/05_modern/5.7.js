@@ -156,7 +156,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "ViT flattens a 14×14 grid into a 196-length sequence and applies **1-D** learned positional embeddings — the model is told patch 13 comes before patch 14, but nothing tells it that patch 14 sits directly below patch 0. It has to infer two-dimensional structure from the data. That it works at all is evidence for how much a transformer can learn from scale, and it is exactly the kind of thing later architectures fixed: 2-D positional encodings and relative position biases, which Swin uses, do measurably better." }] },
 
     { t: "exercise", title: "Take a ViT apart",
-      tasks: [
+      requirements: [
         "Load a ViT and confirm the patch embedding is a Conv2d with kernel equal to stride.",
         "Compute the token count and attention entries for three resolutions you might deploy at.",
         "Extract attention maps from layer 1 and layer 12 and check whether early layers learned locality.",

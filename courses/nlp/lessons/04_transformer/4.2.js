@@ -170,7 +170,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The formula computes happily at position 4999 — `|PE[4999]| = 16.0000`, identical to `|PE[10]|` — where a learned table simply has no row 4999 and raises an index error. That is the standard argument for the sinusoidal form. But a model *trained* only on short sequences degrades badly when run on long ones regardless, because the attention patterns above it never saw those positional vectors and have no reason to handle them well. Well-defined input is not the same as useful behaviour. Lesson 4.9 covers what actually works for length extrapolation — ALiBi, RoPE with scaling, and position interpolation." }] },
 
     { t: "exercise", title: "Probe the encoding",
-      tasks: [
+      requirements: [
         "Build the encoding and plot it as a heatmap of position against dimension. Identify the fast and slow dimensions visually.",
         "Verify the rotation property at five different positions for three different offsets.",
         "Confirm the norm is constant across positions, and derive why it equals sqrt(d_model / 2).",

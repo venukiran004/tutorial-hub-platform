@@ -183,11 +183,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "71",
-   "q": "What is a view? Materialized view?",
+   "q": "What is a view? Materialised view?",
    "body": [
     {
      "t": "p",
-     "text": "View: virtual table (saved query, computed on access). Materialized view: physically stored query result (refreshed periodically). Materialized views are faster but can be stale."
+     "text": "View: virtual table (saved query, computed on access). Materialised view: physically stored query result (refreshed periodically). Materialised views are faster but can be stale."
     }
    ],
    "kind": ""
@@ -199,7 +199,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Automatic actions fired before/after INSERT/UPDATE/DELETE. Use for: audit logging, maintaining derived columns, enforcing complex constraints. Caution: can cause performance issues and implicit behavior."
+     "text": "Automatic actions fired before/after INSERT/UPDATE/DELETE. Use for: audit logging, maintaining derived columns, enforcing complex constraints. Caution: can cause performance issues and implicit behaviour."
     }
    ],
    "kind": ""
@@ -223,7 +223,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Composite: one index on multiple columns, best for queries filtering on leftmost columns together. Multiple: separate indexes, optimizer picks best one. Composite is more efficient for multi-column queries."
+     "text": "Composite: one index on multiple columns, best for queries filtering on leftmost columns together. Multiple: separate indexes, optimiser picks best one. Composite is more efficient for multi-column queries."
     }
    ],
    "kind": ""
@@ -235,7 +235,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "EXPLAIN/EXPLAIN ANALYZE shows how database executes a query. Look for: Seq Scan (full scan, slow), Index Scan (good), Sort (costly), Hash Join vs Nested Loop, estimated vs actual rows."
+     "text": "EXPLAIN/EXPLAIN AnalysE shows how database executes a query. Look for: Seq Scan (full scan, slow), Index Scan (good), Sort (costly), Hash Join vs Nested Loop, estimated vs actual rows."
     }
    ],
    "kind": ""

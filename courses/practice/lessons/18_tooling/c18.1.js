@@ -412,7 +412,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2032",
-   "q": "Program 2032: Parameterized Tests",
+   "q": "Program 2032: Parameterised Tests",
    "body": [
     {
      "t": "code",

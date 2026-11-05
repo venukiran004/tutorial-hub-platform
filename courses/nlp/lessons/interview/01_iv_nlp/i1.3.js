@@ -210,7 +210,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Removes the mean-centering step from LayerNorm (only re-scales, no re-centering)",
+      "Removes the mean-centreing step from LayerNorm (only re-scales, no re-centreing)",
       "~10-15% faster than LayerNorm with equivalent performance",
       "Used in: LLaMA, Mistral, Qwen, Gemma"
      ]
@@ -267,7 +267,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Core idea:** Model sequence as a continuous-time dynamical system discretized for computation",
+      "**Core idea:** Model sequence as a continuous-time dynamical system discretised for computation",
       "**Selection mechanism:** Input-dependent parameters (unlike fixed convolution kernels)",
       "**Advantages:** Linear time and memory, natural for very long sequences (100K+)",
       "**Disadvantages:** No random-access attention (can't \"look up\" specific tokens), slightly worse on retrieval tasks",
@@ -289,7 +289,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Data:** \"Summarize this article: ...\" → \"summary\", \"Write a Python function that...\" → \"code\"",
+      "**Data:** \"Summarise this article: ...\" → \"summary\", \"Write a Python function that...\" → \"code\"",
       "**Scale:** FLAN (1.8K tasks, 473 datasets), Alpaca (52K GPT-generated), Open-Orca",
       "**Effect:** Transforms a next-word predictor into a helpful assistant",
       "**Self-Instruct:** Use the model itself to generate instruction-response pairs"
@@ -311,8 +311,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Alternatives:** DPO (Direct Preference Optimization) — no reward model needed, simpler",
-      "**ORPO:** Odds Ratio Preference Optimization — single-stage, even simpler"
+      "**Alternatives:** DPO (Direct Preference Optimisation) — no reward model needed, simpler",
+      "**ORPO:** Odds Ratio Preference Optimisation — single-stage, even simpler"
      ]
     }
    ],
@@ -331,7 +331,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**QLoRA:** Quantize base model to 4-bit + LoRA → fine-tune 70B model on single 48GB GPU",
+      "**QLoRA:** Quantise base model to 4-bit + LoRA → fine-tune 70B model on single 48GB GPU",
       "**Rank \\(r\\):** Typically 8-64. Higher = more capacity but more memory",
       "**Alpha (\\(\\alpha\\)):** Scaling factor, typically \\(\\alpha = 2r\\)"
      ]
@@ -500,7 +500,7 @@ EC.receiveLesson({
       ],
       [
        "**Slow convergence**",
-       "Poor initialization",
+       "Poor initialisation",
        "GPT-style init (scale residual by \\(1/\\sqrt{2N}\\))"
       ],
       [

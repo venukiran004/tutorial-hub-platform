@@ -16,7 +16,7 @@ EC.receiveLesson({
  "prerequisites": [],
  "blocks": [
 
-    {"kind": "matrix", "title": "Isolation levels, by what each one still allows", "caption": "The honest answer names the anomaly each level leaves behind. Postgres's default is Read Committed, so a repeated read inside one transaction can see different rows — which is where the lost-update bug lives.", "cols": ["dirty read", "repeated read differs", "phantom rows"], "rows": ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-i7_4-top-0"},
+    {"kind": "matrix", "title": "Isolation levels, by what each one still allows", "caption": "The honest answer names the anomaly each level leaves behind. Postgres's default is Read Committed, so a repeated read inside one transaction can see different rows — which is where the lost-update bug lives.", "cols": ["dirty read", "repeated read differs", "phantom rows"], "rows": ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serialisable"], "cells": [[{"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}, {"text": "possible", "tone": "crit"}], [{"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "possible", "tone": "warn"}], [{"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}, {"text": "no", "tone": "good"}]], "t": "diagram", "id": "dg-i7_4-top-0"},
 
 
 
@@ -232,7 +232,7 @@ EC.receiveLesson({
        "Dirty + non-repeatable reads"
       ],
       [
-       "Serializable",
+       "Serialisable",
        "Dirty + non-repeatable + phantom reads (fully isolated)"
       ]
      ]
@@ -243,7 +243,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pick the lowest isolation level that prevents the anomalies your use case can't tolerate; Serializable is safest but costs concurrency."
+     "text": "**Key takeaway:** Pick the lowest isolation level that prevents the anomalies your use case can't tolerate; Serialisable is safest but costs concurrency."
     }
    ]
   },
@@ -376,7 +376,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Always pass values as parameters, never via f-strings/concatenation — parameterisation is what neutralizes SQL injection. See [[best-practices-security]]."
+     "text": "**Key takeaway:** Always pass values as parameters, never via f-strings/concatenation — parameterisation is what neutralises SQL injection. See [[best-practices-security]]."
     }
    ]
   },
@@ -474,18 +474,18 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Relational for structured, transactional, integrity-critical data; NoSQL for scale, flexibility, or specialized access patterns — many systems use both (polyglot persistence)."
+     "text": "**Key takeaway:** Relational for structured, transactional, integrity-critical data; NoSQL for scale, flexibility, or specialised access patterns — many systems use both (polyglot persistence)."
     }
    ]
   },
   {
    "t": "drill",
    "n": "13",
-   "q": "What is normalisation vs denormalization?",
+   "q": "What is normalisation vs denormalisation?",
    "terms": [
     "Answer",
     "Normalisation",
-    "Denormalization",
+    "Denormalisation",
     "Key takeaway"
    ],
    "body": [
@@ -497,12 +497,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Normalisation** organises tables to eliminate redundancy (each fact stored once), reducing update anomalies — the default for transactional (OLTP) systems.",
-      "**Denormalization** deliberately duplicates data to avoid joins and speed up reads — common in reporting/analytics (OLAP) and read-heavy systems."
+      "**Denormalisation** deliberately duplicates data to avoid joins and speed up reads — common in reporting/analytics (OLAP) and read-heavy systems."
      ]
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Normalise for write integrity, denormalize for read performance; it's a deliberate trade-off, not a default."
+     "text": "**Key takeaway:** Normalise for write integrity, denormalise for read performance; it's a deliberate trade-off, not a default."
     }
    ]
   },
@@ -628,7 +628,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A **lost update**: two transactions read the same row, both modify it, and the second overwrites the first. Two defenses:"
+     "text": "A **lost update**: two transactions read the same row, both modify it, and the second overwrites the first. Two defences:"
     },
     {
      "t": "ul",

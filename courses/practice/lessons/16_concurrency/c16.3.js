@@ -468,7 +468,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Doubles: [2, 4, 6, 8]`, `Triples: [3, 6, 9, 12]` **Explanation:** `partial` creates specialized functions. `executor.map` parallelizes execution."
+     "text": "**Answer:** `Doubles: [2, 4, 6, 8]`, `Triples: [3, 6, 9, 12]` **Explanation:** `partial` creates specialised functions. `executor.map` parallelises execution."
     }
    ],
    "prompt": [

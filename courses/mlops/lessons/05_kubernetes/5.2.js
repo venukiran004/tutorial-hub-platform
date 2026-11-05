@@ -153,7 +153,7 @@ spec:
         "An endpoints count that is lower than your ready pods usually means a label mismatch on a subset — often a leftover pod from a previous template."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The two findings that recur are a readiness probe that does not touch the model and a shared liveness endpoint that depends on a database. The first delivers lesson 2.1's twelvefold cold start to real users on every rollout; the second converts a dependency blip into a cluster-wide restart storm." },
           { t: "p", text: "The `preStop` sleep is the cheapest fix on the list and the one that removes the 502s everyone has learned to ignore during deploys. Five seconds, and the asynchrony between SIGTERM and endpoint removal stops mattering." }
         ]

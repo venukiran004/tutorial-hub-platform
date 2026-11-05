@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Supply chain attack: tampered pre-trained model with backdoor, (2) model poisoning: pre-trained model has hidden malicious behavior, (3) dependency attacks: compromised Python packages, (4) mitigation: (a) verify model checksums/hashes, (b) use trusted sources (HuggingFace with verified badge), (c) scan downloaded models for known vulnerabilities, (d) pin specific model versions, (e) test pre-trained models on validation data before deployment, (f) isolated training environment (no access to production systems)."
+     "text": "**Answer:** (1) Supply chain attack: tampered pre-trained model with backdoor, (2) model poisoning: pre-trained model has hidden malicious behaviour, (3) dependency attacks: compromised Python packages, (4) mitigation: (a) verify model checksums/hashes, (b) use trusted sources (HuggingFace with verified badge), (c) scan downloaded models for known vulnerabilities, (d) pin specific model versions, (e) test pre-trained models on validation data before deployment, (f) isolated training environment (no access to production systems)."
     },
     {
      "t": "p",
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Min 0-2: Hook — \"we can save $5M/year\" or the key insight, (2) Min 2-5: Context — business problem, why it matters, what we set out to solve, (3) Min 5-8: Journey — key experiments, what worked/didn't (2-3 highlights, not everything), (4) Min 8-11: Results — main findings with supporting visualizations, (5) Min 11-13: Implications — what this means for the business, (6) Min 13-15: Recommendations — specific actions, next steps, resource needs, (7) backup slides: technical details, additional analyses for Q&A, (8) rule: 1 slide per minute max, more white space, fewer bullets."
+     "text": "**Answer:** (1) Min 0-2: Hook — \"we can save $5M/year\" or the key insight, (2) Min 2-5: Context — business problem, why it matters, what we set out to solve, (3) Min 5-8: Journey — key experiments, what worked/didn't (2-3 highlights, not everything), (4) Min 8-11: Results — main findings with supporting visualisations, (5) Min 11-13: Implications — what this means for the business, (6) Min 13-15: Recommendations — specific actions, next steps, resource needs, (7) backup slides: technical details, additional analyses for Q&A, (8) rule: 1 slide per minute max, more white space, fewer bullets."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multiple annotators: 5+ people label each sample, (2) agreement metrics: Krippendorff's alpha, Fleiss' kappa for inter-rater reliability, (3) soft labels: if 3/5 say biased, use P(biased)=0.6 as label, (4) annotator modeling: account for individual annotator biases (Dawid-Skene), (5) annotation guidelines: clear, detailed criteria to reduce subjectivity, (6) expert review: adjudicator for disputed cases, (7) model: predict distribution of opinions, not single label, (8) evaluation: model should match human agreement level (not exceed it)."
+     "text": "**Answer:** (1) Multiple annotators: 5+ people label each sample, (2) agreement metrics: Krippendorff's alpha, Fleiss' kappa for inter-rater reliability, (3) soft labels: if 3/5 say biased, use P(biased)=0.6 as label, (4) annotator modelling: account for individual annotator biases (Dawid-Skene), (5) annotation guidelines: clear, detailed criteria to reduce subjectivity, (6) expert review: adjudicator for disputed cases, (7) model: predict distribution of opinions, not single label, (8) evaluation: model should match human agreement level (not exceed it)."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Configuration-driven: YAML per client mapping their schema to standard features, (2) adapter layer: transforms client data to canonical schema, (3) shared model: one model trained on canonical features, (4) per-client calibration: threshold adjustment per client, (5) multi-tenant serving: single model service, routing by client, (6) template deployment: automated deployment scripts parameterized by client config, (7) monitoring per client: separate dashboards, (8) client onboarding: standardized process for schema mapping."
+     "text": "**Answer:** (1) Configuration-driven: YAML per client mapping their schema to standard features, (2) adapter layer: transforms client data to canonical schema, (3) shared model: one model trained on canonical features, (4) per-client calibration: threshold adjustment per client, (5) multi-tenant serving: single model service, routing by client, (6) template deployment: automated deployment scripts parameterised by client config, (7) monitoring per client: separate dashboards, (8) client onboarding: standardised process for schema mapping."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Why hard: (1) words are positive but meaning is negative (\"great job breaking everything\"), (2) requires context and world knowledge, (3) tone/delivery cues absent in text. Approaches: (4) contextual models: BERT captures nuance better than bag-of-words, (5) training data: sarcasm-labeled datasets (Reddit /s tags), (6) features: contrast between sentiment and context (positive words + negative topic), (7) multimodal: for speech, tone/prosody helps, (8) emoji/punctuation analysis: \"sure 🙄\" vs. \"sure!\", (9) pragmatic: for business, flag uncertain sentiment for human review rather than classifying incorrectly."
+     "text": "**Answer:** Why hard: (1) words are positive but meaning is negative (\"great job breaking everything\"), (2) requires context and world knowledge, (3) tone/delivery cues absent in text. Approaches: (4) contextual models: BERT captures nuance better than bag-of-words, (5) training data: sarcasm-labelled datasets (Reddit /s tags), (6) features: contrast between sentiment and context (positive words + negative topic), (7) multimodal: for speech, tone/prosody helps, (8) emoji/punctuation analysis: \"sure 🙄\" vs. \"sure!\", (9) pragmatic: for business, flag uncertain sentiment for human review rather than classifying incorrectly."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Convert to base currency using exchange rate at transaction time, (2) PPP adjustment: $100 has different purchasing power in US vs. India, (3) local normalization: z-score within each country, (4) ratio features: relative to median/mean in country, (5) currency as a feature: model may learn currency-specific patterns, (6) inflation adjustment: for historical data spanning years, (7) rounding: different currencies have different decimal places (JPY vs. USD)."
+     "text": "**Answer:** (1) Convert to base currency using exchange rate at transaction time, (2) PPP adjustment: $100 has different purchasing power in US vs. India, (3) local normalisation: z-score within each country, (4) ratio features: relative to median/mean in country, (5) currency as a feature: model may learn currency-specific patterns, (6) inflation adjustment: for historical data spanning years, (7) rounding: different currencies have different decimal places (JPY vs. USD)."
     }
    ],
    "kind": ""
@@ -202,7 +202,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Layer 1 — Business: (1) key business KPIs influenced by model, (2) A/B test results. Layer 2 — Model: (3) prediction distribution histogram, (4) feature drift scores, (5) accuracy on recent labeled data. Layer 3 — Operational: (6) latency p50, p95, p99, (7) error rate, (8) throughput (predictions/sec), (9) resource utilization. Refresh rates: (10) business: daily, (11) model: hourly, (12) operational: real-time, (13) alerting: critical → page, warning → Slack."
+     "text": "**Answer:** Layer 1 — Business: (1) key business KPIs influenced by model, (2) A/B test results. Layer 2 — Model: (3) prediction distribution histogram, (4) feature drift scores, (5) accuracy on recent labelled data. Layer 3 — Operational: (6) latency p50, p95, p99, (7) error rate, (8) throughput (predictions/sec), (9) resource utilisation. Refresh rates: (10) business: daily, (11) model: hourly, (12) operational: real-time, (13) alerting: critical → page, warning → Slack."
     },
     {
      "t": "p",
@@ -250,11 +250,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "344",
-   "q": "Your regression model predicts continuous values, but the business makes discrete decisions (approve/deny at threshold). How do you optimize?",
+   "q": "Your regression model predicts continuous values, but the business makes discrete decisions (approve/deny at threshold). How do you optimise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Even with continuous predictions, the decision threshold determines business impact, (2) optimize threshold directly on business metric (profit, cost), not statistical metric, (3) cost-sensitive threshold: minimize expected cost = FN×cost_FN + FP×cost_FP, (4) decision curve analysis: plot net benefit at different thresholds, (5) separate calibration: regress → calibrate → threshold, (6) consider: would a classification model trained directly on the decision be better?, (7) stakeholder agreement: align on threshold logic and business rules."
+     "text": "**Answer:** (1) Even with continuous predictions, the decision threshold determines business impact, (2) optimise threshold directly on business metric (profit, cost), not statistical metric, (3) cost-sensitive threshold: minimise expected cost = FN×cost_FN + FP×cost_FP, (4) decision curve analysis: plot net benefit at different thresholds, (5) separate calibration: regress → calibrate → threshold, (6) consider: would a classification model trained directly on the decision be better?, (7) stakeholder agreement: align on threshold logic and business rules."
     }
    ],
    "kind": ""
@@ -262,11 +262,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "345",
-   "q": "You're training on GPU but your data preprocessing bottlenecks the pipeline. GPU utilization is only 30%. How do you fix?",
+   "q": "You're training on GPU but your data preprocessing bottlenecks the pipeline. GPU utilisation is only 30%. How do you fix?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data loading: increase num_workers in DataLoader, (2) prefetching: load next batch while GPU processes current, (3) memory mapping: use memory-mapped files for large datasets, (4) preprocessing: move augmentations to GPU (NVIDIA DALI, kornia), (5) format: use optimized format (TFRecord, WebDataset) instead of individual files, (6) caching: cache preprocessed data in memory or fast SSD, (7) profile: use PyTorch Profiler to identify exact bottleneck, (8) mixed precision: reduces memory transfer time."
+     "text": "**Answer:** (1) Data loading: increase num_workers in DataLoader, (2) prefetching: load next batch while GPU processes current, (3) memory mapping: use memory-mapped files for large datasets, (4) preprocessing: move augmentations to GPU (NVIDIA DALI, kornia), (5) format: use optimised format (TFRecord, WebDataset) instead of individual files, (6) caching: cache preprocessed data in memory or fast SSD, (7) profile: use PyTorch Profiler to identify exact bottleneck, (8) mixed precision: reduces memory transfer time."
     }
    ],
    "kind": ""
@@ -302,7 +302,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Build when: (1) unique requirements not met by vendors, (2) large team (>10 DS) to justify investment, (3) competitive advantage from custom tooling, (4) data sovereignty requirements. Buy when: (5) small team (focus on models, not infra), (6) standard use cases (classification, regression), (7) time-constrained (need to ship quickly), (8) vendor integration with existing cloud. Options: (9) SageMaker, Vertex AI, Databricks (full platforms), (10) Tecton, Feast (feature store only), (11) MLflow (experiment tracking — free), (12) hybrid: buy platform, customize specific components."
+     "text": "**Answer:** Build when: (1) unique requirements not met by vendors, (2) large team (>10 DS) to justify investment, (3) competitive advantage from custom tooling, (4) data sovereignty requirements. Buy when: (5) small team (focus on models, not infra), (6) standard use cases (classification, regression), (7) time-constrained (need to ship quickly), (8) vendor integration with existing cloud. Options: (9) SageMaker, Vertex AI, Databricks (full platforms), (10) Tecton, Feast (feature store only), (11) MLflow (experiment tracking — free), (12) hybrid: buy platform, customise specific components."
     }
    ],
    "kind": ""

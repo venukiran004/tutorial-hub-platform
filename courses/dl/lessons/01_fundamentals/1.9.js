@@ -176,7 +176,7 @@ print([f"{lrs[t]:.1e}" for t in [0, 2, 5, 10, 20, 35, 49]])
     "StepLR falls in cliffs, CosineAnnealingLR follows half a cosine to eta_min at T_max, OneCycleLR warms up then anneals below the start, warm restarts reset with lengthening periods, ReduceLROnPlateau reacts to a stalled metric.",
     "Warm-up — 0 to the peak over the first 5–10 % of steps — protects fresh weights and Adam's early statistics from a full-size first step; it is the default for transformers.",
     "Fixed length → cosine; unknown length → plateau; fine-tuning transformers → warm-up + cosine; fastest training → one-cycle.",
-    "optimizer.step() before scheduler.step(); one-cycle steps per batch; plateau needs the validation metric.",
+    "optimiser.step() before scheduler.step(); one-cycle steps per batch; plateau needs the validation metric.",
     "The loss curve reviews the schedule: plunges at cliffs mean the rate was too high, a still-falling cosine means the run was cut short."
   ],
 

@@ -66,7 +66,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Real-world RL applications: (1) Dynamic pricing: agent learns optimal pricing strategy through trial and error, (2) Recommendation: contextual bandits choose what to recommend, learn from engagement, (3) Supply chain: optimize inventory ordering decisions, (4) Ad bidding: real-time bidding on ad impressions, (5) Resource allocation: assign computing resources to workloads, (6) Challenges: (a) need a simulator or safe environment to explore (can't experiment freely in production), (b) reward design is critical and hard, (c) sample efficiency — RL needs many interactions, (7) Start: contextual bandits (simpler than full RL) for recommendation/personalization."
+     "text": "**Answer:** Real-world RL applications: (1) Dynamic pricing: agent learns optimal pricing strategy through trial and error, (2) Recommendation: contextual bandits choose what to recommend, learn from engagement, (3) Supply chain: optimise inventory ordering decisions, (4) Ad bidding: real-time bidding on ad impressions, (5) Resource allocation: assign computing resources to workloads, (6) Challenges: (a) need a simulator or safe environment to explore (can't experiment freely in production), (b) reward design is critical and hard, (c) sample efficiency — RL needs many interactions, (7) Start: contextual bandits (simpler than full RL) for recommendation/personalization."
     }
    ],
    "kind": ""
@@ -78,7 +78,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** GNNs help when: (1) data has natural graph structure (social network, molecular structure, knowledge graph), (2) neighbor information is predictive (fraud detection: is connected to known fraudsters?), (3) you need to capture relational patterns beyond pairwise features, (4) community structure matters (e.g., customer clusters). GNNs DON'T help when: (5) data has no relational structure, (6) relations are fully captured by aggregate features (e.g., \"number of friends\"), (7) graph is too large or dense for efficient computation, (8) simpler graph features (PageRank, centrality) capture the signal adequately. (9) Start with: graph features as input to XGBoost → if insufficient, try GNN."
+     "text": "**Answer:** GNNs help when: (1) data has natural graph structure (social network, molecular structure, knowledge graph), (2) neighbour information is predictive (fraud detection: is connected to known fraudsters?), (3) you need to capture relational patterns beyond pairwise features, (4) community structure matters (e.g., customer clusters). GNNs DON'T help when: (5) data has no relational structure, (6) relations are fully captured by aggregate features (e.g., \"number of friends\"), (7) graph is too large or dense for efficient computation, (8) simpler graph features (PageRank, centrality) capture the signal adequately. (9) Start with: graph features as input to XGBoost → if insufficient, try GNN."
     },
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Demand prediction: forecast ride requests per zone per 15min → pre-position drivers, (2) driver repositioning: suggest idle drivers move to high-demand areas, (3) matching optimization: assign best driver considering distance, route, and future demand, (4) batch matching: wait briefly to accumulate requests, then optimize assignment globally, (5) ETAs: accurate ETA prediction so riders know what to expect, (6) incentives: surge pricing shifts supply to high-demand areas, (7) carpool/shared rides: reduce vehicles needed per rider, (8) data: GPS traces, historical rides, events, weather, (9) metrics: P50/P90 wait time per zone per time period."
+     "text": "**Answer:** (1) Demand prediction: forecast ride requests per zone per 15min → pre-position drivers, (2) driver repositioning: suggest idle drivers move to high-demand areas, (3) matching optimisation: assign best driver considering distance, route, and future demand, (4) batch matching: wait briefly to accumulate requests, then optimise assignment globally, (5) ETAs: accurate ETA prediction so riders know what to expect, (6) incentives: surge pricing shifts supply to high-demand areas, (7) carpool/shared rides: reduce vehicles needed per rider, (8) data: GPS traces, historical rides, events, weather, (9) metrics: P50/P90 wait time per zone per time period."
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Viewing pattern analysis: what genres/actors/themes get high completion rates?, (2) gap analysis: content types with high demand but low supply on platform, (3) audience segmentation: which underserved segments are growing?, (4) competitor analysis: successful content on other platforms not yet available, (5) talent analytics: which actors/directors correlate with hit content?, (6) cost-value modeling: predicted viewership × lifetime subscriber impact vs. production cost, (7) regional strategy: content for specific markets (Korean, Indian), (8) A/B test: thumbnail, description variations correlate with content interest, (9) cannibalization: launching similar content may split audience."
+     "text": "**Answer:** (1) Viewing pattern analysis: what genres/actors/themes get high completion rates?, (2) gap analysis: content types with high demand but low supply on platform, (3) audience segmentation: which underserved segments are growing?, (4) competitor analysis: successful content on other platforms not yet available, (5) talent analytics: which actors/directors correlate with hit content?, (6) cost-value modelling: predicted viewership × lifetime subscriber impact vs. production cost, (7) regional strategy: content for specific markets (Korean, Indian), (8) A/B test: thumbnail, description variations correlate with content interest, (9) cannibalization: launching similar content may split audience."
     },
     {
      "t": "p",
@@ -146,11 +146,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "485",
-   "q": "You have only 100 labeled examples for a text classification task. What approaches maximize performance?",
+   "q": "You have only 100 labelled examples for a text classification task. What approaches maximise performance?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pre-trained models: use BERT/RoBERTa fine-tuned — even 100 examples can give decent results, (2) few-shot with LLM: GPT-4 with prompt engineering (no training needed), (3) data augmentation: back-translation, synonym replacement, paraphrasing with LLM, (4) active learning: label the most informative samples next, (5) semi-supervised: label propagation on unlabeled data using model predictions, (6) transfer: fine-tune on related labeled dataset first, then on your 100, (7) SetFit: few-shot framework designed for small datasets, (8) evaluation: cross-validation on 100 samples has high variance — use stratified k-fold + report CI."
+     "text": "**Answer:** (1) Pre-trained models: use BERT/RoBERTa fine-tuned — even 100 examples can give decent results, (2) few-shot with LLM: GPT-4 with prompt engineering (no training needed), (3) data augmentation: back-translation, synonym replacement, paraphrasing with LLM, (4) active learning: label the most informative samples next, (5) semi-supervised: label propagation on unlabelled data using model predictions, (6) transfer: fine-tune on related labelled dataset first, then on your 100, (7) SetFit: few-shot framework designed for small datasets, (8) evaluation: cross-validation on 100 samples has high variance — use stratified k-fold + report CI."
     }
    ],
    "kind": ""
@@ -162,7 +162,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Day 1-2: (1) Clarify scope: what's the minimum viable model?, (2) data audit: is data accessible and minimally clean? Day 3-5: (3) EDA + feature engineering: focus on top 5-10 features, (4) baseline: logistic regression or simple heuristic. Day 6-8: (5) modeling: try 2-3 algorithms max, (6) evaluation: proper train/test split, business-relevant metrics. Day 9-11: (7) simple deployment: Flask/FastAPI endpoint or saved model + script, (8) basic monitoring: log predictions. Day 12-14: (9) documentation, (10) stakeholder demo with recommendations for improvements. Skip: complex feature engineering, hyperparameter optimization, sophisticated infrastructure."
+     "text": "**Answer:** Day 1-2: (1) Clarify scope: what's the minimum viable model?, (2) data audit: is data accessible and minimally clean? Day 3-5: (3) EDA + feature engineering: focus on top 5-10 features, (4) baseline: logistic regression or simple heuristic. Day 6-8: (5) modelling: try 2-3 algorithms max, (6) evaluation: proper train/test split, business-relevant metrics. Day 9-11: (7) simple deployment: Flask/FastAPI endpoint or saved model + script, (8) basic monitoring: log predictions. Day 12-14: (9) documentation, (10) stakeholder demo with recommendations for improvements. Skip: complex feature engineering, hyperparameter optimisation, sophisticated infrastructure."
     },
     {
      "t": "p",
@@ -174,11 +174,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "487",
-   "q": "\"Given this confusion matrix [TP=80, FP=20, FN=30, TN=870], calculate precision, recall, F1. Then tell me: should we optimize for precision or recall if this is a cancer screening model?\"",
+   "q": "\"Given this confusion matrix [TP=80, FP=20, FN=30, TN=870], calculate precision, recall, F1. Then tell me: should we optimise for precision or recall if this is a cancer screening model?\"",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Precision = 80/(80+20) = 0.80 (80% of positive predictions are correct), Recall = 80/(80+30) = 0.727 (72.7% of actual positives are detected), F1 = 2×(0.80×0.727)/(0.80+0.727) = 0.762. **For cancer screening: optimize for recall.** Rationale: missing a cancer case (FN) is far worse than a false alarm (FP) that leads to additional tests. A missed cancer can be fatal. A false positive causes anxiety and extra tests but isn't life-threatening. Target recall > 95% even if precision drops to 50%."
+     "text": "**Answer:** Precision = 80/(80+20) = 0.80 (80% of positive predictions are correct), Recall = 80/(80+30) = 0.727 (72.7% of actual positives are detected), F1 = 2×(0.80×0.727)/(0.80+0.727) = 0.762. **For cancer screening: optimise for recall.** Rationale: missing a cancer case (FN) is far worse than a false alarm (FP) that leads to additional tests. A missed cancer can be fatal. A false positive causes anxiety and extra tests but isn't life-threatening. Target recall > 95% even if precision drops to 50%."
     }
    ],
    "kind": ""
@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model packaging: embed model weights in the application binary, (2) size constraints: quantize/compress model to fit device storage, (3) feature computation: all features must be computable without external APIs, (4) data: pre-load any lookup tables (embeddings, encodings), (5) updates: mechanism to update model when connected (OTA update), (6) versioning: track which model version is on each device, (7) monitoring: queue predictions and sync analytics when online, (8) fallback: simple rule-based logic if model fails, (9) testing: test on actual target devices."
+     "text": "**Answer:** (1) Model packaging: embed model weights in the application binary, (2) size constraints: quantise/compress model to fit device storage, (3) feature computation: all features must be computable without external APIs, (4) data: pre-load any lookup tables (embeddings, encodings), (5) updates: mechanism to update model when connected (OTA update), (6) versioning: track which model version is on each device, (7) monitoring: queue predictions and sync analytics when online, (8) fallback: simple rule-based logic if model fails, (9) testing: test on actual target devices."
     }
    ],
    "kind": ""
@@ -234,7 +234,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Profile: `%%timeit` or `line_profiler` on each cell to find hotspots, (2) typical culprits: (a) iterating rows with `for row in df.iterrows()` → vectorize, (b) repeated DataFrame copies → use `inplace` or chain operations, (c) reading entire large file → read only needed columns/rows, (d) training model without early stopping → add early stopping, (3) quick wins: use `%%time` on cells, fix the 2-3 slowest, (4) cache: save intermediate results to disk, reload when re-running, (5) parallel: `joblib` for independent operations, (6) usually 80% of runtime is in 20% of cells."
+     "text": "**Answer:** (1) Profile: `%%timeit` or `line_profiler` on each cell to find hotspots, (2) typical culprits: (a) iterating rows with `for row in df.iterrows()` → vectorise, (b) repeated DataFrame copies → use `inplace` or chain operations, (c) reading entire large file → read only needed columns/rows, (d) training model without early stopping → add early stopping, (3) quick wins: use `%%time` on cells, fix the 2-3 slowest, (4) cache: save intermediate results to disk, reload when re-running, (5) parallel: `joblib` for independent operations, (6) usually 80% of runtime is in 20% of cells."
     }
    ],
    "kind": ""
@@ -246,7 +246,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Two serving paths: (a) online: REST/gRPC API behind load balancer with auto-scaling, optimized for low latency (p99 < 100ms), (b) batch: scheduled Spark/Python job that scores entire datasets efficiently, (2) same model artifact: both paths load the same model version, (3) online optimization: caching, quantization, ONNX runtime for speed, (4) batch optimization: vectorized batch prediction, parallelization, (5) feature consistency: same feature computation logic for both, (6) monitoring: separate dashboards for online (latency, error rate) and batch (job completion, throughput)."
+     "text": "**Answer:** (1) Two serving paths: (a) online: REST/gRPC API behind load balancer with auto-scaling, optimised for low latency (p99 < 100ms), (b) batch: scheduled Spark/Python job that scores entire datasets efficiently, (2) same model artifact: both paths load the same model version, (3) online optimisation: caching, quantisation, ONNX runtime for speed, (4) batch optimisation: vectorised batch prediction, parallelisation, (5) feature consistency: same feature computation logic for both, (6) monitoring: separate dashboards for online (latency, error rate) and batch (job completion, throughput)."
     }
    ],
    "kind": ""
@@ -270,7 +270,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Prediction distribution monitoring: compare recent prediction distribution to reference (KS test, PSI), (2) error monitoring: track MAE/RMSE on recent labeled data — if increasing, drift likely, (3) residual analysis: plot residuals over time — systematic patterns indicate drift, (4) feature drift: monitor individual feature distributions using PSI per feature, (5) page-Hinkley test: sequential test for mean shift in error series, (6) adaptive windowing: ADWIN on prediction error stream, (7) comparison: periodically retrain on recent data — if significantly better, drift has occurred, (8) practical: trigger alert when multiple signals agree."
+     "text": "**Answer:** (1) Prediction distribution monitoring: compare recent prediction distribution to reference (KS test, PSI), (2) error monitoring: track MAE/RMSE on recent labelled data — if increasing, drift likely, (3) residual analysis: plot residuals over time — systematic patterns indicate drift, (4) feature drift: monitor individual feature distributions using PSI per feature, (5) page-Hinkley test: sequential test for mean shift in error series, (6) adaptive windowing: ADWIN on prediction error stream, (7) comparison: periodically retrain on recent data — if significantly better, drift has occurred, (8) practical: trigger alert when multiple signals agree."
     }
    ],
    "kind": ""
@@ -278,11 +278,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "495",
-   "q": "You're training on GPU but only achieving 40% GPU utilization. How do you diagnose and improve?",
+   "q": "You're training on GPU but only achieving 40% GPU utilisation. How do you diagnose and improve?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) PyTorch Profiler: `torch.profiler` shows GPU vs. CPU timeline, (2) common causes: (a) data loading bottleneck: CPU can't feed GPU fast enough → increase `num_workers`, use persistent workers, (b) small batch size: GPU underutilized → increase batch size, (c) CPU preprocessing: move augmentations to GPU (kornia, NVIDIA DALI), (d) synchronization: frequent CPU-GPU transfers → minimize `.item()`, `.numpy()` calls, (e) memory transfers: use pinned memory, (3) mixed precision: `torch.cuda.amp` → faster + fits larger batches, (4) data format: use optimized loaders (WebDataset, FFCV)."
+     "text": "**Answer:** (1) PyTorch Profiler: `torch.profiler` shows GPU vs. CPU timeline, (2) common causes: (a) data loading bottleneck: CPU can't feed GPU fast enough → increase `num_workers`, use persistent workers, (b) small batch size: GPU underutilized → increase batch size, (c) CPU preprocessing: move augmentations to GPU (kornia, NVIDIA DALI), (d) synchronisation: frequent CPU-GPU transfers → minimise `.item()`, `.numpy()` calls, (e) memory transfers: use pinned memory, (3) mixed precision: `torch.cuda.amp` → faster + fits larger batches, (4) data format: use optimised loaders (WebDataset, FFCV)."
     }
    ],
    "kind": ""
@@ -318,7 +318,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Consider: (1) Cost: open source = free license but internal maintenance; proprietary = license fee but managed, (2) support: proprietary has dedicated support; open source has community + paid options, (3) customization: open source = full control, modify source; proprietary = limited to provided features, (4) security: proprietary may have certifications; open source = audit yourself, (5) community: large open source community = faster innovation, more resources, (6) lock-in: proprietary creates vendor dependency; open source = portable (usually), (7) compliance: some industries require vendor compliance certifications, (8) my approach: open source default, proprietary only when clear advantage or requirement."
+     "text": "**Answer:** Consider: (1) Cost: open source = free license but internal maintenance; proprietary = license fee but managed, (2) support: proprietary has dedicated support; open source has community + paid options, (3) customisation: open source = full control, modify source; proprietary = limited to provided features, (4) security: proprietary may have certifications; open source = audit yourself, (5) community: large open source community = faster innovation, more resources, (6) lock-in: proprietary creates vendor dependency; open source = portable (usually), (7) compliance: some industries require vendor compliance certifications, (8) my approach: open source default, proprietary only when clear advantage or requirement."
     }
    ],
    "kind": ""

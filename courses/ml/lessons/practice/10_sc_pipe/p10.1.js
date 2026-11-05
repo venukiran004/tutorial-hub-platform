@@ -31,7 +31,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Notebook → production requires: code refactoring, testing, containerization, monitoring, CI/CD, logging, error handling. ~10× more work than prototyping."
+     "text": "**Explanation:** Notebook → production requires: code refactoring, testing, containerisation, monitoring, CI/CD, logging, error handling. ~10× more work than prototyping."
     }
    ],
    "kind": ""
@@ -191,7 +191,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "How do you containerize an ML model for deployment?",
+   "q": "How do you containerise an ML model for deployment?",
    "body": [
     {
      "t": "p",
@@ -320,7 +320,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Zero risk to users. Validates: latency, error rates, prediction distribution. Limitation: can't measure user behavior impact (only A/B test can)."
+     "text": "**Explanation:** Zero risk to users. Validates: latency, error rates, prediction distribution. Limitation: can't measure user behaviour impact (only A/B test can)."
     }
    ],
    "kind": ""
@@ -332,7 +332,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Centralized platform for computing, storing, and serving ML features."
+     "text": "**Answer:** Centralised platform for computing, storing, and serving ML features."
     },
     {
      "t": "p",
@@ -476,8 +476,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Framework-agnostic (PyTorch → ONNX → any runtime)",
-      "ONNX Runtime: optimized inference",
-      "Hardware-specific optimization (CPU, GPU, edge devices)",
+      "ONNX Runtime: optimised inference",
+      "Hardware-specific optimisation (CPU, GPU, edge devices)",
       "Typically 2-3× faster inference than native framework"
      ]
     },
@@ -500,8 +500,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Model optimization:** Quantization, pruning, distillation",
-      "**Serving optimization:** Batching, caching, pre-computation",
+      "**Model optimisation:** Quantisation, pruning, distillation",
+      "**Serving optimisation:** Batching, caching, pre-computation",
       "**Infrastructure:** GPU serving, auto-scaling, CDN for static models",
       "**Architecture:** Simpler model, fewer features, pre-computed embeddings"
      ]
@@ -533,7 +533,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Tools:** SHAP, LIME, feature importance, attention visualization."
+     "text": "**Tools:** SHAP, LIME, feature importance, attention visualisation."
     }
    ],
    "kind": ""

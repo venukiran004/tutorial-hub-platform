@@ -162,7 +162,7 @@ EC.receiveLesson({
       [
        "Pre-training",
        "ImageNet classification",
-       "Language modeling (next token)"
+       "Language modelling (next token)"
       ],
       [
        "Model",
@@ -235,7 +235,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Source and target domains too different",
-      "Source model too specialized",
+      "Source model too specialised",
       "Destructive fine-tuning (overwrite useful features)"
      ]
     },
@@ -270,7 +270,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Humans recognize new objects from 1-2 examples. Few-shot learning mimics this. Meta-learning: \"learn to learn\" from many such tasks."
+     "text": "**Explanation:** Humans recognise new objects from 1-2 examples. Few-shot learning mimics this. Meta-learning: \"learn to learn\" from many such tasks."
     }
    ],
    "kind": ""
@@ -307,7 +307,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Learning to learn — optimize the learning algorithm itself:"
+     "text": "**Answer:** Learning to learn — optimise the learning algorithm itself:"
     },
     {
      "t": "code",
@@ -316,7 +316,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** After meta-training, model can adapt to new tasks with 1-5 gradient steps. Effective for few-shot classification, reinforcement learning, hyperparameter optimization."
+     "text": "**Explanation:** After meta-training, model can adapt to new tasks with 1-5 gradient steps. Effective for few-shot classification, reinforcement learning, hyperparameter optimisation."
     }
    ],
    "kind": ""
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "y=0: same class → minimize distance D y=1: different class → push apart (at least margin)"
+     "text": "y=0: same class → minimise distance D y=1: different class → push apart (at least margin)"
     },
     {
      "t": "p",
@@ -441,7 +441,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Inductive:** Learn model that generalizes to unseen data (standard ML)",
+      "**Inductive:** Learn model that generalises to unseen data (standard ML)",
       "**Transductive:** Make predictions only for specific test data (can use test data structure)"
      ]
     },
@@ -499,7 +499,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Combine quantization with LoRA:"
+     "text": "**Answer:** Combine quantisation with LoRA:"
     },
     {
      "t": "code",
@@ -512,7 +512,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Paged optimizers handle memory spikes. 4-bit NormalFloat (NF4) is information-theoretically optimal for normally distributed weights. Quality matches full fine-tuning."
+     "text": "**Explanation:** Paged optimisers handle memory spikes. 4-bit NormalFloat (NF4) is information-theoretically optimal for normally distributed weights. Quality matches full fine-tuning."
     }
    ],
    "kind": ""
@@ -585,7 +585,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Hard prompts: interpretable, no training. Soft prompts: optimized, not human-readable. Soft prompts are more effective but require training data. Hard prompts work in zero-shot."
+     "text": "**Explanation:** Hard prompts: interpretable, no training. Soft prompts: optimised, not human-readable. Soft prompts are more effective but require training data. Hard prompts work in zero-shot."
     }
    ],
    "kind": ""

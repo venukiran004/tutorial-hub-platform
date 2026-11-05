@@ -227,7 +227,7 @@ SELECT order_id, amount FROM paid_orders ORDER BY order_id LIMIT 1;    -- 100 | 
       caption: "The database can only protect the objects it knows about. A rename is a contract change with every consumer, and expand–contract is how you change a contract with consumers you cannot deploy in the same second."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Changing order_id from INTEGER to BIGINT on a large live table",
       rungs: [
         { level: "bad", label: "ALTER COLUMN TYPE in place", code: `ALTER TABLE orders ALTER COLUMN order_id TYPE BIGINT;`,

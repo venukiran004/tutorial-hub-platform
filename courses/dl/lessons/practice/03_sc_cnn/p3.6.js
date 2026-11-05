@@ -84,7 +84,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GAP is preferred over FC layers for classification — fewer params, better generalization. Strided convolutions are also used instead of explicit pooling."
+     "text": "**Explanation:** GAP is preferred over FC layers for classification — fewer params, better generalisation. Strided convolutions are also used instead of explicit pooling."
     }
    ],
    "kind": ""
@@ -92,7 +92,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "129",
-   "q": "What is the role of batch normalization in vision models?",
+   "q": "What is the role of batch normalisation in vision models?",
    "body": [
     {
      "t": "p",
@@ -110,9 +110,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Stabilizes training (normalizes internal representations)",
+      "Stabilises training (normalises internal representations)",
       "Allows higher learning rates",
-      "Acts as regularization (batch statistics add noise)"
+      "Acts as regularisation (batch statistics add noise)"
      ]
     },
     {
@@ -167,7 +167,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** The right augmentation depends on the task. Don't flip medical images where left/right matters. Don't color jitter for color-based classification."
+     "text": "**Explanation:** The right augmentation depends on the task. Don't flip medical images where left/right matters. Don't colour jitter for colour-based classification."
     }
    ],
    "kind": ""
@@ -185,7 +185,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Bilinear interpolation:** Fixed, smooth upsampling",
-      "**Nearest neighbor:** Copy values, blocky but simple",
+      "**Nearest neighbour:** Copy values, blocky but simple",
       "**Transposed convolution (deconv):** Learnable, can produce checkerboard artifacts",
       "**Pixel shuffle (sub-pixel conv):** Rearrange channels to spatial resolution — artifact-free",
       "**Upsampling + Conv:** Resize then convolve — avoids checkerboard"
@@ -214,7 +214,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Rather than just making models deeper or wider, compound scaling optimizes all dimensions together — more efficient use of parameters."
+     "text": "**Explanation:** Rather than just making models deeper or wider, compound scaling optimises all dimensions together — more efficient use of parameters."
     }
    ],
    "kind": ""
@@ -306,7 +306,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Provides complete scene understanding — every pixel is labeled with semantic class AND instance ID."
+     "text": "**Explanation:** Provides complete scene understanding — every pixel is labelled with semantic class AND instance ID."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "138",
-   "q": "What is the role of feature visualization for understanding CNNs?",
+   "q": "What is the role of feature visualisation for understanding CNNs?",
    "body": [
     {
      "t": "p",
@@ -323,10 +323,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Activation maximization:** Generate input that maximally activates a neuron",
+      "**Activation maximisation:** Generate input that maximally activates a neuron",
       "**Grad-CAM:** Gradient-weighted class activation maps show where model looks",
-      "**Feature maps:** Visualize intermediate layer outputs",
-      "**Filters:** Visualize first-layer conv filters (edge detectors, color blobs)"
+      "**Feature maps:** Visualise intermediate layer outputs",
+      "**Filters:** Visualise first-layer conv filters (edge detectors, colour blobs)"
      ]
     },
     {
@@ -551,7 +551,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** IoU-based losses (GIoU, CIoU) directly optimize for the evaluation metric, unlike L1/L2 which optimize coordinate distances."
+     "text": "**Explanation:** IoU-based losses (GIoU, CIoU) directly optimise for the evaluation metric, unlike L1/L2 which optimise coordinate distances."
     }
    ],
    "kind": ""
@@ -592,7 +592,7 @@ EC.receiveLesson({
       "**Model-centric:** Fix data, improve models (better architecture, more parameters)",
       "**Data-centric:** Fix model, improve data quality",
       "— Better annotations, cleaner labels, targeted augmentation",
-      "— Identify and fix labeling errors",
+      "— Identify and fix labelling errors",
       "— Collect more data for underperforming categories"
      ]
     },

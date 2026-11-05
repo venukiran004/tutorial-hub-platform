@@ -166,7 +166,7 @@ for n in (128, 512, 2048, 8192, 32768):
 
     { t: "callout", kind: "good", title: "Check which side of the crossover you are on",
       body: [
-        { t: "p", text: "This is 3.1's diagnostic discipline applied one level down. If your contexts are 500 tokens, attention is a quarter of the decode arithmetic and the levers are quantization and batching. If they are 32,000, attention is nearly all of it and nothing else will help much." },
+        { t: "p", text: "This is 3.1's diagnostic discipline applied one level down. If your contexts are 500 tokens, attention is a quarter of the decode arithmetic and the levers are quantisation and batching. If they are 32,000, attention is nearly all of it and nothing else will help much." },
         { t: "p", text: "It also explains the shape of the field: FlashAttention arrived when context windows started growing, because at 2K contexts the problem it solves was not the binding one. The same optimisation can be essential or irrelevant depending on a number in your config." },
         { t: "p", text: "The figures above are arithmetic rather than measured latency, and the memory picture in section 01 moves earlier than the FLOPs do — so treat the crossover as approximate and measure on your own workload." }
       ] },
@@ -306,9 +306,9 @@ wide-ffn 7B        11,072`,
         why: "FlashAttention is exact — it produces the same result as standard attention, using tiling, kernel fusion and an online softmax so the n×n matrix never reaches slow memory. It actually performs *more* arithmetic, recomputing values rather than storing them, because moving bytes costs more than computing with them. Approximation is what a sliding window does, which is a different and lossy trade. Head count is architectural (GQA), and caching across requests is prefix caching (3.2)." },
 
       { stem: "Your contexts average 500 tokens. Is FlashAttention your biggest lever?",
-        options: ["Yes — attention is always the bottleneck", "No — at 500 tokens attention is about a quarter of the decode arithmetic; quantization and batching matter more", "Yes, because memory is quadratic", "It depends on the batch size"],
+        options: ["Yes — attention is always the bottleneck", "No — at 500 tokens attention is about a quarter of the decode arithmetic; quantisation and batching matter more", "Yes, because memory is quadratic", "It depends on the batch size"],
         answer: 1,
-        why: "Measured on GPT-2's shape, attention is 25.0% of a decode step's arithmetic at 512 tokens and only passes half at around 1,600 — so below the crossover the levers are the ones that address weight loading, which is quantization (3.3) and batching (3.5). The quadratic memory term is real and also small at 500 tokens. On a larger model with GQA the crossover is further out still, at 114,752 tokens." },
+        why: "Measured on GPT-2's shape, attention is 25.0% of a decode step's arithmetic at 512 tokens and only passes half at around 1,600 — so below the crossover the levers are the ones that address weight loading, which is quantisation (3.3) and batching (3.5). The quadratic memory term is real and also small at 500 tokens. On a larger model with GQA the crossover is further out still, at 114,752 tokens." },
 
       { stem: "Which model shape pushes the attention crossover furthest out?",
         options: ["A small model with a narrow feed-forward", "A large model with GQA", "A model with more layers", "A model with a larger vocabulary"],

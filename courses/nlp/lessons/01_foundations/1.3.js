@@ -4,14 +4,14 @@
 EC.receiveLesson({
   id: "1.3",
 
-  lede: "**Tokenization is the one decision every later stage inherits, and BPE is simple enough to run by hand.** Count every adjacent pair of symbols in the corpus, glue the most frequent one together, repeat. The number of times you repeat *is* your vocabulary size, and the ordered list of merges is the entire model. This lesson recomputes the training trace merge by merge — it reproduces exactly — then shows the one-line change that turns BPE into WordPiece, and runs the real tokenizers.",
+  lede: "**Tokenisation is the one decision every later stage inherits, and BPE is simple enough to run by hand.** Count every adjacent pair of symbols in the corpus, glue the most frequent one together, repeat. The number of times you repeat *is* your vocabulary size, and the ordered list of merges is the entire model. This lesson recomputes the training trace merge by merge — it reproduces exactly — then shows the one-line change that turns BPE into WordPiece, and runs the real tokenisers.",
 
   objectives: [
-    "Compare word, character and subword tokenization on vocabulary and OOV behaviour",
+    "Compare word, character and subword tokenisation on vocabulary and OOV behaviour",
     "Train BPE by hand and apply the merges to an unseen word",
     "Explain why byte-level BPE can never produce an unknown token",
     "State how WordPiece's merge criterion differs from BPE's and what it changes",
-    "Read a real tokenizer's output, including the leading-space marker"
+    "Read a real tokeniser's output, including the leading-space marker"
   ],
 
   prerequisites: ["1.2"],
@@ -45,7 +45,7 @@ EC.receiveLesson({
   byte-level BPE         50K-100K     perfect - never UNK` },
 
     { t: "callout", kind: "mental", title: "Vocabulary size and sequence length trade against each other",
-      body: [{ t: "p", text: "Word-level tokenization gives short sequences and an enormous vocabulary with an unavoidable `[UNK]` problem — any word you did not see in training is lost entirely. Character-level gives a tiny vocabulary and no OOV at all, but sequences become five to ten times longer, and since attention is quadratic in length that is expensive. Subword schemes sit in between deliberately: common words stay whole so sequences stay short, and rare words degrade into pieces rather than disappearing. The vocabulary size is the dial between those extremes, and 30,000 to 50,000 is where the field settled for English." }] },
+      body: [{ t: "p", text: "Word-level tokenisation gives short sequences and an enormous vocabulary with an unavoidable `[UNK]` problem — any word you did not see in training is lost entirely. Character-level gives a tiny vocabulary and no OOV at all, but sequences become five to ten times longer, and since attention is quadratic in length that is expensive. Subword schemes sit in between deliberately: common words stay whole so sequences stay short, and rare words degrade into pieces rather than disappearing. The vocabulary size is the dial between those extremes, and 30,000 to 50,000 is where the field settled for English." }] },
 
     { t: "h2", n: "02", text: "Training BPE by hand", id: "training" },
 
@@ -117,7 +117,7 @@ def bpe_encode(word, merges):
 
     { t: "h2", n: "03", text: "Encoding an unseen word", id: "encoding" },
 
-    {"kind": "trace", "title": "A word never seen, encoded from pieces that were", "caption": "**`bug` never appeared in training and still encodes cleanly as `b` + `ug`, because both pieces are in the vocabulary** — that is the property that makes subword tokenization work at all. And `mug` is the limit stated exactly: **`m` was never in the corpus, so there is no symbol for it**, which is what byte-level BPE fixes by making the base alphabet the 256 byte values instead of whatever characters happened to appear.", "left": "word", "codeW": 130, "vars": ["encoding", "seen in training?"], "steps": [{"code": "hugs", "state": ["['hug', 's']", "yes, as a word"], "tone": "good"}, {"code": "pun", "state": ["['p', 'un']", "yes, as a word"], "changed": [0], "tone": "good"}, {"code": "bug", "state": ["['b', 'ug']", "NO - both pieces were"], "changed": [0, 1], "tone": "good", "note": "the whole point"}, {"code": "mug", "state": ["['m', 'ug']", "'m' never appeared"], "changed": [0, 1], "tone": "crit", "note": "the limit"}], "t": "diagram", "id": "dg-1_3-03-2"},
+    {"kind": "trace", "title": "A word never seen, encoded from pieces that were", "caption": "**`bug` never appeared in training and still encodes cleanly as `b` + `ug`, because both pieces are in the vocabulary** — that is the property that makes subword tokenisation work at all. And `mug` is the limit stated exactly: **`m` was never in the corpus, so there is no symbol for it**, which is what byte-level BPE fixes by making the base alphabet the 256 byte values instead of whatever characters happened to appear.", "left": "word", "codeW": 130, "vars": ["encoding", "seen in training?"], "steps": [{"code": "hugs", "state": ["['hug', 's']", "yes, as a word"], "tone": "good"}, {"code": "pun", "state": ["['p', 'un']", "yes, as a word"], "changed": [0], "tone": "good"}, {"code": "bug", "state": ["['b', 'ug']", "NO - both pieces were"], "changed": [0, 1], "tone": "good", "note": "the whole point"}, {"code": "mug", "state": ["['m', 'ug']", "'m' never appeared"], "changed": [0, 1], "tone": "crit", "note": "the limit"}], "t": "diagram", "id": "dg-1_3-03-2"},
 
 
 
@@ -138,7 +138,7 @@ def bpe_encode(word, merges):
   pun    -> ['p', 'un']   reference: ['p', 'un']   match=True
   mug    -> ['m', 'ug']   <- 'm' was never in the corpus: an OOV character` },
 
-    { t: "p", text: "`bug` never appeared in training, and it still encodes cleanly as `b` + `ug` because both pieces are in the vocabulary. That is the property that makes subword tokenization work: **a word you have never seen is represented by pieces you have.** But `mug` exposes the limit — `m` was never in the corpus, so there is no symbol for it at all." },
+    { t: "p", text: "`bug` never appeared in training, and it still encodes cleanly as `b` + `ug` because both pieces are in the vocabulary. That is the property that makes subword tokenisation work: **a word you have never seen is represented by pieces you have.** But `mug` exposes the limit — `m` was never in the corpus, so there is no symbol for it at all." },
 
     { t: "h2", n: "04", text: "Byte-level BPE", id: "byte-level" },
 
@@ -204,9 +204,9 @@ def bpe_encode(word, merges):
         ["**Unigram**", "Start huge, prune what hurts likelihood least", "—", "T5, ALBERT, XLNet"]
       ] },
 
-    { t: "h2", n: "06", text: "The real tokenizers", id: "real" },
+    { t: "h2", n: "06", text: "The real tokenisers", id: "real" },
 
-    {"kind": "trace", "title": "The same word through two real tokenizers, and one surprise", "caption": "BERT marks every continuation with `##`, so the pieces are visibly glued. GPT-2 marks the **space** instead, with `Ġ` — and that is the surprise worth keeping: **the real tokenizer produces `Ġtransformative` as one token, not ` transform` plus `ative`.** Which means a leading space is part of the token, so `'Hello world'` and `' Hello world'` tokenise differently: **in byte-level BPE, whitespace is data rather than a delimiter.**", "left": "input", "codeW": 170, "vars": ["BERT (WordPiece)", "GPT-2 (byte-level BPE)"], "steps": [{"code": "'unbelievably'", "state": ["un ##bel ##ie ##va ##bly", "un bel iev ably"], "tone": "good"}, {"code": "' transformative'", "state": ["transform ##ative", "Ġtransformative - ONE token"], "changed": [0, 1], "tone": "violet"}, {"code": "'Hello world'", "state": ["hello world", "['Hello', 'Ġworld']"], "changed": [0, 1], "tone": "accent"}, {"code": "' Hello world'", "state": ["hello world", "['ĠHello', 'Ġworld']"], "changed": [1], "tone": "warn", "note": "space is data"}, {"code": "vocab", "state": ["30522", "50257"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-1_3-06-5"},
+    {"kind": "trace", "title": "The same word through two real tokenisers, and one surprise", "caption": "BERT marks every continuation with `##`, so the pieces are visibly glued. GPT-2 marks the **space** instead, with `Ġ` — and that is the surprise worth keeping: **the real tokeniser produces `Ġtransformative` as one token, not ` transform` plus `ative`.** Which means a leading space is part of the token, so `'Hello world'` and `' Hello world'` tokenise differently: **in byte-level BPE, whitespace is data rather than a delimiter.**", "left": "input", "codeW": 170, "vars": ["BERT (WordPiece)", "GPT-2 (byte-level BPE)"], "steps": [{"code": "'unbelievably'", "state": ["un ##bel ##ie ##va ##bly", "un bel iev ably"], "tone": "good"}, {"code": "' transformative'", "state": ["transform ##ative", "Ġtransformative - ONE token"], "changed": [0, 1], "tone": "violet"}, {"code": "'Hello world'", "state": ["hello world", "['Hello', 'Ġworld']"], "changed": [0, 1], "tone": "accent"}, {"code": "' Hello world'", "state": ["hello world", "['ĠHello', 'Ġworld']"], "changed": [1], "tone": "warn", "note": "space is data"}, {"code": "vocab", "state": ["30522", "50257"], "changed": [0, 1], "tone": "good"}], "t": "diagram", "id": "dg-1_3-06-5"},
 
 
 
@@ -231,14 +231,14 @@ def bpe_encode(word, merges):
   tokens      = ['[CLS]', 'hello', ',', 'world', '!', '[SEP]']
   decode      = '[CLS] hello, world! [SEP]'` },
 
-    { t: "p", text: "BERT's split matches exactly, with `##` marking each continuation, and so does the encode to `[101, 7592, 1010, 2088, 999, 102]`. GPT-2 differs from what the usual output prints: the real tokenizer produces **`Ġtransformative` as a single token**, not ` transform` plus `ative`. The `Ġ` is how byte-level BPE renders a leading space — the space is part of the token." },
+    { t: "p", text: "BERT's split matches exactly, with `##` marking each continuation, and so does the encode to `[101, 7592, 1010, 2088, 999, 102]`. GPT-2 differs from what the usual output prints: the real tokeniser produces **`Ġtransformative` as a single token**, not ` transform` plus `ative`. The `Ġ` is how byte-level BPE renders a leading space — the space is part of the token." },
 
     { t: "out", text: `  gpt2 'Hello world'    -> ['Hello', 'Ġworld']
   gpt2 ' Hello world'   -> ['ĠHello', 'Ġworld']
   gpt2 'muller <emoji> <2 CJK chars>' -> 10 tokens for 9 characters` },
 
     { t: "callout", kind: "trap", title: "A leading space changes the token, and non-Latin text costs several times more",
-      body: [{ t: "p", text: "`Hello` and `ĠHello` are **different token IDs** in GPT-2. That is why prompts are sensitive to whitespace in ways that look superstitious until you see the tokenization, and why a trailing space before a completion can measurably change the output. The second line is the byte-level cost: a nine-character string containing one emoji and two CJK characters became **ten tokens**, because each of those characters is several bytes and none of those byte sequences was frequent enough in training to merge. English averages well under one token per word; text in an underrepresented script can cost three or four times more, which is a direct and often-unnoticed cost in both context window and API billing." }] },
+      body: [{ t: "p", text: "`Hello` and `ĠHello` are **different token IDs** in GPT-2. That is why prompts are sensitive to whitespace in ways that look superstitious until you see the tokenisation, and why a trailing space before a completion can measurably change the output. The second line is the byte-level cost: a nine-character string containing one emoji and two CJK characters became **ten tokens**, because each of those characters is several bytes and none of those byte sequences was frequent enough in training to merge. English averages well under one token per word; text in an underrepresented script can cost three or four times more, which is a direct and often-unnoticed cost in both context window and API billing." }] },
 
     { t: "h2", n: "07", text: "Special tokens", id: "special" },
 
@@ -269,8 +269,8 @@ def bpe_encode(word, merges):
         ["`<s>`, `</s>`", "T5, LLaMA", "Start and end of sequence"]
       ] },
 
-    { t: "exercise", kind: "practice", title: "Train a tokenizer and probe it", difficulty: "core", minutes: 40,
-      prompt: "Implement BPE training and encoding, and reproduce the three-merge trace exactly. Then train it on a real corpus at vocabulary sizes of 500, 2,000 and 10,000, and for each record the mean number of tokens per word and the fraction of words that stay whole. Plot both against vocabulary size. Finally, tokenize the same paragraph with a real BERT and GPT-2 tokenizer, and tokenize the same content in two different languages to compare token counts.",
+    { t: "exercise", kind: "practice", title: "Train a tokeniser and probe it", difficulty: "core", minutes: 40,
+      prompt: "Implement BPE training and encoding, and reproduce the three-merge trace exactly. Then train it on a real corpus at vocabulary sizes of 500, 2,000 and 10,000, and for each record the mean number of tokens per word and the fraction of words that stay whole. Plot both against vocabulary size. Finally, tokenise the same paragraph with a real BERT and GPT-2 tokeniser, and tokenise the same content in two different languages to compare token counts.",
       hints: [
         "Weight the pair counts by word frequency, not by document count.",
         "Apply merges in learned order when encoding, and re-check the same position after a glue.",
@@ -279,7 +279,7 @@ def bpe_encode(word, merges):
       solution: {
         notes: [
           { t: "p", text: "The tokens-per-word curve has a clear knee, and that is how vocabulary size is actually chosen: below it you pay a lot of sequence length for a small vocabulary, above it you pay a lot of embedding parameters for diminishing reductions in length. The knee's position depends on the language — morphologically rich languages like Finnish or Turkish need a larger vocabulary to reach the same tokens-per-word as English, which is one concrete way multilingual models are harder." },
-          { t: "p", text: "Comparing real tokenizers, the thing to notice is that GPT-2 attaches the leading space to the token, so `Hello` and `ĠHello` are different IDs, while BERT lowercases and uses `##` to mark continuation. Both are reasonable and they are not interchangeable, which is why a model and its tokenizer must always travel together. Loading the wrong tokenizer produces valid-looking token IDs that mean something else, and nothing errors." },
+          { t: "p", text: "Comparing real tokenisers, the thing to notice is that GPT-2 attaches the leading space to the token, so `Hello` and `ĠHello` are different IDs, while BERT lowercases and uses `##` to mark continuation. Both are reasonable and they are not interchangeable, which is why a model and its tokeniser must always travel together. Loading the wrong tokeniser produces valid-looking token IDs that mean something else, and nothing errors." },
           { t: "p", text: "The cross-language comparison is the one with practical consequences. I measured a nine-character string with an emoji and two CJK characters costing ten tokens. The same content in English would be two or three. That ratio is a direct consequence of what the training corpus contained, and it shows up as a smaller effective context window and a higher bill for exactly the users whose languages were underrepresented." }
         ]
       } }
@@ -305,7 +305,7 @@ def bpe_encode(word, merges):
     { stem: "Why can byte-level BPE never produce an `[UNK]` token?",
       options: ["It has a very large vocabulary", "Its base vocabulary is the 256 possible bytes, and all text is bytes", "It falls back to character level", "It uses a special unknown handler"],
       answer: 1,
-      why: "Any text in any script is a sequence of bytes and there are only 256 of them, so every possible input is representable from the base vocabulary up. The cost is that text in scripts underrepresented in training tokenizes into many more pieces — measured at ten tokens for a nine-character string." },
+      why: "Any text in any script is a sequence of bytes and there are only 256 of them, so every possible input is representable from the base vocabulary up. The cost is that text in scripts underrepresented in training tokenises into many more pieces — measured at ten tokens for a nine-character string." },
     { stem: "How does WordPiece's merge criterion differ from BPE's?",
       options: ["It merges the least frequent pair", "It divides pair frequency by the product of the parts' frequencies", "It merges alphabetically", "It uses a neural scorer"],
       answer: 1,
@@ -313,18 +313,18 @@ def bpe_encode(word, merges):
     { stem: "In GPT-2, are `Hello` and ` Hello` the same token?",
       options: ["Yes — whitespace is stripped", "No — the leading space is part of the token, rendered as `Ġ`", "Only when lowercased", "Yes, but with different IDs"],
       answer: 1,
-      why: "Byte-level BPE keeps the space, so `Hello` and `ĠHello` are distinct token IDs. That is why prompt behaviour is sensitive to trailing whitespace in ways that look superstitious until you look at the tokenization — a space before a completion genuinely changes which tokens the model sees." }
+      why: "Byte-level BPE keeps the space, so `Hello` and `ĠHello` are distinct token IDs. That is why prompt behaviour is sensitive to trailing whitespace in ways that look superstitious until you look at the tokenisation — a space before a completion genuinely changes which tokens the model sees." }
   ] },
 
-  interview: { title: "Interview", sub: "Tokenization", questions: [
+  interview: { title: "Interview", sub: "Tokenisation", questions: [
     { level: "Core", q: "Explain how BPE works.",
       strong: "Count adjacent pairs weighted by frequency, merge the most common, repeat; the ordered merge list is the model.",
       answer: [{ t: "p", text: "You start with every word split into characters. Then you count every adjacent pair of symbols across the corpus, weighted by how often each word occurs, glue the most frequent pair into a single new symbol, and repeat. The number of merges is your vocabulary size, and the ordered list of merges is the entire model — encoding a new word means splitting into characters and applying those rules in the same order. I have run the standard worked example: on a corpus of hug, pug, pun, bun and hugs, the first three merges are `u+g`, then `u+n`, then `h+ug`, after which `hugs` encodes as `hug` plus `s` while `bug`, which never appeared, encodes as `b` plus `ug`. That last part is the value: an unseen word is represented by pieces you do have, so there is no `[UNK]`. It is purely frequency-driven with no linguistic knowledge, which is also why it transfers to any language." }] },
     { level: "Core", q: "BPE, WordPiece or Unigram — what is the difference?",
       strong: "Which pair to merge: most frequent, most surprising, or prune from a large vocabulary instead.",
       answer: [{ t: "p", text: "All three produce subwords and differ only in how they choose. BPE merges the most frequent adjacent pair. WordPiece divides that frequency by the product of the two parts' individual frequencies, so it favours pairs that are common relative to how common their pieces are — on a small corpus I tested, that picked a completely different first merge, `(g,s)` at a count of five rather than `(u,g)` at twenty, because `g` and `s` were individually rare. Unigram goes the other direction: start with a very large candidate vocabulary and iteratively prune the tokens whose removal costs the least corpus likelihood. The practical differences are small; what matters more is byte-level versus character-level base vocabulary, since byte-level makes unknown tokens structurally impossible. The hook I use is: BPE merges the most common pair, WordPiece the surprisingly common pair, Unigram starts big and prunes down." }] },
-    { level: "Senior", q: "Why must a model and its tokenizer always travel together?",
-      strong: "Token IDs are arbitrary indices into one specific vocabulary — the wrong tokenizer produces valid-looking nonsense.",
+    { level: "Senior", q: "Why must a model and its tokeniser always travel together?",
+      strong: "Token IDs are arbitrary indices into one specific vocabulary — the wrong tokeniser produces valid-looking nonsense.",
       answer: [{ t: "p", text: "Because a token ID means nothing on its own. It is an index into one particular learned vocabulary, and the same integer maps to a different string in a different tokenizer. Loading the right model with the wrong tokenizer produces IDs in a valid range, so nothing errors — the model just receives a sequence that means something else and outputs fluent-looking rubbish. Beyond identity there are conventions that differ: GPT-2 attaches the leading space to the token, so `Hello` and `ĠHello` are distinct, while BERT lowercases and marks continuation with `##`. Special tokens differ too, and their positions matter — BERT's `[CLS]` has to be first because its final hidden state is the sentence representation. So I would always load both from the same checkpoint with `from_pretrained`, and if I saw a model producing confident nonsense I would check the tokenizer before looking at the weights." }] }
   ] }
 });

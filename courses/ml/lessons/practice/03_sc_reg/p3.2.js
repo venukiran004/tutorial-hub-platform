@@ -41,7 +41,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "What is the Adam optimizer?",
+   "q": "What is the Adam optimiser?",
    "body": [
     {
      "t": "p",
@@ -79,7 +79,7 @@ EC.receiveLesson({
      "items": [
       "Add more features / polynomial features",
       "Use more complex model",
-      "Reduce regularization strength",
+      "Reduce regularisation strength",
       "Check data quality"
      ]
     },
@@ -150,7 +150,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "32",
-   "q": "What is feature normalization vs standardization?",
+   "q": "What is feature normalisation vs standardisation?",
    "body": [
     {
      "t": "p",
@@ -159,13 +159,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Normalization (MinMax):** Scale to [0,1]: (x-min)/(max-min)",
-      "**Standardization (Z-score):** Scale to mean=0, std=1: (x-μ)/σ"
+      "**Normalisation (MinMax):** Scale to [0,1]: (x-min)/(max-min)",
+      "**Standardisation (Z-score):** Scale to mean=0, std=1: (x-μ)/σ"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Normalization bounded but sensitive to outliers. Standardization unbounded but robust. Choose based on downstream algorithm."
+     "text": "**Explanation:** Normalisation bounded but sensitive to outliers. Standardisation unbounded but robust. Choose based on downstream algorithm."
     }
    ],
    "kind": ""
@@ -272,11 +272,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "38",
-   "q": "What is regularization path?",
+   "q": "What is regularisation path?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Coefficient values plotted as a function of regularization strength (λ)."
+     "text": "**Answer:** Coefficient values plotted as a function of regularisation strength (λ)."
     },
     {
      "t": "p",
@@ -368,15 +368,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "43",
-   "q": "What is batch normalization in the context of gradient descent?",
+   "q": "What is batch normalisation in the context of gradient descent?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalizing inputs to each layer during training: subtract mean, divide by std, then scale and shift."
+     "text": "**Answer:** Normalising inputs to each layer during training: subtract mean, divide by std, then scale and shift."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces internal covariate shift, allows higher learning rates, acts as mild regularizer. Typically used between linear transformation and activation."
+     "text": "**Explanation:** Reduces internal covariate shift, allows higher learning rates, acts as mild regulariser. Typically used between linear transformation and activation."
     }
    ],
    "kind": ""
@@ -394,7 +394,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Skewed target → log(y) or Box-Cox",
-      "Heteroscedastic residuals → log(y) often stabilizes variance",
+      "Heteroscedastic residuals → log(y) often stabilises variance",
       "Multiplicative relationships → log transform makes them additive"
      ]
     },
@@ -423,7 +423,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** No universally best LR — depends on loss landscape. Use learning rate finder or adaptive optimizers."
+     "text": "**Explanation:** No universally best LR — depends on loss landscape. Use learning rate finder or adaptive optimisers."
     }
    ],
    "kind": ""
@@ -464,7 +464,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Solutions:** ReLU activation, skip connections, batch normalization, better initialization."
+     "text": "**Solutions:** ReLU activation, skip connections, batch normalisation, better initialisation."
     }
    ],
    "kind": ""

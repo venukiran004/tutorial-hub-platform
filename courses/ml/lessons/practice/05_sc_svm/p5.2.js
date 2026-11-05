@@ -52,7 +52,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** class_weight='balanced' sets weight inversely proportional to class frequency. Effective: penalizes minority class errors more."
+     "text": "**Explanation:** class_weight='balanced' sets weight inversely proportional to class frequency. Effective: penalises minority class errors more."
     }
    ],
    "kind": ""
@@ -166,7 +166,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Ensures optimization problem is convex → unique global solution."
+     "text": "**Explanation:** Ensures optimisation problem is convex → unique global solution."
     }
    ],
    "kind": ""
@@ -209,7 +209,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Few SVs:** Simple model, clear separation → good generalization",
+      "**Few SVs:** Simple model, clear separation → good generalisation",
       "**Many SVs (>50% of data):** Complex model → may overfit, or classes overlap significantly"
      ]
     },
@@ -223,7 +223,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "35",
-   "q": "What is regularization in SVM vs logistic regression?",
+   "q": "What is regularisation in SVM vs logistic regression?",
    "body": [
     {
      "t": "p",
@@ -232,7 +232,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**SVM:** C parameter (inverse regularization, C = 1/λ)",
+      "**SVM:** C parameter (inverse regularisation, C = 1/λ)",
       "**Logistic Regression:** C parameter (same convention in sklearn) or λ"
      ]
     },
@@ -242,7 +242,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Strong regularization → simple model. SVM regularization affects margin width."
+     "text": "**Explanation:** Strong regularisation → simple model. SVM regularisation affects margin width."
     }
    ],
    "kind": ""
@@ -271,7 +271,7 @@ EC.receiveLesson({
       ],
       [
        "Training",
-       "Convex optimization",
+       "Convex optimisation",
        "Non-convex"
       ],
       [
@@ -361,8 +361,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Compute kernel matrix K",
-      "Center kernel matrix",
-      "Eigendecompose centered K"
+      "Centre kernel matrix",
+      "Eigendecompose centreed K"
      ]
     },
     {
@@ -409,7 +409,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Dual formulation: optimization depends on n (samples) not m (features)",
+      "Dual formulation: optimisation depends on n (samples) not m (features)",
       "Kernel trick avoids explicit feature transformation",
       "Sparse solution: only support vectors matter"
      ]
@@ -424,11 +424,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "42",
-   "q": "What is the Structural Risk Minimization principle?",
+   "q": "What is the Structural Risk Minimisation principle?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** SVM is based on minimizing:"
+     "text": "**Answer:** SVM is based on minimising:"
     },
     {
      "t": "code",
@@ -437,7 +437,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Balances training error (how well it fits data) with model simplicity (margin width). Theoretical foundation for SVM's generalization ability."
+     "text": "**Explanation:** Balances training error (how well it fits data) with model simplicity (margin width). Theoretical foundation for SVM's generalisation ability."
     }
    ],
    "kind": ""
@@ -455,7 +455,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Linear classifier in d dimensions: VC = d + 1",
-      "SVM maximizes margin → effective VC dimension is lower → better generalization"
+      "SVM maximises margin → effective VC dimension is lower → better generalisation"
      ]
     },
     {
@@ -518,17 +518,17 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "46",
-   "q": "What is the Sequential Minimal Optimization (SMO) algorithm?",
+   "q": "What is the Sequential Minimal Optimisation (SMO) algorithm?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Efficient algorithm for solving SVM optimization:"
+     "text": "**Answer:** Efficient algorithm for solving SVM optimisation:"
     },
     {
      "t": "ol",
      "items": [
       "Select two α values (heuristically)",
-      "Optimize these two while keeping others fixed (analytical solution)",
+      "Optimise these two while keeping others fixed (analytical solution)",
       "Repeat until convergence"
      ]
     },
@@ -557,7 +557,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Decision function is weighted sum of Gaussians centered on support vectors. γ controls bump width."
+     "text": "**Explanation:** Decision function is weighted sum of Gaussians centreed on support vectors. γ controls bump width."
     }
    ],
    "kind": ""
@@ -604,7 +604,7 @@ EC.receiveLesson({
      "rows": [
       [
        "Training",
-       "Slow (optimization)",
+       "Slow (optimisation)",
        "None (lazy learner)"
       ],
       [
@@ -645,14 +645,14 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Both are linear classifiers (with linear kernel)",
-      "Both can be regularized",
-      "**SVM:** Hinge loss → sparse support vectors, margin maximization",
+      "Both can be regularised",
+      "**SVM:** Hinge loss → sparse support vectors, margin maximisation",
       "**LR:** Log loss → probability estimates, all points contribute"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** As regularization increases, SVM and LR solutions converge. SVM focuses on boundary; LR uses all data."
+     "text": "**Explanation:** As regularisation increases, SVM and LR solutions converge. SVM focuses on boundary; LR uses all data."
     }
    ],
    "kind": ""

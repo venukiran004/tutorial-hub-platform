@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Estimate how well a model generalizes to unseen data by repeatedly splitting data into train/validation sets and averaging performance."
+     "text": "**Answer:** Estimate how well a model generalises to unseen data by repeatedly splitting data into train/validation sets and averaging performance."
     },
     {
      "t": "p",
@@ -36,7 +36,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Mean accuracy ≈ 0.85 with std ≈ 0.04. The model generalizes reasonably but has some variance across folds."
+     "text": "**Answer:** Mean accuracy ≈ 0.85 with std ≈ 0.04. The model generalises reasonably but has some variance across folds."
     },
     {
      "t": "p",
@@ -88,7 +88,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Without grouping, model can memorize patient-specific patterns and appear to generalize. GroupKFold ensures entire groups are held out together."
+     "text": "**Explanation:** Without grouping, model can memorise patient-specific patterns and appear to generalise. GroupKFold ensures entire groups are held out together."
     }
    ],
    "kind": ""
@@ -130,7 +130,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Without nesting, tuning on the same CV used for evaluation gives optimistic bias. Nested CV provides unbiased estimate of the tuned model's generalization."
+     "text": "**Explanation:** Without nesting, tuning on the same CV used for evaluation gives optimistic bias. Nested CV provides unbiased estimate of the tuned model's generalisation."
     }
    ],
    "kind": ""
@@ -161,7 +161,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "58",
-   "q": "How does Bayesian Optimization for hyperparameter tuning work?",
+   "q": "How does Bayesian Optimisation for hyperparameter tuning work?",
    "body": [
     {
      "t": "p",
@@ -169,7 +169,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** More efficient than grid/random — learns from previous evaluations. Libraries: Optuna, Hyperopt, scikit-optimize. Typically finds better parameters in fewer iterations."
+     "text": "**Explanation:** More efficient than grid/random — learns from previous evaluations. Libraries: Optuna, Hyperopt, scikit-optimise. Typically finds better parameters in fewer iterations."
     }
    ],
    "kind": ""
@@ -188,8 +188,8 @@ EC.receiveLesson({
      "items": [
       "Define-by-run API (dynamic search spaces)",
       "Pruning (early stopping bad trials)",
-      "Multi-objective optimization",
-      "Visualization dashboard"
+      "Multi-objective optimisation",
+      "Visualisation dashboard"
      ]
     },
     {
@@ -215,7 +215,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** If a trial is performing poorly after 2 epochs, don't wait for 100 epochs. Successive Halving and Hyperband formalize this."
+     "text": "**Explanation:** If a trial is performing poorly after 2 epochs, don't wait for 100 epochs. Successive Halving and Hyperband formalise this."
     }
    ],
    "kind": ""
@@ -286,7 +286,7 @@ EC.receiveLesson({
       "`max_depth`: 3-10 (tree depth, typically 6)",
       "`subsample`: 0.6-1.0 (row sampling)",
       "`colsample_bytree`: 0.6-1.0 (column sampling)",
-      "`reg_alpha` (L1), `reg_lambda` (L2): regularization",
+      "`reg_alpha` (L1), `reg_lambda` (L2): regularisation",
       "`min_child_weight`: 1-10 (minimum leaf weight)"
      ]
     },
@@ -304,11 +304,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Inversely related — lower learning rate needs more estimators for same performance but generalizes better (shrinkage effect)."
+     "text": "**Answer:** Inversely related — lower learning rate needs more estimators for same performance but generalises better (shrinkage effect)."
     },
     {
      "t": "p",
-     "text": "**Explanation:** `lr=0.1, n_estimators=100` ≈ `lr=0.01, n_estimators=1000`. Smaller lr = more regularized, less overfitting. Use early stopping to find optimal n_estimators for given lr."
+     "text": "**Explanation:** `lr=0.1, n_estimators=100` ≈ `lr=0.01, n_estimators=1000`. Smaller lr = more regularised, less overfitting. Use early stopping to find optimal n_estimators for given lr."
     }
    ],
    "kind": ""
@@ -326,7 +326,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Model selection:** Choosing the best model/hyperparameters (use validation set or inner CV)",
-      "**Model assessment:** Estimating generalization performance (use test set or outer CV)"
+      "**Model assessment:** Estimating generalisation performance (use test set or outer CV)"
      ]
     },
     {
@@ -377,7 +377,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Kernel:** 'rbf', 'linear', 'poly'",
-      "**C:** Regularization (0.001 to 1000, log scale)",
+      "**C:** Regularisation (0.001 to 1000, log scale)",
       "**gamma (RBF):** Kernel width ('scale', 'auto', 0.001 to 10, log scale)",
       "**degree (poly):** Polynomial degree (2-5)"
      ]
@@ -400,7 +400,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Best CV score may overfit the validation folds. Simpler model within noise range (1 SE ≈ noise level) likely generalizes better. Common in regularization path selection."
+     "text": "**Explanation:** Best CV score may overfit the validation folds. Simpler model within noise range (1 SE ≈ noise level) likely generalises better. Common in regularisation path selection."
     }
    ],
    "kind": ""
@@ -418,7 +418,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Random search instead of grid (more efficient)",
-      "Bayesian optimization (learns from previous trials)",
+      "Bayesian optimisation (learns from previous trials)",
       "Successive halving (prune bad configurations early)",
       "Transfer from similar tasks (warm starting)",
       "Use smaller proxy dataset for initial tuning"
@@ -505,7 +505,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Reusing a previously trained model as initialization for a new configuration. Saves computation."
+     "text": "**Answer:** Reusing a previously trained model as initialisation for a new configuration. Saves computation."
     },
     {
      "t": "code",
@@ -522,11 +522,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "74",
-   "q": "What is multi-objective hyperparameter optimization?",
+   "q": "What is multi-objective hyperparameter optimisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Tuning hyperparameters to optimize multiple conflicting objectives simultaneously (e.g., accuracy AND inference speed, precision AND recall)."
+     "text": "**Answer:** Tuning hyperparameters to optimise multiple conflicting objectives simultaneously (e.g., accuracy AND inference speed, precision AND recall)."
     },
     {
      "t": "p",
@@ -552,7 +552,7 @@ EC.receiveLesson({
       "Architecture: Layers, units per layer",
       "Dropout rate: 0.0 to 0.5",
       "Weight decay: 1e-6 to 1e-2",
-      "Optimizer: Adam, SGD with momentum, AdamW"
+      "Optimiser: Adam, SGD with momentum, AdamW"
      ]
     },
     {

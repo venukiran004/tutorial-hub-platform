@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Market sizing: estimate TAM from public data, surveys, proxies, (2) competitive analysis: scrape and analyze competitors' pricing, reviews, offerings, (3) demand prediction: use analogous markets or similar product launches, (4) customer segmentation: who in the new market matches our existing successful customers?, (5) cost modeling: estimate customer acquisition cost from digital ad data, (6) risk analysis: Monte Carlo simulation of revenue scenarios, (7) NLP: analyze social media/forum discussions about unmet needs in the market, (8) deliverable: data-backed recommendation with confidence intervals and risk scenarios."
+     "text": "**Answer:** (1) Market sizing: estimate TAM from public data, surveys, proxies, (2) competitive analysis: scrape and analyse competitors' pricing, reviews, offerings, (3) demand prediction: use analogous markets or similar product launches, (4) customer segmentation: who in the new market matches our existing successful customers?, (5) cost modelling: estimate customer acquisition cost from digital ad data, (6) risk analysis: Monte Carlo simulation of revenue scenarios, (7) NLP: analyse social media/forum discussions about unmet needs in the market, (8) deliverable: data-backed recommendation with confidence intervals and risk scenarios."
     }
    ],
    "kind": ""
@@ -66,7 +66,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Last-touch (simple but biased): credit the last channel before conversion, (2) first-touch: credit the first channel, (3) linear: equal credit to all channels, (4) data-driven: (a) Shapley values: game-theoretic fair allocation, (b) Markov chains: model customer journey as transition probabilities, remove each channel and measure impact, (5) incrementality testing: run holdout experiment per channel — measure true lift, (6) media mix modeling: regression of spend vs. conversions per channel, (7) practical: combine MMM (strategic allocation) with MTA (tactical optimization)."
+     "text": "**Answer:** (1) Last-touch (simple but biased): credit the last channel before conversion, (2) first-touch: credit the first channel, (3) linear: equal credit to all channels, (4) data-driven: (a) Shapley values: game-theoretic fair allocation, (b) Markov chains: model customer journey as transition probabilities, remove each channel and measure impact, (5) incrementality testing: run holdout experiment per channel — measure true lift, (6) media mix modelling: regression of spend vs. conversions per channel, (7) practical: combine MMM (strategic allocation) with MTA (tactical optimisation)."
     },
     {
      "t": "p",
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Standardize: re-evaluate ALL models on the same held-out test set, (2) multiple metrics: agree on primary metric + secondary metrics, (3) statistical significance: paired t-test or McNemar's test between top models, (4) practical considerations: inference time, model size, interpretability, (5) consensus: create a scorecard — each model rated on multiple dimensions, (6) if performance difference < 1%: choose based on simplicity and maintainability, (7) document: decision rationale, comparison results, chosen model and why."
+     "text": "**Answer:** (1) Standardise: re-evaluate ALL models on the same held-out test set, (2) multiple metrics: agree on primary metric + secondary metrics, (3) statistical significance: paired t-test or McNemar's test between top models, (4) practical considerations: inference time, model size, interpretability, (5) consensus: create a scorecard — each model rated on multiple dimensions, (6) if performance difference < 1%: choose based on simplicity and maintainability, (7) document: decision rationale, comparison results, chosen model and why."
     }
    ],
    "kind": ""
@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Step 1: Data check — (1) did data volume change? (2) new data source added? (3) schema change? (4) null rate spike? Step 2: Feature check — (5) feature distributions shifted? (6) any feature returning constant/null? (7) feature pipeline failed? Step 3: Model check — (8) was model version changed? (9) was model retrained with bad data? Step 4: Environment — (10) library version changed? (11) hardware change? Step 5: Ground truth — (12) did the labeling process change? (13) is the concept genuinely shifting? Tool: automated checks for steps 1-4, manual investigation for step 5."
+     "text": "**Answer:** Step 1: Data check — (1) did data volume change? (2) new data source added? (3) schema change? (4) null rate spike? Step 2: Feature check — (5) feature distributions shifted? (6) any feature returning constant/null? (7) feature pipeline failed? Step 3: Model check — (8) was model version changed? (9) was model retrained with bad data? Step 4: Environment — (10) library version changed? (11) hardware change? Step 5: Ground truth — (12) did the labelling process change? (13) is the concept genuinely shifting? Tool: automated checks for steps 1-4, manual investigation for step 5."
     }
    ],
    "kind": ""
@@ -150,7 +150,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Race condition: parallel processes accessing shared state, (2) non-deterministic operations: GPU floating point, random seeds not set, (3) timeout issues: external API call times out occasionally, (4) memory pressure: under high memory, behavior changes, (5) data: upstream data changes between queries, (6) debugging approach: (a) add extensive logging, (b) capture full state when failure occurs, (c) run in single-threaded mode to isolate parallelism issues, (d) monitor system resources during runs, (e) track exact input/output for failed runs."
+     "text": "**Answer:** (1) Race condition: parallel processes accessing shared state, (2) non-deterministic operations: GPU floating point, random seeds not set, (3) timeout issues: external API call times out occasionally, (4) memory pressure: under high memory, behaviour changes, (5) data: upstream data changes between queries, (6) debugging approach: (a) add extensive logging, (b) capture full state when failure occurs, (c) run in single-threaded mode to isolate parallelism issues, (d) monitor system resources during runs, (e) track exact input/output for failed runs."
     },
     {
      "t": "p",
@@ -166,7 +166,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pre-train on unlabeled data: mask random features, predict them from others, (2) TabNet: built-in self-supervised pre-training for tabular data, (3) contrastive learning: learn representations where similar rows are close, different rows are far, (4) VIME (Value Imputation and Mask Estimation): corrupt features, train to reconstruct, (5) SubTab: subsetting features as augmentation for contrastive learning, (6) benefits: learned representations capture feature interactions, (7) fine-tune: use pre-trained representations with small labeled dataset, (8) empirical: works best when unlabeled data is 10-100x larger than labeled."
+     "text": "**Answer:** (1) Pre-train on unlabelled data: mask random features, predict them from others, (2) TabNet: built-in self-supervised pre-training for tabular data, (3) contrastive learning: learn representations where similar rows are close, different rows are far, (4) VIME (Value Imputation and Mask Estimation): corrupt features, train to reconstruct, (5) SubTab: subsetting features as augmentation for contrastive learning, (6) benefits: learned representations capture feature interactions, (7) fine-tune: use pre-trained representations with small labelled dataset, (8) empirical: works best when unlabelled data is 10-100x larger than labelled."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Advanced Optimization**"
+     "text": "**Theme: Advanced Optimisation**"
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "391",
-   "q": "You need to solve a complex constrained optimization problem (resource allocation with 100 constraints). What approaches work?",
+   "q": "You need to solve a complex constrained optimisation problem (resource allocation with 100 constraints). What approaches work?",
    "body": [
     {
      "t": "p",
@@ -242,11 +242,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "392",
-   "q": "You're optimizing ad spend across 10 channels with a fixed budget. What's your approach?",
+   "q": "You're optimising ad spend across 10 channels with a fixed budget. What's your approach?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Response curves: model ROI as function of spend per channel (diminishing returns), (2) typically: log or Hill function — \\(f(x) = \\frac{a \\cdot x^b}{c + x^b}\\), (3) optimization: maximize total conversions subject to budget constraint, (4) formulation: \\(\\max \\sum_{i} f_i(x_i) \\text{ s.t. } \\sum_{i} x_i \\leq B\\), (5) solution: Lagrange multipliers or numerical optimization, (6) marginal analysis: allocate to channel with highest marginal return, (7) constraints: minimum spend per channel, maximum spend, (8) dynamic: re-optimize weekly as response curves change."
+     "text": "**Answer:** (1) Response curves: model ROI as function of spend per channel (diminishing returns), (2) typically: log or Hill function — \\(f(x) = \\frac{a \\cdot x^b}{c + x^b}\\), (3) optimisation: maximise total conversions subject to budget constraint, (4) formulation: \\(\\max \\sum_{i} f_i(x_i) \\text{ s.t. } \\sum_{i} x_i \\leq B\\), (5) solution: Lagrange multipliers or numerical optimisation, (6) marginal analysis: allocate to channel with highest marginal return, (7) constraints: minimum spend per channel, maximum spend, (8) dynamic: re-optimise weekly as response curves change."
     },
     {
      "t": "p",
@@ -274,7 +274,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Domain expert consultation: get ranges from business (\"max real order is 10K units\"), (2) historical analysis: what's the 99.9th percentile historically?, (3) categorize: (a) clearly impossible: negative prices → data error, (b) extreme but possible: 1M quantity could be bulk order, (c) suspicious: investigate case by case, (4) action by category: impossible → remove/correct, extreme → flag for review, suspicious → keep with flag feature, (5) don't delete silently: log all modifications, (6) create: cleaned_value and original_value columns."
+     "text": "**Answer:** (1) Domain expert consultation: get ranges from business (\"max real order is 10K units\"), (2) historical analysis: what's the 99.9th percentile historically?, (3) categorise: (a) clearly impossible: negative prices → data error, (b) extreme but possible: 1M quantity could be bulk order, (c) suspicious: investigate case by case, (4) action by category: impossible → remove/correct, extreme → flag for review, suspicious → keep with flag feature, (5) don't delete silently: log all modifications, (6) create: cleaned_value and original_value columns."
     },
     {
      "t": "p",
@@ -318,7 +318,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Choose a unique dataset: don't use Titanic or Boston Housing, (2) end-to-end: data collection → EDA → modeling → deployment (not just a notebook), (3) real problem: solve something you care about, (4) write-up: blog post explaining your approach, decisions, and learnings, (5) production touches: error handling, logging, tests, CI/CD, (6) show impact: \"model would save X hours/dollars,\" (7) GitHub: clean code, clear README, reproducible with instructions, (8) bad portfolio projects: Kaggle competition with copy-pasted top kernel, (9) good: web app where users interact with your model."
+     "text": "**Answer:** (1) Choose a unique dataset: don't use Titanic or Boston Housing, (2) end-to-end: data collection → EDA → modelling → deployment (not just a notebook), (3) real problem: solve something you care about, (4) write-up: blog post explaining your approach, decisions, and learnings, (5) production touches: error handling, logging, tests, CI/CD, (6) show impact: \"model would save X hours/dollars,\" (7) GitHub: clean code, clear README, reproducible with instructions, (8) bad portfolio projects: Kaggle competition with copy-pasted top kernel, (9) good: web app where users interact with your model."
     }
    ],
    "kind": ""
@@ -330,7 +330,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Compute: unlimited auto-scaling → can run larger experiments, (2) cost: pay-per-use replaces fixed hardware — optimize for cost (spot instances, right-sizing), (3) storage: S3/GCS for data lake (cheap, scalable), (4) tools: managed services (SageMaker, Vertex AI) replace manual setup, (5) collaboration: shared environments, notebooks in the cloud, (6) security: new model — IAM roles, VPC, encryption configs, (7) networking: data transfer costs and latency, (8) migration plan: lift-and-shift first, then optimize for cloud-native, (9) training: team needs cloud skills (Terraform, IAM, cloud CLI)."
+     "text": "**Answer:** (1) Compute: unlimited auto-scaling → can run larger experiments, (2) cost: pay-per-use replaces fixed hardware — optimise for cost (spot instances, right-sizing), (3) storage: S3/GCS for data lake (cheap, scalable), (4) tools: managed services (SageMaker, Vertex AI) replace manual setup, (5) collaboration: shared environments, notebooks in the cloud, (6) security: new model — IAM roles, VPC, encryption configs, (7) networking: data transfer costs and latency, (8) migration plan: lift-and-shift first, then optimise for cloud-native, (9) training: team needs cloud skills (Terraform, IAM, cloud CLI)."
     }
    ],
    "kind": ""
@@ -342,7 +342,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Quantization: FP32 → INT8 (reduces model size and compute by ~4x, <1% accuracy loss typically), (2) pruning: remove unnecessary weights (30-50% without performance loss), (3) distillation: train smaller model to mimic larger model, (4) feature reduction: remove least important features (fewer computations), (5) caching: cache frequent predictions, (6) batch: batch requests for GPU efficiency, (7) simpler model: can a linear model replace part of the pipeline?, (8) hardware: GPU → optimized CPU inference (cheaper per prediction for small models), (9) measure: actual latency and cost per prediction before/after."
+     "text": "**Answer:** (1) Quantisation: FP32 → INT8 (reduces model size and compute by ~4x, <1% accuracy loss typically), (2) pruning: remove unnecessary weights (30-50% without performance loss), (3) distillation: train smaller model to mimic larger model, (4) feature reduction: remove least important features (fewer computations), (5) caching: cache frequent predictions, (6) batch: batch requests for GPU efficiency, (7) simpler model: can a linear model replace part of the pipeline?, (8) hardware: GPU → optimised CPU inference (cheaper per prediction for small models), (9) measure: actual latency and cost per prediction before/after."
     }
    ],
    "kind": ""
@@ -354,7 +354,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Leakage: using future information → strict temporal splits, pipeline audit, (2) wrong metric: optimizing accuracy when business cares about cost → align metrics with business goals, (3) skipping EDA: jumping to modeling → mandatory EDA phase, (4) no baseline: can't assess if model is good → always establish baseline first, (5) overcomplication: neural network when logistic regression works → start simple, complexity ladder, (6) poor communication: great model nobody uses → involve stakeholders early, (7) no monitoring: model degrades silently → automated monitoring and alerts, (8) single metric tunnel vision: improving one metric while degrading others → multi-metric evaluation."
+     "text": "**Answer:** (1) Leakage: using future information → strict temporal splits, pipeline audit, (2) wrong metric: optimising accuracy when business cares about cost → align metrics with business goals, (3) skipping EDA: jumping to modelling → mandatory EDA phase, (4) no baseline: can't assess if model is good → always establish baseline first, (5) overcomplication: neural network when logistic regression works → start simple, complexity ladder, (6) poor communication: great model nobody uses → involve stakeholders early, (7) no monitoring: model degrades silently → automated monitoring and alerts, (8) single metric tunnel vision: improving one metric while degrading others → multi-metric evaluation."
     }
    ],
    "kind": ""

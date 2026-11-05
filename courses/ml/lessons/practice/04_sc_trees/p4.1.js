@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Chooses the feature and threshold that maximizes information gain (or minimizes impurity):"
+     "text": "**Answer:** Chooses the feature and threshold that maximises information gain (or minimises impurity):"
     },
     {
      "t": "ul",
@@ -92,12 +92,12 @@ EC.receiveLesson({
      "items": [
       "Training accuracy = 100%",
       "Severe overfitting",
-      "Poor generalization"
+      "Poor generalisation"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unrestricted trees memorize training data, including noise. Must prune or set depth limits."
+     "text": "**Explanation:** Unrestricted trees memorise training data, including noise. Must prune or set depth limits."
     }
    ],
    "kind": ""
@@ -166,7 +166,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Easy to interpret and visualize",
+      "Easy to interpret and visualise",
       "No feature scaling needed",
       "Handles mixed feature types (numerical + categorical)",
       "Handles non-linear relationships",
@@ -448,7 +448,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Random Forest: multiply by number of trees, but parallelizable."
+     "text": "**Explanation:** Random Forest: multiply by number of trees, but parallelisable."
     }
    ],
    "kind": ""
@@ -514,7 +514,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Information gain is biased toward features with many values (like ID columns). Gain ratio normalizes by split information, penalizing features that create many small groups."
+     "text": "**Explanation:** Information gain is biased toward features with many values (like ID columns). Gain ratio normalises by split information, penalising features that create many small groups."
     }
    ],
    "kind": ""
@@ -580,11 +580,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "What is the Extra Trees (Extremely Randomized Trees) algorithm?",
+   "q": "What is the Extra Trees (Extremely Randomised Trees) algorithm?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Like Random Forest but with additional randomization:"
+     "text": "**Answer:** Like Random Forest but with additional randomisation:"
     },
     {
      "t": "ol",
@@ -595,7 +595,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Faster training (no optimal threshold search), more randomization → sometimes better generalization. Lower variance but potentially higher bias."
+     "text": "**Explanation:** Faster training (no optimal threshold search), more randomisation → sometimes better generalisation. Lower variance but potentially higher bias."
     }
    ],
    "kind": ""

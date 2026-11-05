@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) Use cost-sensitive learning: set class_weight={0:1, 1:10}, (2) adjust classification threshold — lower threshold catches more defaults, (3) optimize for expected cost: E[cost] = FP×cost_fp + FN×cost_fn, (4) use decision curve analysis to find optimal threshold, (5) train with custom loss function reflecting asymmetric costs, (6) evaluate with profit/loss metric instead of accuracy."
+     "text": "**Answer:** (1) Use cost-sensitive learning: set class_weight={0:1, 1:10}, (2) adjust classification threshold — lower threshold catches more defaults, (3) optimise for expected cost: E[cost] = FP×cost_fp + FN×cost_fn, (4) use decision curve analysis to find optimal threshold, (5) train with custom loss function reflecting asymmetric costs, (6) evaluate with profit/loss metric instead of accuracy."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Analyze the confusion matrix to identify which classes overlap, (2) add distinguishing features between those classes, (3) merge them if they're truly similar, then separate later, (4) use hierarchical classification — first broad categories, then fine-grained, (5) use One-vs-One (OvO) classifiers for the confused pair, (6) collect more labeled data for the ambiguous cases, (7) use focal loss to focus on hard examples."
+     "text": "**Answer:** (1) Analyse the confusion matrix to identify which classes overlap, (2) add distinguishing features between those classes, (3) merge them if they're truly similar, then separate later, (4) use hierarchical classification — first broad categories, then fine-grained, (5) use One-vs-One (OvO) classifiers for the confused pair, (6) collect more labelled data for the ambiguous cases, (7) use focal loss to focus on hard examples."
     }
    ],
    "kind": ""
@@ -126,7 +126,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is a fairness issue. Approaches: (1) evaluate disparate impact — check if selection rates differ across groups, (2) use equalized odds — ensure TPR and FPR are equal across groups, (3) training-time: use adversarial debiasing or reweighting, (4) post-processing: adjust thresholds per group, (5) pre-processing: remove proxy variables or balance training data, (6) report disaggregated metrics in model card, (7) legal/regulatory compliance check."
+     "text": "**Answer:** This is a fairness issue. Approaches: (1) evaluate disparate impact — check if selection rates differ across groups, (2) use equalised odds — ensure TPR and FPR are equal across groups, (3) training-time: use adversarial debiasing or reweighting, (4) post-processing: adjust thresholds per group, (5) pre-processing: remove proxy variables or balance training data, (6) report disaggregated metrics in model card, (7) legal/regulatory compliance check."
     }
    ],
    "kind": ""
@@ -166,7 +166,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use `n_init=20` (or higher) — runs K-means 20 times with different seeds, picks best, (2) set `random_state=42` for reproducibility, (3) use K-means++ initialization (default in sklearn), (4) if still unstable, data may not have clear cluster structure, (5) try 100 runs and consensus clustering — assign to most frequent cluster, (6) consider if K-means is appropriate — non-spherical clusters need DBSCAN or Gaussian Mixture."
+     "text": "**Answer:** (1) Use `n_init=20` (or higher) — runs K-means 20 times with different seeds, picks best, (2) set `random_state=42` for reproducibility, (3) use K-means++ initialisation (default in sklearn), (4) if still unstable, data may not have clear cluster structure, (5) try 100 runs and consensus clustering — assign to most frequent cluster, (6) consider if K-means is appropriate — non-spherical clusters need DBSCAN or Gaussian Mixture."
     }
    ],
    "kind": ""
@@ -214,7 +214,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) This indicates the new feature has high variance and dominates distance calculations, (2) standardize all features to mean=0, std=1 before clustering, (3) use feature weighting — domain experts assign importance, (4) reduce with PCA to orthogonal components first, (5) test stability: bootstrap clustering and measure cluster membership consistency, (6) consider feature selection specifically for clustering (Laplacian score, spectral methods)."
+     "text": "**Answer:** (1) This indicates the new feature has high variance and dominates distance calculations, (2) standardise all features to mean=0, std=1 before clustering, (3) use feature weighting — domain experts assign importance, (4) reduce with PCA to orthogonal components first, (5) test stability: bootstrap clustering and measure cluster membership consistency, (6) consider feature selection specifically for clustering (Laplacian score, spectral methods)."
     }
    ],
    "kind": ""
@@ -226,7 +226,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Internal validation metrics: (1) silhouette score — measures how similar points are to own cluster vs. nearest other, (2) Davies-Bouldin Index — lower is better, measures cluster separation, (3) Calinski-Harabasz Index — ratio of between-cluster to within-cluster dispersion, (4) cluster stability via bootstrapping, (5) visual validation: PCA/t-SNE/UMAP plots colored by cluster, (6) business validation: do clusters have distinct, interpretable profiles?"
+     "text": "**Answer:** Internal validation metrics: (1) silhouette score — measures how similar points are to own cluster vs. nearest other, (2) Davies-Bouldin Index — lower is better, measures cluster separation, (3) Calinski-Harabasz Index — ratio of between-cluster to within-cluster dispersion, (4) cluster stability via bootstrapping, (5) visual validation: PCA/t-SNE/UMAP plots coloured by cluster, (6) business validation: do clusters have distinct, interpretable profiles?"
     }
    ],
    "kind": ""
@@ -238,7 +238,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use the trained cluster centers — assign to nearest centroid (for K-means), (2) use `model.predict(new_data)` from trained model, (3) for DBSCAN, classify as nearest core point's cluster or noise, (4) train a classifier on (features → cluster_label) for faster real-time assignment, (5) set up monitoring — if many new customers don't fit existing clusters well, it's time to re-cluster, (6) periodically retrain clusters to capture evolving patterns."
+     "text": "**Answer:** (1) Use the trained cluster centres — assign to nearest centroid (for K-means), (2) use `model.predict(new_data)` from trained model, (3) for DBSCAN, classify as nearest core point's cluster or noise, (4) train a classifier on (features → cluster_label) for faster real-time assignment, (5) set up monitoring — if many new customers don't fit existing clusters well, it's time to re-cluster, (6) periodically retrain clusters to capture evolving patterns."
     }
    ],
    "kind": ""
@@ -250,7 +250,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) t-SNE is non-linear and distorts distances — clusters in t-SNE don't always exist in original space, (2) t-SNE parameters (perplexity) affect cluster appearance — different perplexity gives different visualizations, (3) K-means assumes spherical clusters — use DBSCAN or spectral clustering for non-convex shapes, (4) apply UMAP (preserves more global structure than t-SNE) and cluster on UMAP embeddings, (5) don't use t-SNE for clustering — only for visualization."
+     "text": "**Answer:** (1) t-SNE is non-linear and distorts distances — clusters in t-SNE don't always exist in original space, (2) t-SNE parameters (perplexity) affect cluster appearance — different perplexity gives different visualisations, (3) K-means assumes spherical clusters — use DBSCAN or spectral clustering for non-convex shapes, (4) apply UMAP (preserves more global structure than t-SNE) and cluster on UMAP embeddings, (5) don't use t-SNE for clustering — only for visualisation."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use transformer models (BERT/RoBERTa) fine-tuned on sentiment — they capture context better than bag-of-words, (2) aspect-based sentiment: analyze sentiment per aspect (quality: positive, price: negative), (3) train on sarcasm-labeled data as additional task, (4) use emoji and punctuation as features (sarcasm often has \"!! 🙄\"), (5) ensemble lexicon-based + ML approach, (6) for mixed reviews: sentence-level sentiment aggregation."
+     "text": "**Answer:** (1) Use transformer models (BERT/RoBERTa) fine-tuned on sentiment — they capture context better than bag-of-words, (2) aspect-based sentiment: analyse sentiment per aspect (quality: positive, price: negative), (3) train on sarcasm-labelled data as additional task, (4) use emoji and punctuation as features (sarcasm often has \"!! 🙄\"), (5) ensemble lexicon-based + ML approach, (6) for mixed reviews: sentence-level sentiment aggregation."
     }
    ],
    "kind": ""
@@ -290,7 +290,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Preprocessing: handle hashtags, mentions, emojis, URLs, slang, abbreviations, (2) fine-tune on social media data (domain adaptation), (3) use models pre-trained on social media (BERTweet, Twitter-RoBERTa), (4) expand your training data with social media examples, (5) handle code-switching (multiple languages), (6) normalize text: \"u r\" → \"you are\", \"gonna\" → \"going to\", (7) keep emojis as features — they carry sentiment information."
+     "text": "**Answer:** (1) Preprocessing: handle hashtags, mentions, emojis, URLs, slang, abbreviations, (2) fine-tune on social media data (domain adaptation), (3) use models pre-trained on social media (BERTweet, Twitter-RoBERTa), (4) expand your training data with social media examples, (5) handle code-switching (multiple languages), (6) normalise text: \"u r\" → \"you are\", \"gonna\" → \"going to\", (7) keep emojis as features — they carry sentiment information."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use multilingual models: mBERT, XLM-RoBERTa — trained on 100+ languages, (2) fine-tune on combined multilingual data, (3) zero-shot cross-lingual transfer: train on English, test on other languages, (4) translate-train: machine translate English training data to other languages, (5) language-specific tokenizers matter — use SentencePiece with multilingual vocab, (6) evaluate per-language to identify weak languages needing more data."
+     "text": "**Answer:** (1) Use multilingual models: mBERT, XLM-RoBERTa — trained on 100+ languages, (2) fine-tune on combined multilingual data, (3) zero-shot cross-lingual transfer: train on English, test on other languages, (4) translate-train: machine translate English training data to other languages, (5) language-specific tokenisers matter — use SentencePiece with multilingual vocab, (6) evaluate per-language to identify weak languages needing more data."
     }
    ],
    "kind": ""
@@ -326,7 +326,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Semantic search with sentence embeddings (Sentence-BERT), (2) BM25 for keyword matching + neural reranking for relevance, (3) hybrid: BM25 retrieves candidates, cross-encoder reranks top-k, (4) query expansion: add synonyms (\"cheap\" → \"affordable, budget\"), (5) generate embeddings for both queries and documents offline, (6) use approximate nearest neighbor (FAISS/Annoy) for fast similarity search, (7) fine-tune embeddings on your query-document pairs for domain adaptation."
+     "text": "**Answer:** (1) Semantic search with sentence embeddings (Sentence-BERT), (2) BM25 for keyword matching + neural reranking for relevance, (3) hybrid: BM25 retrieves candidates, cross-encoder reranks top-k, (4) query expansion: add synonyms (\"cheap\" → \"affordable, budget\"), (5) generate embeddings for both queries and documents offline, (6) use approximate nearest neighbour (FAISS/Annoy) for fast similarity search, (7) fine-tune embeddings on your query-document pairs for domain adaptation."
     }
    ],
    "kind": ""

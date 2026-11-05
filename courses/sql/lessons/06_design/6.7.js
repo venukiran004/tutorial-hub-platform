@@ -170,7 +170,7 @@ SELECT [1, 2, 3] AS list, {'a': 1} AS struct;                            -- nest
       { t: "p", text: "Pick one system that holds the truth and enforces the constraints — for almost every application, a relational database — and let every other store be derived from it and rebuildable from it. **A cache that can be flushed, a search index that can be reindexed, a warehouse that can be reloaded: these are safe.** Two systems that each hold part of the truth, with the application responsible for keeping them agreed, is the design that produces the incidents." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "A product catalogue with variable attributes per category",
       rungs: [
         { level: "bad", label: "A separate document store because 'the schema varies'", code: `// MongoDB: products collection, any fields per document; orders stay in PostgreSQL

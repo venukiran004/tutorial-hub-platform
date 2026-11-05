@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Color features: mean RGB per channel, dominant colors (K-means on pixels), color histogram, saturation/brightness, (2) texture: Gabor filter responses, LBP (Local Binary Pattern), edge density, (3) shape: aspect ratio, object count (from simple segmentation), symmetry, (4) quality: blur detection (Laplacian variance), brightness, contrast, (5) pre-trained CNN features: pass image through ResNet/VGG, extract penultimate layer activations (2048-dim), reduce with PCA. The CNN embedding approach usually works best — it captures semantic features automatically."
+     "text": "(1) Colour features: mean RGB per channel, dominant colours (K-means on pixels), colour histogram, saturation/brightness, (2) texture: Gabor filter responses, LBP (Local Binary Pattern), edge density, (3) shape: aspect ratio, object count (from simple segmentation), symmetry, (4) quality: blur detection (Laplacian variance), brightness, contrast, (5) pre-trained CNN features: pass image through ResNet/VGG, extract penultimate layer activations (2048-dim), reduce with PCA. The CNN embedding approach usually works best — it captures semantic features automatically."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Parse the User-Agent: (1) device_type: mobile/tablet/desktop, (2) OS: iOS/Android/Windows/Mac/Linux, (3) browser: Chrome/Safari/Firefox/Edge, (4) OS_version and browser_version, (5) is_bot (known bot user agents), (6) is_outdated_browser — security risk indicator, (7) device_brand for mobile (Apple/Samsung/Huawei), (8) is_webview — in-app browser, (9) screen resolution if available. Use libraries like `user-agents` for parsing. These features are valuable for fraud detection (bots use unusual user agents), personalization, and compatibility analysis."
+     "text": "Parse the User-Agent: (1) device_type: mobile/tablet/desktop, (2) OS: iOS/Android/Windows/Mac/Linux, (3) browser: Chrome/Safari/Firefox/Edge, (4) OS_version and browser_version, (5) is_bot (known bot user agents), (6) is_outdated_browser — security risk indicator, (7) device_brand for mobile (Apple/Samsung/Huawei), (8) is_webview — in-app browser, (9) screen resolution if available. Use libraries like `user-agents` for parsing. These features are valuable for fraud detection (bots use unusual user agents), personalisation, and compatibility analysis."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Compare recent behavior to historical: (1) `activity_last_7d / activity_last_30d` — ratio >1 means increasing, (2) slope of activity over time windows (linear regression coefficient), (3) acceleration: `(activity_last_7d - activity_prev_7d) - (activity_prev_7d - activity_prev_prev_7d)`, (4) streak features: consecutive_active_days, max_streak_length, (5) trend classification: is_increasing, is_stable, is_declining based on recent trajectory, (6) exponentially weighted moving average — more recent activity counts more. Momentum features are powerful predictors for churn and conversion."
+     "text": "Compare recent behaviour to historical: (1) `activity_last_7d / activity_last_30d` — ratio >1 means increasing, (2) slope of activity over time windows (linear regression coefficient), (3) acceleration: `(activity_last_7d - activity_prev_7d) - (activity_prev_7d - activity_prev_prev_7d)`, (4) streak features: consecutive_active_days, max_streak_length, (5) trend classification: is_increasing, is_stable, is_declining based on recent trajectory, (6) exponentially weighted moving average — more recent activity counts more. Momentum features are powerful predictors for churn and conversion."
     }
    ],
    "kind": ""
@@ -134,7 +134,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Options: (1) Multilingual embeddings: use mBERT, XLM-RoBERTa, or multilingual-e5 which encode 100+ languages into the same embedding space, (2) Translate all text to English first, then extract features (adds latency but simplifies downstream), (3) Language-specific pipelines: detect language, route to language-specific tokenizer/model, (4) Language-agnostic features: text_length, punctuation_ratio, uppercase_ratio, number_density work across languages, (5) Add language as a categorical feature. Multilingual embeddings are the best modern approach — no translation needed, shared semantic space."
+     "text": "Options: (1) Multilingual embeddings: use mBERT, XLM-RoBERTa, or multilingual-e5 which encode 100+ languages into the same embedding space, (2) Translate all text to English first, then extract features (adds latency but simplifies downstream), (3) Language-specific pipelines: detect language, route to language-specific tokeniser/model, (4) Language-agnostic features: text_length, punctuation_ratio, uppercase_ratio, number_density work across languages, (5) Add language as a categorical feature. Multilingual embeddings are the best modern approach — no translation needed, shared semantic space."
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) days_since_last_event — simple, intuitive, good for models that handle linear relationships, (2) log(days_since) — compresses long recency, better for skewed distributions, (3) exponential decay: `exp(-lambda * days_since)` — high value for recent, drops off smoothly, (4) binary recency thresholds: active_in_last_7d, active_in_last_30d — simple but loses granularity, (5) recency rank: where this user falls among all users in recency — normalized, (6) recency relative to user's pattern: days_since_last / avg_inter_event_interval — captures if this gap is unusual for THIS user. Use multiple recency formulations as different features."
+     "text": "(1) days_since_last_event — simple, intuitive, good for models that handle linear relationships, (2) log(days_since) — compresses long recency, better for skewed distributions, (3) exponential decay: `exp(-lambda * days_since)` — high value for recent, drops off smoothly, (4) binary recency thresholds: active_in_last_7d, active_in_last_30d — simple but loses granularity, (5) recency rank: where this user falls among all users in recency — normalised, (6) recency relative to user's pattern: days_since_last / avg_inter_event_interval — captures if this gap is unusual for THIS user. Use multiple recency formulations as different features."
     }
    ],
    "kind": ""
@@ -194,7 +194,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Distance from decision boundary: for linear models, the raw score before sigmoid is the margin, (2) calibrated probability as a feature for downstream models, (3) ensemble agreement: what percentage of trees/models predict positive?, (4) nearest neighbor analysis: target rate among K nearest neighbors, (5) density estimation: P(positive|similar samples), (6) feature-level signal strength: how many features individually suggest positive vs negative? Create `positive_feature_count` and `negative_feature_count`. These meta-features are useful for cascaded models and escalation rules."
+     "text": "(1) Distance from decision boundary: for linear models, the raw score before sigmoid is the margin, (2) calibrated probability as a feature for downstream models, (3) ensemble agreement: what percentage of trees/models predict positive?, (4) nearest neighbour analysis: target rate among K nearest neighbours, (5) density estimation: P(positive|similar samples), (6) feature-level signal strength: how many features individually suggest positive vs negative? Create `positive_feature_count` and `negative_feature_count`. These meta-features are useful for cascaded models and escalation rules."
     }
    ],
    "kind": ""
@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Coefficient of variation: std/mean of periodic values, (2) entropy of binned activity distribution, (3) autocorrelation at lag-1 and lag-7 — high autocorrelation = consistent patterns, (4) count of \"regime changes\" detected by change point detection algorithms, (5) day-to-day correlation of activity patterns, (6) regularity index: 1 - (variance of inter-event intervals / mean²), (7) periodicity score: strength of dominant frequency in Fourier transform. Consistent users are typically more predictable and have higher retention — this is a valuable behavioral feature."
+     "text": "(1) Coefficient of variation: std/mean of periodic values, (2) entropy of binned activity distribution, (3) autocorrelation at lag-1 and lag-7 — high autocorrelation = consistent patterns, (4) count of \"regime changes\" detected by change point detection algorithms, (5) day-to-day correlation of activity patterns, (6) regularity index: 1 - (variance of inter-event intervals / mean²), (7) periodicity score: strength of dominant frequency in Fourier transform. Consistent users are typically more predictable and have higher retention — this is a valuable behavioural feature."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Quadratic: age² — captures U-shaped relationships (e.g., spending high for young and old), (2) age_midpoint (21, 29.5, 39.5) — for models needing numeric input, (3) age interactions: age_group × product_category, age_group × channel, (4) age relative to product: young_for_luxury_brand = (age_midpoint < 30) & (brand = luxury), (5) generation feature: GenZ, Millennial, GenX, Boomer — culturally meaningful, (6) life stage proxy: student, young_professional, family, pre_retirement, retirement. Life stage is often more predictive than raw age for consumer behavior."
+     "text": "(1) Quadratic: age² — captures U-shaped relationships (e.g., spending high for young and old), (2) age_midpoint (21, 29.5, 39.5) — for models needing numeric input, (3) age interactions: age_group × product_category, age_group × channel, (4) age relative to product: young_for_luxury_brand = (age_midpoint < 30) & (brand = luxury), (5) generation feature: GenZ, Millennial, GenX, Boomer — culturally meaningful, (6) life stage proxy: student, young_professional, family, pre_retirement, retirement. Life stage is often more predictive than raw age for consumer behaviour."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Cross features: user_age_group × product_category, user_income × product_price_tier, user_location × product_shipping_speed. Affinity features: user's historical avg_rating_for_this_category, user's purchase_frequency_for_this_brand, price_sensitivity = (user's chosen_price / category_avg_price). Match features: does_product_match_user_preferences (size, color, style), brand_loyalty_to_this_brand, category_familiarity_score. Collaborative: users_like_me_bought_this_rate, items_like_this_rated_by_user. These cross features capture the user-item compatibility that drives recommendations."
+     "text": "Cross features: user_age_group × product_category, user_income × product_price_tier, user_location × product_shipping_speed. Affinity features: user's historical avg_rating_for_this_category, user's purchase_frequency_for_this_brand, price_sensitivity = (user's chosen_price / category_avg_price). Match features: does_product_match_user_preferences (size, colour, style), brand_loyalty_to_this_brand, category_familiarity_score. Collaborative: users_like_me_bought_this_rate, items_like_this_rated_by_user. These cross features capture the user-item compatibility that drives recommendations."
     }
    ],
    "kind": ""
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "148",
-   "q": "You're told your model needs a \"surprise\" feature — how surprised the system should be by a given event. How do you operationalize this?",
+   "q": "You're told your model needs a \"surprise\" feature — how surprised the system should be by a given event. How do you operationalise this?",
    "body": [
     {
      "t": "p",
@@ -302,7 +302,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Split the feature into two eras: `premium_v1` (pre-change) and `premium_v2` (post-change), (2) harmonize to one definition: if you can recompute the old definition using raw data, apply the new definition retroactively, (3) create a time-interaction: `premium × is_post_change`, (4) add a `definition_version` feature, (5) if harmonization isn't possible, treat data before and after the change as different datasets and validate the model handles both. Document the definition change timestamp. This is a common production issue — feature drift due to business rule changes."
+     "text": "(1) Split the feature into two eras: `premium_v1` (pre-change) and `premium_v2` (post-change), (2) harmonise to one definition: if you can recompute the old definition using raw data, apply the new definition retroactively, (3) create a time-interaction: `premium × is_post_change`, (4) add a `definition_version` feature, (5) if harmonisation isn't possible, treat data before and after the change as different datasets and validate the model handles both. Document the definition change timestamp. This is a common production issue — feature drift due to business rule changes."
     }
    ],
    "kind": ""

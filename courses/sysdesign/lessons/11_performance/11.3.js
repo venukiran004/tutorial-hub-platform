@@ -327,7 +327,7 @@ lower(email), index on lower():   Bitmap Index Scan on plan_orders_lower_idx    
       ],
       requirements: [
         "A million-row orders table with one very large customer",
-        "EXPLAIN ANALYZE timings for both customers under each index",
+        "EXPLAIN AnalysE timings for both customers under each index",
         "Report the plan shape for the small shop",
         "Explain why each single-column index fails one of the two customers"
       ],

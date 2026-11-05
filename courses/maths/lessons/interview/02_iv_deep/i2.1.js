@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**A:** Bayes' Theorem updates beliefs given evidence: \\(P(\\theta|D) \\propto P(D|\\theta) \\cdot P(\\theta)\\). In ML: the likelihood \\(P(D|\\theta)\\) is the data fit (loss function), the prior \\(P(\\theta)\\) becomes regularization, and the posterior \\(P(\\theta|D)\\) is what we optimize. MLE maximizes only the likelihood (no regularization), while MAP includes the prior (regularization). Specifically: Gaussian prior → L2/Ridge, Laplace prior → L1/Lasso. Bayesian approaches also naturally quantify uncertainty — a MAP or MLE gives a point estimate, but the full posterior gives a distribution over parameters."
+     "text": "**A:** Bayes' Theorem updates beliefs given evidence: \\(P(\\theta|D) \\propto P(D|\\theta) \\cdot P(\\theta)\\). In ML: the likelihood \\(P(D|\\theta)\\) is the data fit (loss function), the prior \\(P(\\theta)\\) becomes regularisation, and the posterior \\(P(\\theta|D)\\) is what we optimise. MLE maximises only the likelihood (no regularisation), while MAP includes the prior (regularisation). Specifically: Gaussian prior → L2/Ridge, Laplace prior → L1/Lasso. Bayesian approaches also naturally quantify uncertainty — a MAP or MLE gives a point estimate, but the full posterior gives a distribution over parameters."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**A:** Use **mean** for symmetric distributions without outliers — it uses all data and is the MLE for Normal distributions. Use **median** for skewed distributions or when outliers are present — it's robust and minimizes MAE. In income data (right-skewed), median is more representative. In ML: L2 loss (MSE) → predicts the mean, L1 loss (MAE) → predicts the median. When both mean and median differ significantly, the distribution is likely skewed."
+     "text": "**A:** Use **mean** for symmetric distributions without outliers — it uses all data and is the MLE for Normal distributions. Use **median** for skewed distributions or when outliers are present — it's robust and minimises MAE. In income data (right-skewed), median is more representative. In ML: L2 loss (MSE) → predicts the mean, L1 loss (MAE) → predicts the median. When both mean and median differ significantly, the distribution is likely skewed."
     }
    ],
    "kind": ""
@@ -66,19 +66,19 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**A:** MLE finds parameters maximizing \\(P(\\text{data}|\\theta)\\). Equivalently, it minimizes \\(-\\log P(\\text{data}|\\theta)\\) (negative log-likelihood). This directly gives us:"
+     "text": "**A:** MLE finds parameters maximising \\(P(\\text{data}|\\theta)\\). Equivalently, it minimises \\(-\\log P(\\text{data}|\\theta)\\) (negative log-likelihood). This directly gives us:"
     },
     {
      "t": "ul",
      "items": [
-      "**Normal noise assumption** → minimize MSE (regression)",
-      "**Bernoulli assumption** → minimize binary cross-entropy (classification)",
-      "**Categorical assumption** → minimize categorical cross-entropy (multi-class)"
+      "**Normal noise assumption** → minimise MSE (regression)",
+      "**Bernoulli assumption** → minimise binary cross-entropy (classification)",
+      "**Categorical assumption** → minimise categorical cross-entropy (multi-class)"
      ]
     },
     {
      "t": "p",
-     "text": "So every time you train a model by minimizing MSE or cross-entropy, you're doing MLE. Adding regularization makes it MAP estimation: \\(-\\log P(\\text{data}|\\theta) - \\log P(\\theta) = \\text{loss} + \\text{regularization}\\)."
+     "text": "So every time you train a model by minimising MSE or cross-entropy, you're doing MLE. Adding regularisation makes it MAP estimation: \\(-\\log P(\\text{data}|\\theta) - \\log P(\\theta) = \\text{loss} + \\text{regularisation}\\)."
     }
    ],
    "kind": ""
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "5",
-   "q": "What distribution would you use for modeling count data?",
+   "q": "What distribution would you use for modelling count data?",
    "body": [
     {
      "t": "p",
@@ -123,9 +123,9 @@ EC.receiveLesson({
       "**Hypotheses:** H₀: no difference in conversion. H₁: new flow has different conversion.",
       "**Sample size:** Power analysis — if baseline is 10% and MDE is 5% relative lift (to 10.5%), need ~58K per group at 80% power.",
       "**Duration:** At 5K visitors/day across both groups, ~116K users takes ~23 days, so plan 4 full weeks to cover weekly cycles.",
-      "**Randomization:** User-level (cookie/user ID), not session-level.",
+      "**Randomisation:** User-level (cookie/user ID), not session-level.",
       "**Run:** No peeking! Monitor guardrail metrics only.",
-      "**Analyze:** Two-proportion z-test, CI for the lift, check SRM.",
+      "**Analyse:** Two-proportion z-test, CI for the lift, check SRM.",
       "**Decide:** If significant AND practically meaningful → ship."
      ]
     }

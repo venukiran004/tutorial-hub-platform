@@ -192,7 +192,7 @@ trap   = [max(T[k] @ E[i] for i in range(len(E))) for k in range(len(T))]`,
 
     { t: "callout", kind: "note", title: "A false cache hit is not a slow response",
       body: [
-        { t: "p", text: "Every other failure mode in this module degrades gracefully: a slow request is still correct, a preempted request retries, a quantized model is a bit worse everywhere. A false semantic cache hit returns **a fluent, confident answer to a question the user did not ask**, with no error, no log line and no latency anomaly — it is the fastest response your system produces." },
+        { t: "p", text: "Every other failure mode in this module degrades gracefully: a slow request is still correct, a preempted request retries, a quantised model is a bit worse everywhere. A false semantic cache hit returns **a fluent, confident answer to a question the user did not ask**, with no error, no log line and no latency anomaly — it is the fastest response your system produces." },
         { t: "p", text: "That is why this belongs in a deployment lesson rather than a performance one. The decision about the threshold is a product-risk decision, and it should be taken by whoever owns the consequence of a wrong answer, not by whoever is tuning the p99." }
       ] },
 
@@ -305,7 +305,7 @@ if hit and verify_addresses(q, hit.answer):     # small-model check
           "Because GPU utilisation is expensive to measure accurately",
           "Because continuous batching keeps the device near 100% whenever any work is queued, so the signal saturates before users are affected",
           "Because utilisation is reported per process rather than per device",
-          "Because quantized models report utilisation differently"
+          "Because quantised models report utilisation differently"
         ],
         answer: 1,
         why: "A correctly configured server with continuous batching has the device busy whenever there is anything to do, so utilisation hits its ceiling long before the queue starts hurting anyone and barely moves afterwards. Queue depth and the TPOT percentile track the user's experience instead — TPOT rises as the batch fills, which 3.5 measured at 6.4× step time from batch 1 to 32. Utilisation remains the right metric for cost, which is a different decision." },

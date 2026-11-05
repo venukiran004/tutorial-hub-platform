@@ -51,8 +51,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**MLE (Maximum Likelihood Estimation):** Find \\(\\theta\\) maximizing \\(P(X|\\theta)\\). No prior. Prone to overfitting.",
-      "**MAP (Maximum A Posteriori):** Find \\(\\theta\\) maximizing \\(P(\\theta|X) \\propto P(X|\\theta)P(\\theta)\\). Equivalent to MLE + regularization (L2 prior = Gaussian, L1 prior = Laplace)."
+      "**MLE (Maximum Likelihood Estimation):** Find \\(\\theta\\) maximising \\(P(X|\\theta)\\). No prior. Prone to overfitting.",
+      "**MAP (Maximum A Posteriori):** Find \\(\\theta\\) maximising \\(P(\\theta|X) \\propto P(X|\\theta)P(\\theta)\\). Equivalent to MLE + regularisation (L2 prior = Gaussian, L1 prior = Laplace)."
      ]
     }
    ],
@@ -65,7 +65,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A distribution over functions where any finite set of function values follows a multivariate Gaussian distribution. Defined by mean function \\(m(x)\\) and covariance kernel \\(k(x, x')\\). Used for regression with uncertainty estimates, Bayesian optimization."
+     "text": "A distribution over functions where any finite set of function values follows a multivariate Gaussian distribution. Defined by mean function \\(m(x)\\) and covariance kernel \\(k(x, x')\\). Used for regression with uncertainty estimates, Bayesian optimisation."
     }
    ],
    "kind": ""
@@ -133,7 +133,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Approximate the true posterior \\(P(\\theta|X)\\) with a simpler distribution \\(q(\\theta)\\) by minimizing KL divergence. Equivalent to maximizing the ELBO (Evidence Lower Bound):"
+     "text": "Approximate the true posterior \\(P(\\theta|X)\\) with a simpler distribution \\(q(\\theta)\\) by minimising KL divergence. Equivalent to maximising the ELBO (Evidence Lower Bound):"
     },
     {
      "t": "math",
@@ -169,11 +169,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "149",
-   "q": "What is Bayesian Optimization and how does it work?",
+   "q": "What is Bayesian Optimisation and how does it work?",
    "body": [
     {
      "t": "p",
-     "text": "Efficiently optimize expensive black-box functions (e.g., hyperparameter tuning):"
+     "text": "Efficiently optimise expensive black-box functions (e.g., hyperparameter tuning):"
     },
     {
      "t": "ol",

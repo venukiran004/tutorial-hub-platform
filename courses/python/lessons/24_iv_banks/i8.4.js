@@ -96,7 +96,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Python's GC handles **reference cycles** that reference counting alone can't clean up (e.g., two objects referencing each other). It uses a generational tri-color mark-and-sweep collector with three generations (0, 1, 2). New objects go into gen 0; surviving objects are promoted. Gen 0 is collected most frequently. You can interact with it via the `gc` module: `gc.collect()`, `gc.disable()`, `gc.get_threshold()`."
+     "text": "Python's GC handles **reference cycles** that reference counting alone can't clean up (e.g., two objects referencing each other). It uses a generational tri-colour mark-and-sweep collector with three generations (0, 1, 2). New objects go into gen 0; surviving objects are promoted. Gen 0 is collected most frequently. You can interact with it via the `gc` module: `gc.collect()`, `gc.disable()`, `gc.get_threshold()`."
     },
     {
      "t": "h4",
@@ -308,7 +308,7 @@ EC.receiveLesson({
     "Inheritance",
     "Polymorphism",
     "Composition",
-    "C3 linearization"
+    "C3 linearisation"
    ],
    "body": [
     {
@@ -351,7 +351,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "MRO defines the order Python searches for a method in the class hierarchy. It uses the **C3 linearization** algorithm, which guarantees that: (a) a class always precedes its parents, (b) the order of base classes is preserved. Use `ClassName.__mro__` or `ClassName.mro()` to inspect it."
+     "text": "MRO defines the order Python searches for a method in the class hierarchy. It uses the **C3 linearisation** algorithm, which guarantees that: (a) a class always precedes its parents, (b) the order of base classes is preserved. Use `ClassName.__mro__` or `ClassName.mro()` to inspect it."
     },
     {
      "t": "h4",
@@ -359,7 +359,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "When two parent classes share a common ancestor and both override its method, a child inheriting from both faces ambiguity. Python's C3 linearization resolves this by creating a consistent, deterministic MRO. The common ancestor's method is only called once."
+     "text": "When two parent classes share a common ancestor and both override its method, a child inheriting from both faces ambiguity. Python's C3 linearisation resolves this by creating a consistent, deterministic MRO. The common ancestor's method is only called once."
     },
     {
      "t": "code",
@@ -1046,7 +1046,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Like a regular dict but calls a factory function to provide a default value when a missing key is accessed. `defaultdict(list)` auto-initializes missing keys to `[]`."
+     "text": "Like a regular dict but calls a factory function to provide a default value when a missing key is accessed. `defaultdict(list)` auto-initialises missing keys to `[]`."
     },
     {
      "t": "h4",
@@ -1159,7 +1159,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A threading primitive for signaling between threads. `event.wait()` blocks until `event.set()` is called. One thread signals; others wait."
+     "text": "A threading primitive for signalling between threads. `event.wait()` blocks until `event.set()` is called. One thread signals; others wait."
     },
     {
      "t": "h4",
@@ -1183,7 +1183,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Same interface as `ThreadPoolExecutor` but uses processes. Bypasses GIL for CPU-bound work. Serializes arguments via `pickle`."
+     "text": "Same interface as `ThreadPoolExecutor` but uses processes. Bypasses GIL for CPU-bound work. Serialises arguments via `pickle`."
     },
     {
      "t": "h4",
@@ -1853,7 +1853,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Occur when module A imports B and B imports A. Partially-initialized modules can cause `ImportError` or missing attributes. Solutions: - Restructure code to remove the cycle. - Move imports inside functions (lazy import). - Use `importlib.import_module()` lazily. - Use `TYPE_CHECKING` guard for type-annotation-only imports."
+     "text": "Occur when module A imports B and B imports A. Partially-initialised modules can cause `ImportError` or missing attributes. Solutions: - Restructure code to remove the cycle. - Move imports inside functions (lazy import). - Use `importlib.import_module()` lazily. - Use `TYPE_CHECKING` guard for type-annotation-only imports."
     },
     {
      "t": "h4",

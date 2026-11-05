@@ -10,17 +10,28 @@ Open `index.html` in a browser. It works from `file://` and from any static host
 
 ## What is here
 
-| Course | Modules | Lessons | Questions / problems |
+Sixteen courses and 1,329 published lessons. The counts include each course's
+practice and interview tracks, which is why the home page, counting the taught
+track alone, can show a smaller number for the same course.
+
+| Course | Modules | Published | Taught track |
 |---|---:|---:|---:|
-| **Python** | 24 | 177 | 1,074 interview questions |
-| **Coding Practice** | 23 | 114 | 2,882 programming problems |
-
-Python runs from execution model to production services, in five phases —
-Fundamentals, Craft, Depth, Building systems, Applied — followed by an
-algorithms appendix and eight interview modules.
-
-Coding Practice is a separate course of programming problems, each with its
-answer hidden until you ask for it.
+| **Python** | 24 | 183 | 145 |
+| **Coding Practice** | 23 | 114 | problem sets |
+| **Mathematics & Statistics** | 9 | 55 | 43 |
+| **Data Handling** | 14 | 127 | 57 |
+| **SQL** | 8 | 46 | 39 |
+| **Data Structures & Algorithms** | 4 | 8 | 7 |
+| **Machine Learning** | 23 | 133 | 67 |
+| **Deep Learning** | 20 | 124 | 68 |
+| **NLP & Transformers** | 10 | 75 | 68 |
+| **GenAI & LLMs** | 13 | 176 | 176 |
+| **LangChain & LangGraph** | 14 | 118 | 118 |
+| **Model Context Protocol** | 5 | 16 | 16 |
+| **MLOps & Deployment** | 19 | 37 of 79 | 37 |
+| **System Design** | 15 | 63 of 78 | 63 |
+| **Google ADK** | 12 | 52 | 52 |
+| **Interview Experience** | 1 | 2 | 2 |
 
 ## Why it is built this way
 
@@ -53,7 +64,7 @@ courses/<id>/           one folder per course
 ## Working on it
 
 ```bash
-bash .build/check.sh    # syntax, published lists, render tests, both courses
+bash .build/check.sh    # syntax, published lists, render tests, every course
 bash .build/ship.sh "…" # runs the gate, commits only if green
 ```
 

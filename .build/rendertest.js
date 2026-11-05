@@ -170,6 +170,27 @@ for (const id of published) {
   const drillBlocks = (L.blocks || []).filter(b => b.t === "drill");
   const isPractice = drillBlocks.length >= 5;
 
+  // Earlier means earlier on the reader's path: a prerequisite that lies ahead
+  // of the lesson, or is the lesson, cannot be taken first.
+  const position = lid => C.allLessons.indexOf(C.lessonById[lid]);
+  p("prereqs come first", (L.prerequisites || []).every(x => position(x) < position(id)),
+    (L.prerequisites || []).filter(x => position(x) >= position(id)).join(", "));
+
+  // The renderer ignores keys it does not know, so content under the wrong
+  // name passes every other check and reaches the reader as an empty panel.
+  const blocksIn = bs => (Array.isArray(bs) ? bs : []).flatMap(b => b && typeof b === "object"
+    ? [b, ...blocksIn(b.body), ...blocksIn(b.blocks),
+       ...(b.t === "tabs" ? (b.items || []).flatMap(i => blocksIn(i.blocks || i.body)) : [])]
+    : []);
+  const all = blocksIn(L.blocks);
+  const exercises = all.filter(b => b.t === "exercise");
+  p("exercises state a task", exercises.every(e => e.prompt || (e.body || []).length || e.requirements),
+    exercises.filter(e => !(e.prompt || (e.body || []).length || e.requirements)).map(e => e.title).join(" | "));
+  p("solutions show something", exercises.every(e => !e.solution || e.solution.code || (e.solution.notes || []).length),
+    exercises.filter(e => e.solution && !e.solution.code && !(e.solution.notes || []).length).map(e => e.title).join(" | "));
+  p("code blocks have content", all.filter(b => b.t === "code").every(b => b.code || b.out),
+    all.filter(b => b.t === "code" && !b.code && !b.out).map(b => b.title).join(" | "));
+
   p("id matches filename", L.id === id, `declares ${L.id}`);
   p("lede", !!L.lede && L.lede.length > 80);
   p("objectives >= 4", (L.objectives || []).length >= 4);

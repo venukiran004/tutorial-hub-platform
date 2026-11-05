@@ -90,7 +90,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NumPy operations execute in compiled C/Fortran code. Vectorized operations avoid Python interpreter overhead, utilize CPU SIMD instructions, and benefit from memory locality (contiguous arrays)."
+     "text": "NumPy operations execute in compiled C/Fortran code. Vectorised operations avoid Python interpreter overhead, utilise CPU SIMD instructions, and benefit from memory locality (contiguous arrays)."
     }
    ],
    "kind": ""
@@ -216,7 +216,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`numba` JIT-compiles Python functions to machine code using LLVM. Ideal for loops that cannot be vectorized with NumPy:"
+     "text": "`numba` JIT-compiles Python functions to machine code using LLVM. Ideal for loops that cannot be vectorised with NumPy:"
     },
     {
      "t": "code",

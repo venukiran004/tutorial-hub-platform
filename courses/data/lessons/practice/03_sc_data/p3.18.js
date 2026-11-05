@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Forward-fill: carry last observation forward (with decay), (2) discretize into regular intervals: aggregate within bins, (3) time-since-last-measurement as a feature, (4) GRU-D: neural network designed for irregular time series with decay, (5) Gaussian processes: naturally handle irregular sampling, (6) attention-based models: learn to weight observations by their timing, (7) imputation with contextual awareness: vitals decay differently (heart rate normalizes quickly, lab values persist longer), (8) medical domain knowledge: some missing values are informative (lab not ordered = not clinically indicated)."
+     "text": "**Answer:** (1) Forward-fill: carry last observation forward (with decay), (2) discretise into regular intervals: aggregate within bins, (3) time-since-last-measurement as a feature, (4) GRU-D: neural network designed for irregular time series with decay, (5) Gaussian processes: naturally handle irregular sampling, (6) attention-based models: learn to weight observations by their timing, (7) imputation with contextual awareness: vitals decay differently (heart rate normalises quickly, lab values persist longer), (8) medical domain knowledge: some missing values are informative (lab not ordered = not clinically indicated)."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Different X-ray machines produce different image characteristics, (2) different patient populations (demographics, disease prevalence), (3) label bias: different radiologists have different diagnostic thresholds, (4) positioning differences: protocols vary between hospitals, (5) image preprocessing differences: contrast, resolution, cropping. Solutions: (1) train on multi-site data, (2) domain adaptation techniques, (3) standardize preprocessing, (4) fine-tune on target site data, (5) evaluate site-by-site during development."
+     "text": "**Answer:** (1) Different X-ray machines produce different image characteristics, (2) different patient populations (demographics, disease prevalence), (3) label bias: different radiologists have different diagnostic thresholds, (4) positioning differences: protocols vary between hospitals, (5) image preprocessing differences: contrast, resolution, cropping. Solutions: (1) train on multi-site data, (2) domain adaptation techniques, (3) standardise preprocessing, (4) fine-tune on target site data, (5) evaluate site-by-site during development."
     },
     {
      "t": "p",
@@ -90,7 +90,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Disparate impact analysis: approval rates across protected groups (80% rule), (2) statistical parity: P(approved|group A) ≈ P(approved|group B), (3) equalized odds: same TPR and FPR across groups, (4) predictive parity: same precision across groups, (5) check proxy variables: zip code may proxy for race, (6) log-linear analysis to measure impact of each feature by group, (7) counterfactual fairness: would prediction change if protected attribute differed?, (8) regular fairness audits with quantitative reports, (9) document mitigation strategies for identified biases."
+     "text": "**Answer:** (1) Disparate impact analysis: approval rates across protected groups (80% rule), (2) statistical parity: P(approved|group A) ≈ P(approved|group B), (3) equalised odds: same TPR and FPR across groups, (4) predictive parity: same precision across groups, (5) check proxy variables: zip code may proxy for race, (6) log-linear analysis to measure impact of each feature by group, (7) counterfactual fairness: would prediction change if protected attribute differed?, (8) regular fairness audits with quantitative reports, (9) document mitigation strategies for identified biases."
     },
     {
      "t": "p",
@@ -118,7 +118,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Association rules: Apriori algorithm — find {A, B} → {C} patterns, (2) metrics: support (frequency), confidence (P(C|A,B)), lift (above random), (3) filter: minimum support threshold (avoid rare patterns), minimum confidence, (4) FP-Growth for efficient computation on large datasets, (5) collaborative filtering: customers who bought A also bought B, (6) visualize: heatmap of product co-occurrence matrix, (7) business use: product placement, cross-selling recommendations, bundle pricing, (8) consider sequential patterns: what do customers buy next?."
+     "text": "**Answer:** (1) Association rules: Apriori algorithm — find {A, B} → {C} patterns, (2) metrics: support (frequency), confidence (P(C|A,B)), lift (above random), (3) filter: minimum support threshold (avoid rare patterns), minimum confidence, (4) FP-Growth for efficient computation on large datasets, (5) collaborative filtering: customers who bought A also bought B, (6) visualise: heatmap of product co-occurrence matrix, (7) business use: product placement, cross-selling recommendations, bundle pricing, (8) consider sequential patterns: what do customers buy next?."
     }
    ],
    "kind": ""
@@ -142,11 +142,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "435",
-   "q": "You have 50K customer reviews and need to extract actionable insights without labeled data. How do you approach this?",
+   "q": "You have 50K customer reviews and need to extract actionable insights without labelled data. How do you approach this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Topic modeling (LDA, BERTopic): discover themes automatically, (2) sentiment analysis using pre-trained models (VADER, transformers), (3) aspect-based sentiment: what topics are positive/negative?, (4) keyword extraction (TF-IDF, RAKE, KeyBERT), (5) named entity recognition: extract product names, features mentioned, (6) clustering embeddings: group similar reviews, label clusters, (7) trend analysis: how topics/sentiment change over time, (8) summarization: representative review per topic, (9) word clouds for quick visualization, (10) actionable deliverable: \"top 5 complaints with example reviews and trends.\""
+     "text": "**Answer:** (1) Topic modelling (LDA, BERTopic): discover themes automatically, (2) sentiment analysis using pre-trained models (VADER, transformers), (3) aspect-based sentiment: what topics are positive/negative?, (4) keyword extraction (TF-IDF, RAKE, KeyBERT), (5) named entity recognition: extract product names, features mentioned, (6) clustering embeddings: group similar reviews, label clusters, (7) trend analysis: how topics/sentiment change over time, (8) summarisation: representative review per topic, (9) word clouds for quick visualisation, (10) actionable deliverable: \"top 5 complaints with example reviews and trends.\""
     }
    ],
    "kind": ""
@@ -154,11 +154,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "436",
-   "q": "You need to classify support tickets into 50 categories with only 20 labeled examples per category. How?",
+   "q": "You need to classify support tickets into 50 categories with only 20 labelled examples per category. How?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pre-trained model fine-tuning: BERT/RoBERTa fine-tuned on 1000 total examples, (2) SetFit: few-shot text classification framework, (3) prompt-based classification with LLM: \"classify this ticket: ...\", (4) data augmentation: back-translation, synonym replacement on labeled examples, (5) semi-supervised: use confident predictions to expand training data, (6) active learning: human labels uncertain examples iteratively, (7) zero-shot classification as baseline: use class names as labels with zero-shot models, (8) evaluate with macro F1 to ensure coverage across all 50 categories."
+     "text": "**Answer:** (1) Pre-trained model fine-tuning: BERT/RoBERTa fine-tuned on 1000 total examples, (2) SetFit: few-shot text classification framework, (3) prompt-based classification with LLM: \"classify this ticket: ...\", (4) data augmentation: back-translation, synonym replacement on labelled examples, (5) semi-supervised: use confident predictions to expand training data, (6) active learning: human labels uncertain examples iteratively, (7) zero-shot classification as baseline: use class names as labels with zero-shot models, (8) evaluate with macro F1 to ensure coverage across all 50 categories."
     }
    ],
    "kind": ""
@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multilingual model: XLM-RoBERTa, mBERT — train once, works across languages, (2) zero-shot cross-lingual transfer: train on English, evaluate on other languages, (3) translate-train: machine translate labeled English data to target languages, train per-language models, (4) translate-test: translate test inputs to English, use English model, (5) compare approaches: multilingual models often competitive with translate-train, (6) language-specific evaluation: some languages have different performance, (7) consider language families: transfer works better between similar languages."
+     "text": "**Answer:** (1) Multilingual model: XLM-RoBERTa, mBERT — train once, works across languages, (2) zero-shot cross-lingual transfer: train on English, evaluate on other languages, (3) translate-train: machine translate labelled English data to target languages, train per-language models, (4) translate-test: translate test inputs to English, use English model, (5) compare approaches: multilingual models often competitive with translate-train, (6) language-specific evaluation: some languages have different performance, (7) consider language families: transfer works better between similar languages."
     },
     {
      "t": "p",
@@ -206,11 +206,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "440",
-   "q": "Your Spark job takes 4 hours. How do you optimize it?",
+   "q": "Your Spark job takes 4 hours. How do you optimise it?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Partition optimization: repartition to avoid skew and small files, (2) caching: `df.cache()` for DataFrames used multiple times, (3) broadcast join: for small tables joined with large ones:`broadcast(small_df)`, (4) avoid shuffles: reduce `groupBy` operations, use `reduceByKey` over `groupByKey`, (5) filter early: push filters before joins, (6) data format: Parquet with appropriate compression, (7) tune spark.sql.shuffle.partitions, executor memory, (8) avoid UDFs: use built-in Spark functions, (9) monitor Spark UI for shuffle bottlenecks and straggler tasks."
+     "text": "**Answer:** (1) Partition optimisation: repartition to avoid skew and small files, (2) caching: `df.cache()` for DataFrames used multiple times, (3) broadcast join: for small tables joined with large ones:`broadcast(small_df)`, (4) avoid shuffles: reduce `groupBy` operations, use `reduceByKey` over `groupByKey`, (5) filter early: push filters before joins, (6) data format: Parquet with appropriate compression, (7) tune spark.sql.shuffle.partitions, executor memory, (8) avoid UDFs: use built-in Spark functions, (9) monitor Spark UI for shuffle bottlenecks and straggler tasks."
     },
     {
      "t": "p",
@@ -226,7 +226,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Louvain algorithm: efficient modularity-based community detection, O(n log n), (2) Label Propagation: fast, scalable but non-deterministic, (3) for implementation: use NetworkX for small graphs, graph-tool or igraph for medium, Apache Spark GraphX or Neo4j for 10M+ nodes, (4) hierarchical communities: Louvain gives multi-level partitioning, (5) evaluate: modularity score, coverage, NMI against ground truth, (6) overlapping communities: BigCLAM or DEMON algorithms, (7) connected components as pre-processing: analyze giant component separately."
+     "text": "**Answer:** (1) Louvain algorithm: efficient modularity-based community detection, O(n log n), (2) Label Propagation: fast, scalable but non-deterministic, (3) for implementation: use NetworkX for small graphs, graph-tool or igraph for medium, Apache Spark GraphX or Neo4j for 10M+ nodes, (4) hierarchical communities: Louvain gives multi-level partitioning, (5) evaluate: modularity score, coverage, NMI against ground truth, (6) overlapping communities: BigCLAM or DEMON algorithms, (7) connected components as pre-processing: analyse giant component separately."
     }
    ],
    "kind": ""
@@ -238,7 +238,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature-based: common neighbors, Jaccard coefficient, Adamic-Adar index, preferential attachment, (2) path-based: shortest path length, Katz centrality, (3) community-based: same community membership, (4) node embeddings: Node2Vec, GraphSAGE — learn vector representations, (5) GNN (Graph Neural Network): learn from graph structure, (6) negative sampling: pair positive (existing edges) with random negative pairs, (7) temporal: use older network to predict newer edges, (8) feature combination: concatenate users' profiles + graph features → classifier."
+     "text": "**Answer:** (1) Feature-based: common neighbours, Jaccard coefficient, Adamic-Adar index, preferential attachment, (2) path-based: shortest path length, Katz centrality, (3) community-based: same community membership, (4) node embeddings: Node2Vec, GraphSAGE — learn vector representations, (5) GNN (Graph Neural Network): learn from graph structure, (6) negative sampling: pair positive (existing edges) with random negative pairs, (7) temporal: use older network to predict newer edges, (8) feature combination: concatenate users' profiles + graph features → classifier."
     },
     {
      "t": "p",
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is intersectional fairness: (1) evaluate metrics on all relevant subgroup intersections, not just individual protected attributes, (2) this can create many small groups — need adequate sample sizes, (3) Gerrymandering fairness: model can satisfy parity on each attribute alone but discriminate at intersections, (4) solutions: (a) include interaction terms, (b) multi-calibration: ensure calibration for all detectable subgroups, (c) minimax fairness: minimize worst-case group performance, (5) prioritize subgroups based on historical disadvantage and sample size."
+     "text": "**Answer:** This is intersectional fairness: (1) evaluate metrics on all relevant subgroup intersections, not just individual protected attributes, (2) this can create many small groups — need adequate sample sizes, (3) Gerrymandering fairness: model can satisfy parity on each attribute alone but discriminate at intersections, (4) solutions: (a) include interaction terms, (b) multi-calibration: ensure calibration for all detectable subgroups, (c) minimax fairness: minimise worst-case group performance, (5) prioritise subgroups based on historical disadvantage and sample size."
     }
    ],
    "kind": ""
@@ -330,7 +330,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Detection: (1) correlation matrix: pairwise correlations > 0.8, (2) VIF (Variance Inflation Factor): VIF > 5-10 indicates problematic collinearity, (3) condition number of design matrix: >30 suggests issues. Impact: inflates standard errors of coefficients, makes them unstable. Handle: (1) remove one of correlated features, (2) PCA/dimensionality reduction, (3) regularization: L1 (Lasso) automatically selects, L2 (Ridge) shrinks correlated features, (4) domain-guided: combine features (e.g., debt/income → ratio), (5) tree models are less affected by multicollinearity."
+     "text": "**Answer:** Detection: (1) correlation matrix: pairwise correlations > 0.8, (2) VIF (Variance Inflation Factor): VIF > 5-10 indicates problematic collinearity, (3) condition number of design matrix: >30 suggests issues. Impact: inflates standard errors of coefficients, makes them unstable. Handle: (1) remove one of correlated features, (2) PCA/dimensionality reduction, (3) regularisation: L1 (Lasso) automatically selects, L2 (Ridge) shrinks correlated features, (4) domain-guided: combine features (e.g., debt/income → ratio), (5) tree models are less affected by multicollinearity."
     }
    ],
    "kind": ""

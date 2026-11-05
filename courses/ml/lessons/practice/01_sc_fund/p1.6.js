@@ -153,10 +153,10 @@ EC.receiveLesson({
      "items": [
       "**Learning rate too high:** Loss oscillates or diverges → reduce LR by 10×",
       "**Learning rate too low:** Loss decreases extremely slowly → increase LR",
-      "**Dead ReLU neurons:** Many neurons output 0 → use LeakyReLU or He initialization",
+      "**Dead ReLU neurons:** Many neurons output 0 → use LeakyReLU or He initialisation",
       "**Vanishing gradients:** Deep network with sigmoid/tanh → use ReLU, batch norm, skip connections",
       "**Wrong loss function:** Using MSE for classification, or wrong target format",
-      "**Data issue:** Labels are wrong, features aren't normalized, data isn't shuffled",
+      "**Data issue:** Labels are wrong, features aren't normalised, data isn't shuffled",
       "**Bug in data pipeline:** All batches get the same data"
      ]
     },
@@ -265,7 +265,7 @@ EC.receiveLesson({
      "items": [
       "**Data augmentation:** RandomCrop, HorizontalFlip, ColorJitter, rotation",
       "**Verify data pipeline:** Check that images are correctly loaded and labels match",
-      "**Normalize properly:** Use ImageNet stats if using pretrained model",
+      "**Normalise properly:** Use ImageNet stats if using pretrained model",
       "**Start with known working architecture:** Don't invent architecture for small data"
      ]
     }
@@ -359,7 +359,7 @@ EC.receiveLesson({
       "**Use LSTM or GRU** instead of vanilla RNN — gating mechanisms control gradient flow",
       "**Reduce sequence length** — truncate BPTT",
       "**Reduce learning rate**",
-      "**Use Layer Normalization**"
+      "**Use Layer Normalisation**"
      ]
     }
    ],
@@ -523,7 +523,7 @@ EC.receiveLesson({
        "Sequential generation"
       ],
       [
-       "Summarization",
+       "Summarisation",
        "**T5/BART** (enc-dec)",
        "Input understanding + output generation"
       ],
@@ -723,7 +723,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Token limit issues:** Long inputs exceed context window → implement text splitting or summarization before the chain",
+      "**Token limit issues:** Long inputs exceed context window → implement text splitting or summarisation before the chain",
       "**Output parsing failures:** LLM doesn't follow expected format → add output parser with retry"
      ]
     },
@@ -874,7 +874,7 @@ EC.receiveLesson({
       "**Least privilege:** MCP server uses a read-only database user, limited S3 permissions",
       "**Rate limiting:** Prevent runaway agents from making thousands of requests",
       "**Audit logging:** Log every tool call with user, timestamp, inputs, outputs",
-      "**Authentication:** Verify the client (LLM application) is authorized",
+      "**Authentication:** Verify the client (LLM application) is authorised",
       "**Sandboxing:** Run tools in isolated environments, no arbitrary code execution",
       "**Human-in-the-loop:** Require approval for write/destructive operations",
       "**Timeout:** Kill long-running operations",
@@ -905,7 +905,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Continuous target variable (price) with labeled training data. Regression predicts numerical values."
+     "text": "**Explanation:** Continuous target variable (price) with labelled training data. Regression predicts numerical values."
     }
    ],
    "kind": ""
@@ -942,7 +942,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** High training accuracy but low test accuracy = model memorized training data, doesn't generalize."
+     "text": "**Explanation:** High training accuracy but low test accuracy = model memorised training data, doesn't generalise."
     }
    ],
    "kind": ""

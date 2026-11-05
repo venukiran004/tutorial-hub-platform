@@ -225,7 +225,7 @@ SELECT NULLIF(0, 0) AS nif, 10 / NULLIF(0, 0) AS safe_div, COALESCE(NULL, NULL, 
       { t: "p", text: "`'N/A'`, `-1`, `0`, `1900-01-01` and `''` are all worse than NULL, because every rule in the table above stops applying: the sentinel is counted, averaged, grouped as a real category and matched in joins. **NULL is the only representation of missing that the engine's own arithmetic and logic understand.** Convert sentinels on the way in with `NULLIF(col, 'N/A')`, and fill NULLs on the way out with `COALESCE` — at the point where you know what the default should mean." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Customers who are not in the UK",
       rungs: [
         { level: "bad", label: "The obvious filter", code: `SELECT name FROM customers WHERE country <> 'GB';`,

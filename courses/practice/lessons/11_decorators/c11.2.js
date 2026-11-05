@@ -78,7 +78,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Parameterized decorator — `repeat(3)` returns a decorator that calls function 3 times."
+     "text": "**Explanation:** Parameterised decorator — `repeat(3)` returns a decorator that calls function 3 times."
     }
    ],
    "prompt": [
@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `7`, `Expected int, got str` **Explanation:** Parameterized decorator for runtime type checking."
+     "text": "**Answer:** `7`, `Expected int, got str` **Explanation:** Parameterised decorator for runtime type checking."
     }
    ],
    "prompt": [
@@ -398,7 +398,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Deleted Charlie`, `Requires admin role` **Explanation:** Authorization decorator checks user role before executing function."
+     "text": "**Answer:** `Deleted Charlie`, `Requires admin role` **Explanation:** Authorisation decorator checks user role before executing function."
     }
    ],
    "prompt": [
@@ -508,7 +508,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Volume set to 50`, `Value 150 not in [0, 100]` **Explanation:** Class-based parameterized decorator using `__call__`."
+     "text": "**Answer:** `Volume set to 50`, `Value 150 not in [0, 100]` **Explanation:** Class-based parameterised decorator using `__call__`."
     }
    ],
    "prompt": [

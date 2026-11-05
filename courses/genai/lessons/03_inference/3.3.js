@@ -1,12 +1,12 @@
 EC.receiveLesson({
   id: "3.3",
 
-  lede: "Quantization stores weights in fewer bits. Because decode is memory-bound (3.1), fewer bits means proportionally faster decode — which makes it the highest-leverage optimisation available and the one most likely to be applied carelessly. This lesson measures both halves: int8 gave a **1.69× speedup** on real inference, and it also took perplexity from 2.07 to **1136.97**. That second number is why calibration-based methods exist, and why \"we quantized it\" is not a finished sentence.",
+  lede: "Quantisation stores weights in fewer bits. Because decode is memory-bound (3.1), fewer bits means proportionally faster decode — which makes it the highest-leverage optimisation available and the one most likely to be applied carelessly. This lesson measures both halves: int8 gave a **1.69× speedup** on real inference, and it also took perplexity from 2.07 to **1136.97**. That second number is why calibration-based methods exist, and why \"we quantised it\" is not a finished sentence.",
 
   objectives: [
-    "Explain why quantization helps decode more than prefill",
+    "Explain why quantisation helps decode more than prefill",
     "Compute memory savings from bit width",
-    "Distinguish naive dynamic quantization from calibration-based methods",
+    "Distinguish naive dynamic quantisation from calibration-based methods",
     "Choose a method from the deployment target",
     "Measure quality loss rather than assuming it is small"
   ],
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "why", text: "Why it works, and where",
       sub: "Decode is bound by bytes moved, so moving fewer is a direct win" },
 
-    {"kind": "flow", "title": "Quantization is a decode optimisation, and only a decode optimisation", "caption": "From 3.1: decode throughput is bounded by model size / memory bandwidth, because every token requires loading every weight. **Halving the bytes per weight halves the bytes loaded, which halves that bound** — and nothing about the arithmetic changes, because the arithmetic was never the constraint. Prefill benefits far less: it is already compute-bound and amortises one weight load across hundreds of tokens, so the dequantisation work can cost more than it saves. So quantization helps throughput and TPOT and does almost nothing for TTFT.", "cols": 3, "nodes": [{"id": "b", "label": "Decode is bound by bytes loaded", "sub": "3.1's arithmetic intensity", "tone": "violet"}, {"id": "h", "label": "Halve the bytes per weight", "sub": "fp16 to int8", "tone": "good"}, {"id": "t", "label": "Halve the bound", "sub": "TPOT and throughput improve", "tone": "good"}, {"id": "p", "label": "Prefill is compute-bound", "sub": "weights already amortised", "tone": "warn"}, {"id": "d", "label": "Dequantisation can cost more", "sub": "than the load it saved", "tone": "crit"}, {"id": "f", "label": "So TTFT barely moves", "sub": "which is the thing to expect", "tone": "teal"}], "edges": [["b", "h"], ["h", "t"], ["p", "d"], ["d", "f"], ["t", "f"]], "t": "diagram", "id": "dg-3_3-01-0"},
+    {"kind": "flow", "title": "Quantisation is a decode optimisation, and only a decode optimisation", "caption": "From 3.1: decode throughput is bounded by model size / memory bandwidth, because every token requires loading every weight. **Halving the bytes per weight halves the bytes loaded, which halves that bound** — and nothing about the arithmetic changes, because the arithmetic was never the constraint. Prefill benefits far less: it is already compute-bound and amortises one weight load across hundreds of tokens, so the dequantisation work can cost more than it saves. So quantisation helps throughput and TPOT and does almost nothing for TTFT.", "cols": 3, "nodes": [{"id": "b", "label": "Decode is bound by bytes loaded", "sub": "3.1's arithmetic intensity", "tone": "violet"}, {"id": "h", "label": "Halve the bytes per weight", "sub": "fp16 to int8", "tone": "good"}, {"id": "t", "label": "Halve the bound", "sub": "TPOT and throughput improve", "tone": "good"}, {"id": "p", "label": "Prefill is compute-bound", "sub": "weights already amortised", "tone": "warn"}, {"id": "d", "label": "Dequantisation can cost more", "sub": "than the load it saved", "tone": "crit"}, {"id": "f", "label": "So TTFT barely moves", "sub": "which is the thing to expect", "tone": "teal"}], "edges": [["b", "h"], ["h", "t"], ["p", "d"], ["d", "f"], ["t", "f"]], "t": "diagram", "id": "dg-3_3-01-0"},
 
 
 
@@ -43,7 +43,7 @@ EC.receiveLesson({
 
     { t: "p", text: "From 3.1: decode throughput is bounded by `model size / memory bandwidth`, because every token requires loading every weight. Halving the bytes per weight halves the bytes loaded, which halves that bound. Nothing about the arithmetic changes — the arithmetic was never the constraint." },
 
-    { t: "p", text: "Prefill benefits far less, because prefill is compute-bound: it already amortises one weight load across hundreds of tokens, so reducing the load helps little and the dequantisation work can even cost more than it saves. **Quantization is a decode optimisation**, which means it helps throughput and TPOT and does almost nothing for TTFT." },
+    { t: "p", text: "Prefill benefits far less, because prefill is compute-bound: it already amortises one weight load across hundreds of tokens, so reducing the load helps little and the dequantisation work can even cost more than it saves. **Quantisation is a decode optimisation**, which means it helps throughput and TPOT and does almost nothing for TTFT." },
 
     { t: "code", lang: "python", title: "g31.py — memory, by bit width", code: `def model_bytes(m):
     return sum(p.numel() * p.element_size() for p in m.parameters())`,
@@ -62,14 +62,14 @@ EC.receiveLesson({
 
     { t: "callout", kind: "insight", title: "INT4 is what puts a 7B model on consumer hardware",
       body: [
-        { t: "p", text: "3.5 GB of weights fits on a 6 GB consumer card with room for a KV cache. 14 GB at fp16 does not. That single fact is why the local-inference ecosystem runs on 4-bit quantization and why GGUF exists." },
+        { t: "p", text: "3.5 GB of weights fits on a 6 GB consumer card with room for a KV cache. 14 GB at fp16 does not. That single fact is why the local-inference ecosystem runs on 4-bit quantisation and why GGUF exists." },
         { t: "p", text: "It also changes the economics of self-hosting (3.12): a model that fits on one cheap device rather than needing a data-centre accelerator is a different cost structure entirely, not a cheaper version of the same one." }
       ] },
 
     { t: "h2", n: "02", id: "methods", text: "The methods, and what distinguishes them",
       sub: "Calibration is the dividing line" },
 
-    {"kind": "matrix", "title": "Six methods, and the insight worth carrying", "caption": "**AWQ's idea is the one to remember.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output, and protecting those channels — scaling them before quantizing — costs almost nothing in size while recovering most of the quality uniform quantization loses. That is why AWQ generally beats GPTQ at the same bit width, and why \"4-bit\" is not one thing.", "cols": ["Bits", "How", "Quality"], "rows": ["FP16 / BF16", "INT8 (W8A8)", "GPTQ", "AWQ", "GGUF", "FP8"], "cells": [["16", "standard half precision", "baseline"], ["8", "weights and activations", "minimal"], ["4", "calibration-based", "small"], [{"text": "4", "tone": "good"}, {"text": "protects salient channels", "tone": "good"}, {"text": "better than GPTQ", "tone": "good"}], ["2-8", "mixed per tensor, for CPU", "varies"], ["8", "mixed E4M3/E5M2", "minimal"]], "t": "diagram", "id": "dg-3_3-02-1"},
+    {"kind": "matrix", "title": "Six methods, and the insight worth carrying", "caption": "**AWQ's idea is the one to remember.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output, and protecting those channels — scaling them before quantising — costs almost nothing in size while recovering most of the quality uniform quantisation loses. That is why AWQ generally beats GPTQ at the same bit width, and why \"4-bit\" is not one thing.", "cols": ["Bits", "How", "Quality"], "rows": ["FP16 / BF16", "INT8 (W8A8)", "GPTQ", "AWQ", "GGUF", "FP8"], "cells": [["16", "standard half precision", "baseline"], ["8", "weights and activations", "minimal"], ["4", "calibration-based", "small"], [{"text": "4", "tone": "good"}, {"text": "protects salient channels", "tone": "good"}, {"text": "better than GPTQ", "tone": "good"}], ["2-8", "mixed per tensor, for CPU", "varies"], ["8", "mixed E4M3/E5M2", "minimal"]], "t": "diagram", "id": "dg-3_3-02-1"},
 
 
 
@@ -97,19 +97,19 @@ EC.receiveLesson({
       rows: [
         ["FP16 / BF16", "16", "Standard half precision; BF16 has more range", "Baseline"],
         ["INT8 (W8A8)", "8", "Weights **and** activations to 8-bit", "Minimal"],
-        ["**GPTQ**", "4", "Calibration-based weight quantization", "Small"],
+        ["**GPTQ**", "4", "Calibration-based weight quantisation", "Small"],
         ["**AWQ**", "4", "Activation-aware — protects salient weight channels", "Minimal; better than GPTQ"],
         ["GGUF", "2–8", "CPU-optimised, mixed precision per tensor", "Varies"],
         ["FP8", "8", "Mixed E4M3/E5M2", "Minimal"]
       ],
       caption: "The two bolded rows are calibration-based, which is the property that matters and is easy to miss in a table organised by bit width." },
 
-    { t: "p", text: "**AWQ's insight is the one worth carrying.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output. Protecting those channels — scaling them before quantizing — costs almost nothing in size and recovers most of the quality that uniform quantization loses. It is why AWQ generally beats GPTQ at the same bit width." },
+    { t: "p", text: "**AWQ's insight is the one worth carrying.** Not all weights matter equally: a small fraction correspond to large activations and dominate the output. Protecting those channels — scaling them before quantising — costs almost nothing in size and recovers most of the quality that uniform quantisation loses. It is why AWQ generally beats GPTQ at the same bit width." },
 
-    { t: "h2", n: "03", id: "measured", text: "What naive quantization actually costs",
+    { t: "h2", n: "03", id: "measured", text: "What naive quantisation actually costs",
       sub: "The measurement that makes the case for calibration" },
 
-    {"kind": "trace", "title": "The one-line quantization, and what it did", "caption": "PyTorch's dynamic quantization needs no calibration data and is the first thing anyone tries. On GPT-2 it delivers the promised speedup — 1.69× — and takes perplexity from **2.0707 to 1136.9664**, a factor of 549. The model is not degraded; it is destroyed, and it will still return fluent-looking text. Which is the argument for the check: perplexity on held-out text from your own domain is cheap and catches catastrophes like this one, and a task metric from 2.12's set catches the subtler degradation perplexity misses.", "left": "precision", "codeW": 150, "vars": ["perplexity", "forward pass"], "steps": [{"code": "fp32", "state": ["2.0707", "378.7 ms"], "tone": "good"}, {"code": "int8 dynamic", "state": ["1136.9664", "224.4 ms"], "changed": [0, 1], "tone": "crit", "note": "1.69x faster, 549x worse"}, {"code": "so measure both", "state": ["perplexity", "and a task metric"], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-03-2"},
+    {"kind": "trace", "title": "The one-line quantisation, and what it did", "caption": "PyTorch's dynamic quantisation needs no calibration data and is the first thing anyone tries. On GPT-2 it delivers the promised speedup — 1.69× — and takes perplexity from **2.0707 to 1136.9664**, a factor of 549. The model is not degraded; it is destroyed, and it will still return fluent-looking text. Which is the argument for the check: perplexity on held-out text from your own domain is cheap and catches catastrophes like this one, and a task metric from 2.12's set catches the subtler degradation perplexity misses.", "left": "precision", "codeW": 150, "vars": ["perplexity", "forward pass"], "steps": [{"code": "fp32", "state": ["2.0707", "378.7 ms"], "tone": "good"}, {"code": "int8 dynamic", "state": ["1136.9664", "224.4 ms"], "changed": [0, 1], "tone": "crit", "note": "1.69x faster, 549x worse"}, {"code": "so measure both", "state": ["perplexity", "and a task metric"], "tone": "violet"}], "t": "diagram", "id": "dg-3_3-03-2"},
 
 
 
@@ -132,9 +132,9 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "PyTorch's dynamic quantization is one line and requires no calibration data. It is also the first thing anyone tries. Here is what it does to GPT-2." },
+    { t: "p", text: "PyTorch's dynamic quantisation is one line and requires no calibration data. It is also the first thing anyone tries. Here is what it does to GPT-2." },
 
-    { t: "code", lang: "python", title: "g31.py — int8 dynamic quantization, measured", code: `qmodel = torch.ao.quantization.quantize_dynamic(
+    { t: "code", lang: "python", title: "g31.py — int8 dynamic quantisation, measured", code: `qmodel = torch.ao.quantization.quantize_dynamic(
     model, {torch.nn.Linear}, dtype=torch.qint8)
 
 def perplexity(m):
@@ -154,16 +154,16 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
     { t: "callout", kind: "trap", title: "The speedup is real and the quality number is the one that matters",
       body: [
         { t: "p", text: "A team measuring only latency would report this as a success: 1.69× faster inference for one line of code. The quality measurement takes the same five minutes and reverses the conclusion completely." },
-        { t: "p", text: "Two caveats make this less damning than it first appears, and both are worth stating. GPT-2 at 124M parameters is unusually sensitive — larger models are substantially more robust to quantization, which is why the usual description is INT8 quality loss as \"minimal\". And dynamic quantization uses no calibration data at all, where GPTQ and AWQ use a representative sample to choose scales per channel." },
-        { t: "p", text: "But the lesson holds in the direction that matters: **quantization quality is not a property of the bit width, it is a property of the method**, and the cheapest method is the one most likely to be reached for. Measure perplexity before and after, every time." }
+        { t: "p", text: "Two caveats make this less damning than it first appears, and both are worth stating. GPT-2 at 124M parameters is unusually sensitive — larger models are substantially more robust to quantisation, which is why the usual description is INT8 quality loss as \"minimal\". And dynamic quantisation uses no calibration data at all, where GPTQ and AWQ use a representative sample to choose scales per channel." },
+        { t: "p", text: "But the lesson holds in the direction that matters: **quantisation quality is not a property of the bit width, it is a property of the method**, and the cheapest method is the one most likely to be reached for. Measure perplexity before and after, every time." }
       ] },
 
-    { t: "p", text: "The right comparison to run before deploying any quantized model is perplexity on held-out text from your own domain, plus a task metric from 2.12's test set. Perplexity is cheap and catches catastrophes like the one above; the task metric catches the subtler degradation that perplexity misses." },
+    { t: "p", text: "The right comparison to run before deploying any quantised model is perplexity on held-out text from your own domain, plus a task metric from 2.12's test set. Perplexity is cheap and catches catastrophes like the one above; the task metric catches the subtler degradation that perplexity misses." },
 
     { t: "h2", n: "04", id: "choosing", text: "Choosing a method",
       sub: "The deployment target decides, not the bit count" },
 
-    {"kind": "matrix", "title": "Which method, decided by where it will run", "caption": "The method follows the hardware rather than a quality ranking. Note the fourth row, which is the honest option people skip past: **BF16 — no quantization at all — when the memory is there.** And the last row is a warning rather than a recommendation: 2-bit is usually treated as about 40% of the original quality, which is rarely the right trade for the memory it returns.", "cols": ["Method", "Why"], "rows": ["Data-centre GPU", "Consumer GPU", "CPU or laptop", "Maximum quality", "Extreme constraint"], "cells": [[{"text": "FP8, or AWQ 4-bit", "tone": "good"}, "hardware FP8 on recent accelerators"], [{"text": "AWQ or GPTQ 4-bit", "tone": "good"}, "fits 6-8 GB; mature kernels"], [{"text": "GGUF Q4_K_M", "tone": "good"}, "the quality-size balance; llama.cpp"], [{"text": "BF16 - none at all", "tone": "violet"}, "the honest option when it fits"], [{"text": "GGUF Q2_K", "tone": "crit"}, "about 40% of quality - rarely worth it"]], "t": "diagram", "id": "dg-3_3-04-3"},
+    {"kind": "matrix", "title": "Which method, decided by where it will run", "caption": "The method follows the hardware rather than a quality ranking. Note the fourth row, which is the honest option people skip past: **BF16 — no quantisation at all — when the memory is there.** And the last row is a warning rather than a recommendation: 2-bit is usually treated as about 40% of the original quality, which is rarely the right trade for the memory it returns.", "cols": ["Method", "Why"], "rows": ["Data-centre GPU", "Consumer GPU", "CPU or laptop", "Maximum quality", "Extreme constraint"], "cells": [[{"text": "FP8, or AWQ 4-bit", "tone": "good"}, "hardware FP8 on recent accelerators"], [{"text": "AWQ or GPTQ 4-bit", "tone": "good"}, "fits 6-8 GB; mature kernels"], [{"text": "GGUF Q4_K_M", "tone": "good"}, "the quality-size balance; llama.cpp"], [{"text": "BF16 - none at all", "tone": "violet"}, "the honest option when it fits"], [{"text": "GGUF Q2_K", "tone": "crit"}, "about 40% of quality - rarely worth it"]], "t": "diagram", "id": "dg-3_3-04-3"},
 
 
 
@@ -192,7 +192,7 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
         ["Data-centre GPU serving", "**FP8** or AWQ 4-bit", "Hardware FP8 support on recent accelerators; AWQ where it is absent"],
         ["Consumer GPU", "**AWQ or GPTQ 4-bit**", "Fits in 6–8 GB; both have mature kernels"],
         ["CPU / laptop", "**GGUF Q4_K_M**", "The recommended quality-size balance; llama.cpp ecosystem"],
-        ["Maximum quality, memory available", "**BF16**", "No quantization at all — the honest option when it fits"],
+        ["Maximum quality, memory available", "**BF16**", "No quantisation at all — the honest option when it fits"],
         ["Extreme constraint", "GGUF Q2_K", "The usual treatment ~40% of original quality. Rarely the right trade"]
       ],
       caption: "The GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
@@ -209,12 +209,12 @@ m = AutoAWQForCausalLM.from_quantized("TheBloke/Llama-2-7B-AWQ")
 # GGUF: a single file, loaded by llama.cpp rather than transformers
 from llama_cpp import Llama
 m = Llama(model_path="llama-2-7b.Q4_K_M.gguf", n_ctx=4096)`,
-      caption: "The three formats are not interchangeable at the loader. GPTQ and AWQ are transformers-shaped and GPU-oriented; a `.gguf` file is a self-contained artefact for llama.cpp, which is why 3.7 lists it as the CPU answer rather than a quantization choice." },
+      caption: "The three formats are not interchangeable at the loader. GPTQ and AWQ are transformers-shaped and GPU-oriented; a `.gguf` file is a self-contained artefact for llama.cpp, which is why 3.7 lists it as the CPU answer rather than a quantisation choice." },
 
-    { t: "callout", kind: "good", title: "Quantize the KV cache too",
+    { t: "callout", kind: "good", title: "Quantise the KV cache too",
       body: [
         { t: "p", text: "3.2 measured that an fp8 KV cache doubles concurrency on top of whatever GQA gave — 244 concurrent requests to 488 at 2K context on a four-device node." },
-        { t: "p", text: "It is a separate decision from weight quantization and frequently forgotten, because it is a serving-framework setting rather than a model artefact. On a long-context deployment where the cache dominates the memory budget, it is the larger of the two wins." }
+        { t: "p", text: "It is a separate decision from weight quantisation and frequently forgotten, because it is a serving-framework setting rather than a model artefact. On a long-context deployment where the cache dominates the memory budget, it is the larger of the two wins." }
       ] },
 
     { t: "exercise", kind: "Challenge", title: "Measure the quality–speed curve yourself",
@@ -224,7 +224,7 @@ m = Llama(model_path="llama-2-7b.Q4_K_M.gguf", n_ctx=4096)`,
         { t: "p", text: "Build it, and find where the knee is." }
       ],
       requirements: [
-        "Evaluate perplexity and forward-pass latency at fp32, and at int8 dynamic quantization",
+        "Evaluate perplexity and forward-pass latency at fp32, and at int8 dynamic quantisation",
         "Evaluate on at least two text domains — ordinary prose and something unusual such as code or a technical log",
         "Report perplexity ratio and speedup for each",
         "State whether the quality loss is uniform across domains",
@@ -270,55 +270,55 @@ code           1.7594      1255.9569        713.8      1.62x
 logs           1.9595      1236.6637        631.1      1.23x`,
         notes: [
           { t: "p", text: "**The speedup is not consistent, and in one case it is a slowdown** — 0.90× on prose, 1.62× on code, 1.23× on logs. I expected it to be uniform, since a memory-bound operation whose byte count fell by the same factor should gain the same factor regardless of content. It is not, and the honest reading is that this microbenchmark is too noisy to support a claim either way: three repetitions, on a CPU, over 256-token sequences, with other processes running. The §03 figure of 1.69× came from a different run of the same comparison." },
-          { t: "p", text: "The **degradation is not uniform either**: 506× on prose against 714× on code. All three are catastrophic, so the differences are not actionable here, but the pattern is the point — quality loss varies by domain, so a perplexity check on generic text does not tell you what happens to your traffic. A model quantized and validated on English prose can degrade differently on code, on a non-English language, or on the structured text a production system actually sends." },
-          { t: "p", text: "What this measurement cannot tell you is the thing that matters most: **perplexity is not task accuracy**. A model can lose perplexity and still classify correctly, or hold perplexity and lose an ability that the eval text never exercised. Perplexity is a cheap catastrophe detector — it caught this one instantly — and 2.12's task test set is what tells you whether a quantized model is still fit for the job." }
+          { t: "p", text: "The **degradation is not uniform either**: 506× on prose against 714× on code. All three are catastrophic, so the differences are not actionable here, but the pattern is the point — quality loss varies by domain, so a perplexity check on generic text does not tell you what happens to your traffic. A model quantised and validated on English prose can degrade differently on code, on a non-English language, or on the structured text a production system actually sends." },
+          { t: "p", text: "What this measurement cannot tell you is the thing that matters most: **perplexity is not task accuracy**. A model can lose perplexity and still classify correctly, or hold perplexity and lose an ability that the eval text never exercised. Perplexity is a cheap catastrophe detector — it caught this one instantly — and 2.12's task test set is what tells you whether a quantised model is still fit for the job." }
         ] } },
 
     { t: "callout", kind: "scenario", title: "Incident: the 4-bit model that was fine in English",
       body: [
-        { t: "p", text: "**Symptom.** A support assistant was quantized to 4-bit to halve serving cost. It was validated against the team's 400-case English test set, lost 1.2 points of accuracy, and shipped. Complaints from German and Japanese users rose over the following fortnight; English satisfaction was unchanged." },
+        { t: "p", text: "**Symptom.** A support assistant was quantised to 4-bit to halve serving cost. It was validated against the team's 400-case English test set, lost 1.2 points of accuracy, and shipped. Complaints from German and Japanese users rose over the following fortnight; English satisfaction was unchanged." },
         { t: "p", text: "**What the per-language evaluation showed.** English accuracy had fallen 1.2 points as measured. German had fallen 6 points and Japanese 14. The aggregate had not moved much because English was 78% of traffic." },
-        { t: "p", text: "**Mechanism.** Quantization error is not distributed evenly across a model's behaviour. The weight channels that matter most for a language seen rarely in the calibration set are the ones least protected — AWQ's insight (section 02) run in reverse. The calibration sample had been English, so English-relevant channels were the ones whose scales were chosen well." },
-        { t: "p", text: "**Fix.** Recalibrated on a traffic-weighted multilingual sample, which recovered most of the loss, and the evaluation set was split by language with a per-segment gate. The generalisable lesson is 2.4's, arriving in a different form: **an aggregate metric can improve or hold while a segment you care about degrades badly** — and with quantization the segments at risk are specifically the ones underrepresented in whatever data chose the scales." }
+        { t: "p", text: "**Mechanism.** Quantisation error is not distributed evenly across a model's behaviour. The weight channels that matter most for a language seen rarely in the calibration set are the ones least protected — AWQ's insight (section 02) run in reverse. The calibration sample had been English, so English-relevant channels were the ones whose scales were chosen well." },
+        { t: "p", text: "**Fix.** Recalibrated on a traffic-weighted multilingual sample, which recovered most of the loss, and the evaluation set was split by language with a per-segment gate. The generalisable lesson is 2.4's, arriving in a different form: **an aggregate metric can improve or hold while a segment you care about degrades badly** — and with quantisation the segments at risk are specifically the ones underrepresented in whatever data chose the scales." }
       ] }
   ],
 
   takeaways: [
-    "**Quantization is a decode optimisation.** Decode is bound by bytes loaded, so fewer bits per weight directly raises the throughput ceiling; prefill is compute-bound and benefits far less.",
+    "**Quantisation is a decode optimisation.** Decode is bound by bytes loaded, so fewer bits per weight directly raises the throughput ceiling; prefill is compute-bound and benefits far less.",
     "It therefore helps **throughput and TPOT, and almost nothing for TTFT** — which is the opposite of what a prefill-bound service needs (3.1).",
     "Memory is parameters × bytes per parameter. The 7B table checks out exactly: 28 GB at FP32 down to **3.5 GB at INT4**, which is what puts a 7B model on a consumer card.",
-    "**The dividing line between methods is calibration, not bit width.** GPTQ and AWQ use representative data to choose scales; dynamic quantization uses none.",
+    "**The dividing line between methods is calibration, not bit width.** GPTQ and AWQ use representative data to choose scales; dynamic quantisation uses none.",
     "**AWQ's insight**: a small fraction of weights correspond to large activations and dominate the output. Protecting those channels costs almost nothing and recovers most of the quality.",
-    "Measured on GPT-2: int8 dynamic quantization gave **1.69× faster inference and perplexity from 2.07 to 1136.97** — a factor of 549.",
+    "Measured on GPT-2: int8 dynamic quantisation gave **1.69× faster inference and perplexity from 2.07 to 1136.97** — a factor of 549.",
     "A team measuring only latency would call that a success. **The quality measurement takes the same five minutes and reverses the conclusion.**",
-    "Two honest caveats: GPT-2 at 124M is unusually sensitive, and dynamic quantization is the weakest method. But the direction holds — **quality is a property of the method, and the cheapest method is the one people reach for**.",
+    "Two honest caveats: GPT-2 at 124M is unusually sensitive, and dynamic quantisation is the weakest method. But the direction holds — **quality is a property of the method, and the cheapest method is the one people reach for**.",
     "Measured across three domains, **degradation varies 506× to 714×** — so a perplexity check on generic text does not describe your traffic. The speedup came out 0.90× to 1.62×, which is too noisy on a CPU microbenchmark to claim anything from, including the slowdown.",
     "**Perplexity is a catastrophe detector, not a task metric.** Pair it with 2.12's test set.",
-    "**Quantize the KV cache separately** — 3.2 measured fp8 doubling concurrency on top of GQA, and it is a serving setting rather than a model artefact, so it gets forgotten."
+    "**Quantise the KV cache separately** — 3.2 measured fp8 doubling concurrency on top of GQA, and it is a serving setting rather than a model artefact, so it gets forgotten."
   ],
 
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Why does quantization help decode more than prefill?",
-        options: ["Decode uses more weights", "Decode is bound by bytes loaded; prefill is bound by compute and already amortises the load", "Prefill cannot be quantized", "Decode runs at lower precision anyway"],
+      { stem: "Why does quantisation help decode more than prefill?",
+        options: ["Decode uses more weights", "Decode is bound by bytes loaded; prefill is bound by compute and already amortises the load", "Prefill cannot be quantised", "Decode runs at lower precision anyway"],
         answer: 1,
-        why: "Decode loads every weight to produce one token, so halving the bytes per weight directly halves the binding constraint — while prefill already spreads one weight load across hundreds of tokens, so reducing the load helps little and dequantisation overhead can offset it. Both phases use the same weights and both are quantized; the difference is which resource limits them (3.1). That is also why quantization does little for TTFT." },
+        why: "Decode loads every weight to produce one token, so halving the bytes per weight directly halves the binding constraint — while prefill already spreads one weight load across hundreds of tokens, so reducing the load helps little and dequantisation overhead can offset it. Both phases use the same weights and both are quantised; the difference is which resource limits them (3.1). That is also why quantisation does little for TTFT." },
 
       { stem: "You apply `quantize_dynamic` to a model and inference is 1.69× faster. What must you check?",
         options: ["Nothing — the speedup is the goal", "Quality: measured, the same change took perplexity from 2.07 to 1136.97", "Memory usage", "Whether the API changed"],
         answer: 1,
-        why: "The speedup is real and so is the damage — a factor of 549 in perplexity, producing a model that generates nothing useful, from a change a team measuring only latency would report as a success. The quality check costs the same five minutes. Two caveats soften it — GPT-2 is unusually sensitive and dynamic quantization is the weakest method — but the direction holds: quality is a property of the method, not the bit width." },
+        why: "The speedup is real and so is the damage — a factor of 549 in perplexity, producing a model that generates nothing useful, from a change a team measuring only latency would report as a success. The quality check costs the same five minutes. Two caveats soften it — GPT-2 is unusually sensitive and dynamic quantisation is the weakest method — but the direction holds: quality is a property of the method, not the bit width." },
 
-      { stem: "What distinguishes AWQ from naive 4-bit quantization?",
-        options: ["It uses fewer bits", "It protects weight channels corresponding to large activations, using calibration data", "It runs on CPU", "It quantizes activations too"],
+      { stem: "What distinguishes AWQ from naive 4-bit quantisation?",
+        options: ["It uses fewer bits", "It protects weight channels corresponding to large activations, using calibration data", "It runs on CPU", "It quantises activations too"],
         answer: 1,
-        why: "Not all weights matter equally: a small fraction correspond to large activations and dominate the output, so scaling those channels before quantizing recovers most of what uniform quantization loses — at the same bit width and almost no size cost. That is why AWQ generally beats GPTQ, which also calibrates but does not weight by activation magnitude. Both are 4-bit; GGUF is the CPU-oriented family; and W8A8 is the scheme that quantizes activations." },
+        why: "Not all weights matter equally: a small fraction correspond to large activations and dominate the output, so scaling those channels before quantising recovers most of what uniform quantisation loses — at the same bit width and almost no size cost. That is why AWQ generally beats GPTQ, which also calibrates but does not weight by activation magnitude. Both are 4-bit; GGUF is the CPU-oriented family; and W8A8 is the scheme that quantises activations." },
 
       { stem: "A 4-bit model loses 1.2 points on your English test set and ships. What should worry you?",
         options: ["Nothing — 1.2 points is acceptable", "Quality loss is not uniform; segments underrepresented in the calibration data degrade much more", "The speedup may be smaller than expected", "Memory usage may rise"],
         answer: 1,
-        why: "Quantization error concentrates where the calibration data was thin, so a model calibrated and validated on English can degrade far more on other languages or on structured text — measured in the incident at 6 points for German and 14 for Japanese while English held at 1.2 and the aggregate barely moved. This is 2.4's lesson in a different setting: an aggregate can hold while a segment you care about collapses. Speedup was measured as uniform across domains, and memory falls rather than rises." }
+        why: "Quantisation error concentrates where the calibration data was thin, so a model calibrated and validated on English can degrade far more on other languages or on structured text — measured in the incident at 6 points for German and 14 for Japanese while English held at 1.2 and the aggregate barely moved. This is 2.4's lesson in a different setting: an aggregate can hold while a segment you care about collapses. Speedup was measured as uniform across domains, and memory falls rather than rises." }
     ]
   },
 
@@ -327,7 +327,7 @@ logs           1.9595      1236.6637        631.1      1.23x`,
     sub: "A question where the interesting answer is about measurement rather than about formats.",
     questions: [
       { level: "core",
-        q: "Why does quantization speed up inference?",
+        q: "Why does quantisation speed up inference?",
         strong: "A strong answer connects it to the memory-bound nature of decode rather than saying 'smaller is faster'.",
         answer: [
           { t: "p", text: "Because decode is memory-bandwidth-bound. Every output token requires loading every weight, so throughput is roughly model size over bandwidth — and halving the bytes per weight halves that bound. The arithmetic was never the constraint, which is why reducing precision does not cost speed anywhere." },
@@ -336,7 +336,7 @@ logs           1.9595      1236.6637        631.1      1.23x`,
         ] },
 
       { level: "advanced",
-        q: "How would you validate a quantized model before shipping it?",
+        q: "How would you validate a quantised model before shipping it?",
         strong: "A strong answer pairs perplexity with a task metric and insists on per-segment measurement.",
         answer: [
           { t: "p", text: "Perplexity first, on held-out text from my own domain, because it is cheap and catches catastrophes. I measured int8 dynamic quantization on GPT-2 taking perplexity from 2.07 to 1136 — a factor of 549 — while being 1.69× faster. A team looking only at latency would have shipped that." },
@@ -345,7 +345,7 @@ logs           1.9595      1236.6637        631.1      1.23x`,
         ] },
 
       { level: "core",
-        q: "Which quantization method would you choose?",
+        q: "Which quantisation method would you choose?",
         strong: "A strong answer decides from the deployment target and knows calibration is the dividing line.",
         answer: [
           { t: "p", text: "From the target rather than the bit count. Data-centre GPU: FP8 where the hardware supports it, AWQ 4-bit otherwise. Consumer GPU: AWQ or GPTQ 4-bit, because 3.5 GB fits and both have mature kernels. CPU or laptop: GGUF, with Q4_K_M as the usual quality–size balance." },

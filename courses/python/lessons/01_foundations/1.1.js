@@ -134,7 +134,7 @@ SyntaxError: invalid syntax`},
     { t: "h2", n: "03", text: "The pipeline", id: "the-pipeline",
       sub: "Four transformations between the text you write and the effects you observe." },
 
-    {"kind": "flow", "title": "The CPython pipeline", "caption": "Source text is tokenised, parsed into an AST, compiled to bytecode, and only then executed by the evaluation loop. Every performance, GIL and typing question in the course traces back to one of these five stages.", "cols": 5, "nodes": [{"id": "src", "label": "source .py"}, {"id": "tok", "label": "tokens", "sub": "tokenizer", "tone": "accent"}, {"id": "ast", "label": "AST", "sub": "parser", "tone": "accent"}, {"id": "bc", "label": "bytecode", "sub": "compiler · .pyc", "tone": "good"}, {"id": "vm", "label": "eval loop", "sub": "the PVM", "tone": "warn"}], "edges": [["src", "tok"], ["tok", "ast"], ["ast", "bc"], ["bc", "vm"]], "t": "diagram", "id": "dg-1_1-03-0"},
+    {"kind": "flow", "title": "The CPython pipeline", "caption": "Source text is tokenised, parsed into an AST, compiled to bytecode, and only then executed by the evaluation loop. Every performance, GIL and typing question in the course traces back to one of these five stages.", "cols": 5, "nodes": [{"id": "src", "label": "source .py"}, {"id": "tok", "label": "tokens", "sub": "tokeniser", "tone": "accent"}, {"id": "ast", "label": "AST", "sub": "parser", "tone": "accent"}, {"id": "bc", "label": "bytecode", "sub": "compiler · .pyc", "tone": "good"}, {"id": "vm", "label": "eval loop", "sub": "the PVM", "tone": "warn"}], "edges": [["src", "tok"], ["tok", "ast"], ["ast", "bc"], ["bc", "vm"]], "t": "diagram", "id": "dg-1_1-03-0"},
 
 
 

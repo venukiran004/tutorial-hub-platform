@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Additional Deep Learning · Additional NLP & GenAI · Additional System Design & Production AI · Additional Ethics & Responsible AI · Additional Behavioral & Projects · Additional NLP & Text Processing",
+   "text": "Additional Deep Learning · Additional NLP & GenAI · Additional System Design & Production AI · Additional Ethics & Responsible AI · Additional Behavioural & Projects · Additional NLP & Text Processing",
    "id": "set"
   },
   {
@@ -76,7 +76,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Build a complete text preprocessing pipeline and TF-IDF vectorizer."
+     "text": "**Question:** Build a complete text preprocessing pipeline and TF-IDF vectoriser."
     },
     {
      "t": "p",
@@ -139,7 +139,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Production AI needs input guards (PII, injection, toxicity), output guards (safety, hallucination), rate limiting, conversation memory, and comprehensive monitoring. Defense in depth — multiple safety layers. Log everything for debugging and compliance."
+     "text": "**Key Insight:** Production AI needs input guards (PII, injection, toxicity), output guards (safety, hallucination), rate limiting, conversation memory, and comprehensive monitoring. Defence in depth — multiple safety layers. Log everything for debugging and compliance."
     }
    ],
    "kind": ""
@@ -151,7 +151,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Calculate demographic parity, equalized odds, and calibration for an ML model."
+     "text": "**Question:** Calculate demographic parity, equalised odds, and calibration for an ML model."
     },
     {
      "t": "p",
@@ -164,7 +164,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Demographic parity: equal positive rates. Equalized odds: equal error rates. These can conflict — it's mathematically impossible to satisfy all fairness criteria simultaneously (Chouldechova's impossibility theorem). Choose based on context: lending → equalized odds; hiring → demographic parity."
+     "text": "**Key Insight:** Demographic parity: equal positive rates. Equalised odds: equal error rates. These can conflict — it's mathematically impossible to satisfy all fairness criteria simultaneously (Chouldechova's impossibility theorem). Choose based on context: lending → equalised odds; hiring → demographic parity."
     }
    ],
    "kind": ""
@@ -172,7 +172,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Behavioral questions for AI Engineers (Various — All Levels)",
+   "q": "Behavioural questions for AI Engineers (Various — All Levels)",
    "body": [
     {
      "t": "table",
@@ -300,7 +300,7 @@ EC.receiveLesson({
       [
        "24",
        "**Tech Mahindra**",
-       "How do you optimize AI models for edge/IoT deployment in telecom?"
+       "How do you optimise AI models for edge/IoT deployment in telecom?"
       ]
      ]
     }

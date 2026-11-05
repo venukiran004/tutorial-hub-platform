@@ -138,7 +138,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The field has not replaced attention with SSMs; it has **mixed** them. Architectures like Jamba interleave a few attention layers among many Mamba layers, so the model gets constant-state efficiency for most of its depth and exact retrieval where it needs it. A small number of attention layers is enough to support the recall the SSM layers cannot do, while the cache cost is a fraction of a full transformer's. That is the usual resolution of a structural trade-off — not one side winning, but a ratio being found." }] },
 
     { t: "exercise", title: "Implement the duality",
-      tasks: [
+      requirements: [
         "Implement both modes of an SSM and confirm they agree to floating-point precision.",
         "Plot the kernel K_j for several values of A and relate its decay to the half-life.",
         "Measure how long a value persists in the state for A = 0.9 against A = 0.999.",

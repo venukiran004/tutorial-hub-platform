@@ -1068,7 +1068,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** `True True True`; `in` is typically fastest. **Explanation:** `in` on a list is C-optimized; `any()` carries generator overhead; the explicit loop is pure Python."
+     "text": "**Answer:** `True True True`; `in` is typically fastest. **Explanation:** `in` on a list is C-optimised; `any()` carries generator overhead; the explicit loop is pure Python."
     }
    ]
   },

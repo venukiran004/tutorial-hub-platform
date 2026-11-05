@@ -58,7 +58,7 @@ EC.receiveLesson({
      "items": [
       "`fit` learns parameters (e.g., a scaler's mean/std) and stores them.",
       "`transform` applies those learned parameters to data.",
-      "`fit_transform` does both in one call and is often optimized."
+      "`fit_transform` does both in one call and is often optimised."
      ]
     },
     {
@@ -109,7 +109,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "A Pipeline chains preprocessing and the estimator into one object. Benefits: (1) no leakage — preprocessing is re-fit on each CV fold; (2) one serializable artifact; (3) works with GridSearchCV so you tune preprocessing and model together; (4) identical transforms guaranteed at train and inference time."
+     "text": "A Pipeline chains preprocessing and the estimator into one object. Benefits: (1) no leakage — preprocessing is re-fit on each CV fold; (2) one serialisable artifact; (3) works with GridSearchCV so you tune preprocessing and model together; (4) identical transforms guaranteed at train and inference time."
     },
     {
      "t": "code",
@@ -159,7 +159,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Scale for **distance- and gradient-based** models: SVM, KNN, logistic/linear regression with regularization, neural nets, PCA, K-Means. Tree-based models (Decision Tree, Random Forest, gradient boosting) are scale-invariant and need none."
+     "text": "Scale for **distance- and gradient-based** models: SVM, KNN, logistic/linear regression with regularisation, neural nets, PCA, K-Means. Tree-based models (Decision Tree, Random Forest, gradient boosting) are scale-invariant and need none."
     },
     {
      "t": "table",
@@ -229,7 +229,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Cross-validation repeatedly splits the data into train/validation folds and averages the scores, giving a lower-variance estimate of generalization than a single split."
+     "text": "Cross-validation repeatedly splits the data into train/validation folds and averages the scores, giving a lower-variance estimate of generalisation than a single split."
     },
     {
      "t": "ul",
@@ -283,7 +283,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "How does `C` in SVM / LogisticRegression relate to regularization?",
+   "q": "How does `C` in SVM / LogisticRegression relate to regularisation?",
    "body": [
     {
      "t": "p",
@@ -291,7 +291,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`C` is the **inverse** of regularization strength. Small `C` = strong regularization (simpler model, more bias); large `C` = weak regularization (fits training data harder, more variance)."
+     "text": "`C` is the **inverse** of regularisation strength. Small `C` = strong regularisation (simpler model, more bias); large `C` = weak regularisation (fits training data harder, more variance)."
     },
     {
      "t": "code",
@@ -300,7 +300,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** It is inverted relative to `alpha` in Ridge/Lasso, where larger `alpha` means *more* regularization. Easy to confuse in interviews."
+     "text": "**Key takeaway:** It is inverted relative to `alpha` in Ridge/Lasso, where larger `alpha` means *more* regularisation. Easy to confuse in interviews."
     }
    ],
    "kind": ""
@@ -368,7 +368,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**LightGBM:** fastest on large datasets (histogram + leaf-wise growth), low memory; can overfit small data via `num_leaves`.",
-      "**XGBoost:** strong regularization, GPU support, very mature.",
+      "**XGBoost:** strong regularisation, GPU support, very mature.",
       "**CatBoost:** best native categorical handling (ordered target encoding), great defaults."
      ]
     },
@@ -398,7 +398,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Use Grid for tiny spaces, Randomized for large ones, Halving when compute is the bottleneck."
+     "text": "**Key takeaway:** Use Grid for tiny spaces, Randomised for large ones, Halving when compute is the bottleneck."
     }
    ],
    "kind": ""
@@ -452,7 +452,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Optimize precision when false positives are costly (spam), recall when false negatives are costly (cancer screening), and F1 when you need one balanced number."
+     "text": "**Key takeaway:** Optimise precision when false positives are costly (spam), recall when false negatives are costly (cancer screening), and F1 when you need one balanced number."
     }
    ],
    "kind": ""
@@ -497,7 +497,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** ROC-AUC for roughly balanced data; PR-AUC for severe imbalance. Both summarize ranking quality across all thresholds."
+     "text": "**Key takeaway:** ROC-AUC for roughly balanced data; PR-AUC for severe imbalance. Both summarise ranking quality across all thresholds."
     }
    ],
    "kind": ""
@@ -538,11 +538,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "SMOTE (Synthetic Minority Over-sampling) creates **new** synthetic minority samples by interpolating between a minority point and its k nearest neighbors. Random oversampling just duplicates existing minority rows."
+     "text": "SMOTE (Synthetic Minority Over-sampling) creates **new** synthetic minority samples by interpolating between a minority point and its k nearest neighbours. Random oversampling just duplicates existing minority rows."
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Duplicates encourage overfitting to exact copies; SMOTE generates plausible new points and generalizes better. ADASYN is a variant focusing synthesis near the decision boundary."
+     "text": "**Key takeaway:** Duplicates encourage overfitting to exact copies; SMOTE generates plausible new points and generalises better. ADASYN is a variant focusing synthesis near the decision boundary."
     }
    ],
    "kind": ""
@@ -656,7 +656,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Compute precision/recall across thresholds and pick the one optimizing your objective (max F1, or a target recall)."
+     "text": "Compute precision/recall across thresholds and pick the one optimising your objective (max F1, or a target recall)."
     },
     {
      "t": "code",

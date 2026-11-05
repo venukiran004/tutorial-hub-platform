@@ -159,7 +159,7 @@ def train_step(model, batch, optimizer, clip=1.0):
       answer: 1,
       why: "`nan * 0` is `nan`, so no masking or averaging cleans it out. It reaches the loss, then a weight's gradient, then after `optimizer.step()` that weight itself — and from the next forward pass every output that weight touches is NaN. Within a few steps the whole model is poisoned." },
     { stem: "Your loss becomes NaN. Where should the check go?",
-      options: ["On the loss value only", "At the source — on the logits before the loss, and on the gradient norm before the step", "After the optimizer step", "In the data loader"],
+      options: ["On the loss value only", "At the source — on the logits before the loss, and on the gradient norm before the step", "After the optimiser step", "In the data loader"],
       answer: 1,
       why: "By the time the NaN is visible in the loss, the information about its origin is gone. Checking logits before the loss and the gradient norm before the step localises it. Check `isfinite` rather than `isnan`, because `log(0)` and `exp(100)` produce infinities that only become NaN one operation later." },
     { stem: "A 30-layer network initialised at gain 2.5 produces output activations with norm 5.6e+07. What is the fix?",

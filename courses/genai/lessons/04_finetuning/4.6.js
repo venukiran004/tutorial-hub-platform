@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Training is the same loop any supervised model uses. Text becomes token ids, ids become embeddings, the transformer produces a distribution over the next token at every position, the loss compares that with what the example actually said, and backpropagation works out which way to move every parameter that has `requires_grad` set." },
 
-    { t: "p", text: "The only LoRA-specific fact is that nearly nothing does. The base matrices are frozen, so gradients flow *through* them \u2014 they are still needed to compute the chain rule \u2014 but no optimizer state is kept for them and no update is applied." },
+    { t: "p", text: "The only LoRA-specific fact is that nearly nothing does. The base matrices are frozen, so gradients flow *through* them \u2014 they are still needed to compute the chain rule \u2014 but no optimiser state is kept for them and no update is applied." },
 
     { t: "viz", title: "One example through the loop", caption: "Gradients flow back through everything; only the adapter matrices receive updates. Frozen is not the same as absent.",
       svg: `<svg viewBox="0 0 760 300" width="100%" role="img" aria-label="The LoRA training loop">
@@ -200,7 +200,7 @@ print(lay.A.grad.norm(), lay.B.grad.norm())`,
     { t: "h2", n: "05", id: "frozen", text: "Is the base actually frozen?",
       sub: "The claim everything else depends on" },
 
-    {"kind": "trace", "title": "'Frozen' verified, because it is easy to get wrong", "caption": "A frozen base is what makes 4.1's forgetting reversible rather than permanent — and *frozen* only means what it says if nothing has quietly re-enabled gradients: a stray `requires_grad`, an optimizer built over `model.parameters()` instead of the trainable subset, a library that helpfully turns them back on. Verified after 24 steps: loss fell 4.834 to 3.439, A's gradient grew from zero as predicted, and **0 of 12 base matrices changed, with max difference 0.000e+00**. The embedding matrix did not move either.", "left": "step", "codeW": 120, "vars": ["loss", "|grad A|", "max |B|"], "steps": [{"code": "0", "state": ["4.8339", "0.000000", "0.000000"], "tone": "accent"}, {"code": "1", "state": ["4.7168", "0.014908", "0.000200"], "changed": [1], "tone": "good", "note": "A starts moving"}, {"code": "8", "state": ["4.4918", "0.130279", "0.001614"], "tone": "good"}, {"code": "16", "state": ["4.1082", "0.121425", "0.003299"], "tone": "good"}, {"code": "23", "state": ["3.4390", "", ""], "tone": "good"}, {"code": "base matrices changed", "state": ["0 of 12", "0.000e+00", "frozen"], "tone": "violet"}], "t": "diagram", "id": "dg-4_6-05-3"},
+    {"kind": "trace", "title": "'Frozen' verified, because it is easy to get wrong", "caption": "A frozen base is what makes 4.1's forgetting reversible rather than permanent — and *frozen* only means what it says if nothing has quietly re-enabled gradients: a stray `requires_grad`, an optimiser built over `model.parameters()` instead of the trainable subset, a library that helpfully turns them back on. Verified after 24 steps: loss fell 4.834 to 3.439, A's gradient grew from zero as predicted, and **0 of 12 base matrices changed, with max difference 0.000e+00**. The embedding matrix did not move either.", "left": "step", "codeW": 120, "vars": ["loss", "|grad A|", "max |B|"], "steps": [{"code": "0", "state": ["4.8339", "0.000000", "0.000000"], "tone": "accent"}, {"code": "1", "state": ["4.7168", "0.014908", "0.000200"], "changed": [1], "tone": "good", "note": "A starts moving"}, {"code": "8", "state": ["4.4918", "0.130279", "0.001614"], "tone": "good"}, {"code": "16", "state": ["4.1082", "0.121425", "0.003299"], "tone": "good"}, {"code": "23", "state": ["3.4390", "", ""], "tone": "good"}, {"code": "base matrices changed", "state": ["0 of 12", "0.000e+00", "frozen"], "tone": "violet"}], "t": "diagram", "id": "dg-4_6-05-3"},
 
 
 
@@ -222,7 +222,7 @@ print(lay.A.grad.norm(), lay.B.grad.norm())`,
 
 
 
-    { t: "p", text: "4.3 argued that a frozen base makes 4.1\u2019s catastrophic forgetting reversible rather than permanent. That is only true if \u201cfrozen\u201d means what it says, which is easy to get wrong \u2014 a stray `requires_grad`, an optimizer constructed over `model.parameters()` instead of the trainable subset, a library that re-enables gradients. So I snapshotted the base matrices before training and compared afterwards." },
+    { t: "p", text: "4.3 argued that a frozen base makes 4.1\u2019s catastrophic forgetting reversible rather than permanent. That is only true if \u201cfrozen\u201d means what it says, which is easy to get wrong \u2014 a stray `requires_grad`, an optimiser constructed over `model.parameters()` instead of the trainable subset, a library that re-enables gradients. So I snapshotted the base matrices before training and compared afterwards." },
 
     { t: "code", lang: "python", title: "g46.py \u2014 snapshot, train, compare", code: `before = {i: blk.attn.c_attn.base.weight.detach().clone()
           for i, blk in enumerate(m.transformer.h)}
@@ -304,7 +304,7 @@ n_ad = sum(v.numel() for v in sd.values())`,
         "Report trainable parameters and the frozen remainder at r = 4, 8, 16, 32",
         "Record the per-step loss for the first few steps and comment on its shape"
       ],
-      hint: "Freeze with a loop over all parameters before wrapping, then let the adapter's own Parameters default to requires_grad=True. Constructing the optimizer over model.parameters() rather than the trainable subset is the mistake the frozen check is there to catch.",
+      hint: "Freeze with a loop over all parameters before wrapping, then let the adapter's own Parameters default to requires_grad=True. Constructing the optimiser over model.parameters() rather than the trainable subset is the mistake the frozen check is there to catch.",
       solution: { lang: "python", title: "g46.py \u2014 the three checks", code: `# 1. the wrapped model is the base model
 with torch.no_grad():
     lo_base = full(ids).logits
@@ -356,7 +356,7 @@ print(moved, len(m.transformer.h))`,
         notes: [
           { t: "p", text: "**All three claims hold exactly, not approximately.** The wrapped model's logits are bit-identical to the base, `|grad A|` is 0.00000000 rather than merely small, and 0 of 12 base matrices changed after 24 optimiser steps. Exact equality is the right test here \u2014 a tolerance would hide precisely the configuration bugs the check exists to catch." },
           { t: "p", text: "**The gradient asymmetry is the product rule made visible.** `BA` differentiates so that `A`'s gradient carries a factor of `B` and vice versa; with `B = 0` the first is identically zero. `B` therefore takes the first step alone, and `|grad A|` climbs 0.000 \u2192 0.015 \u2192 0.024 \u2192 0.064 as `B` moves away from zero. It also rules out zero-initialising both, which would freeze the adapter permanently." },
-          { t: "p", text: "**`max |B|` grows almost exactly linearly** \u2014 0.000200 per step for the first several steps. That is AdamW's signature: the update is the gradient divided by its own running magnitude, so the step size is roughly the learning rate regardless of how large the gradient is. It is a useful sanity check that the optimizer is doing what you think." },
+          { t: "p", text: "**`max |B|` grows almost exactly linearly** \u2014 0.000200 per step for the first several steps. That is AdamW's signature: the update is the gradient divided by its own running magnitude, so the step size is roughly the learning rate regardless of how large the gradient is. It is a useful sanity check that the optimiser is doing what you think." },
           { t: "p", text: "**The loss rose at step 2** \u2014 4.717 to 5.418 \u2014 and that is not a problem. With eight examples in batches of two, each step sees a quarter of the data and the batches differ in difficulty. Judge the epoch mean; a single step going the wrong way on a tiny dataset carries no information." },
           { t: "p", text: "**The frozen check is worth keeping permanently.** An accidentally unfrozen base trains *better*, so every visible metric says the run is healthy while it quietly reintroduces the forgetting LoRA was chosen to avoid. One clone and one assertion covers it." }
         ] } },
@@ -371,7 +371,7 @@ print(moved, len(m.transformer.h))`,
       body: [
         { t: "p", text: "**\u201cOur LoRA fine-tune produced a model that is noticeably worse at tasks outside the training data. We thought LoRA could not do that. What would you check?\u201d**" },
         { t: "p", text: "LoRA cannot do that *through the base weights*, so the first thing I would check is whether the base weights actually stayed frozen. That is a two-line test: clone one base matrix before training and compare the maximum absolute difference afterwards. In my own run it was 0.000e+00 across all twelve matrices after 24 steps, which is what a correctly configured run looks like." },
-        { t: "p", text: "The usual way this breaks is the optimizer. If it is constructed over `model.parameters()` rather than the trainable subset, every parameter with a gradient gets updated \u2014 and depending on how the freezing was done, that can include base weights. The symptom is confusing because an accidentally unfrozen run trains *better*: the loss falls faster, so every metric on screen says the configuration is fine while it is quietly doing a partial full fine-tune." },
+        { t: "p", text: "The usual way this breaks is the optimiser. If it is constructed over `model.parameters()` rather than the trainable subset, every parameter with a gradient gets updated \u2014 and depending on how the freezing was done, that can include base weights. The symptom is confusing because an accidentally unfrozen run trains *better*: the loss falls faster, so every metric on screen says the configuration is fine while it is quietly doing a partial full fine-tune." },
         { t: "p", text: "If the base genuinely is frozen, then the degradation is coming from the adapter itself, which is a different and more mundane problem. An adapter can absolutely make a model worse at other things \u2014 it is added to every forward pass, so a strongly-trained adapter shifts behaviour everywhere, not only on the target task. The difference from full fine-tuning is that it is reversible: detach the adapter and the original model is back exactly." },
         { t: "p", text: "So the fixes are the ordinary ones \u2014 fewer epochs, lower rank, a lower learning rate, or restricting the target modules \u2014 and the evaluation discipline from 4.1 applies: hold out a general-ability set, because the training loss will keep improving while this happens." },
         { t: "p", text: "The thing I would push on is whether anyone measured the base model before and after. \u201cNoticeably worse\u201d needs a number, and the two causes \u2014 an unfrozen base and an over-trained adapter \u2014 have different fixes and are trivially distinguishable by the one check nobody runs." }
@@ -379,7 +379,7 @@ print(moved, len(m.transformer.h))`,
   ],
 
   takeaways: [
-    "**The loop is ordinary; only what receives updates is unusual.** Gradients flow through the frozen base because the chain rule needs it, but no optimizer state is kept and no update applied.",
+    "**The loop is ordinary; only what receives updates is unusual.** Gradients flow through the frozen base because the chain rule needs it, but no optimiser state is kept and no update applied.",
     "**Trainable counts, measured**: 0.12% at r=4, 0.24% at r=8, 0.95% at r=32 on one matrix per block \u2014 so \u201cunder 1%\u201d is a statement about a configuration, not about the method.",
     "**A freshly wrapped model is bit-for-bit the base model**: maximum logit difference 0.000e+00, exact equality true, because `B = 0` makes `BA` the zero matrix.",
     "**That is what makes adapters safe to attach, detach and swap per request** \u2014 a half-loaded adapter degrades to the base model rather than to noise.",
@@ -387,7 +387,7 @@ print(moved, len(m.transformer.h))`,
     "**So `B` moves first and `A` follows**, and initialising both to zero would leave both gradients at zero and train nothing \u2014 the asymmetry is load-bearing.",
     "**The base really stays frozen**: 0 of 12 matrices changed after 24 optimiser steps, maximum difference 0.000e+00, embeddings untouched.",
     "**Assert that in your own script.** An accidentally unfrozen base trains *better*, so the loss cannot reveal it, and it reintroduces exactly the forgetting LoRA was chosen to avoid.",
-    "**`max |B|` grows linearly at about the learning rate per step** \u2014 AdamW's signature, and a cheap check that the optimizer is behaving.",
+    "**`max |B|` grows linearly at about the learning rate per step** \u2014 AdamW's signature, and a cheap check that the optimiser is behaving.",
     "**A single step's loss can rise on a small dataset** (4.717 \u2192 5.418 here) because each batch is a different quarter of the data; judge the epoch mean, not the step."
   ],
 
@@ -409,10 +409,10 @@ print(moved, len(m.transformer.h))`,
           "Floating-point accumulation makes tolerances unreliable at this scale",
           "A frozen weight should receive no update at all, so any non-zero difference indicates a configuration error the tolerance would hide",
           "Tolerances are too slow to compute on large matrices",
-          "The optimizer applies updates in fp32, which is exactly representable"
+          "The optimiser applies updates in fp32, which is exactly representable"
         ],
         answer: 1,
-        why: "A correctly frozen parameter is never written to, so the difference is identically zero \u2014 measured, 0.000e+00 across all twelve matrices after 24 steps. The failure this test exists to catch is a misconfigured optimizer updating base weights, which would produce small but non-zero differences that a tolerance would mask. The failure is otherwise invisible because an accidentally unfrozen run trains better, so the loss will not reveal it." },
+        why: "A correctly frozen parameter is never written to, so the difference is identically zero \u2014 measured, 0.000e+00 across all twelve matrices after 24 steps. The failure this test exists to catch is a misconfigured optimiser updating base weights, which would produce small but non-zero differences that a tolerance would mask. The failure is otherwise invisible because an accidentally unfrozen run trains better, so the loss will not reveal it." },
 
       { stem: "A LoRA run's loss goes 4.834, 4.717, 5.418, 4.400 over its first four steps. What should you conclude?",
         options: [
@@ -427,12 +427,12 @@ print(moved, len(m.transformer.h))`,
       { stem: "A team reports their LoRA fine-tune degraded the model on unrelated tasks. What is the first check?",
         options: [
           "Reduce the rank and retrain",
-          "Verify the base weights are actually unchanged, since an optimizer built over all parameters can silently update them",
-          "Switch to QLoRA so the base is quantized and cannot be written",
+          "Verify the base weights are actually unchanged, since an optimiser built over all parameters can silently update them",
+          "Switch to QLoRA so the base is quantised and cannot be written",
           "Increase the dataset size to reduce overfitting"
         ],
         answer: 1,
-        why: "LoRA cannot damage the base through frozen weights, so the first question is whether they are frozen \u2014 a two-line snapshot-and-compare that catches an optimizer constructed over model.parameters() instead of the trainable subset. That failure trains better, so no visible metric reveals it. If the base is genuinely frozen, an over-trained adapter can still shift behaviour everywhere, and the fixes are fewer epochs, lower rank or narrower target modules \u2014 but those come after distinguishing the two causes." }
+        why: "LoRA cannot damage the base through frozen weights, so the first question is whether they are frozen \u2014 a two-line snapshot-and-compare that catches an optimiser constructed over model.parameters() instead of the trainable subset. That failure trains better, so no visible metric reveals it. If the base is genuinely frozen, an over-trained adapter can still shift behaviour everywhere, and the fixes are fewer epochs, lower rank or narrower target modules \u2014 but those come after distinguishing the two causes." }
     ]
   },
 

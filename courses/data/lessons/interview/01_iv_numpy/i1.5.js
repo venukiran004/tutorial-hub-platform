@@ -61,7 +61,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "64",
-   "q": "How do you normalize / standardize data using NumPy?",
+   "q": "How do you normalise / standardise data using NumPy?",
    "body": [
     {
      "t": "code",

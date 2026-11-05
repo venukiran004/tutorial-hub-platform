@@ -6,7 +6,7 @@ EC.receiveLesson({
   objectives: [
     "Measure size, latency and accuracy together rather than quoting a compression ratio",
     "Explain what ONNX changes about a model artifact beyond its speed",
-    "Interpret dynamic int8 quantization: what moves, what does not, and what the aggregate metric hides",
+    "Interpret dynamic int8 quantisation: what moves, what does not, and what the aggregate metric hides",
     "Recognise when the correct compression is a simpler model class"
   ],
 
@@ -77,9 +77,9 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
     { t: "h2", n: "03", id: "int8", text: "Dynamic int8, on a model that has weights",
       sub: "3.78x smaller, and the aggregate hides the movement" },
 
-    { t: "p", text: "Quantization needs weights to quantize, and a tree ensemble has thresholds rather than matrices — so the gradient-boosted model is the wrong subject. A four-layer MLP trained on the same data is the right one, and it is also the realistic case: quantization is a neural-network technique." },
+    { t: "p", text: "Quantisation needs weights to quantise, and a tree ensemble has thresholds rather than matrices — so the gradient-boosted model is the wrong subject. A four-layer MLP trained on the same data is the right one, and it is also the realistic case: quantisation is a neural-network technique." },
 
-    { t: "code", lang: "python", title: "m23.py — dynamic quantization",
+    { t: "code", lang: "python", title: "m23.py — dynamic quantisation",
       code: `qnet = torch.quantization.quantize_dynamic(net, {nn.Linear}, dtype=torch.qint8)`,
       out: `== Part B: a torch MLP, then dynamic int8 ==
   parameters       133121
@@ -96,7 +96,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
 
     { t: "p", text: "The number worth pausing on is the last one. **The maximum probability difference is 4.5e-02** — individual predictions moved by up to 0.045, four and a half percentage points of probability, while aggregate accuracy barely registered. The aggregate is stable because most of that movement happens away from the decision boundary, where it changes no decision." },
 
-    { t: "callout", kind: "trap", title: "Accuracy is the wrong acceptance test for a quantized model",
+    { t: "callout", kind: "trap", title: "Accuracy is the wrong acceptance test for a quantised model",
       body: [
         { t: "p", text: "A 0.0007 accuracy delta looks like nothing. But if the score feeds a downstream threshold, a price, a ranking, or a human reviewer's queue ordering, a 0.045 probability shift is a real change in behaviour that an accuracy check certifies as harmless." },
         { t: "p", text: "The acceptance test should be **agreement on decisions** plus the **maximum and 99th-percentile probability difference** — the three numbers measured here. ONNX passed all three exactly; int8 passed on decisions and moved on probabilities, and whether that is acceptable depends on what consumes the score." }
@@ -104,7 +104,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
 
     { t: "callout", kind: "note", title: "On the API used here",
       body: [
-        { t: "p", text: "`torch.quantization.quantize_dynamic` emits a DeprecationWarning on torch 2.10: eager-mode quantization is moving to `torchao`'s `quantize_` API, and FX graph mode to `prepare_pt2e`/`convert_pt2e`. The measurement stands, but the call will not survive the next major version — which is itself an argument for exporting to ONNX, whose opset is versioned independently of the framework that produced it." }
+        { t: "p", text: "`torch.quantization.quantize_dynamic` emits a DeprecationWarning on torch 2.10: eager-mode quantisation is moving to `torchao`'s `quantize_` API, and FX graph mode to `prepare_pt2e`/`convert_pt2e`. The measurement stands, but the call will not survive the next major version — which is itself an argument for exporting to ONNX, whose opset is versioned independently of the framework that produced it." }
       ] },
 
     { t: "h2", n: "04", id: "distil", text: "Distillation, and the uncomfortable result",
@@ -150,7 +150,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
     { t: "callout", kind: "insight", title: "The first compression question is whether the model class is right",
       body: [
         { t: "p", text: "Lesson 1.2 measured a sixfold hyperparameter sweep moving AUC by 0.3 points and concluded the remaining error was in the data rather than the fit. This is the same finding arriving from the other direction: if tuning buys nothing and a linear model matches the ensemble, the ensemble's capacity was never the binding constraint." },
-        { t: "p", text: "So before quantizing, pruning or distilling, fit the simplest reasonable model and compare. It is an afternoon, and when it works it beats every compression technique by two orders of magnitude — while also being inspectable, portable and immune to lesson 1.3's pickle problem." }
+        { t: "p", text: "So before quantising, pruning or distilling, fit the simplest reasonable model and compare. It is an afternoon, and when it works it beats every compression technique by two orders of magnitude — while also being inspectable, portable and immune to lesson 1.3's pickle problem." }
       ] },
 
     { t: "p", text: "And distillation itself did essentially nothing: teacher labels gave the tree +0.0035 accuracy and *cost* the logistic 0.0014. That is the honest result on this problem. Distillation earns its reputation where the teacher's soft probabilities encode genuine structure the hard labels obscure — large models on hard perceptual tasks — and not on a four-feature tabular problem whose labels are already generated from a smooth function." },
@@ -167,7 +167,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
         { label: "Measure the split first (lesson 2.1)", desc: "The model was 30% of a warm request, so halving inference buys 15% end to end." },
         { label: "Export to ONNX", desc: "0.59x size, 2.00x speed, zero decisions changed. Free, and it fixes the pickle versioning too." },
         { label: "Try the simplest model class", desc: "0.7 KB logistic beat the 163.7 KB teacher on both accuracy and AUC. An afternoon of work, 234x the reduction." },
-        { label: "Then quantize, if the model is a network", desc: "3.78x smaller, 1.43x faster, 0.0007 accuracy. Accept on decision agreement and probability deltas, not accuracy." }
+        { label: "Then quantise, if the model is a network", desc: "3.78x smaller, 1.43x faster, 0.0007 accuracy. Accept on decision agreement and probability deltas, not accuracy." }
       ] },
 
     { t: "table",
@@ -181,14 +181,14 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
       ] },
 
     { t: "exercise", kind: "practice", title: "Measure all three numbers on your own model", difficulty: "core", minutes: 35,
-      prompt: "Take a model you serve and produce a four-row table: baseline, ONNX, a simpler model class, and a quantized version if it is a network. For each row record size on disk, latency on a fixed batch, accuracy, AUC, the fraction of decisions that differ from the baseline, and the maximum and p99 absolute probability difference. Then answer two questions with the numbers in front of you. Given the latency split you measured in 2.1, what does the fastest row actually buy end to end? And does the simplest model class row make the others irrelevant?",
+      prompt: "Take a model you serve and produce a four-row table: baseline, ONNX, a simpler model class, and a quantised version if it is a network. For each row record size on disk, latency on a fixed batch, accuracy, AUC, the fraction of decisions that differ from the baseline, and the maximum and p99 absolute probability difference. Then answer two questions with the numbers in front of you. Given the latency split you measured in 2.1, what does the fastest row actually buy end to end? And does the simplest model class row make the others irrelevant?",
       hints: [
         "skl2onnx needs a typed sample input to trace shapes, and zipmap: False to get an array instead of a list of dicts.",
         "Decision agreement and probability deltas are the acceptance test; accuracy is too coarse to see a 0.045 shift.",
         "Fit the simple model first. If it wins, you can stop."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "ONNX usually comes out as it did here — smaller, faster, numerically identical — because it is a format change rather than an approximation. That makes it the one step worth doing unconditionally, and the versioning benefit outlasts the speed benefit." },
           { t: "p", text: "The simple-model row is the one that surprises people. It will not always win, and when it loses you have learned that the capacity is doing real work and compression is a genuine trade. Either way the afternoon was worth it, and it is the only step that can make the whole project unnecessary." }
         ]
@@ -215,7 +215,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
     title: "Knowledge check",
     questions: [
       {
-        stem: "You quantize a model to int8. Accuracy falls by 0.0007 and no decisions change on your test set. What else must you check before shipping it?",
+        stem: "You quantise a model to int8. Accuracy falls by 0.0007 and no decisions change on your test set. What else must you check before shipping it?",
         options: [
           "Nothing — unchanged decisions and negligible accuracy loss is a pass",
           "How far individual probabilities moved: int8 shifted them by up to 0.045 here, which matters if the score feeds a threshold, a price, a ranking or a review queue",
@@ -239,7 +239,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
         options: [
           "Smaller files, because the format is more compact than pickle",
           "An artifact versioned independently of the training framework — a declared graph with an opset, rather than a pickle embedding class paths and attribute layouts",
-          "Automatic quantization of the model weights"
+          "Automatic quantisation of the model weights"
         ],
         answer: 1,
         why: "The first option happened to be true here (0.59x) but is not guaranteed. The durable benefit is decoupling the artifact from the library that produced it, which removes the silent-behaviour-change risk of loading a pickle under a different scikit-learn."
@@ -254,7 +254,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
       {
         level: "mid",
         q: "How would you make a model faster to serve?",
-        strong: "I would measure where the time goes before changing the model, because when I did that the model was 0.58 ms of a 1.94 ms request — thirty percent — so halving inference would have bought fifteen percent end to end. If the model genuinely dominates, I would export to ONNX first: I measured 0.59x the size, 2.00x the speed, and zero of six thousand decisions changed, so it is free. Then I would try a simpler model class, which in my case gave a 0.7 KB logistic regression that beat a 163.7 KB ensemble on both accuracy and AUC. Quantization comes after those, and only for networks.",
+        strong: "I would measure where the time goes before changing the model, because when I did that the model was 0.58 ms of a 1.94 ms request — thirty percent — so halving inference would have bought fifteen percent end to end. If the model genuinely dominates, I would export to ONNX first: I measured 0.59x the size, 2.00x the speed, and zero of six thousand decisions changed, so it is free. Then I would try a simpler model class, which in my case gave a 0.7 KB logistic regression that beat a 163.7 KB ensemble on both accuracy and AUC. Quantisation comes after those, and only for networks.",
         answer: [
           { t: "p", text: "The ordering is the answer. Candidates usually reach for quantization immediately; leading with the latency split and putting compression last shows the decision is driven by measurement." },
           { t: "p", text: "ONNX being free in all three dimensions is worth stating as a measurement, since it is the one step that is almost unconditionally worth doing." }
@@ -263,7 +263,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
       {
         level: "senior",
         q: "How do you validate a compressed model before shipping it?",
-        strong: "As a different model, through the same gate as any other candidate — because that is what it is. The specific tests are three numbers rather than accuracy: the fraction of decisions that differ from the baseline on a fixed set, and the maximum and 99th-percentile absolute probability difference. I use those because I have measured int8 quantization moving individual probabilities by up to 0.045 while accuracy moved 0.0007 — so an accuracy check would have certified it as harmless while a downstream threshold or ranking saw a real change. ONNX by contrast came through at 1e-07 maximum difference with zero decisions changed, which is a genuinely equivalent artifact.",
+        strong: "As a different model, through the same gate as any other candidate — because that is what it is. The specific tests are three numbers rather than accuracy: the fraction of decisions that differ from the baseline on a fixed set, and the maximum and 99th-percentile absolute probability difference. I use those because I have measured int8 quantisation moving individual probabilities by up to 0.045 while accuracy moved 0.0007 — so an accuracy check would have certified it as harmless while a downstream threshold or ranking saw a real change. ONNX by contrast came through at 1e-07 maximum difference with zero decisions changed, which is a genuinely equivalent artifact.",
         answer: [
           { t: "p", text: "Treating the compressed artifact as a new candidate rather than an optimisation of an existing one is the senior framing, and it is what connects this to the promotion gate." },
           { t: "p", text: "The contrast between 1e-07 and 4.5e-02 is the detail that makes the point concrete: one is a format change, the other is an approximation, and they deserve different levels of scrutiny." }
@@ -272,7 +272,7 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
       {
         level: "senior",
         q: "When is model compression the wrong project?",
-        strong: "Four cases, and I have measured the first. When the model is a minority of request latency — thirty percent in my case, so a halving bought fifteen percent for a week of work. When the bottleneck is actually feature fetching or serialization, which a faster model does not touch. When the score feeds something threshold-sensitive, because compression moves probabilities more than it moves accuracy. And when nobody has tried a simpler model class: I had a 0.7 KB logistic regression match a 163.7 KB ensemble, which is a 234x reduction that no compression technique would have reached, and it also made the artifact inspectable and portable. The general principle is that compression trades fidelity for resources, so you should first establish that resources are the binding constraint.",
+        strong: "Four cases, and I have measured the first. When the model is a minority of request latency — thirty percent in my case, so a halving bought fifteen percent for a week of work. When the bottleneck is actually feature fetching or serialisation, which a faster model does not touch. When the score feeds something threshold-sensitive, because compression moves probabilities more than it moves accuracy. And when nobody has tried a simpler model class: I had a 0.7 KB logistic regression match a 163.7 KB ensemble, which is a 234x reduction that no compression technique would have reached, and it also made the artifact inspectable and portable. The general principle is that compression trades fidelity for resources, so you should first establish that resources are the binding constraint.",
         answer: [
           { t: "p", text: "Having four concrete cases with a measurement behind the first is much stronger than a general caution. The simpler-model-class case is the one most teams never test." }
         ]

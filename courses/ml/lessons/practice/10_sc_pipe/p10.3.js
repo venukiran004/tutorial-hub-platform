@@ -77,7 +77,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Example:** Treatment A has higher overall success rate, but Treatment B is better for EACH disease type when analyzed separately."
+     "text": "**Example:** Treatment A has higher overall success rate, but Treatment B is better for EACH disease type when analysed separately."
     },
     {
      "t": "p",
@@ -98,7 +98,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Different user behavior on Mondays (e.g., higher work-related activity)",
+      "Different user behaviour on Mondays (e.g., higher work-related activity)",
       "Data pipeline differences (weekend data batch processed Monday)",
       "Seasonal features not capturing weekly patterns"
      ]
@@ -122,8 +122,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Model learns noise patterns → lower generalization",
-      "Overparameterized models (deep learning) can memorize noise easily",
+      "Model learns noise patterns → lower generalisation",
+      "Overparameterized models (deep learning) can memorise noise easily",
       "Decision boundary becomes noisy"
      ]
     },
@@ -205,7 +205,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Inference speed:** RF is parallelizable (independent trees); XGBoost sequential",
+      "**Inference speed:** RF is parallelisable (independent trees); XGBoost sequential",
       "**Training speed:** RF faster to train typically",
       "**Interpretability:** Both have feature importance; RF slightly simpler",
       "**Maintenance:** XGBoost has more hyperparameters",
@@ -230,11 +230,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**ML example:** Optimizing for click-through rate → model shows clickbait. Optimizing for engagement → model shows outrage."
+     "text": "**ML example:** Optimising for click-through rate → model shows clickbait. Optimising for engagement → model shows outrage."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Metric hacking: model finds shortcuts to optimize metric without actual improvement. Use multiple metrics, include guardrail metrics, align with business objectives not proxy metrics."
+     "text": "**Explanation:** Metric hacking: model finds shortcuts to optimise metric without actual improvement. Use multiple metrics, include guardrail metrics, align with business objectives not proxy metrics."
     }
    ],
    "kind": ""
@@ -288,7 +288,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** COVID-19 is a dramatic example — consumer behavior shifted overnight, invalidating models trained on pre-COVID data."
+     "text": "**Explanation:** COVID-19 is a dramatic example — consumer behaviour shifted overnight, invalidating models trained on pre-COVID data."
     }
    ],
    "kind": ""
@@ -399,7 +399,7 @@ EC.receiveLesson({
       "Oversample or weight underperforming subgroups",
       "Separate models for different subgroups",
       "Additional features that help distinguish subgroup patterns",
-      "Fairness constraints in optimization"
+      "Fairness constraints in optimisation"
      ]
     },
     {
@@ -467,7 +467,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Better features that separate classes",
-      "Cost-sensitive learning (emphasize misclassification costs)",
+      "Cost-sensitive learning (emphasise misclassification costs)",
       "Probabilistic outputs instead of hard decisions",
       "Reject option (don't classify ambiguous instances)",
       "Non-linear models that find complex boundaries"
@@ -521,7 +521,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Model bias:** Assumptions model makes that may not fit data (linear model on non-linear data)",
-      "**Data bias:** Systematic errors in data collection, labeling, or representation"
+      "**Data bias:** Systematic errors in data collection, labelling, or representation"
      ]
     },
     {
@@ -542,7 +542,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Defense:**"
+     "text": "**Defence:**"
     },
     {
      "t": "ol",
@@ -576,14 +576,14 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**MAML:** Learn initialization that adapts quickly to new tasks",
+      "**MAML:** Learn initialisation that adapts quickly to new tasks",
       "**Prototypical Networks:** Learn metric space for few-shot classification",
       "**Hyperparameter transfer:** Learn optimal hyperparameters across tasks"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Useful for few-shot learning, AutoML, personalization. Train on many tasks, generalize to new tasks with few examples."
+     "text": "**Explanation:** Useful for few-shot learning, AutoML, personalisation. Train on many tasks, generalise to new tasks with few examples."
     }
    ],
    "kind": ""

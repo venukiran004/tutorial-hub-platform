@@ -288,7 +288,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Hello world`, `Hello World`, `Hello world` **Explanation:** `capitalize()` capitalizes first char and lowercases rest. `title()` capitalizes first letter of each word."
+     "text": "**Answer:** `Hello world`, `Hello World`, `Hello world` **Explanation:** `capitalize()` capitalises first char and lowercases rest. `title()` capitalises first letter of each word."
     }
    ],
    "prompt": [

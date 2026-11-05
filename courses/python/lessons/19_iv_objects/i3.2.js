@@ -303,7 +303,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `Event` for signaling, `Semaphore` for limiting concurrency, `Condition` for predicate-based waiting (producer/consumer), `Barrier` for phase synchronisation."
+     "text": "**Key takeaway:** `Event` for signalling, `Semaphore` for limiting concurrency, `Condition` for predicate-based waiting (producer/consumer), `Barrier` for phase synchronisation."
     }
    ]
   },

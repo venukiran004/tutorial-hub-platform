@@ -112,7 +112,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "K-Nearest Neighbors",
+   "q": "K-Nearest Neighbours",
    "body": [
     {
      "t": "code",

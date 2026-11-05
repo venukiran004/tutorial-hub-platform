@@ -172,7 +172,7 @@ ORDER  BY o.order_id, e.occurred_at;
       { t: "p", text: "Before adding a join, say which table is the many side of the relationship and what one output row will represent afterwards — 'one row per order', 'one row per line item', 'one row per (order, event) pair'. **Every aggregate you write after the join is over that unit.** If the unit is not the thing you want to count, the join belongs in a subquery that aggregates first (2.2) or in an EXISTS that does not multiply (2.3)." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Listing customers with their order count",
       rungs: [
         { level: "bad", label: "Inner join, then count", code: `SELECT c.name, COUNT(*) FROM customers c JOIN orders o ON o.customer_id = c.customer_id GROUP BY c.name;`,

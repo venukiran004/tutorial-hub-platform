@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "51",
-   "q": "What is the difference between word-level, subword-level, and character-level tokenization?",
+   "q": "What is the difference between word-level, subword-level, and character-level tokenisation?",
    "body": [
     {
      "t": "p",
@@ -143,7 +143,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Fine-tuning:** Update model weights on task-specific data. Best performance but expensive.",
-      "**Prompt engineering:** Design input text to elicit desired behavior without training. Zero cost.",
+      "**Prompt engineering:** Design input text to elicit desired behaviour without training. Zero cost.",
       "**Few-shot prompting:** Include examples in prompt. No training required.",
       "**Parameter-efficient fine-tuning (PEFT):** LoRA, adapters — update tiny fraction of weights."
      ]
@@ -187,7 +187,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "56",
-   "q": "What is the difference between extractive and abstractive summarization?",
+   "q": "What is the difference between extractive and abstractive summarisation?",
    "body": [
     {
      "t": "p",
@@ -263,7 +263,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Identify and classify entities in text: persons, organizations, locations, dates, etc."
+     "text": "**Answer:** Identify and classify entities in text: persons, organisations, locations, dates, etc."
     },
     {
      "t": "p",
@@ -272,7 +272,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**BiLSTM-CRF:** Bidirectional LSTM with CRF layer for sequence labeling",
+      "**BiLSTM-CRF:** Bidirectional LSTM with CRF layer for sequence labelling",
       "**BERT + token classification:** Fine-tune BERT with linear head per token",
       "**SpaCy NER:** Pre-trained transformer-based NER"
      ]
@@ -311,7 +311,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Seq2seq processes sequentially (can't parallelize). Transformer parallelizes.",
+      "Seq2seq processes sequentially (can't parallelise). Transformer parallelises.",
       "Seq2seq attention is cross-attention only. Transformer has self-attention too.",
       "Transformer uses multi-head attention. Seq2seq typically single-head.",
       "Transformer has positional encoding. Seq2seq has implicit position from recurrence."
@@ -432,7 +432,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pre-trained transformer + linear classification head. Fine-tune on labeled data. Achieves SOTA on most text classification benchmarks."
+     "text": "**Explanation:** Pre-trained transformer + linear classification head. Fine-tune on labelled data. Achieves SOTA on most text classification benchmarks."
     }
    ],
    "kind": ""
@@ -564,7 +564,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Encoder-decoder (T5, BART):** Encode input fully, then decode output. Good for conditional generation (translation, summarization).",
+      "**Encoder-decoder (T5, BART):** Encode input fully, then decode output. Good for conditional generation (translation, summarisation).",
       "**Decoder-only (GPT):** Process input and output as single sequence. Simpler scaling, unified architecture."
      ]
     },
@@ -574,7 +574,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Decoder-only is simpler to scale and train. Prefix acts as implicit encoder. Scaling laws favor decoder-only architecture."
+     "text": "**Explanation:** Decoder-only is simpler to scale and train. Prefix acts as implicit encoder. Scaling laws favour decoder-only architecture."
     }
    ],
    "kind": ""
@@ -582,7 +582,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "69",
-   "q": "What is tokenization and how does BPE (Byte Pair Encoding) work?",
+   "q": "What is tokenisation and how does BPE (Byte Pair Encoding) work?",
    "body": [
     {
      "t": "p",
@@ -765,7 +765,7 @@ EC.receiveLesson({
        "Generation",
        "Text (optional)",
        "Text",
-       "Translation, summarization"
+       "Translation, summarisation"
       ],
       [
        "Span extraction",

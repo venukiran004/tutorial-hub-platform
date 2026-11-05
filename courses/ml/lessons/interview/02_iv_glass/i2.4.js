@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Additional Product & Business Sense · Additional A/B Testing · Additional System Design for Data Science · Additional Behavioral & Scenarios · Additional Statistics & Probability",
+   "text": "Additional Product & Business Sense · Additional A/B Testing · Additional System Design for Data Science · Additional Behavioural & Scenarios · Additional Statistics & Probability",
    "id": "set"
   },
   {
@@ -114,7 +114,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Network effects violate SUTVA (Stable Unit Treatment Value Assumption). Geo-randomization + DiD is the gold standard for marketplace experiments. Switchback handles within-market seasonality."
+     "text": "**Key Insight:** Network effects violate SUTVA (Stable Unit Treatment Value Assumption). Geo-randomisation + DiD is the gold standard for marketplace experiments. Switchback handles within-market seasonality."
     }
    ],
    "kind": ""
@@ -147,7 +147,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "35",
-   "q": "Behavioral questions for Data Scientists (Various — All Levels)",
+   "q": "Behavioural questions for Data Scientists (Various — All Levels)",
    "body": [
     {
      "t": "table",
@@ -220,7 +220,7 @@ EC.receiveLesson({
       [
        "13",
        "**Snap**",
-       "How do you decide what NOT to analyze?"
+       "How do you decide what NOT to analyse?"
       ],
       [
        "14",
@@ -275,7 +275,7 @@ EC.receiveLesson({
       [
        "24",
        "**Tech Mahindra**",
-       "How do you prioritize model accuracy vs latency for telecom use cases?"
+       "How do you prioritise model accuracy vs latency for telecom use cases?"
       ]
      ]
     }
@@ -364,7 +364,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Design end-to-end churn prediction with business value optimization."
+     "text": "**Question:** Design end-to-end churn prediction with business value optimisation."
     },
     {
      "t": "p",
@@ -377,7 +377,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Churn is about business value, not AUC. Optimize threshold on ROI = revenue_saved - intervention_cost. Retrain monthly."
+     "text": "**Key Insight:** Churn is about business value, not AUC. Optimise threshold on ROI = revenue_saved - intervention_cost. Retrain monthly."
     }
    ],
    "kind": ""

@@ -1137,7 +1137,7 @@ EC.receiveLesson({
     },
     {
      "t": "h4",
-     "text": "Q46: Predict the output — Tricky Python behaviors"
+     "text": "Q46: Predict the output — Tricky Python behaviours"
     },
     {
      "t": "code",
@@ -1475,7 +1475,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scenario:** You initialize a 2D grid using multiplication but changes propagate unexpectedly."
+     "text": "**Scenario:** You initialise a 2D grid using multiplication but changes propagate unexpectedly."
     },
     {
      "t": "code",
@@ -1504,7 +1504,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scenario:** Predict the behavior of `+=` on a tuple vs list."
+     "text": "**Scenario:** Predict the behaviour of `+=` on a tuple vs list."
     },
     {
      "t": "code",
@@ -2030,7 +2030,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scenario:** Analyze character distribution in a text for cryptography class."
+     "text": "**Scenario:** Analyse character distribution in a text for cryptography class."
     },
     {
      "t": "code",
@@ -3743,7 +3743,7 @@ EC.receiveLesson({
     },
     {
      "t": "h4",
-     "text": "Q86: `__slots__` for memory optimization"
+     "text": "Q86: `__slots__` for memory optimisation"
     },
     {
      "t": "p",
@@ -3834,7 +3834,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scenario:** Create a lightweight data structure for RGB colors."
+     "text": "**Scenario:** Create a lightweight data structure for RGB colours."
     },
     {
      "t": "code",
@@ -4037,7 +4037,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Scenario:** Create specialized versions of a generic function."
+     "text": "**Scenario:** Create specialised versions of a generic function."
     },
     {
      "t": "code",

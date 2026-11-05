@@ -58,7 +58,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `1 2 3`, `Cannot modify immutable object`, `Cannot delete from immutable object` **Explanation:** `__setattr__` and `__delattr__` enforce immutability after initialization."
+     "text": "**Answer:** `1 2 3`, `Cannot modify immutable object`, `Cannot delete from immutable object` **Explanation:** `__setattr__` and `__delattr__` enforce immutability after initialisation."
     }
    ],
    "prompt": [

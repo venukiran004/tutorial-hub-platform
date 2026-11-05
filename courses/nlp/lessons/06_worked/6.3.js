@@ -110,7 +110,7 @@ EC.receiveLesson({
     { t: "p", text: "Nothing in the block changes — the same weights run over a sequence one token longer, and the causal mask means the first three positions compute exactly what they computed before. That last fact is what makes the KV cache from lesson 5.2 correct rather than merely convenient: the earlier positions' keys and values are provably unchanged, so recomputing them is pure waste." },
 
     { t: "exercise", title: "Finish the trace yourself",
-      tasks: [
+      requirements: [
         "Recompute both LayerNorms with a calculator and confirm the mean is 0 and the variance 1 to four decimal places.",
         "Change b1 from 0.5 to 0.2 and find which dimension survives ReLU instead.",
         "Verify the antisymmetry holds for a different input sentence from the same vocabulary.",

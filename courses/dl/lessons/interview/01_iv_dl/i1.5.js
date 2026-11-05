@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Training on easy examples first, then gradually introducing harder ones. Inspired by human learning. Can accelerate convergence and improve generalization."
+     "text": "Training on easy examples first, then gradually introducing harder ones. Inspired by human learning. Can accelerate convergence and improve generalisation."
     }
    ],
    "kind": ""
@@ -301,7 +301,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "where \\(\\phi_i = f_{vision}(image_i)\\), \\(\\psi_i = g_{text}(text_i)\\) are normalized embeddings."
+     "text": "where \\(\\phi_i = f_{vision}(image_i)\\), \\(\\psi_i = g_{text}(text_i)\\) are normalised embeddings."
     },
     {
      "t": "p",
@@ -317,7 +317,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Learning representations from unlabeled data using automatically generated supervision signals (masked tokens in BERT, next frame prediction). Removes need for expensive labeling."
+     "text": "Learning representations from unlabelled data using automatically generated supervision signals (masked tokens in BERT, next frame prediction). Removes need for expensive labelling."
     }
    ],
    "kind": ""
@@ -325,14 +325,14 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "78",
-   "q": "What is the difference between instance normalization, layer normalization, and batch normalization?",
+   "q": "What is the difference between instance normalisation, layer normalisation, and batch normalisation?",
    "body": [
     {
      "t": "ul",
      "items": [
-      "**Batch Norm:** Normalize across the batch dimension. Good for CNNs.",
-      "**Layer Norm:** Normalize across features of a single sample. Good for Transformers/RNNs.",
-      "**Instance Norm:** Normalize each spatial feature map per sample. Good for style transfer."
+      "**Batch Norm:** Normalise across the batch dimension. Good for CNNs.",
+      "**Layer Norm:** Normalise across features of a single sample. Good for Transformers/RNNs.",
+      "**Instance Norm:** Normalise each spatial feature map per sample. Good for style transfer."
      ]
     }
    ],
@@ -353,12 +353,12 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "80",
-   "q": "What is the difference between model quantization and pruning?",
+   "q": "What is the difference between model quantisation and pruning?",
    "body": [
     {
      "t": "ul",
      "items": [
-      "**Quantization:** Reduce numerical precision (float32 → int8). Reduces model size and improves inference speed.",
+      "**Quantisation:** Reduce numerical precision (float32 → int8). Reduces model size and improves inference speed.",
       "**Pruning:** Remove weights below a threshold (magnitude pruning) or entire neurons/heads. Reduces model size."
      ]
     }
@@ -368,11 +368,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "81",
-   "q": "What is INT8 quantization?",
+   "q": "What is INT8 quantisation?",
    "body": [
     {
      "t": "p",
-     "text": "Converting float32 weights and activations to 8-bit integers. Reduces model memory by 4×, inference latency by 2–4× with minimal accuracy loss. Post-training quantization (PTQ) or quantization-aware training (QAT)."
+     "text": "Converting float32 weights and activations to 8-bit integers. Reduces model memory by 4×, inference latency by 2–4× with minimal accuracy loss. Post-training quantisation (PTQ) or quantisation-aware training (QAT)."
     }
    ],
    "kind": ""
@@ -396,7 +396,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NVIDIA's high-performance inference SDK. Optimizes trained models by: layer fusion, precision calibration (FP16/INT8), kernel auto-tuning. Achieves 2–10× speedup vs. standard PyTorch inference on NVIDIA GPUs."
+     "text": "NVIDIA's high-performance inference SDK. Optimises trained models by: layer fusion, precision calibration (FP16/INT8), kernel auto-tuning. Achieves 2–10× speedup vs. standard PyTorch inference on NVIDIA GPUs."
     }
    ],
    "kind": ""
@@ -404,7 +404,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "What is vLLM and how does it optimize LLM inference?",
+   "q": "What is vLLM and how does it optimise LLM inference?",
    "body": [
     {
      "t": "p",
@@ -432,7 +432,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Pre-training → SFT (Supervised Fine-Tuning) → RLHF/DPO alignment → Quantization → Deployment with serving infrastructure."
+     "text": "Pre-training → SFT (Supervised Fine-Tuning) → RLHF/DPO alignment → Quantisation → Deployment with serving infrastructure."
     }
    ],
    "kind": ""
@@ -440,11 +440,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "87",
-   "q": "What is Direct Preference Optimization (DPO)?",
+   "q": "What is Direct Preference Optimisation (DPO)?",
    "body": [
     {
      "t": "p",
-     "text": "An alternative to RLHF that eliminates the separate reward model training step. Directly optimizes the LLM using preference pairs (chosen vs. rejected responses) using a reparameterized binary cross-entropy loss."
+     "text": "An alternative to RLHF that eliminates the separate reward model training step. Directly optimises the LLM using preference pairs (chosen vs. rejected responses) using a reparameterised binary cross-entropy loss."
     }
    ],
    "kind": ""
@@ -456,7 +456,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "An optimization that parallelizes the decoding attention across the KV sequence dimension using online softmax. Particularly effective when the KV cache is very long (large batch sizes or long sequences)."
+     "text": "An optimisation that parallelises the decoding attention across the KV sequence dimension using online softmax. Particularly effective when the KV cache is very long (large batch sizes or long sequences)."
     }
    ],
    "kind": ""
@@ -504,7 +504,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Replace one-hot labels with soft labels (e.g., 0.9 for true class, 0.1/K distributed elsewhere). Prevents overconfidence, improves calibration and generalization."
+     "text": "Replace one-hot labels with soft labels (e.g., 0.9 for true class, 0.1/K distributed elsewhere). Prevents overconfidence, improves calibration and generalisation."
     }
    ],
    "kind": ""
@@ -527,7 +527,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "94",
-   "q": "What is perplexity in language modeling?",
+   "q": "What is perplexity in language modelling?",
    "body": [
     {
      "t": "p",
@@ -584,7 +584,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "PyTorch's distributed training strategy that shards model parameters, gradients, and optimizer states across GPUs instead of replicating them. Enables training models that don't fit on a single GPU memory."
+     "text": "PyTorch's distributed training strategy that shards model parameters, gradients, and optimiser states across GPUs instead of replicating them. Enables training models that don't fit on a single GPU memory."
     }
    ],
    "kind": ""
@@ -616,7 +616,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "KV cache compression (quantized KV, GQA, MQA)",
+      "KV cache compression (quantised KV, GQA, MQA)",
       "Grouped Query Attention (GQA): Fewer K/V heads than Q heads",
       "Multi-Query Attention (MQA): Single K/V head shared across all Q heads",
       "Sliding window / sparse attention for very long sequences"

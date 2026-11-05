@@ -85,7 +85,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Observer:** one-to-many notification; subscribers don't know each other. **Mediator:** a hub that coordinates many-to-many communication between peers, centralizing the interaction logic."
+     "text": "**Observer:** one-to-many notification; subscribers don't know each other. **Mediator:** a hub that coordinates many-to-many communication between peers, centralising the interaction logic."
     },
     {
      "t": "p",

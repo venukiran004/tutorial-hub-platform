@@ -148,7 +148,7 @@ print("  rendered:", repr(pr.messages[0].content.text))`,
       ["Tools are supported everywhere", "Every host that implements MCP calls tools. This is why servers drift towards tool-only designs: it is the one primitive guaranteed to be used."],
       ["Resources depend on the host having somewhere to put them", "A host must decide when to read and where the content goes in the model's context. Some do this well, some only on explicit user action, some not at all."],
       ["Prompts need a user interface", "A prompt is only reachable if the host renders a menu of them. A headless agent service has no menu, so prompts are inert there — correctly designed and never invoked."],
-      ["So check your host before deciding", "The capability flags in the initialize response are the client's side of this; the host's own documentation is the rest. A resource nobody reads is not a design win."]
+      ["So check your host before deciding", "The capability flags in the initialise response are the client's side of this; the host's own documentation is the rest. A resource nobody reads is not a design win."]
     ] },
 
     { t: "callout", kind: "tradeoff", title: "The pragmatic shape",

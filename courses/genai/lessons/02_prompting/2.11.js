@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Recognise the trade you are making when the prompt stops being something you wrote"
   ],
 
-  prerequisites: ["2.1", "2.2", "2.12"],
+  prerequisites: ["2.1", "2.2"],
 
   blocks: [
 
@@ -154,7 +154,7 @@ result = optimized(review="This product is amazing!")`,
       body: [
         { t: "p", text: "Every optimiser takes a metric and searches to maximise it. So the quality of the result is bounded entirely by the quality of that function — which is a thing you write, in Python, and which nothing in DSPy validates." },
         { t: "p", text: "A metric that is exact-match on a task with several correct phrasings will optimise toward whichever phrasing your labels happen to use. A metric that is an LLM judge inherits every bias in 9.11. A metric computed on twenty examples will select a prompt that fits twenty examples." },
-        { t: "p", text: "This is the same observation as 2.12's and it matters more here, because automation removes the step where a human looks at the outputs and notices the metric is wrong. The optimiser will confidently deliver a prompt that maximises a bad measurement." }
+        { t: "p", text: "2.12 makes the same observation, and it matters more here, because automation removes the step where a human looks at the outputs and notices the metric is wrong. The optimiser will confidently deliver a prompt that maximises a bad measurement." }
       ] },
 
     /* ============================================================ 03 */

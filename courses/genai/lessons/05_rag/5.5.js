@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Choose a vector store from operational properties rather than from benchmarks"
   ],
 
-  prerequisites: ["5.3", "5.6"],
+  prerequisites: ["5.3"],
 
   blocks: [
 
@@ -222,7 +222,7 @@ print(D * 4 + M * 2 * 4)         # HNSW: + neighbour graph`,
     { t: "callout", kind: "insight", title: "The vectors dominate, so dimension reduction beats index choice",
       body: [
         { t: "p", text: "HNSW at M=32 adds 17% on top of the vectors. 5.3 measured that **truncating from 384 to 128 dimensions cost five points of recall@5 and saved two thirds of the storage** \u2014 which is four times the saving, available before any index is chosen." },
-        { t: "p", text: "So if memory is the constraint, the order to attack it in is: reduce dimensions, quantize the vectors (product quantization, which FAISS offers and which trades recall for a large memory reduction), and only then worry about the index\u2019s own overhead." },
+        { t: "p", text: "So if memory is the constraint, the order to attack it in is: reduce dimensions, quantise the vectors (product quantisation, which FAISS offers and which trades recall for a large memory reduction), and only then worry about the index\u2019s own overhead." },
         { t: "p", text: "The exception is HNSW at large M on high-dimensional vectors, where the graph genuinely becomes significant \u2014 but that is a reason to lower M, not to avoid the index." }
       ] },
 
@@ -354,7 +354,7 @@ for M, ef in ((16, 16), (16, 64), (32, 64)):
           { t: "p", text: "**At 200,000 vectors the trade is real and both algorithms offer a runtime dial.** IVF at nprobe=8 gives 99% recall at 23\u00d7 the speed of exact; HNSW at M=32 gives 100% at 26\u00d7. Both `nprobe` and `efSearch` change per query with no rebuild, which makes them unusually good operational controls \u2014 raise under light load, lower under heavy." },
           { t: "p", text: "**More clusters is not better.** nlist=1024 at nprobe=8 gave 88% against nlist=256's 99% at the same nprobe, because each cluster holds fewer vectors so eight cover less of the space. The quantity to hold roughly constant is the fraction of the corpus searched, not nprobe itself." },
           { t: "p", text: "**Build time is the dimension nobody benchmarks**: 0.3 s exact, 3.8 s IVF, 77 s HNSW at M=32. Extrapolated to ten million vectors that is an hour, which turns re-indexing from a deploy step into a scheduled job \u2014 an architectural consequence rather than a tuning detail." },
-          { t: "p", text: "**The vectors dominate memory, so dimension reduction beats index choice.** HNSW's graph adds 17%; 5.3 measured truncating 384 to 128 dimensions saving two thirds for five points of recall@5. Attack dimensions first, then quantization, then the index's own overhead." }
+          { t: "p", text: "**The vectors dominate memory, so dimension reduction beats index choice.** HNSW's graph adds 17%; 5.3 measured truncating 384 to 128 dimensions saving two thirds for five points of recall@5. Attack dimensions first, then quantisation, then the index's own overhead." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
@@ -395,7 +395,7 @@ for M, ef in ((16, 16), (16, 64), (32, 64)):
           "HNSW, for the lowest search latency",
           "None \u2014 exact search at that scale is well under a millisecond and loses no recall",
           "IVF with nprobe tuned to the latency budget",
-          "Product quantization, to minimise memory"
+          "Product quantisation, to minimise memory"
         ],
         answer: 1,
         why: "Brute-force search is a matrix multiply, which hardware is heavily optimised for \u2014 measured at 8.4 ms for 100,000 vectors and 1.7 ms for twenty queries over 1,187. Against generation taking hundreds of milliseconds, the search is not the bottleneck. Choosing an approximate index at this scale accepts recall loss and tuning parameters to solve a problem that does not exist; the real trigger for a dedicated store is memory, filtering or operations." },
@@ -428,7 +428,7 @@ for M, ef in ((16, 16), (16, 64), (32, 64)):
           "Store the vectors on disk and memory-map them"
         ],
         answer: 1,
-        why: "The vectors dominate: 307 MB of vectors against 51 MB of graph at 200,000 \u00d7 384. Dimension reduction attacks the dominant term and was measured at two thirds saved for five points of recall@5, which is four times the saving available from changing index structure. Product quantization is the next lever for the same reason. efSearch affects search time rather than storage, and memory-mapping trades latency for residency rather than reducing size." }
+        why: "The vectors dominate: 307 MB of vectors against 51 MB of graph at 200,000 \u00d7 384. Dimension reduction attacks the dominant term and was measured at two thirds saved for five points of recall@5, which is four times the saving available from changing index structure. Product quantisation is the next lever for the same reason. efSearch affects search time rather than storage, and memory-mapping trades latency for residency rather than reducing size." }
     ]
   },
 

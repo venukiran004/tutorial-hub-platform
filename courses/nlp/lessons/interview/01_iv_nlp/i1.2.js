@@ -171,7 +171,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "What is BPE tokenization and how does it work step by step?",
+   "q": "What is BPE tokenisation and how does it work step by step?",
    "body": [
     {
      "t": "code",
@@ -331,7 +331,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "What is Layer Normalization and why is it preferred over Batch Norm in NLP?",
+   "q": "What is Layer Normalisation and why is it preferred over Batch Norm in NLP?",
    "body": [
     {
      "t": "table",
@@ -342,7 +342,7 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "Normalizes across",
+       "Normalises across",
        "Batch dimension",
        "Feature dimension"
       ],
@@ -397,7 +397,7 @@ EC.receiveLesson({
       ],
       [
        "**ROUGE-L**",
-       "Summarization",
+       "Summarisation",
        "Longest common subsequence F1"
       ],
       [
@@ -427,8 +427,8 @@ EC.receiveLesson({
       ],
       [
        "**SacreBLEU**",
-       "Translation (standardized)",
-       "Standardized BLEU with fixed tokenization"
+       "Translation (standardised)",
+       "Standardised BLEU with fixed tokenisation"
       ]
      ]
     }
@@ -530,7 +530,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Zero-shot transfer:** Fine-tune on English NER, evaluate on German — works surprisingly well",
-      "**Why it works:** Shared subwords, similar sentence structures, and attention patterns that generalize",
+      "**Why it works:** Shared subwords, similar sentence structures, and attention patterns that generalise",
       "**XLM-R:** 100 languages, 270M params, trained with MLM only (no parallel data needed)"
      ]
     }
@@ -565,7 +565,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "What is the difference between extractive and abstractive summarization?",
+   "q": "What is the difference between extractive and abstractive summarisation?",
    "body": [
     {
      "t": "table",

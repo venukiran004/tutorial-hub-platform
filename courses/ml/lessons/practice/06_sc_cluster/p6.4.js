@@ -24,7 +24,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** NMF produces parts-based representation (face = eyes + nose + mouth). More interpretable than PCA. Used in topic modeling, image processing, recommenders."
+     "text": "**Explanation:** NMF produces parts-based representation (face = eyes + nose + mouth). More interpretable than PCA. Used in topic modelling, image processing, recommenders."
     }
    ],
    "kind": ""
@@ -162,7 +162,7 @@ EC.receiveLesson({
      "items": [
       "Variance filtering — remove low-variance genes",
       "PCA to reduce to ~50-100 components",
-      "t-SNE/UMAP for visualization",
+      "t-SNE/UMAP for visualisation",
       "Feature selection using statistical tests (differential expression)"
      ]
     },
@@ -196,7 +196,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Finds low-dimensional embedding that preserves pairwise distances from original space. Minimizes stress (discrepancy between original and embedded distances)."
+     "text": "**Answer:** Finds low-dimensional embedding that preserves pairwise distances from original space. Minimises stress (discrepancy between original and embedded distances)."
     },
     {
      "t": "p",
@@ -218,13 +218,13 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "All pairwise distances become approximately equal",
-      "Nearest neighbor distance → farthest neighbor distance",
+      "Nearest neighbour distance → farthest neighbour distance",
       "Volume of unit hypersphere → 0 relative to unit hypercube"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** In 100D, a \"near\" neighbor might be almost as far as the \"farthest\" point. k-NN, DBSCAN, K-Means all degrade. Dimensionality reduction before distance-based methods is critical."
+     "text": "**Explanation:** In 100D, a \"near\" neighbour might be almost as far as the \"farthest\" point. k-NN, DBSCAN, K-Means all degrade. Dimensionality reduction before distance-based methods is critical."
     }
    ],
    "kind": ""
@@ -259,7 +259,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Builds weight graph of nearest neighbors, computes graph Laplacian, then finds eigenvectors for embedding. Preserves local distances."
+     "text": "**Answer:** Builds weight graph of nearest neighbours, computes graph Laplacian, then finds eigenvectors for embedding. Preserves local distances."
     },
     {
      "t": "p",
@@ -306,12 +306,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Global:** Large distances between distant points are preserved (PCA, Isomap, MDS)",
-      "**Local:** Neighborhood relationships are preserved, global layout may distort (t-SNE, LLE)"
+      "**Local:** Neighbourhood relationships are preserved, global layout may distort (t-SNE, LLE)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** UMAP claims both. For visualization, local structure often more important. For downstream ML, global structure matters more."
+     "text": "**Explanation:** UMAP claims both. For visualisation, local structure often more important. For downstream ML, global structure matters more."
     }
    ],
    "kind": ""
@@ -356,7 +356,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "92",
-   "q": "How would you visualize a 50-dimensional dataset?",
+   "q": "How would you visualise a 50-dimensional dataset?",
    "body": [
     {
      "t": "p",
@@ -366,7 +366,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "PCA to 2D for quick overview of variance structure",
-      "t-SNE or UMAP for cluster visualization",
+      "t-SNE or UMAP for cluster visualisation",
       "Parallel coordinates plot for feature patterns",
       "Heatmap of feature correlations",
       "Pairplot of top PCA components"
@@ -409,14 +409,14 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Uses label information to find projections that optimize class separation:"
+     "text": "**Answer:** Uses label information to find projections that optimise class separation:"
     },
     {
      "t": "ol",
      "items": [
-      "**LDA:** Maximizes between-class / within-class variance ratio",
-      "**Supervised UMAP:** Uses labels to influence neighbor graph",
-      "**Neighborhood Component Analysis (NCA)**"
+      "**LDA:** Maximises between-class / within-class variance ratio",
+      "**Supervised UMAP:** Uses labels to influence neighbour graph",
+      "**Neighbourhood Component Analysis (NCA)**"
      ]
     },
     {
@@ -506,7 +506,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**FAMD:** Factor Analysis of Mixed Data (combines PCA for numerical, MCA for categorical)",
-      "One-hot encode categoricals, standardize everything, then PCA",
+      "One-hot encode categoricals, standardise everything, then PCA",
       "Separate reduction: PCA on numerical, MCA on categorical, then combine"
      ]
     },
@@ -551,7 +551,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Steps: 1) Center data. 2) Compute covariance matrix C = X^T X / (n-1). 3) Eigendecompose: C = VΛV^T. 4) V = principal directions, Λ = variances."
+     "text": "**Explanation:** Steps: 1) Centre data. 2) Compute covariance matrix C = X^T X / (n-1). 3) Eigendecompose: C = VΛV^T. 4) V = principal directions, Λ = variances."
     }
    ],
    "kind": ""

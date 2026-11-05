@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** K-Means initialization is random — different initial centroids lead to different local optima."
+     "text": "**Answer:** K-Means initialisation is random — different initial centroids lead to different local optima."
     },
     {
      "t": "p",
@@ -32,7 +32,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "How does K-Means++ improve over random initialization?",
+   "q": "How does K-Means++ improve over random initialisation?",
    "body": [
     {
      "t": "p",
@@ -93,7 +93,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** The point is closer to a neighboring cluster than to its own assigned cluster — it's likely misassigned."
+     "text": "**Answer:** The point is closer to a neighbouring cluster than to its own assigned cluster — it's likely misassigned."
     },
     {
      "t": "p",
@@ -139,13 +139,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**eps (ε):** Maximum neighborhood distance",
+      "**eps (ε):** Maximum neighbourhood distance",
       "**min_samples:** Minimum points to form a dense region"
      ]
     },
     {
      "t": "p",
-     "text": "**Choosing:** k-distance plot — plot sorted distance to k-th nearest neighbor, find the \"elbow\". min_samples ≥ dimensions + 1 as rule of thumb."
+     "text": "**Choosing:** k-distance plot — plot sorted distance to k-th nearest neighbour, find the \"elbow\". min_samples ≥ dimensions + 1 as rule of thumb."
     }
    ],
    "kind": ""
@@ -173,7 +173,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** DBSCAN uses a global eps — can't handle clusters with significantly different densities. Dense clusters get merged, sparse clusters get labeled as noise."
+     "text": "**Answer:** DBSCAN uses a global eps — can't handle clusters with significantly different densities. Dense clusters get merged, sparse clusters get labelled as noise."
     },
     {
      "t": "p",
@@ -200,7 +200,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Agglomerative is more common. Results visualized as a dendrogram. Cut dendrogram at chosen height to get desired number of clusters."
+     "text": "**Explanation:** Agglomerative is more common. Results visualised as a dendrogram. Cut dendrogram at chosen height to get desired number of clusters."
     }
    ],
    "kind": ""
@@ -220,7 +220,7 @@ EC.receiveLesson({
       "**Single linkage:** Min distance between clusters (can create chain effect)",
       "**Complete linkage:** Max distance (creates compact clusters)",
       "**Average linkage:** Mean distance between all pairs",
-      "**Ward's linkage:** Minimizes within-cluster variance (similar to K-Means)"
+      "**Ward's linkage:** Minimises within-cluster variance (similar to K-Means)"
      ]
     },
     {
@@ -264,7 +264,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** K-Means scales well to large datasets. Agglomerative impractical for n > ~10,000 without optimizations."
+     "text": "**Explanation:** K-Means scales well to large datasets. Agglomerative impractical for n > ~10,000 without optimisations."
     }
    ],
    "kind": ""
@@ -331,13 +331,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**BIC (Bayesian Information Criterion):** Penalizes model complexity more — preferred",
+      "**BIC (Bayesian Information Criterion):** Penalises model complexity more — preferred",
       "**AIC (Akaike Information Criterion):** Less penalty for complexity"
      ]
     },
     {
      "t": "p",
-     "text": "Pick the number of components that minimizes BIC/AIC."
+     "text": "Pick the number of components that minimises BIC/AIC."
     },
     {
      "t": "p",
@@ -376,7 +376,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Feature scales are vastly different — income dominates distance calculations. Must standardize features first."
+     "text": "**Answer:** Feature scales are vastly different — income dominates distance calculations. Must standardise features first."
     },
     {
      "t": "p",
@@ -396,7 +396,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Also called Variance Ratio Criterion. Fast to compute, favors convex clusters. Compare across different K values. Unlike silhouette, no bounded range."
+     "text": "**Explanation:** Also called Variance Ratio Criterion. Fast to compute, favours convex clusters. Compare across different K values. Unlike silhouette, no bounded range."
     }
    ],
    "kind": ""
@@ -487,7 +487,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Adjusted Rand Index (ARI):** Measures agreement between clusters and labels, adjusted for chance",
-      "**Normalized Mutual Information (NMI):** Measures shared information",
+      "**Normalised Mutual Information (NMI):** Measures shared information",
       "**Homogeneity / Completeness / V-measure**",
       "**Fowlkes-Mallows Index**"
      ]

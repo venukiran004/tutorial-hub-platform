@@ -104,7 +104,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Nothing here is specific to translation. This is the same encoder block from lesson 4.7 — two sublayers, two norms, two residuals, shape preserved throughout at (3, 4). A real model stacks six or more of these and the memory is the last one's output. The only thing that makes it an *encoder* rather than a decoder is the absence of a causal mask and the absence of a cross-attention sublayer." }] },
 
     { t: "exercise", title: "Trace the encoder",
-      tasks: [
+      requirements: [
         "Run the NumPy and confirm the memory matrix to three decimal places.",
         "Add a causal mask to the encoder's self-attention and see how the memory changes.",
         "Extend the source to four words and confirm the memory shape follows the source, not the target.",

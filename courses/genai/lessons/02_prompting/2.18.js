@@ -73,7 +73,7 @@ User:   Summarize the following text in {N} bullet points.
     { t: "h2", n: "02", id: "adapting", text: "Adapting rather than copying",
       sub: "Three edits that make a generic template yours" },
 
-    { t: "ladder", title: "From template to prompt", rungs: [
+    { t: "ladder", lang: "text", title: "From template to prompt", rungs: [
       { level: "bad", label: "Used verbatim",
         why: "Generic in exactly the places that matter",
         code: `Summarize the following text in 3 bullet points.

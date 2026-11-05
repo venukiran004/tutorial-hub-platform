@@ -270,7 +270,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2730",
-   "q": "Program 2730: Query optimization",
+   "q": "Program 2730: Query optimisation",
    "body": [
     {
      "t": "code",

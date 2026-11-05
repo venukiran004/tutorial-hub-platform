@@ -195,7 +195,7 @@ memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
 
     { t: "callout", kind: "insight", title: "This single ratio explains most of the module",
       body: [
-        { t: "p", text: "**Quantization** (3.3) works because it reduces bytes loaded, which is the binding constraint in decode. Halving the weight precision roughly halves the decode time — the arithmetic is not what was limiting." },
+        { t: "p", text: "**Quantisation** (3.3) works because it reduces bytes loaded, which is the binding constraint in decode. Halving the weight precision roughly halves the decode time — the arithmetic is not what was limiting." },
         { t: "p", text: "**Batching** (3.5) works because the weights loaded for one token can serve 32 requests at once, raising arithmetic intensity without loading anything more." },
         { t: "p", text: "**Speculative decoding** (3.6) works because the GPU is idle during decode, so verifying four candidate tokens in one pass costs little more than verifying one." },
         { t: "p", text: "All three are the same observation from different angles: decode wastes compute, so anything that gets more work out of the same memory traffic is nearly free." }
@@ -259,15 +259,15 @@ summarise a doc            8000      400        35%        65%
 classify                    200        2        77%        23%`,
         notes: [
           { t: "p", text: "The crossover is startlingly low. On a 100-token prompt, decode overtakes prefill after **4.1 output tokens** — so for essentially every real response, decode is the larger cost. Even on a 10,000-token prompt the crossover is 272 tokens, which a long answer passes." },
-          { t: "p", text: "That is why the serving literature is overwhelmingly about decode: quantization, batching, speculative decoding, KV cache management. Prefill matters for **TTFT** — the user staring at a spinner (1.12) — and decode matters for **throughput and total latency**, which is where the cost is." },
+          { t: "p", text: "That is why the serving literature is overwhelmingly about decode: quantisation, batching, speculative decoding, KV cache management. Prefill matters for **TTFT** — the user staring at a spinner (1.12) — and decode matters for **throughput and total latency**, which is where the cost is." },
           { t: "p", text: "The workload table makes the exceptions visible, and there are two. A RAG answer is **42% prefill**, because 4,000 tokens of retrieved context is a lot of prompt for a short answer — so on a RAG endpoint, prompt caching (1.13) and chunked prefill (3.5) are worth more than on a chat product. And `classify` is the extreme case at **77% prefill**: a 200-token prompt and a two-token answer is almost all prefill, which is exactly the shape of the incident this lesson closes on." },
         ] } },
 
-    { t: "callout", kind: "scenario", title: "Incident: six weeks of quantization work on a prefill-bound service",
+    { t: "callout", kind: "scenario", title: "Incident: six weeks of quantisation work on a prefill-bound service",
       body: [
-        { t: "p", text: "**Symptom.** A document-analysis service had a p95 latency of 9 seconds and a target of 3. The team spent six weeks on decode optimisations — quantizing the model to INT8, upgrading to a serving framework with continuous batching, tuning the batch scheduler. p95 moved from 9 seconds to 8.4." },
+        { t: "p", text: "**Symptom.** A document-analysis service had a p95 latency of 9 seconds and a target of 3. The team spent six weeks on decode optimisations — quantising the model to INT8, upgrading to a serving framework with continuous batching, tuning the batch scheduler. p95 moved from 9 seconds to 8.4." },
         { t: "p", text: "**What the metrics showed, once they were separated.** TTFT was 7.9 seconds and TPOT was 21 ms over an average of 24 output tokens — so decode accounted for about half a second of the nine. Every optimisation had been aimed at the half-second." },
-        { t: "p", text: "**Mechanism.** The service sent 30,000-token documents and asked for a two-sentence classification. That is the far end of the workload table above: almost all prompt, almost no output, and therefore almost all prefill. Prefill is compute-bound and quantization helps it least; continuous batching helps throughput and not a single request's TTFT." },
+        { t: "p", text: "**Mechanism.** The service sent 30,000-token documents and asked for a two-sentence classification. That is the far end of the workload table above: almost all prompt, almost no output, and therefore almost all prefill. Prefill is compute-bound and quantisation helps it least; continuous batching helps throughput and not a single request's TTFT." },
         { t: "p", text: "**Fix.** Chunked prefill so a long document did not block other requests, prompt caching for the 4,000-token instruction prefix that was identical across requests (1.13), and — by far the largest — summarising the document in a cheap first pass so the expensive model saw 2,000 tokens instead of 30,000. p95 went to 2.1 seconds. The six weeks were not wasted work badly done; they were good work aimed at the wrong phase, and separating TTFT from TPOT at the start would have shown that in an afternoon." }
       ] }
   ],
@@ -282,7 +282,7 @@ classify                    200        2        77%        23%`,
     "**Weights are a fixed cost; the KV cache is per-request and grows with sequence length.** The second is what limits concurrency (3.2).",
     "**Arithmetic intensity predicts the bottleneck.** Prefill reuses loaded weights across many tokens; decode loads everything for one — so decode wastes compute while waiting on memory.",
     "`decode throughput ≈ model size / memory bandwidth`: a 14 GB model on 2 TB/s cannot beat about 7 ms per token however fast its arithmetic.",
-    "That one ratio explains quantization (fewer bytes), batching (more work per byte) and speculative decoding (idle compute) — three angles on the same observation.",
+    "That one ratio explains quantisation (fewer bytes), batching (more work per byte) and speculative decoding (idle compute) — three angles on the same observation.",
     "**The prefill/decode crossover is low**: on a 100-token prompt decode overtakes prefill after **4.1 output tokens**. Decode dominates almost every real response — except on prompt-heavy shapes, measured at 42% prefill for RAG and **77% for a short classification**.",
   ],
 
@@ -295,9 +295,9 @@ classify                    200        2        77%        23%`,
         why: "Arithmetic intensity is FLOPs per byte loaded: prefill amortises a single weight load across hundreds of tokens, so the compute units are the limit, while decode performs almost no arithmetic per byte moved and the units idle waiting on memory. That is why `decode throughput ≈ model size / bandwidth` is a useful bound. Both phases use the same kernels on the same hardware; and decode very much can be batched — 3.5 is the lesson about why doing so helps so much." },
 
       { stem: "Your p95 latency is 9 seconds, TTFT is 7.9 seconds and output averages 24 tokens. What do you optimise?",
-        options: ["Quantization, to speed up decode", "Prefill — the prompt, caching, or chunking", "Continuous batching", "A larger batch size"],
+        options: ["Quantisation, to speed up decode", "Prefill — the prompt, caching, or chunking", "Continuous batching", "A larger batch size"],
         answer: 1,
-        why: "TTFT of 7.9 of 9 seconds means decode accounts for about half a second, so every decode optimisation is competing for that half-second — which is the six-week incident in section 04. Prefill is compute-bound and grows with prompt length, so the levers are a shorter prompt, prompt caching for a static prefix, chunked prefill, or a cheap first pass to shrink the document. Quantization helps decode most; batching raises throughput and does nothing for one request's TTFT." },
+        why: "TTFT of 7.9 of 9 seconds means decode accounts for about half a second, so every decode optimisation is competing for that half-second — which is the six-week incident in section 04. Prefill is compute-bound and grows with prompt length, so the levers are a shorter prompt, prompt caching for a static prefix, chunked prefill, or a cheap first pass to shrink the document. Quantisation helps decode most; batching raises throughput and does nothing for one request's TTFT." },
 
       { stem: "On a 100-token prompt, after how many output tokens does decode cost exceed prefill cost?",
         options: ["About 100", "About 4", "About 50", "Never — prefill always dominates"],

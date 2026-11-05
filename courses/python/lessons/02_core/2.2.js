@@ -243,7 +243,7 @@ print(len(fruits), "apple" in fruits)
 # Deduplicate any iterable in one call:
 print(sorted(set([3, 1, 3, 2, 1])))
 `,
-      out: `4 True
+      out: `3 True
 [1, 2, 3]`
     },
 

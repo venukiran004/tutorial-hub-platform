@@ -237,7 +237,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "93",
-   "q": "Tokenizer",
+   "q": "Tokeniser",
    "body": [
     {
      "t": "code",

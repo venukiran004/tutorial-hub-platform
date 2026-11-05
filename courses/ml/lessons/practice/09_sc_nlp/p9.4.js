@@ -86,22 +86,22 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "79",
-   "q": "What is weight decay and how does it differ from L2 regularization?",
+   "q": "What is weight decay and how does it differ from L2 regularisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Both penalize large weights but differ in implementation with adaptive optimizers:"
+     "text": "**Answer:** Both penalise large weights but differ in implementation with adaptive optimisers:"
     },
     {
      "t": "ul",
      "items": [
-      "**L2 regularization:** Adds λ||w||² to loss (gradient: 2λw added to gradient)",
+      "**L2 regularisation:** Adds λ||w||² to loss (gradient: 2λw added to gradient)",
       "**Weight decay:** Directly shrinks weights: w = w - lr×decay×w (independent of gradient)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** With SGD: equivalent. With Adam: L2 regularization is incorrect because adaptive lr scales the penalty. AdamW implements proper weight decay."
+     "text": "**Explanation:** With SGD: equivalent. With Adam: L2 regularisation is incorrect because adaptive lr scales the penalty. AdamW implements proper weight decay."
     }
    ],
    "kind": ""
@@ -140,7 +140,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Online: adaptable, handles drift, memory-efficient. Batch: more stable, thorough optimization. SGD enables online learning naturally. Production: mini-batch + periodic retraining."
+     "text": "**Explanation:** Online: adaptable, handles drift, memory-efficient. Batch: more stable, thorough optimisation. SGD enables online learning naturally. Production: mini-batch + periodic retraining."
     }
    ],
    "kind": ""
@@ -157,13 +157,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Small batch (16-32):** Noisy gradients → regularization effect, better generalization, slower",
-      "**Large batch (256-4096):** Smoother gradients → faster computation, may generalize worse"
+      "**Small batch (16-32):** Noisy gradients → regularisation effect, better generalisation, slower",
+      "**Large batch (256-4096):** Smoother gradients → faster computation, may generalise worse"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Large batch: need learning rate scaling (linear scaling rule). Large batch may converge to sharp minima (poor generalization). Small batch finds flatter minima."
+     "text": "**Explanation:** Large batch: need learning rate scaling (linear scaling rule). Large batch may converge to sharp minima (poor generalisation). Small batch finds flatter minima."
     }
    ],
    "kind": ""
@@ -240,11 +240,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "86",
-   "q": "What is layer normalization?",
+   "q": "What is layer normalisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalizes across features for each sample (not across batch like batch norm)."
+     "text": "**Answer:** Normalises across features for each sample (not across batch like batch norm)."
     },
     {
      "t": "code",
@@ -304,7 +304,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Dense neural networks contain sparse subnetworks (\"winning tickets\") that can achieve comparable performance when trained in isolation from the same initialization."
+     "text": "**Answer:** Dense neural networks contain sparse subnetworks (\"winning tickets\") that can achieve comparable performance when trained in isolation from the same initialisation."
     },
     {
      "t": "p",
@@ -344,7 +344,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "91",
-   "q": "What is quantization for model deployment?",
+   "q": "What is quantisation for model deployment?",
    "body": [
     {
      "t": "p",
@@ -356,7 +356,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Post-training quantization: quantize after training. Quantization-aware training: simulate quantization during training (better quality). ONNX, TensorRT support quantization."
+     "text": "**Explanation:** Post-training quantisation: quantise after training. Quantisation-aware training: simulate quantisation during training (better quality). ONNX, TensorRT support quantisation."
     }
    ],
    "kind": ""
@@ -395,7 +395,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Prevents model from being overconfident. Regularization effect. The model can't achieve zero loss → reduces overfitting. Standard in modern image classification and NLP."
+     "text": "**Explanation:** Prevents model from being overconfident. Regularisation effect. The model can't achieve zero loss → reduces overfitting. Standard in modern image classification and NLP."
     }
    ],
    "kind": ""
@@ -460,7 +460,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Benefits: shared features, regularization effect, data efficiency. Works when tasks are related. Hard task can help easy task and vice versa."
+     "text": "**Explanation:** Benefits: shared features, regularisation effect, data efficiency. Works when tasks are related. Hard task can help easy task and vice versa."
     }
    ],
    "kind": ""
@@ -520,7 +520,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Encoder: classification, NER, semantic search. Decoder: text generation. Encoder-decoder: translation, summarization."
+     "text": "**Explanation:** Encoder: classification, NER, semantic search. Decoder: text generation. Encoder-decoder: translation, summarisation."
     }
    ],
    "kind": ""
@@ -538,10 +538,10 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Check basics:** Data loading correct? Labels right? Loss function appropriate?",
-      "**Overfit one batch:** If it can't memorize 1 batch, architecture/code is wrong",
+      "**Overfit one batch:** If it can't memorise 1 batch, architecture/code is wrong",
       "**Learning rate:** Try 1e-3 (default), or use lr finder",
       "**Gradients:** Check for vanishing/exploding (print gradient norms)",
-      "**Data:** Visualize inputs and labels, check preprocessing",
+      "**Data:** Visualise inputs and labels, check preprocessing",
       "**Simplify:** Start with simple model, gradually add complexity",
       "**Baseline:** Compare to known working implementation"
      ]

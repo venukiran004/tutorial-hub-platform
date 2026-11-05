@@ -193,7 +193,7 @@ FROM   employees GROUP BY department ORDER BY dept_avg DESC;
       { t: "p", text: "**Clarify** the definition in one question: 'do ties share a rank?', 'is a refunded order an order?', 'can the same user log in twice a day?'. **Write the simple version** that answers the literal question. **Make it robust** by naming the edge you handled — NULLs, ties, empty groups, division by zero — and show the one-line change. **Offer the follow-up** yourself: 'if you wanted the nth, this becomes DENSE_RANK = n'. That sequence shows the interviewer what they are actually assessing: whether you know where SQL answers are wrong." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "'Find the customers who placed an order every month this year'",
       rungs: [
         { level: "bad", label: "Count orders and compare with 12", code: `SELECT customer_id FROM orders WHERE placed_at >= '2025-01-01' GROUP BY customer_id HAVING COUNT(*) >= 12`,

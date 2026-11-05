@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Weekly prioritization: which requests have highest business impact?, (2) office hours: dedicated time for ad-hoc requests (reduces interruptions), (3) self-serve: create dashboards and SQL templates teams can use independently, (4) documentation: write once, reuse — standard analyses, code templates, (5) say no strategically: \"I can do this in Q2 or do this simpler version now,\" (6) estimate work: communicate timelines clearly, (7) force multiply: train analysts on teams to handle basic analyses, (8) focus time: block calendar for deep work, (9) automation: invest in pipelines that replace manual recurring work."
+     "text": "**Answer:** (1) Weekly prioritisation: which requests have highest business impact?, (2) office hours: dedicated time for ad-hoc requests (reduces interruptions), (3) self-serve: create dashboards and SQL templates teams can use independently, (4) documentation: write once, reuse — standard analyses, code templates, (5) say no strategically: \"I can do this in Q2 or do this simpler version now,\" (6) estimate work: communicate timelines clearly, (7) force multiply: train analysts on teams to handle basic analyses, (8) focus time: block calendar for deep work, (9) automation: invest in pipelines that replace manual recurring work."
     }
    ],
    "kind": ""
@@ -74,11 +74,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "230",
-   "q": "Your ML model needs to interact with 3 microservices (user service, product service, risk service) to get features. How do you minimize latency?",
+   "q": "Your ML model needs to interact with 3 microservices (user service, product service, risk service) to get features. How do you minimise latency?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Parallel requests: fetch from all 3 services simultaneously (async/await), (2) caching: cache user profile (changes slowly) with TTL, (3) feature pre-computation: batch compute features → store in feature store, (4) circuit breaker: if service is slow → use cached/default value, (5) gRPC instead of REST: faster serialization, streaming, (6) service mesh: Istio for automatic load balancing and retries, (7) local cache: in-memory cache for hot data, (8) target: total feature fetching < 20ms, model inference < 10ms."
+     "text": "**Answer:** (1) Parallel requests: fetch from all 3 services simultaneously (async/await), (2) caching: cache user profile (changes slowly) with TTL, (3) feature pre-computation: batch compute features → store in feature store, (4) circuit breaker: if service is slow → use cached/default value, (5) gRPC instead of REST: faster serialisation, streaming, (6) service mesh: Istio for automatic load balancing and retries, (7) local cache: in-memory cache for hot data, (8) target: total feature fetching < 20ms, model inference < 10ms."
     },
     {
      "t": "p",
@@ -144,7 +144,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Time-aware training: train on recent data only (sliding window), (2) concept drift detection: monitor label distributions over time, (3) regular annotation refresh: have annotators relabel old data with current definitions, (4) version labels: track which definition version generated each label, (5) multi-task: current labels + historical labels as separate tasks, (6) active learning: continuously sample for re-labeling, (7) documentation: changelog for label definitions."
+     "text": "**Answer:** (1) Time-aware training: train on recent data only (sliding window), (2) concept drift detection: monitor label distributions over time, (3) regular annotation refresh: have annotators relabel old data with current definitions, (4) version labels: track which definition version generated each label, (5) multi-task: current labels + historical labels as separate tasks, (6) active learning: continuously sample for re-labelling, (7) documentation: changelog for label definitions."
     }
    ],
    "kind": ""
@@ -172,7 +172,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Find nearest approved sample and show the differences, (2) DiCE (Diverse Counterfactual Explanations): generate actionable counterfactuals, (3) constraints: only change actionable features (can increase income, can't decrease age), (4) minimize number of changes (sparse counterfactuals), (5) realistic: changes should be plausible (income +$5K is plausible, +$500K isn't), (6) diverse: provide multiple paths to approval, (7) implementation:"
+     "text": "**Answer:** (1) Find nearest approved sample and show the differences, (2) DiCE (Diverse Counterfactual Explanations): generate actionable counterfactuals, (3) constraints: only change actionable features (can increase income, can't decrease age), (4) minimise number of changes (sparse counterfactuals), (5) realistic: changes should be plausible (income +$5K is plausible, +$500K isn't), (6) diverse: provide multiple paths to approval, (7) implementation:"
     },
     {
      "t": "code",
@@ -189,7 +189,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Elastic Weight Consolidation (EWC): penalize changing important weights, (2) replay/rehearsal: mix old data with new data during retraining, (3) progressive neural networks: freeze old network, add new capacity, (4) knowledge distillation: new model mimics old model on old data while learning new data, (5) curriculum learning: present data in meaningful order, (6) practical: keep a representative sample of old data, always include in retraining, (7) for production: this is why we retrain on combined old+new data, not just new data."
+     "text": "**Answer:** (1) Elastic Weight Consolidation (EWC): penalise changing important weights, (2) replay/rehearsal: mix old data with new data during retraining, (3) progressive neural networks: freeze old network, add new capacity, (4) knowledge distillation: new model mimics old model on old data while learning new data, (5) curriculum learning: present data in meaningful order, (6) practical: keep a representative sample of old data, always include in retraining, (7) for production: this is why we retrain on combined old+new data, not just new data."
     }
    ],
    "kind": ""
@@ -213,7 +213,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Example: hiring model screens candidates → hired candidates generate training data → model reinforces its own biases. (2) counterfactual evaluation: estimate what would have happened with random selection, (3) exploration: randomly approve X% to maintain unbiased evaluation data, (4) inverse propensity weighting: weight samples by 1/P(selected by model), (5) offline evaluation: use randomized data for evaluation, (6) bias monitoring: track outcomes for borderline cases, (7) human audit of rejected cases, (8) periodic model-free evaluation to detect bias drift."
+     "text": "**Answer:** (1) Example: hiring model screens candidates → hired candidates generate training data → model reinforces its own biases. (2) counterfactual evaluation: estimate what would have happened with random selection, (3) exploration: randomly approve X% to maintain unbiased evaluation data, (4) inverse propensity weighting: weight samples by 1/P(selected by model), (5) offline evaluation: use randomised data for evaluation, (6) bias monitoring: track outcomes for borderline cases, (7) human audit of rejected cases, (8) periodic model-free evaluation to detect bias drift."
     }
    ],
    "kind": ""
@@ -225,7 +225,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Reward model quality: garbage in, garbage out — need consistent human preferences, (2) reward hacking: model finds ways to get high reward without being truly better, (3) annotation consistency: different humans have different preferences — inter-annotator agreement, (4) mode collapse: model becomes very conservative to maximize expected reward, (5) training instability: PPO requires careful hyperparameter tuning, (6) scale: need thousands of human preference comparisons, (7) evaluation: automated metrics don't capture quality well — need ongoing human evaluation."
+     "text": "**Answer:** (1) Reward model quality: garbage in, garbage out — need consistent human preferences, (2) reward hacking: model finds ways to get high reward without being truly better, (3) annotation consistency: different humans have different preferences — inter-annotator agreement, (4) mode collapse: model becomes very conservative to maximise expected reward, (5) training instability: PPO requires careful hyperparameter tuning, (6) scale: need thousands of human preference comparisons, (7) evaluation: automated metrics don't capture quality well — need ongoing human evaluation."
     },
     {
      "t": "p",
@@ -241,7 +241,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Starting with complex models before understanding the data, (2) not establishing a proper baseline, (3) not splitting data correctly (leakage), (4) over-engineering features without domain understanding, (5) ignoring class imbalance, (6) presenting p-values without effect sizes, (7) not communicating results in business terms, (8) optimizing for wrong metric, (9) not testing in production conditions, (10) treating data science as purely technical (ignoring stakeholder management)."
+     "text": "**Answer:** (1) Starting with complex models before understanding the data, (2) not establishing a proper baseline, (3) not splitting data correctly (leakage), (4) over-engineering features without domain understanding, (5) ignoring class imbalance, (6) presenting p-values without effect sizes, (7) not communicating results in business terms, (8) optimising for wrong metric, (9) not testing in production conditions, (10) treating data science as purely technical (ignoring stakeholder management)."
     }
    ],
    "kind": ""
@@ -265,7 +265,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Simple rules work: if-else logic covers 95% of cases, (2) not enough data: < 100 labeled examples for the problem, (3) exact answers needed: ML provides probabilistic estimates, not guarantees, (4) full transparency required: some regulations need every decision fully traceable, (5) problem changes too fast: by the time model is built, problem has evolved, (6) ROI doesn't justify: development + maintenance cost > value of automation, (7) human judgment irreplaceable: ethical/moral decisions, (8) data doesn't exist: the features needed for prediction aren't available."
+     "text": "**Answer:** (1) Simple rules work: if-else logic covers 95% of cases, (2) not enough data: < 100 labelled examples for the problem, (3) exact answers needed: ML provides probabilistic estimates, not guarantees, (4) full transparency required: some regulations need every decision fully traceable, (5) problem changes too fast: by the time model is built, problem has evolved, (6) ROI doesn't justify: development + maintenance cost > value of automation, (7) human judgement irreplaceable: ethical/moral decisions, (8) data doesn't exist: the features needed for prediction aren't available."
     }
    ],
    "kind": ""
@@ -289,7 +289,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "245",
-   "q": "Design a real-time personalization engine for an e-commerce website.",
+   "q": "Design a real-time personalisation engine for an e-commerce website.",
    "body": [
     {
      "t": "p",
@@ -357,7 +357,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Monitor: drift metrics, performance on labeled samples, business KPIs, (2) feedback loops: collect ground truth labels, user feedback, (3) error analysis: regularly review worst predictions, find patterns, (4) feature iteration: brainstorm and test new features quarterly, (5) model refresh: scheduled retraining (monthly/quarterly), (6) challenger models: continuously test new approaches in shadow mode, (7) data quality improvements: fix upstream issues as discovered, (8) stakeholder sync: quarterly review of model value and priorities, (9) document: maintain model changelog with metrics at each version."
+     "text": "**Answer:** (1) Monitor: drift metrics, performance on labelled samples, business KPIs, (2) feedback loops: collect ground truth labels, user feedback, (3) error analysis: regularly review worst predictions, find patterns, (4) feature iteration: brainstorm and test new features quarterly, (5) model refresh: scheduled retraining (monthly/quarterly), (6) challenger models: continuously test new approaches in shadow mode, (7) data quality improvements: fix upstream issues as discovered, (8) stakeholder sync: quarterly review of model value and priorities, (9) document: maintain model changelog with metrics at each version."
     }
    ],
    "kind": ""

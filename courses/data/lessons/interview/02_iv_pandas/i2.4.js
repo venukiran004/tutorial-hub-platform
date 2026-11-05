@@ -91,15 +91,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "51",
-   "q": "What makes Pandas slow and how do you optimize it?",
+   "q": "What makes Pandas slow and how do you optimise it?",
    "body": [
     {
      "t": "ul",
      "items": [
-      "Avoid row-by-row loops; use vectorized operations.",
+      "Avoid row-by-row loops; use vectorised operations.",
       "Use appropriate dtypes (`int32` vs `int64`, `category`).",
       "Use `query()` for filtering (can be faster than boolean indexing for large DataFrames).",
-      "Avoid `apply` where vectorization is possible.",
+      "Avoid `apply` where vectorisation is possible.",
       "Use `chunksize` when reading large files."
      ]
     }

@@ -115,7 +115,7 @@ EC.receiveLesson({
       edges: [["x","p"],["p","s"],["s","m"],["m","w"],["w","b"],["b","o"]] },
 
     { t: "exercise", title: "Compute both versions",
-      tasks: [
+      requirements: [
         "Reproduce the identity-projection weights for all three rows and confirm the masked entries are exactly 0.",
         "Compute the 'cat' row under real projections and see whether it also attends to a linguistically sensible token.",
         "Swap W_Q and W_K and recompute. Explain why the attention pattern changes.",

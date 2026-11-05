@@ -29,7 +29,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** End-to-end ML cost is often 10-100× the training cost. Serving costs grow with traffic. Optimize early and continuously."
+     "text": "**Explanation:** End-to-end ML cost is often 10-100× the training cost. Serving costs grow with traffic. Optimise early and continuously."
     }
    ],
    "kind": ""
@@ -92,7 +92,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** The data flywheel creates a competitive moat — more users → more data → better model → more users. Companies that operationalize this have a lasting advantage."
+     "text": "**Explanation:** The data flywheel creates a competitive moat — more users → more data → better model → more users. Companies that operationalise this have a lasting advantage."
     }
    ],
    "kind": ""
@@ -405,7 +405,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Real-time feature computation is the latency bottleneck, not model inference. Design feature pipeline to minimize online computation."
+     "text": "**Explanation:** Real-time feature computation is the latency bottleneck, not model inference. Design feature pipeline to minimise online computation."
     }
    ],
    "kind": ""
@@ -573,13 +573,13 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Data > Models:** Invest in data quality, labeling, and pipelines",
+      "**Data > Models:** Invest in data quality, labelling, and pipelines",
       "**Simple first:** Start with logistic regression, add complexity when justified",
       "**Monitor everything:** You can't fix what you can't see",
       "**Automate testing:** Manual QA doesn't scale for ML",
       "**Feature stores matter:** Training-serving skew is the #1 production bug",
       "**Plan for failure:** Fallbacks, circuit breakers, graceful degradation",
-      "**Cost awareness:** Track cost per prediction, optimize continuously",
+      "**Cost awareness:** Track cost per prediction, optimise continuously",
       "**Version everything:** Code, data, models, configs — full reproducibility",
       "**Think end-to-end:** Model is 10% of the system; pipeline + serving + monitoring = 90%",
       "**Iterate fast:** Deploy simple model quickly → improve iteratively with production feedback"

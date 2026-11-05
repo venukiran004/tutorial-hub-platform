@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) Adapter pattern: standardized interface per source, source-specific implementation, (2) schema registry: define and version expected schemas, validate on ingestion, (3) update orchestration: Airflow schedule per source frequency (hourly, daily, weekly), (4) idempotent ingestion: re-running doesn't create duplicates, (5) monitoring: freshness dashboard per source with SLA tracking, (6) state management: track last successful ingestion per source, (7) backfill capability: replay historical data when pipeline changes, (8) decoupling: sources write to landing zone → standardized processing → feature store."
+     "text": "**Answer:** (1) Adapter pattern: standardised interface per source, source-specific implementation, (2) schema registry: define and version expected schemas, validate on ingestion, (3) update orchestration: Airflow schedule per source frequency (hourly, daily, weekly), (4) idempotent ingestion: re-running doesn't create duplicates, (5) monitoring: freshness dashboard per source with SLA tracking, (6) state management: track last successful ingestion per source, (7) backfill capability: replay historical data when pipeline changes, (8) decoupling: sources write to landing zone → standardised processing → feature store."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature store: compute once, serve many — central feature repository, (2) shared feature engineering module: common code imported by all models, (3) materialized features: pre-compute and store in database/cache, (4) dependency graph: identify common features across models, compute in shared step, (5) scheduling: common feature computation runs first, model-specific features run per model, (6) cost tracking: attribute compute costs to features, optimize expensive ones."
+     "text": "**Answer:** (1) Feature store: compute once, serve many — central feature repository, (2) shared feature engineering module: common code imported by all models, (3) materialised features: pre-compute and store in database/cache, (4) dependency graph: identify common features across models, compute in shared step, (5) scheduling: common feature computation runs first, model-specific features run per model, (6) cost tracking: attribute compute costs to features, optimise expensive ones."
     },
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Life-altering decision: must be interpretable and fair, (2) historical bias: past parole decisions reflect systemic racism — training on them perpetuates bias, (3) protected attributes: race, ethnicity must not influence decisions directly or via proxies, (4) COMPAS controversy: study showed bias in a widely-used risk assessment tool, (5) require human decision-maker: model provides input, not decision, (6) right to explanation: defendant should understand factors, (7) regular bias audits: statistical parity, equalized odds across groups, (8) consider: should ML be used here at all? Strong arguments against."
+     "text": "**Answer:** (1) Life-altering decision: must be interpretable and fair, (2) historical bias: past parole decisions reflect systemic racism — training on them perpetuates bias, (3) protected attributes: race, ethnicity must not influence decisions directly or via proxies, (4) COMPAS controversy: study showed bias in a widely-used risk assessment tool, (5) require human decision-maker: model provides input, not decision, (6) right to explanation: defendant should understand factors, (7) regular bias audits: statistical parity, equalised odds across groups, (8) consider: should ML be used here at all? Strong arguments against."
     }
    ],
    "kind": ""
@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Look-ahead bias: using information not available at decision time, (2) survivorship bias: only including currently listed stocks, (3) data snooping: testing many strategies, reporting the best (p-hacking), (4) regime changes: market behavior changes (bull vs. bear), (5) transaction costs: paper profits often disappear after fees, slippage, market impact, (6) non-stationarity: financial time series are non-stationary, (7) overfitting: high-dimensional data, limited independent samples, (8) walk-forward validation mandatory: never random CV, (9) P(data|model) vs. P(profit|model): good predictions don't guarantee profit."
+     "text": "**Answer:** (1) Look-ahead bias: using information not available at decision time, (2) survivorship bias: only including currently listed stocks, (3) data snooping: testing many strategies, reporting the best (p-hacking), (4) regime changes: market behaviour changes (bull vs. bear), (5) transaction costs: paper profits often disappear after fees, slippage, market impact, (6) non-stationarity: financial time series are non-stationary, (7) overfitting: high-dimensional data, limited independent samples, (8) walk-forward validation mandatory: never random CV, (9) P(data|model) vs. P(profit|model): good predictions don't guarantee profit."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data augmentation: brightness reduction, noise addition, simulated low-light, (2) collect night-time data and fine-tune, (3) domain adaptation: CycleGAN to translate day→night images for training, (4) pre-processing: image enhancement (histogram equalization, dehazing) before inference, (5) infrared/thermal cameras: different modality better for night, (6) multi-modal: combine visible + IR sensors, (7) style transfer augmentation: apply night-time visual styles to training data, (8) test-time adaptation: adjust batch normalization for night conditions."
+     "text": "**Answer:** (1) Data augmentation: brightness reduction, noise addition, simulated low-light, (2) collect night-time data and fine-tune, (3) domain adaptation: CycleGAN to translate day→night images for training, (4) pre-processing: image enhancement (histogram equalisation, dehazing) before inference, (5) infrared/thermal cameras: different modality better for night, (6) multi-modal: combine visible + IR sensors, (7) style transfer augmentation: apply night-time visual styles to training data, (8) test-time adaptation: adjust batch normalisation for night conditions."
     },
     {
      "t": "p",
@@ -222,7 +222,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Build a revenue model: revenue = customers × conversion rate × average order value, (2) parameterize uncertainty: each component has a distribution (not point estimate), (3) Monte Carlo simulation: sample from each distribution 10,000 times, (4) compute revenue for each simulation, (5) result: distribution of possible revenues, (6) answer: \"there's a 65% probability of meeting the $10M target, and a 90% probability of exceeding $8M,\" (7) sensitivity analysis: which parameter has the largest impact on variance?, (8) scenario planning: what levers would increase probability of hitting target?"
+     "text": "**Answer:** (1) Build a revenue model: revenue = customers × conversion rate × average order value, (2) parameterise uncertainty: each component has a distribution (not point estimate), (3) Monte Carlo simulation: sample from each distribution 10,000 times, (4) compute revenue for each simulation, (5) result: distribution of possible revenues, (6) answer: \"there's a 65% probability of meeting the $10M target, and a 90% probability of exceeding $8M,\" (7) sensitivity analysis: which parameter has the largest impact on variance?, (8) scenario planning: what levers would increase probability of hitting target?"
     }
    ],
    "kind": ""
@@ -250,7 +250,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Features: (1) account age, (2) posting frequency and timing patterns, (3) follower/following ratio, (4) profile completeness (photo, bio, location), (5) content analysis: copy-pasted text, stock photos, (6) network analysis: connected to other suspected fakes?, (7) behavioral: human-like activity patterns vs. bot patterns, (8) engagement: likes/comments received vs. given."
+     "text": "**Answer:** Features: (1) account age, (2) posting frequency and timing patterns, (3) follower/following ratio, (4) profile completeness (photo, bio, location), (5) content analysis: copy-pasted text, stock photos, (6) network analysis: connected to other suspected fakes?, (7) behavioural: human-like activity patterns vs. bot patterns, (8) engagement: likes/comments received vs. given."
     },
     {
      "t": "p",
@@ -286,7 +286,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Manager behavior: labeled \"flight risk\" may lead to reduced investment in employee (self-fulfilling), (2) privacy: what data is used? Monitoring email frequency? Building badge swipes?, (3) false positives: falsely labeling loyal employees as flight risks damages trust, (4) power dynamics: employees can't consent meaningfully to workplace surveillance, (5) fairness: does the model disproportionately flag certain demographics?, (6) acceptable use: use for improving working conditions (aggregate), not targeting individuals, (7) alternative: anonymous employee surveys are more ethical and often more effective."
+     "text": "**Answer:** (1) Manager behaviour: labelled \"flight risk\" may lead to reduced investment in employee (self-fulfilling), (2) privacy: what data is used? Monitoring email frequency? Building badge swipes?, (3) false positives: falsely labelling loyal employees as flight risks damages trust, (4) power dynamics: employees can't consent meaningfully to workplace surveillance, (5) fairness: does the model disproportionately flag certain demographics?, (6) acceptable use: use for improving working conditions (aggregate), not targeting individuals, (7) alternative: anonymous employee surveys are more ethical and often more effective."
     }
    ],
    "kind": ""
@@ -326,7 +326,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't create all — domain knowledge to select likely interactions, (2) statistical screening: test each interaction, keep significant ones, (3) decision tree: automatically finds important splits = interactions, (4) SHAP interaction values: identify the most important pairwise interactions from a fitted model, (5) L1 regularization: include all interactions, let Lasso select, (6) random forest interaction importance, (7) practical: create top 20 domain-guided interactions + let GBM find the rest, (8) dimensionality reduction on interaction features if needed."
+     "text": "**Answer:** (1) Don't create all — domain knowledge to select likely interactions, (2) statistical screening: test each interaction, keep significant ones, (3) decision tree: automatically finds important splits = interactions, (4) SHAP interaction values: identify the most important pairwise interactions from a fitted model, (5) L1 regularisation: include all interactions, let Lasso select, (6) random forest interaction importance, (7) practical: create top 20 domain-guided interactions + let GBM find the rest, (8) dimensionality reduction on interaction features if needed."
     },
     {
      "t": "p",
@@ -370,7 +370,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Not all churners should be targeted: some will stay regardless, some will leave regardless, (2) uplift modeling: estimate P(stay | intervention) - P(stay | no intervention), (3) cost-benefit: intervention cost vs. customer value × uplift, (4) target customers where: uplift × customer_value > intervention_cost, (5) rank by expected ROI: (uplift × value - cost) / cost, (6) constraints: budget limit → target top-N by ROI, (7) personalize intervention: different strategies for different churn reasons, (8) measure: A/B test the intervention strategy, not just the model."
+     "text": "**Answer:** (1) Not all churners should be targeted: some will stay regardless, some will leave regardless, (2) uplift modelling: estimate P(stay | intervention) - P(stay | no intervention), (3) cost-benefit: intervention cost vs. customer value × uplift, (4) target customers where: uplift × customer_value > intervention_cost, (5) rank by expected ROI: (uplift × value - cost) / cost, (6) constraints: budget limit → target top-N by ROI, (7) personalise intervention: different strategies for different churn reasons, (8) measure: A/B test the intervention strategy, not just the model."
     }
    ],
    "kind": ""

@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "DeepMind's model that augments language modeling with retrieved text at each attention layer. Achieves GPT-3 performance with 25× fewer parameters by leveraging a large external text database at inference."
+     "text": "DeepMind's model that augments language modelling with retrieved text at each attention layer. Achieves GPT-3 performance with 25× fewer parameters by leveraging a large external text database at inference."
     }
    ],
    "kind": ""
@@ -80,7 +80,7 @@ EC.receiveLesson({
       ],
       [
        "Encoder-Decoder",
-       "Translation, summarization",
+       "Translation, summarisation",
        "T5, BART, mT5"
       ]
      ]
@@ -211,7 +211,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Represent a 3D scene as a continuous volumetric radiance field \\(F: (x,y,z,\\theta,\\phi) \\rightarrow (RGB, \\sigma)\\) modeled by an MLP. Rendered via differentiable volume rendering. Enables novel view synthesis from limited 2D images."
+     "text": "Represent a 3D scene as a continuous volumetric radiance field \\(F: (x,y,z,\\theta,\\phi) \\rightarrow (RGB, \\sigma)\\) modelled by an MLP. Rendered via differentiable volume rendering. Enables novel view synthesis from limited 2D images."
     }
    ],
    "kind": ""

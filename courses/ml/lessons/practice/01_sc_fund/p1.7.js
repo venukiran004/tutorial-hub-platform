@@ -47,11 +47,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** The model will find the best-fit line minimizing MSE, approximately y ≈ 0.6x + 2.2"
+     "text": "**Answer:** The model will find the best-fit line minimising MSE, approximately y ≈ 0.6x + 2.2"
     },
     {
      "t": "p",
-     "text": "**Explanation:** Linear regression minimizes sum of squared residuals. With noise, it finds the best linear approximation."
+     "text": "**Explanation:** Linear regression minimises sum of squared residuals. With noise, it finds the best linear approximation."
     }
    ],
    "kind": ""
@@ -245,7 +245,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use MAE when outliers should not heavily influence the model; use MSE when larger errors should be penalized more."
+     "text": "**Answer:** Use MAE when outliers should not heavily influence the model; use MSE when larger errors should be penalised more."
     },
     {
      "t": "p",
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "65",
-   "q": "Given this scenario, which metric should you optimize?",
+   "q": "Given this scenario, which metric should you optimise?",
    "body": [
     {
      "t": "code",
@@ -303,7 +303,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Recall (Sensitivity) — minimize False Negatives"
+     "text": "**Answer:** Recall (Sensitivity) — minimise False Negatives"
     },
     {
      "t": "p",
@@ -315,7 +315,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "66",
-   "q": "Given this scenario, which metric should you optimize?",
+   "q": "Given this scenario, which metric should you optimise?",
    "body": [
     {
      "t": "code",
@@ -324,7 +324,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Precision — minimize False Positives"
+     "text": "**Answer:** Precision — minimise False Positives"
     },
     {
      "t": "p",
@@ -336,7 +336,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "67",
-   "q": "What is the difference between L1 and L2 regularization?",
+   "q": "What is the difference between L1 and L2 regularisation?",
    "body": [
     {
      "t": "p",
@@ -379,7 +379,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Dimensionality reduction (PCA), feature selection, or regularization (Lasso/Ridge)."
+     "text": "**Answer:** Dimensionality reduction (PCA), feature selection, or regularisation (Lasso/Ridge)."
     },
     {
      "t": "p",
@@ -475,7 +475,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** High variance across folds suggests data quality issues — possible data leakage, inconsistent labeling, or non-stationary data."
+     "text": "**Answer:** High variance across folds suggests data quality issues — possible data leakage, inconsistent labelling, or non-stationary data."
     },
     {
      "t": "p",

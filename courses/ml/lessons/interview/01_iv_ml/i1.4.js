@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "RMSE = √(mean(yᵢ − ŷᵢ)²). Preferred when large errors are especially undesirable (penalizes them more). MAE is preferred when all errors matter equally or outliers should not dominate."
+     "text": "RMSE = √(mean(yᵢ − ŷᵢ)²). Preferred when large errors are especially undesirable (penalises them more). MAE is preferred when all errors matter equally or outliers should not dominate."
     }
    ],
    "kind": ""

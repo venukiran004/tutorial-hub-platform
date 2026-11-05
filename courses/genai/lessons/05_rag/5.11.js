@@ -49,7 +49,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Only the third one needs an agent",
       body: [
         { t: "p", text: "\u201cWhether to retrieve\u201d is a classification, and a small classifier does it for a millisecond rather than a model call. \u201cWhere to retrieve from\u201d is also a classification \u2014 and section 02 measures how badly it can go." },
-        { t: "p", text: "Multi-hop is different in kind. *\u201cWhich quantization method should I use for the model we fine-tuned in Q3?\u201d* cannot be turned into one search: you need the first retrieval to learn which model that was before the second query exists. No amount of query rewriting collapses that into a single step, which is why this is the case that earns the loop." },
+        { t: "p", text: "Multi-hop is different in kind. *\u201cWhich quantisation method should I use for the model we fine-tuned in Q3?\u201d* cannot be turned into one search: you need the first retrieval to learn which model that was before the second query exists. No amount of query rewriting collapses that into a single step, which is why this is the case that earns the loop." },
         { t: "p", text: "So \u201cshould we use agentic RAG\u201d usually decomposes into three questions with different answers, and the honest one is: use a classifier for the first two and an agent only for the third." }
       ] },
 
@@ -154,7 +154,7 @@ order = np.argsort(-(QV[i] @ FE[idxs].T))`,
         ["\u201cHow does our retry policy work?\u201d", "Vector index", "It is in the documentation; SQL has no prose and the web does not know your policy"],
         ["\u201cWhat was Q4 revenue?\u201d", "SQL", "5.12 measures this \u2014 retrieval returns a *sample* of rows and cannot aggregate"],
         ["\u201cWhat changed in the API last week?\u201d", "Web or changelog", "The index is as fresh as its last build; a changelog is authoritative"],
-        ["\u201cWhich model did we fine-tune in Q3, and what quantization suits it?\u201d", "**Both, in sequence**", "The second query cannot be written until the first returns \u2014 this is the multi-hop case"]
+        ["\u201cWhich model did we fine-tune in Q3, and what quantisation suits it?\u201d", "**Both, in sequence**", "The second query cannot be written until the first returns \u2014 this is the multi-hop case"]
       ] },
 
     { t: "callout", kind: "warn", title: "The agent's failure modes are the agent's, not retrieval's",
@@ -274,7 +274,7 @@ print(np.mean([H.recall_at_k(routed[i], flat, fmeta, *QS[i], 5)
           "How many chunks to retrieve"
         ],
         answer: 1,
-        why: "Whether and where to retrieve are both classifications of the incoming query, which a small fast classifier handles without a model call. Multi-hop is different in kind: a question like \u201cwhich model did we fine-tune in Q3, and what quantization suits it\u201d cannot be turned into a single search, because the second query cannot be written until the first result arrives. That sequential dependency is what the loop is for." },
+        why: "Whether and where to retrieve are both classifications of the incoming query, which a small fast classifier handles without a model call. Multi-hop is different in kind: a question like \u201cwhich model did we fine-tune in Q3, and what quantisation suits it\u201d cannot be turned into a single search, because the second query cannot be written until the first result arrives. That sequential dependency is what the loop is for." },
 
       { stem: "When does routing between sources earn its place despite the measured risk?",
         options: [

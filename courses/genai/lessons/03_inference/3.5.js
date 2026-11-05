@@ -382,7 +382,7 @@ report("continuous", c_done, c_wall)`,
         { t: "p", text: "**\"Our p50 latency is 800 ms and our p99 is 14 seconds. GPU utilisation sits at 40%. We serve a chat product on vLLM. Where do you look?\"**" },
         { t: "p", text: "The combination is the clue: 40% utilisation with a bad tail means the device is idle while requests wait, so the problem is scheduling or admission rather than capacity. vLLM already does continuous batching, so I would not be looking for padding waste." },
         { t: "p", text: "First hypothesis: long prefills blocking decode. A chat product with document context has prompts in the thousands of tokens, each worth tens of decode steps — measured, 1,315 ms of prefill against a 39 ms step. A request that arrives mid-stream stalls every active stream while it prefills, and that lands in the p99 of the *other* requests. Check whether chunked prefill is enabled and plot TTFT against prompt length." },
-        { t: "p", text: "Second: preemption. If the KV cache fills, vLLM evicts and later recomputes, and a recomputed request pays its prefill twice. The scheduler exposes a preemption counter — a non-zero one at 40% utilisation means the memory ceiling is binding before the compute ceiling, which points at the cache fraction, cache quantization, or GQA (3.2)." },
+        { t: "p", text: "Second: preemption. If the KV cache fills, vLLM evicts and later recomputes, and a recomputed request pays its prefill twice. The scheduler exposes a preemption counter — a non-zero one at 40% utilisation means the memory ceiling is binding before the compute ceiling, which points at the cache fraction, cache quantisation, or GQA (3.2)." },
         { t: "p", text: "Third, and the one I would check before either if the product allows it: the maximum context admitted. One tenant sending 32k-token prompts can consume the whole token budget, and the symptom is exactly this — low utilisation, fine median, catastrophic tail. The fix is a per-tenant token limit rather than a bigger GPU." }
       ] }
   ],
@@ -427,7 +427,7 @@ report("continuous", c_done, c_wall)`,
         options: [
           "The batch size is too small, so the device is starved",
           "Long prefills are serialised against decode, stalling every active stream while they run",
-          "Quantization has degraded the model, so requests retry",
+          "Quantisation has degraded the model, so requests retry",
           "The model is too large for the device and is swapping weights"
         ],
         answer: 1,

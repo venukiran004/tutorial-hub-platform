@@ -92,7 +92,7 @@ with torch.no_grad():
     { t: "callout", kind: "trap", title: "Gate ordering differs between frameworks and papers",
       body: [{ t: "p", text: "PyTorch packs the four gates as **i, f, g, o** in a single `(4H, d)` matrix. Other frameworks and the original paper's presentation order them differently. Get it wrong when porting weights or setting the forget bias and the model still trains — the shapes are identical and gradients flow — it simply learns badly, because the sigmoid gates and the tanh candidate have been swapped around. It is a silent failure of the same family as applying softmax twice." }] },
 
-    { t: "h2", n: "04b", text: "Reading the gates", id: "gates" },
+    { t: "h2", n: "05", text: "Reading the gates", id: "gates" },
 
     {"kind": "matrix", "title": "Reading the gates, when you need to", "caption": "The gates are interpretable in a way most internals are not, because each is a number in (0, 1) with a stated job. A forget gate pinned near 1 across a sequence means the cell is holding something; pinned near 0 means it is being cleared every step, which is the failure of section 03 visible directly.", "cols": ["Near 1 means", "Near 0 means"], "rows": ["Forget gate f", "Input gate i", "Output gate o"], "cells": [[{"text": "holding the cell state", "tone": "good"}, {"text": "clearing it every step", "tone": "crit"}], [{"text": "admitting new content", "tone": "accent"}, "ignoring the input"], [{"text": "exposing the cell to h", "tone": "accent"}, "holding it hidden"]], "t": "diagram", "id": "dg-5_4-04b-4"},
 
@@ -112,7 +112,7 @@ with torch.no_grad():
     { t: "callout", kind: "good", title: "Log the mean forget gate per timestep during training",
       body: [{ t: "p", text: "One line with a forward hook, and it turns an opaque failure into a readable one. On a task where information must persist you should see the gate rise towards 1 for the dimensions carrying that information and drift down elsewhere — the network learning its own retention policy per dimension. A gate that never moves from its initialisation is the signature of the bootstrap problem, where the model cannot learn to open its gates because the closed gates suppress the very gradient it would need." }] },
 
-    { t: "h2", n: "05", text: "Honest strengths and weaknesses", id: "tradeoffs" },
+    { t: "h2", n: "06", text: "Honest strengths and weaknesses", id: "tradeoffs" },
 
     { t: "diagram", kind: "compare", title: "What an LSTM is for",
       caption: "It solved the problem it was designed for and was then overtaken on long context.",

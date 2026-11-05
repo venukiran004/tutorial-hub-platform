@@ -70,14 +70,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Supervised:** All data labeled (classification/regression)",
+      "**Supervised:** All data labelled (classification/regression)",
       "**Unsupervised:** No labels (clustering, dimensionality reduction)",
-      "**Semi-supervised:** Small labeled set + large unlabeled set"
+      "**Semi-supervised:** Small labelled set + large unlabelled set"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Semi-supervised leverages unlabeled data structure to improve learning with limited labels."
+     "text": "**Explanation:** Semi-supervised leverages unlabelled data structure to improve learning with limited labels."
     }
    ],
    "kind": ""
@@ -123,7 +123,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Use one-hot for nominal categories (color: red/blue/green). Label encoding for ordinal (size: S/M/L)."
+     "text": "**Explanation:** Use one-hot for nominal categories (colour: red/blue/green). Label encoding for ordinal (size: S/M/L)."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "89",
-   "q": "What is the effect of increasing the regularization parameter (C) in SVM?",
+   "q": "What is the effect of increasing the regularisation parameter (C) in SVM?",
    "body": [
     {
      "t": "p",
@@ -319,8 +319,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Large C:** Less regularization → smaller margin → fits training data more closely (risk of overfitting)",
-      "**Small C:** More regularization → larger margin → allows some misclassifications (risk of underfitting)"
+      "**Large C:** Less regularisation → smaller margin → fits training data more closely (risk of overfitting)",
+      "**Small C:** More regularisation → larger margin → allows some misclassifications (risk of underfitting)"
      ]
     },
     {
@@ -366,7 +366,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**R²:** Can only increase with more features (potentially misleading)",
-      "**Adjusted R²:** Penalizes adding useless features — only increases if new feature improves model"
+      "**Adjusted R²:** Penalises adding useless features — only increases if new feature improves model"
      ]
     },
     {
@@ -462,15 +462,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "96",
-   "q": "What happens if you normalize your target variable in regression?",
+   "q": "What happens if you normalise your target variable in regression?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** The model learns normalized relationships. Predictions must be inverse-transformed back to original scale."
+     "text": "**Answer:** The model learns normalised relationships. Predictions must be inverse-transformed back to original scale."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Normalizing targets can help when target distribution is skewed. Log-transform for right-skewed targets is common."
+     "text": "**Explanation:** Normalising targets can help when target distribution is skewed. Log-transform for right-skewed targets is common."
     }
    ],
    "kind": ""

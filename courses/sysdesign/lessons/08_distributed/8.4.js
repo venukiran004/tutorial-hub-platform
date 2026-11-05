@@ -134,7 +134,7 @@ with fencing tokens
         { t: "p", text: "Two scheduler instances run a nightly payout job; leader election through a lease store decides which one runs it. On 3% of nights the leader suffers a long pause after winning, its lease expires, and the other instance takes over. Simulate a year with and without fencing at the job's sink." }
       ],
       requirements: [
-        "Model a linearizable lease store whose revision increases with each new holder",
+        "Model a linearisable lease store whose revision increases with each new holder",
         "Run the job from whichever scheduler holds the lease, carrying the revision as a token",
         "Model the pause: the other scheduler acquires the expired lease and runs the job; the paused one wakes and runs it too",
         "Count nights the job ran twice, with and without the sink checking tokens",

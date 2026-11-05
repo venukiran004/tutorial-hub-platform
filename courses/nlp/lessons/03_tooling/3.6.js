@@ -234,7 +234,7 @@ out["elmo_representations"][0].shape            # (2, 5, 1024)
     { t: "p", text: "**This is also where the architecture shows its age.** The two biLSTM directions are trained separately and concatenated, so no layer ever sees both sides of a word at once — which is precisely the limitation BERT's masked objective removed, and the reason the field moved within a year. ELMo is worth knowing as the step that proved contextual representations work, not as something to deploy." },
 
     { t: "exercise", title: "Run the probe yourself",
-      tasks: [
+      requirements: [
         "Reproduce the layer sweep on a polysemous word from your own domain and find where separation peaks.",
         "Confirm layer 0 is static: extract the same word from two sentences where it sits at the same index and check the cosine is exactly 1.0000.",
         "Cluster the contextual vectors of a frequent polysemous word across 200 sentences and see whether the clusters match WordNet senses.",

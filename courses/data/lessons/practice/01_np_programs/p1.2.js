@@ -146,7 +146,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "36",
-   "q": "Batch Normalization",
+   "q": "Batch Normalisation",
    "body": [
     {
      "t": "code",
@@ -159,7 +159,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "Layer Normalization",
+   "q": "Layer Normalisation",
    "body": [
     {
      "t": "code",
@@ -224,7 +224,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "42",
-   "q": "Min-Max Normalization",
+   "q": "Min-Max Normalisation",
    "body": [
     {
      "t": "code",
@@ -237,7 +237,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "43",
-   "q": "Z-Score Standardization",
+   "q": "Z-Score Standardisation",
    "body": [
     {
      "t": "code",

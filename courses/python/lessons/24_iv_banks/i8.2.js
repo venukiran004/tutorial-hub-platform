@@ -451,7 +451,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "MRO determines which method to call in the presence of multiple inheritance. Python uses C3 linearization. Inspect via `ClassName.__mro__`."
+     "text": "MRO determines which method to call in the presence of multiple inheritance. Python uses C3 linearisation. Inspect via `ClassName.__mro__`."
     }
    ]
   },
@@ -1107,7 +1107,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "`pickle` serialises Python objects to bytes (pickling) and deserializes back (unpickling). Used for saving models, caching, inter-process communication. Warning: never unpickle untrusted data (security risk)."
+     "text": "`pickle` serialises Python objects to bytes (pickling) and deserialises back (unpickling). Used for saving models, caching, inter-process communication. Warning: never unpickle untrusted data (security risk)."
     }
    ]
   },

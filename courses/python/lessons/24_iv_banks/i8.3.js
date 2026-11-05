@@ -1009,8 +1009,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "`array.array`: Typed array, homogeneous C-type data, lower memory than list. No vectorized ops.",
-      "NumPy: Full ND-array with vectorized operations, broadcasting, BLAS integration. Use `array` for simple typed sequences without NumPy; NumPy for all scientific computing."
+      "`array.array`: Typed array, homogeneous C-type data, lower memory than list. No vectorised ops.",
+      "NumPy: Full ND-array with vectorised operations, broadcasting, BLAS integration. Use `array` for simple typed sequences without NumPy; NumPy for all scientific computing."
      ]
     }
    ]
@@ -1182,8 +1182,8 @@ EC.receiveLesson({
      "items": [
       "`loads(s)`: Parse JSON from **string**.",
       "`load(fp)`: Parse JSON from **file object**.",
-      "`dumps(obj)`: Serialize to **string**.",
-      "`dump(obj, fp)`: Serialize to **file object**."
+      "`dumps(obj)`: Serialise to **string**.",
+      "`dump(obj, fp)`: Serialise to **file object**."
      ]
     },
     {

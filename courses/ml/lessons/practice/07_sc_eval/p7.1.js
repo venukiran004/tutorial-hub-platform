@@ -55,7 +55,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "When would you optimize for precision vs recall?",
+   "q": "When would you optimise for precision vs recall?",
    "body": [
     {
      "t": "p",
@@ -86,7 +86,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Useful when you want to balance precision and recall, especially with class imbalance. F1 = 0 if either P or R is 0. Harmonic mean penalizes extreme imbalance between P and R."
+     "text": "**Explanation:** Useful when you want to balance precision and recall, especially with class imbalance. F1 = 0 if either P or R is 0. Harmonic mean penalises extreme imbalance between P and R."
     }
    ],
    "kind": ""
@@ -220,10 +220,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Youden's J statistic:** Maximize (sensitivity + specificity - 1) from ROC",
-      "**Business cost:** Minimize cost of FP × cost_FP + FN × cost_FN",
+      "**Youden's J statistic:** Maximise (sensitivity + specificity - 1) from ROC",
+      "**Business cost:** Minimise cost of FP × cost_FP + FN × cost_FN",
       "**Precision-Recall trade-off:** Find acceptable precision at required recall",
-      "**F1 maximization:** Threshold that maximizes F1 score"
+      "**F1 maximisation:** Threshold that maximises F1 score"
      ]
     },
     {
@@ -244,7 +244,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Penalizes confident wrong predictions heavily. A prediction of 0.99 for a negative example incurs huge loss. Accuracy ignores prediction confidence. Log loss encourages well-calibrated probabilities."
+     "text": "**Explanation:** Penalises confident wrong predictions heavily. A prediction of 0.99 for a negative example incurs huge loss. Accuracy ignores prediction confidence. Log loss encourages well-calibrated probabilities."
     }
    ],
    "kind": ""
@@ -325,7 +325,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**MSE:** Penalizes large errors more (squared), differentiable",
+      "**MSE:** Penalises large errors more (squared), differentiable",
       "**RMSE:** Same scale as target, interpretable",
       "**MAE:** Robust to outliers, median-centric",
       "**MAPE:** Percentage-based, scale-independent",
@@ -373,7 +373,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** MSE optimizes for mean (sensitive to outliers). MAE optimizes for median (robust). If outliers are important to capture, use MSE. If they're noise, use MAE."
+     "text": "**Explanation:** MSE optimises for mean (sensitive to outliers). MAE optimises for median (robust). If outliers are important to capture, use MSE. If they're noise, use MAE."
     }
    ],
    "kind": ""
@@ -489,7 +489,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**NDCG (Normalized Discounted Cumulative Gain):** Considers position and relevance level",
+      "**NDCG (Normalised Discounted Cumulative Gain):** Considers position and relevance level",
       "**MAP (Mean Average Precision):** Average precision at each relevant result",
       "**MRR (Mean Reciprocal Rank):** Position of first relevant result",
       "**Precision@K / Recall@K:** Metrics at cutoff K"
@@ -541,11 +541,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Optimize threshold to minimize total cost."
+     "text": "Optimise threshold to minimise total cost."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard metrics don't capture business impact. Cost-sensitive evaluation aligns model optimization with business objectives."
+     "text": "**Explanation:** Standard metrics don't capture business impact. Cost-sensitive evaluation aligns model optimisation with business objectives."
     }
    ],
    "kind": ""

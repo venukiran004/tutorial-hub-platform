@@ -66,7 +66,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** StandardScaler: z = (x - mean) / std. Centers data at 0, scales to unit variance."
+     "text": "**Explanation:** StandardScaler: z = (x - mean) / std. Centres data at 0, scales to unit variance."
     }
    ],
    "kind": ""
@@ -247,7 +247,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "TF-IDF vectorization",
+      "TF-IDF vectorisation",
       "Word count, character count",
       "Sentiment score",
       "Presence of specific keywords",
@@ -448,7 +448,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Linear regression minimizes MSE, which squares errors — outliers have outsized impact. Use robust regression or remove outliers."
+     "text": "**Explanation:** Linear regression minimises MSE, which squares errors — outliers have outsized impact. Use robust regression or remove outliers."
     }
    ],
    "kind": ""

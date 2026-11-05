@@ -368,7 +368,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Foo Bar Baz` **Explanation:** Lambda in `sub` capitalizes first letter of each word. `\\b(\\w)` captures word boundary character."
+     "text": "**Answer:** `Foo Bar Baz` **Explanation:** Lambda in `sub` capitalises first letter of each word. `\\b(\\w)` captures word boundary character."
     }
    ],
    "prompt": [

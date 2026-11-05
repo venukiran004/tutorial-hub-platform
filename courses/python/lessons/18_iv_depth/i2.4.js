@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "6",
-   "q": "How do you serialise and deserialize JSON in Python?",
+   "q": "How do you serialise and deserialise JSON in Python?",
    "body": [
     {
      "t": "p",
@@ -284,7 +284,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Non-serializable types** (like `datetime`, custom classes) require a custom `JSONEncoder`:"
+     "text": "**Non-serialisable types** (like `datetime`, custom classes) require a custom `JSONEncoder`:"
     },
     {
      "t": "code",
@@ -726,7 +726,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Common pitfalls:** - `json.dump`/`json.load` work with **files**. - `json.dumps`/`json.loads` work with **strings**. - Non-serializable types need a custom encoder. - JSON keys must be strings; integer keys are converted to strings."
+     "text": "**Common pitfalls:** - `json.dump`/`json.load` work with **files**. - `json.dumps`/`json.loads` work with **strings**. - Non-serialisable types need a custom encoder. - JSON keys must be strings; integer keys are converted to strings."
     }
    ]
   },

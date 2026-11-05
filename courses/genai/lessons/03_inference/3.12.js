@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "arithmetic", text: "The arithmetic, and a missing premise",
       sub: "Dollars per hour over tokens per hour — that is the whole formula" },
 
-    { t: "p", text: "Self-hosted cost per token is a division: what the hardware costs per hour, divided by how many tokens it produced in that hour. Everything else — quantization, batching, a better scheduler — enters only through the denominator. So the formula is trivial and the inputs are where the argument lives." },
+    { t: "p", text: "Self-hosted cost per token is a division: what the hardware costs per hour, divided by how many tokens it produced in that hour. Everything else — quantisation, batching, a better scheduler — enters only through the denominator. So the formula is trivial and the inputs are where the argument lives." },
 
     { t: "code", lang: "python", title: "g312.py — the self-hosted figures, recomputed", code: `for label, tps, ref in (("70B INT4", 1500, 0.48), ("7B FP16", 3000, 0.24)):
     per_hour = tps * 3600
@@ -41,7 +41,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "The reference is not wrong — it is quiet about the thing that matters",
       body: [
         { t: "p", text: "A uniform 1.30× factor across two independent rows is not an arithmetic error. It is a utilisation assumption: at 77% busy, 1,500 tokens per second of capacity delivers 1,155 on average, and $0.370 becomes $0.481." },
-        { t: "p", text: "That is a defensible number for a well-run service. The problem is that it is invisible, and it is the variable with the most leverage in the entire calculation — more than quantization, more than batching, more than the choice of model. A reader who takes $0.48 as *the* cost of self-hosting a 70B has absorbed an assumption they cannot see and almost certainly will not meet." },
+        { t: "p", text: "That is a defensible number for a well-run service. The problem is that it is invisible, and it is the variable with the most leverage in the entire calculation — more than quantisation, more than batching, more than the choice of model. A reader who takes $0.48 as *the* cost of self-hosting a 70B has absorbed an assumption they cannot see and almost certainly will not meet." },
         { t: "p", text: "I would write the figure as a function rather than a number, which is what the next section does." }
       ] },
 
@@ -57,7 +57,7 @@ EC.receiveLesson({
   20%                        300            1.852
   10%                        150            3.704
   5%                          75            7.407`,
-      caption: "A 20× cost range from one variable. Quantization at best buys 4×; nothing else on the usual list of optimisations is in this league." },
+      caption: "A 20× cost range from one variable. Quantisation at best buys 4×; nothing else on the usual list of optimisations is in this league." },
 
     { t: "viz", title: "Where the cost per token actually comes from", caption: "The optimisations everyone discusses move the denominator by factors of 2–4. Utilisation moves it by 20×.",
       svg: `<svg viewBox="0 0 760 268" width="100%" role="img" aria-label="Relative leverage of cost levers">
@@ -265,7 +265,7 @@ for name, blended in blended_prices.items():
         ["Flatten the peak-to-mean ratio", "3:1 → 1:1 takes $1.11 to $0.37 at scale", "Any service with a traffic pattern, which is all of them"],
         ["Reserved or spot pricing", "$2.00/hr → $0.60/hr, so **3.3×**", "Predictable baseline load; spot needs interruption tolerance"],
         ["Choose a smaller model", "23× spread across the API price list", "Whenever a smaller model passes your evaluation (3.3, M8)"],
-        ["Quantization", "4× memory, which converts to batch size", "Memory-bound decode, at the quality cost 3.3 measures"],
+        ["Quantisation", "4× memory, which converts to batch size", "Memory-bound decode, at the quality cost 3.3 measures"],
         ["Batching", "**5.2× measured** (3.5)", "Already on by default in every serious framework"],
         ["Prefix caching", "Up to **2.8×** on RAG traffic (3.7)", "Repeated prompt prefixes, which is agent and RAG traffic"],
         ["Output length limits", "Linear in the tokens not generated", "Anywhere verbosity is not the product"],
@@ -281,7 +281,7 @@ for name, blended in blended_prices.items():
     { t: "h2", n: "05", id: "notcost", text: "The reasons to self-host that are not about cost",
       sub: "Which is usually why people actually do it" },
 
-    {"kind": "layers", "title": "Nine levers, ordered by measured effect", "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.", "items": [{"label": "Keep the GPU busy", "sub": "up to 20x - the largest lever here", "tone": "good"}, {"label": "Flatten peak-to-mean", "sub": "3:1 to 1:1 takes $1.11 to $0.37 at scale", "tone": "good"}, {"label": "Reserved or spot pricing", "sub": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}, {"label": "A smaller model", "sub": "23x spread across the price list", "tone": "good"}, {"label": "Quantization", "sub": "4x memory, which converts to batch size"}, {"label": "Batching", "sub": "5.2x measured - already on by default", "tone": "accent"}, {"label": "Prefix caching", "sub": "up to 2.8x on RAG traffic", "tone": "accent"}, {"label": "Output length limits", "sub": "linear in the tokens not generated"}, {"label": "Speculative decoding", "sub": "1.13x measured - the smallest here", "tone": "warn"}], "t": "diagram", "id": "dg-3_12-05-3"},
+    {"kind": "layers", "title": "Nine levers, ordered by measured effect", "caption": "The first row dwarfs everything below it: **keeping the GPU busy is up to 20× on cost per token**, which is the same observation as §04 from the other side. Two rows down the list are already on by default in any serious framework, and the last is the one with the most written about it and the smallest measured return — **1.13×**, from 3.6. Spending a week on speculative decoding while running at 10% utilisation is the characteristic mistake here.", "items": [{"label": "Keep the GPU busy", "sub": "up to 20x - the largest lever here", "tone": "good"}, {"label": "Flatten peak-to-mean", "sub": "3:1 to 1:1 takes $1.11 to $0.37 at scale", "tone": "good"}, {"label": "Reserved or spot pricing", "sub": "$2.00/hr to $0.60/hr, so 3.3x", "tone": "good"}, {"label": "A smaller model", "sub": "23x spread across the price list", "tone": "good"}, {"label": "Quantisation", "sub": "4x memory, which converts to batch size"}, {"label": "Batching", "sub": "5.2x measured - already on by default", "tone": "accent"}, {"label": "Prefix caching", "sub": "up to 2.8x on RAG traffic", "tone": "accent"}, {"label": "Output length limits", "sub": "linear in the tokens not generated"}, {"label": "Speculative decoding", "sub": "1.13x measured - the smallest here", "tone": "warn"}], "t": "diagram", "id": "dg-3_12-05-3"},
 
 
 
@@ -380,7 +380,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
         notes: [
           { t: "p", text: "**At a 3:1 peak-to-mean ratio, self-hosting a 70B never beats GPT-4o-mini or a hosted Llama endpoint — at any volume.** It converges to $1.11 per million while they sit at $0.263 and $0.550. The only comparison it wins is against the frontier model, from about 50M tokens a day." },
           { t: "p", text: "The utilisation column explains it: 33% at two billion tokens a day, because provisioning for a 3× peak caps utilisation at 1/3 by construction. Volume cannot fix that; only flattening the peak can." },
-          { t: "p", text: "**Reserved and spot pricing change the verdict more than any technique in this module.** $2.00 to $0.60 an hour takes the 100M-tokens-a-day case from $1.440 to $0.432, which now beats the hosted Llama endpoint. A procurement decision outperformed quantization, batching and speculative decoding combined — and the model-side ceiling on all three of those is about 4×, 5.2× and 1.13× respectively." },
+          { t: "p", text: "**Reserved and spot pricing change the verdict more than any technique in this module.** $2.00 to $0.60 an hour takes the 100M-tokens-a-day case from $1.440 to $0.432, which now beats the hosted Llama endpoint. A procurement decision outperformed quantisation, batching and speculative decoding combined — and the model-side ceiling on all three of those is about 4×, 5.2× and 1.13× respectively." },
           { t: "p", text: "Two honest limits. This counts GPU-hours only: no engineering time, no on-call, no load balancer, no idle standby capacity, no model-storage or egress costs — all of which favour the API side, and some of which are larger than the compute. And the 1,500 tokens/sec figure is the; 3.5 showed that throughput numbers are hardware- and traffic-specific, so a real decision needs that measured on the real workload." }
         ] } },
 
@@ -396,7 +396,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
         { t: "p", text: "First, convert the bill to volume, because every later number depends on it. $40,000 a month at GPT-4o's blended $4.375 per million is 9,143 million tokens a month — **about 305 million tokens a day**. That is well past the ~11 million break-even against GPT-4o, so self-hosting genuinely is cheaper here, and I would say so before complicating it." },
         { t: "p", text: "How much cheaper depends on the peak-to-mean ratio. At a 3:1 pattern this needs 8 GPUs provisioned, costs **$11,520 a month at 29.4% utilisation**, and saves 71%. At a flat load it would be 3 GPUs and $4,320. At 10:1 it would be 24 GPUs and $34,560 — a 14% saving, which would not be worth the project. So the first thing I would pull from the logs is the traffic shape, because it spans the whole range from obviously-do-it to obviously-do-not." },
         { t: "p", text: "But the number that should end the meeting is the other one: **GPT-4o-mini at the same volume is $2,400 a month**, a 94% cut, available this week with no infrastructure — and 4.8× cheaper than the self-hosted plan. A hosted Llama 70B endpoint is $5,029. So the serious question is not whether to self-host, it is whether a smaller model passes their evaluation, which is an evaluation project rather than an infrastructure one. The 23× spread across the price list is a bigger lever than anything on the serving side." },
-        { t: "p", text: "If the smaller model does not pass and they want to proceed, I would price it honestly, because GPU-hours are the smallest line: engineering time to build and operate it, on-call, idle standby, and the fact that my 1,500 tokens/sec figure is somebody else's benchmark rather than our measurement. And I would get the procurement right before touching the model — reserved at $0.80 an hour takes the same plan to **$4,608 a month** and spot to $3,456, which is 2.5× to 3.3× and beats quantization, batching and speculative decoding put together." },
+        { t: "p", text: "If the smaller model does not pass and they want to proceed, I would price it honestly, because GPU-hours are the smallest line: engineering time to build and operate it, on-call, idle standby, and the fact that my 1,500 tokens/sec figure is somebody else's benchmark rather than our measurement. And I would get the procurement right before touching the model — reserved at $0.80 an hour takes the same plan to **$4,608 a month** and spot to $3,456, which is 2.5× to 3.3× and beats quantisation, batching and speculative decoding put together." },
         { t: "p", text: "The one thing I would push back on is the framing. If the real driver is data residency or a fine-tuned model, that is a sound reason to self-host and the cost analysis is a budget exercise, not a justification. Pretending it is about cost is how a project ends up judged against a number it cannot hit." }
       ] }
   ],
@@ -404,7 +404,7 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
   takeaways: [
     "**Cost per token is dollars per GPU-hour over tokens produced per hour.** Every optimisation enters through the denominator, and utilisation is part of the denominator too.",
     "**The self-hosted figures are 1.30× the naive arithmetic**, consistent with an unstated ~77% utilisation assumption — defensible, invisible, and the variable with the most leverage.",
-    "**Utilisation spans a 20× cost range** from 5% to 100%, against 4× for quantization, 5.2× for batching and 1.13× for speculative decoding.",
+    "**Utilisation spans a 20× cost range** from 5% to 100%, against 4× for quantisation, 5.2× for batching and 1.13× for speculative decoding.",
     "**Blend the API price list by your own input-to-output ratio.** The same provider ranges 2.8× across plausible ratios, and the list itself spans 23×.",
     "**\"Self-host above 10M tokens a day\" assumes you are replacing a frontier model.** That is 7.7% utilisation of one GPU, costing $4.80 per million — break-even is 11.0M against GPT-4o and 182.9M against GPT-4o-mini.",
     "**You provision for peak and utilise at mean**, so a 3:1 peak-to-mean ratio caps utilisation at a third regardless of volume.",
@@ -439,19 +439,19 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
 
       { stem: "A team spends $40,000 a month on GPT-4o and wants to cut it. Which lever is largest?",
         options: [
-          "Quantizing a self-hosted replacement to INT4",
+          "Quantising a self-hosted replacement to INT4",
           "Evaluating whether a smaller model passes, since the price list spans 23×",
           "Enabling speculative decoding",
           "Switching to continuous batching"
         ],
         answer: 1,
-        why: "GPT-4o blends to $4.375 per million and GPT-4o-mini to $0.263 — a 94% reduction available this week with no infrastructure, if the task tolerates the smaller model. That dwarfs quantization's 4×, batching's measured 5.2× and speculative decoding's measured 1.13×, and continuous batching is on by default in every serious framework. Whether the smaller model passes is an evaluation question, which is what makes evaluation a cost discipline as much as a quality one." },
+        why: "GPT-4o blends to $4.375 per million and GPT-4o-mini to $0.263 — a 94% reduction available this week with no infrastructure, if the task tolerates the smaller model. That dwarfs quantisation's 4×, batching's measured 5.2× and speculative decoding's measured 1.13×, and continuous batching is on by default in every serious framework. Whether the smaller model passes is an evaluation question, which is what makes evaluation a cost discipline as much as a quality one." },
 
       { stem: "Why are spot instances a weaker fit for inference than for training?",
         options: [
           "Spot GPUs are slower than on-demand GPUs",
           "A preemption drops in-flight requests and the model takes minutes to reload, so availability suffers rather than throughput",
-          "Spot capacity cannot run quantized models",
+          "Spot capacity cannot run quantised models",
           "Inference needs more memory than spot instances provide"
         ],
         answer: 1,

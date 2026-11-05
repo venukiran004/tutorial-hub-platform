@@ -179,7 +179,7 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
         "If a dashboard panel shows avg of a p99, that is the 46% error from lesson 7.2 and it is on your wall."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The unbounded label is usually a URL path containing an id, which is easy to miss because it looks like a route. Normalising at instrumentation time is the fix; dropping it later means losing the series and the history." },
           { t: "p", text: "The score histogram is the metric most often absent, and it is the one lesson 2.2 identified as the fastest harm-correlated signal available without labels — 1.9 minutes to detect a five-point move in the positive rate." }
         ]
@@ -246,7 +246,7 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
       {
         level: "mid",
         q: "What would you instrument on a model serving endpoint?",
-        strong: "Four metrics. A latency histogram labelled by stage — deserialize, fetch features, transform, infer, serialize — because without the stage label you cannot tell where the time goes, and when I measured that split the model was only 30% of the request, so an optimisation aimed at it would have bought 15% end to end. A request counter labelled by model version and outcome. An in-flight gauge, which is a better autoscaling signal than CPU. And a histogram of the prediction score labelled by model version, which people usually omit: it is the fastest harm-correlated signal available without labels, detectable in under two minutes for a five-point shift, and it is what would have caught a unit-change incident where the approval rate collapsed from 0.45 to 0.04. A histogram rather than a summary for all of those, because summary quantiles cannot be aggregated across replicas.",
+        strong: "Four metrics. A latency histogram labelled by stage — deserialise, fetch features, transform, infer, serialise — because without the stage label you cannot tell where the time goes, and when I measured that split the model was only 30% of the request, so an optimisation aimed at it would have bought 15% end to end. A request counter labelled by model version and outcome. An in-flight gauge, which is a better autoscaling signal than CPU. And a histogram of the prediction score labelled by model version, which people usually omit: it is the fastest harm-correlated signal available without labels, detectable in under two minutes for a five-point shift, and it is what would have caught a unit-change incident where the approval rate collapsed from 0.45 to 0.04. A histogram rather than a summary for all of those, because summary quantiles cannot be aggregated across replicas.",
         answer: [
           { t: "p", text: "The stage label and the score histogram are the two that distinguish this from a generic answer, and both have measurements behind them." },
           { t: "p", text: "Noting histogram-over-summary unprompted, with the aggregation reason, pre-empts the natural follow-up." }

@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "67",
-   "q": "Label Binarizer",
+   "q": "Label Binariser",
    "body": [
     {
      "t": "code",

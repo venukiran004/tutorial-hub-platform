@@ -7,7 +7,7 @@ EC.receiveLesson({
   lede: "**Every MCP connection starts with one exchange that decides what the rest of it may contain.** The client says which protocol revision it speaks and what it can do; the server answers with its own revision, its identity, and a set of capability flags. Those flags are not documentation — they are a contract, and calling a method the server never advertised is a client bug rather than a server limitation.",
 
   objectives: [
-    "Read an initialize response field by field",
+    "Read an initialise response field by field",
     "Explain what capability negotiation settles and what it does not",
     "Say what the listChanged and subscribe flags commit a server to",
     "Use the instructions field for what it is actually for",
@@ -125,7 +125,7 @@ mcp = FastMCP("finance", instructions="This server provides finance tools.")`,
 
     { t: "h2", n: "04", text: "Revision mismatch", id: "revision" },
 
-    {"kind": "tree", "title": "A revision mismatch should fail loudly, at initialize", "caption": "**The expensive outcome is a connection that proceeds hopefully and breaks halfway through a tool call**, where the error surfaces far from its cause and reads like a bug in your own code. Failing at `initialize` is cheap and legible. **And pin the SDK rather than the revision:** a server upgraded across an SDK major can change the revision it offers with no change to your code, which is exactly the kind of movement a handshake log line catches.", "root": {"label": "The server answered with a revision", "sub": "is it one you offered?", "tone": "accent", "children": [{"label": "Older than yours", "sub": "it chose from what you sent", "tone": "good", "children": [{"label": "Proceed on that revision", "sub": "later features are simply absent", "tone": "good"}]}, {"label": "One you never offered", "sub": "it did not negotiate", "tone": "crit", "children": [{"label": "Refuse the connection", "sub": "or fail mid-call later", "tone": "crit"}]}, {"label": "No agreement possible", "sub": "-", "tone": "warn", "children": [{"label": "Fail at initialize, loudly", "sub": "and log name, revision, flags", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-1_2-04-3"},
+    {"kind": "tree", "title": "A revision mismatch should fail loudly, at initialise", "caption": "**The expensive outcome is a connection that proceeds hopefully and breaks halfway through a tool call**, where the error surfaces far from its cause and reads like a bug in your own code. Failing at `initialize` is cheap and legible. **And pin the SDK rather than the revision:** a server upgraded across an SDK major can change the revision it offers with no change to your code, which is exactly the kind of movement a handshake log line catches.", "root": {"label": "The server answered with a revision", "sub": "is it one you offered?", "tone": "accent", "children": [{"label": "Older than yours", "sub": "it chose from what you sent", "tone": "good", "children": [{"label": "Proceed on that revision", "sub": "later features are simply absent", "tone": "good"}]}, {"label": "One you never offered", "sub": "it did not negotiate", "tone": "crit", "children": [{"label": "Refuse the connection", "sub": "or fail mid-call later", "tone": "crit"}]}, {"label": "No agreement possible", "sub": "-", "tone": "warn", "children": [{"label": "Fail at initialise, loudly", "sub": "and log name, revision, flags", "tone": "warn"}]}]}, "t": "diagram", "id": "dg-1_2-04-3"},
 
 
     { t: "p", text: "MCP revisions are dated — `2025-11-25` in the trace above — and they change. The client sends the newest revision it supports, and the server replies with the revision it will actually use, which may be older." },
@@ -184,7 +184,7 @@ ver_server.py        -> name='versioned' version='4.2.0'`,
       ] },
 
     { t: "exercise", kind: "practice", title: "Read the handshake, then break it", difficulty: "core", minutes: 22,
-      prompt: "Write a client that connects to a server and prints the full initialize result, including the client capabilities it sent. Then (a) build a server offering only tools and confirm the resources and prompts capabilities come back as None; (b) call resources/list against it and record exactly what happens; (c) set listChanged=True on a server that never sends the notification, and describe what a caching client would experience; (d) confirm FastMCP has no version parameter, set one through the private attribute, and confirm the client sees it.",
+      prompt: "Write a client that connects to a server and prints the full initialise result, including the client capabilities it sent. Then (a) build a server offering only tools and confirm the resources and prompts capabilities come back as None; (b) call resources/list against it and record exactly what happens; (c) set listChanged=True on a server that never sends the notification, and describe what a caching client would experience; (d) confirm FastMCP has no version parameter, set one through the private attribute, and confirm the client sees it.",
       hints: [
         "A FastMCP server with no @mcp.resource decorators should not advertise resources.",
         "For (b), note whether the failure is an exception or an error result — they are different code paths.",
@@ -200,7 +200,7 @@ ver_server.py        -> name='versioned' version='4.2.0'`,
 
     { t: "h2", n: "06", text: "The whole method catalogue", id: "methods" },
 
-    {"kind": "trace", "title": "Thirty-one method names, in four groups", "caption": "**You have already met most of the ones that matter**, and the groups are what the list is for. The three server-to-client requests are lesson 1.4's subject. The `notifications/*` family is fire-and-forget with no reply. **And `tasks/*` is a newer surface for work that outlives a request** — treat it as optional and check the capability rather than assuming, exactly as for sampling.", "left": "group", "codeW": 180, "vars": ["methods", "note"], "steps": [{"code": "the handshake", "state": ["initialize, notifications/initialized", "once, first"], "tone": "good"}, {"code": "the three primitives", "state": ["tools/*, resources/*, prompts/*", "what lesson 1.3 covered"], "changed": [0, 1], "tone": "good"}, {"code": "server-to-client", "state": ["roots/list, sampling/createMessage, elicitation/create", "lesson 1.4 - a host dependency"], "changed": [0, 1], "tone": "violet"}, {"code": "notifications", "state": ["progress, cancelled, *_list_changed, message", "no reply - fire and forget"], "changed": [0, 1], "tone": "accent"}, {"code": "odds and ends", "state": ["ping, logging/setLevel, completion/complete", "ping is the honest liveness check"], "changed": [0, 1], "tone": "accent"}, {"code": "tasks/*", "state": ["get, list, cancel, result", "newer; not every host has it"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_2-06-5"},
+    {"kind": "trace", "title": "Thirty-one method names, in four groups", "caption": "**You have already met most of the ones that matter**, and the groups are what the list is for. The three server-to-client requests are lesson 1.4's subject. The `notifications/*` family is fire-and-forget with no reply. **And `tasks/*` is a newer surface for work that outlives a request** — treat it as optional and check the capability rather than assuming, exactly as for sampling.", "left": "group", "codeW": 180, "vars": ["methods", "note"], "steps": [{"code": "the handshake", "state": ["initialise, notifications/initialized", "once, first"], "tone": "good"}, {"code": "the three primitives", "state": ["tools/*, resources/*, prompts/*", "what lesson 1.3 covered"], "changed": [0, 1], "tone": "good"}, {"code": "server-to-client", "state": ["roots/list, sampling/createMessage, elicitation/create", "lesson 1.4 - a host dependency"], "changed": [0, 1], "tone": "violet"}, {"code": "notifications", "state": ["progress, cancelled, *_list_changed, message", "no reply - fire and forget"], "changed": [0, 1], "tone": "accent"}, {"code": "odds and ends", "state": ["ping, logging/setLevel, completion/complete", "ping is the honest liveness check"], "changed": [0, 1], "tone": "accent"}, {"code": "tasks/*", "state": ["get, list, cancel, result", "newer; not every host has it"], "changed": [0, 1], "tone": "warn"}], "t": "diagram", "id": "dg-1_2-06-5"},
 
     { t: "p", text: "Having read a handshake, the rest of the protocol is a short list. Every method name in the SDK's type module, grouped by who sends it." },
 
@@ -249,7 +249,7 @@ for m in sorted(names):
 
     { t: "h2", n: "07", text: "Errors on the wire, and the metadata beside them", id: "wire" },
 
-    {"kind": "layers", "title": "Two error layers, and the one most people conflate", "caption": "**A JSON-RPC error means the request failed; an `isError` result means the request succeeded and the tool did not.** That is why lesson 2.3's measurement showed an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND` — `tools/call` was a perfectly valid method call, and the tool inside it was the problem. **Keeping them apart matters when reading a trace:** a −32601 is a client bug or a version mismatch, and an `isError` is a conversation about the tool.", "items": [{"label": "-32700 PARSE_ERROR", "sub": "the frame was not JSON", "tone": "crit", "side": "transport"}, {"label": "-32600 INVALID_REQUEST / -32601 METHOD_NOT_FOUND", "sub": "a client bug, or a revision mismatch", "tone": "crit", "side": "protocol"}, {"label": "-32602 INVALID_PARAMS / -32603 INTERNAL_ERROR", "sub": "JSON-RPC's own band, inherited unchanged", "tone": "warn", "side": "protocol"}, {"label": "-32000 CONNECTION_CLOSED, -32042 URL_ELICITATION_REQUIRED", "sub": "MCP's own two, outside the band", "tone": "accent", "side": "MCP"}, {"label": "a result with isError: True", "sub": "the call worked; the tool did not", "tone": "violet", "side": "your tool"}, {"label": "a result with isError: False and an error payload", "sub": "the tool worked; the answer is a refusal", "tone": "violet", "side": "your logic"}], "t": "diagram", "id": "dg-1_2-07-6"},
+    {"kind": "layers", "title": "Two error layers, and the one most people conflate", "caption": "**A JSON-RPC error means the request failed; an `isError` result means the request succeeded and the tool did not.** That is why lesson 2.3's measurement shows an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND` — `tools/call` was a perfectly valid method call, and the tool inside it was the problem. **Keeping them apart matters when reading a trace:** a −32601 is a client bug or a version mismatch, and an `isError` is a conversation about the tool.", "items": [{"label": "-32700 PARSE_ERROR", "sub": "the frame was not JSON", "tone": "crit", "side": "transport"}, {"label": "-32600 INVALID_REQUEST / -32601 METHOD_NOT_FOUND", "sub": "a client bug, or a revision mismatch", "tone": "crit", "side": "protocol"}, {"label": "-32602 INVALID_PARAMS / -32603 INTERNAL_ERROR", "sub": "JSON-RPC's own band, inherited unchanged", "tone": "warn", "side": "protocol"}, {"label": "-32000 CONNECTION_CLOSED, -32042 URL_ELICITATION_REQUIRED", "sub": "MCP's own two, outside the band", "tone": "accent", "side": "MCP"}, {"label": "a result with isError: True", "sub": "the call worked; the tool did not", "tone": "violet", "side": "your tool"}, {"label": "a result with isError: False and an error payload", "sub": "the tool worked; the answer is a refusal", "tone": "violet", "side": "your logic"}], "t": "diagram", "id": "dg-1_2-07-6"},
 
     { t: "p", text: "Lesson 2.3 covers the errors a *tool* produces. These are the layer beneath: JSON-RPC's own error codes, which describe a failure of the request rather than of your logic." },
 
@@ -270,7 +270,7 @@ for n in sorted(dir(T)):
 
     { t: "callout", kind: "insight", title: "These are a different layer from isError",
       body: [
-        { t: "p", text: "A JSON-RPC error means **the request failed**: the method does not exist, the frame did not parse, the connection died. A tool result with `isError: True` means the request succeeded and the tool did not — which is why lesson 2.3's measurement showed an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND`. `tools/call` was a perfectly valid method call; the tool inside it was the problem." },
+        { t: "p", text: "A JSON-RPC error means **the request failed**: the method does not exist, the frame did not parse, the connection died. A tool result with `isError: True` means the request succeeded and the tool did not — which is why lesson 2.3's measurement shows an unknown tool coming back as a *result* rather than as `METHOD_NOT_FOUND`. `tools/call` was a perfectly valid method call; the tool inside it was the problem." },
         { t: "p", text: "Keeping the two apart matters when you are reading a trace: a −32601 is a client bug or a version mismatch, and an `isError` result is a conversation about the tool." }
       ] },
 
@@ -301,7 +301,7 @@ for n in sorted(dir(T)):
     title: "Knowledge check",
     questions: [
       {
-        stem: "A server's initialize response reports `serverInfo.version` as `1.28.1`, which is also the version of the installed MCP SDK. What does that tell a consumer about the server?",
+        stem: "A server's initialise response reports `serverInfo.version` as `1.28.1`, which is also the version of the installed MCP SDK. What does that tell a consumer about the server?",
         options: [
           "The server is on its 1.28.1 release",
           "Nothing about the server's own release — FastMCP has no `version` parameter, so the field is the version of the `mcp` package it was built against",
@@ -331,7 +331,7 @@ for n in sorted(dir(T)):
           "Because capabilities can change mid-connection"
         ],
         answer: 1,
-        why: "The flags are a contract whose purpose is to let the host decide what to offer and what to fetch. A try/except around a capability you have already been told is absent is a sign the initialize result was thrown away."
+        why: "The flags are a contract whose purpose is to let the host decide what to offer and what to fetch. A try/except around a capability you have already been told is absent is a sign the initialise result was thrown away."
       },
       {
         stem: "What belongs in the `instructions` field rather than in a tool description?",
@@ -353,7 +353,7 @@ for n in sorted(dir(T)):
           "Ignore the field entirely"
         ],
         answer: 1,
-        why: "Failing at initialize is the cheap, legible outcome. The expensive one is a connection that proceeds on an unagreed revision and breaks halfway through a call, where the error surfaces far from its cause."
+        why: "Failing at initialise is the cheap, legible outcome. The expensive one is a connection that proceeds on an unagreed revision and breaks halfway through a call, where the error surfaces far from its cause."
       }
     ]
   },
@@ -365,7 +365,7 @@ for n in sorted(dir(T)):
       {
         level: "mid",
         q: "What happens when an MCP client connects to a server?",
-        strong: "An initialize exchange. The client sends the newest protocol revision it speaks plus its own capabilities — sampling, roots, elicitation. The server replies with the revision it will use, its name and version, optional free-text instructions, and its capability flags: which of tools, resources and prompts it offers, and the optional behaviours within each. After that the client may only call what was advertised.",
+        strong: "An initialise exchange. The client sends the newest protocol revision it speaks plus its own capabilities — sampling, roots, elicitation. The server replies with the revision it will use, its name and version, optional free-text instructions, and its capability flags: which of tools, resources and prompts it offers, and the optional behaviours within each. After that the client may only call what was advertised.",
         answer: [
           { t: "p", text: "Mentioning that capabilities flow both ways is the detail that separates someone who has read the handshake from someone who has read about it — most answers only cover the server's side." },
           { t: "p", text: "The contract framing matters: the flags exist so a host can build its interface without probing, which is why a client that try/excepts a known-absent capability has discarded the result." },

@@ -219,12 +219,12 @@ print("paraphrase with smoothing: %.6f"
   repetitive, clipped   : 0.000000
   repetitive, UNclipped : 0.000000
 
-  paraphrase with smoothing: 0.067238`,
+  paraphrase with smoothing: 0.312394`,
         notes: [
           { t: "p", text: "**The paraphrase scores exactly 0.000000**, which is the headline failure. \u2018The feline rested on the rug\u2019 is a correct translation and shares no bigram with the reference, so p\u2082 is zero and the geometric mean collapses \u2014 a correct answer scoring the same as gibberish." },
           { t: "p", text: "**Both repetitive rows are 0.000000, which is not what I expected and is instructive.** Clipping drops p\u2081 from 1.0 to 0.4 as intended, but the repetitive candidate has no matching bigram at all, so the single-zero property zeroes it either way. The clipping effect is real and visible only at n=1 \u2014 to demonstrate it cleanly you have to look at p\u2081 directly rather than at BLEU-4." },
           { t: "p", text: "**That is the single-zero property dominating everything else**, and it is why sentence-level BLEU is close to useless without smoothing. Three of the five rows here are exactly zero for three different reasons." },
-          { t: "p", text: "**Smoothing rescues the paraphrase from 0.000000 to 0.067238**, which is still a very low score for a correct translation \u2014 so smoothing fixes the mathematical degeneracy and not the paraphrase blindness. Those are different failures and only one of them has a fix inside BLEU." },
+          { t: "p", text: "**Smoothing rescues the paraphrase from 0.000000 to 0.312394**, which is still a low score for a correct translation \u2014 so smoothing fixes the mathematical degeneracy and not the paraphrase blindness. Those are different failures and only one of them has a fix inside BLEU." },
           { t: "p", text: "One implementation note: the unclipped branch uses `v * (g in r)`, counting every candidate occurrence when the n-gram appears anywhere in the reference. That is the naive formula clipping exists to replace, and writing both is the only way to see what the `min` is buying." }
         ] } },
 
@@ -242,7 +242,7 @@ print("paraphrase with smoothing: %.6f"
         { t: "p", text: "The clipping is the part worth explaining, because it is what makes the metric work at all. Without it, \u2018the the the the the\u2019 against a reference containing \u2018the\u2019 twice scores 5/5 on unigram precision. Clipped to the count it scores 2/5. The `min` is the whole defence against repetition." },
         { t: "p", text: "Why we stopped: it cannot see paraphrase. I scored \u2018the feline rested on the rug\u2019 against that reference and got exactly 0.000000 \u2014 a correct translation scoring identically to gibberish, because it shares no bigram and the geometric mean collapses on any single zero." },
         { t: "p", text: "That single-zero property is also why BLEU is really a corpus-level metric. At corpus level you pool n-gram counts across all sentences before dividing, so one bad sentence cannot zero the aggregate. Sentence-level BLEU needs smoothing, and smoothed and unsmoothed are different numbers that should be reported as such." },
-        { t: "p", text: "And smoothing only fixes half the problem. With add-one it took that paraphrase from 0.000000 to 0.067 \u2014 no longer mathematically degenerate, still a terrible score for a correct answer. The degeneracy has a fix inside BLEU; the paraphrase blindness does not, which is what METEOR, chrF and BERTScore exist for." }
+        { t: "p", text: "And smoothing only fixes half the problem. With add-one it took that paraphrase from 0.000000 to 0.312 \u2014 no longer mathematically degenerate, still a poor score for a correct answer. The degeneracy has a fix inside BLEU; the paraphrase blindness does not, which is what METEOR, chrF and BERTScore exist for." }
       ] }
   ],
 
@@ -255,7 +255,7 @@ print("paraphrase with smoothing: %.6f"
     "**A single zero precision makes BLEU zero**, because the geometric mean has a zero factor, which no amount of excellence elsewhere repairs.",
     "**So BLEU is a corpus-level metric**: pool n-gram counts across sentences before dividing, or smooth and report that you did.",
     "**A correct paraphrase scored exactly 0.000000** \u2014 identical to gibberish \u2014 which is the failure that ended its use for open-ended output.",
-    "**Smoothing fixes the degeneracy, not the blindness**: add-one took that paraphrase to 0.067238, still a terrible score for a correct answer.",
+    "**Smoothing fixes the degeneracy, not the blindness**: add-one took that paraphrase to 0.312394, still a poor score for a correct answer.",
     "**Verify at full precision**: 0.8187 \u00d7 0.7071 displays as 0.5787 while 0.818731 \u00d7 0.707107 = 0.578930, and I briefly mistook that for a reference error.",
     "**Use it for translation with multiple references** and for regression testing where output should be nearly identical.",
     "**A metric's published form is usually the obvious formula plus one term closing a degenerate optimum** \u2014 clipping here, the over-refusal set in safety evaluation."
@@ -284,15 +284,15 @@ print("paraphrase with smoothing: %.6f"
         answer: 1,
         why: "A paraphrase can share unigrams while sharing no bigram, so p\u2082 hits zero and the geometric mean collapses \u2014 exactly 0, not approximately. This is the property that makes sentence-level BLEU unusable without smoothing and that makes BLEU fundamentally a corpus-level metric, where counts are pooled across sentences before dividing. The brevity penalty is a multiplier in (0, 1] and never zero." },
 
-      { stem: "Add-one smoothing takes a correct paraphrase from 0.000000 to 0.067238. What does this tell you?",
+      { stem: "Add-one smoothing takes a correct paraphrase from 0.000000 to 0.312394. What does this tell you?",
         options: [
           "Smoothing repairs BLEU's paraphrase blindness",
-          "Smoothing fixes the mathematical degeneracy but not the blindness \u2014 0.067 is still a terrible score for a correct translation",
+          "Smoothing fixes the mathematical degeneracy but not the blindness \u2014 0.312 is still a poor score for a correct translation",
           "The smoothing constant was set too low to be useful",
           "The paraphrase shares more n-grams than expected"
         ],
         answer: 1,
-        why: "Two distinct failures are in play: the single-zero property, which is a property of the geometric mean and which smoothing addresses, and insensitivity to meaning, which no reweighting inside BLEU can address. The score moving from exactly zero to 0.067 shows the first fixed and the second intact. Addressing the second requires leaving surface n-grams, which is what METEOR, chrF and BERTScore do." },
+        why: "Two distinct failures are in play: the single-zero property, which is a property of the geometric mean and which smoothing addresses, and insensitivity to meaning, which no reweighting inside BLEU can address. The score moving from exactly zero to 0.312 shows the first fixed and the second intact. Addressing the second requires leaving surface n-grams, which is what METEOR, chrF and BERTScore do." },
 
       { stem: "A hand check gives BLEU-4 of 0.5787 where it is commonly stated 0.5789. What is the most likely explanation?",
         options: [
@@ -336,7 +336,7 @@ print("paraphrase with smoothing: %.6f"
         answer: [
           { t: "p", text: "Two distinct failures, and only one has a fix inside the metric. The first is paraphrase blindness: I scored \u2018the feline rested on the rug\u2019 against \u2018the cat sat on the mat\u2019 and got exactly 0.000000 \u2014 a correct translation scoring the same as gibberish." },
           { t: "p", text: "The mechanism is the geometric mean. A paraphrase can share unigrams and share no bigram, so p\u2082 is zero and the whole product is zero regardless of the other precisions. That single-zero property is the second failure, and it is why BLEU is really a corpus-level metric \u2014 pooling counts across sentences stops one bad sentence zeroing the aggregate." },
-          { t: "p", text: "Smoothing fixes the second and not the first. Add-one took that paraphrase from 0.000000 to 0.067 \u2014 no longer mathematically degenerate, still a terrible score for a correct answer. So reaching for smoothing to make sentence-level BLEU usable addresses the arithmetic and leaves the semantics untouched." },
+          { t: "p", text: "Smoothing fixes the second and not the first. Add-one took that paraphrase from 0.000000 to 0.312 \u2014 no longer mathematically degenerate, still a poor score for a correct answer. So reaching for smoothing to make sentence-level BLEU usable addresses the arithmetic and leaves the semantics untouched." },
           { t: "p", text: "Where it remains the right tool is translation with multiple references and regression testing where output should be nearly identical \u2014 same inputs, same references, version N against N+1. There a drop means something broke, even though the absolute value means little. What it cannot be is an absolute quality measure on open-ended generation." }
         ] }
     ]

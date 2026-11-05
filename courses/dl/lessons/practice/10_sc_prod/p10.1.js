@@ -37,7 +37,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Techniques:** Pruning, quantization, knowledge distillation, architecture search."
+     "text": "**Techniques:** Pruning, quantisation, knowledge distillation, architecture search."
     }
    ],
    "kind": ""
@@ -78,7 +78,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Dense networks contain sparse subnetworks (\"winning tickets\") that, when trained in isolation from the same initialization, can match the full network's performance."
+     "text": "**Answer:** Dense networks contain sparse subnetworks (\"winning tickets\") that, when trained in isolation from the same initialisation, can match the full network's performance."
     },
     {
      "t": "p",
@@ -103,7 +103,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "4",
-   "q": "What is quantization in deep learning?",
+   "q": "What is quantisation in deep learning?",
    "body": [
     {
      "t": "p",
@@ -121,9 +121,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Post-training quantization (PTQ):** Quantize after training (easy, some accuracy loss)",
-      "**Quantization-aware training (QAT):** Simulate quantization during training (better accuracy)",
-      "**Dynamic quantization:** Quantize weights statically, activations dynamically at runtime"
+      "**Post-training quantisation (PTQ):** Quantise after training (easy, some accuracy loss)",
+      "**Quantisation-aware training (QAT):** Simulate quantisation during training (better accuracy)",
+      "**Dynamic quantisation:** Quantise weights statically, activations dynamically at runtime"
      ]
     },
     {
@@ -157,7 +157,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Student can achieve near-teacher performance with fraction of parameters. Works because soft labels regularize and provide richer gradients."
+     "text": "**Explanation:** Student can achieve near-teacher performance with fraction of parameters. Works because soft labels regularise and provide richer gradients."
     }
    ],
    "kind": ""
@@ -188,11 +188,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "What is TensorRT and how does it optimize inference?",
+   "q": "What is TensorRT and how does it optimise inference?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** NVIDIA's inference optimization framework:"
+     "text": "**Answer:** NVIDIA's inference optimisation framework:"
     },
     {
      "t": "ol",
@@ -200,7 +200,7 @@ EC.receiveLesson({
       "**Layer fusion:** Combine Conv + BN + ReLU into single kernel",
       "**Precision calibration:** Automatic FP32 → INT8/FP16 conversion",
       "**Kernel auto-tuning:** Select fastest GPU kernel per operation",
-      "**Dynamic tensor memory:** Minimize memory allocation",
+      "**Dynamic tensor memory:** Minimise memory allocation",
       "**Multi-stream execution:** Parallel execution of independent operations"
      ]
     },
@@ -233,13 +233,13 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Framework interoperability (train in PyTorch, deploy with TensorRT/OpenVINO)",
-      "Hardware-specific optimization via runtime (ONNX Runtime)",
-      "Standardized model representation"
+      "Hardware-specific optimisation via runtime (ONNX Runtime)",
+      "Standardised model representation"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** ONNX Runtime provides cross-platform optimized inference — CPU, GPU, mobile."
+     "text": "**Explanation:** ONNX Runtime provides cross-platform optimised inference — CPU, GPU, mobile."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
       "**EfficientNet:** Compound scaling (width, depth, resolution)",
       "**MobileNet:** Depthwise separable convolutions",
       "**Once-for-all (OFA):** Single supernet, extract sub-networks for different devices",
-      "**Hardware-aware NAS:** Include latency/energy in optimization objective"
+      "**Hardware-aware NAS:** Include latency/energy in optimisation objective"
      ]
     },
     {
@@ -374,11 +374,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "What is model quantization calibration?",
+   "q": "What is model quantisation calibration?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Finding optimal scale/zero-point for quantizing each layer."
+     "text": "**Answer:** Finding optimal scale/zero-point for quantising each layer."
     },
     {
      "t": "p",
@@ -389,7 +389,7 @@ EC.receiveLesson({
      "items": [
       "Run representative calibration data through model",
       "Collect activation statistics (min, max, percentiles)",
-      "Choose quantization parameters that minimize error"
+      "Choose quantisation parameters that minimise error"
      ]
     },
     {
@@ -401,7 +401,7 @@ EC.receiveLesson({
      "items": [
       "MinMax: Use observed min/max (sensitive to outliers)",
       "Percentile: Use 99.99th percentile (robust)",
-      "Entropy: Minimize KL divergence between FP32 and quantized distributions"
+      "Entropy: Minimise KL divergence between FP32 and quantised distributions"
      ]
     },
     {
@@ -469,7 +469,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Combined with pruning:** Prune → quantize → Huffman encode = Deep Compression pipeline."
+     "text": "**Combined with pruning:** Prune → quantise → Huffman encode = Deep Compression pipeline."
     },
     {
      "t": "p",
@@ -593,7 +593,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GPUs are designed for parallelism — higher batch = better GPU utilization. Balance against latency requirements."
+     "text": "**Explanation:** GPUs are designed for parallelism — higher batch = better GPU utilisation. Balance against latency requirements."
     }
    ],
    "kind": ""
@@ -605,7 +605,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Transform high-level model into optimized low-level code for specific hardware."
+     "text": "**Answer:** Transform high-level model into optimised low-level code for specific hardware."
     },
     {
      "t": "p",
@@ -614,7 +614,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**TVM:** Cross-hardware optimization (CPU, GPU, mobile, accelerators)",
+      "**TVM:** Cross-hardware optimisation (CPU, GPU, mobile, accelerators)",
       "**XLA (Accelerated Linear Algebra):** Google's compiler for TensorFlow/JAX",
       "**Glow:** Facebook's compiler for neural networks",
       "**torch.compile (Inductor):** PyTorch's new compiler"
@@ -622,11 +622,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Optimizations:** Operator fusion, memory planning, layout optimization, vectorization."
+     "text": "**Optimisations:** Operator fusion, memory planning, layout optimisation, vectorisation."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Can achieve 2-5× speedup by generating hardware-specific optimized code instead of framework-interpreted execution."
+     "text": "**Explanation:** Can achieve 2-5× speedup by generating hardware-specific optimised code instead of framework-interpreted execution."
     }
    ],
    "kind": ""
@@ -634,7 +634,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "21",
-   "q": "What is INT4 quantization and when does it work?",
+   "q": "What is INT4 quantisation and when does it work?",
    "body": [
     {
      "t": "p",
@@ -647,8 +647,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**GPTQ:** Post-training quantization for large language models",
-      "**AWQ:** Activation-aware weight quantization",
+      "**GPTQ:** Post-training quantisation for large language models",
+      "**AWQ:** Activation-aware weight quantisation",
       "**QLoRA:** 4-bit base model + LoRA fine-tuning adapters"
      ]
     },

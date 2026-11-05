@@ -199,7 +199,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "How to optimise loops in Python? (list comprehension, map, vectorization)",
+   "q": "How to optimise loops in Python? (list comprehension, map, vectorisation)",
    "body": [
     {
      "t": "p",
@@ -221,7 +221,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Why faster? Comprehensions are optimised at the bytecode level — they use a specialized `LIST_APPEND` instruction instead of method lookup for `.append()`."
+     "text": "Why faster? Comprehensions are optimised at the bytecode level — they use a specialised `LIST_APPEND` instruction instead of method lookup for `.append()`."
     },
     {
      "t": "p",
@@ -275,7 +275,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**7. NumPy vectorization (for numerical work — 10–100x faster)**"
+     "text": "**7. NumPy vectorisation (for numerical work — 10–100x faster)**"
     },
     {
      "t": "code",
@@ -306,7 +306,7 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "NumPy vectorization",
+       "NumPy vectorisation",
        "1x (baseline — fastest)",
        "Numerical computation"
       ],
@@ -877,7 +877,7 @@ EC.receiveLesson({
        "C-level loops, short-circuit"
       ],
       [
-       "Vectorize",
+       "Vectorise",
        "NumPy operations",
        "Avoid Python loops entirely"
       ],

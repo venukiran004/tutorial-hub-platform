@@ -143,7 +143,7 @@ EC.receiveLesson({
       edges: [["t","n1"],["n1","a"],["a","r1"],["r1","n2"],["n2","f"],["f","r2"],["r2","h"]] },
 
     { t: "exercise", title: "Run both traces",
-      tasks: [
+      requirements: [
         "Run the NumPy script unmodified and confirm it prints mat at 0.59.",
         "Change W_K to equal W_Q and see how the attention pattern collapses toward self-attention.",
         "Replace the mask value -1e9 with -10 and measure how much weight leaks to the future.",

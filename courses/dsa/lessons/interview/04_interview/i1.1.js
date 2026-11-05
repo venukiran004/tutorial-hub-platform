@@ -145,7 +145,7 @@ EC.receiveLesson({
     "Clarify",
     "Examples",
     "Brute force",
-    "Optimize",
+    "Optimise",
     "Code"
    ],
    "body": [
@@ -163,7 +163,7 @@ EC.receiveLesson({
       "**Clarify**ask about input constraints, ranges, types, duplicates, and the expected output format.",
       "**Examples**work through 2–3 examples by hand, including edge cases (empty, single element, all equal).",
       "**Brute force**state the obvious O(n²)/O(2ⁿ) solution first to show you understand the problem.",
-      "**Optimize**look for a pattern: sorted? → two pointers / binary search; subarray? → sliding window; \"min/max ways\"? → DP; overlapping work? → memoize.",
+      "**Optimise**look for a pattern: sorted? → two pointers / binary search; subarray? → sliding window; \"min/max ways\"? → DP; overlapping work? → memoize.",
       "**Code**write clean, modular code with helper functions.",
       "**Test**trace through examples and edge cases.",
       "**Complexity**state final time and space complexity."
@@ -390,7 +390,7 @@ EC.receiveLesson({
    "terms": [
     "Answer",
     "Directed",
-    "Gray",
+    "Grey",
     "Undirected",
     "not the parent",
     "Union-Find"
@@ -403,7 +403,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Directed:** DFS with three colors — White (unvisited), Gray (in the current DFS path), Black (finished). A cycle exists if DFS reaches a **Gray** node (a back edge to an ancestor in the current path).",
+      "**Directed:** DFS with three colours — White (unvisited), Grey (in the current DFS path), Black (finished). A cycle exists if DFS reaches a **Grey** node (a back edge to an ancestor in the current path).",
       "**Undirected:** DFS/BFS — a cycle exists if you reach a visited node that is **not the parent** of the current node. Alternatively, **Union-Find**: if `union(u, v)` finds u and v already in the same set, adding edge (u, v) creates a cycle."
      ]
     },

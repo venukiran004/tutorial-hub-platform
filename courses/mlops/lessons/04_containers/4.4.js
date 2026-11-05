@@ -158,7 +158,7 @@ volumes:
         "Restarting the dependency mid-run is the test that distinguishes the two fixes; only the application-level retry survives it."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The point of doing both fixes is that they solve different problems. `service_healthy` solves the startup ordering, which is a Compose-only concern. The lazy connect with retry solves the dependency being unavailable at any point in the service's life, which is the only version of the problem that exists in production." },
           { t: "p", text: "The `restart db` test makes that concrete: a service that connected at import is dead afterwards even though the database came back, while one that connects lazily recovers on the next request. That is also what lets it report unready rather than crash-loop, which is lesson 5.2's readiness gate." }
         ]

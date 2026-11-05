@@ -20,7 +20,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Feature Engineering & Modeling Math",
+   "text": "Feature Engineering & Modelling Math",
    "id": "set"
   },
   {
@@ -46,7 +46,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Fix — Regularized target encoding:**"
+     "text": "**Fix — Regularised target encoding:**"
     },
     {
      "t": "math",
@@ -213,14 +213,14 @@ EC.receiveLesson({
        "Local structure (nonlinear)",
        "No",
        "O(n²)",
-       "Visualization only"
+       "Visualisation only"
       ],
       [
        "UMAP",
        "Local + some global",
        "Approximate",
        "O(n log n)",
-       "Visualization + preprocessing"
+       "Visualisation + preprocessing"
       ],
       [
        "Truncated SVD",
@@ -350,7 +350,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Model predicts \\(\\hat{z} = \\log(y)\\), inference: \\(\\hat{y} = e^{\\hat{z}}\\)",
-      "MSE in log space ≈ optimizing **MAPE** (mean absolute percentage error)",
+      "MSE in log space ≈ optimising **MAPE** (mean absolute percentage error)",
       "Residuals become more homoscedastic (constant variance)",
       "Predictions are always positive (good for prices)"
      ]
@@ -421,7 +421,7 @@ EC.receiveLesson({
       [
        "Sigmoid",
        "\\(\\tanh(\\gamma x_i^T x_j + c)\\)",
-       "Neural network-like behavior"
+       "Neural network-like behaviour"
       ]
      ]
     },
@@ -461,7 +461,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Flatten each image to a 10,000-dim vector",
-      "Center: \\(\\bar{x} = \\frac{1}{n}\\sum x_i\\); \\(\\tilde{x}_i = x_i - \\bar{x}\\)",
+      "Centre: \\(\\bar{x} = \\frac{1}{n}\\sum x_i\\); \\(\\tilde{x}_i = x_i - \\bar{x}\\)",
       "Compute covariance \\(C = \\frac{1}{n}\\tilde{X}^T\\tilde{X}\\) (10,000 × 10,000 — too large!)",
       "**Trick:** Compute \\(\\tilde{X}\\tilde{X}^T\\) instead (n × n = 1,000 × 1,000). Eigenvectors of this smaller matrix can be projected back.",
       "Keep top-\\(k\\) eigenvectors (eigenfaces): \\(k = 100-300\\) typically captures 95%+ variance",
@@ -525,7 +525,7 @@ EC.receiveLesson({
       ],
       [
        "Temperature scaling",
-       "Divide logits by \\(T\\), optimize \\(T\\) on val set",
+       "Divide logits by \\(T\\), optimise \\(T\\) on val set",
        "Single parameter, multiclass"
       ],
       [

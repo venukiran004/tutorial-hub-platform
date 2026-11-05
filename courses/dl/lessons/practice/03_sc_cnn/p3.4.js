@@ -31,7 +31,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Class-agnostic is simpler, more generalizable. Used in SAM, open-vocabulary detection. Class-specific is standard for fixed-category benchmarks."
+     "text": "**Explanation:** Class-agnostic is simpler, more generalisable. Used in SAM, open-vocabulary detection. Class-specific is standard for fixed-category benchmarks."
     }
    ],
    "kind": ""
@@ -64,7 +64,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Adapt detector from source domain (labeled) to target domain (unlabeled):"
+     "text": "**Answer:** Adapt detector from source domain (labelled) to target domain (unlabelled):"
     },
     {
      "t": "code",
@@ -177,7 +177,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** IoU-based losses directly optimize the evaluation metric. CIoU is most comprehensive. Standard choice: GIoU or CIoU loss for box regression."
+     "text": "**Explanation:** IoU-based losses directly optimise the evaluation metric. CIoU is most comprehensive. Standard choice: GIoU or CIoU loss for box regression."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Model selects which unlabeled images would be most valuable to annotate:"
+     "text": "**Answer:** Model selects which unlabelled images would be most valuable to annotate:"
     },
     {
      "t": "code",
@@ -423,7 +423,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Self-supervised pre-training can match or exceed supervised ImageNet pre-training for detection. Especially valuable when labeled data is limited."
+     "text": "**Explanation:** Self-supervised pre-training can match or exceed supervised ImageNet pre-training for detection. Especially valuable when labelled data is limited."
     }
    ],
    "kind": ""
@@ -571,7 +571,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** mIoU is standard for semantic segmentation. AP for instance segmentation. PQ for panoptic. Pixel accuracy is misleading (labeling everything as \"background\" gives high accuracy)."
+     "text": "**Explanation:** mIoU is standard for semantic segmentation. AP for instance segmentation. PQ for panoptic. Pixel accuracy is misleading (labelling everything as \"background\" gives high accuracy)."
     }
    ],
    "kind": ""

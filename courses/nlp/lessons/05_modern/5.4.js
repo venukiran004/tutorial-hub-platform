@@ -148,7 +148,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "They predict **loss**, not capability, and the relationship between the two is not one you can assume. They are fitted within an architecture and data distribution, so they extrapolate only while those hold — a change of tokeniser, data mix or architecture invalidates the fit. And they say nothing about data *quality*: the token counts in every table above treat all tokens as equal, which is plainly false, and much of the recent progress in small models has come from better data rather than more of it. Treat a scaling law as a well-calibrated instrument with a narrow operating range, not a law of nature." }] },
 
     { t: "exercise", title: "Fit and test",
-      tasks: [
+      requirements: [
         "Compute the Chinchilla-optimal N and D for a compute budget you could actually afford, using C ≈ 6ND.",
         "Take three models you use and compute their tokens-per-parameter ratio. Note which are over- and under-trained.",
         "Reproduce the emergence simulation and vary the number of required tokens from 1 to 50.",

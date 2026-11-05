@@ -151,7 +151,7 @@ the same two hits at ranks 4 and 5:               NDCG = 0.5013                 
 #  Thompson            91,925            493   (99 %)                      200 of 200             0.848`,
       caption: "A recommender trains on the clicks it caused. Show only the current top 10 and the estimates of the other 190 never change; the system converges on the best of what it happened to show and cannot know what it did not. Exploration is not a tax on accuracy — here it earned 31 % more clicks — and Thompson sampling (11.2) does it in proportion to uncertainty. The same loop produces filter bubbles and popularity concentration; exposure Gini and catalogue coverage belong on the dashboard beside click rate." },
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "Building a recommender for a catalogue with clicks and a few ratings",
       rungs: [
         { level: "bad", label: "Item-based CF on the ratings, ranked by predicted rating", code: `sim = adjusted_cosine(R); score = Σ sim · r_user / Σ|sim|`,

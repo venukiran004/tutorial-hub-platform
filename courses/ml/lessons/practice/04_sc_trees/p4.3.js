@@ -52,7 +52,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bagging for high-variance models (trees). Boosting for high-bias models. Stacking for maximizing accuracy."
+     "text": "**Explanation:** Bagging for high-variance models (trees). Boosting for high-bias models. Stacking for maximising accuracy."
     }
    ],
    "kind": ""
@@ -135,7 +135,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Gradient boosting generalizes boosting to any differentiable loss function. More flexible."
+     "text": "**Explanation:** Gradient boosting generalises boosting to any differentiable loss function. More flexible."
     }
    ],
    "kind": ""
@@ -161,7 +161,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** learning_rate and n_estimators are inversely related. Lower η + more trees = better generalization."
+     "text": "**Explanation:** learning_rate and n_estimators are inversely related. Lower η + more trees = better generalisation."
     }
    ],
    "kind": ""
@@ -178,14 +178,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**η=0.1, n=1000:** Many small steps → better generalization, slower training",
+      "**η=0.1, n=1000:** Many small steps → better generalisation, slower training",
       "**η=1.0, n=10:** Few large steps → may overfit, fast training",
       "**Best practice:** Small η (0.01-0.1) with many trees and early stopping"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Shrinkage (small η) regularizes boosting. Each tree's contribution is scaled down."
+     "text": "**Explanation:** Shrinkage (small η) regularises boosting. Each tree's contribution is scaled down."
     }
    ],
    "kind": ""
@@ -218,13 +218,13 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** eXtreme Gradient Boosting — optimized gradient boosting with:"
+     "text": "**Answer:** eXtreme Gradient Boosting — optimised gradient boosting with:"
     },
     {
      "t": "ol",
      "items": [
-      "**Regularization:** L1/L2 on leaf weights",
-      "**Speed:** Parallel tree construction, cache-aware, hardware optimization",
+      "**Regularisation:** L1/L2 on leaf weights",
+      "**Speed:** Parallel tree construction, cache-aware, hardware optimisation",
       "**Missing value handling:** Learns optimal default direction",
       "**Built-in cross-validation** and early stopping",
       "**Feature importance** methods"
@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "60",
-   "q": "What regularization does XGBoost apply?",
+   "q": "What regularisation does XGBoost apply?",
    "body": [
     {
      "t": "p",
@@ -255,13 +255,13 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "γ: penalty for number of leaves (T)",
-      "λ: L2 regularization on leaf weights",
-      "α: L1 regularization on leaf weights"
+      "λ: L2 regularisation on leaf weights",
+      "α: L1 regularisation on leaf weights"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unlike standard GB, XGBoost explicitly regularizes tree complexity and leaf values."
+     "text": "**Explanation:** Unlike standard GB, XGBoost explicitly regularises tree complexity and leaf values."
     }
    ],
    "kind": ""
@@ -273,7 +273,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** At each split, XGBoost learns optimal direction (left or right) for missing values by trying both and keeping whichever minimizes loss."
+     "text": "**Answer:** At each split, XGBoost learns optimal direction (left or right) for missing values by trying both and keeping whichever minimises loss."
     },
     {
      "t": "p",
@@ -480,7 +480,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** subsample < 1.0 acts as regularization (like dropout). Reduces overfitting, adds bagging effect to boosting."
+     "text": "**Explanation:** subsample < 1.0 acts as regularisation (like dropout). Reduces overfitting, adds bagging effect to boosting."
     }
    ],
    "kind": ""
@@ -629,7 +629,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Boosting amplifies noise. Use regularization, subsampling, and early stopping."
+     "text": "**Explanation:** Boosting amplifies noise. Use regularisation, subsampling, and early stopping."
     }
    ],
    "kind": ""

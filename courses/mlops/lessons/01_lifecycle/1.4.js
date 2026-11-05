@@ -230,7 +230,7 @@ vector = store.get_online_features(
         "If the temporal split is much worse than the random one, you have found something — either a leak or genuine non-stationarity, and both matter."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The frequent discovery is a mutable dimension table: a customer `segment` or `status` column that is updated in place, so the training set joins today's value onto a two-year-old decision. There is no window predicate to fix, because the history was never kept — the fix is to start appending, and until then the feature cannot be used honestly." },
           { t: "p", text: "The second frequent discovery is that the random and temporal splits differ substantially. That is worth separating carefully: a leak and real non-stationarity both produce the gap, and the recompute-ten-rows check is what distinguishes them." }
         ]

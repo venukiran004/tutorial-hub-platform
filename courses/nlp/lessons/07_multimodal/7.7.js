@@ -117,7 +117,7 @@ EC.receiveLesson({
       caption: "`infer_table_structure=True` is the argument that returns a grid rather than a jumble." },
     { t: "p", text: "The `category` field is the part that matters for §01’s argument: **the output is not a string, it is a list of typed elements with page numbers — so reading order and layout survive as data rather than being flattened away.** And `strategy=\"hi_res\"` runs a layout model rather than the PDF’s own text layer, which is slower and is the only mode that can produce `text_as_html` for a table. **§06’s first error class is exactly what that layout model gets wrong**, so its confidence is worth surfacing rather than trusting." },
     { t: "exercise", title: "Measure your pipeline",
-      tasks: [
+      requirements: [
         "Take 50 documents and measure layout, OCR and extraction accuracy separately, then compare the product against the end-to-end number.",
         "Extract a two-column PDF as plain text and find where the columns interleave.",
         "Extract a table with merged cells and see what happens to the grid.",

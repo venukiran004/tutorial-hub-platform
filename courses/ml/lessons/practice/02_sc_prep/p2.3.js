@@ -27,7 +27,7 @@ EC.receiveLesson({
      "items": [
       "**Filter:** Evaluate features independently using statistical tests (fast, model-agnostic)",
       "**Wrapper:** Use model performance to evaluate feature subsets (accurate, slow)",
-      "**Embedded:** Feature selection built into model training (L1 regularization, tree importance)"
+      "**Embedded:** Feature selection built into model training (L1 regularisation, tree importance)"
      ]
     },
     {
@@ -77,7 +77,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "54",
-   "q": "How does L1 (Lasso) regularization perform feature selection?",
+   "q": "How does L1 (Lasso) regularisation perform feature selection?",
    "body": [
     {
      "t": "p",
@@ -231,7 +231,7 @@ EC.receiveLesson({
      "items": [
       "Biased toward high-cardinality features (more split points available)",
       "Doesn't distinguish between predictive and correlated features",
-      "Reflects training data, may not generalize"
+      "Reflects training data, may not generalise"
      ]
     },
     {
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Wrapper method. Greedy — doesn't guarantee global optimum. 'forward' adds features, 'backward' removes. CV ensures generalization."
+     "text": "**Explanation:** Wrapper method. Greedy — doesn't guarantee global optimum. 'forward' adds features, 'backward' removes. CV ensures generalisation."
     }
    ],
    "kind": ""
@@ -484,7 +484,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Keep features selected in majority of folds (≥3/5)",
-      "Use stability selection (Randomized Lasso on subsamples)",
+      "Use stability selection (Randomised Lasso on subsamples)",
       "Consider the union of all selected features",
       "Investigate why selection is unstable (correlated features?)"
      ]

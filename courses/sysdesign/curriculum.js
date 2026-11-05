@@ -179,7 +179,7 @@
             summary: "What each letter guarantees, the four isolation levels drawn against the anomalies they allow, and how MVCC lets readers and writers stop blocking each other.",
             keywords: ["acid", "isolation", "read committed", "repeatable read", "serializable", "mvcc", "write skew", "base"] },
           { id: "5.3", title: "Consistency Models and Quorums", difficulty: "advanced", minutes: 30, tier: "must",
-            summary: "Linearizable to eventual on one line, the session guarantees in between, and R + W > N worked on real numbers.",
+            summary: "Linearisable to eventual on one line, the session guarantees in between, and R + W > N worked on real numbers.",
             keywords: ["linearizability", "eventual consistency", "causal", "quorum", "r w n", "read repair", "session guarantees"] },
           { id: "5.4", title: "Distributed Transactions: 2PC and Sagas", difficulty: "advanced", minutes: 32, tier: "must",
             summary: "Two-phase commit and the coordinator that blocks everyone, sagas with compensations, and choreography against orchestration.",
@@ -389,7 +389,7 @@
         outcome: "You can secure a service-to-service call, choose a token format, and lay out a VPC that keeps the database off the internet.",
         lessons: [
           { id: "12.1", title: "Authentication, Authorisation, OAuth and OIDC", difficulty: "core", minutes: 30, tier: "must",
-            summary: "AuthN against AuthZ, RBAC and ABAC, the authorization-code flow with PKCE drawn step by step, and what OIDC adds.",
+            summary: "AuthN against AuthZ, RBAC and ABAC, the authorisation-code flow with PKCE drawn step by step, and what OIDC adds.",
             keywords: ["authentication", "authorization", "oauth", "oidc", "pkce", "rbac", "abac"] },
           { id: "12.2", title: "JWT and Opaque Tokens", difficulty: "core", minutes: 28, tier: "must",
             summary: "What is inside a JWT, why it cannot be revoked, short-lived access with refresh tokens, and when an opaque token is better.",

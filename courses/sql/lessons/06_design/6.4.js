@@ -197,7 +197,7 @@ SELECT order_id, TRIM(UNNEST(string_split(products, ','))) AS product, TRIM(UNNE
       { t: "p", text: "Every constraint is a check per write, and a foreign key is an index lookup per insert and per delete of the parent. A table loaded at a million rows an hour feels that. **The trade is almost always worth it**, because a constraint violation caught at write time costs one error message and the same violation found at read time costs a data-quality investigation. Where the load is the bottleneck, validate in staging and load with constraints deferred or checked once at the end (`ALTER TABLE … VALIDATE CONSTRAINT`), rather than dropping them." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "A status column",
       rungs: [
         { level: "bad", label: "Free text", code: `status TEXT`,

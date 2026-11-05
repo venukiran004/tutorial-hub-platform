@@ -39,7 +39,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Simple models: high bias, low variance. Complex models: low bias, high variance. Sweet spot minimizes total error. Regularization reduces variance at cost of small bias increase. Cross-validation finds the sweet spot empirically."
+     "text": "**Key Insight:** Simple models: high bias, low variance. Complex models: low bias, high variance. Sweet spot minimises total error. Regularisation reduces variance at cost of small bias increase. Cross-validation finds the sweet spot empirically."
     }
    ],
    "kind": ""
@@ -64,7 +64,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** GB fits trees to negative gradient of loss. XGBoost: level-wise growth, more regularization knobs. LightGBM: leaf-wise growth, histogram binning, GOSS for faster training. Always use early stopping."
+     "text": "**Key Insight:** GB fits trees to negative gradient of loss. XGBoost: level-wise growth, more regularisation knobs. LightGBM: leaf-wise growth, histogram binning, GOSS for faster training. Always use early stopping."
     }
    ],
    "kind": ""
@@ -72,11 +72,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Explain and implement batch normalization (NVIDIA — ML Engineer)",
+   "q": "Explain and implement batch normalisation (NVIDIA — ML Engineer)",
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Derive batch normalization forward and backward pass. Why does it help training?"
+     "text": "**Question:** Derive batch normalisation forward and backward pass. Why does it help training?"
     },
     {
      "t": "p",
@@ -89,7 +89,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** BN normalizes activations to zero mean, unit variance, then applies learnable scale/shift. Enables higher learning rates and faster convergence. Use LayerNorm for transformers (batch-independent)."
+     "text": "**Key Insight:** BN normalises activations to zero mean, unit variance, then applies learnable scale/shift. Enables higher learning rates and faster convergence. Use LayerNorm for transformers (batch-independent)."
     }
    ],
    "kind": ""

@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Appropriate: (1) quick baseline/proof-of-concept, (2) many similar modeling tasks (e.g., forecasting 100 products), (3) limited ML expertise on team, (4) feature selection and hyperparameter search. Not appropriate: (1) highly regulated domains requiring full explainability of model selection, (2) custom loss functions or domain-specific constraints, (3) novel problem types not well-represented in AutoML search space, (4) when data preprocessing requires deep domain knowledge, (5) production deployment with strict latency requirements. Best practice: use AutoML for exploration, then refine the best approach manually."
+     "text": "**Answer:** Appropriate: (1) quick baseline/proof-of-concept, (2) many similar modelling tasks (e.g., forecasting 100 products), (3) limited ML expertise on team, (4) feature selection and hyperparameter search. Not appropriate: (1) highly regulated domains requiring full explainability of model selection, (2) custom loss functions or domain-specific constraints, (3) novel problem types not well-represented in AutoML search space, (4) when data preprocessing requires deep domain knowledge, (5) production deployment with strict latency requirements. Best practice: use AutoML for exploration, then refine the best approach manually."
     }
    ],
    "kind": ""
@@ -66,7 +66,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Reduce max model complexity: limit tree depth, max features, network size, (2) increase regularization penalties in search space, (3) enforce more aggressive cross-validation (more folds, stratification), (4) add time-based validation split (not random) for time-series data, (5) set minimum sample requirements per leaf/split, (6) limit training time per model to prevent deep search, (7) exclude model types prone to overfitting (e.g., very deep trees), (8) add early stopping criteria, (9) increase weight on validation performance vs. training performance in selection."
+     "text": "**Answer:** (1) Reduce max model complexity: limit tree depth, max features, network size, (2) increase regularisation penalties in search space, (3) enforce more aggressive cross-validation (more folds, stratification), (4) add time-based validation split (not random) for time-series data, (5) set minimum sample requirements per leaf/split, (6) limit training time per model to prevent deep search, (7) exclude model types prone to overfitting (e.g., very deep trees), (8) add early stopping criteria, (9) increase weight on validation performance vs. training performance in selection."
     }
    ],
    "kind": ""
@@ -87,7 +87,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "This ensures train/test consistency, serializable pipeline, and reproducible transformations."
+     "text": "This ensures train/test consistency, serialisable pipeline, and reproducible transformations."
     },
     {
      "t": "p",
@@ -99,11 +99,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "406",
-   "q": "You have only 500 labeled examples for an image classification task. How do you leverage transfer learning?",
+   "q": "You have only 500 labelled examples for an image classification task. How do you leverage transfer learning?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use pre-trained model (ResNet, EfficientNet) trained on ImageNet, (2) freeze all layers except the final classification head, (3) train only the head on your 500 examples, (4) if performance is insufficient: unfreeze last 2-3 layers, fine-tune with very low learning rate (1e-5), (5) data augmentation: rotation, flip, crop, color jitter to effectively multiply your dataset, (6) use stratified split to ensure all classes represented in train/val, (7) consider few-shot learning approaches if classes are very limited."
+     "text": "**Answer:** (1) Use pre-trained model (ResNet, EfficientNet) trained on ImageNet, (2) freeze all layers except the final classification head, (3) train only the head on your 500 examples, (4) if performance is insufficient: unfreeze last 2-3 layers, fine-tune with very low learning rate (1e-5), (5) data augmentation: rotation, flip, crop, colour jitter to effectively multiply your dataset, (6) use stratified split to ensure all classes represented in train/val, (7) consider few-shot learning approaches if classes are very limited."
     }
    ],
    "kind": ""
@@ -111,11 +111,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "407",
-   "q": "You want to use a pre-trained NLP model (BERT) for text classification in a specialized domain (medical notes). The model wasn't trained on medical text. What do you do?",
+   "q": "You want to use a pre-trained NLP model (BERT) for text classification in a specialised domain (medical notes). The model wasn't trained on medical text. What do you do?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Domain-adaptive pre-training: continue masked language model training on unlabeled medical text (cheapest approach), (2) then fine-tune on your labeled classification data, (3) alternatively: use existing domain-specific model like BioBERT, ClinicalBERT, (4) compare: generic BERT fine-tuned vs. domain BERT fine-tuned, (5) if very few labels: use prompt-based learning or few-shot approaches, (6) active learning: have domain experts label uncertain examples."
+     "text": "**Answer:** (1) Domain-adaptive pre-training: continue masked language model training on unlabelled medical text (cheapest approach), (2) then fine-tune on your labelled classification data, (3) alternatively: use existing domain-specific model like BioBERT, ClinicalBERT, (4) compare: generic BERT fine-tuned vs. domain BERT fine-tuned, (5) if very few labels: use prompt-based learning or few-shot approaches, (6) active learning: have domain experts label uncertain examples."
     }
    ],
    "kind": ""
@@ -127,7 +127,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Domain shift analysis: compare feature distributions between source and target, (2) t-SNE/UMAP visualization of embeddings: do they cluster differently?, (3) A-distance or proxy A-distance to quantify domain shift, (4) error analysis on target domain: what types of examples fail?, (5) gradual unfreezing: unfreeze more layers to allow adaptation, (6) domain adversarial training: force model to learn domain-invariant features, (7) self-training: use confident predictions on target as pseudo-labels."
+     "text": "**Answer:** (1) Domain shift analysis: compare feature distributions between source and target, (2) t-SNE/UMAP visualisation of embeddings: do they cluster differently?, (3) A-distance or proxy A-distance to quantify domain shift, (4) error analysis on target domain: what types of examples fail?, (5) gradual unfreezing: unfreeze more layers to allow adaptation, (6) domain adversarial training: force model to learn domain-invariant features, (7) self-training: use confident predictions on target as pseudo-labels."
     },
     {
      "t": "p",
@@ -180,7 +180,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Check randomization: compare treated/control group distributions on pre-treatment features, (2) statistical test: chi-squared on demographics between groups, (3) check for self-selection: did users opt into treatment?, (4) instrument variable approach if randomization is imperfect, (5) regression discontinuity if assignment based on a threshold, (6) propensity score matching to control for observed confounders, (7) run SRM (Sample Ratio Mismatch) test: are group sizes as expected?, (8) check for spillover effects between groups."
+     "text": "**Answer:** (1) Check randomisation: compare treated/control group distributions on pre-treatment features, (2) statistical test: chi-squared on demographics between groups, (3) check for self-selection: did users opt into treatment?, (4) instrument variable approach if randomisation is imperfect, (5) regression discontinuity if assignment based on a threshold, (6) propensity score matching to control for observed confounders, (7) run SRM (Sample Ratio Mismatch) test: are group sizes as expected?, (8) check for spillover effects between groups."
     }
    ],
    "kind": ""
@@ -188,11 +188,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "412",
-   "q": "You can't run a randomized experiment (ethical/practical reasons). How do you estimate causal effects from observational data?",
+   "q": "You can't run a randomised experiment (ethical/practical reasons). How do you estimate causal effects from observational data?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Propensity Score Matching: match treated/untreated on probability of treatment, (2) Difference-in-Differences: compare before/after between treated and control groups, (3) Regression Discontinuity: exploit a threshold in treatment assignment, (4) Instrumental Variables: find a variable that affects treatment but not outcome directly, (5) Synthetic Control: create a synthetic counterfactual from control units, (6) Doubly Robust Estimation: combine outcome modeling with propensity scoring, (7) always test sensitivity to unmeasured confounders."
+     "text": "**Answer:** (1) Propensity Score Matching: match treated/untreated on probability of treatment, (2) Difference-in-Differences: compare before/after between treated and control groups, (3) Regression Discontinuity: exploit a threshold in treatment assignment, (4) Instrumental Variables: find a variable that affects treatment but not outcome directly, (5) Synthetic Control: create a synthetic counterfactual from control units, (6) Doubly Robust Estimation: combine outcome modelling with propensity scoring, (7) always test sensitivity to unmeasured confounders."
     }
    ],
    "kind": ""
@@ -216,7 +216,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Proxy metrics: find shorter-term metrics correlated with LTV (first-month purchases, engagement), (2) validate proxy: show historical correlation between proxy and LTV, (3) Bayesian approach: update beliefs as data accumulates, (4) predictive LTV models: predict LTV from early behavior, use predicted LTV as metric, (5) staged approach: test short-term proxy, then monitor long-term LTV for winners, (6) survival analysis: model time-to-event rather than waiting for full observation, (7) interim analysis with proper alpha adjustment."
+     "text": "**Answer:** (1) Proxy metrics: find shorter-term metrics correlated with LTV (first-month purchases, engagement), (2) validate proxy: show historical correlation between proxy and LTV, (3) Bayesian approach: update beliefs as data accumulates, (4) predictive LTV models: predict LTV from early behaviour, use predicted LTV as metric, (5) staged approach: test short-term proxy, then monitor long-term LTV for winners, (6) survival analysis: model time-to-event rather than waiting for full observation, (7) interim analysis with proper alpha adjustment."
     }
    ],
    "kind": ""
@@ -252,11 +252,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "417",
-   "q": "Your model inadvertently memorizes and can reproduce training data (e.g., names, addresses). How do you prevent this?",
+   "q": "Your model inadvertently memorises and can reproduce training data (e.g., names, addresses). How do you prevent this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Differential privacy during training: add calibrated noise to gradients, (2) regularization: weight decay and dropout reduce memorization, (3) membership inference testing: check if model can identify training data, (4) canary testing: insert known fake records, check if model memorizes them, (5) K-anonymity/L-diversity on training data, (6) for language models: train deduplication, output filtering for PII patterns, (7) limit model capacity to prevent memorization, (8) federated learning keeps data distributed."
+     "text": "**Answer:** (1) Differential privacy during training: add calibrated noise to gradients, (2) regularisation: weight decay and dropout reduce memorisation, (3) membership inference testing: check if model can identify training data, (4) canary testing: insert known fake records, check if model memorises them, (5) K-anonymity/L-diversity on training data, (6) for language models: train deduplication, output filtering for PII patterns, (7) limit model capacity to prevent memorisation, (8) federated learning keeps data distributed."
     }
    ],
    "kind": ""
@@ -284,7 +284,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature engineering: add context features (user history, device fingerprint), (2) two-stage system: anomaly detection → classification model on flagged transactions, (3) feedback loop: analysts label alerts, retrain on labeled data, (4) increase threshold: trade recall for precision based on analyst capacity, (5) rule-based pre-filter: common benign patterns (payroll, recurring charges), (6) user-specific baselines: what's normal for this user?, (7) alert scoring: rank by severity, analysts review top-scored first, (8) adaptive thresholds based on analyst feedback."
+     "text": "**Answer:** (1) Feature engineering: add context features (user history, device fingerprint), (2) two-stage system: anomaly detection → classification model on flagged transactions, (3) feedback loop: analysts label alerts, retrain on labelled data, (4) increase threshold: trade recall for precision based on analyst capacity, (5) rule-based pre-filter: common benign patterns (payroll, recurring charges), (6) user-specific baselines: what's normal for this user?, (7) alert scoring: rank by severity, analysts review top-scored first, (8) adaptive thresholds based on analyst feedback."
     }
    ],
    "kind": ""
@@ -304,7 +304,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "421",
-   "q": "How do you evaluate an anomaly detection model when you have very few labeled anomalies?",
+   "q": "How do you evaluate an anomaly detection model when you have very few labelled anomalies?",
    "body": [
     {
      "t": "p",

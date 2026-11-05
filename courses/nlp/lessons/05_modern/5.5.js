@@ -131,7 +131,7 @@ EC.receiveLesson({
     { t: "p", text: "Temperature divides the logits before the softmax, so `T < 1` sharpens and `T > 1` flattens. Top-k masks everything outside the k highest logits to `−inf` so the softmax assigns them exactly zero. The two compose: temperature reshapes the distribution, top-k truncates it, and they are applied in that order." },
 
     { t: "exercise", title: "Build it yourself",
-      tasks: [
+      requirements: [
         "Write the model from scratch and check `GPTModel(50257)` gives 124,439,808 parameters before training anything.",
         "Remove the weight tying and confirm the count rises by exactly vocab × d_model.",
         "Train on sequence reversal and compute the theoretical loss floor from the task's entropy before you run it.",

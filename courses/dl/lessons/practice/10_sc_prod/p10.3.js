@@ -175,7 +175,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Examples:** MNASNet, FBNet, ProxylessNAS — find architectures optimized for specific phones/GPUs."
+     "text": "**Examples:** MNASNet, FBNet, ProxylessNAS — find architectures optimised for specific phones/GPUs."
     },
     {
      "t": "p",
@@ -200,7 +200,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Previous approaches scaled only one dimension (deeper OR wider OR higher resolution). Compound scaling optimizes all three together — more efficient."
+     "text": "**Explanation:** Previous approaches scaled only one dimension (deeper OR wider OR higher resolution). Compound scaling optimises all three together — more efficient."
     }
    ],
    "kind": ""
@@ -260,7 +260,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**#Params:** Simple count of parameters (surprisingly correlated with accuracy)",
-      "**Jacobian score:** Sensitivity of output to input at initialization",
+      "**Jacobian score:** Sensitivity of output to input at initialisation",
       "**NASWOT (Neural Architecture Search Without Training):** Score based on initial activation overlap",
       "**ZenNAS:** Zen-Score from Gaussian complexity"
      ]
@@ -323,7 +323,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "62",
-   "q": "What is hyperparameter optimization (HPO)?",
+   "q": "What is hyperparameter optimisation (HPO)?",
    "body": [
     {
      "t": "p",
@@ -348,7 +348,7 @@ EC.receiveLesson({
        "Better than grid for many HPs"
       ],
       [
-       "Bayesian Optimization",
+       "Bayesian Optimisation",
        "Build surrogate model, sample promising",
        "Expensive evaluations"
       ],
@@ -379,7 +379,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "63",
-   "q": "How does Bayesian Optimization work for HPO?",
+   "q": "How does Bayesian Optimisation work for HPO?",
    "body": [
     {
      "t": "p",

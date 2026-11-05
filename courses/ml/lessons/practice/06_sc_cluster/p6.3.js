@@ -32,11 +32,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "52",
-   "q": "What is PCA and what does it optimize?",
+   "q": "What is PCA and what does it optimise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Principal Component Analysis finds orthogonal directions (principal components) that maximize variance in the data. Projects data onto these directions."
+     "text": "**Answer:** Principal Component Analysis finds orthogonal directions (principal components) that maximise variance in the data. Projects data onto these directions."
     },
     {
      "t": "p",
@@ -81,7 +81,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** 95% is a common threshold but domain-dependent. For visualization, use 2-3 components."
+     "text": "**Explanation:** 95% is a common threshold but domain-dependent. For visualisation, use 2-3 components."
     }
    ],
    "kind": ""
@@ -93,7 +93,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Standardization (mean=0, variance=1) is essential. PCA is scale-sensitive."
+     "text": "**Answer:** Standardisation (mean=0, variance=1) is essential. PCA is scale-sensitive."
     },
     {
      "t": "p",
@@ -114,8 +114,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**PCA:** Unsupervised — maximizes variance, ignores labels",
-      "**LDA:** Supervised — maximizes class separation (between-class variance / within-class variance)"
+      "**PCA:** Unsupervised — maximises variance, ignores labels",
+      "**LDA:** Supervised — maximises class separation (between-class variance / within-class variance)"
      ]
     },
     {
@@ -148,7 +148,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** t-Distributed Stochastic Neighbor Embedding — non-linear dimensionality reduction for visualization (2D/3D)."
+     "text": "**Answer:** t-Distributed Stochastic Neighbour Embedding — non-linear dimensionality reduction for visualisation (2D/3D)."
     },
     {
      "t": "p",
@@ -157,7 +157,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Non-deterministic (stochastic optimization)",
+      "Non-deterministic (stochastic optimisation)",
       "Doesn't preserve global structure",
       "Perplexity parameter sensitive",
       "Can't transform new data points",
@@ -166,7 +166,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Great for visualizing clusters in high-dimensional data. Don't interpret distances between clusters or cluster sizes in t-SNE."
+     "text": "**Explanation:** Great for visualising clusters in high-dimensional data. Don't interpret distances between clusters or cluster sizes in t-SNE."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Roughly the number of effective nearest neighbors. Balances local vs global structure."
+     "text": "**Answer:** Roughly the number of effective nearest neighbours. Balances local vs global structure."
     },
     {
      "t": "ul",
@@ -234,12 +234,12 @@ EC.receiveLesson({
       "t-SNE can't transform unseen test data",
       "Distorts distances — components don't have meaningful scale",
       "Non-deterministic — different runs give different embeddings",
-      "Primarily for visualization, not feature engineering"
+      "Primarily for visualisation, not feature engineering"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Use PCA, UMAP, or autoencoders for feature extraction. t-SNE is for exploratory visualization only."
+     "text": "**Explanation:** Use PCA, UMAP, or autoencoders for feature extraction. t-SNE is for exploratory visualisation only."
     }
    ],
    "kind": ""
@@ -343,11 +343,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Mathematically equivalent for centered data. PCA uses eigendecomposition of covariance matrix. SVD directly decomposes the data matrix X = UΣV^T."
+     "text": "**Answer:** Mathematically equivalent for centreed data. PCA uses eigendecomposition of covariance matrix. SVD directly decomposes the data matrix X = UΣV^T."
     },
     {
      "t": "p",
-     "text": "**Explanation:** SVD is numerically more stable and can handle non-square matrices. sklearn PCA uses SVD internally. Truncated SVD works on sparse matrices (no centering needed)."
+     "text": "**Explanation:** SVD is numerically more stable and can handle non-square matrices. sklearn PCA uses SVD internally. Truncated SVD works on sparse matrices (no centreing needed)."
     }
    ],
    "kind": ""
@@ -359,11 +359,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** For sparse matrices (e.g., TF-IDF text data). PCA requires centering which destroys sparsity. Truncated SVD works directly on sparse input."
+     "text": "**Answer:** For sparse matrices (e.g., TF-IDF text data). PCA requires centreing which destroys sparsity. Truncated SVD works directly on sparse input."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Also called LSA (Latent Semantic Analysis) when applied to text. Faster for sparse data. Doesn't center data — components may not have zero mean."
+     "text": "**Explanation:** Also called LSA (Latent Semantic Analysis) when applied to text. Faster for sparse data. Doesn't centre data — components may not have zero mean."
     }
    ],
    "kind": ""
@@ -423,7 +423,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Builds k-nearest-neighbor graph, computes geodesic (shortest path) distances, then applies MDS (Multi-Dimensional Scaling) on geodesic distances."
+     "text": "**Answer:** Builds k-nearest-neighbour graph, computes geodesic (shortest path) distances, then applies MDS (Multi-Dimensional Scaling) on geodesic distances."
     },
     {
      "t": "p",
@@ -439,7 +439,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Reconstructs each point as a linear combination of its k nearest neighbors, then finds low-dimensional embedding preserving these linear relationships."
+     "text": "**Answer:** Reconstructs each point as a linear combination of its k nearest neighbours, then finds low-dimensional embedding preserving these linear relationships."
     },
     {
      "t": "p",
@@ -468,7 +468,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** PCA maximizes variance, not predictive power. Use supervised methods (LDA) or check if key features were preserved."
+     "text": "**Explanation:** PCA maximises variance, not predictive power. Use supervised methods (LDA) or check if key features were preserved."
     }
    ],
    "kind": ""

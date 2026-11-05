@@ -323,7 +323,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Multiple evaluations needed because each measures different aspects. Linear probe: representation quality. k-NN: embedding structure. Transfer: generalization."
+     "text": "**Explanation:** Multiple evaluations needed because each measures different aspects. Linear probe: representation quality. k-NN: embedding structure. Transfer: generalisation."
     }
    ],
    "kind": ""
@@ -402,7 +402,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "92",
-   "q": "What is the role of batch normalization in self-supervised learning?",
+   "q": "What is the role of batch normalisation in self-supervised learning?",
    "body": [
     {
      "t": "p",
@@ -457,7 +457,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bridges continuous and discrete representations. Discrete tokens enable: BERT-style masked prediction for images, autoregressive generation. Foundation for visual tokenizers."
+     "text": "**Explanation:** Bridges continuous and discrete representations. Discrete tokens enable: BERT-style masked prediction for images, autoregressive generation. Foundation for visual tokenisers."
     }
    ],
    "kind": ""
@@ -465,7 +465,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "95",
-   "q": "What is the difference between autoregressive and masked language modeling?",
+   "q": "What is the difference between autoregressive and masked language modelling?",
    "body": [
     {
      "t": "p",
@@ -478,7 +478,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**XLNet:** Combines both — permutation language modeling."
+     "text": "**XLNet:** Combines both — permutation language modelling."
     },
     {
      "t": "p",
@@ -561,7 +561,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Simple masked image modeling:"
+     "text": "**Answer:** Simple masked image modelling:"
     },
     {
      "t": "code",
@@ -574,7 +574,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Shows that masked image modeling can be extremely simple and still work well. Challenges the need for complex decoder architecture."
+     "text": "**Explanation:** Shows that masked image modelling can be extremely simple and still work well. Challenges the need for complex decoder architecture."
     }
    ],
    "kind": ""

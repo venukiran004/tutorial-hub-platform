@@ -125,7 +125,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2496",
-   "q": "Program 2496: Interval Scheduling Maximization",
+   "q": "Program 2496: Interval Scheduling Maximisation",
    "body": [
     {
      "t": "code",

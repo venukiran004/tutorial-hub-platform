@@ -254,7 +254,7 @@ FROM   grid g ORDER BY 1, 2;`,
       { t: "p", text: "The grid query with `as_of = today` and every customer is the serving feature set; the same query with a historical grid is the training set. **Keep it as one SQL definition — a view or a parameterised query with `:as_of`** — so the features a model was trained on and the features it is scored on are computed by identical code. Train–serve skew is almost always a second implementation of the same feature, and the cure is not having one. Materialise the historical grid into a feature table keyed on `(customer_id, as_of)` with an upsert (6.3), and append each new scoring date to it." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "A 'recent activity' feature for a churn model",
       rungs: [
         { level: "bad", label: "Count events in the customer's last 30 days", code: `SELECT customer_id, COUNT(*) FROM events WHERE occurred_at >= now() - INTERVAL '30 days' GROUP BY 1`,

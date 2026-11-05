@@ -352,7 +352,7 @@ for r in (1, 2, 4, 8, 16, 32, 64):
 
       { stem: "A LoRA run plateaus at a worse loss than a full fine-tune and a learning-rate sweep does not help. What is the most likely cause?",
         options: [
-          "The base model was quantized, limiting achievable precision",
+          "The base model was quantised, limiting achievable precision",
           "The rank is too low to represent the directions the task needs, which no learning rate can recover",
           "The adapter was initialised incorrectly, with B random instead of zero",
           "The dataset is too small for the number of trainable parameters"

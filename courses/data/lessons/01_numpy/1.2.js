@@ -269,7 +269,7 @@ d = np.sqrt(np.maximum(d2, 0))            # clamp float error`,
       { t: "p", text: "This matters only at the scale where it matters. Optimising temporaries in a 10 MB calculation is wasted effort — but knowing the rule means you recognise the problem when the array is 10 GB." }
     ]},
 
-    { t: "callout", kind: "trap", title: "apply_along_axis and vectorize are loops with a nicer signature", body: [
+    { t: "callout", kind: "trap", title: "apply_along_axis and vectorise are loops with a nicer signature", body: [
       { t: "p", text: "`np.apply_along_axis(f, axis, a)` calls `f` once per 1-D slice, in Python; `np.vectorize(f)` calls it once per element. Neither moves work into C. **Use them for a one-off on small data; reach for a ufunc, a reduction with `axis=`, or broadcasting for anything that runs more than once.** When you cannot tell where the time goes: `%timeit` measures a line, `%prun` (cProfile) ranks the functions, and `line_profiler` ranks the lines inside one." }
     ]},
 

@@ -92,7 +92,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1635",
-   "q": "Program 1635: Pickle Serialization",
+   "q": "Program 1635: Pickle Serialisation",
    "body": [
     {
      "t": "code",
@@ -207,7 +207,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1643",
-   "q": "Program 1643: MessagePack Serialization",
+   "q": "Program 1643: MessagePack Serialisation",
    "body": [
     {
      "t": "code",
@@ -324,7 +324,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1652",
-   "q": "Program 1652: Protobuf-Style Serialization",
+   "q": "Program 1652: Protobuf-Style Serialisation",
    "body": [
     {
      "t": "code",

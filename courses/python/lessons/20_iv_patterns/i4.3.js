@@ -311,7 +311,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The classic example is a print shop reusing one metal stamp for every letter 'a' rather than carving a new one. The modern one is sharing a single tokenizer, embedding table or long system prompt across thousands of request objects, where only the user's message differs."
+     "text": "The classic example is a print shop reusing one metal stamp for every letter 'a' rather than carving a new one. The modern one is sharing a single tokeniser, embedding table or long system prompt across thousands of request objects, where only the user's message differs."
     },
     {
      "t": "p",

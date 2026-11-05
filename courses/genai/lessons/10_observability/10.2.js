@@ -91,7 +91,7 @@ EC.receiveLesson({
         { t: "p", text: "And if you have spans and no logs from the components around them, you reach the mechanism and stop short of the cause. Knowing that nothing cleared the threshold does not tell you that 1,284 PDFs were skipped at ingest three weeks earlier." }
       ] },
 
-    { t: "ladder", title: "The same incident, with each rung missing",
+    { t: "ladder", lang: "text", title: "The same incident, with each rung missing",
       rungs: [
         { level: "bad", label: "Metric only", why: "You know accuracy fell and nothing else. The next step is a meeting, and the most likely action is someone editing the prompt \u2014 which in a RAG system is usually the wrong knob.", code: `answer_accuracy  0.95 -> 0.60`,
           note: "This is the state most LLM features are actually in." },

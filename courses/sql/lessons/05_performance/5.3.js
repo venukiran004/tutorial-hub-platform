@@ -215,7 +215,7 @@ FROM   pg_stat_user_indexes WHERE relname = 'orders' ORDER BY idx_scan;
       { t: "p", text: "`(customer_id, placed_at)` serves customer lookups, customer + date range, and per-customer ORDER BY — three query shapes for one write cost. `(customer_id)` and `(placed_at)` separately serve customer lookups and date ranges, and the planner can combine them with a bitmap for a query that uses both — but neither serves the per-customer ORDER BY without a sort. **Design from the queries: list the WHERE and ORDER BY shapes that run, and choose the smallest set of indexes whose leftmost prefixes cover them.**" }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Indexing the orders table for a customer-history page",
       rungs: [
         { level: "bad", label: "An index on every column", code: `CREATE INDEX ON orders (customer_id); CREATE INDEX ON orders (placed_at);

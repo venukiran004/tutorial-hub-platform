@@ -27,7 +27,7 @@ EC.receiveLesson({
      "items": [
       "**Two-stage:** Generate proposals → classify each (R-CNN family)",
       "**One-stage:** Direct prediction from feature maps (YOLO, SSD, RetinaNet)",
-      "**Anchor-free:** Predict center + size directly (FCOS, CenterNet)",
+      "**Anchor-free:** Predict centre + size directly (FCOS, CenterNet)",
       "**Transformer-based:** DETR — set prediction with attention"
      ]
     },
@@ -75,7 +75,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**RoI Pooling:** Quantizes (rounds) coordinates → misalignment artifacts",
+      "**RoI Pooling:** Quantises (rounds) coordinates → misalignment artifacts",
       "**RoI Align:** Uses bilinear interpolation → exact alignment"
      ]
     },
@@ -290,7 +290,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Complete scene understanding. Every pixel labeled with class AND instance ID (for things). Panoptic FPN, MaskFormer, Mask2Former are leading approaches."
+     "text": "**Explanation:** Complete scene understanding. Every pixel labelled with class AND instance ID (for things). Panoptic FPN, MaskFormer, Mask2Former are leading approaches."
     }
    ],
    "kind": ""
@@ -308,7 +308,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Anchor-based (Faster R-CNN, YOLO v3):** Pre-defined reference boxes at various scales/ratios. Predict offsets.",
-      "**Anchor-free (FCOS, CenterNet):** Predict center point + distances to box edges directly."
+      "**Anchor-free (FCOS, CenterNet):** Predict centre point + distances to box edges directly."
      ]
     },
     {
@@ -317,7 +317,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** FCOS: per-pixel prediction of center-ness + box regression. CenterNet: detect object center as keypoint, regress properties. Modern trend favors anchor-free."
+     "text": "**Explanation:** FCOS: per-pixel prediction of centre-ness + box regression. CenterNet: detect object centre as keypoint, regress properties. Modern trend favours anchor-free."
     }
    ],
    "kind": ""
@@ -625,7 +625,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Cascade R-CNN progressively refines detections. Each stage specializes in higher-quality matches. Significant AP improvement at high IoU thresholds (AP@0.75, AP@0.9)."
+     "text": "**Explanation:** Cascade R-CNN progressively refines detections. Each stage specialises in higher-quality matches. Significant AP improvement at high IoU thresholds (AP@0.75, AP@0.9)."
     }
    ],
    "kind": ""

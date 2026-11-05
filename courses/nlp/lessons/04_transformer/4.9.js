@@ -220,7 +220,7 @@ EC.receiveLesson({
       ] },
 
     { t: "exercise", title: "Verify the schemes",
-      tasks: [
+      requirements: [
         "Demonstrate permutation equivariance on your own attention implementation, then add positional encoding and show it breaks.",
         "Implement RoPE and confirm the score for a fixed distance is identical at several absolute positions.",
         "Reproduce the aligned-versus-random decay measurement and explain the difference to someone in two sentences.",

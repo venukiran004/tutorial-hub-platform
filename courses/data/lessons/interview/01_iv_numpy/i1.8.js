@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Broadcasting & Vectorization",
+   "text": "Broadcasting & Vectorisation",
    "id": "set"
   },
   {

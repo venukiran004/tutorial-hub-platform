@@ -108,7 +108,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "A decoder-only model drops the encoder and cross-attention entirely, concatenates source and target into one stream, and lets masked self-attention do both jobs. It is simpler, it scales, and lesson 5.1 covered why it won the general case. Encoder-decoder still wins where the input and output are genuinely *different* sequences or modalities — translation, speech-to-text, any clean source-to-target transformation — because the source gets a full bidirectional read before output begins, the encoder runs once, and cross-attention gives you an inspectable alignment matrix that a decoder-only model simply does not have." }] },
 
     { t: "exercise", title: "Run the loop yourself",
-      tasks: [
+      requirements: [
         "Run the inference loop with a cap of 20 tokens and confirm it never emits <eos>.",
         "Compare the teacher-forced loss against free-running output quality, and state why the loss did not predict the failure.",
         "Add a repetition penalty to the decoding step and see whether the loop breaks.",

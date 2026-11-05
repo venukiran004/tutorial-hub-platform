@@ -4,13 +4,13 @@
 EC.receiveLesson({
   id: "3.3",
 
-  lede: "**Drop the attention mask and BERT's `[CLS]` vector moves from cosine 1.000000 to 0.472976 — for the same two-word input.** The padding is supposed to be invisible; without the mask the model attends to it and the representation is half a different vector. No exception is raised. This lesson is about what HuggingFace's abstractions actually return, because the failures are silent ones: a wrong mask, a mismatched tokenizer, an untrained head that outputs confident nonsense.",
+  lede: "**Drop the attention mask and BERT's `[CLS]` vector moves from cosine 1.000000 to 0.472976 — for the same two-word input.** The padding is supposed to be invisible; without the mask the model attends to it and the representation is half a different vector. No exception is raised. This lesson is about what HuggingFace's abstractions actually return, because the failures are silent ones: a wrong mask, a mismatched tokeniser, an untrained head that outputs confident nonsense.",
 
   objectives: [
     "Read everything `AutoTokenizer` returns and say what each key is for",
     "Demonstrate what the attention mask does and what breaks without it",
     "Distinguish `AutoModel` from the `AutoModelFor…` task heads",
-    "Explain why a tokenizer and model checkpoint must match",
+    "Explain why a tokeniser and model checkpoint must match",
     "Use zero-shot classification, and recognise the bias a masked LM exposes"
   ],
 
@@ -20,7 +20,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "Three layers of abstraction", id: "layers" },
 
-    {"kind": "layers", "title": "Four layers, and the second one is where you work when anything goes wrong", "caption": "**`pipeline` is the fastest way to a result and the hardest to debug** — it tokenizes, runs and post-processes in one call, so a surprising output has three possible causes you cannot see. **`AutoTokenizer` + `AutoModel` is where you own the tensors**, which is why §02 and §03 work at that level. `Trainer` is the fine-tuning loop already written, and `datasets` is memory-mapped with a caching `.map`, **so it handles corpora far larger than RAM.**", "items": [{"label": "pipeline(...)", "sub": "tokenize, run, post-process in one call", "tone": "good", "side": "fastest"}, {"label": "AutoTokenizer + AutoModel", "sub": "you own the tensors", "tone": "violet", "side": "debuggable"}, {"label": "Trainer", "sub": "eval, checkpointing, mixed precision, logging", "tone": "good", "side": "training"}, {"label": "datasets", "sub": "memory-mapped, with a caching .map", "tone": "good", "side": "> RAM"}], "t": "diagram", "id": "dg-3_3-01-0"},
+    {"kind": "layers", "title": "Four layers, and the second one is where you work when anything goes wrong", "caption": "**`pipeline` is the fastest way to a result and the hardest to debug** — it tokenises, runs and post-processes in one call, so a surprising output has three possible causes you cannot see. **`AutoTokenizer` + `AutoModel` is where you own the tensors**, which is why §02 and §03 work at that level. `Trainer` is the fine-tuning loop already written, and `datasets` is memory-mapped with a caching `.map`, **so it handles corpora far larger than RAM.**", "items": [{"label": "pipeline(...)", "sub": "tokenise, run, post-process in one call", "tone": "good", "side": "fastest"}, {"label": "AutoTokenizer + AutoModel", "sub": "you own the tensors", "tone": "violet", "side": "debuggable"}, {"label": "Trainer", "sub": "eval, checkpointing, mixed precision, logging", "tone": "good", "side": "training"}, {"label": "datasets", "sub": "memory-mapped, with a caching .map", "tone": "good", "side": "> RAM"}], "t": "diagram", "id": "dg-3_3-01-0"},
 
 
 
@@ -33,7 +33,7 @@ EC.receiveLesson({
 
 
     { t: "dl", items: [
-      ["`pipeline`", "Tokenize, run, post-process, in one call. Fastest way to a result and the hardest to debug."],
+      ["`pipeline`", "Tokenise, run, post-process, in one call. Fastest way to a result and the hardest to debug."],
       ["`AutoTokenizer` + `AutoModel`", "You own the tensors. This is where you work when anything goes wrong or you need control."],
       ["`Trainer`", "The fine-tuning loop, with evaluation, checkpointing, mixed precision and logging already written."],
       ["`datasets`", "Memory-mapped datasets with a `.map` that caches. Handles corpora far larger than RAM."]
@@ -42,7 +42,7 @@ EC.receiveLesson({
     { t: "callout", kind: "warn", title: "Several of the pipelines no longer exist",
       body: [{ t: "p", text: "On **transformers 5.17** the tasks `summarization`, `translation_en_to_fr` and `question-answering` were removed from the pipeline registry and raise `KeyError: Unknown task`. Still present: `text-classification`, `ner`, `text-generation`, `fill-mask`, `zero-shot-classification` and `feature-extraction`. The models are all unchanged — what went away is the wrapper, so you call the model class directly, as lessons 2.6 to 2.8 did. On transformers 4.x every example in the usual treatment runs as written." }] },
 
-    { t: "h2", n: "02", text: "What the tokenizer returns", id: "tokenizer" },
+    { t: "h2", n: "02", text: "What the tokeniser returns", id: "tokenizer" },
 
     {"kind": "trace", "title": "Three keys, and two of them are about batching rather than text", "caption": "`input_ids` is the text. **The other two exist because a model takes rectangular tensors: `token_type_ids` marks which of two segments each token belongs to — all zeros here because there is one sentence — and `attention_mask` marks which positions are real.** On a single unpadded input the mask is all ones and looks redundant, which is exactly why it gets dropped. **§03 measures what that costs.**", "left": "key", "codeW": 170, "vars": ["shape", "value", "what it is for"], "steps": [{"code": "input_ids", "state": ["(1, 4)", "[[101, 7592, 2088, 102]]", "the text"], "tone": "good"}, {"code": "token_type_ids", "state": ["(1, 4)", "[[0, 0, 0, 0]]", "which segment"], "changed": [1, 2], "tone": "accent"}, {"code": "attention_mask", "state": ["(1, 4)", "[[1, 1, 1, 1]]", "which positions are real"], "changed": [1, 2], "tone": "violet", "note": "looks redundant here"}], "t": "diagram", "id": "dg-3_3-02-1"},
 
@@ -116,9 +116,9 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "A fresh head is random, and it will not tell you",
       body: [{ t: "p", text: "Loading `AutoModelForSequenceClassification.from_pretrained(\"bert-base-uncased\", num_labels=2)` prints a load report saying `classifier.weight` and `classifier.bias` are **MISSING** and were newly initialised. That report is the only signal. The model will happily produce logits, softmax will turn them into confident-looking probabilities, and they are pure noise until you train. Anyone who has evaluated a \"fine-tuned\" model and got results near chance has usually skipped that message." }] },
 
-    { t: "h2", n: "05", text: "Tokenizers are not interchangeable", id: "mismatch" },
+    { t: "h2", n: "05", text: "Tokenisers are not interchangeable", id: "mismatch" },
 
-    {"kind": "trace", "title": "One sentence, three token counts, three conventions", "caption": "**12 ids, 11 and 9 for the same seven words** — so a token budget computed with one tokenizer does not transfer. The conventions differ in the opposite direction too: **BERT marks continuations with `##`; RoBERTa and GPT-2 mark word-*initial* tokens with `Ġ`, a visible stand-in for a preceding space.** And **GPT-2 adds no special tokens at all, because a causal LM has no use for `[CLS]` or `[SEP]`** — which means a pipeline that slices off the first and last ids silently eats real words.", "left": "tokenizer", "codeW": 190, "vars": ["ids", "marks", "special tokens"], "steps": [{"code": "bert-base-uncased", "state": ["12", "## = continuation", "[CLS] ... [SEP]"], "tone": "good"}, {"code": "roberta-base", "state": ["11", "Ġ = word-initial", "<s> ... </s>"], "changed": [0, 1, 2], "tone": "good"}, {"code": "gpt2", "state": ["9", "Ġ = word-initial", "NONE"], "changed": [0, 2], "tone": "warn", "note": "slicing [1:-1] eats words"}], "t": "diagram", "id": "dg-3_3-05-4"},
+    {"kind": "trace", "title": "One sentence, three token counts, three conventions", "caption": "**12 ids, 11 and 9 for the same seven words** — so a token budget computed with one tokeniser does not transfer. The conventions differ in the opposite direction too: **BERT marks continuations with `##`; RoBERTa and GPT-2 mark word-*initial* tokens with `Ġ`, a visible stand-in for a preceding space.** And **GPT-2 adds no special tokens at all, because a causal LM has no use for `[CLS]` or `[SEP]`** — which means a pipeline that slices off the first and last ids silently eats real words.", "left": "tokenizer", "codeW": 190, "vars": ["ids", "marks", "special tokens"], "steps": [{"code": "bert-base-uncased", "state": ["12", "## = continuation", "[CLS] ... [SEP]"], "tone": "good"}, {"code": "roberta-base", "state": ["11", "Ġ = word-initial", "<s> ... </s>"], "changed": [0, 1, 2], "tone": "good"}, {"code": "gpt2", "state": ["9", "Ġ = word-initial", "NONE"], "changed": [0, 2], "tone": "warn", "note": "slicing [1:-1] eats words"}], "t": "diagram", "id": "dg-3_3-05-4"},
 
 
 
@@ -133,10 +133,10 @@ EC.receiveLesson({
     { t: "out", text:
 "\"The unhappiest tokenization I have seen\"\n\nbert-base-uncased  12 ids  ['[CLS]','the','un','##ha','##pp','##iest','token',\n                             '##ization','i','have','seen','[SEP]']\nroberta-base       11 ids  ['<s>','The','Ġunh','app','iest','Ġtoken',\n                             'ization','ĠI','Ġhave','Ġseen','</s>']\ngpt2                9 ids  ['The','Ġunh','app','iest','Ġtoken','ization',\n                             'ĠI','Ġhave','Ġseen']" },
 
-    { t: "p", text: "Three tokenizers, three different token counts, three different subword splits, three different special-token conventions. BERT marks continuations with `##`; RoBERTa and GPT-2 mark word-*initial* tokens with `Ġ`, a visible stand-in for a preceding space. GPT-2 adds no special tokens at all, because a causal LM has no use for `[CLS]`." },
+    { t: "p", text: "Three tokenisers, three different token counts, three different subword splits, three different special-token conventions. BERT marks continuations with `##`; RoBERTa and GPT-2 mark word-*initial* tokens with `Ġ`, a visible stand-in for a preceding space. GPT-2 adds no special tokens at all, because a causal LM has no use for `[CLS]`." },
 
     { t: "callout", kind: "crit", title: "The mismatch produces garbage, not an error",
-      body: [{ t: "p", text: "Token id 7592 is `hello` in BERT's vocabulary and something entirely unrelated in RoBERTa's. Feed one model's ids to another and you get a tensor of the right shape, a plausible-looking output, and meaningless results. Because the shapes agree, nothing fails. Always load both from the same checkpoint string — and when you save a fine-tuned model, save the tokenizer alongside it, because a checkpoint without its tokenizer is not reproducible." }] },
+      body: [{ t: "p", text: "Token id 7592 is `hello` in BERT's vocabulary and something entirely unrelated in RoBERTa's. Feed one model's ids to another and you get a tensor of the right shape, a plausible-looking output, and meaningless results. Because the shapes agree, nothing fails. Always load both from the same checkpoint string — and when you save a fine-tuned model, save the tokeniser alongside it, because a checkpoint without its tokeniser is not reproducible." }] },
 
     { t: "h2", n: "06", text: "Zero-shot classification", id: "zeroshot" },
 
@@ -165,7 +165,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "07", text: "Fill-mask, and what it exposes", id: "fillmask" },
 
-    {"kind": "trace", "title": "A factual probe at 0.997, and the same mechanism reading back its training data", "caption": "`Paris is the [MASK] of France` gives `capital` at **0.997** — the probe working as intended. Then the same two sentences differing by one word: **`The man worked as a [MASK]` gives `carpenter 0.097, waiter 0.052`, and `The woman worked as a [MASK]` gives `nurse 0.220, waitress 0.160, maid 0.115, prostitute 0.038`.** Note the **confidence** gap as well as the content: the female-subject distribution is sharper, so **the model is more certain about the stereotype than about the occupation.**", "left": "prompt", "codeW": 200, "vars": ["top predictions", "top probability"], "steps": [{"code": "'Paris is the [MASK] of France.'", "state": ["capital, heart, center", "0.997"], "tone": "good"}, {"code": "'The man worked as a [MASK].'", "state": ["carpenter, waiter, barber", "0.097"], "changed": [0, 1], "tone": "warn"}, {"code": "'The woman worked as a [MASK].'", "state": ["nurse, waitress, maid", "0.220"], "changed": [0, 1], "tone": "crit", "note": "and more confident"}], "t": "diagram", "id": "dg-3_3-07-6"},
+    {"kind": "trace", "title": "A factual probe at 0.997, and the same mechanism reading back its training data", "caption": "`Paris is the [MASK] of France` gives `capital` at **0.997** — the probe working as intended. Then the same two sentences differing by one word: **`The man worked as a [MASK]` gives `carpenter 0.097, waiter 0.052`, and `The woman worked as a [MASK]` gives `nurse 0.220, waitress 0.160, maid 0.115, prostitute 0.038`.** Note the **confidence** gap as well as the content: the female-subject distribution is sharper, so **the model is more certain about the stereotype than about the occupation.**", "left": "prompt", "codeW": 200, "vars": ["top predictions", "top probability"], "steps": [{"code": "'Paris is the [MASK] of France.'", "state": ["capital, heart, centre", "0.997"], "tone": "good"}, {"code": "'The man worked as a [MASK].'", "state": ["carpenter, waiter, barber", "0.097"], "changed": [0, 1], "tone": "warn"}, {"code": "'The woman worked as a [MASK].'", "state": ["nurse, waitress, maid", "0.220"], "changed": [0, 1], "tone": "crit", "note": "and more confident"}], "t": "diagram", "id": "dg-3_3-07-6"},
 
 
 
@@ -209,17 +209,17 @@ EC.receiveLesson({
     ] },
 
     { t: "exercise", title: "Verify the abstractions",
-      tasks: [
+      requirements: [
         "Encode a batch of ragged sentences and confirm the mask zeros line up with the `[PAD]` positions in `input_ids`.",
         "Reproduce the mask measurement on a model of your choice and record the cosine with and without it.",
-        "Feed BERT ids to RoBERTa and look at the output. Confirm nothing raises, then decode the ids with the wrong tokenizer to see what the model actually received.",
+        "Feed BERT ids to RoBERTa and look at the output. Confirm nothing raises, then decode the ids with the wrong tokeniser to see what the model actually received.",
         "Load a sequence-classification head, run it untrained, and softmax the logits. Note how confident the meaningless output looks.",
         "Run `fill-mask` on occupation, nationality and religion templates for a model you are about to deploy, and write the results into your test suite as assertions."
       ] }
   ],
 
   takeaways: [
-    "The tokenizer returns `input_ids`, `attention_mask` and `token_type_ids`, and adds `[CLS]` and `[SEP]` you did not write.",
+    "The tokeniser returns `input_ids`, `attention_mask` and `token_type_ids`, and adds `[CLS]` and `[SEP]` you did not write.",
     "Dropping the attention mask moved BERT's `[CLS]` vector to cosine 0.472976 from the correct one, with dimensions off by 6.633 — silently.",
     "With the mask, padding changes the representation by 1.9e-06, which is floating-point noise.",
     "`AutoModel` returns representations; `AutoModelFor…` adds a task head — 1,538 parameters against 109.5M in the encoder.",
@@ -238,10 +238,10 @@ EC.receiveLesson({
       options: ["About 1.5 million", "1,538 — a 768x2 matrix plus two biases", "768", "Half the model"],
       answer: 1,
       why: "109.5M in the encoder against 1,538 in the head. Essentially all the capability is in the pretrained base, which is why fine-tuning needs a learning rate around 2e-5 — you are adapting an encoder that already works, not training a classifier from nothing." },
-    { stem: "Why must the tokenizer and model come from the same checkpoint?",
-      options: ["Licensing", "Because token ids index a model-specific vocabulary, so a mismatch yields valid-shaped meaningless input with no error", "Because the tokenizer stores the weights", "They need not match"],
+    { stem: "Why must the tokeniser and model come from the same checkpoint?",
+      options: ["Licensing", "Because token ids index a model-specific vocabulary, so a mismatch yields valid-shaped meaningless input with no error", "Because the tokeniser stores the weights", "They need not match"],
       answer: 1,
-      why: "Id 7592 is 'hello' to BERT and something unrelated to RoBERTa. The same sentence tokenised to 12, 11 and 9 ids across BERT, RoBERTa and GPT-2. Shapes still agree, so the forward pass succeeds and returns confident nonsense — which is why you save the tokenizer beside any fine-tuned model." },
+      why: "Id 7592 is 'hello' to BERT and something unrelated to RoBERTa. The same sentence tokenised to 12, 11 and 9 ids across BERT, RoBERTa and GPT-2. Shapes still agree, so the forward pass succeeds and returns confident nonsense — which is why you save the tokeniser beside any fine-tuned model." },
     { stem: "What does the fill-mask occupation result demonstrate?",
       options: ["The model is broken", "That pretraining bias is directly readable from the model and inherited by anything fine-tuned on it", "That BERT cannot handle gender", "That the mask token was wrong"],
       answer: 1,

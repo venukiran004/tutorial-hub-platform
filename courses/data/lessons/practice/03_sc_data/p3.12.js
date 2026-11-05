@@ -22,11 +22,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "276",
-   "q": "You need to compare model performance across 10 datasets. A table would be hard to read. What visualization do you use?",
+   "q": "You need to compare model performance across 10 datasets. A table would be hard to read. What visualisation do you use?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Heatmap: models × datasets, colored by metric value, (2) critical difference diagram (from Demšar test) — shows statistical groupings, (3) bump chart: rank each model per dataset, connect across datasets, (4) box plot: distribution of metric across datasets per model, (5) parallel coordinates plot, (6) radar chart per dataset, small multiples layout, (7) summary table with rank aggregation (average rank, win count)."
+     "text": "**Answer:** (1) Heatmap: models × datasets, coloured by metric value, (2) critical difference diagram (from Demšar test) — shows statistical groupings, (3) bump chart: rank each model per dataset, connect across datasets, (4) box plot: distribution of metric across datasets per model, (5) parallel coordinates plot, (6) radar chart per dataset, small multiples layout, (7) summary table with rank aggregation (average rank, win count)."
     }
    ],
    "kind": ""
@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Normalize rows (show percentages instead of counts), (2) only show cells above a threshold (suppress near-zero values), (3) hierarchical: group related classes, show aggregated confusion first, (4) color intensity proportional to value, (5) sort classes by confusion similarity, (6) extract key insights: top-5 confused pairs as a separate table, (7) show precision/recall per class as a simple bar chart alongside, (8) interactive version with hover details."
+     "text": "**Answer:** (1) Normalise rows (show percentages instead of counts), (2) only show cells above a threshold (suppress near-zero values), (3) hierarchical: group related classes, show aggregated confusion first, (4) colour intensity proportional to value, (5) sort classes by confusion similarity, (6) extract key insights: top-5 confused pairs as a separate table, (7) show precision/recall per class as a simple bar chart alongside, (8) interactive version with hover details."
     }
    ],
    "kind": ""
@@ -86,11 +86,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "281",
-   "q": "Your hiring model was trained on historical data where 80% of hires were male. The model now favors male candidates. How do you fix this?",
+   "q": "Your hiring model was trained on historical data where 80% of hires were male. The model now favours male candidates. How do you fix this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Remove gender and gender-proxy features (name, sports, pronouns), (2) pre-processing: balance training data across genders, (3) in-processing: adversarial debiasing — model can't predict gender from features, (4) post-processing: separate thresholds per group to equalize selection rates, (5) evaluate with disparate impact ratio (should be 0.8-1.25), (6) re-examine what \"success\" means — are historical labels biased? (7) involve HR and legal teams, (8) regular bias audits."
+     "text": "**Answer:** (1) Remove gender and gender-proxy features (name, sports, pronouns), (2) pre-processing: balance training data across genders, (3) in-processing: adversarial debiasing — model can't predict gender from features, (4) post-processing: separate thresholds per group to equalise selection rates, (5) evaluate with disparate impact ratio (should be 0.8-1.25), (6) re-examine what \"success\" means — are historical labels biased? (7) involve HR and legal teams, (8) regular bias audits."
     }
    ],
    "kind": ""
@@ -102,7 +102,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** No — equal accuracy doesn't guarantee fairness. Fairness metrics: (1) Equalized Odds: TPR and FPR should be equal across groups, (2) different FPR means one group faces more false accusations/denials, (3) in criminal justice: higher FPR for minorities means more wrongful actions, (4) in lending: higher FPR means more wrongful denials. Choose fairness metric based on context and stakeholder input. Note: it's mathematically impossible to satisfy all fairness metrics simultaneously (impossibility theorem)."
+     "text": "**Answer:** No — equal accuracy doesn't guarantee fairness. Fairness metrics: (1) Equalised Odds: TPR and FPR should be equal across groups, (2) different FPR means one group faces more false accusations/denials, (3) in criminal justice: higher FPR for minorities means more wrongful actions, (4) in lending: higher FPR means more wrongful denials. Choose fairness metric based on context and stakeholder input. Note: it's mathematically impossible to satisfy all fairness metrics simultaneously (impossibility theorem)."
     }
    ],
    "kind": ""
@@ -114,7 +114,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Privacy: monitoring creates surveillance culture, reducing trust, (2) measurement validity: what's a fair proxy for \"productivity\"?, (3) bias: may discriminate against disabled, caregiving, or neurodiverse employees, (4) consent: do employees know they're being modeled?, (5) power dynamics: employees can't meaningfully opt out, (6) gaming: people optimize for the metric, not actual productivity, (7) feedback loops: low predicted productivity → less opportunity → lower actual productivity. Recommend careful scoping, transparency, and human oversight."
+     "text": "**Answer:** (1) Privacy: monitoring creates surveillance culture, reducing trust, (2) measurement validity: what's a fair proxy for \"productivity\"?, (3) bias: may discriminate against disabled, caregiving, or neurodiverse employees, (4) consent: do employees know they're being modelled?, (5) power dynamics: employees can't meaningfully opt out, (6) gaming: people optimise for the metric, not actual productivity, (7) feedback loops: low predicted productivity → less opportunity → lower actual productivity. Recommend careful scoping, transparency, and human oversight."
     }
    ],
    "kind": ""
@@ -126,7 +126,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Add diversity slots: recommend some content outside user's comfort zone, (2) calibration: match recommendation distribution to broader content distribution, (3) serendipity metric: track and optimize for surprising-but-relevant recommendations, (4) \"explore\" mode: occasional diverse recommendations, (5) topic diversification constraints, (6) transparency: show users why content was recommended, (7) editorial intervention for news/information to ensure balanced coverage."
+     "text": "**Answer:** (1) Add diversity slots: recommend some content outside user's comfort zone, (2) calibration: match recommendation distribution to broader content distribution, (3) serendipity metric: track and optimise for surprising-but-relevant recommendations, (4) \"explore\" mode: occasional diverse recommendations, (5) topic diversification constraints, (6) transparency: show users why content was recommended, (7) editorial intervention for news/information to ensure balanced coverage."
     }
    ],
    "kind": ""
@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** This is redlining (illegal in many jurisdictions). Immediate actions: (1) remove zip code and correlated features (neighborhood income), (2) audit for proxy discrimination: which features correlate with protected attributes?, (3) test with fairness metrics: disparate impact ratio, equal opportunity, (4) consult legal/compliance team, (5) use fair lending frameworks (ECOA, Fair Housing Act), (6) implement ongoing monitoring for disparate impact, (7) consider using only permissible features per regulations."
+     "text": "**Answer:** This is redlining (illegal in many jurisdictions). Immediate actions: (1) remove zip code and correlated features (neighbourhood income), (2) audit for proxy discrimination: which features correlate with protected attributes?, (3) test with fairness metrics: disparate impact ratio, equal opportunity, (4) consult legal/compliance team, (5) use fair lending frameworks (ECOA, Fair Housing Act), (6) implement ongoing monitoring for disparate impact, (7) consider using only permissible features per regulations."
     }
    ],
    "kind": ""
@@ -150,7 +150,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data minimization: only collect what's needed, (2) anonymization: remove direct identifiers, (3) pseudonymization: replace PII with tokens, (4) differential privacy for aggregate statistics, (5) access controls: role-based access, audit logs, (6) retention policy: delete data after purpose is fulfilled, (7) consent management: track data usage consents, (8) data processing agreements (DPAs) with third parties, (9) GDPR/CCPA compliance: right to erasure, data portability, (10) encrypt data at rest and in transit."
+     "text": "**Answer:** (1) Data minimisation: only collect what's needed, (2) anonymisation: remove direct identifiers, (3) pseudonymisation: replace PII with tokens, (4) differential privacy for aggregate statistics, (5) access controls: role-based access, audit logs, (6) retention policy: delete data after purpose is fulfilled, (7) consent management: track data usage consents, (8) data processing agreements (DPAs) with third parties, (9) GDPR/CCPA compliance: right to erasure, data portability, (10) encrypt data at rest and in transit."
     }
    ],
    "kind": ""
@@ -162,7 +162,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Responsibility is shared: (1) developer: for training data quality, testing, safety measures, (2) deployer: for appropriate use, monitoring, overrides, (3) organization: for governance and accountability. Prevention: (1) human-in-the-loop for high-stakes decisions, (2) bounded autonomy: limit model's action space, (3) fallback to safe defaults when uncertain, (4) explainability: understand why the decision was made, (5) regular testing with adversarial scenarios, (6) incident response and learning from failures."
+     "text": "**Answer:** Responsibility is shared: (1) developer: for training data quality, testing, safety measures, (2) deployer: for appropriate use, monitoring, overrides, (3) organisation: for governance and accountability. Prevention: (1) human-in-the-loop for high-stakes decisions, (2) bounded autonomy: limit model's action space, (3) fallback to safe defaults when uncertain, (4) explainability: understand why the decision was made, (5) regular testing with adversarial scenarios, (6) incident response and learning from failures."
     }
    ],
    "kind": ""
@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Accuracy disparities across demographics (worse for darker skin tones, women), (2) consent: do subjects know they're being scanned?, (3) surveillance concerns and civil liberties, (4) data security: biometric data can't be changed if breached, (5) legal compliance: GDPR, BIPA, local regulations, (6) error consequences: false match → wrongful detention?, (7) scope creep: system deployed for one purpose, used for another, (8) disproportionate impact on marginalized communities. Implement: regular bias audits, transparency reports, human oversight, appeal mechanisms."
+     "text": "**Answer:** (1) Accuracy disparities across demographics (worse for darker skin tones, women), (2) consent: do subjects know they're being scanned?, (3) surveillance concerns and civil liberties, (4) data security: biometric data can't be changed if breached, (5) legal compliance: GDPR, BIPA, local regulations, (6) error consequences: false match → wrongful detention?, (7) scope creep: system deployed for one purpose, used for another, (8) disproportionate impact on marginalised communities. Implement: regular bias audits, transparency reports, human oversight, appeal mechanisms."
     },
     {
      "t": "p",
@@ -238,7 +238,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Identify specific cost centers: operations, customer acquisition, inventory, support, (2) quantify: \"which cost categories are largest and most variable?\", (3) prioritize by potential impact × feasibility, (4) define a specific, measurable objective: \"reduce call center volume by 15%\", (5) identify available data, (6) propose 2-3 candidate projects with expected ROI, (7) start with quick-win analytics before complex ML, (8) define success metrics and timeline for evaluation."
+     "text": "**Answer:** (1) Identify specific cost centres: operations, customer acquisition, inventory, support, (2) quantify: \"which cost categories are largest and most variable?\", (3) prioritise by potential impact × feasibility, (4) define a specific, measurable objective: \"reduce call centre volume by 15%\", (5) identify available data, (6) propose 2-3 candidate projects with expected ROI, (7) start with quick-win analytics before complex ML, (8) define success metrics and timeline for evaluation."
     }
    ],
    "kind": ""
@@ -262,7 +262,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Honest response: (1) stock prices incorporate all available public information (efficient market hypothesis), (2) any signal that works becomes arbitraged away, (3) we can analyze factors that historically correlate with stock movement, (4) we can build sentiment analysis on news/social media for short-term indicators, (5) forecasting specific prices is unreliable — uncertainty increases rapidly, (6) better framing: \"we can model risk factors and scenario analysis,\" (7) set expectations: no model reliably beats the market long-term."
+     "text": "**Answer:** Honest response: (1) stock prices incorporate all available public information (efficient market hypothesis), (2) any signal that works becomes arbitraged away, (3) we can analyse factors that historically correlate with stock movement, (4) we can build sentiment analysis on news/social media for short-term indicators, (5) forecasting specific prices is unreliable — uncertainty increases rapidly, (6) better framing: \"we can model risk factors and scenario analysis,\" (7) set expectations: no model reliably beats the market long-term."
     }
    ],
    "kind": ""
@@ -274,7 +274,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use rules when: (1) rules are clear and few (\"if amount > $10K, flag for review\"), (2) data is scarce, (3) full explainability is required, (4) relationship is well-understood, (5) maintenance by non-ML team. Use ML when: (1) patterns are complex and non-obvious, (2) rules are too many to manually define (>20-30), (3) sufficient labeled data exists, (4) slight accuracy improvement has large business value, (5) patterns evolve over time. Often: start with rules, add ML when rules aren't enough."
+     "text": "**Answer:** Use rules when: (1) rules are clear and few (\"if amount > $10K, flag for review\"), (2) data is scarce, (3) full explainability is required, (4) relationship is well-understood, (5) maintenance by non-ML team. Use ML when: (1) patterns are complex and non-obvious, (2) rules are too many to manually define (>20-30), (3) sufficient labelled data exists, (4) slight accuracy improvement has large business value, (5) patterns evolve over time. Often: start with rules, add ML when rules aren't enough."
     }
    ],
    "kind": ""
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "297",
-   "q": "You're the first data scientist at a startup. There's no data infrastructure. How do you prioritize?",
+   "q": "You're the first data scientist at a startup. There's no data infrastructure. How do you prioritise?",
    "body": [
     {
      "t": "p",
@@ -310,7 +310,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Agile approach: 2-week sprints with defined deliverables, (2) project charter: document agreed scope, success criteria, timeline, (3) change request process: new requirements go to backlog, prioritized in next sprint, (4) stakeholder alignment: regular demos showing progress, (5) MVP approach: deliver minimum viable model first, iterate, (6) say no diplomatically: \"we can add this in phase 2,\" (7) track scope changes and their impact on timeline, (8) single point of contact from business side."
+     "text": "**Answer:** (1) Agile approach: 2-week sprints with defined deliverables, (2) project charter: document agreed scope, success criteria, timeline, (3) change request process: new requirements go to backlog, prioritised in next sprint, (4) stakeholder alignment: regular demos showing progress, (5) MVP approach: deliver minimum viable model first, iterate, (6) say no diplomatically: \"we can add this in phase 2,\" (7) track scope changes and their impact on timeline, (8) single point of contact from business side."
     }
    ],
    "kind": ""
@@ -322,7 +322,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Define the concept precisely: what does \"customer satisfaction\" mean in measurable terms?, (2) use behavioral proxies: satisfaction → repeat purchases + low return rate + positive reviews, (3) survey a sample and use as labels, then train model predicting survey responses from behavioral data, (4) composite score: combine multiple signals into one target, (5) validate the proxy: does it correlate with business outcomes?, (6) be transparent about limitations of the proxy, (7) continuously validate as ground truth data becomes available."
+     "text": "**Answer:** (1) Define the concept precisely: what does \"customer satisfaction\" mean in measurable terms?, (2) use behavioural proxies: satisfaction → repeat purchases + low return rate + positive reviews, (3) survey a sample and use as labels, then train model predicting survey responses from behavioural data, (4) composite score: combine multiple signals into one target, (5) validate the proxy: does it correlate with business outcomes?, (6) be transparent about limitations of the proxy, (7) continuously validate as ground truth data becomes available."
     }
    ],
    "kind": ""

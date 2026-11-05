@@ -198,7 +198,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Twenty points at k=1 from respecting the document's own structure",
       body: [
         { t: "p", text: "Fixed to recursive is worth 10 points at k=1, and recursive to markdown-aware another 10. Unlike the overlap column this is monotone across three conditions and consistent at k=3 and k=5, which is what a real effect looks like at this sample size." },
-        { t: "p", text: "Two mechanisms are at work and they are worth separating. **Cutting at boundaries** keeps a thought intact, so the chunk embeds as one thing rather than as the tail of one idea plus the head of another. **Prepending the heading** gives the chunk words it would not otherwise contain \u2014 a passage under \u201c## Quantization for Inference\u201d now carries those words even if the body never repeats them." },
+        { t: "p", text: "Two mechanisms are at work and they are worth separating. **Cutting at boundaries** keeps a thought intact, so the chunk embeds as one thing rather than as the tail of one idea plus the head of another. **Prepending the heading** gives the chunk words it would not otherwise contain \u2014 a passage under \u201c## Quantisation for Inference\u201d now carries those words even if the body never repeats them." },
         { t: "p", text: "That second mechanism is the more interesting one, because it is a form of context injection rather than of better cutting. It is the cheap, deterministic version of what it is commonly called *contextual retrieval* \u2014 prepending a generated description of where a chunk came from \u2014 at none of the cost, because the heading is already in the document." },
         { t: "p", text: "The generalisation: **use whatever structure the document already has.** Markdown headings, HTML tags, code function boundaries, legal section numbers. The structure was put there by an author to mark where topics change, which is exactly the judgement a chunker is trying to make." }
       ] },
@@ -406,7 +406,7 @@ for fn in (H.chunk_fixed, H.chunk_recursive, chunk_markdown):
           "Deduplicating overlapping text across chunks"
         ],
         answer: 1,
-        why: "Boundary-respecting cuts mean a chunk embeds as a single idea rather than the tail of one plus the head of another. Separately, prepending the section heading injects topic vocabulary a passage may never repeat \u2014 a chunk under \"Quantization for Inference\" now carries those words. The second mechanism is context injection rather than chunking, and is the free deterministic version of contextual retrieval, which generates a description per chunk at an LLM call each." },
+        why: "Boundary-respecting cuts mean a chunk embeds as a single idea rather than the tail of one plus the head of another. Separately, prepending the section heading injects topic vocabulary a passage may never repeat \u2014 a chunk under \"Quantisation for Inference\" now carries those words. The second mechanism is context injection rather than chunking, and is the free deterministic version of contextual retrieval, which generates a description per chunk at an LLM call each." },
 
       { stem: "A question fails at every chunk size and strategy tried. The answer is intact in the right document, but the passage uses a metaphor the question does not.",
         options: [

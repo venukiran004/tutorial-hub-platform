@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Name the four stages a query passes through and what each one produces",
     "Read a physical plan as a tree of operators evaluated bottom-up",
     "Explain the cost model, selectivity, and why the same predicate gets an index scan at 5 % and a sequential scan at 90 %",
-    "Say where statistics come from, how they go stale, and what ANALYZE does",
+    "Say where statistics come from, how they go stale, and what AnalysE does",
     "Describe prepared statements, plan caching and the parameter-sniffing problem"
   ],
 
@@ -33,7 +33,7 @@ EC.receiveLesson({
 
     { t: "viz",
       title: "From text to rows",
-      caption: "Parsing and analysis are deterministic. Planning is a search over alternatives, scored by a cost model that reads statistics — row counts, distinct values, histograms — gathered by ANALYZE. The executor runs whichever plan scored lowest; whether that plan was actually the fastest depends on how good the statistics were.",
+      caption: "Parsing and analysis are deterministic. Planning is a search over alternatives, scored by a cost model that reads statistics — row counts, distinct values, histograms — gathered by AnalysE. The executor runs whichever plan scored lowest; whether that plan was actually the fastest depends on how good the statistics were.",
       svg: `<svg viewBox="0 0 880 260" role="img" aria-label="A pipeline of five boxes: SQL text, parser and analyser, rewriter, planner, executor, rows out. A statistics store feeds the planner from below, filled by ANALYZE; a cost model sits beside the planner.">
   <defs>
     <marker id="qr-ah-51" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -74,7 +74,7 @@ EC.receiveLesson({
       ["Cost", "A unitless estimate of work, built from parameters like the cost of reading a page sequentially versus at random and of processing a row. Plans are compared by cost; the number is not a time."],
       ["Cardinality estimate", "The planner's guess at how many rows each node will produce. Every cost depends on it; every bad plan traces back to one that was wrong."],
       ["Selectivity", "The fraction of rows a predicate keeps. Estimated from statistics: for `status = 'paid'`, the frequency of 'paid' in the most-common-values list; for a range, the histogram."],
-      ["Statistics", "Per-column summaries gathered by ANALYZE from a sample: null fraction, distinct count, most common values and their frequencies, a histogram of the rest, and physical-order correlation."]
+      ["Statistics", "Per-column summaries gathered by AnalysE from a sample: null fraction, distinct count, most common values and their frequencies, a histogram of the rest, and physical-order correlation."]
     ]},
 
     { t: "h2", n: "02", text: "A plan is a tree, evaluated from the leaves", id: "tree" },
@@ -83,7 +83,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "A physical plan is a tree whose leaves read tables and whose internal nodes combine what their children produce. Rows flow upward. **The join at the bottom decides how many rows reach the aggregate above it; the estimate on each node is what the planner believed would flow through it, and the actual count — when EXPLAIN ANALYZE is used — is what did.** Reading a plan means reading from the leaves up, and comparing believed to actual at each step." },
+    { t: "p", text: "A physical plan is a tree whose leaves read tables and whose internal nodes combine what their children produce. Rows flow upward. **The join at the bottom decides how many rows reach the aggregate above it; the estimate on each node is what the planner believed would flow through it, and the actual count — when EXPLAIN AnalysE is used — is what did.** Reading a plan means reading from the leaves up, and comparing believed to actual at each step." },
 
     { t: "code", lang: "sql", title: "A real physical plan: paid orders per country (DuckDB, trimmed)",
       hl: [4, 13, 20, 21],
@@ -149,17 +149,17 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';
     { t: "table",
       head: ["Planner needs", "Statistic", "Where it comes from", "Goes wrong when"],
       rows: [
-        ["Table size", "Row count, page count", "ANALYZE; the storage manager", "Bulk load without ANALYZE; the planner thinks the table is empty"],
-        ["Equality selectivity", "Most common values and their frequencies", "ANALYZE sample", "A value outside the MCV list is assumed to have average frequency"],
-        ["Range selectivity", "Histogram bounds", "ANALYZE sample", "Data skewed since the last ANALYZE; a new month's data lies beyond the last bound"],
-        ["Join cardinality", "n_distinct on the join keys", "ANALYZE sample", "n_distinct estimated from a sample on a long-tailed column can be off by 10×"],
+        ["Table size", "Row count, page count", "AnalysE; the storage manager", "Bulk load without AnalysE; the planner thinks the table is empty"],
+        ["Equality selectivity", "Most common values and their frequencies", "AnalysE sample", "A value outside the MCV list is assumed to have average frequency"],
+        ["Range selectivity", "Histogram bounds", "AnalysE sample", "Data skewed since the last AnalysE; a new month's data lies beyond the last bound"],
+        ["Join cardinality", "n_distinct on the join keys", "AnalysE sample", "n_distinct estimated from a sample on a long-tailed column can be off by 10×"],
         ["Combined predicates", "Independence assumption, or extended statistics", "Assumed independent unless CREATE STATISTICS", "Correlated columns — city and postcode — multiply into an estimate far too small"],
-        ["Index scan cost", "Physical correlation between index order and table order", "ANALYZE", "A table rewritten in a different order makes an index look more random than it is"]
+        ["Index scan cost", "Physical correlation between index order and table order", "AnalysE", "A table rewritten in a different order makes an index look more random than it is"]
       ]
     },
 
-    { t: "callout", kind: "production", title: "ANALYZE is the fix more often than an index is", body: [
-      { t: "p", text: "A query that was fast yesterday and slow today, with no schema change, has usually crossed a statistics boundary: the table doubled, a new value appeared, the histogram's last bucket ended a week ago. **PostgreSQL's autovacuum runs ANALYZE when a table changes by a threshold fraction — 10 % by default — which on a billion-row table is a hundred million rows of drift.** After a bulk load, `ANALYZE table` by hand. When a plan's estimate and actual differ by an order of magnitude on a scan node, statistics are the first suspect." }
+    { t: "callout", kind: "production", title: "AnalysE is the fix more often than an index is", body: [
+      { t: "p", text: "A query that was fast yesterday and slow today, with no schema change, has usually crossed a statistics boundary: the table doubled, a new value appeared, the histogram's last bucket ended a week ago. **PostgreSQL's autovacuum runs AnalysE when a table changes by a threshold fraction — 10 % by default — which on a billion-row table is a hundred million rows of drift.** After a bulk load, `ANALYZE table` by hand. When a plan's estimate and actual differ by an order of magnitude on a scan node, statistics are the first suspect." }
     ]},
 
     { t: "h2", n: "04", text: "Plan caching and prepared statements", id: "caching" },
@@ -181,7 +181,7 @@ SET plan_cache_mode = force_generic_plan;  -- always reuse: for uniform columns 
       caption: "A generic plan is planned for the average value; on a column with one dominant value and many rare ones there is no average value, and the generic plan is wrong for most callers. The tell is a query that is fast in psql and slow from the application — the application is running a cached plan."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "A query that got slow overnight",
       rungs: [
         { level: "bad", label: "Add an index", code: `CREATE INDEX orders_status_idx ON orders (status);   -- there was nothing wrong with the indexes`,
@@ -203,15 +203,15 @@ ALTER TABLE orders ALTER COLUMN status SET STATISTICS 500;   -- a bigger sample,
       difficulty: "core",
       minutes: 22,
       body: [
-        { t: "p", text: "For each scenario, say what the planner will estimate, what it will choose, and whether the choice is right — then say which statistic, if any, is to blame. **(1)** `WHERE status = 'paid'` on the 400,000-row orders table with an index on status, where 90 % of rows are paid. **(2)** The same predicate with `'refunded'` at 5 %. **(3)** `WHERE placed_at >= '2025-12-01'` the morning after December's data was loaded, with ANALYZE last run in November. **(4)** `WHERE city = 'Leeds' AND postcode LIKE 'LS%'` with independent statistics on the two columns. **(5)** A prepared `WHERE status = $1` executed 10,000 times a minute, first with 'refunded', then mostly with 'paid', on SQL Server." },
+        { t: "p", text: "For each scenario, say what the planner will estimate, what it will choose, and whether the choice is right — then say which statistic, if any, is to blame. **(1)** `WHERE status = 'paid'` on the 400,000-row orders table with an index on status, where 90 % of rows are paid. **(2)** The same predicate with `'refunded'` at 5 %. **(3)** `WHERE placed_at >= '2025-12-01'` the morning after December's data was loaded, with AnalysE last run in November. **(4)** `WHERE city = 'Leeds' AND postcode LIKE 'LS%'` with independent statistics on the two columns. **(5)** A prepared `WHERE status = $1` executed 10,000 times a minute, first with 'refunded', then mostly with 'paid', on SQL Server." },
         { t: "p", text: "Then write the SQLite query that shows, on the large shop, that cost scales with rows touched even when the plan is the same." }
       ],
       requirements: [
         "Estimate, choice, verdict and culprit for each of the five.",
-        "The remedy for each that is wrong: ANALYZE, extended statistics, plan-cache control, or nothing.",
+        "The remedy for each that is wrong: AnalysE, extended statistics, plan-cache control, or nothing.",
         "The two-query timing demonstration on status = 'paid' versus 'refunded'."
       ],
-      hint: "(3): the histogram's upper bound is the last date ANALYZE saw; anything beyond it is estimated as almost nothing. (4): 'Leeds' and 'LS%' are the same fact twice; multiplying their selectivities under-estimates by a lot. (5): the first plan is cached for the rest.",
+      hint: "(3): the histogram's upper bound is the last date AnalysE saw; anything beyond it is estimated as almost nothing. (4): 'Leeds' and 'LS%' are the same fact twice; multiplying their selectivities under-estimates by a lot. (5): the first plan is cached for the rest.",
       solution: {
         lang: "sql",
         title: "planner_beliefs.sql",
@@ -236,7 +236,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
 -- same plan text, 17x the time: the plan names the access path, the rows decide the cost.`,
         notes: [
           { t: "p", text: "**Two of the five are the planner being right** — a sequential scan for 90 % of a table is the correct answer, and the reflex to 'make it use the index' would make it slower. The verdict comes from selectivity, not from whether an index was used." },
-          { t: "p", text: "**(3) and (4) are the two statistics failures that account for most bad plans**: a summary that is out of date, and a summary that assumes independence between columns that are really one fact. ANALYZE fixes the first; extended statistics fix the second; neither is an index." },
+          { t: "p", text: "**(3) and (4) are the two statistics failures that account for most bad plans**: a summary that is out of date, and a summary that assumes independence between columns that are really one fact. AnalysE fixes the first; extended statistics fix the second; neither is an index." },
           { t: "p", text: "**(5) is why 'fast in the console, slow in the app' happens**: the console plans with the literal, the app runs a cached plan planned for someone else's value." }
         ]
       }
@@ -250,7 +250,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
           stem: "A query's plan shows `Seq Scan on orders (rows=4) (actual rows=1200000)`. What is the most likely cause?",
           options: [
             "The index is missing",
-            "Stale or missing statistics: the planner believed the table or the predicate's selectivity was tiny — run ANALYZE and re-check the estimate before touching indexes",
+            "Stale or missing statistics: the planner believed the table or the predicate's selectivity was tiny — run AnalysE and re-check the estimate before touching indexes",
             "The query needs a CTE",
             "The table is corrupt"
           ],
@@ -263,14 +263,14 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
 
   takeaways: [
     "**Parse, analyse, rewrite, plan, execute** — and performance lives in the planning stage.",
-    "**The planner never sees the data; it sees statistics** — row counts, most common values, histograms, n_distinct — gathered by ANALYZE from a sample.",
-    "**A physical plan is a tree read from the leaves up**; each node carries an estimated row count, and EXPLAIN ANALYZE adds the actual.",
+    "**The planner never sees the data; it sees statistics** — row counts, most common values, histograms, n_distinct — gathered by AnalysE from a sample.",
+    "**A physical plan is a tree read from the leaves up**; each node carries an estimated row count, and EXPLAIN AnalysE adds the actual.",
     "**Cost is unitless and relative**: sequential pages cheap, random pages dear, rows a little each. Plans are ranked by it; it is not a time.",
     "**Selectivity decides the access path**: an index wins at 5 % of rows and loses at 90 %, from the same statistic.",
     "**Cost scales with rows touched whatever the plan says** — the same index scan is 17× slower on the common value.",
     "**Filters are pushed down into scans** so fewer rows reach the joins; that is the rewriter and planner working for you.",
     "**A bad plan is almost always a bad estimate**, and a bad estimate is usually stale statistics or a false independence assumption.",
-    "**ANALYZE after a bulk load; CREATE STATISTICS for correlated columns** — before adding an index.",
+    "**AnalysE after a bulk load; CREATE STATISTICS for correlated columns** — before adding an index.",
     "**Prepared statements cache plans; a plan for one parameter value can be wrong for another** — parameter sniffing, and PostgreSQL's custom-versus-generic switch."
   ],
 
@@ -289,7 +289,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
         why: "The choice is a cost comparison driven by selectivity. The same index is used for 'refunded' at 5 %. An index that no query would use at the data's actual selectivity is an index to drop."
       },
       {
-        stem: "What does ANALYZE do, and what does it not do?",
+        stem: "What does AnalysE do, and what does it not do?",
         options: [
           "It rebuilds indexes",
           "It samples the table and stores per-column statistics — row count, null fraction, distinct count, most common values, histogram — for the planner; it changes no data and builds no index",
@@ -297,7 +297,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
           "It defragments the table"
         ],
         answer: 1,
-        why: "ANALYZE refreshes the planner's beliefs. EXPLAIN ANALYZE, confusingly, is a different thing: it runs the query and reports actual row counts and times per node."
+        why: "AnalysE refreshes the planner's beliefs. EXPLAIN AnalysE, confusingly, is a different thing: it runs the query and reports actual row counts and times per node."
       },
       {
         stem: "`WHERE city = 'Leeds' AND postcode LIKE 'LS%'` is estimated at 0.04 % of rows and returns 2 %. Why?",
@@ -342,7 +342,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
       {
         level: "core",
         q: "How does a database decide how to execute a query?",
-        strong: "It parses the text, binds names and types, rewrites views and CTEs into the tree, and then the planner searches over physical plans — which scan for each table, which join algorithm and order — scoring each with a cost model. The costs come from parameters like sequential versus random page cost, applied to estimated row counts, and the row counts come from statistics ANALYZE gathered: most common values for equality selectivity, histograms for ranges, n_distinct for joins. The cheapest estimated plan runs. So when a query is slow, I look for the node where the estimate and the actual disagree, because the planner optimised for a table that does not match the one it read.",
+        strong: "It parses the text, binds names and types, rewrites views and CTEs into the tree, and then the planner searches over physical plans — which scan for each table, which join algorithm and order — scoring each with a cost model. The costs come from parameters like sequential versus random page cost, applied to estimated row counts, and the row counts come from statistics AnalysE gathered: most common values for equality selectivity, histograms for ranges, n_distinct for joins. The cheapest estimated plan runs. So when a query is slow, I look for the node where the estimate and the actual disagree, because the planner optimised for a table that does not match the one it read.",
         answer: [
           { t: "p", text: "Tracing the plan back to the statistics that produced it is the core of the answer." }
         ]
@@ -350,7 +350,7 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
       {
         level: "core",
         q: "Why would the planner ignore an index that exists?",
-        strong: "Because it estimated that using it would cost more. An index scan pays a random page read per matching row unless the index covers the query, so above some selectivity — often tens of per cent — one sequential pass is cheaper, and the planner is right to skip the index. It might also be wrong: stale statistics can make a rare value look common, a type mismatch or a function on the column can make the predicate unindexable, or the index might not match the predicate's shape. I check EXPLAIN for the estimate, ANALYZE if it is off, and only then look at whether the predicate is sargable or the index is the right one.",
+        strong: "Because it estimated that using it would cost more. An index scan pays a random page read per matching row unless the index covers the query, so above some selectivity — often tens of per cent — one sequential pass is cheaper, and the planner is right to skip the index. It might also be wrong: stale statistics can make a rare value look common, a type mismatch or a function on the column can make the predicate unindexable, or the index might not match the predicate's shape. I check EXPLAIN for the estimate, AnalysE if it is off, and only then look at whether the predicate is sargable or the index is the right one.",
         answer: [
           { t: "p", text: "Starting from 'the planner may be right' and listing the three ways it could be wrong shows calibrated judgement." }
         ]

@@ -112,7 +112,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1827",
-   "q": "Program 1827: Thread Event Signaling",
+   "q": "Program 1827: Thread Event Signalling",
    "body": [
     {
      "t": "code",

@@ -111,7 +111,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "05", text: "Sparse attention", id: "sparse" },
 
-    {"kind": "trace", "title": "Four O(n) patterns, and they get there four different ways", "caption": "**Longformer and BigBird keep real attention and restrict *which* pairs are computed — window plus a few global tokens, with BigBird adding random connections and the proof that sparse attention is Turing complete.** Linformer and Performer instead **approximate**: one projects K and V to a fixed dimension before attending, the other uses random feature maps to approximate the softmax kernel without ever forming the matrix. **Which is the real split: restricted-exact against full-approximate.**", "left": "model", "codeW": 150, "vars": ["pattern", "exact or approximate"], "steps": [{"code": "Longformer", "state": ["sliding window + global tokens", "exact, restricted"], "tone": "good"}, {"code": "BigBird", "state": ["random + window + global", "exact, restricted"], "changed": [0], "tone": "good", "note": "Turing complete"}, {"code": "Linformer", "state": ["low-rank projection of K, V", "APPROXIMATE"], "changed": [0, 1], "tone": "warn"}, {"code": "Performer", "state": ["FAVOR+ random features", "APPROXIMATE"], "changed": [0], "tone": "warn", "note": "never forms the matrix"}], "t": "diagram", "id": "dg-5_2-05-3"},
+    {"kind": "trace", "title": "Four O(n) patterns, and they get there four different ways", "caption": "**Longformer and BigBird keep real attention and restrict *which* pairs are computed — window plus a few global tokens, with BigBird adding random connections and the proof that sparse attention is Turing complete.** Linformer and Performer instead **approximate**: one projects K and V to a fixed dimension before attending, the other uses random feature maps to approximate the softmax kernel without ever forming the matrix. **Which is the real split: restricted-exact against full-approximate.**", "left": "model", "codeW": 150, "vars": ["pattern", "exact or approximate"], "steps": [{"code": "Longformer", "state": ["sliding window + global tokens", "exact, restricted"], "tone": "good"}, {"code": "BigBird", "state": ["random + window + global", "exact, restricted"], "changed": [0], "tone": "good", "note": "Turing complete"}, {"code": "Linformer", "state": ["low-rank projection of K, V", "APPROXIMATE"], "changed": [0, 1], "tone": "warn"}, {"code": "Performer", "state": ["Favour+ random features", "APPROXIMATE"], "changed": [0], "tone": "warn", "note": "never forms the matrix"}], "t": "diagram", "id": "dg-5_2-05-3"},
 
 
 
@@ -124,14 +124,14 @@ EC.receiveLesson({
         ["Longformer", "Sliding window + global tokens", "O(n)", "Local attention everywhere, full attention for a few task-chosen tokens like [CLS]"],
         ["BigBird", "Random + window + global", "O(n)", "Adds random connections; proved sparse attention is Turing complete"],
         ["Linformer", "Low-rank projection", "O(n)", "Projects K and V down to a fixed dimension before attending"],
-        ["Performer", "Random feature maps", "O(n)", "FAVOR+ approximates the softmax kernel without forming the matrix"]
+        ["Performer", "Random feature maps", "O(n)", "Favour+ approximates the softmax kernel without forming the matrix"]
       ] },
 
     { t: "callout", kind: "tradeoff", title: "Sparse changes the answer; Flash does not",
       body: [{ t: "p", text: "This is the distinction that decides which to reach for. FlashAttention computes exactly the same function, so adopting it costs nothing but engineering. Every sparse method computes a **different** function — Longformer genuinely cannot attend from token 1 to token 4000 unless one of them is global, and Performer approximates the softmax kernel. That means re-evaluating on your task, and it means some capabilities are structurally removed. Given that Flash made exact attention affordable at long context, sparse patterns have become a narrower tool than they looked in 2020: use them when the sequences are genuinely enormous and the access pattern is genuinely local." }] },
 
     { t: "exercise", title: "Measure the cache and the kernel",
-      tasks: [
+      requirements: [
         "Compute your model's KV cache for your real batch size and context length, and compare it against the weights.",
         "Generate with `use_cache=True` and `False` at several lengths and plot the ratio.",
         "Implement online softmax and verify it matches standard attention at several block sizes.",

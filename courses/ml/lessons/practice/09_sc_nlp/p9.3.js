@@ -69,7 +69,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Sigmoid derivative max = 0.25. Multiplying through many layers: 0.25^20 ≈ 10^-12. Solutions: ReLU, batch normalization, residual connections, better initialization (He/Xavier)."
+     "text": "**Explanation:** Sigmoid derivative max = 0.25. Multiplying through many layers: 0.25^20 ≈ 10^-12. Solutions: ReLU, batch normalisation, residual connections, better initialisation (He/Xavier)."
     }
    ],
    "kind": ""
@@ -91,8 +91,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Gradient clipping: cap gradient magnitude",
-      "Proper initialization (Xavier/He)",
-      "Batch normalization",
+      "Proper initialisation (Xavier/He)",
+      "Batch normalisation",
       "Learning rate reduction"
      ]
     },
@@ -143,7 +143,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Mini-batch is standard practice. Batch size affects: convergence speed, generalization, memory usage. Larger batch → faster but may generalize worse."
+     "text": "**Explanation:** Mini-batch is standard practice. Batch size affects: convergence speed, generalisation, memory usage. Larger batch → faster but may generalise worse."
     }
    ],
    "kind": ""
@@ -151,7 +151,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "57",
-   "q": "What are common optimizers and when to use each?",
+   "q": "What are common optimisers and when to use each?",
    "body": [
     {
      "t": "p",
@@ -160,9 +160,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**SGD + Momentum:** Simple, good generalization, needs tuning",
+      "**SGD + Momentum:** Simple, good generalisation, needs tuning",
       "**Adam:** Adaptive learning rates, fast convergence, default choice",
-      "**AdamW:** Adam with decoupled weight decay (better regularization)",
+      "**AdamW:** Adam with decoupled weight decay (better regularisation)",
       "**RMSprop:** Good for RNNs"
      ]
     },
@@ -221,11 +221,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "60",
-   "q": "What is batch normalization and why does it help?",
+   "q": "What is batch normalisation and why does it help?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalizes layer inputs to zero mean and unit variance within each mini-batch, then applies learned scale and shift."
+     "text": "**Answer:** Normalises layer inputs to zero mean and unit variance within each mini-batch, then applies learned scale and shift."
     },
     {
      "t": "code",
@@ -234,7 +234,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Benefits: faster training, higher learning rates, slight regularization, reduces internal covariate shift. Applied before or after activation (debate). Uses running statistics at inference."
+     "text": "**Explanation:** Benefits: faster training, higher learning rates, slight regularisation, reduces internal covariate shift. Applied before or after activation (debate). Uses running statistics at inference."
     }
    ],
    "kind": ""
@@ -242,7 +242,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "61",
-   "q": "What is the difference between L1 and L2 regularization in neural networks?",
+   "q": "What is the difference between L1 and L2 regularisation in neural networks?",
    "body": [
     {
      "t": "p",
@@ -257,7 +257,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** L2 is more common in neural networks (weight_decay parameter in optimizers). L1 leads to sparse networks. Both prevent overfitting by penalizing large weights."
+     "text": "**Explanation:** L2 is more common in neural networks (weight_decay parameter in optimisers). L1 leads to sparse networks. Both prevent overfitting by penalising large weights."
     }
    ],
    "kind": ""
@@ -265,11 +265,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "62",
-   "q": "What is Xavier (Glorot) initialization?",
+   "q": "What is Xavier (Glorot) initialisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Initializes weights from distribution with variance = 2 / (fan_in + fan_out)."
+     "text": "**Answer:** Initialises weights from distribution with variance = 2 / (fan_in + fan_out)."
     },
     {
      "t": "code",
@@ -278,7 +278,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Designed for sigmoid/tanh activations. Keeps variance stable across layers. He initialization (variance = 2/fan_in) for ReLU activations."
+     "text": "**Explanation:** Designed for sigmoid/tanh activations. Keeps variance stable across layers. He initialisation (variance = 2/fan_in) for ReLU activations."
     }
    ],
    "kind": ""
@@ -303,7 +303,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Loss function defines what the network optimizes. Must match the task. Custom losses for specific business needs (e.g., asymmetric loss for imbalanced data)."
+     "text": "**Explanation:** Loss function defines what the network optimises. Must match the task. Custom losses for specific business needs (e.g., asymmetric loss for imbalanced data)."
     }
    ],
    "kind": ""
@@ -345,7 +345,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Prevents overfitting without explicit regularization. Training loss continues to decrease while validation loss increases → overfitting point. Restore best weights from the epoch with lowest validation loss."
+     "text": "**Explanation:** Prevents overfitting without explicit regularisation. Training loss continues to decrease while validation loss increases → overfitting point. Restore best weights from the epoch with lowest validation loss."
     }
    ],
    "kind": ""

@@ -47,7 +47,7 @@ EC.receiveLesson({
       "**KDE (Kernel Density Estimation):** \\(\\hat{f}(x) = \\frac{1}{nh}\\sum_{i=1}^n K\\left(\\frac{x-x_i}{h}\\right)\\)",
       "— \\(K\\): Kernel (usually Gaussian)",
       "— \\(h\\): Bandwidth (controls smoothness) — use Silverman's rule or CV",
-      "**Normalizing flows:** Neural network-based density estimation",
+      "**Normalising flows:** Neural network-based density estimation",
       "**Gaussian mixture:** Semi-parametric, flexible"
      ]
     }
@@ -111,7 +111,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**RMSE** penalizes large errors more (\\(\\sqrt{\\frac{1}{n}\\sum e_i^2}\\)) — sensitive to outliers",
+      "**RMSE** penalises large errors more (\\(\\sqrt{\\frac{1}{n}\\sum e_i^2}\\)) — sensitive to outliers",
       "**MAE** treats all errors equally (\\(\\frac{1}{n}\\sum |e_i|\\)) — robust to outliers"
      ]
     },
@@ -179,7 +179,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Question:** Should your model optimize for mean or median delivery time?"
+     "text": "**Question:** Should your model optimise for mean or median delivery time?"
     },
     {
      "t": "p",
@@ -188,7 +188,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Mean (MSE loss):** Penalizes late deliveries heavily. Good if you want to reduce worst-case",
+      "**Mean (MSE loss):** Penalises late deliveries heavily. Good if you want to reduce worst-case",
       "**Median (MAE loss):** Predicts the \"typical\" delivery time. Robust to outliers"
      ]
     },
@@ -215,7 +215,7 @@ EC.receiveLesson({
        "Quantile loss at 95%"
       ],
       [
-       "Cost optimization",
+       "Cost optimisation",
        "Mean",
        "MSE"
       ],
@@ -240,7 +240,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** Marketing wants to maximize clicks, product wants engagement, finance wants revenue. Your model can't optimize all three."
+     "text": "**Situation:** Marketing wants to maximise clicks, product wants engagement, finance wants revenue. Your model can't optimise all three."
     },
     {
      "t": "p",
@@ -252,7 +252,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Multi-objective optimization approaches:**"
+     "text": "**Multi-objective optimisation approaches:**"
     },
     {
      "t": "ol",
@@ -264,7 +264,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Constrained optimization:** Maximize revenue subject to engagement ≥ threshold, clicks ≥ threshold"
+      "**Constrained optimisation:** Maximise revenue subject to engagement ≥ threshold, clicks ≥ threshold"
      ]
     },
     {
@@ -301,7 +301,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Cause:** The retrained model is optimized for the **current data distribution**, which may have shifted from production. If you evaluate on the current training window, it looks good, but production sees data from the evolving distribution."
+     "text": "**Cause:** The retrained model is optimised for the **current data distribution**, which may have shifted from production. If you evaluate on the current training window, it looks good, but production sees data from the evolving distribution."
     },
     {
      "t": "p",
@@ -401,7 +401,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "50",
-   "q": "Bayesian Optimization for Hyperparameters",
+   "q": "Bayesian Optimisation for Hyperparameters",
    "body": [
     {
      "t": "p",
@@ -409,11 +409,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Question:** How does Bayesian optimization work mathematically?"
+     "text": "**Question:** How does Bayesian optimisation work mathematically?"
     },
     {
      "t": "p",
-     "text": "**Answer:** **Bayesian optimization** models the objective function \\(f(\\mathbf{x})\\) (validation loss) as a Gaussian Process:"
+     "text": "**Answer:** **Bayesian optimisation** models the objective function \\(f(\\mathbf{x})\\) (validation loss) as a Gaussian Process:"
     },
     {
      "t": "math",
@@ -425,7 +425,7 @@ EC.receiveLesson({
       "**Surrogate model (GP):** Predicts mean and uncertainty of \\(f\\) at any point",
       "**Acquisition function:** Balances exploration vs exploitation",
       "— **EI (Expected Improvement):** \\(EI(\\mathbf{x}) = E[\\max(f^* - f(\\mathbf{x}), 0)]\\)",
-      "— **UCB:** \\(\\alpha(\\mathbf{x}) = -\\mu(\\mathbf{x}) + \\kappa \\sigma(\\mathbf{x})\\) (for minimization: low mean or high uncertainty scores well)",
+      "— **UCB:** \\(\\alpha(\\mathbf{x}) = -\\mu(\\mathbf{x}) + \\kappa \\sigma(\\mathbf{x})\\) (for minimisation: low mean or high uncertainty scores well)",
       "**Next point:** \\(\\mathbf{x}_{\\text{next}} = \\arg\\max \\alpha(\\mathbf{x})\\)",
       "**Evaluate** \\(f(\\mathbf{x}_{\\text{next}})\\), update GP, repeat"
      ]

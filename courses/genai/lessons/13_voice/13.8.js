@@ -84,7 +84,7 @@ EC.receiveLesson({
       { k: "No nested structure at all", v: "There is no audio equivalent of indentation. A sub-list is simply a flat list with confusing transitions, so flatten deliberately rather than letting the synthesiser flatten it for you." }
     ] },
 
-    { t: "ladder", title: "The same answer, four ways",
+    { t: "ladder", lang: "text", title: "The same answer, four ways",
       rungs: [
         { level: "bad", label: "The chat answer, spoken",
           why: "377 characters, 27 seconds, 21 strings read aloud as punctuation, a three-item numbered list and three lettered options. The content is correct and the delivery is unusable.",

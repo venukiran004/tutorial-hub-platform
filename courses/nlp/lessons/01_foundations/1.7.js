@@ -183,8 +183,8 @@ predictions = crf.decode(emissions, mask=mask)   # inference: Viterbi`,
       ["Hybrid is usual", "Rules for the formatted entities, a model for the open ones, and a merge step that resolves overlaps with rules winning."]
     ] },
 
-    { t: "callout", kind: "trap", title: "Subword tokenization breaks the token-label alignment",
-      body: [{ t: "p", text: "Your labels are per word; a transformer's tokens are subwords. `Washington` might become `Wash` + `##ington`, so one label now has to cover two positions. The standard convention is to label the first subword and mark the rest with `-100` so they are ignored by the loss, then aggregate back at prediction time. Getting this wrong is one of the most common NER bugs and it fails quietly — the model trains, the loss falls, and entity boundaries land in the middle of words. HuggingFace's `word_ids()` on a fast tokenizer gives you the mapping to do it correctly." }] },
+    { t: "callout", kind: "trap", title: "Subword tokenisation breaks the token-label alignment",
+      body: [{ t: "p", text: "Your labels are per word; a transformer's tokens are subwords. `Washington` might become `Wash` + `##ington`, so one label now has to cover two positions. The standard convention is to label the first subword and mark the rest with `-100` so they are ignored by the loss, then aggregate back at prediction time. Getting this wrong is one of the most common NER bugs and it fails quietly — the model trains, the loss falls, and entity boundaries land in the middle of words. HuggingFace's `word_ids()` on a fast tokeniser gives you the mapping to do it correctly." }] },
 
     { t: "exercise", kind: "practice", title: "Build and evaluate an NER model properly", difficulty: "core", minutes: 40,
       prompt: "Implement span decoding from BIO tags and a span-level precision, recall and F1. Take a trained NER model and report both token accuracy and span F1 on the same predictions — confirm the gap. Then break the predictions deliberately three ways: shift one boundary, change one type, and split one entity into two, and check that span F1 penalises each correctly. Finally, add a CRF layer to a token classifier and count how many invalid transitions each model emits on the test set.",
@@ -211,12 +211,12 @@ predictions = crf.decode(emissions, mask=mask)   # inference: Viterbi`,
     "A span counts only if the type and both boundaries are right — there is no partial credit.",
     "Six of twenty-five tag transitions are structurally invalid; a per-token softmax can emit them and a CRF cannot.",
     "Rules beat models on formatted entities; transformers win on open categories; hybrids are usual.",
-    "Subword tokenization breaks per-word labels — label the first subword and mask the rest with `-100`."
+    "Subword tokenisation breaks per-word labels — label the first subword and mask the rest with `-100`."
   ],
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does BIO tagging need the `B-` prefix?",
-      options: ["To mark the entity type", "To separate two adjacent entities of the same type", "To help the tokenizer", "To indicate confidence"],
+      options: ["To mark the entity type", "To separate two adjacent entities of the same type", "To help the tokeniser", "To indicate confidence"],
       answer: 1,
       why: "With only `I-` and `O`, a run of four `PER` tokens is indistinguishable from two two-token names side by side — `Steve Jobs Tim Cook` decodes as one person. That is rare in prose and routine in lists and credits, which is exactly where NER is used." },
     { stem: "A model gets 83.3 % token accuracy. What span F1 might it have?",

@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Bimodality often indicates the data contains two distinct subpopulations. Investigation: (1) color the histogram by a categorical feature (e.g., gender, product type) to see if peaks separate by group, (2) check if the feature definition changed over time (plot by date), (3) verify it's not a data error (e.g., mixed units — feet vs meters). Action: if subpopulations are meaningful, consider separate models or add an interaction feature. Never just average over bimodal distributions — it misrepresents both groups."
+     "text": "Bimodality often indicates the data contains two distinct subpopulations. Investigation: (1) colour the histogram by a categorical feature (e.g., gender, product type) to see if peaks separate by group, (2) check if the feature definition changed over time (plot by date), (3) verify it's not a data error (e.g., mixed units — feet vs meters). Action: if subpopulations are meaningful, consider separate models or add an interaction feature. Never just average over bimodal distributions — it misrepresents both groups."
     }
    ],
    "kind": ""
@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Plot points on a map using folium or plotly to identify clusters and patterns, (2) compute spatial density — KDE heatmaps to find hotspots, (3) check for geographic outliers (points in wrong country/ocean), (4) create spatial features: distance to landmarks, cluster assignment (DBSCAN), neighborhood density, (5) investigate spatial autocorrelation (Moran's I) — nearby points should have similar target values, (6) check for spatial bias — is your data uniformly distributed or concentrated in certain areas?"
+     "text": "(1) Plot points on a map using folium or plotly to identify clusters and patterns, (2) compute spatial density — KDE heatmaps to find hotspots, (3) check for geographic outliers (points in wrong country/ocean), (4) create spatial features: distance to landmarks, cluster assignment (DBSCAN), neighbourhood density, (5) investigate spatial autocorrelation (Moran's I) — nearby points should have similar target values, (6) check for spatial bias — is your data uniformly distributed or concentrated in certain areas?"
     }
    ],
    "kind": ""
@@ -218,7 +218,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "The dataset has high variance, heavy-tailed distributions, or extreme outliers that dominate statistics. Investigation: (1) check for outliers — a single extreme value can shift the mean significantly, (2) use robust statistics (median, IQR instead of mean, std), (3) bootstrap confidence intervals to quantify uncertainty, (4) increase sample size or use stratified sampling. This instability means your model may also be unstable — consider robust modeling techniques."
+     "text": "The dataset has high variance, heavy-tailed distributions, or extreme outliers that dominate statistics. Investigation: (1) check for outliers — a single extreme value can shift the mean significantly, (2) use robust statistics (median, IQR instead of mean, std), (3) bootstrap confidence intervals to quantify uncertainty, (4) increase sample size or use stratified sampling. This instability means your model may also be unstable — consider robust modelling techniques."
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Multi-method approach for robustness: (1) filter methods: mutual information, chi-squared test, point-biserial correlation, (2) wrapper method: recursive feature elimination with cross-validation, (3) embedded methods: L1 regularization (Lasso) coefficients, tree-based feature importance, (4) compare rankings across methods — features consistently ranked high are most reliable, (5) SHAP values for model-agnostic importance. Start with filter methods (fast) to eliminate obvious non-predictors, then refine with more expensive methods."
+     "text": "Multi-method approach for robustness: (1) filter methods: mutual information, chi-squared test, point-biserial correlation, (2) wrapper method: recursive feature elimination with cross-validation, (3) embedded methods: L1 regularisation (Lasso) coefficients, tree-based feature importance, (4) compare rankings across methods — features consistently ranked high are most reliable, (5) SHAP values for model-agnostic importance. Start with filter methods (fast) to eliminate obvious non-predictors, then refine with more expensive methods."
     }
    ],
    "kind": ""
@@ -238,11 +238,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "69",
-   "q": "You visualize feature distributions and see that several features follow a power law distribution. How does this affect modeling?",
+   "q": "You visualise feature distributions and see that several features follow a power law distribution. How does this affect modelling?",
    "body": [
     {
      "t": "p",
-     "text": "Power law features have extreme skewness and heavy tails — a few very large values dominate. This affects: (1) mean and standard deviation are unreliable, (2) StandardScaler doesn't work well, (3) linear models are distorted by extreme values. Solutions: log-transform (`np.log1p`), rank transform, or quantile transform. For tree-based models, raw values usually work fine since trees split by thresholds. Always visualize the transformed distribution to verify it's more analysis-friendly."
+     "text": "Power law features have extreme skewness and heavy tails — a few very large values dominate. This affects: (1) mean and standard deviation are unreliable, (2) StandardScaler doesn't work well, (3) linear models are distorted by extreme values. Solutions: log-transform (`np.log1p`), rank transform, or quantile transform. For tree-based models, raw values usually work fine since trees split by thresholds. Always visualise the transformed distribution to verify it's more analysis-friendly."
     }
    ],
    "kind": ""
@@ -250,11 +250,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "70",
-   "q": "You're doing EDA on a multi-class classification problem with 20 classes. Standard visualizations become cluttered. What's your approach?",
+   "q": "You're doing EDA on a multi-class classification problem with 20 classes. Standard visualisations become cluttered. What's your approach?",
    "body": [
     {
      "t": "p",
-     "text": "Hierarchical analysis: (1) group 20 classes into 3-5 super-classes first, analyze at that level, (2) use heatmaps instead of scatter plots (class × feature mean/median), (3) confusion matrix visualization for class separability, (4) t-SNE or UMAP to visualize class clusters in 2D, (5) analyze one-vs-rest: how does each class differ from the rest, (6) focus on the most confused pairs (classes that are hardest to separate). Small multiples (one plot per class) work better than one crowded plot."
+     "text": "Hierarchical analysis: (1) group 20 classes into 3-5 super-classes first, analyse at that level, (2) use heatmaps instead of scatter plots (class × feature mean/median), (3) confusion matrix visualisation for class separability, (4) t-SNE or UMAP to visualise class clusters in 2D, (5) analyse one-vs-rest: how does each class differ from the rest, (6) focus on the most confused pairs (classes that are hardest to separate). Small multiples (one plot per class) work better than one crowded plot."
     }
    ],
    "kind": ""
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "This is domain shift. Analysis: (1) segment the data by source and compare target distributions (KS test, histograms), (2) check if feature distributions also differ by source, (3) determine if the difference is meaningful or artifactual (e.g., higher churn on mobile might be real behavior vs. different tracking). Options: train separate models per source, add source as a feature, or use domain adaptation techniques. At minimum, ensure your train/test split respects source distribution."
+     "text": "This is domain shift. Analysis: (1) segment the data by source and compare target distributions (KS test, histograms), (2) check if feature distributions also differ by source, (3) determine if the difference is meaningful or artifactual (e.g., higher churn on mobile might be real behaviour vs. different tracking). Options: train separate models per source, add source as a feature, or use domain adaptation techniques. At minimum, ensure your train/test split respects source distribution."
     }
    ],
    "kind": ""
@@ -290,7 +290,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Major impact: (1) your model won't generalize to the full population — it's trained only on survivors, (2) features correlated with onboarding completion (but not with the target) may appear artificially important, (3) base rates are inflated (e.g., conversion appears high because non-converters already dropped off). Mitigation: try to obtain data on non-completers (even partial), adjust your analysis scope to acknowledge the limitation, build the model explicitly for the surviving population, and document this as a known limitation."
+     "text": "Major impact: (1) your model won't generalise to the full population — it's trained only on survivors, (2) features correlated with onboarding completion (but not with the target) may appear artificially important, (3) base rates are inflated (e.g., conversion appears high because non-converters already dropped off). Mitigation: try to obtain data on non-completers (even partial), adjust your analysis scope to acknowledge the limitation, build the model explicitly for the surviving population, and document this as a known limitation."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Don't check all pairs manually. (1) Train a Random Forest or XGBoost and use SHAP interaction values to rank top interactions, (2) use Friedman's H-statistic available in some tree implementations, (3) create interaction features for domain-relevant pairs only (not all combinations), (4) visualize top 10-20 interactions with partial dependence plots (PDP) and SHAP dependence plots, (5) check if adding top interaction features improves cross-validated performance. Focus on interactions that have both statistical significance and business interpretability."
+     "text": "Don't check all pairs manually. (1) Train a Random Forest or XGBoost and use SHAP interaction values to rank top interactions, (2) use Friedman's H-statistic available in some tree implementations, (3) create interaction features for domain-relevant pairs only (not all combinations), (4) visualise top 10-20 interactions with partial dependence plots (PDP) and SHAP dependence plots, (5) check if adding top interaction features improves cross-validated performance. Focus on interactions that have both statistical significance and business interpretability."
     }
    ],
    "kind": ""

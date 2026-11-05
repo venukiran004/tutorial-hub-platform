@@ -181,7 +181,7 @@ WHERE  keep.name = s.name AND keep.country IS NOT DISTINCT FROM s.country AND ke
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Loading a daily customer extract that sometimes arrives twice",
       rungs: [
         { level: "bad", label: "INSERT, then SELECT DISTINCT when reporting", code: `INSERT INTO customers SELECT * FROM extract_today;

@@ -128,7 +128,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `{'RED': 1, 'GREEN': 2, 'BLUE': 3}`, `True`, `False` **Explanation:** Custom enum-like behavior using metaclass."
+     "text": "**Answer:** `{'RED': 1, 'GREEN': 2, 'BLUE': 3}`, `True`, `False` **Explanation:** Custom enum-like behaviour using metaclass."
     }
    ],
    "prompt": [

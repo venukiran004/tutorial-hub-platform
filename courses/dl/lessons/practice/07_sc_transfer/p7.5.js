@@ -35,8 +35,8 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Shared features reduce total parameters",
-      "Inductive bias from related tasks improves generalization",
-      "Regularization — prevents overfitting to single task",
+      "Inductive bias from related tasks improves generalisation",
+      "Regularisation — prevents overfitting to single task",
       "Efficient inference — one forward pass for multiple outputs"
      ]
     },
@@ -61,7 +61,7 @@ EC.receiveLesson({
      "items": [
       "**Hard sharing:** Tasks share a common backbone, separate task-specific heads.",
       "— Simpler, fewer parameters, risk of negative transfer",
-      "**Soft sharing:** Each task has its own model, but parameters are regularized to be similar.",
+      "**Soft sharing:** Each task has its own model, but parameters are regularised to be similar.",
       "— More flexible, higher parameter count",
       "— Cross-stitch networks: learn linear combinations of task features"
      ]
@@ -155,7 +155,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**EWC:** Penalize changes to important weights",
+      "**EWC:** Penalise changes to important weights",
       "**PackNet:** Prune + assign freed weights to new tasks",
       "**Progressive Nets:** Add new columns for new tasks, freeze old",
       "**Replay:** Mix old task data when training new task"
@@ -230,7 +230,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key insight:** Learn initialization θ that adapts quickly (in few gradient steps) to any new task."
+     "text": "**Key insight:** Learn initialisation θ that adapts quickly (in few gradient steps) to any new task."
     },
     {
      "t": "p",
@@ -255,7 +255,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Simple and effective. No inner loop optimization (unlike MAML). Just learn a good embedding space where class means are discriminative. Scales to many classes easily."
+     "text": "**Explanation:** Simple and effective. No inner loop optimisation (unlike MAML). Just learn a good embedding space where class means are discriminative. Scales to many classes easily."
     }
    ],
    "kind": ""
@@ -263,7 +263,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "110",
-   "q": "What is the difference between metric-based, optimization-based, and model-based meta-learning?",
+   "q": "What is the difference between metric-based, optimisation-based, and model-based meta-learning?",
    "body": [
     {
      "t": "p",
@@ -283,8 +283,8 @@ EC.receiveLesson({
        "Siamese, Prototypical, Matching Networks"
       ],
       [
-       "Optimization-based",
-       "Learn good initialization for fast adaptation",
+       "Optimisation-based",
+       "Learn good initialisation for fast adaptation",
        "MAML, Reptile, Meta-SGD"
       ],
       [
@@ -296,7 +296,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Metric: embed and compare. Optimization: initialize and fine-tune. Model-based: feed support set as input → output predictions. Each has different inductive biases."
+     "text": "**Explanation:** Metric: embed and compare. Optimisation: initialise and fine-tune. Model-based: feed support set as input → output predictions. Each has different inductive biases."
     }
    ],
    "kind": ""
@@ -330,7 +330,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Faster convergence",
-      "Better generalization",
+      "Better generalisation",
       "More stable training"
      ]
     },
@@ -354,7 +354,7 @@ EC.receiveLesson({
      "t": "table",
      "head": [
       "Setting",
-      "Labeled Examples",
+      "Labelled Examples",
       "Example"
      ],
      "rows": [
@@ -488,7 +488,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "117",
-   "q": "What is the Pareto front in multi-task optimization?",
+   "q": "What is the Pareto front in multi-task optimisation?",
    "body": [
     {
      "t": "p",
@@ -501,7 +501,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Multi-objective optimization:** Find the best trade-off between tasks."
+     "text": "**Multi-objective optimisation:** Find the best trade-off between tasks."
     },
     {
      "t": "p",
@@ -589,11 +589,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "121",
-   "q": "What is domain randomization as a meta-learning approach?",
+   "q": "What is domain randomisation as a meta-learning approach?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Train on many randomized simulated environments → transfer to real world."
+     "text": "**Answer:** Train on many randomised simulated environments → transfer to real world."
     },
     {
      "t": "code",
@@ -602,7 +602,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Domain randomization treats each random configuration as a different \"task\" — the model meta-learns to handle variation. Key for sim-to-real transfer."
+     "text": "**Explanation:** Domain randomisation treats each random configuration as a different \"task\" — the model meta-learns to handle variation. Key for sim-to-real transfer."
     }
    ],
    "kind": ""
@@ -648,7 +648,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Each task has its own gating network that learns which experts to use. Tasks can share or specialize experts dynamically. Used at Google for recommendation systems."
+     "text": "**Explanation:** Each task has its own gating network that learns which experts to use. Tasks can share or specialise experts dynamically. Used at Google for recommendation systems."
     }
    ],
    "kind": ""
@@ -675,7 +675,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Regular meta-learning can overfit to meta-training tasks. Contrastive regularization gives more generalizable representations."
+     "text": "**Explanation:** Regular meta-learning can overfit to meta-training tasks. Contrastive regularisation gives more generalisable representations."
     }
    ],
    "kind": ""

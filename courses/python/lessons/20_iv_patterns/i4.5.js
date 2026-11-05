@@ -208,7 +208,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**CQRS** (Command Query Responsibility Segregation) separates the write side (commands that mutate state, often emitting events) from the read side (a query-optimized model). The read model is built by **applying/projecting events** from the write side."
+     "text": "**CQRS** (Command Query Responsibility Segregation) separates the write side (commands that mutate state, often emitting events) from the read side (a query-optimised model). The read model is built by **applying/projecting events** from the write side."
     },
     {
      "t": "p",

@@ -191,7 +191,7 @@ SELECT customer_id, MAX(placed_at), MAX(status) FROM orders GROUP BY customer_id
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Orders per customer, including customers with none",
       rungs: [
         { level: "bad", label: "Group the join, count the rows", code: `SELECT c.name, COUNT(*) FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id GROUP BY c.name;`,

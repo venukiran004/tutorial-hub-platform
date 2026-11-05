@@ -187,7 +187,7 @@ def version(i):
         ["sha256 of the artifact", "Is this the same file I tested? The only field that makes the rest trustworthy."],
         ["run_id", "What produced it — the link to params, metrics and the three fingerprints from 1.2."],
         ["data_sha, code_sha, env_sha", "Can it be rebuilt, and if the numbers differ, which of the three moved."],
-        ["Framework and version", "Will it even deserialize. A pickle is not portable across library versions, which is lesson 13.3."],
+        ["Framework and version", "Will it even deserialise. A pickle is not portable across library versions, which is lesson 13.3."],
         ["Input schema and dtypes", "What it expects to be called with, so a skewed caller fails loudly rather than silently."],
         ["Metrics at promotion", "What it scored when it was approved, so a regression is detectable rather than arguable."]
       ] },
@@ -195,7 +195,7 @@ def version(i):
     { t: "callout", kind: "trap", title: "A pickle is a version-coupled artifact, not a model",
       body: [
         { t: "p", text: "`joblib.dump` of a scikit-learn pipeline embeds the class paths and internal attribute layout of the installed version. Load it under a different sklearn and you get, in rough order of luck: an exception, a warning, or a silent behaviour change. The last one is the one that reaches production." },
-        { t: "p", text: "Which is why `env_sha` belongs in the pointer and why ONNX exists — a serialization boundary that is a specified format rather than a memory dump. Lesson 2.3 converts a model to it and measures what that costs, and 13.3 measures the silent-difference case directly." }
+        { t: "p", text: "Which is why `env_sha` belongs in the pointer and why ONNX exists — a serialisation boundary that is a specified format rather than a memory dump. Lesson 2.3 converts a model to it and measures what that costs, and 13.3 measures the silent-difference case directly." }
       ] },
 
     { t: "exercise", kind: "practice", title: "Price your own history", difficulty: "intro", minutes: 25,
@@ -206,7 +206,7 @@ def version(i):
         "The multiplication in the third step is usually where the answer comes from, not the first two."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The common outcome is that total storage is unremarkable and clone cost is the real bill — which is the shape of the measurement in this lesson, and it means the fix is a pointer rather than a bigger disk." },
           { t: "p", text: "The other common outcome is discovering that nobody can enumerate the versions in history at all, because the file was overwritten in place and committed with the message 'update data'. That is not a storage problem and a pointer will not fix it; it is the missing data fingerprint from 1.2." }
         ]

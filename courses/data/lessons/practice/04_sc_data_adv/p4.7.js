@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) Stratified randomization: randomize within iOS and Android separately, (2) analyze separately: test may work on one platform but not the other, (3) interaction analysis: platform × treatment interaction term in regression, (4) if effect is consistent across platforms: report overall result, (5) if different: report platform-specific results — may deploy differently, (6) ensure equal traffic split within each platform, (7) pre-test balance check: verify randomization worked per platform."
+     "text": "**Answer:** (1) Stratified randomisation: randomise within iOS and Android separately, (2) analyse separately: test may work on one platform but not the other, (3) interaction analysis: platform × treatment interaction term in regression, (4) if effect is consistent across platforms: report overall result, (5) if different: report platform-specific results — may deploy differently, (6) ensure equal traffic split within each platform, (7) pre-test balance check: verify randomisation worked per platform."
     }
    ],
    "kind": ""
@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Cluster randomization: randomize at network cluster level (e.g., geographic regions, friend groups), (2) graph cluster randomization: partition social graph, randomize clusters, (3) ego-network experiments: randomize egos and their alters together, (4) switchback experiments: alternate between treatment/control over time, (5) measure spillover directly: compare control users with many treated neighbors vs. few, (6) interference-robust estimators, (7) larger clusters reduce spillover but reduce sample size."
+     "text": "**Answer:** (1) Cluster randomisation: randomise at network cluster level (e.g., geographic regions, friend groups), (2) graph cluster randomisation: partition social graph, randomise clusters, (3) ego-network experiments: randomise egos and their alters together, (4) switchback experiments: alternate between treatment/control over time, (5) measure spillover directly: compare control users with many treated neighbours vs. few, (6) interference-robust estimators, (7) larger clusters reduce spillover but reduce sample size."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) A/B/n test: same principles, more variants, (2) main concern: diluted power — each variant gets fewer users, (3) multiple comparison correction: Bonferroni or Benjamini-Hochberg to control false discoveries, (4) more users needed: each pairwise comparison needs adequate power, (5) Bayesian approach: posterior probability each variant is best — naturally handles multiple comparisons, (6) multi-armed bandit: allocate more traffic to winning variants during test, (7) factorial design if testing independent features (e.g., color × layout)."
+     "text": "**Answer:** (1) A/B/n test: same principles, more variants, (2) main concern: diluted power — each variant gets fewer users, (3) multiple comparison correction: Bonferroni or Benjamini-Hochberg to control false discoveries, (4) more users needed: each pairwise comparison needs adequate power, (5) Bayesian approach: posterior probability each variant is best — naturally handles multiple comparisons, (6) multi-armed bandit: allocate more traffic to winning variants during test, (7) factorial design if testing independent features (e.g., colour × layout)."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature alignment: if combining data from multiple sensors, misaligned timestamps corrupt features, (2) NTP synchronization: ensure devices use network time protocol, (3) tolerance windows: join events within ±Δ seconds, (4) event ordering: use sequence numbers in addition to timestamps, (5) interpolation: resample all sensors to common time grid, (6) robust features: use statistics over longer windows (minutes, not seconds) to reduce sensitivity to clock drift, (7) monitor drift: track timestamp discrepancies over time."
+     "text": "**Answer:** (1) Feature alignment: if combining data from multiple sensors, misaligned timestamps corrupt features, (2) NTP synchronisation: ensure devices use network time protocol, (3) tolerance windows: join events within ±Δ seconds, (4) event ordering: use sequence numbers in addition to timestamps, (5) interpolation: resample all sensors to common time grid, (6) robust features: use statistics over longer windows (minutes, not seconds) to reduce sensitivity to clock drift, (7) monitor drift: track timestamp discrepancies over time."
     },
     {
      "t": "p",
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Query understanding: spell correction, synonym expansion, intent classification, (2) learning-to-rank: RankNet, LambdaMART — learn optimal ranking from click-through data, (3) features for ranking: BM25 score, click-through rate, conversion rate, freshness, popularity, price competitiveness, (4) semantic search: embed queries and products in same space (dense retrieval), (5) personalization: user history influences ranking, (6) query rewriting: expand ambiguous queries, (7) evaluation: NDCG@10, MRR, click-through rate, zero-result rate."
+     "text": "**Answer:** (1) Query understanding: spell correction, synonym expansion, intent classification, (2) learning-to-rank: RankNet, LambdaMART — learn optimal ranking from click-through data, (3) features for ranking: BM25 score, click-through rate, conversion rate, freshness, popularity, price competitiveness, (4) semantic search: embed queries and products in same space (dense retrieval), (5) personalisation: user history influences ranking, (6) query rewriting: expand ambiguous queries, (7) evaluation: NDCG@10, MRR, click-through rate, zero-result rate."
     }
    ],
    "kind": ""
@@ -178,11 +178,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Online store: Redis or DynamoDB for key-value lookup (< 1ms per feature), (2) batch pre-computation: compute features offline, materialize to online store, (3) feature grouping: store all user features together (single lookup), (4) read-through caching: if feature not in cache → compute and cache, (5) partition by entity key for distributed serving, (6) circuit breaker: if feature store is slow → use default values, (7) monitoring: p99 latency, cache hit rate, staleness, (8) async updates: stream updates as events arrive."
+     "text": "**Answer:** (1) Online store: Redis or DynamoDB for key-value lookup (< 1ms per feature), (2) batch pre-computation: compute features offline, materialise to online store, (3) feature grouping: store all user features together (single lookup), (4) read-through caching: if feature not in cache → compute and cache, (5) partition by entity key for distributed serving, (6) circuit breaker: if feature store is slow → use default values, (7) monitoring: p99 latency, cache hit rate, staleness, (8) async updates: stream updates as events arrive."
     },
     {
      "t": "p",
-     "text": "**Theme: Behavioral Data Science**"
+     "text": "**Theme: Behavioural Data Science**"
     }
    ],
    "kind": ""
@@ -190,7 +190,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "163",
-   "q": "You're analyzing user behavior on a website. Users can take multiple paths to conversion. How do you identify the most effective path?",
+   "q": "You're analysing user behaviour on a website. Users can take multiple paths to conversion. How do you identify the most effective path?",
    "body": [
     {
      "t": "p",
@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Likely confounded: (1) users who use Feature X may be more engaged overall (selection bias), (2) correlation ≠ causation: both Feature X usage and retention may be caused by higher motivation, (3) propensity score matching: compare similar users who did/didn't use Feature X, (4) instrumental variable: is there something that randomly increased Feature X exposure?, (5) A/B test: randomly expose users to Feature X via prompts, measure retention, (6) DAG analysis: draw causal graph with confounders, (7) if causal: Feature X is an \"aha moment\" → optimize onboarding to guide users there."
+     "text": "**Answer:** Likely confounded: (1) users who use Feature X may be more engaged overall (selection bias), (2) correlation ≠ causation: both Feature X usage and retention may be caused by higher motivation, (3) propensity score matching: compare similar users who did/didn't use Feature X, (4) instrumental variable: is there something that randomly increased Feature X exposure?, (5) A/B test: randomly expose users to Feature X via prompts, measure retention, (6) DAG analysis: draw causal graph with confounders, (7) if causal: Feature X is an \"aha moment\" → optimise onboarding to guide users there."
     },
     {
      "t": "p",
@@ -246,7 +246,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Centralized monitoring dashboard: all models on one view, (2) standardized metrics: every model reports same core metrics (latency, error rate, drift score), (3) tiered alerting: critical (model down) → urgent (drift detected) → informational (performance trending down), (4) automated health checks: scheduled evaluation on holdout data, (5) model scorecards: monthly automated report per model, (6) on-call rotation: ML engineer responsible for production issues, (7) runbooks: standard procedures for common issues per model."
+     "text": "**Answer:** (1) Centralised monitoring dashboard: all models on one view, (2) standardised metrics: every model reports same core metrics (latency, error rate, drift score), (3) tiered alerting: critical (model down) → urgent (drift detected) → informational (performance trending down), (4) automated health checks: scheduled evaluation on holdout data, (5) model scorecards: monthly automated report per model, (6) on-call rotation: ML engineer responsible for production issues, (7) runbooks: standard procedures for common issues per model."
     },
     {
      "t": "p",
@@ -274,7 +274,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Challenge: customers who join loyalty programs may already be high spenders. (1) Propensity score matching: match joiners with similar non-joiners on pre-program features, (2) DiD: compare spending trends before/after joining vs. non-joiners, (3) regression discontinuity: if there's a qualifying threshold, compare just above/below, (4) IV: use distance to store (affects enrollment) as instrument, (5) always present: \"estimated causal effect with these assumptions: ...\", (6) best: advocate for randomized rollout or holdout for future programs."
+     "text": "**Answer:** Challenge: customers who join loyalty programs may already be high spenders. (1) Propensity score matching: match joiners with similar non-joiners on pre-program features, (2) DiD: compare spending trends before/after joining vs. non-joiners, (3) regression discontinuity: if there's a qualifying threshold, compare just above/below, (4) IV: use distance to store (affects enrollment) as instrument, (5) always present: \"estimated causal effect with these assumptions: ...\", (6) best: advocate for randomised rollout or holdout for future programs."
     },
     {
      "t": "p",
@@ -290,7 +290,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model inventory: catalog all models, purpose, owner, risk tier, (2) risk tiering: Tier 1 (high-risk: financial, health, safety), Tier 2 (medium: recommendations, pricing), Tier 3 (low: internal analytics), (3) development standards: code review, documentation, testing requirements per tier, (4) validation: independent validation for Tier 1 before deployment, (5) model cards: standardized documentation template, (6) monitoring requirements: drift, performance, fairness — frequency based on tier, (7) review cadence: annual review for all, quarterly for Tier 1, (8) decommissioning: process for retiring models, (9) audit trail: all decisions and changes documented."
+     "text": "**Answer:** (1) Model inventory: catalog all models, purpose, owner, risk tier, (2) risk tiering: Tier 1 (high-risk: financial, health, safety), Tier 2 (medium: recommendations, pricing), Tier 3 (low: internal analytics), (3) development standards: code review, documentation, testing requirements per tier, (4) validation: independent validation for Tier 1 before deployment, (5) model cards: standardised documentation template, (6) monitoring requirements: drift, performance, fairness — frequency based on tier, (7) review cadence: annual review for all, quarterly for Tier 1, (8) decommissioning: process for retiring models, (9) audit trail: all decisions and changes documented."
     }
    ],
    "kind": ""
@@ -302,7 +302,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model card: purpose, methodology, limitations, (2) feature list with business definitions and data sources, (3) model architecture and training procedure, (4) validation results: accuracy, calibration, across subgroups, (5) fairness analysis: disparate impact, equalized odds per protected group, (6) sample explanations: SHAP/LIME for representative decisions, (7) monitoring reports: ongoing performance and drift, (8) override process: when and how humans can override, (9) change history: log of all model updates with justification."
+     "text": "**Answer:** (1) Model card: purpose, methodology, limitations, (2) feature list with business definitions and data sources, (3) model architecture and training procedure, (4) validation results: accuracy, calibration, across subgroups, (5) fairness analysis: disparate impact, equalised odds per protected group, (6) sample explanations: SHAP/LIME for representative decisions, (7) monitoring reports: ongoing performance and drift, (8) override process: when and how humans can override, (9) change history: log of all model updates with justification."
     },
     {
      "t": "p",
@@ -330,7 +330,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't use raw probability — it's not well-calibrated, (2) calibrate: Platt scaling or isotonic regression to get true probabilities, (3) discretize into buckets: \"High Confidence,\" \"Medium,\" \"Low\" based on calibrated thresholds, (4) validate: \"High Confidence\" predictions should actually be right 90%+ of the time, (5) user-facing text: \"We're fairly confident\" vs. technical P(positive)=0.73, (6) visual: color coding or confidence bars, (7) important: calibration evaluation — reliability diagram."
+     "text": "**Answer:** (1) Don't use raw probability — it's not well-calibrated, (2) calibrate: Platt scaling or isotonic regression to get true probabilities, (3) discretise into buckets: \"High Confidence,\" \"Medium,\" \"Low\" based on calibrated thresholds, (4) validate: \"High Confidence\" predictions should actually be right 90%+ of the time, (5) user-facing text: \"We're fairly confident\" vs. technical P(positive)=0.73, (6) visual: colour coding or confidence bars, (7) important: calibration evaluation — reliability diagram."
     },
     {
      "t": "p",
@@ -358,7 +358,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Test-time adaptation (TTA): fine-tune on test batch using self-supervised objectives, (2) domain generalization: train to be robust across domains from the start, (3) batch normalization adaptation: update BN statistics with test batch, (4) prediction-time augmentation: average predictions over augmented versions, (5) calibration adjustment: recalibrate probabilities using unlabeled test data, (6) importance weighting: weight training examples by similarity to test distribution, (7) ensemble: models trained on diverse domains."
+     "text": "**Answer:** (1) Test-time adaptation (TTA): fine-tune on test batch using self-supervised objectives, (2) domain generalisation: train to be robust across domains from the start, (3) batch normalisation adaptation: update BN statistics with test batch, (4) prediction-time augmentation: average predictions over augmented versions, (5) calibration adjustment: recalibrate probabilities using unlabelled test data, (6) importance weighting: weight training examples by similarity to test distribution, (7) ensemble: models trained on diverse domains."
     }
    ],
    "kind": ""

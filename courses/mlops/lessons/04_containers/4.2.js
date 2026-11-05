@@ -180,7 +180,7 @@ EC.receiveLesson({
         "Check for torch, matplotlib or jupyter in a serving requirements file — all three are large and none is usually imported at inference."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The context ratio is usually dominated by one directory — `.venv`, `node_modules`, `.git` or raw data — and a single `.dockerignore` line fixes most of it. Teams are often surprised that the context is larger than the image." },
           { t: "p", text: "The dependency audit tends to find one large library that serving never imports. Removing it is free, and the measurement here puts torch at 446.7 MB, which is 2.4 times the whole scikit-learn serving stack." }
         ]

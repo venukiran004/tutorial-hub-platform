@@ -201,7 +201,7 @@ naw.BackTranslationAug(from_model_name="facebook/wmt19-en-de",
     { t: "p", text: "**Two rules make augmentation safe rather than merely plausible: augment the training split only, and inspect a sample before trusting the pipeline.** Augmenting before the split puts near-duplicates of the same sentence on both sides of it, which inflates the validation score exactly as a duplicate row would — and reading twenty augmented examples takes a minute and catches the inverted labels no metric will show you." },
 
     { t: "exercise", title: "Build a verified augmentation pipeline",
-      tasks: [
+      requirements: [
         "Run synonym replacement over 100 of your own sentences and count how many survive an entailment filter.",
         "Inspect twenty discarded ones and classify why each failed — wrong sense, proper noun, broken grammar.",
         "Compare back-translation against synonym replacement on survival rate and on downstream accuracy.",

@@ -88,7 +88,7 @@ EC.receiveLesson({
       "`max_depth`: Tree complexity; 3–6 typical.",
       "`subsample`: Row sampling each iteration; reduces overfitting.",
       "`colsample_bytree`: Feature sampling; reduces correlation between trees.",
-      "`lambda` / `alpha`: L2/L1 regularization on leaf weights.",
+      "`lambda` / `alpha`: L2/L1 regularisation on leaf weights.",
       "`min_child_weight`: Minimum sum of hessians in a leaf; controls pruning."
      ]
     }
@@ -136,7 +136,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "107",
-   "q": "What is stacking (stacked generalization)?",
+   "q": "What is stacking (stacked generalisation)?",
    "body": [
     {
      "t": "p",
@@ -259,7 +259,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "`n_estimators`: More trees → better generalization (diminishing returns after ~200-500; never hurts accuracy, only speed).",
+      "`n_estimators`: More trees → better generalisation (diminishing returns after ~200-500; never hurts accuracy, only speed).",
       "`max_depth`: Deeper trees → higher variance. Use `None` (full depth) with enough trees OR limit depth to tune bias-variance."
      ]
     }
@@ -310,7 +310,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Applies dropout to trees during boosting (randomly drops some previously learned trees). Prevents over-specialization of later trees and reduces overfitting. Available in XGBoost and LightGBM as `booster=\"dart\"`."
+     "text": "Applies dropout to trees during boosting (randomly drops some previously learned trees). Prevents over-specialisation of later trees and reduces overfitting. Available in XGBoost and LightGBM as `booster=\"dart\"`."
     }
    ],
    "kind": ""

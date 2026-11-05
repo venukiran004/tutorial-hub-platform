@@ -109,7 +109,7 @@ EC.receiveLesson({
     { t: "p", text: "The cost structure favours it too: the vision model runs **once per asset at ingest**, not once per query. C inverts that, which is the same precompute argument 6.1 made about bi-encoders \u2014 work that does not depend on the query belongs before the query arrives." },
     { t: "h2", n: "04", id: "summary", text: "The summary is a prompt-engineering problem", sub: "And it sets the system's ceiling" },
     { t: "p", text: "Since what the summary omits is **permanently unretrievable**, the summarisation instruction decides the ceiling of the whole system. That makes it the highest-leverage prompt in a multimodal pipeline, and it is usually an afterthought." },
-    { t: "ladder", title: "Summarising a pricing table", rungs: [
+    { t: "ladder", lang: "text", title: "Summarising a pricing table", rungs: [
       { level: "bad", label: "Describe the asset", why: "Retrievable by nothing a user would ask.",
         code: "A table showing pricing information.",
         note: "A query for 'rate limit on Growth' has nothing to match. The table is in the index and is effectively invisible." },

@@ -263,7 +263,7 @@ def label(X, t, rng):                   # t=0 launch rule, t=1 downturn rule
         "A drift alert nobody acted on was probably World A. That is worth saying out loud rather than treating it as a failure of discipline."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The useful outcome is a label-delay figure and an honest list. Most teams discover two things: the delay is much longer than they assumed, and the only harm-correlated signal they have is one that needs labels they do not have yet." },
           { t: "p", text: "That gap is not solved by a better detector. It is solved by logging enough at prediction time that the measurement becomes possible once the labels land, plus a proxy that is genuinely correlated with harm in the meantime — a human review sample, a complaint rate, a downstream business metric. Picking that proxy is lesson 16.1's four pillars, and the business metric is the one that proves harm." }
         ]

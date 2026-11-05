@@ -704,7 +704,7 @@ EC.receiveLesson({
        "Django, Flask-Login"
       ],
       [
-       "**Authorization**",
+       "**Authorisation**",
        "`@require_role(\"admin\")`",
        "Custom RBAC"
       ],
@@ -754,7 +754,7 @@ EC.receiveLesson({
        "Test setup and mocking"
       ],
       [
-       "**Serialization**",
+       "**Serialisation**",
        "`@dataclass`",
        "Data models"
       ],
@@ -791,7 +791,7 @@ EC.receiveLesson({
       [
        "**Error handling**",
        "`@handle_exceptions`",
-       "Centralized error management"
+       "Centralised error management"
       ]
      ]
     },

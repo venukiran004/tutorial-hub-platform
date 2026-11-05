@@ -210,7 +210,7 @@ after three points at −1.5, 0, 2:   EI proposes x = 2.65 (EI 0.511);   UCB wit
 # the exercise repeats it with arms 0.10 / 0.11 / 0.12: Thompson 29.0, UCB1 43.6, ε-greedy 27.3 ± 22.8, uniform 50.0`,
       caption: "Thompson sampling explores exactly as much as its uncertainty warrants: an arm with a wide posterior is sometimes sampled high and pulled, an arm whose posterior has collapsed below the leader almost never is. It has no exploration parameter to tune, extends to contextual bandits by putting the posterior on a model, and is the standard answer to 11.1's rollout question when the aim is to *learn which variant is better while serving it* rather than to run a fixed-size test. The same machinery — a posterior sampled rather than maximised — is why it is cheaper than UCB to get right." },
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "Choosing a Bayesian tool",
       rungs: [
         { level: "bad", label: "A point estimate and a post-hoc 'confidence' from the residuals", code: `w = OLS(X, y); interval = w ± 2 * resid.std()`,

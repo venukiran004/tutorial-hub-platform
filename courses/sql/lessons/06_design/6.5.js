@@ -198,7 +198,7 @@ SELECT year_month, SUM(line_total) AS revenue FROM sales_wide WHERE status = 'pa
       { t: "p", text: "All three analytical shapes are derived, and the derivation is where the difficult joins, the NULL-handling decisions and the SCD logic live — written once, tested once, run on a schedule. **Every query after that is a GROUP BY.** When analysts are writing five-way joins with COALESCE in every dashboard, that is a sign the derivation step is missing, not that they need to get better at joins." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Monthly revenue by customer tier for the last two years",
       rungs: [
         { level: "bad", label: "Against the operational tables, live", code: `SELECT date_trunc('month', o.placed_at), c.tier, SUM(oi.qty * oi.unit_price)

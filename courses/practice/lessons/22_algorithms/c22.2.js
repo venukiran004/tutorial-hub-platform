@@ -197,7 +197,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2607",
-   "q": "Program 2607: KD-Tree (Nearest Neighbor)",
+   "q": "Program 2607: KD-Tree (Nearest Neighbour)",
    "body": [
     {
      "t": "code",
@@ -278,7 +278,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2611",
-   "q": "Program 2611: Serialize/Deserialize Binary Tree",
+   "q": "Program 2611: Serialise/Deserialize Binary Tree",
    "body": [
     {
      "t": "code",

@@ -40,7 +40,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "77",
-   "q": "TF-IDF Vectorization",
+   "q": "TF-IDF Vectorisation",
    "body": [
     {
      "t": "code",
@@ -130,7 +130,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "82",
-   "q": "Nearest Neighbors Search",
+   "q": "Nearest Neighbours Search",
    "body": [
     {
      "t": "code",
@@ -382,7 +382,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "96",
-   "q": "Latent Dirichlet Allocation (Topic Modeling)",
+   "q": "Latent Dirichlet Allocation (Topic Modelling)",
    "body": [
     {
      "t": "code",
@@ -400,7 +400,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "97",
-   "q": "Normalizer (Row-wise L2)",
+   "q": "Normaliser (Row-wise L2)",
    "body": [
     {
      "t": "code",

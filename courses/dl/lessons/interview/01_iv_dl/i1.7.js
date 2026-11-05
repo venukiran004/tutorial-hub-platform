@@ -16,17 +16,17 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Training Techniques & Regularization",
+   "text": "Training Techniques & Regularisation",
    "id": "set"
   },
   {
    "t": "drill",
    "n": "121",
-   "q": "What is weight initialization and why does it matter?",
+   "q": "What is weight initialisation and why does it matter?",
    "body": [
     {
      "t": "p",
-     "text": "Poor initialization → vanishing/exploding gradients before training starts."
+     "text": "Poor initialisation → vanishing/exploding gradients before training starts."
     },
     {
      "t": "ul",
@@ -42,7 +42,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "122",
-   "q": "What is Layer Normalization vs Batch Normalization?",
+   "q": "What is Layer Normalisation vs Batch Normalisation?",
    "body": [
     {
      "t": "table",
@@ -53,14 +53,14 @@ EC.receiveLesson({
      ],
      "rows": [
       [
-       "Normalizes over",
+       "Normalises over",
        "Batch dimension",
        "Feature dimension"
       ],
       [
        "Training/inference",
-       "Different behavior",
-       "Same behavior"
+       "Different behaviour",
+       "Same behaviour"
       ],
       [
        "Works with",
@@ -80,11 +80,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "123",
-   "q": "What is Group Normalization and when is it used?",
+   "q": "What is Group Normalisation and when is it used?",
    "body": [
     {
      "t": "p",
-     "text": "Divides channels into groups and normalizes within each group independently. Works well with small batch sizes (e.g., object detection where batch size = 1-2):"
+     "text": "Divides channels into groups and normalises within each group independently. Works well with small batch sizes (e.g., object detection where batch size = 1-2):"
     },
     {
      "t": "math",
@@ -96,11 +96,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "124",
-   "q": "What is spectral normalization in GANs?",
+   "q": "What is spectral normalisation in GANs?",
    "body": [
     {
      "t": "p",
-     "text": "Constrains the Lipschitz constant of the discriminator by normalizing each weight matrix by its spectral norm (largest singular value). Stabilizes GAN training without needing gradient penalty."
+     "text": "Constrains the Lipschitz constant of the discriminator by normalising each weight matrix by its spectral norm (largest singular value). Stabilises GAN training without needing gradient penalty."
     }
    ],
    "kind": ""
@@ -114,7 +114,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Dropout:** Randomly zeroes individual activations. Ineffective for CNNs (nearby units carry same info).",
-      "**DropBlock:** Drops contiguous spatial regions (blocks) of feature maps. More effective regularization for CNNs."
+      "**DropBlock:** Drops contiguous spatial regions (blocks) of feature maps. More effective regularisation for CNNs."
      ]
     }
    ],
@@ -244,16 +244,16 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "134",
-   "q": "What is implicit regularization in deep learning?",
+   "q": "What is implicit regularisation in deep learning?",
    "body": [
     {
      "t": "p",
-     "text": "Properties of the optimizer (especially SGD) that implicitly regularize the model even without explicit regularization terms:"
+     "text": "Properties of the optimiser (especially SGD) that implicitly regularise the model even without explicit regularisation terms:"
     },
     {
      "t": "ul",
      "items": [
-      "SGD finds minimum-norm solutions in over-parameterized settings.",
+      "SGD finds minimum-norm solutions in over-parameterised settings.",
       "Large learning rates prefer flatter minima."
      ]
     },
@@ -271,7 +271,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "In the infinite-width limit, neural networks trained with gradient descent behave like kernel regression with the NTK. Provides theoretical grounding for: convergence analysis, generalization bounds, and understanding why over-parameterized networks generalize well."
+     "text": "In the infinite-width limit, neural networks trained with gradient descent behave like kernel regression with the NTK. Provides theoretical grounding for: convergence analysis, generalisation bounds, and understanding why over-parameterised networks generalise well."
     }
    ],
    "kind": ""
@@ -345,7 +345,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Use float16 (or bfloat16) for forward pass and gradient computation, float32 for optimizer state:"
+     "text": "Use float16 (or bfloat16) for forward pass and gradient computation, float32 for optimiser state:"
     },
     {
      "t": "code",

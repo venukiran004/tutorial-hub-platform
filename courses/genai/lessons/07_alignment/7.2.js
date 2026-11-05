@@ -307,7 +307,7 @@ for per_day in (1e6, 1e9, 1e12):
           "Because inference uses only the forward pass, which is unaffected by training length",
           "Because inference FLOPs are approximately 2N per generated token \u2014 a function of model size alone \u2014 so the saving comes entirely from being able to choose a smaller N",
           "Because KV caching eliminates the dependence on training data volume",
-          "Because quantization at serving time overwrites any benefit from longer training"
+          "Because quantisation at serving time overwrites any benefit from longer training"
         ],
         answer: 1,
         why: "Inference cost depends on N and not on D, so training a fixed-size model for longer adds training expense and changes serving cost by nothing. The strategy works only because longer training is supposed to let a smaller model reach a target quality, and the entire saving is attributable to that reduction in N. This is why the load-bearing premise \u2014 that an over-trained small model matches a larger optimally-trained one \u2014 is a quality claim rather than something the scaling relations establish." },

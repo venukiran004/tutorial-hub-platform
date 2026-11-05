@@ -26,11 +26,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Theme: Advanced Modeling Strategies**"
+     "text": "**Theme: Advanced Modelling Strategies**"
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) Resampling: SMOTE + Tomek links (clean synthetic oversampling), (2) class weights: `class_weight='balanced'` or custom weights (1000:1), (3) anomaly detection framing: learn normal class, flag deviations, (4) ensemble: balanced bagging — each base model trains on balanced subset, (5) focal loss: down-weight easy-to-classify majority examples, (6) two-stage: rule-based pre-filter → ML on filtered set (more balanced), (7) metric: AUPRC, not accuracy or AUC-ROC, (8) threshold tuning: optimize F1 or custom cost function, (9) collect more minority samples if possible."
+     "text": "**Answer:** (1) Resampling: SMOTE + Tomek links (clean synthetic oversampling), (2) class weights: `class_weight='balanced'` or custom weights (1000:1), (3) anomaly detection framing: learn normal class, flag deviations, (4) ensemble: balanced bagging — each base model trains on balanced subset, (5) focal loss: down-weight easy-to-classify majority examples, (6) two-stage: rule-based pre-filter → ML on filtered set (more balanced), (7) metric: AUPRC, not accuracy or AUC-ROC, (8) threshold tuning: optimise F1 or custom cost function, (9) collect more minority samples if possible."
     }
    ],
    "kind": ""
@@ -59,7 +59,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Calibrate each model separately before ensembling (Platt scaling or isotonic), (2) after calibration: probabilities are on the same scale → meaningful averaging, (3) weighted average: optimize weights on validation set, (4) stacking: meta-learner that learns to combine irrespective of scale, (5) rank-based ensemble: use rank of predictions rather than raw scores, (6) never average uncalibrated probabilities — models with wider ranges dominate."
+     "text": "**Answer:** (1) Calibrate each model separately before ensembling (Platt scaling or isotonic), (2) after calibration: probabilities are on the same scale → meaningful averaging, (3) weighted average: optimise weights on validation set, (4) stacking: meta-learner that learns to combine irrespective of scale, (5) rank-based ensemble: use rank of predictions rather than raw scores, (6) never average uncalibrated probabilities — models with wider ranges dominate."
     },
     {
      "t": "p",
@@ -87,7 +87,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Near-duplicate detection: MinHash/LSH to find similar descriptions, (2) impact on model: TF-IDF weights are wrong (IDF inflated for duplicated terms), (3) topic modeling: topic distributions skewed by duplicates, (4) recommendations: text similarity inflated for products sharing descriptions, (5) fix: deduplicate before TF-IDF computation, (6) better features: extract unique product attributes rather than using full description, (7) create custom descriptions: use LLM to generate unique descriptions from structured attributes."
+     "text": "**Answer:** (1) Near-duplicate detection: MinHash/LSH to find similar descriptions, (2) impact on model: TF-IDF weights are wrong (IDF inflated for duplicated terms), (3) topic modelling: topic distributions skewed by duplicates, (4) recommendations: text similarity inflated for products sharing descriptions, (5) fix: deduplicate before TF-IDF computation, (6) better features: extract unique product attributes rather than using full description, (7) create custom descriptions: use LLM to generate unique descriptions from structured attributes."
     }
    ],
    "kind": ""
@@ -111,11 +111,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "307",
-   "q": "You need to run 1000 experiments (hyperparameter search) overnight. How do you parallelize efficiently?",
+   "q": "You need to run 1000 experiments (hyperparameter search) overnight. How do you parallelise efficiently?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Optuna with distributed backend: multiple workers search in parallel, (2) Ray Tune: distributed hyperparameter optimization, (3) cloud: spin up spot instances, each runs experiments concurrently, (4) job scheduler: SLURM, Kubernetes Job for cluster execution, (5) early stopping: Hyperband/ASHA — kill bad configurations early, free resources, (6) shared results database: all workers write to same Optuna study, (7) resource allocation: GPU-efficient configs run on GPU, CPU configs on CPU."
+     "text": "**Answer:** (1) Optuna with distributed backend: multiple workers search in parallel, (2) Ray Tune: distributed hyperparameter optimisation, (3) cloud: spin up spot instances, each runs experiments concurrently, (4) job scheduler: SLURM, Kubernetes Job for cluster execution, (5) early stopping: Hyperband/ASHA — kill bad configurations early, free resources, (6) shared results database: all workers write to same Optuna study, (7) resource allocation: GPU-efficient configs run on GPU, CPU configs on CPU."
     }
    ],
    "kind": ""
@@ -127,7 +127,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Incremental learning: fine-tune existing model on new data, (2) sliding window: train on last 90 days only (fixed training size), (3) warm-starting: initialize with previous model weights, (4) downsample old data: keep 10% of old + 100% of recent, (5) active learning: select most informative samples from growing data, (6) online learning: update model continuously as data arrives, (7) evaluate: does more data actually help? Plot learning curve, (8) data versioning: DVC to track which data trained which model."
+     "text": "**Answer:** (1) Incremental learning: fine-tune existing model on new data, (2) sliding window: train on last 90 days only (fixed training size), (3) warm-starting: initialise with previous model weights, (4) downsample old data: keep 10% of old + 100% of recent, (5) active learning: select most informative samples from growing data, (6) online learning: update model continuously as data arrives, (7) evaluate: does more data actually help? Plot learning curve, (8) data versioning: DVC to track which data trained which model."
     },
     {
      "t": "p",
@@ -143,7 +143,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Traffic patterns: high frequency views of pricing pages, no add-to-cart, (2) user agent analysis: known scraper signatures, (3) behavioral: consistent timing intervals (bot-like), no mouse movement or scrolling, (4) IP analysis: data center IPs, VPN exit nodes, rotating proxies, (5) rate limiting: throttle excessive page views, (6) CAPTCHA: challenge suspicious sessions, (7) honeypot: invisible price elements that only bots detect, (8) model: classify sessions as human/bot based on behavioral features."
+     "text": "**Answer:** (1) Traffic patterns: high frequency views of pricing pages, no add-to-cart, (2) user agent analysis: known scraper signatures, (3) behavioural: consistent timing intervals (bot-like), no mouse movement or scrolling, (4) IP analysis: data centre IPs, VPN exit nodes, rotating proxies, (5) rate limiting: throttle excessive page views, (6) CAPTCHA: challenge suspicious sessions, (7) honeypot: invisible price elements that only bots detect, (8) model: classify sessions as human/bot based on behavioural features."
     }
    ],
    "kind": ""
@@ -171,7 +171,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Dead ReLU: neurons saturated, output constant — try LeakyReLU, (2) learning rate too high: weights exploded to extreme values early, (3) vanishing gradients: weights not updating — check gradient norms, (4) initialization: all weights initialized to zero or same value, (5) batch norm without training=True, (6) last layer sigmoid saturated: output stuck near 0 or 1, (7) data: all inputs are the same after preprocessing (normalization bug), (8) debug steps: (a) check if loss changes, (b) print gradients, (c) check intermediate layer activations."
+     "text": "**Answer:** (1) Dead ReLU: neurons saturated, output constant — try LeakyReLU, (2) learning rate too high: weights exploded to extreme values early, (3) vanishing gradients: weights not updating — check gradient norms, (4) initialisation: all weights initialised to zero or same value, (5) batch norm without training=True, (6) last layer sigmoid saturated: output stuck near 0 or 1, (7) data: all inputs are the same after preprocessing (normalisation bug), (8) debug steps: (a) check if loss changes, (b) print gradients, (c) check intermediate layer activations."
     }
    ],
    "kind": ""
@@ -179,11 +179,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "312",
-   "q": "Your model performs differently every time you train it (accuracy varies from 75% to 85%). How do you stabilize?",
+   "q": "Your model performs differently every time you train it (accuracy varies from 75% to 85%). How do you stabilise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Set random seeds: Python, NumPy, framework-specific, (2) deterministic algorithms: `torch.use_deterministic_algorithms(True)`, (3) investigation: variance is high → model is sensitive to initialization or data order, (4) increase training data: more data → less variance, (5) ensemble: average multiple trained models, (6) regularization: prevents fitting to noise that varies between runs, (7) larger batch sizes: reduce stochasticity, (8) report: mean ± std across 5+ runs for fair comparison."
+     "text": "**Answer:** (1) Set random seeds: Python, NumPy, framework-specific, (2) deterministic algorithms: `torch.use_deterministic_algorithms(True)`, (3) investigation: variance is high → model is sensitive to initialisation or data order, (4) increase training data: more data → less variance, (5) ensemble: average multiple trained models, (6) regularisation: prevents fitting to noise that varies between runs, (7) larger batch sizes: reduce stochasticity, (8) report: mean ± std across 5+ runs for fair comparison."
     }
    ],
    "kind": ""
@@ -195,7 +195,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data leakage: user_id shouldn't be a predictive feature, (2) it's acting as a lookup table: memorizing user-specific outcomes, (3) won't generalize to new users, (4) immediate fix: remove user_id from features, (5) check other features: any that are unique per row (transaction_id, row_number)?, (6) if you want user-level patterns: engineer features from user_id (user_transaction_count, user_avg_spend), (7) lesson: always review top feature importance for suspiciously informative features."
+     "text": "**Answer:** (1) Data leakage: user_id shouldn't be a predictive feature, (2) it's acting as a lookup table: memorising user-specific outcomes, (3) won't generalise to new users, (4) immediate fix: remove user_id from features, (5) check other features: any that are unique per row (transaction_id, row_number)?, (6) if you want user-level patterns: engineer features from user_id (user_transaction_count, user_avg_spend), (7) lesson: always review top feature importance for suspiciously informative features."
     },
     {
      "t": "p",
@@ -211,7 +211,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Review process: which projects require ethics review? (risk-based), (2) composition: diverse members — technical, legal, ethicists, affected community representatives, (3) criteria: fairness, privacy, transparency, accountability, safety, (4) authority: can it veto deployment? Or only advise?, (5) timeline: review at design phase (not just pre-launch), (6) documentation: standardized ethics review template, (7) incident response: process for addressing ethics concerns post-deployment, (8) education: training for engineers on ethical AI, (9) external audit: periodic third-party review."
+     "text": "**Answer:** (1) Review process: which projects require ethics review? (risk-based), (2) composition: diverse members — technical, legal, ethicists, affected community representatives, (3) criteria: fairness, privacy, transparency, accountability, safety, (4) authority: can it veto deployment? Or only advise?, (5) timeline: review at design phase (not just pre-launch), (6) documentation: standardised ethics review template, (7) incident response: process for addressing ethics concerns post-deployment, (8) education: training for engineers on ethical AI, (9) external audit: periodic third-party review."
     }
    ],
    "kind": ""
@@ -223,7 +223,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Delete personal data from databases, backups, (2) model weights: generally considered aggregated/anonymized — individual data can't typically be extracted, (3) but: if model memorizes (especially language models), may need action, (4) machine unlearning: approximate methods exist but aren't standard, (5) practical: retrain model without the user's data (if requested and feasible), (6) SISA training: train on shards for efficient unlearning, (7) legal: consult privacy team — interpretation varies by jurisdiction, (8) document: record the deletion request and actions taken."
+     "text": "**Answer:** (1) Delete personal data from databases, backups, (2) model weights: generally considered aggregated/anonymized — individual data can't typically be extracted, (3) but: if model memorises (especially language models), may need action, (4) machine unlearning: approximate methods exist but aren't standard, (5) practical: retrain model without the user's data (if requested and feasible), (6) SISA training: train on shards for efficient unlearning, (7) legal: consult privacy team — interpretation varies by jurisdiction, (8) document: record the deletion request and actions taken."
     },
     {
      "t": "p",
@@ -277,7 +277,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) PC algorithm: constraint-based, uses conditional independence tests, (2) GES (Greedy Equivalence Search): score-based, searches over DAG space, (3) NOTEARS: continuous optimization for learning DAG structure, (4) FCI algorithm: handles hidden confounders, (5) tools: DoWhy + CausalDiscovery, Tetrad, causal-learn Python package, (6) output: causal graph (DAG) with directed edges, (7) validation: (a) domain expert review — does the graph make sense?, (b) check known causal relationships, (c) interventional data if available, (8) limitations: finite sample issues, untestable assumptions."
+     "text": "**Answer:** (1) PC algorithm: constraint-based, uses conditional independence tests, (2) GES (Greedy Equivalence Search): score-based, searches over DAG space, (3) NOTEARS: continuous optimisation for learning DAG structure, (4) FCI algorithm: handles hidden confounders, (5) tools: DoWhy + CausalDiscovery, Tetrad, causal-learn Python package, (6) output: causal graph (DAG) with directed edges, (7) validation: (a) domain expert review — does the graph make sense?, (b) check known causal relationships, (c) interventional data if available, (8) limitations: finite sample issues, untestable assumptions."
     }
    ],
    "kind": ""
@@ -333,7 +333,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Re-evaluate all models on the SAME test set — essential for comparison, (2) if models can't be re-evaluated: statistical comparison isn't meaningful on different data, (3) report limitation: \"models were evaluated on different test sets, comparison is approximate,\" (4) normalize by dataset difficulty: compare vs. baseline on each test set, (5) use relative improvement over a common simple baseline, (6) future: standardize evaluation — shared test set, versioned data, reproducible metrics."
+     "text": "**Answer:** (1) Re-evaluate all models on the SAME test set — essential for comparison, (2) if models can't be re-evaluated: statistical comparison isn't meaningful on different data, (3) report limitation: \"models were evaluated on different test sets, comparison is approximate,\" (4) normalise by dataset difficulty: compare vs. baseline on each test set, (5) use relative improvement over a common simple baseline, (6) future: standardise evaluation — shared test set, versioned data, reproducible metrics."
     }
    ],
    "kind": ""
@@ -373,7 +373,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Map current state: document all jobs, dependencies, schedules, owners, (2) identify critical paths: which pipelines feed production models?, (3) consolidate to orchestrator: migrate to Airflow/Dagster, (4) incremental migration: move one pipeline at a time, keep others running, (5) add testing: data quality checks at each stage, (6) standardize: common patterns for ingestion, transformation, loading, (7) monitoring: alerting for all pipeline failures, (8) documentation: each pipeline has README, data lineage."
+     "text": "**Answer:** (1) Map current state: document all jobs, dependencies, schedules, owners, (2) identify critical paths: which pipelines feed production models?, (3) consolidate to orchestrator: migrate to Airflow/Dagster, (4) incremental migration: move one pipeline at a time, keep others running, (5) add testing: data quality checks at each stage, (6) standardise: common patterns for ingestion, transformation, loading, (7) monitoring: alerting for all pipeline failures, (8) documentation: each pipeline has README, data lineage."
     },
     {
      "t": "p",

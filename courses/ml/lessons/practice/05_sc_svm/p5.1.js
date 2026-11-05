@@ -20,11 +20,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Find the hyperplane that maximizes the margin (distance) between the two closest points from different classes (support vectors)."
+     "text": "**Answer:** Find the hyperplane that maximises the margin (distance) between the two closest points from different classes (support vectors)."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Maximum margin → best generalization. Only support vectors determine the boundary — all other points are irrelevant."
+     "text": "**Explanation:** Maximum margin → best generalisation. Only support vectors determine the boundary — all other points are irrelevant."
     }
    ],
    "kind": ""
@@ -60,7 +60,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "What is the margin and why do we want to maximize it?",
+   "q": "What is the margin and why do we want to maximise it?",
    "body": [
     {
      "t": "p",
@@ -68,11 +68,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why maximize:** Larger margin → more confidence in separating classes → better generalization."
+     "text": "**Why maximise:** Larger margin → more confidence in separating classes → better generalisation."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Maximizing margin = minimizing ||w|| subject to correct classification. Unique optimal solution."
+     "text": "**Explanation:** Maximising margin = minimising ||w|| subject to correct classification. Unique optimal solution."
     }
    ],
    "kind": ""
@@ -234,7 +234,7 @@ EC.receiveLesson({
       ],
       [
        "Sigmoid",
-       "Neural network-like behavior (rarely used)"
+       "Neural network-like behaviour (rarely used)"
       ]
      ]
     },
@@ -252,7 +252,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** SVMs rely on distance calculations. Unscaled features with different magnitudes dominate the optimization."
+     "text": "**Answer:** SVMs rely on distance calculations. Unscaled features with different magnitudes dominate the optimisation."
     },
     {
      "t": "p",
@@ -276,7 +276,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Instead of minimizing ||w||, maximize:"
+     "text": "**Answer:** Instead of minimising ||w||, maximise:"
     },
     {
      "t": "code",
@@ -387,7 +387,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Only penalizes points inside or on wrong side of margin. Points beyond margin contribute zero loss."
+     "text": "**Explanation:** Only penalises points inside or on wrong side of margin. Points beyond margin contribute zero loss."
     }
    ],
    "kind": ""
@@ -584,7 +584,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Math:** Margin = 2/||w||. Maximize margin → minimize ||w||."
+     "text": "**Math:** Margin = 2/||w||. Maximise margin → minimise ||w||."
     },
     {
      "t": "p",

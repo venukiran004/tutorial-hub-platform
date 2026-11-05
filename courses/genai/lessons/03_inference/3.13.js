@@ -385,10 +385,10 @@ if not any(data["name"] in src for src in [prompt]):
           "Because the sampler is replaced by a deterministic argmax when a grammar is active",
           "Because the mask sets the forbidden logits to negative infinity before the softmax, giving them zero probability",
           "Because the grammar rejects and regenerates invalid tokens after sampling",
-          "Because the tokenizer is restricted to a smaller vocabulary"
+          "Because the tokeniser is restricted to a smaller vocabulary"
         ],
         answer: 1,
-        why: "The mask is applied to the logits, so after the softmax the forbidden tokens carry probability zero \u2014 temperature rescales zeros to zeros, and top-p and top-k select from a distribution those tokens are no longer in. Nothing is rejected and regenerated, which is what makes it a single-pass guarantee rather than a retry loop, and the tokenizer is untouched. Sampling still operates normally over whatever the grammar left available." },
+        why: "The mask is applied to the logits, so after the softmax the forbidden tokens carry probability zero \u2014 temperature rescales zeros to zeros, and top-p and top-k select from a distribution those tokens are no longer in. Nothing is rejected and regenerated, which is what makes it a single-pass guarantee rather than a retry loop, and the tokeniser is untouched. Sampling still operates normally over whatever the grammar left available." },
 
       { stem: "On a two-field JSON grammar, 8 of 10 states allowed exactly 1 token out of 50,257. What follows?",
         options: [

@@ -417,7 +417,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Challenges with multiple inheritance:** 1. **Diamond problem** — when two parents share a common ancestor, which path does Python follow? Solved by **MRO** (C3 Linearization). 2. **Name collisions** — if two parents define the same method, the one earlier in MRO wins. 3. **Complexity** — deep multiple inheritance trees become hard to reason about."
+     "text": "**Challenges with multiple inheritance:** 1. **Diamond problem** — when two parents share a common ancestor, which path does Python follow? Solved by **MRO** (C3 Linearisation). 2. **Name collisions** — if two parents define the same method, the one earlier in MRO wins. 3. **Complexity** — deep multiple inheritance trees become hard to reason about."
     },
     {
      "t": "p",
@@ -428,16 +428,16 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "12",
-   "q": "What is MRO? Explain C3 Linearization with diamond problem example.",
+   "q": "What is MRO? Explain C3 Linearisation with diamond problem example.",
    "terms": [
     "MRO (Method Resolution Order)",
-    "C3 Linearization",
+    "C3 Linearisation",
     "How C3 works (simplified)"
    ],
    "body": [
     {
      "t": "p",
-     "text": "**A:** **MRO (Method Resolution Order)** is the order in which Python searches classes when looking up a method. Python uses the **C3 Linearization** algorithm, which guarantees: 1. Children come before parents. 2. The order of bases in the class definition is preserved. 3. A class appears only once in the MRO."
+     "text": "**A:** **MRO (Method Resolution Order)** is the order in which Python searches classes when looking up a method. Python uses the **C3 Linearisation** algorithm, which guarantees: 1. Children come before parents. 2. The order of bases in the class definition is preserved. 3. A class appears only once in the MRO."
     },
     {
      "t": "code",
@@ -1528,7 +1528,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Relationship:** - **Duck typing** is the runtime philosophy — \"just call the method.\" - **Protocol** is the static typing formalization of duck typing — \"declare what methods are expected\" without requiring inheritance. - Together, they give you the flexibility of dynamic dispatch with the safety of static analysis."
+     "text": "**Relationship:** - **Duck typing** is the runtime philosophy — \"just call the method.\" - **Protocol** is the static typing formalisation of duck typing — \"declare what methods are expected\" without requiring inheritance. - Together, they give you the flexibility of dynamic dispatch with the safety of static analysis."
     },
     {
      "t": "p",

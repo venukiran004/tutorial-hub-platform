@@ -46,13 +46,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Static (TF 1.x):** Define graph first, then execute. Harder to debug, easier to optimize.",
+      "**Static (TF 1.x):** Define graph first, then execute. Harder to debug, easier to optimise.",
       "**Dynamic (PyTorch, TF Eager):** Build graph on-the-fly during execution. Easier to debug, flexible control flow."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Dynamic graphs allow Python control flow (if/else, loops) naturally. Static graphs can be compiled and optimized. TorchScript/ONNX bridge the gap by converting dynamic to static for deployment."
+     "text": "**Explanation:** Dynamic graphs allow Python control flow (if/else, loops) naturally. Static graphs can be compiled and optimised. TorchScript/ONNX bridge the gap by converting dynamic to static for deployment."
     }
    ],
    "kind": ""
@@ -97,7 +97,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Images:** Rotation, flip, crop, color jitter, cutout, mixup, CutMix"
+     "text": "**Images:** Rotation, flip, crop, colour jitter, cutout, mixup, CutMix"
     },
     {
      "t": "p",
@@ -282,7 +282,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Student learns \"dark knowledge\" — e.g., teacher says \"cat\" but also reveals it's somewhat like a \"dog.\" This inter-class relationship information helps the student generalize better."
+     "text": "**Explanation:** Student learns \"dark knowledge\" — e.g., teacher says \"cat\" but also reveals it's somewhat like a \"dog.\" This inter-class relationship information helps the student generalise better."
     }
    ],
    "kind": ""
@@ -300,14 +300,14 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Pruning:** Remove unimportant weights/neurons (structured or unstructured)",
-      "**Quantization:** Reduce precision (FP32 → INT8). 4× smaller, faster inference.",
+      "**Quantisation:** Reduce precision (FP32 → INT8). 4× smaller, faster inference.",
       "**Distillation:** Train smaller model to mimic larger one",
       "**Architecture search:** Find efficient architectures (MobileNet, EfficientNet)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Often combined: distill → prune → quantize. Target: edge devices, mobile, real-time applications."
+     "text": "**Explanation:** Often combined: distill → prune → quantise. Target: edge devices, mobile, real-time applications."
     }
    ],
    "kind": ""
@@ -325,12 +325,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Depth (more layers):** Better at learning hierarchical features, more parameter efficient for complex functions.",
-      "**Width (more neurons per layer):** Better at memorization, easier to optimize."
+      "**Width (more neurons per layer):** Better at memorisation, easier to optimise."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Very deep networks may be hard to train (vanishing gradients, solved by residual connections). Very wide networks may overfit. Modern trend: deep AND wide with proper regularization (ResNet, GPT)."
+     "text": "**Explanation:** Very deep networks may be hard to train (vanishing gradients, solved by residual connections). Very wide networks may overfit. Modern trend: deep AND wide with proper regularisation (ResNet, GPT)."
     }
    ],
    "kind": ""
@@ -419,7 +419,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Prevents model from becoming overconfident. Improves generalization and calibration. Forces model to maintain non-zero probability for incorrect classes."
+     "text": "**Explanation:** Prevents model from becoming overconfident. Improves generalisation and calibration. Forces model to maintain non-zero probability for incorrect classes."
     }
    ],
    "kind": ""
@@ -436,7 +436,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Loss function:** Must be differentiable. Used for optimization (backprop). Computed on batches.",
+      "**Loss function:** Must be differentiable. Used for optimisation (backprop). Computed on batches.",
       "**Metric:** Can be non-differentiable. Used for evaluation. Computed on entire dataset."
      ]
     },
@@ -446,7 +446,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Sometimes use a surrogate loss that approximates the target metric. F1 score can't be directly optimized — use cross-entropy loss and tune threshold."
+     "text": "**Explanation:** Sometimes use a surrogate loss that approximates the target metric. F1 score can't be directly optimised — use cross-entropy loss and tune threshold."
     }
    ],
    "kind": ""
@@ -467,7 +467,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Benefits:** Shared representation, regularization effect, data efficiency."
+     "text": "**Benefits:** Shared representation, regularisation effect, data efficiency."
     },
     {
      "t": "p",
@@ -483,15 +483,15 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Dense neural networks contain sparse sub-networks (\"winning tickets\") that, when trained in isolation with the same initialization, can match the full network's performance."
+     "text": "**Answer:** Dense neural networks contain sparse sub-networks (\"winning tickets\") that, when trained in isolation with the same initialisation, can match the full network's performance."
     },
     {
      "t": "p",
-     "text": "**Implication:** Most parameters are unnecessary. The right initialization + architecture matters."
+     "text": "**Implication:** Most parameters are unnecessary. The right initialisation + architecture matters."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pruning after training finds these sub-networks. Suggests we over-parameterize networks to make optimization easier, then can safely remove redundancy."
+     "text": "**Explanation:** Pruning after training finds these sub-networks. Suggests we over-parameterise networks to make optimisation easier, then can safely remove redundancy."
     }
    ],
    "kind": ""
@@ -539,7 +539,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Especially important for: Adam optimizer, large batch sizes, transformers. Allows the optimizer statistics to stabilize before using the full learning rate."
+     "text": "**Explanation:** Especially important for: Adam optimiser, large batch sizes, transformers. Allows the optimiser statistics to stabilise before using the full learning rate."
     }
    ],
    "kind": ""

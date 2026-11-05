@@ -42,7 +42,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "78",
-   "q": "Xavier Initialization",
+   "q": "Xavier Initialisation",
    "body": [
     {
      "t": "code",
@@ -211,7 +211,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "91",
-   "q": "Normalize Vectors",
+   "q": "Normalise Vectors",
    "body": [
     {
      "t": "code",

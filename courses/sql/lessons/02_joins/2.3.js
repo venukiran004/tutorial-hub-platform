@@ -194,7 +194,7 @@ SELECT e.name FROM employees e WHERE NOT EXISTS (SELECT 1 FROM employees r WHERE
       caption: "Whether a person manages anyone is a yes/no per employee — a semi join against the same table. `SELECT 1` inside EXISTS is a convention that says so out loud; `SELECT *` there is equally fast and slightly misleading."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Customers who have never placed a paid order",
       rungs: [
         { level: "bad", label: "NOT IN on a subquery", code: `SELECT name FROM customers WHERE customer_id NOT IN (SELECT customer_id FROM orders WHERE status = 'paid');`,

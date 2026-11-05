@@ -111,11 +111,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "307",
-   "q": "Your query joining two tables is extremely slow (10 minutes). Both tables have 100M rows. How do you optimize?",
+   "q": "Your query joining two tables is extremely slow (10 minutes). Both tables have 100M rows. How do you optimise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Add indexes on join columns, (2) filter BEFORE joining (push WHERE clause to subqueries), (3) check execution plan: `EXPLAIN ANALYZE`, (4) partition tables by date if querying specific periods, (5) avoid SELECT * — only retrieve needed columns, (6) use appropriate join type (INNER vs LEFT), (7) consider materialized views for repeated queries, (8) check for data skew — one join key with millions of matches, (9) increase work_mem/sort_buffer for hash joins."
+     "text": "**Answer:** (1) Add indexes on join columns, (2) filter BEFORE joining (push WHERE clause to subqueries), (3) check execution plan: `EXPLAIN ANALYZE`, (4) partition tables by date if querying specific periods, (5) avoid SELECT * — only retrieve needed columns, (6) use appropriate join type (INNER vs LEFT), (7) consider materialised views for repeated queries, (8) check for data skew — one join key with millions of matches, (9) increase work_mem/sort_buffer for hash joins."
     }
    ],
    "kind": ""
@@ -186,7 +186,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Stratified sampling: ensure rare classes are represented, (2) active learning: start with random sample, train model, select uncertain examples for labeling, iterate, (3) diversity sampling: cluster data, sample from each cluster, (4) importance sampling: oversample from regions where model is weakest, (5) reservoir sampling for streaming data, (6) avoid convenience sampling (latest data only) — need temporal diversity too."
+     "text": "**Answer:** (1) Stratified sampling: ensure rare classes are represented, (2) active learning: start with random sample, train model, select uncertain examples for labelling, iterate, (3) diversity sampling: cluster data, sample from each cluster, (4) importance sampling: oversample from regions where model is weakest, (5) reservoir sampling for streaming data, (6) avoid convenience sampling (latest data only) — need temporal diversity too."
     }
    ],
    "kind": ""
@@ -206,11 +206,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "313",
-   "q": "You're designing a clinical trial with a rare disease (only 200 patients available). How do you maximize statistical power?",
+   "q": "You're designing a clinical trial with a rare disease (only 200 patients available). How do you maximise statistical power?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Crossover design: each patient serves as own control, (2) adaptive design: modify randomization based on interim results, (3) Bayesian analysis with informative priors from previous studies, (4) enrichment design: select patients most likely to respond, (5) multi-arm adaptive: drop ineffective arms early, (6) use surrogate endpoints for faster signal, (7) paired design reduces variance substantially, (8) one-sided test if effect direction is known."
+     "text": "**Answer:** (1) Crossover design: each patient serves as own control, (2) adaptive design: modify randomisation based on interim results, (3) Bayesian analysis with informative priors from previous studies, (4) enrichment design: select patients most likely to respond, (5) multi-arm adaptive: drop ineffective arms early, (6) use surrogate endpoints for faster signal, (7) paired design reduces variance substantially, (8) one-sided test if effect direction is known."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Interaction effects: tests may interfere with each other, (2) multiple testing problem: 50 tests at α=0.05 → ~2.5 false positives expected, (3) shared metrics: winning variant in one test may affect another's metric, (4) traffic splitting: 50 tests each needing sufficient traffic may be infeasible, (5) organizational: who resolves conflicting results? Solutions: (1) use multi-variate testing framework, (2) FDR correction, (3) test isolation (different user segments), (4) prioritize and sequence tests."
+     "text": "**Answer:** (1) Interaction effects: tests may interfere with each other, (2) multiple testing problem: 50 tests at α=0.05 → ~2.5 false positives expected, (3) shared metrics: winning variant in one test may affect another's metric, (4) traffic splitting: 50 tests each needing sufficient traffic may be infeasible, (5) organizational: who resolves conflicting results? Solutions: (1) use multi-variate testing framework, (2) FDR correction, (3) test isolation (different user segments), (4) prioritise and sequence tests."
     }
    ],
    "kind": ""
@@ -262,7 +262,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Louvain algorithm: fast, scalable, maximizes modularity, (2) Label Propagation: efficient for very large graphs, (3) Girvan-Newman: edge betweenness-based (slower but interpretable), (4) spectral clustering on adjacency matrix, (5) METIS for graph partitioning, (6) for fraud: look for unusual community structures — dense subgraphs, star patterns, chains, (7) compare community structure over time — new unusual clusters may indicate fraud rings."
+     "text": "**Answer:** (1) Louvain algorithm: fast, scalable, maximises modularity, (2) Label Propagation: efficient for very large graphs, (3) Girvan-Newman: edge betweenness-based (slower but interpretable), (4) spectral clustering on adjacency matrix, (5) METIS for graph partitioning, (6) for fraud: look for unusual community structures — dense subgraphs, star patterns, chains, (7) compare community structure over time — new unusual clusters may indicate fraud rings."
     }
    ],
    "kind": ""
@@ -286,7 +286,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Compute graph features per node: degree, clustering coefficient, PageRank, community ID, (2) append as additional columns to tabular data, (3) aggregate neighborhood features: average neighbor fraud rate, max neighbor amount, (4) use Graph Neural Networks (GNN) to learn embeddings, concatenate with tabular, (5) two-stage: graph model generates risk scores → input to tabular model, (6) important features: n-hop neighborhood statistics, triangle count, connectivity patterns."
+     "text": "**Answer:** (1) Compute graph features per node: degree, clustering coefficient, PageRank, community ID, (2) append as additional columns to tabular data, (3) aggregate neighbourhood features: average neighbour fraud rate, max neighbour amount, (4) use Graph Neural Networks (GNN) to learn embeddings, concatenate with tabular, (5) two-stage: graph model generates risk scores → input to tabular model, (6) important features: n-hop neighbourhood statistics, triangle count, connectivity patterns."
     }
    ],
    "kind": ""
@@ -294,11 +294,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "320",
-   "q": "You're analyzing a knowledge graph for a search engine. How do you use it to improve search results?",
+   "q": "You're analysing a knowledge graph for a search engine. How do you use it to improve search results?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Entity disambiguation: \"Apple\" → company vs. fruit based on context, (2) query expansion: search for \"COVID\" also includes \"coronavirus, SARS-CoV-2,\" (3) knowledge panels: structured info from graph, (4) relationship-based answers: \"who founded Tesla\" → traverse founder edge, (5) semantic search: embed entities and relationships, (6) fact verification: cross-reference claims with graph, (7) personalized results: user's knowledge graph indicates interests."
+     "text": "**Answer:** (1) Entity disambiguation: \"Apple\" → company vs. fruit based on context, (2) query expansion: search for \"COVID\" also includes \"coronavirus, SARS-CoV-2,\" (3) knowledge panels: structured info from graph, (4) relationship-based answers: \"who founded Tesla\" → traverse founder edge, (5) semantic search: embed entities and relationships, (6) fact verification: cross-reference claims with graph, (7) personalised results: user's knowledge graph indicates interests."
     },
     {
      "t": "p",
@@ -326,7 +326,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Batch: Spark on EMR/Databricks — daily ETL jobs, (2) data lake: store raw logs in S3/ADLS in Parquet format, (3) orchestration: Airflow/Dagster for pipeline scheduling, (4) for near real-time: Kafka → Spark Streaming → feature store, (5) processing pipeline: raw → cleaned → features → feature store, (6) partition by date for efficient querying, (7) use columnar formats and predicate pushdown for selective reads, (8) cost optimization: spot instances for batch processing."
+     "text": "**Answer:** (1) Batch: Spark on EMR/Databricks — daily ETL jobs, (2) data lake: store raw logs in S3/ADLS in Parquet format, (3) orchestration: Airflow/Dagster for pipeline scheduling, (4) for near real-time: Kafka → Spark Streaming → feature store, (5) processing pipeline: raw → cleaned → features → feature store, (6) partition by date for efficient querying, (7) use columnar formats and predicate pushdown for selective reads, (8) cost optimisation: spot instances for batch processing."
     }
    ],
    "kind": ""
@@ -358,11 +358,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "325",
-   "q": "Your model training requires reading features from a data warehouse which is slow. How do you optimize the training data pipeline?",
+   "q": "Your model training requires reading features from a data warehouse which is slow. How do you optimise the training data pipeline?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Materialize training data as a snapshot (Parquet files in object storage), (2) use a feature store (Feast, Tecton): precompute and serve features, (3) create materialized views for repeated queries, (4) cache results: don't re-query for each training run, (5) use columnar storage format (Parquet/ORC), (6) partition by training date, (7) pre-join tables and denormalize, (8) parallel data loading from distributed storage, (9) incremental updates: only process new data since last snapshot."
+     "text": "**Answer:** (1) Materialise training data as a snapshot (Parquet files in object storage), (2) use a feature store (Feast, Tecton): precompute and serve features, (3) create materialised views for repeated queries, (4) cache results: don't re-query for each training run, (5) use columnar storage format (Parquet/ORC), (6) partition by training date, (7) pre-join tables and denormalise, (8) parallel data loading from distributed storage, (9) incremental updates: only process new data since last snapshot."
     },
     {
      "t": "p",

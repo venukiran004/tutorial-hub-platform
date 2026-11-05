@@ -167,7 +167,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Worst case O(n)** requires pathological hash collisions — virtually impossible with Python's randomized hash (SipHash since 3.4)."
+     "text": "**Worst case O(n)** requires pathological hash collisions — virtually impossible with Python's randomised hash (SipHash since 3.4)."
     }
    ]
   },
@@ -643,7 +643,7 @@ EC.receiveLesson({
       ],
       [
        "Speed",
-       "**Faster** (specialized bytecode)",
+       "**Faster** (specialised bytecode)",
        "Slower (function call + name lookup)"
       ],
       [

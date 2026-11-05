@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Target encoding: replace each SKU with mean of target variable (with smoothing), (2) frequency encoding: replace with occurrence count, (3) embedding: learn dense representation in neural network, (4) hash encoding: map to fixed number of bins (e.g., 100), (5) group into higher-level categories (product type, brand), (6) cluster SKUs by behavior and use cluster ID, (7) binary encoding (log2(5000) ≈ 13 columns)."
+     "text": "**Answer:** (1) Target encoding: replace each SKU with mean of target variable (with smoothing), (2) frequency encoding: replace with occurrence count, (3) embedding: learn dense representation in neural network, (4) hash encoding: map to fixed number of bins (e.g., 100), (5) group into higher-level categories (product type, brand), (6) cluster SKUs by behaviour and use cluster ID, (7) binary encoding (log2(5000) ≈ 13 columns)."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Create polynomial features: age², age³, (2) bin age into groups (18-25, 26-35, etc.) and one-hot encode, (3) use spline transformation, (4) apply B-spline or natural spline basis, (5) tree-based models handle this automatically, (6) create interaction terms: age × other_features, (7) use GAM (Generalized Additive Model) for automatic non-linear effects."
+     "text": "**Answer:** (1) Create polynomial features: age², age³, (2) bin age into groups (18-25, 26-35, etc.) and one-hot encode, (3) use spline transformation, (4) apply B-spline or natural spline basis, (5) tree-based models handle this automatically, (6) create interaction terms: age × other_features, (7) use GAM (Generalised Additive Model) for automatic non-linear effects."
     }
    ],
    "kind": ""
@@ -74,7 +74,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Distance to key locations (city center, competitor, nearest store), (2) geohash for grid-based aggregation, (3) cluster coordinates into regions using K-means, (4) population density from census data, (5) urban/suburban/rural classification, (6) distance to nearest point of interest, (7) H3 hexagonal grid indexing, (8) local statistics: average target value in radius, (9) driving time/distance (not Euclidean) to relevant locations."
+     "text": "**Answer:** (1) Distance to key locations (city centre, competitor, nearest store), (2) geohash for grid-based aggregation, (3) cluster coordinates into regions using K-means, (4) population density from census data, (5) urban/suburban/rural classification, (6) distance to nearest point of interest, (7) H3 hexagonal grid indexing, (8) local statistics: average target value in radius, (9) driving time/distance (not Euclidean) to relevant locations."
     },
     {
      "t": "p",
@@ -134,7 +134,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "185",
-   "q": "Your dataset has inconsistent formats: \"New York\", \"new york\", \"NY\", \"N.Y.\", \"New York City\" all represent the same entity. How do you standardize?",
+   "q": "Your dataset has inconsistent formats: \"New York\", \"new york\", \"NY\", \"N.Y.\", \"New York City\" all represent the same entity. How do you standardise?",
    "body": [
     {
      "t": "p",
@@ -170,11 +170,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "188",
-   "q": "You discover that your target variable was incorrectly labeled for a subset of data (label noise). How much noise can your model tolerate?",
+   "q": "You discover that your target variable was incorrectly labelled for a subset of data (label noise). How much noise can your model tolerate?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Depends on the model and noise level: (1) tree-based models tolerate 5-10% label noise reasonably well, (2) deep learning is more sensitive — can memorize noise, (3) use confident learning (cleanlab library) to identify and correct mislabeled samples, (4) train with noise-robust loss functions (symmetric cross-entropy), (5) use cross-validation-based noise detection — samples consistently misclassified across folds are likely mislabeled."
+     "text": "**Answer:** Depends on the model and noise level: (1) tree-based models tolerate 5-10% label noise reasonably well, (2) deep learning is more sensitive — can memorise noise, (3) use confident learning (cleanlab library) to identify and correct mislabelled samples, (4) train with noise-robust loss functions (symmetric cross-entropy), (5) use cross-validation-based noise detection — samples consistently misclassified across folds are likely mislabelled."
     }
    ],
    "kind": ""
@@ -214,7 +214,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Overfitting. Causes and fixes: (1) too many features relative to samples — use regularization (Ridge/Lasso), (2) polynomial features creating too much complexity — reduce degree, (3) outliers inflating training fit — use robust regression, (4) check for data leakage, (5) use cross-validation instead of single train/test split, (6) try simpler model or feature selection."
+     "text": "**Answer:** Overfitting. Causes and fixes: (1) too many features relative to samples — use regularisation (Ridge/Lasso), (2) polynomial features creating too much complexity — reduce degree, (3) outliers inflating training fit — use robust regression, (4) check for data leakage, (5) use cross-validation instead of single train/test split, (6) try simpler model or feature selection."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use beta regression (for 0-1 bounded), scaling the target to (0,1), (2) ordinal regression (ordered logit) since it's an ordered discrete outcome, (3) logit-transform the target: logit((y-1)/4) for 1-5 scale, (4) clip predictions to valid range post-hoc, (5) use constrained optimization in boosting (custom objective), (6) treat as classification if you need discrete classes."
+     "text": "**Answer:** (1) Use beta regression (for 0-1 bounded), scaling the target to (0,1), (2) ordinal regression (ordered logit) since it's an ordered discrete outcome, (3) logit-transform the target: logit((y-1)/4) for 1-5 scale, (4) clip predictions to valid range post-hoc, (5) use constrained optimisation in boosting (custom objective), (6) treat as classification if you need discrete classes."
     }
    ],
    "kind": ""

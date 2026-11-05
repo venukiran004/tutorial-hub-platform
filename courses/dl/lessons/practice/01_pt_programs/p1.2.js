@@ -268,7 +268,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "Spectral Normalization",
+   "q": "Spectral Normalisation",
    "body": [
     {
      "t": "code",
@@ -286,7 +286,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "41",
-   "q": "Layer Normalization vs Batch Normalization",
+   "q": "Layer Normalisation vs Batch Normalisation",
    "body": [
     {
      "t": "code",

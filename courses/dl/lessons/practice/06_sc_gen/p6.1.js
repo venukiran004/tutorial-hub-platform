@@ -219,7 +219,7 @@ EC.receiveLesson({
      "items": [
       "Coarse (4×4-8×8): pose, face shape",
       "Middle (16×16-32×32): facial features, hairstyle",
-      "Fine (64×64+): color scheme, micro-features"
+      "Fine (64×64+): colour scheme, micro-features"
      ]
     },
     {
@@ -248,7 +248,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Solutions:** WGAN-GP, spectral normalization, progressive training, careful hyperparameter tuning, two-timescale update rule (TTUR)."
+     "text": "**Solutions:** WGAN-GP, spectral normalisation, progressive training, careful hyperparameter tuning, two-timescale update rule (TTUR)."
     }
    ],
    "kind": ""
@@ -256,11 +256,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "What is spectral normalization?",
+   "q": "What is spectral normalisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Normalize weight matrices by their spectral norm (largest singular value):"
+     "text": "**Answer:** Normalise weight matrices by their spectral norm (largest singular value):"
     },
     {
      "t": "code",
@@ -273,7 +273,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Replaces weight clipping (WGAN) and gradient penalty (WGAN-GP). Applied per layer. Stabilizes discriminator. No extra loss terms. Simpler and effective."
+     "text": "**Explanation:** Replaces weight clipping (WGAN) and gradient penalty (WGAN-GP). Applied per layer. Stabilises discriminator. No extra loss terms. Simpler and effective."
     }
    ],
    "kind": ""
@@ -448,7 +448,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GANs optimize for individual sample quality. VAEs optimize for distribution coverage. Modern diffusion models surpass both. VQ-VAE combines VAE structure with high quality."
+     "text": "**Explanation:** GANs optimise for individual sample quality. VAEs optimise for distribution coverage. Modern diffusion models surpass both. VQ-VAE combines VAE structure with high quality."
     }
    ],
    "kind": ""
@@ -623,7 +623,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Penalizes samples that are far from the decision boundary even if correctly classified. Produces more gradients for samples that are already on the correct side."
+     "text": "**Explanation:** Penalises samples that are far from the decision boundary even if correctly classified. Produces more gradients for samples that are already on the correct side."
     }
    ],
    "kind": ""
@@ -644,7 +644,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Model:** SPADE (Spatially Adaptive Normalization) — modulates batch norm with semantic layout."
+     "text": "**Model:** SPADE (Spatially Adaptive Normalisation) — modulates batch norm with semantic layout."
     },
     {
      "t": "p",
@@ -673,7 +673,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Must change wrinkles, hair color, face shape while keeping identity recognizable. Disentangling age from identity is key."
+     "text": "**Explanation:** Must change wrinkles, hair colour, face shape while keeping identity recognisable. Disentangling age from identity is key."
     }
    ],
    "kind": ""

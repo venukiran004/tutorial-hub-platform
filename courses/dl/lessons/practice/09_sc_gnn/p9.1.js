@@ -27,12 +27,12 @@ EC.receiveLesson({
      "items": [
       "Data is naturally a graph (social networks, molecules, knowledge graphs)",
       "Relationships between entities matter for prediction",
-      "Data has variable structure (different number of neighbors per node)"
+      "Data has variable structure (different number of neighbours per node)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard NNs assume fixed-size inputs. GNNs handle irregular topology by aggregating information from neighbors, preserving structural information."
+     "text": "**Explanation:** Standard NNs assume fixed-size inputs. GNNs handle irregular topology by aggregating information from neighbours, preserving structural information."
     }
    ],
    "kind": ""
@@ -49,7 +49,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Message:** Each neighbor sends a message (function of its features)",
+      "**Message:** Each neighbour sends a message (function of its features)",
       "**Aggregate:** Node collects all incoming messages (sum, mean, max)",
       "**Update:** Node updates its own representation using aggregated message"
      ]
@@ -61,7 +61,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** After K rounds, each node's representation captures information from its K-hop neighborhood."
+     "text": "**Explanation:** After K rounds, each node's representation captures information from its K-hop neighbourhood."
     }
    ],
    "kind": ""
@@ -85,7 +85,7 @@ EC.receiveLesson({
      "rows": [
       [
        "GCN",
-       "Weighted mean (degree-normalized)",
+       "Weighted mean (degree-normalised)",
        "Spectral-based, simple"
       ],
       [
@@ -96,13 +96,13 @@ EC.receiveLesson({
       [
        "GAT",
        "Attention-weighted sum",
-       "Learnable neighbor importance"
+       "Learnable neighbour importance"
       ]
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** GCN uses fixed weights based on degree. GraphSAGE samples neighbors for scalability. GAT learns which neighbors are important via attention."
+     "text": "**Explanation:** GCN uses fixed weights based on degree. GraphSAGE samples neighbours for scalability. GAT learns which neighbours are important via attention."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why:** Each layer aggregates from neighbors → after many layers, all nodes receive information from entire graph."
+     "text": "**Why:** Each layer aggregates from neighbours → after many layers, all nodes receive information from entire graph."
     },
     {
      "t": "p",
@@ -161,12 +161,12 @@ EC.receiveLesson({
       "Concatenate transformed features",
       "Apply learnable attention vector `a`",
       "LeakyReLU activation",
-      "Softmax over all neighbors"
+      "Softmax over all neighbours"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Multi-head attention: run K parallel attention heads, concatenate or average outputs. Allows different neighbors to have different importance."
+     "text": "**Explanation:** Multi-head attention: run K parallel attention heads, concatenate or average outputs. Allows different neighbours to have different importance."
     }
    ],
    "kind": ""
@@ -183,13 +183,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Transductive:** Train and predict on same graph. Test nodes present during training (unlabeled). Example: GCN.",
-      "**Inductive:** Can generalize to unseen nodes/graphs. Learns aggregation function, not node-specific embeddings. Example: GraphSAGE."
+      "**Transductive:** Train and predict on same graph. Test nodes present during training (unlabelled). Example: GCN.",
+      "**Inductive:** Can generalise to unseen nodes/graphs. Learns aggregation function, not node-specific embeddings. Example: GraphSAGE."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Inductive is more practical — new users join social network, new molecules synthesized. GraphSAGE samples and aggregates from neighbors, so it works on new nodes."
+     "text": "**Explanation:** Inductive is more practical — new users join social network, new molecules synthesized. GraphSAGE samples and aggregates from neighbours, so it works on new nodes."
     }
    ],
    "kind": ""
@@ -259,7 +259,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** WL test is a graph isomorphism test that iteratively refines node labels based on neighbor labels."
+     "text": "**Answer:** WL test is a graph isomorphism test that iteratively refines node labels based on neighbour labels."
     },
     {
      "t": "ul",
@@ -313,12 +313,12 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Spectral:** Based on graph Fourier transform. Define convolution in frequency domain. Example: ChebNet, GCN.",
-      "**Spatial:** Directly aggregate neighbor features. More intuitive, flexible. Example: GraphSAGE, GAT, GIN."
+      "**Spatial:** Directly aggregate neighbour features. More intuitive, flexible. Example: GraphSAGE, GAT, GIN."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Spectral methods rely on graph Laplacian eigendecomposition — computationally expensive and graph-specific. Spatial methods are more scalable and generalizable."
+     "text": "**Explanation:** Spectral methods rely on graph Laplacian eigendecomposition — computationally expensive and graph-specific. Spatial methods are more scalable and generalisable."
     }
    ],
    "kind": ""
@@ -335,7 +335,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Mini-batch training:** GraphSAGE samples K-hop neighborhoods per node",
+      "**Mini-batch training:** GraphSAGE samples K-hop neighbourhoods per node",
       "**Cluster-GCN:** Partition graph into clusters, train on subgraphs",
       "**Graph sampling:** Random walk-based, importance sampling",
       "**DistDGL/PyG:** Distributed GNN training across machines"
@@ -420,7 +420,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GCN: multiply node features by normalized adjacency matrix (aggregate neighbors), then linear transform and activation. `A_hat` includes self-loops and degree normalization."
+     "text": "**Explanation:** GCN: multiply node features by normalised adjacency matrix (aggregate neighbours), then linear transform and activation. `A_hat` includes self-loops and degree normalisation."
     }
    ],
    "kind": ""
@@ -514,7 +514,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Standard GNN:** Aggregates from local neighbors only (message passing)",
+      "**Standard GNN:** Aggregates from local neighbours only (message passing)",
       "**Graph Transformer:** Full self-attention over all nodes (global receptive field)"
      ]
     },
@@ -548,7 +548,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**GNN-based:** R-GCN, CompGCN — aggregate neighbor information through typed edges"
+     "text": "**GNN-based:** R-GCN, CompGCN — aggregate neighbour information through typed edges"
     },
     {
      "t": "p",
@@ -556,7 +556,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GNNs learn richer entity representations by considering neighborhood context, not just direct connections."
+     "text": "**Explanation:** GNNs learn richer entity representations by considering neighbourhood context, not just direct connections."
     }
    ],
    "kind": ""
@@ -634,7 +634,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Categorical:** One-hot encoding or learned embeddings",
-      "**Numerical:** Normalize/standardize, then linear projection",
+      "**Numerical:** Normalise/standardize, then linear projection",
       "**Text:** Use pre-trained embeddings (BERT, Word2Vec)",
       "**No features:** Use structural features (degree, centrality) or learnable embeddings"
      ]
@@ -712,7 +712,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**User-item bipartite graph:** Users and items as nodes, interactions as edges",
-      "**LightGCN:** Simplified GCN for collaborative filtering — only neighborhood aggregation, no feature transformation",
+      "**LightGCN:** Simplified GCN for collaborative filtering — only neighbourhood aggregation, no feature transformation",
       "**PinSage:** Industry-scale GNN for Pinterest recommendations",
       "**Social influence:** Leverage social graph for better recommendations"
      ]

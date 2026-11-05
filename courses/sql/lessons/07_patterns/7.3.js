@@ -213,7 +213,7 @@ FROM   scored ORDER BY customer_id;`,
 </svg>`
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "'What is our monthly retention?'",
       rungs: [
         { level: "bad", label: "Customers active this month over customers active last month", code: `SELECT COUNT(DISTINCT customer_id) FILTER (WHERE m = '2025-03-01') * 1.0

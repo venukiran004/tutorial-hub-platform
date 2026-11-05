@@ -101,7 +101,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "What is the role of operator fusion in inference optimization?",
+   "q": "What is the role of operator fusion in inference optimisation?",
    "body": [
     {
      "t": "p",
@@ -154,13 +154,13 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "TorchDynamo captures computation graph",
-      "TorchInductor generates optimized code (Triton for GPU)",
+      "TorchInductor generates optimised code (Triton for GPU)",
       "Automatic operator fusion, memory planning"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** 30-200% speedup with zero code changes. Gradually replacing manual optimization."
+     "text": "**Explanation:** 30-200% speedup with zero code changes. Gradually replacing manual optimisation."
     }
    ],
    "kind": ""
@@ -219,7 +219,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "What is weight quantization vs activation quantization?",
+   "q": "What is weight quantisation vs activation quantisation?",
    "body": [
     {
      "t": "p",
@@ -228,25 +228,25 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Weight quantization:** Quantize model parameters (can be done offline, well-studied)",
-      "**Activation quantization:** Quantize intermediate feature maps (harder — values change per input)"
+      "**Weight quantisation:** Quantise model parameters (can be done offline, well-studied)",
+      "**Activation quantisation:** Quantise intermediate feature maps (harder — values change per input)"
      ]
     },
     {
      "t": "p",
-     "text": "**Challenges with activation quantization:**"
+     "text": "**Challenges with activation quantisation:**"
     },
     {
      "t": "ol",
      "items": [
       "Dynamic range varies across inputs",
-      "Outliers in activations cause large quantization error",
-      "Need calibration or dynamic quantization"
+      "Outliers in activations cause large quantisation error",
+      "Need calibration or dynamic quantisation"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Full INT8 inference needs both weight AND activation quantization. Weight-only quantization saves memory but not compute."
+     "text": "**Explanation:** Full INT8 inference needs both weight AND activation quantisation. Weight-only quantisation saves memory but not compute."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "34",
-   "q": "What is the difference between static and dynamic quantization?",
+   "q": "What is the difference between static and dynamic quantisation?",
    "body": [
     {
      "t": "p",
@@ -263,8 +263,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Static:** Quantization parameters (scale, zero-point) fixed after calibration. Fastest inference.",
-      "**Dynamic:** Quantization parameters computed at runtime from actual activation values. More accurate, slight overhead."
+      "**Static:** Quantisation parameters (scale, zero-point) fixed after calibration. Fastest inference.",
+      "**Dynamic:** Quantisation parameters computed at runtime from actual activation values. More accurate, slight overhead."
      ]
     },
     {
@@ -295,7 +295,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** For small batch sizes, inference is memory-bandwidth bound (loading weights dominates). Quantization directly reduces this bottleneck. For large batches, inference becomes compute-bound."
+     "text": "**Explanation:** For small batch sizes, inference is memory-bandwidth bound (loading weights dominates). Quantisation directly reduces this bottleneck. For large batches, inference becomes compute-bound."
     }
    ],
    "kind": ""
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "What is the post-training quantization workflow?",
+   "q": "What is the post-training quantisation workflow?",
    "body": [
     {
      "t": "p",
@@ -372,7 +372,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Choose compression level based on application requirements. Safety-critical (medical): preserve accuracy. Consumer app: optimize latency. Usually INT8 offers best accuracy-latency trade-off."
+     "text": "**Explanation:** Choose compression level based on application requirements. Safety-critical (medical): preserve accuracy. Consumer app: optimise latency. Usually INT8 offers best accuracy-latency trade-off."
     }
    ],
    "kind": ""
@@ -434,7 +434,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Memory-efficient attention algorithm that avoids materializing the full N×N attention matrix."
+     "text": "**Answer:** Memory-efficient attention algorithm that avoids materialising the full N×N attention matrix."
     },
     {
      "t": "p",
@@ -513,7 +513,7 @@ EC.receiveLesson({
        "Higher but better throughput/$"
       ],
       [
-       "Quantization",
+       "Quantisation",
        "INT8 well-supported",
        "INT8, FP16, INT4"
       ],
@@ -559,7 +559,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "45",
-   "q": "What is pruning + quantization combined?",
+   "q": "What is pruning + quantisation combined?",
    "body": [
     {
      "t": "p",
@@ -572,11 +572,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Pipeline:** Train → Prune → Fine-tune → Quantize → Deploy"
+     "text": "**Pipeline:** Train → Prune → Fine-tune → Quantise → Deploy"
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deep Compression (Han et al.) showed pruning + quantization + Huffman coding achieves 35-49× compression without accuracy loss."
+     "text": "**Explanation:** Deep Compression (Han et al.) showed pruning + quantisation + Huffman coding achieves 35-49× compression without accuracy loss."
     }
    ],
    "kind": ""
@@ -610,7 +610,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "47",
-   "q": "What is the impact of activation functions on quantization?",
+   "q": "What is the impact of activation functions on quantisation?",
    "body": [
     {
      "t": "p",
@@ -619,14 +619,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**ReLU:** Easy to quantize — output range [0, max], no negative values to waste bits on",
+      "**ReLU:** Easy to quantise — output range [0, max], no negative values to waste bits on",
       "**SiLU/GELU:** Harder — small negative values near zero require careful precision",
       "**Sigmoid/Tanh:** Output range [0,1] or [-1,1] — bounded but need precision near saturation"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unbounded activations (ReLU) need dynamic range handling. Smooth activations (GELU) may lose subtle features. Choose activation with quantization in mind."
+     "text": "**Explanation:** Unbounded activations (ReLU) need dynamic range handling. Smooth activations (GELU) may lose subtle features. Choose activation with quantisation in mind."
     }
    ],
    "kind": ""
@@ -659,7 +659,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "49",
-   "q": "What is the role of model profiling before optimization?",
+   "q": "What is the role of model profiling before optimisation?",
    "body": [
     {
      "t": "p",
@@ -684,7 +684,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Profile BEFORE optimizing. Optimize the bottleneck, not the easiest part. 90% of time may be in one layer."
+     "text": "**Explanation:** Profile BEFORE optimising. Optimise the bottleneck, not the easiest part. 90% of time may be in one layer."
     }
    ],
    "kind": ""

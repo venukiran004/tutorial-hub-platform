@@ -618,7 +618,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `True`, `False`, `True`, `False` **Explanation:** `__init_subclass__` customizes subclass creation with parameters."
+     "text": "**Answer:** `True`, `False`, `True`, `False` **Explanation:** `__init_subclass__` customises subclass creation with parameters."
     }
    ],
    "prompt": [

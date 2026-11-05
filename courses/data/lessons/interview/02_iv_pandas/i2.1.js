@@ -31,8 +31,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Series:** 1D labeled array.",
-      "**DataFrame:** 2D labeled table (columns of potentially different dtypes).",
+      "**Series:** 1D labelled array.",
+      "**DataFrame:** 2D labelled table (columns of potentially different dtypes).",
       "**Index:** Labels for rows/columns. Can be integer, string, datetime, multi-level."
      ]
     }
@@ -276,11 +276,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "What is vectorization in Pandas and why is it preferred over `apply`?",
+   "q": "What is vectorisation in Pandas and why is it preferred over `apply`?",
    "body": [
     {
      "t": "p",
-     "text": "Vectorized operations work on entire columns at once using NumPy under the hood — much faster than Python loops or `apply`:"
+     "text": "Vectorised operations work on entire columns at once using NumPy under the hood — much faster than Python loops or `apply`:"
     },
     {
      "t": "code",

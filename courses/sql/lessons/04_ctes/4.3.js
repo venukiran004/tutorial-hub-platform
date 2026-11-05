@@ -222,7 +222,7 @@ SELECT b AS reachable FROM walk ORDER BY b;
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Everyone under a manager, any depth",
       rungs: [
         { level: "bad", label: "A join per level", code: `SELECT e3.name FROM employees e1 JOIN employees e2 ON e2.manager_id = e1.employee_id

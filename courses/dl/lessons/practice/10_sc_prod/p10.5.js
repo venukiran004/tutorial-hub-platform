@@ -38,7 +38,7 @@ EC.receiveLesson({
       [
        "Hardware",
        "Large GPUs, multi-node",
-       "Optimized for serving (CPU/GPU/edge)"
+       "Optimised for serving (CPU/GPU/edge)"
       ],
       [
        "Data",
@@ -135,7 +135,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "105",
-   "q": "How do you containerize a deep learning model for deployment?",
+   "q": "How do you containerise a deep learning model for deployment?",
    "body": [
     {
      "t": "p",
@@ -190,13 +190,13 @@ EC.receiveLesson({
       "— Example: More mobile users → different image sizes",
       "— Detection: Compare feature distributions (training vs production)",
       "**Concept drift:** Relationship between input and target changes",
-      "— Example: COVID changed consumer behavior",
+      "— Example: COVID changed consumer behaviour",
       "— Detection: Monitor prediction accuracy over time"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Data drift: P(X) changes. Concept drift: P(Y|X) changes. Data drift is detectable without labels. Concept drift requires labeled data (delayed)."
+     "text": "**Explanation:** Data drift: P(X) changes. Concept drift: P(Y|X) changes. Data drift is detectable without labels. Concept drift requires labelled data (delayed)."
     }
    ],
    "kind": ""
@@ -484,7 +484,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GPU costs dominate ML serving budgets. Optimizing utilization is critical for cost-effective deployment."
+     "text": "**Explanation:** GPU costs dominate ML serving budgets. Optimising utilisation is critical for cost-effective deployment."
     }
    ],
    "kind": ""
@@ -597,7 +597,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "124",
-   "q": "What is model efficiency optimization for production?",
+   "q": "What is model efficiency optimisation for production?",
    "body": [
     {
      "t": "p",
@@ -610,7 +610,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Start with easy wins. Profile first — optimize the bottleneck, not everything. INT8 quantization is often the best effort-to-reward ratio."
+     "text": "**Explanation:** Start with easy wins. Profile first — optimise the bottleneck, not everything. INT8 quantisation is often the best effort-to-reward ratio."
     }
    ],
    "kind": ""
@@ -631,7 +631,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Real production systems often use multiple models. Cascade saves compute (simple model handles easy cases). Routing specializes per segment."
+     "text": "**Explanation:** Real production systems often use multiple models. Cascade saves compute (simple model handles easy cases). Routing specialises per segment."
     }
    ],
    "kind": ""

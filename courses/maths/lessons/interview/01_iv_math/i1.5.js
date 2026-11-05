@@ -92,7 +92,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Primary metric:** One pre-defined metric for the decision (power-optimized)",
+      "**Primary metric:** One pre-defined metric for the decision (power-optimised)",
       "**Guardrail metrics:** Must not degrade (e.g., latency, crash rate)",
       "**Secondary metrics:** Explore but don't decide on",
       "**Correction:** Bonferroni for few metrics, FDR for many, or use an Overall Evaluation Criterion (OEC)"
@@ -118,7 +118,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Run the test longer (2+ weeks minimum)",
-      "Analyze only users who joined after the experiment started",
+      "Analyse only users who joined after the experiment started",
       "Look for effect decay over time",
       "Use hold-back experiments (keep some users on the old version permanently)"
      ]
@@ -146,8 +146,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Cluster randomization:** Randomize at the cluster level (e.g., geographic regions)",
-      "**Ego-network randomization:** Treat entire friend groups",
+      "**Cluster randomisation:** Randomise at the cluster level (e.g., geographic regions)",
+      "**Ego-network randomisation:** Treat entire friend groups",
       "**Switchback experiments:** Alternate treatment over time periods"
      ]
     }
@@ -172,7 +172,7 @@ EC.receiveLesson({
      "items": [
       "**Delta method:** Approximate variance of the ratio",
       "**Bootstrap:** Resample user-level data, compute ratio each time",
-      "**Linearization:** Convert ratio to user-level metric: \\(\\hat{\\theta}_i = y_i - \\hat{R} \\cdot x_i\\)"
+      "**Linearisation:** Convert ratio to user-level metric: \\(\\hat{\\theta}_i = y_i - \\hat{R} \\cdot x_i\\)"
      ]
     }
    ],
@@ -286,11 +286,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Causes:** Bot filtering, redirect failures, sticky assignment bugs, browser-level vs user-level randomization inconsistencies."
+     "text": "**Causes:** Bot filtering, redirect failures, sticky assignment bugs, browser-level vs user-level randomisation inconsistencies."
     },
     {
      "t": "p",
-     "text": "**Action:** Never trust results with SRM. Debug the randomization system first."
+     "text": "**Action:** Never trust results with SRM. Debug the randomisation system first."
     }
    ],
    "kind": ""
@@ -364,7 +364,7 @@ EC.receiveLesson({
       ],
       [
        "Stratified sampling",
-       "Randomize within strata (country, platform)",
+       "Randomise within strata (country, platform)",
        "10-30%"
       ],
       [
@@ -374,7 +374,7 @@ EC.receiveLesson({
       ],
       [
        "Triggered analysis",
-       "Analyze only triggered users",
+       "Analyse only triggered users",
        "Removes noise from untriggered"
       ],
       [
@@ -390,7 +390,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "How do you analyze a test that ran shorter than planned?",
+   "q": "How do you analyse a test that ran shorter than planned?",
    "body": [
     {
      "t": "p",

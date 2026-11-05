@@ -515,7 +515,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Celery's default and recommended serialiser is **JSON**. Avoid **`pickle`**: it can execute arbitrary code on deserialization, so a compromised or spoofed broker message becomes remote code execution. JSON is safe and language-agnostic (workers in other languages can read it) but only supports basic types — another reason to pass simple IDs/dicts, not rich objects."
+     "text": "Celery's default and recommended serialiser is **JSON**. Avoid **`pickle`**: it can execute arbitrary code on deserialisation, so a compromised or spoofed broker message becomes remote code execution. JSON is safe and language-agnostic (workers in other languages can read it) but only supports basic types — another reason to pass simple IDs/dicts, not rich objects."
     },
     {
      "t": "p",

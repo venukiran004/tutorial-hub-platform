@@ -80,7 +80,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2421",
-   "q": "Program 2421: Authorization",
+   "q": "Program 2421: Authorisation",
    "body": [
     {
      "t": "code",

@@ -28,9 +28,9 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Mini-batch SGD:** Load batches from disk (Dask, TF datasets, PyTorch DataLoader).",
-      "**Distributed training:** Horovod, PyTorch DDP — gradient synchronization across GPUs/nodes.",
+      "**Distributed training:** Horovod, PyTorch DDP — gradient synchronisation across GPUs/nodes.",
       "**Incremental/online learning:** Partial fit on streaming data (sklearn `partial_fit`).",
-      "**Approximate algorithms:** Approximate nearest-neighbor, sketches (HyperLogLog, MinHash)."
+      "**Approximate algorithms:** Approximate nearest-neighbour, sketches (HyperLogLog, MinHash)."
      ]
     }
    ],
@@ -83,7 +83,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A centralized repository for computed features that ensures:"
+     "text": "A centralised repository for computed features that ensures:"
     },
     {
      "t": "ul",
@@ -238,7 +238,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Mitigation: PCA/dimensionality reduction, feature selection, regularization."
+     "text": "Mitigation: PCA/dimensionality reduction, feature selection, regularisation."
     }
    ],
    "kind": ""
@@ -306,11 +306,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "172",
-   "q": "What is model quantization in scikit-learn / traditional ML?",
+   "q": "What is model quantisation in scikit-learn / traditional ML?",
    "body": [
     {
      "t": "p",
-     "text": "Represent model parameters with lower precision (float32 → int8). For tree models: discretize thresholds, quantize leaf values. sklearn's `export_text` for trees or custom serialization. More commonly applied in deep learning."
+     "text": "Represent model parameters with lower precision (float32 → int8). For tree models: discretise thresholds, quantise leaf values. sklearn's `export_text` for trees or custom serialisation. More commonly applied in deep learning."
     }
    ],
    "kind": ""

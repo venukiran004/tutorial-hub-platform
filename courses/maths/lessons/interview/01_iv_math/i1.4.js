@@ -211,7 +211,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Steps:** Define metric → Calculate sample size → Randomize → Run → Analyze"
+     "text": "**Steps:** Define metric → Calculate sample size → Randomise → Run → Analyse"
     },
     {
      "t": "p",
@@ -243,7 +243,7 @@ EC.receiveLesson({
       [
        "Sample ratio mismatch",
        "Biased results",
-       "Check randomization integrity"
+       "Check randomisation integrity"
       ],
       [
        "Simpson's paradox",
@@ -352,7 +352,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Establishing causation:** RCTs (randomized controlled trials), instrumental variables, difference-in-differences, causal graphs (do-calculus)."
+     "text": "**Establishing causation:** RCTs (randomised controlled trials), instrumental variables, difference-in-differences, causal graphs (do-calculus)."
     }
    ],
    "kind": ""
@@ -573,7 +573,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Analyzes time-to-event data (churn, death, failure), handling censored observations (event hasn't happened yet)."
+     "text": "**Answer:** Analyses time-to-event data (churn, death, failure), handling censored observations (event hasn't happened yet)."
     },
     {
      "t": "p",

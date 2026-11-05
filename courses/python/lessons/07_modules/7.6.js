@@ -79,7 +79,7 @@ source .venv/bin/activate && pip install -r requirements.txt
 
     { t: "h2", n: "02", text: "Direct versus transitive", id: "graph" },
 
-    {"kind": "tree", "title": "Direct versus transitive dependencies", "caption": "You declare the direct ones; the resolver pulls in their dependencies. A lock file records every resolved version so two installs on two machines are identical.", "root": {"label": "your project", "tone": "accent", "children": [{"label": "requests  (direct)", "tone": "good", "children": [{"label": "urllib3"}, {"label": "certifi"}, {"label": "charset-normalizer"}]}, {"label": "pandas  (direct)", "tone": "good", "children": [{"label": "numpy"}, {"label": "python-dateutil", "children": [{"label": "six"}]}]}]}, "t": "diagram", "id": "dg-7_6-02-2"},
+    {"kind": "tree", "title": "Direct versus transitive dependencies", "caption": "You declare the direct ones; the resolver pulls in their dependencies. A lock file records every resolved version so two installs on two machines are identical.", "root": {"label": "your project", "tone": "accent", "children": [{"label": "requests  (direct)", "tone": "good", "children": [{"label": "urllib3"}, {"label": "certifi"}, {"label": "charset-normaliser"}]}, {"label": "pandas  (direct)", "tone": "good", "children": [{"label": "numpy"}, {"label": "python-dateutil", "children": [{"label": "six"}]}]}]}, "t": "diagram", "id": "dg-7_6-02-2"},
 
 
 

@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Marketing Mix Modeling (MMM): regression of sales on channel spend + controls, (2) response curves: diminishing returns per channel (log or Hill function), (3) attribution: how much each channel contributes to conversions, (4) optimization: allocate budget to maximize total conversions subject to constraints, (5) constraints: minimum/maximum per channel, total budget, (6) incrementality testing: holdout tests per channel to validate causal impact, (7) Bayesian approach: uncertainty in response curves → uncertainty in optimal allocation, (8) dynamic: re-optimize monthly as conditions change."
+     "text": "**Answer:** (1) Marketing Mix Modelling (MMM): regression of sales on channel spend + controls, (2) response curves: diminishing returns per channel (log or Hill function), (3) attribution: how much each channel contributes to conversions, (4) optimisation: allocate budget to maximise total conversions subject to constraints, (5) constraints: minimum/maximum per channel, total budget, (6) incrementality testing: holdout tests per channel to validate causal impact, (7) Bayesian approach: uncertainty in response curves → uncertainty in optimal allocation, (8) dynamic: re-optimise monthly as conditions change."
     },
     {
      "t": "p",
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Node-level: (1) degree centrality, (2) betweenness centrality, (3) clustering coefficient, (4) PageRank. Neighborhood: (5) average neighbor feature values, (6) neighbor count by type, (7) second-degree connections. Graph-level: (8) connected component size, (9) community membership, (10) ego-network density. Advanced: (11) Node2Vec embeddings, (12) GNN-learned representations, (13) motif counts (triangles, etc.), (14) temporal: how network features change over time."
+     "text": "**Answer:** Node-level: (1) degree centrality, (2) betweenness centrality, (3) clustering coefficient, (4) PageRank. Neighbourhood: (5) average neighbour feature values, (6) neighbour count by type, (7) second-degree connections. Graph-level: (8) connected component size, (9) community membership, (10) ego-network density. Advanced: (11) Node2Vec embeddings, (12) GNN-learned representations, (13) motif counts (triangles, etc.), (14) temporal: how network features change over time."
     },
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Check error logs: what's the exception? (OOM, dependency failure, input error), (2) check health endpoint: is the process running?, (3) recent changes: any deployment, config change, or data pipeline change?, (4) resources: CPU/memory/disk usage, (5) dependencies: is the database/feature store reachable?, (6) input validation: are incoming requests malformed?, (7) model loading: can the model file be read and deserialized?, (8) reproduce: send known-good request, does it work?, (9) scale: is it all requests or intermittent? (load-related?), (10) mitigation: rollback last change, restart service, scale up."
+     "text": "**Answer:** (1) Check error logs: what's the exception? (OOM, dependency failure, input error), (2) check health endpoint: is the process running?, (3) recent changes: any deployment, config change, or data pipeline change?, (4) resources: CPU/memory/disk usage, (5) dependencies: is the database/feature store reachable?, (6) input validation: are incoming requests malformed?, (7) model loading: can the model file be read and deserialised?, (8) reproduce: send known-good request, does it work?, (9) scale: is it all requests or intermittent? (load-related?), (10) mitigation: rollback last change, restart service, scale up."
     }
    ],
    "kind": ""
@@ -82,7 +82,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data growth: feature computations touching larger tables, (2) feature store: index degradation, growing state store, (3) model: if online learning, model complexity may have grown, (4) infrastructure: shared resources being consumed by other services, (5) memory: memory leak causing GC overhead, (6) connection pooling: database connections not being released, (7) feature cardinality: categorical features with growing vocabulary, (8) profiling: instrument each pipeline stage to identify the bottleneck, (9) fix: optimize slow query, add indices, clean up memory, right-size resources."
+     "text": "**Answer:** (1) Data growth: feature computations touching larger tables, (2) feature store: index degradation, growing state store, (3) model: if online learning, model complexity may have grown, (4) infrastructure: shared resources being consumed by other services, (5) memory: memory leak causing GC overhead, (6) connection pooling: database connections not being released, (7) feature cardinality: categorical features with growing vocabulary, (8) profiling: instrument each pipeline stage to identify the bottleneck, (9) fix: optimise slow query, add indices, clean up memory, right-size resources."
     },
     {
      "t": "p",
@@ -106,11 +106,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "282",
-   "q": "You have 10 related classification tasks (e.g., predicting different user behaviors). Should you build 10 separate models or one multi-task model?",
+   "q": "You have 10 related classification tasks (e.g., predicting different user behaviours). Should you build 10 separate models or one multi-task model?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Multi-task when: (1) tasks share underlying patterns, (2) some tasks have limited data (benefit from shared learning), (3) inference efficiency matters (one forward pass for all). Separate when: (4) tasks are unrelated, (5) different feature sets are optimal, (6) different update frequencies needed, (7) failure isolation matters. Architecture: (8) shared base layers + task-specific heads, (9) hard parameter sharing (same weights) vs. soft (regularize toward similar), (10) task weighting: balance losses to prevent dominant task from dominating learning."
+     "text": "**Answer:** Multi-task when: (1) tasks share underlying patterns, (2) some tasks have limited data (benefit from shared learning), (3) inference efficiency matters (one forward pass for all). Separate when: (4) tasks are unrelated, (5) different feature sets are optimal, (6) different update frequencies needed, (7) failure isolation matters. Architecture: (8) shared base layers + task-specific heads, (9) hard parameter sharing (same weights) vs. soft (regularise toward similar), (10) task weighting: balance losses to prevent dominant task from dominating learning."
     },
     {
      "t": "p",
@@ -126,7 +126,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Structure: **Title**: \"Customer Retention Model — 25% Churn Reduction\" **Key Result**: Model identifies at-risk customers 30 days before churn, enabling proactive retention. Pilot showed 25% churn reduction → $1.2M annual savings. **How It Works**: Analyzes 15 behavioral signals (purchase recency, support tickets, engagement) to score churn risk daily. **Business Impact**: (1) $1.2M saved/year, (2) 85% of actual churners caught by model, (3) marketing team contacts top 200 at-risk customers weekly. **Next Steps**: (1) Expand to all segments (Q2), (2) automate interventions (Q3), (3) expected full-year impact: $3M. **Risk**: Model needs quarterly refresh; monitoring in place."
+     "text": "**Answer:** Structure: **Title**: \"Customer Retention Model — 25% Churn Reduction\" **Key Result**: Model identifies at-risk customers 30 days before churn, enabling proactive retention. Pilot showed 25% churn reduction → $1.2M annual savings. **How It Works**: Analyses 15 behavioural signals (purchase recency, support tickets, engagement) to score churn risk daily. **Business Impact**: (1) $1.2M saved/year, (2) 85% of actual churners caught by model, (3) marketing team contacts top 200 at-risk customers weekly. **Next Steps**: (1) Expand to all segments (Q2), (2) automate interventions (Q3), (3) expected full-year impact: $3M. **Risk**: Model needs quarterly refresh; monitoring in place."
     }
    ],
    "kind": ""
@@ -162,11 +162,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "286",
-   "q": "Your data has hierarchical categories (Product → Category → Subcategory → SKU). How do you encode this for modeling?",
+   "q": "Your data has hierarchical categories (Product → Category → Subcategory → SKU). How do you encode this for modelling?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multiple features: separate columns per level, (2) label encoding per level: preserves hierarchy, (3) target encoding per level: captures category-level target means, (4) entity embeddings: learn representations that preserve hierarchy, (5) create features at each level: category_avg_price, subcategory_return_rate, (6) tree-based models: can split at any level naturally, (7) path encoding: \"Electronics/Phones/Smartphones\" as a string → character n-grams, (8) hierarchical regularization: child categories regularize toward parent."
+     "text": "**Answer:** (1) Multiple features: separate columns per level, (2) label encoding per level: preserves hierarchy, (3) target encoding per level: captures category-level target means, (4) entity embeddings: learn representations that preserve hierarchy, (5) create features at each level: category_avg_price, subcategory_return_rate, (6) tree-based models: can split at any level naturally, (7) path encoding: \"Electronics/Phones/Smartphones\" as a string → character n-grams, (8) hierarchical regularisation: child categories regularise toward parent."
     },
     {
      "t": "p",
@@ -182,7 +182,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) End-to-end: data collection → EDA → modeling → evaluation → deployment, (2) real data: not toy datasets (but can be public Kaggle data), (3) business framing: \"I solved X for Y audience,\" not \"I trained a model,\" (4) communication: clear README, visualizations, insights narrative, (5) code quality: clean, documented, reproducible, (6) unique angle: novel approach or interesting domain, (7) deployed: even a simple Streamlit app shows production thinking, (8) avoid: Titanic, Iris, Boston Housing without a twist."
+     "text": "**Answer:** (1) End-to-end: data collection → EDA → modelling → evaluation → deployment, (2) real data: not toy datasets (but can be public Kaggle data), (3) business framing: \"I solved X for Y audience,\" not \"I trained a model,\" (4) communication: clear README, visualisations, insights narrative, (5) code quality: clean, documented, reproducible, (6) unique angle: novel approach or interesting domain, (7) deployed: even a simple Streamlit app shows production thinking, (8) avoid: Titanic, Iris, Boston Housing without a twist."
     }
    ],
    "kind": ""
@@ -210,7 +210,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Different feature engineering: same concept, different computation, (2) different model frameworks: TensorFlow vs. PyTorch vs. scikit-learn, (3) different data definitions: what counts as \"active user\"?, (4) different infrastructure: AWS vs. GCP, different monitoring tools, (5) approach: (a) evaluate both models on combined data, (b) keep the better one, retrain on combined data, (c) ensemble if both have unique strengths, (6) data migration: standardize data pipelines, (7) team alignment: establish shared standards, tooling, vocabulary."
+     "text": "**Answer:** (1) Different feature engineering: same concept, different computation, (2) different model frameworks: TensorFlow vs. PyTorch vs. scikit-learn, (3) different data definitions: what counts as \"active user\"?, (4) different infrastructure: AWS vs. GCP, different monitoring tools, (5) approach: (a) evaluate both models on combined data, (b) keep the better one, retrain on combined data, (c) ensemble if both have unique strengths, (6) data migration: standardise data pipelines, (7) team alignment: establish shared standards, tooling, vocabulary."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) This is MNAR: missing because of the attribute itself (age-aware missing), (2) \"is_age_missing\" binary feature: captures the systematic difference, (3) don't impute with mean — that would assign average age to privacy-conscious young users, (4) estimate age from behavioral proxies: device type, browsing patterns, language style, (5) multiple imputation with auxiliary information, (6) model without age: if model still performs well, age may not be necessary, (7) respect user choice: using inferred age may violate privacy expectations."
+     "text": "**Answer:** (1) This is MNAR: missing because of the attribute itself (age-aware missing), (2) \"is_age_missing\" binary feature: captures the systematic difference, (3) don't impute with mean — that would assign average age to privacy-conscious young users, (4) estimate age from behavioural proxies: device type, browsing patterns, language style, (5) multiple imputation with auxiliary information, (6) model without age: if model still performs well, age may not be necessary, (7) respect user choice: using inferred age may violate privacy expectations."
     }
    ],
    "kind": ""
@@ -234,7 +234,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Cookie churn → users hop between treatment/control → diluted treatment effect, (2) intent-to-treat analysis: analyze based on first cookie assignment, (3) use user IDs instead of cookies for logged-in users, (4) device fingerprinting: more persistent than cookies (but privacy concerns), (5) server-side randomization: more stable than client-side, (6) measure: what % of users appear in both groups?, (7) quantify dilution: the observed effect is biased toward zero — actual effect is larger."
+     "text": "**Answer:** (1) Cookie churn → users hop between treatment/control → diluted treatment effect, (2) intent-to-treat analysis: analyse based on first cookie assignment, (3) use user IDs instead of cookies for logged-in users, (4) device fingerprinting: more persistent than cookies (but privacy concerns), (5) server-side randomisation: more stable than client-side, (6) measure: what % of users appear in both groups?, (7) quantify dilution: the observed effect is biased toward zero — actual effect is larger."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "293",
-   "q": "Your time series forecasting model is deployed but you realize the test set evaluation didn't account for the deployment scenario. In production, you forecast 7 days ahead, but you evaluated on 1-day-ahead. How do you fix?",
+   "q": "Your time series forecasting model is deployed but you realise the test set evaluation didn't account for the deployment scenario. In production, you forecast 7 days ahead, but you evaluated on 1-day-ahead. How do you fix?",
    "body": [
     {
      "t": "p",
@@ -270,7 +270,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Caching: store geocoded results, only geocode new addresses, (2) batch processing: respect rate limits with sleep/retry logic, (3) time estimate: 500K / 100 per min = ~83 hours for uncached, (4) local geocoding: use offline geocoder (Nominatim/OpenStreetMap) to avoid API limits, (5) fuzzy dedup: normalize addresses before geocoding to reduce unique lookups, (6) priority: geocode most-used addresses first, (7) incremental: geocode new addresses only, maintain mapping table."
+     "text": "**Answer:** (1) Caching: store geocoded results, only geocode new addresses, (2) batch processing: respect rate limits with sleep/retry logic, (3) time estimate: 500K / 100 per min = ~83 hours for uncached, (4) local geocoding: use offline geocoder (Nominatim/OpenStreetMap) to avoid API limits, (5) fuzzy dedup: normalise addresses before geocoding to reduce unique lookups, (6) priority: geocode most-used addresses first, (7) incremental: geocode new addresses only, maintain mapping table."
     }
    ],
    "kind": ""
@@ -294,7 +294,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Profile memory usage: identify peak memory during inference, (2) increase pod memory limits: set resource requests/limits in YAML, (3) model optimization: quantize, prune to reduce memory footprint, (4) batch size control: limit concurrent predictions per pod, (5) memory-mapped model loading: load from mmap, only access needed weights, (6) garbage collection: force GC after large operations, (7) streaming inference: process large inputs in chunks, (8) horizontal scaling: more pods with manageable memory each."
+     "text": "**Answer:** (1) Profile memory usage: identify peak memory during inference, (2) increase pod memory limits: set resource requests/limits in YAML, (3) model optimisation: quantise, prune to reduce memory footprint, (4) batch size control: limit concurrent predictions per pod, (5) memory-mapped model loading: load from mmap, only access needed weights, (6) garbage collection: force GC after large operations, (7) streaming inference: process large inputs in chunks, (8) horizontal scaling: more pods with manageable memory each."
     }
    ],
    "kind": ""
@@ -318,7 +318,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Adversarial training: generate adversarial examples, include in training, (2) input validation: reject inputs with suspicious patterns, (3) randomized smoothing: add noise during inference, certify robustness, (4) defensive distillation: train model on soft labels from robust teacher, (5) input preprocessing: denoise, quantize inputs before model, (6) ensemble: harder to attack multiple diverse models simultaneously, (7) detection: separate model to detect adversarial inputs, (8) monitoring: track prediction confidence distributions for anomalies."
+     "text": "**Answer:** (1) Adversarial training: generate adversarial examples, include in training, (2) input validation: reject inputs with suspicious patterns, (3) randomised smoothing: add noise during inference, certify robustness, (4) defensive distillation: train model on soft labels from robust teacher, (5) input preprocessing: denoise, quantise inputs before model, (6) ensemble: harder to attack multiple diverse models simultaneously, (7) detection: separate model to detect adversarial inputs, (8) monitoring: track prediction confidence distributions for anomalies."
     }
    ],
    "kind": ""
@@ -330,7 +330,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) EDA pairing: one person drives exploration, other questions assumptions, (2) review sessions: walk through notebook analysis together, (3) modeling pairing: one implements, other validates methodology, (4) code review: mandatory for production code, feature engineering, (5) pair debugging: especially valuable for data pipeline issues, (6) senior-junior pairing: mentoring opportunity, (7) cross-functional pairing: data scientist + ML engineer for deployment, (8) time-limited: 1-2 hour sessions for focused work."
+     "text": "**Answer:** (1) EDA pairing: one person drives exploration, other questions assumptions, (2) review sessions: walk through notebook analysis together, (3) modelling pairing: one implements, other validates methodology, (4) code review: mandatory for production code, feature engineering, (5) pair debugging: especially valuable for data pipeline issues, (6) senior-junior pairing: mentoring opportunity, (7) cross-functional pairing: data scientist + ML engineer for deployment, (8) time-limited: 1-2 hour sessions for focused work."
     }
    ],
    "kind": ""

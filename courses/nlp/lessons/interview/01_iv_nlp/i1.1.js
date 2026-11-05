@@ -39,14 +39,14 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Stemming vs Lemmatization — when do you use which?",
+   "q": "Stemming vs Lemmatisation — when do you use which?",
    "body": [
     {
      "t": "table",
      "head": [
       "Aspect",
       "Stemming",
-      "Lemmatization"
+      "Lemmatisation"
      ],
      "rows": [
       [
@@ -101,7 +101,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**TF(t, d):** How often term \\(t\\) appears in document \\(d\\) (local importance)",
-      "**IDF(t):** Penalizes common terms that appear in many documents (global importance)",
+      "**IDF(t):** Penalises common terms that appear in many documents (global importance)",
       "**Why better than BoW:** BoW treats \"the\" and \"quantum\" equally. TF-IDF downweights frequent/common words and highlights discriminative terms."
      ]
     }
@@ -124,11 +124,11 @@ EC.receiveLesson({
       [
        "Input",
        "Context words",
-       "Center word"
+       "Centre word"
       ],
       [
        "Output",
-       "Predicts center word",
+       "Predicts centre word",
        "Predicts context words"
       ],
       [
@@ -189,7 +189,7 @@ EC.receiveLesson({
       [
        "Objective",
        "Predict context/center word",
-       "Minimize co-occurrence reconstruction error"
+       "Minimise co-occurrence reconstruction error"
       ],
       [
        "Training",
@@ -214,11 +214,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "What is subword tokenization and why is it used?",
+   "q": "What is subword tokenisation and why is it used?",
    "body": [
     {
      "t": "p",
-     "text": "Subword tokenization (BPE, WordPiece, SentencePiece) splits words into smaller units:"
+     "text": "Subword tokenisation (BPE, WordPiece, SentencePiece) splits words into smaller units:"
     },
     {
      "t": "ul",
@@ -226,7 +226,7 @@ EC.receiveLesson({
       "\"unhappiness\" → [\"un\", \"happiness\"] or [\"un\", \"hap\", \"pi\", \"ness\"]",
       "**Why:** Handles OOV (out-of-vocabulary) words, reduces vocabulary size, shares morphological information",
       "**BPE:** Merges most frequent character pairs iteratively",
-      "**WordPiece:** Similar but maximizes likelihood of training data (used by BERT)",
+      "**WordPiece:** Similar but maximises likelihood of training data (used by BERT)",
       "**SentencePiece:** Language-agnostic, treats input as raw Unicode (used by T5, LLaMA)"
      ]
     }
@@ -253,7 +253,7 @@ EC.receiveLesson({
       ],
       [
        "**Statistical (CRF)**",
-       "Sequence labeling with features",
+       "Sequence labelling with features",
        "BiLSTM-CRF"
       ],
       [
@@ -309,9 +309,9 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "\\(p_n\\) = modified n-gram precision (clipped to reference count)",
-      "BP = brevity penalty (penalizes short translations)",
+      "BP = brevity penalty (penalises short translations)",
       "Typically BLEU-4 (up to 4-grams) with uniform weights \\(w_n = 1/4\\)",
-      "**Limitation:** Only measures precision, not recall; doesn't handle synonyms; poor correlation with human judgment for single sentences"
+      "**Limitation:** Only measures precision, not recall; doesn't handle synonyms; poor correlation with human judgement for single sentences"
      ]
     }
    ],
@@ -334,7 +334,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "\\(e_{ij}\\) = alignment score between decoder state \\(i\\) and encoder state \\(j\\)",
-      "\\(\\alpha_{ij}\\) = attention weight (softmax normalized)",
+      "\\(\\alpha_{ij}\\) = attention weight (softmax normalised)",
       "\\(c_i\\) = context vector (weighted sum of encoder states)"
      ]
     },
@@ -471,7 +471,7 @@ EC.receiveLesson({
        "**Encoder-Decoder**",
        "Enc: bidirectional, Dec: causal + cross-attn",
        "Span corruption / denoising",
-       "Translation, summarization, seq-to-seq",
+       "Translation, summarisation, seq-to-seq",
        "T5, FLAN-T5, BART, mBART"
       ]
      ]
@@ -489,13 +489,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Decoder-only — causal, generative models.** A **causal mask** lets position \\(i\\) attend only to positions \\(\\leq i\\), so the model never \"sees the future.\" Trained by **next-token prediction**; at inference it generates **autoregressively** (feed output back in, one token at a time). This single objective scales beautifully and gives in-context/few-shot learning, which is why all modern LLMs (GPT, LLaMA, Claude) are decoder-only. → Best for anything *open-ended*: chat, instruction following, reasoning, code generation, agents, summarization-by-prompting."
+      "**Decoder-only — causal, generative models.** A **causal mask** lets position \\(i\\) attend only to positions \\(\\leq i\\), so the model never \"sees the future.\" Trained by **next-token prediction**; at inference it generates **autoregressively** (feed output back in, one token at a time). This single objective scales beautifully and gives in-context/few-shot learning, which is why all modern LLMs (GPT, LLaMA, Claude) are decoder-only. → Best for anything *open-ended*: chat, instruction following, reasoning, code generation, agents, summarisation-by-prompting."
      ]
     },
     {
      "t": "ul",
      "items": [
-      "**Encoder-decoder — bidirectional read + autoregressive write.** The encoder builds a full bidirectional representation of the *source*; the decoder generates the *target* autoregressively while **cross-attending** to the encoder output. Trained by denoising / span corruption (T5). → Best for **transduction** tasks with a clear input→output mapping where the input should be fully understood before writing: machine translation, summarization, grammar correction, T5-style \"text-to-text.\""
+      "**Encoder-decoder — bidirectional read + autoregressive write.** The encoder builds a full bidirectional representation of the *source*; the decoder generates the *target* autoregressively while **cross-attending** to the encoder output. Trained by denoising / span corruption (T5). → Best for **transduction** tasks with a clear input→output mapping where the input should be fully understood before writing: machine translation, summarisation, grammar correction, T5-style \"text-to-text.\""
      ]
     },
     {

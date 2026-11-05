@@ -68,7 +68,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Analyzing grammatical structure by finding relationships between words (head-dependent pairs)."
+     "text": "**Answer:** Analysing grammatical structure by finding relationships between words (head-dependent pairs)."
     },
     {
      "t": "p",
@@ -121,7 +121,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Rule-based:** Hand-crafted patterns and rules (regex, grammars). Precise for known patterns, brittle for variations.",
-      "**ML-based:** Learn patterns from data. More flexible, handle variations, need labeled data."
+      "**ML-based:** Learn patterns from data. More flexible, handle variations, need labelled data."
      ]
     },
     {
@@ -184,25 +184,25 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "What is text normalization?",
+   "q": "What is text normalisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Standardizing text variations:"
+     "text": "**Answer:** Standardising text variations:"
     },
     {
      "t": "ol",
      "items": [
       "Lowercasing: \"Apple\" → \"apple\"",
-      "Unicode normalization: \"café\" → \"cafe\"",
+      "Unicode normalisation: \"café\" → \"cafe\"",
       "Contractions: \"don't\" → \"do not\"",
-      "Number normalization: \"1st\" → \"first\"",
+      "Number normalisation: \"1st\" → \"first\"",
       "Abbreviation expansion: \"NYC\" → \"New York City\""
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces vocabulary and variation. Domain-specific: medical abbreviations, social media slang. Too aggressive normalization loses information."
+     "text": "**Explanation:** Reduces vocabulary and variation. Domain-specific: medical abbreviations, social media slang. Too aggressive normalisation loses information."
     }
    ],
    "kind": ""
@@ -233,7 +233,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "35",
-   "q": "What is N-gram language modeling?",
+   "q": "What is N-gram language modelling?",
    "body": [
     {
      "t": "p",
@@ -257,7 +257,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "36",
-   "q": "What is perplexity in language modeling?",
+   "q": "What is perplexity in language modelling?",
    "body": [
     {
      "t": "p",
@@ -273,7 +273,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Used to compare language models. Not directly comparable across different tokenizations/vocabularies."
+     "text": "**Explanation:** Used to compare language models. Not directly comparable across different tokenisations/vocabularies."
     }
    ],
    "kind": ""
@@ -369,13 +369,13 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Term frequency saturation (diminishing returns for repeated words)",
-      "Document length normalization",
+      "Document length normalisation",
       "IDF weighting"
      ]
     },
     {
      "t": "p",
-     "text": "**Formula:** includes k1, b parameters controlling saturation and length normalization."
+     "text": "**Formula:** includes k1, b parameters controlling saturation and length normalisation."
     },
     {
      "t": "p",
@@ -420,7 +420,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Spell correction (SymSpell, pyspellchecker)",
-      "Custom normalization rules (slang dictionary)",
+      "Custom normalisation rules (slang dictionary)",
       "Character-level or subword models (robust to misspellings)",
       "Data augmentation with noise injection",
       "Pre-training on similar noisy data"
@@ -528,7 +528,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Select the most informative unlabeled samples for human annotation, rather than random selection."
+     "text": "**Answer:** Select the most informative unlabelled samples for human annotation, rather than random selection."
     },
     {
      "t": "p",
@@ -539,12 +539,12 @@ EC.receiveLesson({
      "items": [
       "Uncertainty sampling (model is least confident)",
       "Query by committee (models disagree)",
-      "Diversity sampling (maximize coverage)"
+      "Diversity sampling (maximise coverage)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduces annotation cost by 50-80%. Iterative: model trains → selects → human labels → retrain. Critical for NLP where labeling is expensive."
+     "text": "**Explanation:** Reduces annotation cost by 50-80%. Iterative: model trains → selects → human labels → retrain. Critical for NLP where labelling is expensive."
     }
    ],
    "kind": ""
@@ -609,9 +609,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Latency:** Tokenization + inference time (BERT is slow, distilled models faster)",
+      "**Latency:** Tokenisation + inference time (BERT is slow, distilled models faster)",
       "**Model size:** BERT-base = 440MB, DistilBERT = 260MB",
-      "**Preprocessing consistency:** Same tokenizer in train and serve",
+      "**Preprocessing consistency:** Same tokeniser in train and serve",
       "**Edge cases:** Empty text, very long text, unsupported languages",
       "**Monitoring:** Drift in text distribution, new vocabulary",
       "**Updates:** Retrain as language evolves"
@@ -619,7 +619,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Distillation, quantization, ONNX export for production speed. Cache frequent predictions. Batch inference for offline tasks."
+     "text": "**Explanation:** Distillation, quantisation, ONNX export for production speed. Cache frequent predictions. Batch inference for offline tasks."
     }
    ],
    "kind": ""

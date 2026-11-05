@@ -64,7 +64,7 @@ ppl = 2 ** -mean`,
     { t: "h2", n: "02", id: "lies", text: "The three ways it lies",
       sub: "All three are about comparability" },
 
-    {"kind": "layers", "title": "Three ways perplexity lies", "caption": "All three are the same structural problem: perplexity is a statement about **a model, a tokenizer and a corpus together**, and it gets quoted as a statement about the model alone. A bigger vocabulary splits text into fewer tokens and changes the number without changing quality. Perplexity on Wikipedia and on legal contracts are different numbers about different things. And a low figure on an instruction-tuned model says nothing about helpfulness.", "items": [{"label": "Not across tokenizers", "sub": "a bigger vocabulary gives fewer tokens - the number moves, the model does not", "tone": "crit"}, {"label": "Not across datasets", "sub": "Wikipedia and legal contracts are different numbers about different things", "tone": "crit"}, {"label": "Not a quality measure", "sub": "low perplexity is not helpfulness, safety or correctness", "tone": "crit"}], "t": "diagram", "id": "dg-9_2-02-1"},
+    {"kind": "layers", "title": "Three ways perplexity lies", "caption": "All three are the same structural problem: perplexity is a statement about **a model, a tokeniser and a corpus together**, and it gets quoted as a statement about the model alone. A bigger vocabulary splits text into fewer tokens and changes the number without changing quality. Perplexity on Wikipedia and on legal contracts are different numbers about different things. And a low figure on an instruction-tuned model says nothing about helpfulness.", "items": [{"label": "Not across tokenisers", "sub": "a bigger vocabulary gives fewer tokens - the number moves, the model does not", "tone": "crit"}, {"label": "Not across datasets", "sub": "Wikipedia and legal contracts are different numbers about different things", "tone": "crit"}, {"label": "Not a quality measure", "sub": "low perplexity is not helpfulness, safety or correctness", "tone": "crit"}], "t": "diagram", "id": "dg-9_2-02-1"},
 
 
 
@@ -77,21 +77,21 @@ ppl = 2 ** -mean`,
 
 
     { t: "dl", items: [
-      { k: "Not comparable across tokenizers", v: "A bigger vocabulary splits text into fewer tokens, changing perplexity without changing quality. 8.2 measured the magnitude: one model, one text and one measured total of 245.05 nats reads as PPL **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s." },
+      { k: "Not comparable across tokenisers", v: "A bigger vocabulary splits text into fewer tokens, changing perplexity without changing quality. 8.2 measured the magnitude: one model, one text and one measured total of 245.05 nats reads as PPL **86.10** under T5\u2019s tokenisation and **183.80** under BERT\u2019s." },
       { k: "Not comparable across datasets", v: "Perplexity on Wikipedia and on legal contracts are different numbers about different things. The metric is a property of a model *and* a corpus." },
       { k: "Low perplexity does not mean useful", v: "A model can be confidently fluent and wrong. Perplexity has no idea whether the content is true or whether it answered the question \u2014 which is 9.1\u2019s family-1 blind spot." }
     ] },
 
-    { t: "callout", kind: "insight", title: "The tokenizer lie has an inversion worth holding",
+    { t: "callout", kind: "insight", title: "The tokeniser lie has an inversion worth holding",
       body: [
-        { t: "p", text: "An **efficient** tokenizer uses fewer tokens per character, so the same total surprise is divided by a smaller number and perplexity comes out **higher**. The better-engineered model looks worse on the metric." },
-        { t: "p", text: "And it is cheaper to serve, because 7.2 established that inference cost is roughly 2N FLOPs per *token*. So the direction perplexity rewards and the direction cost rewards are opposed, which is a strong argument for never using it cross-tokenizer." },
+        { t: "p", text: "An **efficient** tokeniser uses fewer tokens per character, so the same total surprise is divided by a smaller number and perplexity comes out **higher**. The better-engineered model looks worse on the metric." },
+        { t: "p", text: "And it is cheaper to serve, because 7.2 established that inference cost is roughly 2N FLOPs per *token*. So the direction perplexity rewards and the direction cost rewards are opposed, which is a strong argument for never using it cross-tokeniser." },
         { t: "p", text: "Bits-per-byte is the fix: total negative log-probability in bits over the byte length of the text. The denominator is a property of the string, so nothing can game it \u2014 8.2 measured 1.4489 bits per byte, a 5.5\u00d7 compression against 8." }
       ] },
 
     { t: "callout", kind: "good", title: "What it is genuinely for",
       body: [
-        { t: "p", text: "Comparing checkpoints of the **same** model during training, and detecting whether a fine-tune damaged the base model. Both hold the tokenizer and the corpus fixed, which is exactly what makes them valid." },
+        { t: "p", text: "Comparing checkpoints of the **same** model during training, and detecting whether a fine-tune damaged the base model. Both hold the tokeniser and the corpus fixed, which is exactly what makes them valid." },
         { t: "p", text: "The second use is underrated. 4.8 measured generic perplexity rising from **5.282 to 10.777** after a domain fine-tune \u2014 a doubling that quantified catastrophic forgetting and refuted an earlier claim in that module that LoRA made forgetting structurally impossible." },
         { t: "p", text: "**Never** as a product quality metric. 8.2 added the sharper version: instruction tuning *raises* perplexity on generic text, so selecting between chat models on perplexity systematically prefers the least aligned one." }
       ] },
@@ -150,15 +150,15 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
         notes: [
           { t: "p", text: "**The uniform identity is the whole correctness proof.** A crossed base still returns a plausible-looking perplexity, so reading the code is weaker than this test \u2014 feed p = 1/1000 and the answer must be exactly 1000.0, not 1000 raised to any power of ln 2." },
           { t: "p", text: "**Asserting the two forms agree catches the other half**, where one path is right and the other is subtly wrong. Both tests together mean the function is correct rather than merely consistent." },
-          { t: "p", text: "**The last two lines are the only comparison this licenses** \u2014 same tokenizer, same held-out corpus, one model before and after fine-tuning. The 5.282 to 10.777 figures are real measurements of catastrophic forgetting, a doubling of perplexity on generic text." },
+          { t: "p", text: "**The last two lines are the only comparison this licenses** \u2014 same tokeniser, same held-out corpus, one model before and after fine-tuning. The 5.282 to 10.777 figures are real measurements of catastrophic forgetting, a doubling of perplexity on generic text." },
           { t: "p", text: "**That is also the use people forget perplexity has.** It is a sensitive, label-free damage detector for a fine-tune, which is worth running on every training job because it costs nothing and catches a regression no task metric sees." },
-          { t: "p", text: "One thing the output deliberately does not include: a perplexity figure for a different model family. That comparison is not licensed, and the reason is quantitative rather than fussy \u2014 one model and one text can read anywhere from 86.10 to 183.80 depending only on whose tokenizer you count with." }
+          { t: "p", text: "One thing the output deliberately does not include: a perplexity figure for a different model family. That comparison is not licensed, and the reason is quantitative rather than fussy \u2014 one model and one text can read anywhere from 86.10 to 183.80 depending only on whose tokeniser you count with." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Perplexity is the exponential of cross-entropy, readable as an effective branching factor \u2014 3.3636 means choosing among 3.36 options per token. Compute in one base and exponentiate in the same one, and prove it with the uniform identity." },
-        { t: "p", text: "All three of its lies are about comparability: not across tokenizers (a 2.13\u00d7 spread, and the efficient tokenizer looks worse while being cheaper to serve), not across corpora, and never as a quality metric. Its real job is watching one model\u2019s checkpoints and detecting fine-tune damage." }
+        { t: "p", text: "All three of its lies are about comparability: not across tokenisers (a 2.13\u00d7 spread, and the efficient tokeniser looks worse while being cheaper to serve), not across corpora, and never as a quality metric. Its real job is watching one model\u2019s checkpoints and detecting fine-tune damage." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
@@ -167,8 +167,8 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
         { t: "p", text: "It is the exponential of the average negative log-probability of the tokens the model actually saw. Given probabilities of 0.5, 0.25, 0.5 and 0.125, the log base 2 values are \u22121, \u22122, \u22121 and \u22123, so the mean is \u22121.75 and perplexity is 2 to the 1.75, which is 3.3636." },
         { t: "p", text: "The reading I would give is the branching factor: at each token the model was as uncertain as if picking uniformly among about 3.36 options. Perplexity 1 is perfect and perplexity equal to the vocabulary size means it learned nothing." },
         { t: "p", text: "In code I would pick one base and stay in it \u2014 natural log with exp, or log base 2 with a power of 2 \u2014 because crossing them produces a wrong answer that still looks like a plausible perplexity. The test I would write is the uniform identity: feed twenty tokens each with probability one in a thousand and the function must return exactly 1000.0." },
-        { t: "p", text: "Then I would volunteer what it cannot do, because that is usually the real question. It is not comparable across tokenizers \u2014 I have measured one model and one passage, with a fixed measured total of 245 nats, reading as 86.10 under one tokenizer and 183.80 under another. It is not comparable across corpora, since it is a property of a model and a dataset together. And low perplexity does not mean useful: a model can be confidently fluent and wrong." },
-        { t: "p", text: "The inversion worth mentioning is that an efficient tokenizer uses fewer tokens, so the same surprise is spread more thinly and perplexity looks *worse* \u2014 while that model is cheaper to serve, since inference cost is per token. For cross-tokenizer comparison I would use bits-per-byte instead, where the denominator is the byte length of the text and nothing can game it." },
+        { t: "p", text: "Then I would volunteer what it cannot do, because that is usually the real question. It is not comparable across tokenisers \u2014 I have measured one model and one passage, with a fixed measured total of 245 nats, reading as 86.10 under one tokeniser and 183.80 under another. It is not comparable across corpora, since it is a property of a model and a dataset together. And low perplexity does not mean useful: a model can be confidently fluent and wrong." },
+        { t: "p", text: "The inversion worth mentioning is that an efficient tokeniser uses fewer tokens, so the same surprise is spread more thinly and perplexity looks *worse* \u2014 while that model is cheaper to serve, since inference cost is per token. For cross-tokeniser comparison I would use bits-per-byte instead, where the denominator is the byte length of the text and nothing can game it." },
         { t: "p", text: "Where it genuinely earns its place is watching one model\u2019s checkpoints during training, and detecting whether a fine-tune damaged the base. I measured generic perplexity doubling from 5.282 to 10.777 after a domain fine-tune, which is catastrophic forgetting quantified with no labels required." }
       ] }
   ],
@@ -178,12 +178,12 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
     "**The worked example verifies exactly**: log\u2082 values \u22121, \u22122, \u22121, \u22123 give a mean of \u22121.75 and PPL = 2^1.75 = 3.3636.",
     "**Read it as an effective branching factor** \u2014 3.36 options per token, with 1 perfect and the vocabulary size meaning nothing was learned.",
     "**Prove the implementation with the uniform identity**: N tokens at p = 1/V must return exactly V, which a crossed base will not.",
-    "**Not comparable across tokenizers** \u2014 one model, one text, one measured total reads 86.10 to 183.80 depending only on tokenisation.",
-    "**And the inversion matters**: an efficient tokenizer reports worse perplexity while being cheaper to serve, since inference cost is per token.",
+    "**Not comparable across tokenisers** \u2014 one model, one text, one measured total reads 86.10 to 183.80 depending only on tokenisation.",
+    "**And the inversion matters**: an efficient tokeniser reports worse perplexity while being cheaper to serve, since inference cost is per token.",
     "**Not comparable across corpora**, because perplexity is a property of a model *and* a dataset \u2014 165 on technical text is the metric working correctly.",
     "**Low perplexity does not mean useful**, which is family 1's blind spot \u2014 it cannot see truth or whether the question was answered.",
-    "**Use bits-per-byte for cross-tokenizer comparison**, where the denominator is the byte length and nothing can game it.",
-    "**Its real jobs are checkpoint comparison and fine-tune damage detection**, both of which hold tokenizer and corpus fixed.",
+    "**Use bits-per-byte for cross-tokeniser comparison**, where the denominator is the byte length and nothing can game it.",
+    "**Its real jobs are checkpoint comparison and fine-tune damage detection**, both of which hold tokeniser and corpus fixed.",
     "**The damage-detection use is underrated** \u2014 4.8 measured generic perplexity doubling from 5.282 to 10.777 after a domain fine-tune.",
     "**Never as a product quality metric**, since instruction tuning raises perplexity and selecting on it prefers the least aligned model."
   ],
@@ -201,7 +201,7 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
         answer: 1,
         why: "Nothing errors: the arithmetic succeeds and produces a number in a plausible range, which is what makes the bug dangerous. The test that catches it is the identity that N tokens each with probability 1/V must give exactly PPL = V \u2014 a crossed base returns V raised to a power of ln 2 instead. Perplexity is not base-independent; the base of the log and the base of the exponential must match." },
 
-      { stem: "Model A uses a more efficient tokenizer than Model B and reports a higher perplexity on the same text. What should you conclude?",
+      { stem: "Model A uses a more efficient tokeniser than Model B and reports a higher perplexity on the same text. What should you conclude?",
         options: [
           "Model B is better at modelling that text",
           "Nothing about quality \u2014 fewer tokens means the same total surprise divided by a smaller denominator, and A is also cheaper to serve since inference cost is per token",
@@ -209,12 +209,12 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
           "A has a smaller vocabulary, which limits its expressiveness"
         ],
         answer: 1,
-        why: "Perplexity divides a fixed total surprise by a token count that is a property of the tokenizer \u2014 measured, one model and one text can read anywhere from 86.10 to 183.80 across five real tokenizers. So the efficient tokenizer looks worse on the metric while being cheaper to run, meaning the metric and the cost point in opposite directions. Holding the corpus fixed does not rescue the comparison; bits-per-byte does, because its denominator is the byte length." },
+        why: "Perplexity divides a fixed total surprise by a token count that is a property of the tokeniser \u2014 measured, one model and one text can read anywhere from 86.10 to 183.80 across five real tokenisers. So the efficient tokeniser looks worse on the metric while being cheaper to run, meaning the metric and the cost point in opposite directions. Holding the corpus fixed does not rescue the comparison; bits-per-byte does, because its denominator is the byte length." },
 
       { stem: "What is perplexity's most underrated legitimate use?",
         options: [
           "Comparing instruction-tuned models during model selection",
-          "Detecting whether a fine-tune damaged the base model, since it holds tokenizer and corpus fixed and needs no labels",
+          "Detecting whether a fine-tune damaged the base model, since it holds tokeniser and corpus fixed and needs no labels",
           "Estimating inference cost, since both scale with token count",
           "Ranking candidate answers at generation time"
         ],
@@ -229,7 +229,7 @@ print("base %.3f -> fine-tuned %.3f  (%+.1f%%)"
           "Because technical text has higher entropy than prose in general"
         ],
         answer: 1,
-        why: "The single-digit figures usually quoted come from standard corpora that models were trained to fit; unfamiliar vocabulary produces genuine surprise, which perplexity measures accurately. This is the second of its three comparability failures, alongside tokenisation and the usefulness gap \u2014 and it is why the valid uses hold both the tokenizer and the corpus fixed. A perplexity quoted without its corpus is half a number." }
+        why: "The single-digit figures usually quoted come from standard corpora that models were trained to fit; unfamiliar vocabulary produces genuine surprise, which perplexity measures accurately. This is the second of its three comparability failures, alongside tokenisation and the usefulness gap \u2014 and it is why the valid uses hold both the tokeniser and the corpus fixed. A perplexity quoted without its corpus is half a number." }
     ]
   },
 

@@ -4,12 +4,12 @@
 EC.receiveLesson({
   id: "12.1",
 
-  lede: "Two questions guard every request. **Authentication** asks who is calling; **authorisation** asks whether they may do this. Systems fail at both in characteristic ways: passwords stored with fast hashes, login flows that let an attacker swap in a stolen code, permission checks scattered through code until one is missed. This lesson measures why password hashing must be slow, walks through **OAuth 2.0's authorization-code flow with PKCE** — and the attacks each of its parameters stops — explains what **OpenID Connect** adds, and compares role-, attribute- and relationship-based authorisation, ending with a Zanzibar-style permission check.",
+  lede: "Two questions guard every request. **Authentication** asks who is calling; **authorisation** asks whether they may do this. Systems fail at both in characteristic ways: passwords stored with fast hashes, login flows that let an attacker swap in a stolen code, permission checks scattered through code until one is missed. This lesson measures why password hashing must be slow, walks through **OAuth 2.0's authorisation-code flow with PKCE** — and the attacks each of its parameters stops — explains what **OpenID Connect** adds, and compares role-, attribute- and relationship-based authorisation, ending with a Zanzibar-style permission check.",
 
   objectives: [
     "Separate authentication from authorisation, and place each in the identity stack",
     "Store passwords with a slow, salted hash, and quantify why",
-    "Trace the authorization-code flow with PKCE, and name the attack that state and PKCE each prevent",
+    "Trace the authorisation-code flow with PKCE, and name the attack that state and PKCE each prevent",
     "Explain what OpenID Connect adds to OAuth 2.0",
     "Choose between RBAC, ABAC and ReBAC, and implement a relationship-based check"
   ],
@@ -70,7 +70,7 @@ scrypt, n=2^15, r=8 (32 MB)                    10               686,327 years
 
     { t: "p", text: "**OAuth 2.0** lets a user grant an application limited access to an API without giving it their password: the application receives an **access token** scoped to what the user approved. **OpenID Connect** is a thin layer on top that adds authentication: an **ID token** — a signed statement from the provider of who logged in, when and how — plus a standard user-info endpoint. Sign-in-with-Google is OIDC; \"allow this app to read your calendar\" is OAuth." },
 
-    { t: "viz", title: "The authorization-code flow with PKCE, for a mobile app",
+    { t: "viz", title: "The authorisation-code flow with PKCE, for a mobile app",
       caption: "The app never sees the password; the browser talks to the auth server. What comes back through the browser is only a short-lived, single-use code, which is worthless without the verifier that never left the device. The app checks state to ensure the callback answers a login it started, then exchanges code plus verifier for tokens directly with the auth server, and calls the API with the access token.",
       svg: `<svg viewBox="0 0 760 413.5" width="100%" role="img"><defs><marker id="q173363accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker><marker id="q173363good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--good)"/></marker><marker id="q173363warn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--warn)"/></marker><marker id="q173363crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--crit)"/></marker><marker id="q173363violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--violet)"/></marker><marker id="q173363teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--teal)"/></marker><marker id="q173363line" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--line)"/></marker></defs>
 <rect x="34.0" y="14" width="112" height="28" rx="7" class="s-fill s-stroke"/>
@@ -112,7 +112,7 @@ scrypt, n=2^15, r=8 (32 MB)                    10               686,327 years
 <line x1="670.0" y1="384" x2="94.0" y2="384" style="stroke:var(--good);stroke-dasharray:5 4" stroke-width="1.6" marker-end="url(#q173363good)"/>
 <text x="380.0" y="378" text-anchor="middle" class="s-sub" style="fill:var(--good)">(orders)</text></svg>` },
 
-    { t: "p", text: "Each parameter in that flow exists because of an attack. A minimal authorization server and mobile client, then three attempts to misuse them:" },
+    { t: "p", text: "Each parameter in that flow exists because of an attack. A minimal authorisation server and mobile client, then three attempts to misuse them:" },
 
     { t: "code", lang: "python", title: "pkce.py — the flow, an intercepted code, a replay and a forged callback", code: `import base64, hashlib, secrets
 
@@ -172,7 +172,7 @@ forged callback (CSRF)    : rejected: state mismatch` },
     ] },
 
     { t: "table", head: ["Grant", "Who uses it", "Status"], rows: [
-      ["Authorization code + PKCE", "web apps, SPAs, mobile and desktop apps", "the default for anything with a user"],
+      ["Authorisation code + PKCE", "web apps, SPAs, mobile and desktop apps", "the default for anything with a user"],
       ["Client credentials", "service to service, no user involved", "use with mTLS or private-key auth where possible"],
       ["Device code", "TVs, CLIs, devices without a browser", "the user approves on another device"],
       ["Refresh token", "renewing access without a new login", "rotate on use; detect reuse (12.2)"],
@@ -273,7 +273,7 @@ can user:eve   viewer doc:public-faq   -> True`,
     "Hash passwords with a **slow, salted, memory-hard** function: measured, SHA-256 allowed **~1.3 million guesses a second** on one core, PBKDF2 and scrypt about **ten**.",
     "**MFA**, ideally phishing-resistant passkeys, stops most account takeovers that start with reused passwords.",
     "**OAuth 2.0** delegates scoped API access with an access token; **OIDC** adds authentication with a signed **ID token**.",
-    "Use the **authorization-code flow with PKCE** for every client with a user; implicit and password grants are deprecated.",
+    "Use the **authorisation-code flow with PKCE** for every client with a user; implicit and password grants are deprecated.",
     "**PKCE** made a stolen code useless; **single-use codes** stopped a replay; **state** rejected a forged callback (login CSRF).",
     "Use **client credentials** for service-to-service calls and **device code** for devices without a browser.",
     "**RBAC** for coarse roles, **ABAC** for context, **ReBAC** for sharing; centralise the policy rather than scattering checks.",
@@ -288,7 +288,7 @@ can user:eve   viewer doc:public-faq   -> True`,
         answer: 1,
         why: "Password hashing needs to be expensive to brute-force, and general-purpose hashes are built for speed. SHA-256 is not broken for collisions in this sense; password hashes must never be reversible; and they all need per-user salts." },
 
-      { stem: "A malicious app registers the same custom URL scheme as your mobile app and intercepts the authorization code. What stops it from getting tokens?",
+      { stem: "A malicious app registers the same custom URL scheme as your mobile app and intercepts the authorisation code. What stops it from getting tokens?",
         options: ["The state parameter", "PKCE: exchanging the code requires the code_verifier, which never left the real app", "HTTPS", "The access token's expiry"],
         answer: 1,
         why: "The code alone is not enough: the token endpoint checks that the verifier hashes to the challenge sent at the start, and only the real app has it. state protects against forged callbacks, HTTPS does not help when the redirect itself is delivered to the wrong app, and expiry does not prevent the exchange." },
@@ -310,7 +310,7 @@ can user:eve   viewer doc:public-faq   -> True`,
     sub: "Security questions reward precise mechanisms over buzzwords.",
     questions: [
       { level: "core",
-        q: "Walk me through the OAuth 2.0 authorization-code flow with PKCE.",
+        q: "Walk me through the OAuth 2.0 authorisation-code flow with PKCE.",
         strong: "A strong answer covers every hop and why each parameter exists.",
         answer: [
           { t: "p", text: "The client creates a random code_verifier and sends its SHA-256 hash as the code_challenge, plus a random state, when redirecting the browser to the authorization server. The user authenticates there — the client never sees the password — and approves scopes. The server redirects back to the exact registered URI with a short-lived, single-use code and the state." },

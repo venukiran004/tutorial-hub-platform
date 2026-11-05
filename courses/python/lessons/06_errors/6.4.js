@@ -341,7 +341,7 @@ import re
 
 SECRET_PATTERN = re.compile(
     r"(?i)(authorization|api[_-]?key|password|token|secret)"
-    r"([\\\\"':=\\s]+)([^\\\\"'\\s,}]+)"
+    r"""([\\\\"':=\\s]+)([^\\\\"'\\s,}]+)"""
 )
 
 
@@ -586,7 +586,7 @@ import sys
 
 SECRET_PATTERN = re.compile(
     r"(?i)\\b(authorization|api[_-]?key|password|secret|card_token)\\b"
-    r"([\\\\"':=\\s]+)(\\S+)"
+    r"""([\\\\"':=\\s]+)(\\S+)"""
 )
 
 

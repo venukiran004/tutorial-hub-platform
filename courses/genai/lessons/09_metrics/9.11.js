@@ -274,7 +274,7 @@ print("formatting stripped averaged %.3f  (delta %+.3f)"
           "Because averaging three scores increases variance rather than reducing it",
           "Because essentially every model family shares a preference for longer answers, so there is no disagreement to average away",
           "Because verbosity bias only affects pointwise scoring, not pairwise",
-          "Because the panel must share a tokenizer for scores to be comparable"
+          "Because the panel must share a tokeniser for scores to be comparable"
         ],
         answer: 1,
         why: "A panel attenuates biases that differ between families \u2014 self-preference and formatting are good candidates \u2014 by averaging over disagreement. A bias all members share is reproduced rather than cancelled, and length preference is near-universal across families. The reliable check for verbosity is therefore to bin win rates by length and look for flat within-bin rates alongside a positive aggregate." },

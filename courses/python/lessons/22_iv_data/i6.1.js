@@ -74,7 +74,7 @@ EC.receiveLesson({
       ],
       [
        "Operations",
-       "Vectorized in C",
+       "Vectorised in C",
        "Python loops"
       ],
       [
@@ -116,7 +116,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Compiled C:** vectorized operations execute in C, not the Python interpreter.",
+      "**Compiled C:** vectorised operations execute in C, not the Python interpreter.",
       "**No per-element overhead:** one C loop replaces millions of Python bytecode steps.",
       "**SIMD:** modern CPUs apply one instruction to multiple values at once.",
       "**Cache locality:** contiguous memory keeps the CPU cache hot.",
@@ -375,7 +375,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Ufuncs are the building blocks of vectorization — they run the loop in C."
+     "text": "**Key takeaway:** Ufuncs are the building blocks of vectorisation — they run the loop in C."
     }
    ]
   },
@@ -491,7 +491,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`np.where(cond, x, y)` is a vectorized ternary; `np.where(cond)` alone returns indices of `True`. `np.select` handles many conditions like if/elif/else."
+     "text": "`np.where(cond, x, y)` is a vectorised ternary; `np.where(cond)` alone returns indices of `True`. `np.select` handles many conditions like if/elif/else."
     },
     {
      "t": "code",
@@ -501,7 +501,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** `np.where` for one condition, `np.select` for a prioritised chain — both vectorized."
+     "text": "**Key takeaway:** `np.where` for one condition, `np.select` for a prioritised chain — both vectorised."
     }
    ]
   },
@@ -754,7 +754,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`np.sum` runs a vectorized C reduction (SIMD, pairwise summation for accuracy); `sum()` iterates element by element in Python."
+     "text": "`np.sum` runs a vectorised C reduction (SIMD, pairwise summation for accuracy); `sum()` iterates element by element in Python."
     },
     {
      "t": "code",
@@ -986,7 +986,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** For top-k / k-nearest-neighbors where order within the top-k doesn't matter, `argpartition` is much faster."
+     "text": "**Key takeaway:** For top-k / k-nearest-neighbours where order within the top-k doesn't matter, `argpartition` is much faster."
     }
    ]
   },

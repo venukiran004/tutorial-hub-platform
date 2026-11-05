@@ -31,7 +31,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Skip-gram: Maximize \\(P(\\text{context}|\\text{word})\\).",
+      "Skip-gram: Maximise \\(P(\\text{context}|\\text{word})\\).",
       "Negative sampling: Efficient approximation — distinguish real context from random noise."
      ]
     },
@@ -159,7 +159,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Sinusoidal (original):** Fixed mathematical functions of position. Generalizes to unseen lengths.",
+      "**Sinusoidal (original):** Fixed mathematical functions of position. Generalises to unseen lengths.",
       "**Learned absolute PE:** Trainable embedding per position. Common in BERT.",
       "**RoPE (Rotary PE):** Encodes relative position by rotating query/key vectors. Used in LLaMA, GPT-NeoX.",
       "**ALiBi:** Adds position-scaled bias to attention logits. Extrapolates better to longer sequences."
@@ -171,7 +171,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "149",
-   "q": "What is masked language modeling (MLM) and causal language modeling (CLM)?",
+   "q": "What is masked language modelling (MLM) and causal language modelling (CLM)?",
    "body": [
     {
      "t": "ul",
@@ -213,7 +213,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Decoder-only Transformer trained with causal language modeling: predict the next token at every position. Pretrained on massive web text. At inference: autoregressive token sampling. Fine-tuned with RLHF for instruction following (InstructGPT → ChatGPT)."
+     "text": "Decoder-only Transformer trained with causal language modelling: predict the next token at every position. Pretrained on massive web text. At inference: autoregressive token sampling. Fine-tuned with RLHF for instruction following (InstructGPT → ChatGPT)."
     }
    ],
    "kind": ""
@@ -275,11 +275,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "155",
-   "q": "What is Byte-Pair Encoding (BPE) tokenization?",
+   "q": "What is Byte-Pair Encoding (BPE) tokenisation?",
    "body": [
     {
      "t": "p",
-     "text": "Start with character vocabulary, iteratively merge the most frequent pair of adjacent tokens until desired vocabulary size is reached. GPT uses BPE. Balances vocabulary size vs OOV rate. Handles morphologically rich languages better than word-level tokenization."
+     "text": "Start with character vocabulary, iteratively merge the most frequent pair of adjacent tokens until desired vocabulary size is reached. GPT uses BPE. Balances vocabulary size vs OOV rate. Handles morphologically rich languages better than word-level tokenisation."
     }
    ],
    "kind": ""
@@ -299,7 +299,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "BP = brevity penalty, \\(p_n\\) = n-gram precision. BLEU 1-4 are standard. Limitations: doesn't capture semantic similarity, heavily penalizes synonyms."
+     "text": "BP = brevity penalty, \\(p_n\\) = n-gram precision. BLEU 1-4 are standard. Limitations: doesn't capture semantic similarity, heavily penalises synonyms."
     }
    ],
    "kind": ""
@@ -311,7 +311,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Recall-oriented metric for summarization:"
+     "text": "Recall-oriented metric for summarisation:"
     },
     {
      "t": "ul",
@@ -342,7 +342,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Lower perplexity = better model. GPT-4 has much lower perplexity on open-domain text than GPT-2. Not comparable across different tokenizers."
+     "text": "Lower perplexity = better model. GPT-4 has much lower perplexity on open-domain text than GPT-2. Not comparable across different tokenisers."
     }
    ],
    "kind": ""

@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Diagnosis: (1) score identical records through both pipelines, compare feature values, (2) check null handling: pandas NaN vs. Spark null behavior differs, (3) aggregation: pandas default handles nulls differently than Spark, (4) join behavior: pandas inner join vs. Spark outer join defaults. Fix: (5) shared transformation library (feature store), (6) test suite: unit tests computing same features in both, (7) integration test: compare full pipeline outputs, (8) long-term: use feature store (Feast, Tecton) as single source of truth for both training and serving."
+     "text": "**Answer:** Diagnosis: (1) score identical records through both pipelines, compare feature values, (2) check null handling: pandas NaN vs. Spark null behaviour differs, (3) aggregation: pandas default handles nulls differently than Spark, (4) join behaviour: pandas inner join vs. Spark outer join defaults. Fix: (5) shared transformation library (feature store), (6) test suite: unit tests computing same features in both, (7) integration test: compare full pipeline outputs, (8) long-term: use feature store (Feast, Tecton) as single source of truth for both training and serving."
     }
    ],
    "kind": ""
@@ -38,7 +38,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "202",
-   "q": "Your data arrives as nested JSON from an API. You need to flatten it for tabular modeling. What's your approach?",
+   "q": "Your data arrives as nested JSON from an API. You need to flatten it for tabular modelling. What's your approach?",
    "body": [
     {
      "t": "p",
@@ -75,11 +75,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "204",
-   "q": "You need to analyze taxi trip data to find optimal locations for electric vehicle charging stations. How?",
+   "q": "You need to analyse taxi trip data to find optimal locations for electric vehicle charging stations. How?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Cluster trip endpoints (dropoffs): high-density areas need charging, (2) dwell time analysis: where do taxis park/idle longest for charging opportunity?, (3) spatial analysis: DBSCAN on GPS coordinates for hotspot detection, (4) capacity planning: demand estimation based on trip volume per zone, (5) constraint satisfaction: power grid access, zoning, land availability, (6) coverage optimization: maximize taxis within X km of a charger, (7) time-of-day patterns: demand varies by hour, (8) simulation: model taxi flows with proposed station locations."
+     "text": "**Answer:** (1) Cluster trip endpoints (dropoffs): high-density areas need charging, (2) dwell time analysis: where do taxis park/idle longest for charging opportunity?, (3) spatial analysis: DBSCAN on GPS coordinates for hotspot detection, (4) capacity planning: demand estimation based on trip volume per zone, (5) constraint satisfaction: power grid access, zoning, land availability, (6) coverage optimisation: maximise taxis within X km of a charger, (7) time-of-day patterns: demand varies by hour, (8) simulation: model taxi flows with proposed station locations."
     }
    ],
    "kind": ""
@@ -107,7 +107,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Matrix factorization: ALS (Alternating Least Squares) on Spark — handles massive sparse matrices, (2) implicit feedback: use weighted ALS from the implicit library, (3) approximate nearest neighbors: FAISS or Annoy for fast similarity search, (4) embedding-based: learn user/item embeddings, serve via ANN index, (5) two-tower model: separate user and item encoders for efficient retrieval, (6) candidate generation + ranking: retrieve 100 candidates via ANN → rank with detailed model, (7) incremental updates: update embeddings without full retrain as new interactions arrive."
+     "text": "**Answer:** (1) Matrix factorization: ALS (Alternating Least Squares) on Spark — handles massive sparse matrices, (2) implicit feedback: use weighted ALS from the implicit library, (3) approximate nearest neighbours: FAISS or Annoy for fast similarity search, (4) embedding-based: learn user/item embeddings, serve via ANN index, (5) two-tower model: separate user and item encoders for efficient retrieval, (6) candidate generation + ranking: retrieve 100 candidates via ANN → rank with detailed model, (7) incremental updates: update embeddings without full retrain as new interactions arrive."
     }
    ],
    "kind": ""
@@ -119,7 +119,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Clickbait effect: model learned to recommend attention-grabbing but unsatisfying items, (2) engagement ≠ satisfaction: clicks don't mean enjoyment, (3) filter bubble: recommendations too narrow, reducing discovery, (4) metric mismatch: optimize for satisfaction, not just clicks. Fix: (5) add quality signals: time-on-page, return visits, ratings, shares, (6) composite metric: clicks × satisfaction_score, (7) diversity requirements: ensure variety in recommendations, (8) survey: periodic user satisfaction survey linked to recommendation quality, (9) longer-term metrics: retention, not just session metrics."
+     "text": "**Answer:** (1) Clickbait effect: model learned to recommend attention-grabbing but unsatisfying items, (2) engagement ≠ satisfaction: clicks don't mean enjoyment, (3) filter bubble: recommendations too narrow, reducing discovery, (4) metric mismatch: optimise for satisfaction, not just clicks. Fix: (5) add quality signals: time-on-page, return visits, ratings, shares, (6) composite metric: clicks × satisfaction_score, (7) diversity requirements: ensure variety in recommendations, (8) survey: periodic user satisfaction survey linked to recommendation quality, (9) longer-term metrics: retention, not just session metrics."
     },
     {
      "t": "p",
@@ -135,7 +135,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Why: (1) different language style: abbreviations, slang, hashtags, (2) no capitalization cues (people type in lowercase), (3) new entity types: @mentions, product nicknames, (4) short context: tweets have 280 chars vs. full articles. Fix: (5) fine-tune on social media NER dataset (W-NUT, etc.), (6) add social-media specific features: @mention detection, hashtag parsing, (7) character-level models handle misspellings/abbreviations better, (8) pre-train on social media text (BERTweet), (9) active learning: label social media examples iteratively."
+     "text": "**Answer:** Why: (1) different language style: abbreviations, slang, hashtags, (2) no capitalisation cues (people type in lowercase), (3) new entity types: @mentions, product nicknames, (4) short context: tweets have 280 chars vs. full articles. Fix: (5) fine-tune on social media NER dataset (W-NUT, etc.), (6) add social-media specific features: @mention detection, hashtag parsing, (7) character-level models handle misspellings/abbreviations better, (8) pre-train on social media text (BERTweet), (9) active learning: label social media examples iteratively."
     }
    ],
    "kind": ""
@@ -151,7 +151,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Statistical Modeling**"
+     "text": "**Theme: Statistical Modelling**"
     }
    ],
    "kind": ""
@@ -175,7 +175,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Polynomial regression: add x², x³ terms, (2) Splines: piecewise polynomial for flexible smooth fits, (3) GAMs (Generalized Additive Models): non-linear smooth functions of each feature, (4) LOESS/LOWESS: local regression for exploration, (5) piecewise linear: different slopes in different regions, (6) Box-Cox transformation: find optimal power transform, (7) interaction terms: non-linearity may come from feature interactions, (8) if prediction is goal: tree-based models handle non-linearity naturally."
+     "text": "**Answer:** (1) Polynomial regression: add x², x³ terms, (2) Splines: piecewise polynomial for flexible smooth fits, (3) GAMs (Generalised Additive Models): non-linear smooth functions of each feature, (4) LOESS/LOWESS: local regression for exploration, (5) piecewise linear: different slopes in different regions, (6) Box-Cox transformation: find optimal power transform, (7) interaction terms: non-linearity may come from feature interactions, (8) if prediction is goal: tree-based models handle non-linearity naturally."
     }
    ],
    "kind": ""
@@ -199,11 +199,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "213",
-   "q": "You have sequential user behavior data (page views over time). Which architecture — RNN, LSTM, Transformer, or 1D CNN?",
+   "q": "You have sequential user behaviour data (page views over time). Which architecture — RNN, LSTM, Transformer, or 1D CNN?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) LSTM: good for moderate-length sequences (50-200 steps), captures temporal dependencies, (2) Transformer: best for longer sequences, captures global patterns via attention, highly parallelizable, (3) 1D CNN: fast, good for local patterns, use with pooling for sequence features, (4) GRU: lighter than LSTM, often similar performance, (5) for user behavior prediction: Transformer typically wins if you have enough data, (6) training data matters more than architecture: 100K+ sequences for Transformer, LSTM/GRU works with less, (7) practical: start with GRU (simple), try Transformer if performance insufficient."
+     "text": "**Answer:** (1) LSTM: good for moderate-length sequences (50-200 steps), captures temporal dependencies, (2) Transformer: best for longer sequences, captures global patterns via attention, highly parallelisable, (3) 1D CNN: fast, good for local patterns, use with pooling for sequence features, (4) GRU: lighter than LSTM, often similar performance, (5) for user behaviour prediction: Transformer typically wins if you have enough data, (6) training data matters more than architecture: 100K+ sequences for Transformer, LSTM/GRU works with less, (7) practical: start with GRU (simple), try Transformer if performance insufficient."
     }
    ],
    "kind": ""
@@ -264,7 +264,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) **Champions** (high R, F, M): loyalty rewards, referral programs, early access, (2) **Loyal** (high F, M, moderate R): upsell, cross-sell, personalized recommendations, (3) **At Risk** (low R, high F, M): re-engagement campaigns, special offers, \"we miss you\" emails, (4) **New Customers** (high R, low F, M): onboarding nurture, first-purchase incentives, education, (5) **Lost** (low R, F, M): aggressive win-back offers, feedback surveys, (6) budget allocation: invest most in At Risk and Loyal (highest ROI), (7) measure: per-segment conversion rates from campaigns."
+     "text": "**Answer:** (1) **Champions** (high R, F, M): loyalty rewards, referral programs, early access, (2) **Loyal** (high F, M, moderate R): upsell, cross-sell, personalised recommendations, (3) **At Risk** (low R, high F, M): re-engagement campaigns, special offers, \"we miss you\" emails, (4) **New Customers** (high R, low F, M): onboarding nurture, first-purchase incentives, education, (5) **Lost** (low R, F, M): aggressive win-back offers, feedback surveys, (6) budget allocation: invest most in At Risk and Loyal (highest ROI), (7) measure: per-segment conversion rates from campaigns."
     },
     {
      "t": "p",
@@ -348,7 +348,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Advanced Optimization**"
+     "text": "**Theme: Advanced Optimisation**"
     }
    ],
    "kind": ""
@@ -360,7 +360,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Bayesian optimization: Optuna, Hyperopt — intelligently searches promising regions (20-50 evaluations often sufficient), (2) random search: beats grid search, good coverage with 60 evaluations out of 100, (3) early stopping: kill poorly performing runs early (Hyperband), (4) reduce CV: 5-fold instead of 10, or single validation set for early exploration, (5) smaller data: search on 10% sample, validate best on full data, (6) warm starting: initialize with known good hyperparameters, (7) BOHB: combines Bayesian optimization + early stopping."
+     "text": "**Answer:** (1) Bayesian optimisation: Optuna, Hyperopt — intelligently searches promising regions (20-50 evaluations often sufficient), (2) random search: beats grid search, good coverage with 60 evaluations out of 100, (3) early stopping: kill poorly performing runs early (Hyperband), (4) reduce CV: 5-fold instead of 10, or single validation set for early exploration, (5) smaller data: search on 10% sample, validate best on full data, (6) warm starting: initialise with known good hyperparameters, (7) BOHB: combines Bayesian optimisation + early stopping."
     }
    ],
    "kind": ""
@@ -368,11 +368,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "225",
-   "q": "You need to optimize a multi-objective function (accuracy AND latency AND fairness). How?",
+   "q": "You need to optimise a multi-objective function (accuracy AND latency AND fairness). How?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pareto front: find solutions that are non-dominated on all objectives, (2) scalarization: weighted sum of objectives (w1×accuracy + w2×(1/latency) + w3×fairness), (3) constraint-based: maximize accuracy subject to latency < 50ms AND fairness > 0.8, (4) NSGA-II: evolutionary algorithm for multi-objective optimization, (5) Optuna supports multi-objective optimization natively, (6) interactive: present Pareto front to stakeholders, let them choose tradeoff, (7) hierarchical: first filter by hard constraints (latency, fairness), then optimize accuracy."
+     "text": "**Answer:** (1) Pareto front: find solutions that are non-dominated on all objectives, (2) scalarization: weighted sum of objectives (w1×accuracy + w2×(1/latency) + w3×fairness), (3) constraint-based: maximise accuracy subject to latency < 50ms AND fairness > 0.8, (4) NSGA-II: evolutionary algorithm for multi-objective optimisation, (5) Optuna supports multi-objective optimisation natively, (6) interactive: present Pareto front to stakeholders, let them choose tradeoff, (7) hierarchical: first filter by hard constraints (latency, fairness), then optimise accuracy."
     },
     {
      "t": "p",

@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Use content-based filtering with demographic features (age, location, device), popularity-based recommendations for initial suggestions, ask onboarding preference questions, leverage session-based recommendations from current browsing behavior, and transition to collaborative filtering once sufficient interaction data accumulates. Implement a hybrid approach that blends popularity scores with any available signals."
+     "text": "**Answer:** Use content-based filtering with demographic features (age, location, device), popularity-based recommendations for initial suggestions, ask onboarding preference questions, leverage session-based recommendations from current browsing behaviour, and transition to collaborative filtering once sufficient interaction data accumulates. Implement a hybrid approach that blends popularity scores with any available signals."
     }
    ],
    "kind": ""
@@ -46,7 +46,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Social media text contains slang, abbreviations, emojis, sarcasm, and informal grammar absent from product reviews. Address by: fine-tuning on labeled social media data, adding emoji-to-sentiment mappings, handling hashtags and mentions as features, using domain adaptation techniques (e.g., pivot features), and leveraging pre-trained models like BERTweet that understand social media language patterns."
+     "text": "**Answer:** Social media text contains slang, abbreviations, emojis, sarcasm, and informal grammar absent from product reviews. Address by: fine-tuning on labelled social media data, adding emoji-to-sentiment mappings, handling hashtags and mentions as features, using domain adaptation techniques (e.g., pivot features), and leveraging pre-trained models like BERTweet that understand social media language patterns."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "503",
-   "q": "Scenario: You're analyzing customer churn and find that contract length is the strongest predictor but it's not actionable.",
+   "q": "Scenario: You're analysing customer churn and find that contract length is the strongest predictor but it's not actionable.",
    "body": [
     {
      "t": "p",
@@ -86,7 +86,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "505",
-   "q": "Scenario: You need to detect anomalous financial transactions but labeled fraud data is extremely scarce (0.01%).",
+   "q": "Scenario: You need to detect anomalous financial transactions but labelled fraud data is extremely scarce (0.01%).",
    "body": [
     {
      "t": "p",
@@ -94,7 +94,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Use Isolation Forest or Local Outlier Factor for unsupervised detection, autoencoders trained on normal transactions (high reconstruction error = anomaly), one-class SVM trained on legitimate transactions only, and statistical methods (Z-score on transaction amounts, frequency). For semi-supervised: label the few known frauds and use PU learning (Positive-Unlabeled). Combine multiple detector scores via ensemble for robust detection."
+     "text": "**Answer:** Use Isolation Forest or Local Outlier Factor for unsupervised detection, autoencoders trained on normal transactions (high reconstruction error = anomaly), one-class SVM trained on legitimate transactions only, and statistical methods (Z-score on transaction amounts, frequency). For semi-supervised: label the few known frauds and use PU learning (Positive-Unlabelled). Combine multiple detector scores via ensemble for robust detection."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Higher CTR without revenue gain suggests the new variant attracts low-intent clicks (clickbait effect), users click more but don't convert, or the increase is in low-value product clicks. Analyze: conversion rate per click, average order value changes, time-to-purchase patterns, and segment the lift by user value tiers. The revenue metric (primary guardrail) should take precedence. Consider the variant may be degrading user experience despite higher engagement."
+     "text": "**Answer:** Higher CTR without revenue gain suggests the new variant attracts low-intent clicks (clickbait effect), users click more but don't convert, or the increase is in low-value product clicks. Analyse: conversion rate per click, average order value changes, time-to-purchase patterns, and segment the lift by user value tiers. The revenue metric (primary guardrail) should take precedence. Consider the variant may be degrading user experience despite higher engagement."
     }
    ],
    "kind": ""
@@ -158,7 +158,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Multicollinearity inflates coefficient variance in linear models, making interpretation unreliable. Handle with: VIF analysis (remove features with VIF > 10), PCA to create uncorrelated components, regularization (Ridge/Elastic Net penalizes correlated features), tree-based models (naturally handle collinearity), domain-driven feature selection (keep most interpretable from correlated groups), and LASSO for automatic feature elimination."
+     "text": "**Answer:** Multicollinearity inflates coefficient variance in linear models, making interpretation unreliable. Handle with: VIF analysis (remove features with VIF > 10), PCA to create uncorrelated components, regularisation (Ridge/Elastic Net penalises correlated features), tree-based models (naturally handle collinearity), domain-driven feature selection (keep most interpretable from correlated groups), and LASSO for automatic feature elimination."
     }
    ],
    "kind": ""
@@ -222,7 +222,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Frame as: for each time window, predict if failure occurs within next 48 hours. Create rolling features from sensor data (mean, std, trend, rate-of-change over 1h, 6h, 24h windows), use remaining useful life (RUL) as continuous target for regression approach, handle class imbalance (equipment mostly healthy), implement time-series cross-validation respecting temporal order, and engineer degradation indicators. Consider survival analysis for time-to-failure modeling and LSTM/Transformer for sequence patterns."
+     "text": "**Answer:** Frame as: for each time window, predict if failure occurs within next 48 hours. Create rolling features from sensor data (mean, std, trend, rate-of-change over 1h, 6h, 24h windows), use remaining useful life (RUL) as continuous target for regression approach, handle class imbalance (equipment mostly healthy), implement time-series cross-validation respecting temporal order, and engineer degradation indicators. Consider survival analysis for time-to-failure modelling and LSTM/Transformer for sequence patterns."
     }
    ],
    "kind": ""
@@ -238,7 +238,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Compute fairness metrics per group: demographic parity (equal positive rates), equalized odds (equal TPR/FPR), and calibration (equal precision). Use AIF360 or Fairlearn libraries to assess bias. Mitigate with: pre-processing (resampling, reweighting), in-processing (fairness constraints during training), post-processing (threshold adjustment per group). Document disparities, set acceptable fairness bounds, and implement continuous fairness monitoring in production."
+     "text": "**Answer:** Compute fairness metrics per group: demographic parity (equal positive rates), equalised odds (equal TPR/FPR), and calibration (equal precision). Use AIF360 or Fairlearn libraries to assess bias. Mitigate with: pre-processing (resampling, reweighting), in-processing (fairness constraints during training), post-processing (threshold adjustment per group). Document disparities, set acceptable fairness bounds, and implement continuous fairness monitoring in production."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Position bias: higher-ranked items get more clicks regardless of relevance. Address with: inverse propensity weighting (IPW), position-aware click models, and randomized experiments. Presentation bias: items with better thumbnails/titles get more clicks. Create labels using: click-through rate normalized by position, dwell time (long clicks = relevant), skip-next patterns (clicked item followed by next click = unsatisfied), and pairwise preferences (clicked vs skipped at similar positions)."
+     "text": "**Answer:** Position bias: higher-ranked items get more clicks regardless of relevance. Address with: inverse propensity weighting (IPW), position-aware click models, and randomised experiments. Presentation bias: items with better thumbnails/titles get more clicks. Create labels using: click-through rate normalised by position, dwell time (long clicks = relevant), skip-next patterns (clicked item followed by next click = unsatisfied), and pairwise preferences (clicked vs skipped at similar positions)."
     }
    ],
    "kind": ""
@@ -266,11 +266,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** How do you standardize analytical workflows for reproducibility?"
+     "text": "**Question:** How do you standardise analytical workflows for reproducibility?"
     },
     {
      "t": "p",
-     "text": "**Answer:** Implement: notebook templates with standard sections (objective, data, analysis, conclusions), version-controlled notebooks with cleared outputs, parameterized notebooks (papermill) for reproducible runs, shared utility libraries for common operations, code review process for analytical notebooks, environment management (conda/Docker), data versioning (DVC), and a results registry for tracking key findings and their supporting analyses."
+     "text": "**Answer:** Implement: notebook templates with standard sections (objective, data, analysis, conclusions), version-controlled notebooks with cleared outputs, parameterised notebooks (papermill) for reproducible runs, shared utility libraries for common operations, code review process for analytical notebooks, environment management (conda/Docker), data versioning (DVC), and a results registry for tracking key findings and their supporting analyses."
     }
    ],
    "kind": ""
@@ -282,11 +282,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** How do you handle censoring when modeling CLV?"
+     "text": "**Question:** How do you handle censoring when modelling CLV?"
     },
     {
      "t": "p",
-     "text": "**Answer:** Use survival analysis models (Cox PH, AFT) that explicitly handle censoring, or probabilistic models like BG/NBD (Buy-till-you-die) for contractual settings and Pareto/NBD for non-contractual. For ML approaches: use specialized loss functions that account for censoring (e.g., concordance-based losses), predict CLV at fixed horizons (6-month, 1-year) where censoring is less impactful, and use Kaplan-Meier estimates to adjust naive CLV calculations for censored observations."
+     "text": "**Answer:** Use survival analysis models (Cox PH, AFT) that explicitly handle censoring, or probabilistic models like BG/NBD (Buy-till-you-die) for contractual settings and Pareto/NBD for non-contractual. For ML approaches: use specialised loss functions that account for censoring (e.g., concordance-based losses), predict CLV at fixed horizons (6-month, 1-year) where censoring is less impactful, and use Kaplan-Meier estimates to adjust naive CLV calculations for censored observations."
     }
    ],
    "kind": ""
@@ -302,7 +302,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Don't simply add a catch-all \"other\" class (it becomes a garbage collector). Instead: use confidence thresholds (reject predictions below 0.6), train an outlier detector on feature representations, use OpenMax (replace softmax with open-set recognition layer), implement distance-based rejection (if input embedding is far from all class centroids, classify as unknown), and combine softmax entropy with feature-space density for robust detection. Route unknown inputs to human review for labeling."
+     "text": "**Answer:** Don't simply add a catch-all \"other\" class (it becomes a garbage collector). Instead: use confidence thresholds (reject predictions below 0.6), train an outlier detector on feature representations, use OpenMax (replace softmax with open-set recognition layer), implement distance-based rejection (if input embedding is far from all class centroids, classify as unknown), and combine softmax entropy with feature-space density for robust detection. Route unknown inputs to human review for labelling."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "519",
-   "q": "Scenario: You're analyzing website conversion funnels and find that adding a step (email verification) improved final conversion rate.",
+   "q": "Scenario: You're analysing website conversion funnels and find that adding a step (email verification) improved final conversion rate.",
    "body": [
     {
      "t": "p",
@@ -318,7 +318,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** This is a survivorship/selection bias effect. The verification step filters out low-intent users (bots, accidental visitors), so the remaining users are higher quality with stronger purchase intent. The conversion rate increases because the denominator changed (fewer but better-qualified users). Analyze absolute conversion numbers (total purchases likely decreased), cost per acquisition, and revenue impact. The metric improvement is real but may mask a net negative business outcome if total revenue dropped."
+     "text": "**Answer:** This is a survivorship/selection bias effect. The verification step filters out low-intent users (bots, accidental visitors), so the remaining users are higher quality with stronger purchase intent. The conversion rate increases because the denominator changed (fewer but better-qualified users). Analyse absolute conversion numbers (total purchases likely decreased), cost per acquisition, and revenue impact. The metric improvement is real but may mask a net negative business outcome if total revenue dropped."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Common causes: offline metrics computed on historical data reflect past user behavior not future, popularity bias in offline evaluation (popular items always score well), missing counterfactual (can't evaluate items never shown to users), user fatigue from repeated recommendations not captured offline, and presentation effects. Fix with: unbiased offline evaluation using IPS (Inverse Propensity Scoring), replay-based evaluation, and designing offline metrics that better correlate with online outcomes."
+     "text": "**Answer:** Common causes: offline metrics computed on historical data reflect past user behaviour not future, popularity bias in offline evaluation (popular items always score well), missing counterfactual (can't evaluate items never shown to users), user fatigue from repeated recommendations not captured offline, and presentation effects. Fix with: unbiased offline evaluation using IPS (Inverse Propensity Scoring), replay-based evaluation, and designing offline metrics that better correlate with online outcomes."
     }
    ],
    "kind": ""
@@ -350,7 +350,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** One-hot encoding creates too many columns. Better approaches: target encoding with regularization (smoothing toward global mean), entity embeddings learned during neural network training, frequency encoding, hash encoding (feature hashing to fixed dimensions), leave-one-out encoding to prevent target leakage, and category embeddings pre-trained on interaction data. For tree models, CatBoost handles high-cardinality natively. Consider grouping rare categories, and always validate encoding on a holdout set."
+     "text": "**Answer:** One-hot encoding creates too many columns. Better approaches: target encoding with regularisation (smoothing toward global mean), entity embeddings learned during neural network training, frequency encoding, hash encoding (feature hashing to fixed dimensions), leave-one-out encoding to prevent target leakage, and category embeddings pre-trained on interaction data. For tree models, CatBoost handles high-cardinality natively. Consider grouping rare categories, and always validate encoding on a holdout set."
     }
    ],
    "kind": ""
@@ -366,7 +366,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Zip code is a proxy for race/income, creating indirect discrimination. Detect with: feature attribution analysis (SHAP showing zip code importance), outcome analysis by protected groups, and testing with zip code removed vs included. Mitigate: remove zip code and correlated features (property value, neighborhood stats), use fairness constraints during training, implement disparate impact testing (80% rule), replace geographic features with relevant non-discriminatory alternatives (claim type, documentation quality), and conduct regular fairness audits."
+     "text": "**Answer:** Zip code is a proxy for race/income, creating indirect discrimination. Detect with: feature attribution analysis (SHAP showing zip code importance), outcome analysis by protected groups, and testing with zip code removed vs included. Mitigate: remove zip code and correlated features (property value, neighbourhood stats), use fairness constraints during training, implement disparate impact testing (80% rule), replace geographic features with relevant non-discriminatory alternatives (claim type, documentation quality), and conduct regular fairness audits."
     }
    ],
    "kind": ""
@@ -414,7 +414,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Use probabilistic matching on: email (exact/fuzzy), phone number (normalized), name + address (fuzzy string matching with Jaro-Winkler), and device fingerprinting. Implement: blocking (reduce comparison pairs using shared attributes), scoring (weighted combination of match signals), clustering (transitively merge matched records), and manual review for uncertain matches. Use tools like Splink or dedupe library. Create a master data management (MDM) system with golden records and maintain match confidence scores."
+     "text": "**Answer:** Use probabilistic matching on: email (exact/fuzzy), phone number (normalised), name + address (fuzzy string matching with Jaro-Winkler), and device fingerprinting. Implement: blocking (reduce comparison pairs using shared attributes), scoring (weighted combination of match signals), clustering (transitively merge matched records), and manual review for uncertain matches. Use tools like Splink or dedupe library. Create a master data management (MDM) system with golden records and maintain match confidence scores."
     }
    ],
    "kind": ""

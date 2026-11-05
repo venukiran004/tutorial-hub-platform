@@ -85,9 +85,27 @@
   }
   EC.slug = slug;
 
+  /* A badge keeps the word its author chose and takes its colour from the
+     nearest of the four difficulty classes, which are the only ones styled.
+     Courses say Senior, mid or intro where the contract says advanced, core
+     or foundation; without this those badges render uncoloured. */
+  var LEVEL = {
+    intro: "foundation", foundation: "foundation",
+    core: "core", mid: "core", intermediate: "core",
+    advanced: "advanced", senior: "advanced",
+    expert: "expert", staff: "expert", stretch: "expert"
+  };
+  function levelClass(v) { return LEVEL[String(v || "core").toLowerCase()] || "core"; }
+
   /* ------------------------------------------------------------- code -- */
   var cbSeq = 0;
   function codeBlock(b) {
+    // A block that carries only a program's output has no source to show:
+    // drawing the code panel anyway leaves an empty box under the title.
+    if (!b.code && b.out) {
+      return outBlock({ text: b.out, label: b.outLabel || b.title }) +
+        (b.caption ? '<p class="cb-caption">' + inline(b.caption) + "</p>" : "");
+    }
     var lang = b.lang || "python";
     var raw = String(b.code || "").replace(/^\n/, "").replace(/\s+$/, "");
     var lines = global.HL.toLines(global.HL.highlight(raw, lang));
@@ -239,7 +257,7 @@
       '<div class="ex-head"><span class="ex-ic">' + I.dumbbell + "</span>" +
       '<span class="ex-kind">' + esc(b.kind || "Challenge") + "</span>" +
       '<span class="ex-title">' + inline(b.title) + "</span>" +
-      '<span class="ex-meta">' + (b.difficulty ? '<span class="badge ' + b.difficulty + '"><span class="dot"></span>' + esc(b.difficulty) + "</span>" : "") +
+      '<span class="ex-meta">' + (b.difficulty ? '<span class="badge ' + levelClass(b.difficulty) + '"><span class="dot"></span>' + esc(b.difficulty) + "</span>" : "") +
       (b.minutes ? '<span class="badge"><span class="dot"></span>' + b.minutes + " min</span>" : "") + "</span></div>" +
       '<div class="ex-body">' + task + body(b) + reqs + "</div>" +
       '<div class="ex-foot">' +
@@ -316,7 +334,7 @@
       if (q.answer) ans += body({ body: q.answer });
       if (q.weak) ans += '<div class="weak-answer"><div class="weak-answer-h">What weak answers do</div>' + inline(q.weak) + "</div>";
       return '<details class="iv-q"><summary>' +
-        '<span class="iv-lvl badge ' + (q.level || "core") + '"><span class="dot"></span>' + esc(q.level || "core") + "</span>" +
+        '<span class="iv-lvl badge ' + levelClass(q.level) + '"><span class="dot"></span>' + esc(q.level || "core") + "</span>" +
         '<span class="iv-qt">' + inline(q.q) + "</span>" +
         '<span class="iv-chev">' + I.chevron + "</span></summary>" +
         '<div class="iv-a">' + ans + "</div></details>";

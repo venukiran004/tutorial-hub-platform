@@ -164,7 +164,7 @@ EC.receiveLesson({
         "A share that cannot reach significance inside your window is the finding. Either raise the share or lengthen the window."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The common discovery is a 1% or 5% canary on a fixed timer that cannot reach significance — the promotion decision carries no information, and the subsequent full rollout is where the risk actually lands. Raising the share usually feels wrong and is correct." },
           { t: "p", text: "The other discovery is that the canary was nominally gating on model quality, which the label delay makes impossible. That is not a reason to remove the canary; it is a reason to add shadow mode for the quality question and let the canary do the job it can do in minutes." }
         ]

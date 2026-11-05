@@ -133,7 +133,7 @@ system 1600 tokens ->  25500 input tokens over 10 steps -> $0.063750`,
 
     { t: "p", text: "The rules are a good set, and they differ in a way worth noticing: some describe an observable action and some describe an intention. Only the first kind can be tested." },
 
-    { t: "ladder", title: "From aspiration to enforcement", rungs: [
+    { t: "ladder", lang: "text", title: "From aspiration to enforcement", rungs: [
       { level: "bad", label: "An intention",
         why: "Nothing can check whether it happened",
         code: `4. Never make up information or statistics.`,

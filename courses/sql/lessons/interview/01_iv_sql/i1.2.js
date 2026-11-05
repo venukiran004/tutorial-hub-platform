@@ -67,7 +67,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Automatically joins on columns with same name in both tables. Risky: if column names change, join behavior changes silently. Prefer explicit JOIN ON."
+     "text": "Automatically joins on columns with same name in both tables. Risky: if column names change, join behaviour changes silently. Prefer explicit JOIN ON."
     }
    ],
    "kind": ""
@@ -120,7 +120,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Chain JOINs: `FROM a JOIN b ON ... JOIN c ON ...`. With inner joins, the order changes performance but not the result, and the optimizer may reorder them. With outer joins, the order can change the result, so write it deliberately."
+     "text": "Chain JOINs: `FROM a JOIN b ON ... JOIN c ON ...`. With inner joins, the order changes performance but not the result, and the optimiser may reorder them. With outer joins, the order can change the result, so write it deliberately."
     }
    ],
    "kind": ""
@@ -132,7 +132,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Returns rows from left table that have a match in right table, without duplicating. Implemented via EXISTS or IN subquery. No SQL keyword, but optimizer recognizes the pattern."
+     "text": "Returns rows from left table that have a match in right table, without duplicating. Implemented via EXISTS or IN subquery. No SQL keyword, but optimiser recognises the pattern."
     }
    ],
    "kind": ""
@@ -168,7 +168,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Query optimizer usually determines optimal join order. For manual optimization: start with smaller/filtered tables, join on indexed columns, use hash joins for large unsorted data."
+     "text": "Query optimiser usually determines optimal join order. For manual optimisation: start with smaller/filtered tables, join on indexed columns, use hash joins for large unsorted data."
     }
    ],
    "kind": ""

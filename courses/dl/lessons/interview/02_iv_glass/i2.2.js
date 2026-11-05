@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "NLP & Generative AI · Computer Vision · System Design for AI · AI Ethics & Responsible AI · Data Preprocessing & Engineering · Projects & Behavioral · Additional Algorithms & Coding",
+   "text": "NLP & Generative AI · Computer Vision · System Design for AI · AI Ethics & Responsible AI · Data Preprocessing & Engineering · Projects & Behavioural · Additional Algorithms & Coding",
    "id": "set"
   },
   {
@@ -43,7 +43,7 @@ EC.receiveLesson({
       [
        "**Clarity**",
        "Be specific, unambiguous",
-       "❌ \"Summarize this\" → ✅ \"Summarize in 3 bullet points\""
+       "❌ \"Summarise this\" → ✅ \"Summarise in 3 bullet points\""
       ],
       [
        "**Context**",
@@ -163,7 +163,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "This is a behavioral/motivation question. Structure your answer around:"
+     "text": "This is a behavioural/motivation question. Structure your answer around:"
     },
     {
      "t": "ol",
@@ -193,7 +193,7 @@ EC.receiveLesson({
       ],
       [
        "**Privacy**",
-       "Data collection, model memorization",
+       "Data collection, model memorisation",
        "Differential privacy, federated learning"
       ],
       [
@@ -232,7 +232,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "16",
-   "q": "Common AI Engineer behavioral questions",
+   "q": "Common AI Engineer behavioural questions",
    "body": [
     {
      "t": "table",
@@ -314,7 +314,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Greedy decoding is suboptimal — local best ≠ global best. Beam search explores multiple paths. Length normalization prevents bias toward shorter sequences. Nucleus sampling (top-p) is preferred for creative generation."
+     "text": "**Key Insight:** Greedy decoding is suboptimal — local best ≠ global best. Beam search explores multiple paths. Length normalisation prevents bias toward shorter sequences. Nucleus sampling (top-p) is preferred for creative generation."
     }
    ],
    "kind": ""
@@ -339,7 +339,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Augmentation prevents overfitting and improves generalization. CutOut forces model to use non-discriminative features. MixUp regularizes decision boundaries. Use albumentations in production (10x faster than torchvision)."
+     "text": "**Key Insight:** Augmentation prevents overfitting and improves generalisation. CutOut forces model to use non-discriminative features. MixUp regularises decision boundaries. Use albumentations in production (10x faster than torchvision)."
     }
    ],
    "kind": ""

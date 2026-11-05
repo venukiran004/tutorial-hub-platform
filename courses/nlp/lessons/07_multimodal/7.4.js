@@ -125,7 +125,7 @@ EC.receiveLesson({
     { t: "p", text: "Two trends are visible. The U-Net is being replaced by a **transformer** (DiT), which is the same convergence lesson 5.7 described for vision — once you can tokenise the input, the transformer block works. And the text encoder is moving from CLIP to T5, addressing exactly the conditioning weakness described above." },
 
     { t: "exercise", title: "Work the diffusion arithmetic",
-      tasks: [
+      requirements: [
         "Implement the forward process and find the timestep at which correlation with the original drops below 0.1.",
         "Recover z_0 from z_t and the true epsilon, and confirm the error is floating-point noise.",
         "Compute the latent compression for a resolution you care about, and multiply by your step count.",

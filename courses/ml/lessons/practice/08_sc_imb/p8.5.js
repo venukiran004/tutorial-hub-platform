@@ -118,7 +118,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Simon Funk's SVD for Netflix Prize popularized this. Not true SVD (handles missing values via optimization, traditional SVD requires complete matrix). Foundation of modern recommendation systems."
+     "text": "**Explanation:** Simon Funk's SVD for Netflix Prize popularized this. Not true SVD (handles missing values via optimisation, traditional SVD requires complete matrix). Foundation of modern recommendation systems."
     }
    ],
    "kind": ""
@@ -141,7 +141,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Implicit is more abundant but noisier. Not watching ≠ dislike. Algorithms: BPR (Bayesian Personalized Ranking), WRMF (Weighted Regularized Matrix Factorization) for implicit."
+     "text": "**Explanation:** Implicit is more abundant but noisier. Not watching ≠ dislike. Algorithms: BPR (Bayesian Personalised Ranking), WRMF (Weighted Regularised Matrix Factorization) for implicit."
     }
    ],
    "kind": ""
@@ -196,7 +196,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "109",
-   "q": "What is NDCG (Normalized Discounted Cumulative Gain)?",
+   "q": "What is NDCG (Normalised Discounted Cumulative Gain)?",
    "body": [
     {
      "t": "p",
@@ -225,7 +225,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Solutions: diversity-promoting algorithms, exploration (epsilon-greedy), long-tail boosting, personalized re-ranking. Important for niche content discovery."
+     "text": "**Explanation:** Solutions: diversity-promoting algorithms, exploration (epsilon-greedy), long-tail boosting, personalised re-ranking. Important for niche content discovery."
     }
    ],
    "kind": ""
@@ -283,11 +283,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Matrix factorization method: alternately fix user factors and optimize item factors, then fix item factors and optimize user factors."
+     "text": "**Answer:** Matrix factorization method: alternately fix user factors and optimise item factors, then fix item factors and optimise user factors."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Each step is a closed-form least squares problem → fast. Handles large sparse matrices. Easily parallelizable. Default in Spark MLlib for recommendations."
+     "text": "**Explanation:** Each step is a closed-form least squares problem → fast. Handles large sparse matrices. Easily parallelisable. Default in Spark MLlib for recommendations."
     }
    ],
    "kind": ""
@@ -316,7 +316,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Direct user-item similarity fails with sparse data. Latent factor models generalize better across sparse interactions."
+     "text": "**Explanation:** Direct user-item similarity fails with sparse data. Latent factor models generalise better across sparse interactions."
     }
    ],
    "kind": ""
@@ -324,11 +324,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "115",
-   "q": "What is Bayesian Personalized Ranking (BPR)?",
+   "q": "What is Bayesian Personalised Ranking (BPR)?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Optimization criterion for implicit feedback: for each user, observed items should rank higher than unobserved items."
+     "text": "**Answer:** Optimisation criterion for implicit feedback: for each user, observed items should rank higher than unobserved items."
     },
     {
      "t": "code",
@@ -357,7 +357,7 @@ EC.receiveLesson({
       "**Neural CF (NCF):** Replace dot product with neural network for user-item interaction",
       "**Autoencoders:** Learn compressed user/item representations",
       "**Sequence models:** RNN/Transformer for session-based recommendations",
-      "**Wide & Deep:** Combines memorization (wide) and generalization (deep)"
+      "**Wide & Deep:** Combines memorisation (wide) and generalisation (deep)"
      ]
     },
     {
@@ -374,7 +374,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Recommending based on current session behavior without user identification. Uses the sequence of actions within one session."
+     "text": "**Answer:** Recommending based on current session behaviour without user identification. Uses the sequence of actions within one session."
     },
     {
      "t": "p",
@@ -468,7 +468,7 @@ EC.receiveLesson({
      "items": [
       "Inverse propensity scoring (IPS)",
       "Position-aware models",
-      "Randomized experiments",
+      "Randomised experiments",
       "Unbiased learning to rank"
      ]
     },
@@ -535,12 +535,12 @@ EC.receiveLesson({
      "items": [
       "**Pointwise:** Predict relevance score for each item independently (regression/classification)",
       "**Pairwise:** Learn that item A should rank above item B (BPR, RankNet)",
-      "**Listwise:** Optimize the entire ranked list (LambdaMART, ListNet)"
+      "**Listwise:** Optimise the entire ranked list (LambdaMART, ListNet)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pointwise: simplest but ignores ranking. Pairwise: captures relative ordering. Listwise: directly optimizes ranking metrics (NDCG). Listwise generally best."
+     "text": "**Explanation:** Pointwise: simplest but ignores ranking. Pairwise: captures relative ordering. Listwise: directly optimises ranking metrics (NDCG). Listwise generally best."
     }
    ],
    "kind": ""
@@ -561,7 +561,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pre-compute item embeddings offline. At serving: compute user embedding, find nearest item embeddings via ANN (Approximate Nearest Neighbors). Very scalable."
+     "text": "**Explanation:** Pre-compute item embeddings offline. At serving: compute user embedding, find nearest item embeddings via ANN (Approximate Nearest Neighbours). Very scalable."
     }
    ],
    "kind": ""

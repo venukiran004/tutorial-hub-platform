@@ -200,7 +200,7 @@ ORDER  BY c.name;
       caption: "The gift card's NULL category needed its own `IS NULL` branch — `= NULL` would have matched nothing (1.2) and its 75.00 would have vanished from every column with no row count to warn you. Conditional aggregation over a nullable column always needs the NULL bucket written out."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Counting orders by status",
       rungs: [
         { level: "bad", label: "One query per status", code: `SELECT COUNT(*) FROM orders WHERE status = 'paid';

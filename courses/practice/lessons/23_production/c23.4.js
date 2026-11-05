@@ -274,7 +274,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2798",
-   "q": "Program 2798: Deserialization attacks",
+   "q": "Program 2798: Deserialisation attacks",
    "body": [
     {
      "t": "code",

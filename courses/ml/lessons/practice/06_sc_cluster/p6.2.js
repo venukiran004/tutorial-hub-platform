@@ -29,7 +29,7 @@ EC.receiveLesson({
       "Compare feature distributions across clusters",
       "Statistical tests for feature differences",
       "Assign business labels (\"High-value frequent buyers\", \"Discount hunters\")",
-      "Visualization with radar/spider charts"
+      "Visualisation with radar/spider charts"
      ]
     },
     {
@@ -67,7 +67,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Classification:** Supervised — learns from labeled data to predict predefined categories",
+      "**Classification:** Supervised — learns from labelled data to predict predefined categories",
       "**Clustering:** Unsupervised — discovers natural groupings without labels"
      ]
     },
@@ -188,15 +188,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "You apply K-Means to image pixels [R, G, B] for color quantization. What does K represent?",
+   "q": "You apply K-Means to image pixels [R, G, B] for colour quantisation. What does K represent?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** K = number of colors in the resulting image. Each pixel gets assigned to nearest centroid color."
+     "text": "**Answer:** K = number of colours in the resulting image. Each pixel gets assigned to nearest centroid colour."
     },
     {
      "t": "p",
-     "text": "**Explanation:** K=16: reduces image to 16 colors. Each cluster centroid is a representative color. Classic application of K-Means — simple, effective, and visually interpretable."
+     "text": "**Explanation:** K=16: reduces image to 16 colours. Each cluster centroid is a representative colour. Classic application of K-Means — simple, effective, and visually interpretable."
     }
    ],
    "kind": ""
@@ -239,7 +239,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**K-Means:** Centroid = mean of cluster points (may not be an actual data point)",
-      "**K-Medoids:** Centroid = actual data point (medoid) that minimizes total distance"
+      "**K-Medoids:** Centroid = actual data point (medoid) that minimises total distance"
      ]
     },
     {
@@ -309,7 +309,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "39",
-   "q": "What is the difference between UMAP and t-SNE for cluster visualization?",
+   "q": "What is the difference between UMAP and t-SNE for cluster visualisation?",
    "body": [
     {
      "t": "p",
@@ -324,7 +324,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Both are nonlinear dimensionality reduction for 2D visualization of clusters. UMAP increasingly preferred. Neither should be used to determine cluster count."
+     "text": "**Explanation:** Both are nonlinear dimensionality reduction for 2D visualisation of clusters. UMAP increasingly preferred. Neither should be used to determine cluster count."
     }
    ],
    "kind": ""
@@ -336,7 +336,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Shifts each point toward the densest region in its neighborhood (mean of nearby points). Converges to cluster modes/peaks."
+     "text": "**Answer:** Shifts each point toward the densest region in its neighbourhood (mean of nearby points). Converges to cluster modes/peaks."
     },
     {
      "t": "p",
@@ -357,15 +357,15 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Run multiple times with different initializations (`n_init=10+`)",
-      "Use K-Means++ initialization",
-      "Try global optimization (e.g., genetic algorithm initialization)",
-      "Use hierarchical clustering to initialize centroids"
+      "Run multiple times with different initialisations (`n_init=10+`)",
+      "Use K-Means++ initialisation",
+      "Try global optimisation (e.g., genetic algorithm initialisation)",
+      "Use hierarchical clustering to initialise centroids"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** K-Means optimizes a non-convex objective. Multiple restarts with best result is standard practice."
+     "text": "**Explanation:** K-Means optimises a non-convex objective. Multiple restarts with best result is standard practice."
     }
    ],
    "kind": ""
@@ -381,7 +381,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** More robust than single run. Reduces sensitivity to algorithm choice, initialization, and parameters. Uses co-association matrix."
+     "text": "**Explanation:** More robust than single run. Reduces sensitivity to algorithm choice, initialisation, and parameters. Uses co-association matrix."
     }
    ],
    "kind": ""
@@ -464,12 +464,12 @@ EC.receiveLesson({
      "items": [
       "**Distance:** Cosine similarity (handles varying document lengths)",
       "**Features:** TF-IDF vectors",
-      "**Algorithm:** Spherical K-Means or LDA (Latent Dirichlet Allocation) for topic modeling"
+      "**Algorithm:** Spherical K-Means or LDA (Latent Dirichlet Allocation) for topic modelling"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Euclidean on TF-IDF is problematic due to high dimensionality and sparse vectors. Cosine normalizes for document length."
+     "text": "**Explanation:** Euclidean on TF-IDF is problematic due to high dimensionality and sparse vectors. Cosine normalises for document length."
     }
    ],
    "kind": ""
@@ -527,7 +527,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Assumes convex clusters (penalizes DBSCAN-type shapes)",
+      "Assumes convex clusters (penalises DBSCAN-type shapes)",
       "O(n²) computation for pairwise distances",
       "Averages can hide poor individual assignments",
       "Not meaningful for density-based or overlapping clusters"

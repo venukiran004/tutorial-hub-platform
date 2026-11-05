@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Structure: (1) describe the business problem briefly, (2) specific data issues: \"40% missing values in key feature, inconsistent formats across 3 source systems, daily duplicates,\" (3) your approach: \"I built a data quality scoring system, used KNN imputation for missing demographics, created a standardization pipeline for addresses,\" (4) quantify impact: \"improved data completeness from 60% to 95%, model accuracy increased 7%,\" (5) what you learned: \"invested in upstream data quality monitoring to prevent issues.\""
+     "text": "**Answer:** Structure: (1) describe the business problem briefly, (2) specific data issues: \"40% missing values in key feature, inconsistent formats across 3 source systems, daily duplicates,\" (3) your approach: \"I built a data quality scoring system, used KNN imputation for missing demographics, created a standardisation pipeline for addresses,\" (4) quantify impact: \"improved data completeness from 60% to 95%, model accuracy increased 7%,\" (5) what you learned: \"invested in upstream data quality monitoring to prevent issues.\""
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Understand the actual need: \"what decision does this support? when?\", (2) offer alternatives: \"I can give you a rough analysis by tomorrow using simple heuristics, but a reliable model needs 2 weeks,\" (3) break down the work: \"data prep: 3 days, modeling: 4 days, validation: 3 days, deployment: 4 days,\" (4) define MVP: what's the minimum viable version?, (5) risks of rushing: \"a quick model could give misleading results and damage trust,\" (6) propose a phased approach: quick-and-dirty → refined."
+     "text": "**Answer:** (1) Understand the actual need: \"what decision does this support? when?\", (2) offer alternatives: \"I can give you a rough analysis by tomorrow using simple heuristics, but a reliable model needs 2 weeks,\" (3) break down the work: \"data prep: 3 days, modelling: 4 days, validation: 3 days, deployment: 4 days,\" (4) define MVP: what's the minimum viable version?, (5) risks of rushing: \"a quick model could give misleading results and damage trust,\" (6) propose a phased approach: quick-and-dirty → refined."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** \"Imagine studying for a test by memorizing every practice question word-for-word. You'd ace the practice test but struggle with new questions because you memorized answers instead of understanding concepts. That's what happens when a model overfits — it memorizes the training data patterns too closely, including noise and coincidences, so it performs poorly on new data. We prevent this by testing on data the model hasn't seen, and by keeping the model simple enough to learn general patterns rather than memorizing specifics.\""
+     "text": "**Answer:** \"Imagine studying for a test by memorising every practice question word-for-word. You'd ace the practice test but struggle with new questions because you memorised answers instead of understanding concepts. That's what happens when a model overfits — it memorises the training data patterns too closely, including noise and coincidences, so it performs poorly on new data. We prevent this by testing on data the model hasn't seen, and by keeping the model simple enough to learn general patterns rather than memorising specifics.\""
     }
    ],
    "kind": ""
@@ -70,7 +70,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "380",
-   "q": "How do you prioritize between multiple data science project requests?",
+   "q": "How do you prioritise between multiple data science project requests?",
    "body": [
     {
      "t": "p",
@@ -141,7 +141,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Use appropriate dtypes: `df['category_col'] = df['category_col'].astype('category')`, (2) downcast numerics: `pd.to_numeric(df['col'], downcast='integer')`, (3) use vectorized operations, avoid iterrows/apply, (4) use Polars for 10-100x speedup on large data, (5) read only needed columns: `pd.read_csv(file, usecols=['a','b'])`, (6) use Parquet format instead of CSV, (7) chunk processing for memory efficiency, (8) use numba or numpy for computation-heavy operations."
+     "text": "**Answer:** (1) Use appropriate dtypes: `df['category_col'] = df['category_col'].astype('category')`, (2) downcast numerics: `pd.to_numeric(df['col'], downcast='integer')`, (3) use vectorised operations, avoid iterrows/apply, (4) use Polars for 10-100x speedup on large data, (5) read only needed columns: `pd.read_csv(file, usecols=['a','b'])`, (6) use Parquet format instead of CSV, (7) chunk processing for memory efficiency, (8) use numba or numpy for computation-heavy operations."
     }
    ],
    "kind": ""
@@ -153,7 +153,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Wide to long: `pd.melt(df, id_vars=['customer'], value_vars=['jan','feb','mar'], var_name='month', value_name='revenue')`. Long to wide: `df.pivot_table(index='customer', columns='month', values='revenue', aggfunc='sum')`. Use wide for: human-readable reports, models requiring fixed columns. Use long for: visualization (seaborn), flexible aggregation, database storage."
+     "text": "**Answer:** Wide to long: `pd.melt(df, id_vars=['customer'], value_vars=['jan','feb','mar'], var_name='month', value_name='revenue')`. Long to wide: `df.pivot_table(index='customer', columns='month', values='revenue', aggfunc='sum')`. Use wide for: human-readable reports, models requiring fixed columns. Use long for: visualisation (seaborn), flexible aggregation, database storage."
     },
     {
      "t": "p",
@@ -165,7 +165,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "386",
-   "q": "Your e-commerce model needs behavioral features but you only have raw clickstream data. What features do you engineer?",
+   "q": "Your e-commerce model needs behavioural features but you only have raw clickstream data. What features do you engineer?",
    "body": [
     {
      "t": "p",
@@ -278,7 +278,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model size: limited to MBs (not GBs), (2) inference time: milliseconds budget, (3) RAM: limited memory, (4) no GPU: CPU-only inference, (5) battery: computation drains battery. Model options: (1) small decision trees or random forests, (2) quantized neural networks (INT8), (3) MobileNet/EfficientNet for vision, (4) TensorFlow Lite or ONNX Runtime Mobile, (5) on-device feature engineering must be simple, (6) consider hybrid: simple model on device, complex model via API for uncertain cases."
+     "text": "**Answer:** (1) Model size: limited to MBs (not GBs), (2) inference time: milliseconds budget, (3) RAM: limited memory, (4) no GPU: CPU-only inference, (5) battery: computation drains battery. Model options: (1) small decision trees or random forests, (2) quantised neural networks (INT8), (3) MobileNet/EfficientNet for vision, (4) TensorFlow Lite or ONNX Runtime Mobile, (5) on-device feature engineering must be simple, (6) consider hybrid: simple model on device, complex model via API for uncertain cases."
     }
    ],
    "kind": ""
@@ -290,7 +290,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Collect user complaints and categorize error types, (2) analyze: are errors concentrated in a specific data segment?, (3) create custom metrics for the error types users care about, (4) slice analysis: evaluate on subgroups where complaints originate, (5) add features that distinguish the problematic segment, (6) custom loss function: penalize the specific error type more, (7) human-in-the-loop for the problematic segment, (8) separate model for the segment, (9) user feedback loop: incorporate corrections into retraining."
+     "text": "**Answer:** (1) Collect user complaints and categorise error types, (2) analyse: are errors concentrated in a specific data segment?, (3) create custom metrics for the error types users care about, (4) slice analysis: evaluate on subgroups where complaints originate, (5) add features that distinguish the problematic segment, (6) custom loss function: penalise the specific error type more, (7) human-in-the-loop for the problematic segment, (8) separate model for the segment, (9) user feedback loop: incorporate corrections into retraining."
     },
     {
      "t": "p",
@@ -318,7 +318,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Emergency debugging: (1) check if model was recently redeployed (wrong model version?), (2) check input features: are they all nulls/zeros? (pipeline failure), (3) check feature distributions: are they within expected range?, (4) run the model on known-good test examples — does it work?, (5) check for infrastructure issues: model file corruption, memory errors, (6) check preprocessing: is normalization using wrong statistics?, (7) immediate fix: rollback to previous model version, then investigate, (8) add monitoring for prediction distribution."
+     "text": "**Answer:** Emergency debugging: (1) check if model was recently redeployed (wrong model version?), (2) check input features: are they all nulls/zeros? (pipeline failure), (3) check feature distributions: are they within expected range?, (4) run the model on known-good test examples — does it work?, (5) check for infrastructure issues: model file corruption, memory errors, (6) check preprocessing: is normalisation using wrong statistics?, (7) immediate fix: rollback to previous model version, then investigate, (8) add monitoring for prediction distribution."
     }
    ],
    "kind": ""
@@ -330,7 +330,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Code standards: style guide, code review process, (2) version control: Git workflow (feature branches, PRs), (3) shared development environment: Docker, shared compute, (4) experiment tracking: MLflow for all experiments, (5) documentation: project templates, model cards, (6) data access governance: who can access what, (7) weekly knowledge sharing sessions, (8) project management: sprint planning, backlog prioritization, (9) CI/CD pipeline for model deployment, (10) mentoring: pair junior with senior, (11) shared libraries for common tasks."
+     "text": "**Answer:** (1) Code standards: style guide, code review process, (2) version control: Git workflow (feature branches, PRs), (3) shared development environment: Docker, shared compute, (4) experiment tracking: MLflow for all experiments, (5) documentation: project templates, model cards, (6) data access governance: who can access what, (7) weekly knowledge sharing sessions, (8) project management: sprint planning, backlog prioritisation, (9) CI/CD pipeline for model deployment, (10) mentoring: pair junior with senior, (11) shared libraries for common tasks."
     }
    ],
    "kind": ""

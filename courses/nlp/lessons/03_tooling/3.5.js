@@ -146,7 +146,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "07", text: "Train-serve skew", id: "skew" },
 
-    {"kind": "trace", "title": "The bug was invisible until someone swapped the checkpoint", "caption": "The probe is `\"EXCELLENT Service\"`, and on `bert-base-uncased` **both paths agree — because the tokenizer lowercases anyway, so a serving path that forgets to lowercase is indistinguishable from one that does.** Then the checkpoint changes to `bert-base-cased` and **the serve path produces `['E', '##X', '##CE', '##LL', '##EN', '##T', 'Service']`: seven subword tokens where training produced two words.** Accuracy degrades, **and every test still passes, because both paths work perfectly in isolation.**", "left": "checkpoint and path", "codeW": 200, "vars": ["tokens"], "steps": [{"code": "uncased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "uncased, serve path", "state": ["[CLS] excellent service [SEP]"], "changed": [0], "tone": "good", "note": "identical - bug invisible"}, {"code": "cased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "cased, serve path", "state": ["[CLS] E ##X ##CE ##LL ##EN ##T Service [SEP]"], "changed": [0], "tone": "crit", "note": "no error anywhere"}], "t": "diagram", "id": "dg-3_5-07-5"},
+    {"kind": "trace", "title": "The bug was invisible until someone swapped the checkpoint", "caption": "The probe is `\"EXCELLENT Service\"`, and on `bert-base-uncased` **both paths agree — because the tokeniser lowercases anyway, so a serving path that forgets to lowercase is indistinguishable from one that does.** Then the checkpoint changes to `bert-base-cased` and **the serve path produces `['E', '##X', '##CE', '##LL', '##EN', '##T', 'Service']`: seven subword tokens where training produced two words.** Accuracy degrades, **and every test still passes, because both paths work perfectly in isolation.**", "left": "checkpoint and path", "codeW": 200, "vars": ["tokens"], "steps": [{"code": "uncased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "uncased, serve path", "state": ["[CLS] excellent service [SEP]"], "changed": [0], "tone": "good", "note": "identical - bug invisible"}, {"code": "cased, train path", "state": ["[CLS] excellent service [SEP]"], "tone": "good"}, {"code": "cased, serve path", "state": ["[CLS] E ##X ##CE ##LL ##EN ##T Service [SEP]"], "changed": [0], "tone": "crit", "note": "no error anywhere"}], "t": "diagram", "id": "dg-3_5-07-5"},
 
 
 
@@ -167,7 +167,7 @@ EC.receiveLesson({
 "probe: \"EXCELLENT Service\"\n\nbert-base-uncased (the checkpoint used in development)\n  train path: ['[CLS]', 'excellent', 'service', '[SEP]']\n  serve path: ['[CLS]', 'excellent', 'service', '[SEP]']\n  identical — the tokenizer lowercases anyway, so the bug is invisible\n\nbert-base-cased (after someone swaps the checkpoint)\n  train path: ['[CLS]', 'excellent', 'service', '[SEP]']\n  serve path: ['[CLS]', 'E', '##X', '##CE', '##LL', '##EN', '##T', 'Service', '[SEP]']" },
 
     { t: "callout", kind: "crit", title: "Dormant until a checkpoint change wakes it",
-      body: [{ t: "p", text: "On the uncased checkpoint the missing `.lower()` does nothing, because the tokenizer lowercases regardless. The bug sits there passing every test. Then someone switches to a cased model for a legitimate accuracy reason, and the same input goes from **2 tokens to 7** — shattered into character fragments the model has essentially never seen in that configuration. Accuracy falls, and the commit that appears to have caused it is the checkpoint change, not the preprocessing bug from months earlier. The defence is structural: define preprocessing **once**, import it into both paths, and add a test that asserts the training and serving functions produce identical token ids on a fixed probe set." }] },
+      body: [{ t: "p", text: "On the uncased checkpoint the missing `.lower()` does nothing, because the tokeniser lowercases regardless. The bug sits there passing every test. Then someone switches to a cased model for a legitimate accuracy reason, and the same input goes from **2 tokens to 7** — shattered into character fragments the model has essentially never seen in that configuration. Accuracy falls, and the commit that appears to have caused it is the checkpoint change, not the preprocessing bug from months earlier. The defence is structural: define preprocessing **once**, import it into both paths, and add a test that asserts the training and serving functions produce identical token ids on a fixed probe set." }] },
 
     { t: "h2", n: "08", text: "The checklist", id: "checklist" },
 
@@ -195,7 +195,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Accuracy monitoring needs labels, which arrive late or never. Input monitoring needs nothing: track tokens per document, out-of-vocabulary rate, language distribution, and the share of inputs hitting the truncation limit. When those shift, your accuracy has already shifted and you will find out weeks before the labels confirm it. The ragged-batch problem shows up here too — a sudden rise in the tail of the length distribution explains a latency regression that looks inexplicable from the model's side." }] },
 
     { t: "exercise", title: "Measure your own service",
-      tasks: [
+      requirements: [
         "Benchmark your model after warm-up and report P50, P95 and P99. Compare the P99 with the mean you were previously quoting.",
         "Sweep batch size and find the knee. Then compute the added latency for the first request in a batch of that size.",
         "Construct a ragged batch from your own traffic distribution and measure the padding waste. Implement length bucketing and re-measure.",
@@ -221,7 +221,7 @@ EC.receiveLesson({
       answer: 1,
       why: "The padded shape went from (32, 3) to (32, 158). Every short document was padded to the longest one's length, and the model ran full attention over 158 positions for all 32 rows. The attention mask keeps the outputs correct, so nothing errors — you only see it in the latency. Length bucketing fixes it." },
     { stem: "Per-item latency flattens at batch 16. Why not use batch 64 anyway?",
-      options: ["Memory limits", "Because a batch of 64 takes 480.88 ms and every request in it waits for the slowest, inflating individual latency for no throughput gain", "Larger batches reduce accuracy", "The tokenizer cannot handle it"],
+      options: ["Memory limits", "Because a batch of 64 takes 480.88 ms and every request in it waits for the slowest, inflating individual latency for no throughput gain", "Larger batches reduce accuracy", "The tokeniser cannot handle it"],
       answer: 1,
       why: "Throughput was 131.8 items/sec at 16 and 133.1 at 64 — under 1% better. But the batch takes 480.88 ms to complete, so every request in it waits that long plus the time spent waiting for the batch to fill. Past the knee you are trading real latency for nothing." },
     { stem: "What is the right response to quantisation moving a logit by 0.0238?",
@@ -229,7 +229,7 @@ EC.receiveLesson({
       answer: 1,
       why: "Small shifts do not change most predictions, but they flip the ones nearest the decision boundary — and those are disproportionately the rare-class examples. Per-class F1 can move noticeably while accuracy barely changes. The evaluation must run on the artefact you actually deploy, not the one you fine-tuned." },
     { stem: "Why was the missing `.lower()` invisible until someone changed the checkpoint?",
-      options: ["It was never a real bug", "The uncased tokenizer lowercases anyway, so both paths produced identical ids until a cased checkpoint was swapped in", "Tests were not running", "The cache masked it"],
+      options: ["It was never a real bug", "The uncased tokeniser lowercases anyway, so both paths produced identical ids until a cased checkpoint was swapped in", "Tests were not running", "The cache masked it"],
       answer: 1,
       why: "On bert-base-uncased both paths gave ['[CLS]','excellent','service','[SEP]']. On bert-base-cased the serving path gave ['[CLS]','E','##X','##CE','##LL','##EN','##T','Service','[SEP]'] — 7 tokens instead of 2. The latent bug activates on an unrelated change, so the commit that appears responsible is not the one that introduced it." }
   ] },

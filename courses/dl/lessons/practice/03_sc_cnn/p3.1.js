@@ -451,7 +451,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Alternative:** Nearest-neighbor upsampling + regular convolution (avoids artifacts)."
+     "text": "**Alternative:** Nearest-neighbour upsampling + regular convolution (avoids artifacts)."
     }
    ],
    "kind": ""
@@ -578,7 +578,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Geometric:** Rotation, flip, scale, crop, affine transforms",
-      "**Color:** Brightness, contrast, saturation, hue jitter",
+      "**Colour:** Brightness, contrast, saturation, hue jitter",
       "**Cutout:** Random erasing of rectangular patches",
       "**Mixup:** Blend two images and their labels: `x = λx₁ + (1-λ)x₂`",
       "**CutMix:** Replace patch from one image with another",
@@ -595,11 +595,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "What is the role of batch normalization in CNNs?",
+   "q": "What is the role of batch normalisation in CNNs?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Applied after convolution, normalizes across batch and spatial dimensions for each channel:"
+     "text": "**Answer:** Applied after convolution, normalises across batch and spatial dimensions for each channel:"
     },
     {
      "t": "code",
@@ -608,7 +608,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Stabilizes activations across layers, allows higher learning rates. Placed before or after activation (debate exists, but before ReLU is common). Essential for training deep CNNs."
+     "text": "**Explanation:** Stabilises activations across layers, allows higher learning rates. Placed before or after activation (debate exists, but before ReLU is common). Essential for training deep CNNs."
     }
    ],
    "kind": ""

@@ -179,7 +179,7 @@ async def summarise(text: str, ctx: Context) -> dict:
       ["Sampling is the server choosing a prompt for your model", "Nothing restricts what it sends. A server with sampling can run any completion it likes on your account, and lesson 4.1's injection problem now runs in both directions — your model reads text the server composed, with the result returning to the server."],
       ["Elicitation is the server writing to your user", "The message is the server's text, rendered by your host, so it inherits your interface's credibility. *“Enter your API key to continue”* is a phishing prompt with your branding around it."],
       ["Roots is the mildest of the three", "It discloses paths rather than granting an action, and it exists so a server has a boundary to respect instead of a directory to guess. The failure mode is declaring more than the server needs."],
-      ["All three are per-client decisions", "The host grants them by passing a callback, so the control sits exactly where lesson 5.1 said the controls sit: in client code, with the consumer."]
+      ["All three are per-client decisions", "The host grants them by passing a callback, so the control sits exactly where lesson 5.1 says the controls sit: in client code, with the consumer."]
     ] },
 
     { t: "callout", kind: "tradeoff", title: "When to grant them",
@@ -217,7 +217,7 @@ async def summarise(text: str, ctx: Context) -> dict:
     "**Elicitation renders the server's text in your interface**, so it inherits your application's credibility — *\"enter your API key\"* is a phishing prompt with your branding.",
     "**Roots is the mildest:** it discloses paths rather than granting an action, and exists so a server has a boundary to respect instead of one to guess.",
     "**Grant roots freely and narrowly, sampling only to servers you would give an API key, and elicitation only to servers whose prompts you would show a user unread** — which is a short list.",
-    "**All three are granted in client code**, which is where lesson 5.1 showed every other control living too."
+    "**All three are granted in client code**, which is where lesson 5.1 shows every other control living too."
   ],
 
   quiz: {

@@ -154,7 +154,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Generalized tensor contraction over specified axes — extends `dot` to ND arrays:"
+     "text": "Generalised tensor contraction over specified axes — extends `dot` to ND arrays:"
     },
     {
      "t": "code",
@@ -439,7 +439,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "99",
-   "q": "How do you vectorize a Python function that depends on two arrays simultaneously?",
+   "q": "How do you vectorise a Python function that depends on two arrays simultaneously?",
    "body": [
     {
      "t": "code",
@@ -490,7 +490,7 @@ EC.receiveLesson({
       [
        "Use case",
        "General arrays",
-       "Statistics, optimization",
+       "Statistics, optimisation",
        "Deep learning"
       ]
      ]

@@ -215,7 +215,7 @@ FROM   employees ORDER BY department, salary DESC;
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "A rolling 30-day revenue per order",
       rungs: [
         { level: "bad", label: "Rows as a proxy for days", code: `SUM(amount) OVER (ORDER BY placed_at ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)`,

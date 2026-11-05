@@ -62,7 +62,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Probabilistic view:** Assuming \\(y_i = \\mathbf{w}^T\\mathbf{x}_i + \\epsilon_i\\) with \\(\\epsilon_i \\sim \\mathcal{N}(0,\\sigma^2)\\), maximizing the likelihood gives the same MSE objective. MSE minimization ≡ MLE under Gaussian noise."
+     "text": "**Probabilistic view:** Assuming \\(y_i = \\mathbf{w}^T\\mathbf{x}_i + \\epsilon_i\\) with \\(\\epsilon_i \\sim \\mathcal{N}(0,\\sigma^2)\\), maximising the likelihood gives the same MSE objective. MSE minimisation ≡ MLE under Gaussian noise."
     },
     {
      "t": "p",
@@ -156,7 +156,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Primal problem — Hard-margin SVM:** Find hyperplane \\(\\mathbf{w}^T\\mathbf{x}+b = 0\\) that maximizes margin \\(\\frac{2}{||\\mathbf{w}||}\\):"
+     "text": "**Primal problem — Hard-margin SVM:** Find hyperplane \\(\\mathbf{w}^T\\mathbf{x}+b = 0\\) that maximises margin \\(\\frac{2}{||\\mathbf{w}||}\\):"
     },
     {
      "t": "math",
@@ -250,7 +250,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Tree building — greedy recursive splitting:** At each node, find feature \\(j\\) and threshold \\(t\\) that minimize impurity:"
+     "text": "**Tree building — greedy recursive splitting:** At each node, find feature \\(j\\) and threshold \\(t\\) that minimise impurity:"
     },
     {
      "t": "math",
@@ -286,7 +286,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Range: \\([0, 1 - 1/C]\\). Faster to compute than entropy (no log). Slightly favors larger partitions."
+     "text": "Range: \\([0, 1 - 1/C]\\). Faster to compute than entropy (no log). Slightly favours larger partitions."
     },
     {
      "t": "p",
@@ -352,7 +352,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Out-of-Bag (OOB) Error:** Each sample is OOB for ~37% of trees. OOB error ≈ unbiased estimate of generalization error (no separate validation set needed)."
+     "text": "**Out-of-Bag (OOB) Error:** Each sample is OOB for ~37% of trees. OOB error ≈ unbiased estimate of generalisation error (no separate validation set needed)."
     },
     {
      "t": "p",
@@ -415,7 +415,7 @@ EC.receiveLesson({
      "items": [
       "\\(g_i = \\partial_{\\hat{y}} \\mathcal{L}(y_i, \\hat{y}_i^{(m-1)})\\) — first-order gradient",
       "\\(h_i = \\partial^2_{\\hat{y}} \\mathcal{L}(y_i, \\hat{y}_i^{(m-1)})\\) — second-order (Hessian)",
-      "\\(\\Omega(f) = \\gamma T + \\frac{1}{2}\\lambda\\sum_{j=1}^T w_j^2\\) — regularization (T = leaf count, \\(w_j\\) = leaf weights)"
+      "\\(\\Omega(f) = \\gamma T + \\frac{1}{2}\\lambda\\sum_{j=1}^T w_j^2\\) — regularisation (T = leaf count, \\(w_j\\) = leaf weights)"
      ]
     },
     {
@@ -440,7 +440,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "How does K-Nearest Neighbors work? Analyze its complexity and theoretical properties.",
+   "q": "How does K-Nearest Neighbours work? Analyse its complexity and theoretical properties.",
    "body": [
     {
      "t": "p",
@@ -479,7 +479,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Curse of dimensionality for KNN:** In \\(d\\) dimensions, the expected distance to the nearest neighbor scales as \\(n^{-1/d}\\) — points are far apart, making local neighborhoods meaningless."
+     "text": "**Curse of dimensionality for KNN:** In \\(d\\) dimensions, the expected distance to the nearest neighbour scales as \\(n^{-1/d}\\) — points are far apart, making local neighbourhoods meaningless."
     },
     {
      "t": "p",
@@ -555,7 +555,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Lloyd's Algorithm (alternating optimization):**"
+     "text": "**Lloyd's Algorithm (alternating optimisation):**"
     },
     {
      "t": "ul",
@@ -574,7 +574,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**K-Means++ initialization:**"
+     "text": "**K-Means++ initialisation:**"
     },
     {
      "t": "ol",
@@ -594,8 +594,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Assumes spherical, equal-sized clusters (minimizes \\(L^2\\) distance)",
-      "Sensitive to scale → must standardize features",
+      "Assumes spherical, equal-sized clusters (minimises \\(L^2\\) distance)",
+      "Sensitive to scale → must standardise features",
       "Local minimum → run multiple restarts with k-means++",
       "\\(k\\) is not automatically inferred (use Elbow/Silhouette)"
      ]
@@ -615,12 +615,12 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**\\(\\epsilon\\)-neighborhood:** \\(N_\\epsilon(\\mathbf{x}) = \\{p \\in D : d(\\mathbf{x},p) \\leq \\epsilon\\}\\)",
+      "**\\(\\epsilon\\)-neighbourhood:** \\(N_\\epsilon(\\mathbf{x}) = \\{p \\in D : d(\\mathbf{x},p) \\leq \\epsilon\\}\\)",
       "**Core point:** \\(|N_\\epsilon(\\mathbf{x})| \\geq \\text{minPts}\\)",
       "**Directly density-reachable:** \\(p\\) from \\(q\\) if \\(p\\in N_\\epsilon(q)\\) and \\(q\\) is a core point",
       "**Density-reachable:** Chain of directly density-reachable points",
       "**Density-connected:** Both reachable from a common core point",
-      "**Border point:** In neighborhood of core point but not core itself",
+      "**Border point:** In neighbourhood of core point but not core itself",
       "**Noise:** Not reachable from any core point"
      ]
     },
@@ -697,7 +697,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "where \\(\\mathbf{C} = \\frac{1}{n-1}\\mathbf{X}_c^T\\mathbf{X}_c\\) is the sample covariance matrix (\\(\\mathbf{X}_c\\) = mean-centered)."
+     "text": "where \\(\\mathbf{C} = \\frac{1}{n-1}\\mathbf{X}_c^T\\mathbf{X}_c\\) is the sample covariance matrix (\\(\\mathbf{X}_c\\) = mean-centreed)."
     },
     {
      "t": "p",
@@ -757,7 +757,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "\\(\\sigma_i\\) is chosen per-point so that \\(\\text{Perplexity}(P_i) = 2^{H(P_i)} =\\) target perplexity (binary search). Perplexity ≈ effective number of neighbors (typically 5–50)."
+     "text": "\\(\\sigma_i\\) is chosen per-point so that \\(\\text{Perplexity}(P_i) = 2^{H(P_i)} =\\) target perplexity (binary search). Perplexity ≈ effective number of neighbours (typically 5–50)."
     },
     {
      "t": "p",
@@ -940,7 +940,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Ridge (L2 regularization):**"
+     "text": "**Ridge (L2 regularisation):**"
     },
     {
      "t": "math",
@@ -960,7 +960,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Lasso (L1 regularization):**"
+     "text": "**Lasso (L1 regularisation):**"
     },
     {
      "t": "math",
@@ -1201,7 +1201,7 @@ EC.receiveLesson({
       [
        "Ward",
        "\\(\\Delta J = \\frac{|A||B|}{|A|+|B|}||\\bar{A}-\\bar{B}||^2\\)",
-       "Minimizes within-cluster variance"
+       "Minimises within-cluster variance"
       ]
      ]
     },
@@ -1233,8 +1233,8 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Gradient: \\(\\nabla_{\\hat{y}} = \\frac{2}{n}\\sum_i(\\hat{y}_i-y_i)\\) (proportional to error)",
-      "Differentiable everywhere → smooth optimization",
-      "Penalizes large errors quadratically → sensitive to outliers",
+      "Differentiable everywhere → smooth optimisation",
+      "Penalises large errors quadratically → sensitive to outliers",
       "Maximum Likelihood under \\(\\epsilon_i\\sim\\mathcal{N}(0,\\sigma^2)\\)"
      ]
     },
@@ -1294,7 +1294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "43",
-   "q": "Explain Bayesian Optimization for hyperparameter tuning with mathematical detail.",
+   "q": "Explain Bayesian Optimisation for hyperparameter tuning with mathematical detail.",
    "body": [
     {
      "t": "p",
@@ -1338,7 +1338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "44",
-   "q": "What is early stopping? Derive its regularization equivalence.",
+   "q": "What is early stopping? Derive its regularisation equivalence.",
    "body": [
     {
      "t": "p",
@@ -1351,7 +1351,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theoretical equivalence:** For SGD on L2-regularized models, early stopping at step \\(T\\) is equivalent to L2 regularization with \\(\\lambda = 1/(T\\eta)\\) where \\(\\eta\\) = step size. Early stopping implicitly constrains the model's movement from initialization — a soft form of the norm-ball constraint."
+     "text": "**Theoretical equivalence:** For SGD on L2-regularised models, early stopping at step \\(T\\) is equivalent to L2 regularisation with \\(\\lambda = 1/(T\\eta)\\) where \\(\\eta\\) = step size. Early stopping implicitly constrains the model's movement from initialisation — a soft form of the norm-ball constraint."
     }
    ],
    "kind": ""
@@ -1382,7 +1382,7 @@ EC.receiveLesson({
       "Gradient is noisy unbiased estimate of true gradient",
       "Convergence rate: \\(O(1/\\sqrt{T})\\) for convex, \\(O(1/T)\\) for strongly convex",
       "Robbins-Monro conditions: \\(\\sum_t \\eta_t = \\infty\\), \\(\\sum_t \\eta_t^2 < \\infty\\) (e.g., \\(\\eta_t = 1/t\\))",
-      "Noise acts as implicit regularizer — SGD finds flatter minima with better generalization"
+      "Noise acts as implicit regulariser — SGD finds flatter minima with better generalisation"
      ]
     }
    ],
@@ -1422,7 +1422,7 @@ EC.receiveLesson({
      "items": [
       "Train error low, val error high",
       "Large gap",
-      "Fix: more data, regularization, simpler model"
+      "Fix: more data, regularisation, simpler model"
      ]
     },
     {
@@ -1509,8 +1509,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Find \\(k\\) nearest neighbors (same class): \\(N_k = \\{\\mathbf{x}_{i_1},\\ldots,\\mathbf{x}_{i_k}\\}\\)",
-      "Select neighbor \\(\\mathbf{x}_{nn}\\) from \\(N_k\\)",
+      "Find \\(k\\) nearest neighbours (same class): \\(N_k = \\{\\mathbf{x}_{i_1},\\ldots,\\mathbf{x}_{i_k}\\}\\)",
+      "Select neighbour \\(\\mathbf{x}_{nn}\\) from \\(N_k\\)",
       "Synthetic sample: \\(\\mathbf{x}_{new} = \\mathbf{x}_i + u \\cdot (\\mathbf{x}_{nn} - \\mathbf{x}_i)\\), \\(u\\sim U(0,1)\\)"
      ]
     },

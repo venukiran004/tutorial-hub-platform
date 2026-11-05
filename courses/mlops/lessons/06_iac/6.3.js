@@ -189,7 +189,7 @@ jobs:
         "'Not a function of the diff' usually catches a full training run or an integration test against a shared environment."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The two findings that recur are a missing `concurrency` block and a cache key that never invalidates. The first is pure waste and three lines to fix; the second is a correctness problem masquerading as an optimisation, because it means a dependency bump has no effect on anything CI tests." },
           { t: "p", text: "The expected-cost calculation often shows a smaller gain than the concurrency fix, which is worth knowing: ordering is the famous advice and cancelling duplicate runs is usually the bigger number." }
         ]

@@ -231,7 +231,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "63",
-   "q": "Tokenizer Basics",
+   "q": "Tokeniser Basics",
    "body": [
     {
      "t": "code",
@@ -249,7 +249,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "64",
-   "q": "Quantization Basics",
+   "q": "Quantisation Basics",
    "body": [
     {
      "t": "code",

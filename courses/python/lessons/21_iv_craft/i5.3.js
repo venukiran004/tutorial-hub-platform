@@ -632,7 +632,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** \"Profile first, optimise second.\" Find the proven hotspot, then apply the right fix (better data structure, vectorization, caching). Optimising un-profiled code wastes effort and adds complexity."
+     "text": "**Key takeaway:** \"Profile first, optimise second.\" Find the proven hotspot, then apply the right fix (better data structure, vectorisation, caching). Optimising un-profiled code wastes effort and adds complexity."
     }
    ]
   },
@@ -654,7 +654,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`pickle` executes arbitrary Python during deserialization via the `__reduce__` protocol. A crafted payload can run `os.system(...)`, open a reverse shell, or delete files the moment it's unpickled — no further action needed."
+     "text": "`pickle` executes arbitrary Python during deserialisation via the `__reduce__` protocol. A crafted payload can run `os.system(...)`, open a reverse shell, or delete files the moment it's unpickled — no further action needed."
     },
     {
      "t": "code",
@@ -774,7 +774,7 @@ EC.receiveLesson({
    "terms": [
     "Answer",
     "injection",
-    "insecure deserialization",
+    "insecure deserialisation",
     "broken authentication",
     "sensitive data exposure",
     "SSRF"
@@ -786,7 +786,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The OWASP Top 10 is the industry list of the most critical web-application security risks. In Python terms: **injection** (SQL/command/`eval`), **insecure deserialization** (`pickle.load`), **broken authentication** (weak JWT, hard-coded creds), **sensitive data exposure** (logging secrets), **SSRF** (unvalidated URLs in `requests`), **security misconfiguration** (`DEBUG=True` in prod), **XSS** (disabled Jinja2 auto-escaping), and **broken access control** (missing auth checks)."
+     "text": "The OWASP Top 10 is the industry list of the most critical web-application security risks. In Python terms: **injection** (SQL/command/`eval`), **insecure deserialisation** (`pickle.load`), **broken authentication** (weak JWT, hard-coded creds), **sensitive data exposure** (logging secrets), **SSRF** (unvalidated URLs in `requests`), **security misconfiguration** (`DEBUG=True` in prod), **XSS** (disabled Jinja2 auto-escaping), and **broken access control** (missing auth checks)."
     },
     {
      "t": "p",
@@ -921,14 +921,14 @@ EC.receiveLesson({
       "**Add structured logging** with correlation IDs to capture the state leading up to the failure across runs.",
       "**Increase observability:** log inputs, key branch decisions, and timing.",
       "**Install a global post-mortem hook** (`sys.excepthook` → `pdb.post_mortem`) or capture full tracebacks to a file.",
-      "**Check for non-determinism:** threading/async race conditions, unseeded randomness, dict ordering, time dependence, uninitialized state.",
+      "**Check for non-determinism:** threading/async race conditions, unseeded randomness, dict ordering, time dependence, uninitialised state.",
       "**Reproduce under stress:** run the test many times (`pytest -p no:randomly --count=100` with `pytest-repeat`), enable asyncio debug mode, or run under `faulthandler`.",
       "**Use `py-spy`** to sample a hung/slow production process without stopping it."
      ]
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Intermittent bugs are usually concurrency, ordering, or environment dependence. Maximize observability (logging + post-mortem), then hunt the source of non-determinism rather than adding random retries."
+     "text": "**Key takeaway:** Intermittent bugs are usually concurrency, ordering, or environment dependence. Maximise observability (logging + post-mortem), then hunt the source of non-determinism rather than adding random retries."
     }
    ]
   }

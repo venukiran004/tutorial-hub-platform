@@ -395,7 +395,7 @@ EC.receiveLesson({
    "q": "How do the Python 3.11 speedups work, and what code benefits most?",
    "terms": [
     "Answer",
-    "Specializing Adaptive Interpreter",
+    "Specialising Adaptive Interpreter",
     "Quickening",
     "Inline caching",
     "Zero-cost exceptions",
@@ -408,7 +408,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The **Specializing Adaptive Interpreter** (Shannon Plan): 1. **Quickening** — bytecode is rewritten into type-specialized forms after a few runs. 2. **Inline caching** — attribute/method lookups cache type + offset. 3. **Zero-cost exceptions** — `try`/`except` is free when nothing raises. 4. **Cheaper frames & frozen stdlib imports** — faster calls and startup."
+     "text": "The **Specialising Adaptive Interpreter** (Shannon Plan): 1. **Quickening** — bytecode is rewritten into type-specialised forms after a few runs. 2. **Inline caching** — attribute/method lookups cache type + offset. 3. **Zero-cost exceptions** — `try`/`except` is free when nothing raises. 4. **Cheaper frames & frozen stdlib imports** — faster calls and startup."
     },
     {
      "t": "p",
@@ -652,7 +652,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "It stitches together pre-compiled machine-code templates (\"stencils\") at runtime, adding a JIT tier above the specializing interpreter."
+     "text": "It stitches together pre-compiled machine-code templates (\"stencils\") at runtime, adding a JIT tier above the specialising interpreter."
     },
     {
      "t": "table",

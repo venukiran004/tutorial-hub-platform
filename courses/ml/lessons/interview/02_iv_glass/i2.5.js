@@ -165,7 +165,7 @@ EC.receiveLesson({
       [
        "**Saddle points**",
        "Zero gradient, not a minimum",
-       "Momentum, Adam optimizer"
+       "Momentum, Adam optimiser"
       ],
       [
        "**Local minima**",
@@ -183,9 +183,9 @@ EC.receiveLesson({
        "Gradient clipping, LSTM/GRU"
       ],
       [
-       "**Poor initialization**",
+       "**Poor initialisation**",
        "Symmetric weights, dead neurons",
-       "Xavier/He initialization"
+       "Xavier/He initialisation"
       ],
       [
        "**Feature scaling**",
@@ -252,7 +252,7 @@ EC.receiveLesson({
        "Fast updates"
       ],
       [
-       "**GPU utilization**",
+       "**GPU utilisation**",
        "High",
        "Optimal",
        "Poor"

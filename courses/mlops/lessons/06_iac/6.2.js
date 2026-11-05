@@ -151,7 +151,7 @@ EC.receiveLesson({
         "If everything is disposable and image-built, the honest conclusion is that you need neither Ansible nor a configuration-management strategy."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "Most container-native teams find every host is disposable and the answer is Terraform plus images, which is a legitimate conclusion rather than a gap. The exception is almost always GPU hardware: drivers are kernel-adjacent, so an image cannot supply them, and the version has to match what the containers' CUDA userland expects." },
           { t: "p", text: "The deletion test usually finds one resource that should not be destroyed if its block disappears — frequently a bucket holding data or a long-lived database. Those want `prevent_destroy` in their lifecycle block, which is the guardrail lesson 6.1 named." }
         ]

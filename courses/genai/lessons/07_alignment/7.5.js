@@ -264,7 +264,7 @@ for N in (1.5e9, 7e9, 70e9):
           % (N / 1e9, p, d, p / d))`,
         out: `      2B params : PPO    50.3 GB   DPO    25.1 GB   ratio 2.00x
       7B params : PPO   234.7 GB   DPO   117.3 GB   ratio 2.00x
-     70B params : PPO  2346.6 GB   DPO  1173.3 GB   ratio 2.00x`,
+     70B params : PPO  2346.9 GB   DPO  1173.5 GB   ratio 2.00x`,
         notes: [
           { t: "p", text: "**The ratio is exactly 2.00\u00d7 at every size**, which is not a coincidence: PPO holds two trained and two frozen models, DPO holds one of each, so the whole thing scales linearly and the factor is structural rather than empirical." },
           { t: "p", text: "**The trained models are the entire story.** At 7B, the policy and critic are 104.3 GB each while the frozen reference and reward model are 13.0 GB each \u2014 so deleting the critic saves eight times what deleting the reward model saves." },

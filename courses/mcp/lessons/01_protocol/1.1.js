@@ -172,7 +172,7 @@ a second session    : pid 22540, call 1`,
         options: [
           "The protocol assigns unique ids, so there is no collision",
           "The host — it merges the tool lists and must prefix or filter, because a server cannot know what other servers are connected",
-          "The servers negotiate between themselves during initialize",
+          "The servers negotiate between themselves during initialise",
           "The model picks whichever appeared first"
         ],
         answer: 1,

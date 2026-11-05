@@ -46,7 +46,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Discretizes continuous features into bins (e.g., 256), then finds optimal split among bin boundaries."
+     "text": "**Answer:** Discretises continuous features into bins (e.g., 256), then finds optimal split among bin boundaries."
     },
     {
      "t": "code",
@@ -181,7 +181,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Bayesian optimization framework for hyperparameter search:"
+     "text": "**Answer:** Bayesian optimisation framework for hyperparameter search:"
     },
     {
      "t": "code",
@@ -313,7 +313,7 @@ EC.receiveLesson({
        "Fast (C++ with Python wrapper)"
       ],
       [
-       "Regularization",
+       "Regularisation",
        "max_depth only",
        "L1, L2, max_depth, min_child_weight"
       ],
@@ -389,7 +389,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "90",
-   "q": "What is the difference between Random Forest and extra randomization in ExtraTrees?",
+   "q": "What is the difference between Random Forest and extra randomisation in ExtraTrees?",
    "body": [
     {
      "t": "p",
@@ -609,7 +609,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Regularization technique that creates softer decision boundaries. Works for both classification and regression."
+     "text": "**Explanation:** Regularisation technique that creates softer decision boundaries. Works for both classification and regression."
     }
    ],
    "kind": ""

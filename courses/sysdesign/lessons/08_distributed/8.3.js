@@ -199,7 +199,7 @@ final logs:
     { t: "callout", kind: "trap", title: "\"The leader accepted my write\" is not \"my write is committed\"",
       body: [
         { t: "p", text: "A client that treats the leader's receipt of a write as success can lose it: the minority-side `x=2` above was accepted, held in two logs, and later discarded. Raft only promises durability for **committed** entries, and the leader acknowledges a client only after committing. Systems built on Raft that offer a faster \"accepted\" acknowledgement are offering a weaker guarantee." },
-        { t: "p", text: "The same applies to reads: a leader that answers a read from its own state might have been deposed by a partition it has not noticed yet, and serve stale data. Linearizable reads require the leader to confirm it is still leader — a round of heartbeats to a majority (ReadIndex) or a time-bounded lease — before answering." }
+        { t: "p", text: "The same applies to reads: a leader that answers a read from its own state might have been deposed by a partition it has not noticed yet, and serve stale data. Linearisable reads require the leader to confirm it is still leader — a round of heartbeats to a majority (ReadIndex) or a time-bounded lease — before answering." }
       ] },
 
     { t: "h2", n: "05", id: "sizing", text: "Sizing a consensus group",
@@ -272,7 +272,7 @@ for label, followers in (
     "An entry is **committed when a majority holds it**; the leader does not wait for the slowest follower.",
     "**Any two majorities overlap**, which makes Raft safe without any timing assumption; only progress needs the network to cooperate.",
     "Simulated partition: the minority leader **accepted but could never commit**; the majority elected a new leader in a higher term and committed; on healing, the uncommitted entry was **overwritten**.",
-    "\"Accepted\" is not \"committed\"; and linearizable reads need the leader to **confirm its leadership** first (ReadIndex or leases).",
+    "\"Accepted\" is not \"committed\"; and linearisable reads need the leader to **confirm its leadership** first (ReadIndex or leases).",
     "Use **odd** sizes: four nodes tolerate one failure, like three. Measured: five nodes in three zones commit as fast as three and tolerate two failures.",
     "Commit latency is the round trip to the **nearest majority**; spread across regions, it is the speed of light.",
     "**Count failure domains, not machines**: three nodes with two in one zone lose quorum with that zone."

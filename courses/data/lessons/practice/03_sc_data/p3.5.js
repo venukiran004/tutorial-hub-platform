@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Recency-Frequency-Monetary (RFM) framework plus extensions: recency (days since last purchase), frequency (purchase count in last 30/90/365 days), monetary (total/avg spend), max single purchase, purchase variety (unique categories), inter-purchase interval (mean, std), trend (is spending increasing or decreasing?), session duration, return rate, preferred payment method, preferred day/time, regularity score (std of inter-purchase intervals — low std = regular customer). Always create features at multiple time windows (7d, 30d, 90d, 365d) to capture different behavioral patterns."
+     "text": "Recency-Frequency-Monetary (RFM) framework plus extensions: recency (days since last purchase), frequency (purchase count in last 30/90/365 days), monetary (total/avg spend), max single purchase, purchase variety (unique categories), inter-purchase interval (mean, std), trend (is spending increasing or decreasing?), session duration, return rate, preferred payment method, preferred day/time, regularity score (std of inter-purchase intervals — low std = regular customer). Always create features at multiple time windows (7d, 30d, 90d, 365d) to capture different behavioural patterns."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Session-level features: session_duration, pages_viewed, actions_count, bounce (1 page only), pages_per_minute. Behavioral features: viewed_product_page (bool), added_to_cart (bool), search_count, time_on_product_pages, cart_abandonment_count. Sequential features: funnel_stage_reached, page_sequence_embedding. Engagement features: return_visit (bool), days_since_last_visit, visit_frequency. Content features: product_categories_viewed, price_range_browsed. The features should capture the user's intent and engagement depth."
+     "text": "Session-level features: session_duration, pages_viewed, actions_count, bounce (1 page only), pages_per_minute. Behavioural features: viewed_product_page (bool), added_to_cart (bool), search_count, time_on_product_pages, cart_abandonment_count. Sequential features: funnel_stage_reached, page_sequence_embedding. Engagement features: return_visit (bool), days_since_last_visit, visit_frequency. Content features: product_categories_viewed, price_range_browsed. The features should capture the user's intent and engagement depth."
     }
    ],
    "kind": ""
@@ -74,7 +74,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Distance-based: distance_to_city_center, distance_to_nearest_school, distance_to_subway, distance_to_park, distance_to_highway. Density-based: num_restaurants_within_1km, crime_density_radius_500m, population_density. Cluster-based: neighborhood_cluster (K-means on coordinates), zip_code_median_price. Spatial aggregates: avg_price_within_1km, num_recent_sales_nearby. Interaction features: distance_to_center × sqft (large homes far from center). Use Haversine formula for accurate distance calculations on Earth's surface."
+     "text": "Distance-based: distance_to_city_center, distance_to_nearest_school, distance_to_subway, distance_to_park, distance_to_highway. Density-based: num_restaurants_within_1km, crime_density_radius_500m, population_density. Cluster-based: neighborhood_cluster (K-means on coordinates), zip_code_median_price. Spatial aggregates: avg_price_within_1km, num_recent_sales_nearby. Interaction features: distance_to_center × sqft (large homes far from centre). Use Haversine formula for accurate distance calculations on Earth's surface."
     }
    ],
    "kind": ""
@@ -98,7 +98,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Don't create all pairs — it causes overfitting and slow training. Strategies: (1) domain knowledge — create only semantically meaningful interactions (income × debt_ratio, age × experience), (2) tree-based feature importance — train a Random Forest and use SHAP interaction values to identify top 10 interactions, (3) sequential feature engineering — add interactions one at a time, validate improvement via CV, (4) automated selection: create top 20 candidates, use L1 regularization to select, (5) target encoding of feature pairs as a single categorical. Quality over quantity."
+     "text": "Don't create all pairs — it causes overfitting and slow training. Strategies: (1) domain knowledge — create only semantically meaningful interactions (income × debt_ratio, age × experience), (2) tree-based feature importance — train a Random Forest and use SHAP interaction values to identify top 10 interactions, (3) sequential feature engineering — add interactions one at a time, validate improvement via CV, (4) automated selection: create top 20 candidates, use L1 regularisation to select, (5) target encoding of feature pairs as a single categorical. Quality over quantity."
     }
    ],
    "kind": ""
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Progressive transformations: (1) Box-Cox transform (finds optimal power transformation), (2) Yeo-Johnson (handles zeros and negatives unlike Box-Cox), (3) quantile transform (forces Gaussian or uniform distribution), (4) rank transform (replace values with their percentile ranks), (5) square root for moderate skew, (6) inverse hyperbolic sine: `np.log(x + sqrt(x² + 1))` — handles zeros naturally. For tree-based models, skewness matters less. For linear models, quantile transform is often the most effective at normalizing distributions."
+     "text": "Progressive transformations: (1) Box-Cox transform (finds optimal power transformation), (2) Yeo-Johnson (handles zeros and negatives unlike Box-Cox), (3) quantile transform (forces Gaussian or uniform distribution), (4) rank transform (replace values with their percentile ranks), (5) square root for moderate skew, (6) inverse hyperbolic sine: `np.log(x + sqrt(x² + 1))` — handles zeros naturally. For tree-based models, skewness matters less. For linear models, quantile transform is often the most effective at normalising distributions."
     }
    ],
    "kind": ""
@@ -122,7 +122,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Target encoding: replace each category with the mean target value for that category, with regularization (smoothing with global mean for rare categories). (2) Frequency encoding: replace with category frequency (count in dataset). (3) Leave-one-out encoding: target encoding but excluding the current row. (4) Binary encoding: convert category index to binary digits. (5) Embedding: learn a dense vector per category via neural network. (6) Hash encoding: hash into a fixed number of buckets. (7) Group similar products into clusters first, then encode clusters. Target encoding is usually the best default for tabular data."
+     "text": "(1) Target encoding: replace each category with the mean target value for that category, with regularisation (smoothing with global mean for rare categories). (2) Frequency encoding: replace with category frequency (count in dataset). (3) Leave-one-out encoding: target encoding but excluding the current row. (4) Binary encoding: convert category index to binary digits. (5) Embedding: learn a dense vector per category via neural network. (6) Hash encoding: hash into a fixed number of buckets. (7) Group similar products into clusters first, then encode clusters. Target encoding is usually the best default for tabular data."
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Create features relative to each user's baseline: (1) `amount / user_avg_amount` — ratio to user's average, (2) `(amount - user_avg) / user_std` — z-score relative to user, (3) `amount_percentile` — where this transaction falls in user's historical distribution, (4) `amount > user_p95` — binary flag for unusually high amounts, (5) `time_since_last_purchase / user_avg_inter_purchase_time` — is timing unusual?, (6) behavioral deviation score — multi-feature z-score. These user-relative features capture individual anomalies that absolute features miss."
+     "text": "Create features relative to each user's baseline: (1) `amount / user_avg_amount` — ratio to user's average, (2) `(amount - user_avg) / user_std` — z-score relative to user, (3) `amount_percentile` — where this transaction falls in user's historical distribution, (4) `amount > user_p95` — binary flag for unusually high amounts, (5) `time_since_last_purchase / user_avg_inter_purchase_time` — is timing unusual?, (6) behavioural deviation score — multi-feature z-score. These user-relative features capture individual anomalies that absolute features miss."
     }
    ],
    "kind": ""
@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Geolocation features: country, city, lat/long from IP, distance from user's registered address, (2) IP metadata: ISP, is_vpn, is_proxy, is_tor, is_datacenter (not residential), (3) IP reputation: known malicious IP lists, (4) behavioral: unique_ips_per_user, ip_changes_per_session, country_changes_per_day, (5) velocity: new_ip_for_user (never seen before), (6) aggregate: transactions_per_ip, users_per_ip (shared IP = suspicious for some use cases). IP-based features are among the most valuable for fraud detection but require regular updating of geolocation databases."
+     "text": "(1) Geolocation features: country, city, lat/long from IP, distance from user's registered address, (2) IP metadata: ISP, is_vpn, is_proxy, is_tor, is_datacenter (not residential), (3) IP reputation: known malicious IP lists, (4) behavioural: unique_ips_per_user, ip_changes_per_session, country_changes_per_day, (5) velocity: new_ip_for_user (never seen before), (6) aggregate: transactions_per_ip, users_per_ip (shared IP = suspicious for some use cases). IP-based features are among the most valuable for fraud detection but require regular updating of geolocation databases."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "114",
-   "q": "You want to create \"windows\" features — statistics over different time windows (7d, 30d, 90d). The computation is slow across 100K users. How do you optimize?",
+   "q": "You want to create \"windows\" features — statistics over different time windows (7d, 30d, 90d). The computation is slow across 100K users. How do you optimise?",
    "body": [
     {
      "t": "p",
@@ -190,11 +190,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "115",
-   "q": "You need features that capture the \"diversity\" of a user's behavior (how varied are their purchases/actions?). What measures do you use?",
+   "q": "You need features that capture the \"diversity\" of a user's behaviour (how varied are their purchases/actions?). What measures do you use?",
    "body": [
     {
      "t": "p",
-     "text": "(1) Number of unique categories: `nunique()`, (2) Entropy: `-sum(p_i * log(p_i))` where p_i is proportion of each category — higher entropy = more diversity, (3) Gini coefficient: measures inequality of spending across categories, (4) HHI (Herfindahl-Hirschman Index): sum of squared proportions — low HHI = diverse, (5) coefficient of variation of amounts: std/mean, (6) number of categories with > 5% share, (7) concentration ratio: top-3 categories' share of total. Entropy and HHI are the most robust measures. Diversity features capture important behavioral patterns."
+     "text": "(1) Number of unique categories: `nunique()`, (2) Entropy: `-sum(p_i * log(p_i))` where p_i is proportion of each category — higher entropy = more diversity, (3) Gini coefficient: measures inequality of spending across categories, (4) HHI (Herfindahl-Hirschman Index): sum of squared proportions — low HHI = diverse, (5) coefficient of variation of amounts: std/mean, (6) number of categories with > 5% share, (7) concentration ratio: top-3 categories' share of total. Entropy and HHI are the most robust measures. Diversity features capture important behavioural patterns."
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Group by region first: assign each country to a continent or economic region (EU, NAFTA, ASEAN, etc.) — reduces to ~20 categories. Then: (1) keep top-10 countries individually, group rest into regions, (2) create economic features instead: GDP_per_capita, HDI, internet_penetration (data from World Bank), (3) target encode with strong smoothing (Bayesian target encoding) for countries with few samples, (4) cluster countries by their target behavior. The key insight: don't treat 195 categories equally — most have too few samples for reliable encoding."
+     "text": "Group by region first: assign each country to a continent or economic region (EU, NAFTA, ASEAN, etc.) — reduces to ~20 categories. Then: (1) keep top-10 countries individually, group rest into regions, (2) create economic features instead: GDP_per_capita, HDI, internet_penetration (data from World Bank), (3) target encode with strong smoothing (Bayesian target encoding) for countries with few samples, (4) cluster countries by their target behaviour. The key insight: don't treat 195 categories equally — most have too few samples for reliable encoding."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Don't dismiss it — investigate further: (1) the relationship might be nonlinear — try transformations and binning, (2) it might interact with other features — create interaction terms, (3) it might be predictive for a subpopulation only — segment and re-analyze, (4) the sample might be too small for the effect to show statistically, (5) the feature might be a causal driver that doesn't appear in correlational analysis. Create the feature both ways (raw per domain expert, engineered per analysis) and let the model select. Domain expertise often captures relationships data can't easily reveal."
+     "text": "Don't dismiss it — investigate further: (1) the relationship might be nonlinear — try transformations and binning, (2) it might interact with other features — create interaction terms, (3) it might be predictive for a subpopulation only — segment and re-analyse, (4) the sample might be too small for the effect to show statistically, (5) the feature might be a causal driver that doesn't appear in correlational analysis. Create the feature both ways (raw per domain expert, engineered per analysis) and let the model select. Domain expertise often captures relationships data can't easily reveal."
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Brand extraction: regex/NER for known brands, (2) model/variant: \"Pro\", \"Max\", \"Ultra\", (3) capacity: extract numbers followed by GB/TB, (4) color: match against color dictionary, (5) generation/version: extract numeric version, (6) TF-IDF on cleaned text for similarity search, (7) word embeddings for semantic features. Build a product taxonomy parser with rules + ML: regex for structured parts (numbers, units), NER for entities. Template-based extraction works best when product titles follow consistent patterns (e-commerce data usually does)."
+     "text": "(1) Brand extraction: regex/NER for known brands, (2) model/variant: \"Pro\", \"Max\", \"Ultra\", (3) capacity: extract numbers followed by GB/TB, (4) colour: match against colour dictionary, (5) generation/version: extract numeric version, (6) TF-IDF on cleaned text for similarity search, (7) word embeddings for semantic features. Build a product taxonomy parser with rules + ML: regex for structured parts (numbers, units), NER for entities. Template-based extraction works best when product titles follow consistent patterns (e-commerce data usually does)."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "125",
-   "q": "You're engineering features for anomaly detection in network traffic. What features capture \"unusual\" behavior?",
+   "q": "You're engineering features for anomaly detection in network traffic. What features capture \"unusual\" behaviour?",
    "body": [
     {
      "t": "p",

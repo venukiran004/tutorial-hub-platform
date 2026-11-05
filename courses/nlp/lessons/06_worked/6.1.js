@@ -44,14 +44,14 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "Tokenise", id: "tokenise" },
 
-    {"kind": "trace", "title": "Three words become three integers, and the text is never seen again", "caption": "**The stack receives integers and never sees the text again — so whatever the tokenizer decides is the model's entire view of the input.** One word per token here; a real tokenizer uses subwords, as 4.8 measured, **and nothing downstream cares.** Which is worth holding onto, because it means every tokenisation finding in module 4 is a finding about model capability rather than about preprocessing hygiene.", "left": "stage", "codeW": 170, "vars": ["value"], "steps": [{"code": "text", "state": ["'the cat sat'"], "tone": "accent"}, {"code": "tokens", "state": ["['the', 'cat', 'sat']"], "changed": [0], "tone": "good"}, {"code": "ids", "state": ["[0, 1, 2]"], "changed": [0], "tone": "good"}, {"code": "what the model sees", "state": ["only this - the text is gone"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_1-02-1"},
+    {"kind": "trace", "title": "Three words become three integers, and the text is never seen again", "caption": "**The stack receives integers and never sees the text again — so whatever the tokeniser decides is the model's entire view of the input.** One word per token here; a real tokeniser uses subwords, as 4.8 measured, **and nothing downstream cares.** Which is worth holding onto, because it means every tokenisation finding in module 4 is a finding about model capability rather than about preprocessing hygiene.", "left": "stage", "codeW": 170, "vars": ["value"], "steps": [{"code": "text", "state": ["'the cat sat'"], "tone": "accent"}, {"code": "tokens", "state": ["['the', 'cat', 'sat']"], "changed": [0], "tone": "good"}, {"code": "ids", "state": ["[0, 1, 2]"], "changed": [0], "tone": "good"}, {"code": "what the model sees", "state": ["only this - the text is gone"], "changed": [0], "tone": "violet"}], "t": "diagram", "id": "dg-6_1-02-1"},
 
 
 
     { t: "out", text:
 "\"the cat sat\"  ->  [\"the\", \"cat\", \"sat\"]  ->  [0, 1, 2]" },
 
-    { t: "p", text: "One word, one token — a real tokenizer uses subwords, as lesson 4.8 measured in detail, but nothing downstream cares. The stack receives integers and never sees the text again. Whatever the tokenizer decides is the model's entire view of the input." },
+    { t: "p", text: "One word, one token — a real tokeniser uses subwords, as lesson 4.8 measured in detail, but nothing downstream cares. The stack receives integers and never sees the text again. Whatever the tokeniser decides is the model's entire view of the input." },
 
     { t: "h2", n: "03", text: "Embedding lookup", id: "embed" },
 
@@ -105,7 +105,7 @@ EC.receiveLesson({
       ] },
 
     { t: "exercise", title: "Check the setup by hand",
-      tasks: [
+      requirements: [
         "Compute PE(3) and PE(4) with a calculator and confirm the fast pair has completed more than a full cycle by position 7.",
         "Verify that PE(pos+1) is the same rotation of PE(pos) at two different starting positions, as lesson 4.2 established.",
         "Compute X for a different three-word sentence from the same vocabulary.",

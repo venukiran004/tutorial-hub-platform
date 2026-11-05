@@ -171,7 +171,7 @@ WHERE  o.status = 'paid' ORDER BY o.order_id;
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Each customer's most recent order status",
       rungs: [
         { level: "bad", label: "Two correlated scalars", code: `SELECT c.name,

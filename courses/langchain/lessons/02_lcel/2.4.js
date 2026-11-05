@@ -41,7 +41,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "The original is gone",
-      code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text: "long doc"})',
+      code: 'naive = prompt | model | StrOutputParser()\nnaive.invoke({"text": "long doc"})',
       out: "naive.invoke({'text': ...}) -> 'a summary'",
       caption: "A dict went in; a string came out. The document is no longer available." },
     { t: "p", text: "This is correct behaviour \u2014 a pipeline step transforms its input into its output. It becomes a problem the moment a later step needs something an earlier step consumed: citing the source alongside the summary, scoring the answer against the question, logging the input with the result." },
@@ -69,7 +69,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "Compute and keep",
-      code: 'keep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nkeep.invoke({"text: "long doc"})',
+      code: 'keep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nkeep.invoke({"text": "long doc"})',
       out: "{'summary': 'a summary', 'original': {'text': 'long doc'}}",
       caption: "One branch computes, the other forwards. Both are available downstream." },
     { t: "p", text: "`RunnablePassthrough` is an identity Runnable. On its own it is useless; inside a fan-out it is how you make the input survive a branch that transforms it. This is exactly the role it plays in the standard RAG chain, where the retriever branch produces context and the passthrough branch preserves the question." },
@@ -97,7 +97,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "Enriching a dict",
-      code: 'enrich = RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\nenrich.invoke({"text: "a b c"})',
+      code: 'enrich = RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\nenrich.invoke({"text": "a b c"})',
       out: "before : {'text': 'a b c'}\nafter  : {'text': 'a b c', 'word_count': 3}",
       caption: "The original key survived. That is the whole difference from a plain fan-out." },
     { t: "callout", kind: "good", title: "Nine times out of ten, reach for assign", body: [
@@ -105,7 +105,7 @@ EC.receiveLesson({
       { t: "p", text: "Use a bare `RunnableParallel` when you genuinely want a new shape, and `.assign` when you want the existing shape plus something." }
     ] },
     { t: "code", lang: "text", title: "Assigns chain, and later ones see earlier keys",
-      code: 'chained = (RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\n           | RunnablePassthrough.assign(is_long=lambda x: x["word_count"] > 2))\n\nchained.invoke({"text: "a b c d"})\n-> {\'text\': \'a b c d\', \'word_count\': 4, \'is_long\': True}',
+      code: 'chained = (RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\n           | RunnablePassthrough.assign(is_long=lambda x: x["word_count"] > 2))\n\nchained.invoke({"text": "a b c d"})\n-> {\'text\': \'a b c d\', \'word_count\': 4, \'is_long\': True}',
       caption: "The second assign read `word_count`, which the first one added." },
     { t: "p", text: "That compositionality is what makes `.assign` the backbone of real chains: each step adds one derived value and nothing has to be threaded through by hand. A chain of five assigns reads like a sequence of `let` bindings." },
     { t: "h2", n: "04", id: "itemgetter", text: "itemgetter", sub: "Pulling one key out, with no LangChain import" },
@@ -132,7 +132,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "A builtin, coerced",
-      code: 'from operator import itemgetter\n\npipeline = {"text: itemgetter("doc"),\n            "n":    itemgetter("doc") | RunnableLambda(len)}\n\n(pipeline | RunnableLambda(lambda d: d)).invoke({"doc": "hello", "other": 1})',
+      code: 'from operator import itemgetter\n\npipeline = {"text": itemgetter("doc"),\n            "n":    itemgetter("doc") | RunnableLambda(len)}\n\n(pipeline | RunnableLambda(lambda d: d)).invoke({"doc": "hello", "other": 1})',
       out: "{'text': 'hello', 'n': 5}",
       caption: "`itemgetter` is from the standard library; the pipe coerces it like any function." },
     { t: "p", text: "Note the second entry: `itemgetter(\"doc\") | RunnableLambda(len)` is a two-step chain used as a branch value. Branches of a fan-out can be arbitrary Runnables, which is why the RAG idiom can put a whole retrieval sub-chain behind one key." },
@@ -177,7 +177,7 @@ EC.receiveLesson({
         "Summarise the four plumbing shapes"],
       hint: "The difference between a bare RunnableParallel and .assign is what happens to keys you did not name.",
       solution: { lang: "python", title: "x0204.py \u2014 passthrough, assign, itemgetter",
-        code: 'from operator import itemgetter\nfrom langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda\n\nnaive = prompt | model | StrOutputParser()\nprint(naive.invoke({"text: "long doc"}))            # the input is gone\n\nkeep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nprint(keep.invoke({"text: "long doc"}))\n\nenrich = RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\nprint(enrich.invoke({"text: "a b c"}))\n\nchained = (RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\n           | RunnablePassthrough.assign(is_long=lambda x: x["word_count"] > 2))\nprint(chained.invoke({"text: "a b c d"}))\n\npipeline = {"text: itemgetter("doc"), "n": itemgetter("doc") | RunnableLambda(len)}',
+        code: 'from operator import itemgetter\nfrom langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda\n\nnaive = prompt | model | StrOutputParser()\nprint(naive.invoke({"text": "long doc"}))            # the input is gone\n\nkeep = RunnableParallel(summary=naive, original=RunnablePassthrough())\nprint(keep.invoke({"text": "long doc"}))\n\nenrich = RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\nprint(enrich.invoke({"text": "a b c"}))\n\nchained = (RunnablePassthrough.assign(word_count=lambda x: len(x["text"].split()))\n           | RunnablePassthrough.assign(is_long=lambda x: x["word_count"] > 2))\nprint(chained.invoke({"text": "a b c d"}))\n\npipeline = {"text": itemgetter("doc"), "n": itemgetter("doc") | RunnableLambda(len)}',
         out: "==============================================================================\nPART 1 -- the problem: a step eats its input\n==============================================================================\n  naive.invoke({\'text\': ...}) -> \'a summary\'\n\n  the original text is gone. anything after this step that needs it\n  cannot have it, which is the single most common LCEL frustration.\n\n==============================================================================\nPART 2 -- RunnablePassthrough forwards the input unchanged\n==============================================================================\n   {\'summary\': \'a summary\', \'original\': {\'text\': \'long doc\'}}\n\n  one branch computes, the other forwards. now both are available.\n\n==============================================================================\nPART 3 -- .assign() adds a key and keeps the rest\n==============================================================================\n  before : {\'text\': \'a b c\'}\n  after  : {\'text\': \'a b c\', \'word_count\': 3}\n\n  assign is passthrough plus a key, which is what you want nine times\n  out of ten -- it never drops what was already there.\n\n  assign twice, second sees the first\'s key:\n   {\'text\': \'a b c d\', \'word_count\': 4, \'is_long\': True}\n\n==============================================================================\nPART 4 -- itemgetter pulls one key out\n==============================================================================\n   first={\n  text: RunnableLambda(itemgetter(\'doc\')),\n  n: RunnableLambda(itemgetter(\'doc\'))\n     | RunnableLambda(len)\n} middle=[] last=RunnableLambda(lambda d: d)\n   {\'text\': \'hello\', \'n\': 5}\n\n  itemgetter is a plain function from operator, coerced into a\n  RunnableLambda by the pipe. no LangChain-specific import needed.\n\n==============================================================================\nPART 5 -- the four shapes, side by side\n==============================================================================\n  what you want                      what to write\n  run a step, keep only its output   a | b\n  run steps side by side             RunnableParallel(x=a, y=b) or {\'x\': a, \'y\': b}\n  keep the input alongside a result  RunnableParallel(out=a, orig=RunnablePassthrough())\n  add a key, keep everything else    RunnablePassthrough.assign(k=fn)\n  take one key from a dict           itemgetter(\'k\')",
         notes: [
           { t: "p", text: "**The naive chain returned a string and the document was gone.** That is correct behaviour for a pipeline and it is the thing everyone hits first, because the need for the original input usually appears one requirement after the chain is written." },

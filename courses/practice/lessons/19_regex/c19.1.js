@@ -151,7 +151,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2186",
-   "q": "Program 2186: Color Output Formatter",
+   "q": "Program 2186: Colour Output Formatter",
    "body": [
     {
      "t": "code",

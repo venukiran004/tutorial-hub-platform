@@ -142,7 +142,7 @@ EC.receiveLesson({
         "Running but refused is usually readiness or a label selector that matches nothing — Service to pod is by label, not by name."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The point of the exercise is the habit of asking *which loop stopped* rather than *what is broken*. Case one is a ReplicaSet or quota problem, case two is the scheduler finding no feasible node — resources, taints, affinity — and case three is almost always a selector mismatch or a readiness probe that never passes." },
           { t: "p", text: "The deleted-pod test is worth doing because watching it come back in a couple of seconds makes the control loop concrete in a way reading about it does not. Nothing granted the deletion an exception; the gap simply reappeared and a controller closed it." }
         ]

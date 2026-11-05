@@ -220,7 +220,7 @@ top 29 by score    16 churners caught of 48    recall 0.333   precision 0.552   
       { t: "p", text: "The break-even rule p > c/b only works if p means what it says: a model that outputs 0.15 for customers who churn 30 % of the time has its threshold in the wrong place by a factor of two. Check calibration (2.5) before using probabilities in arithmetic; and remember that a threshold chosen on one month's base rate moves the flagged count when the base rate moves (11.1). **A budget-based top-k rule is robust to both problems**, at the cost of not knowing what recall it will achieve until afterwards." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "Someone asks: 'should we use precision or recall for this model?'",
       rungs: [
         { level: "bad", label: "'Recall, because missing churners is bad'", code: `threshold = argmax recall  ->  flag everyone`,

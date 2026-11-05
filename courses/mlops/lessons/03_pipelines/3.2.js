@@ -174,7 +174,7 @@ EC.receiveLesson({
         "The last step is a genuine trade: rows moved to the holdout are rows not trained on, and module 1 found more data was worth +0.0004 here."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual outcome is uncomfortable: at least one recently promoted improvement sits inside the floor, which means it was a coin flip reported as progress. That is worth knowing without being a scandal — the fix is to publish the interval alongside the point estimate from now on." },
           { t: "p", text: "The holdout-size trade is often easier than expected. Here, doubling the training data bought +0.0004 AUC while doubling the holdout halved the detectable difference, so moving rows from training to evaluation was clearly the better use of them." }
         ]

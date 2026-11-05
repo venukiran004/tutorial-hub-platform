@@ -131,7 +131,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "927",
-   "q": "Program 927: __slots__ for Memory Optimization",
+   "q": "Program 927: __slots__ for Memory Optimisation",
    "body": [
     {
      "t": "code",
@@ -324,7 +324,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "941",
-   "q": "Program 941: JSON Custom Serializer",
+   "q": "Program 941: JSON Custom Serialiser",
    "body": [
     {
      "t": "code",

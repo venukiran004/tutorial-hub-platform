@@ -35,7 +35,7 @@ EC.receiveLesson({
     { t: "table",
       head: ["You want to know\u2026", "Use", "Measured in this module"],
       rows: [
-        ["Is this base model better on the same corpus?", "**Perplexity / BPB**", "8.2 \u2014 tokenisation alone spans 2.13\u00d7, so use BPB across tokenizers"],
+        ["Is this base model better on the same corpus?", "**Perplexity / BPB**", "8.2 \u2014 tokenisation alone spans 2.13\u00d7, so use BPB across tokenisers"],
         ["Translation or summary regression?", "BLEU / ROUGE / chrF / BERTScore", "8.3 \u2014 an inverted sentence scored ROUGE-1 1.0000; relative signal only"],
         ["Code correctness?", "**pass@k** with unit tests", "8.3 \u2014 n must substantially exceed k, or the estimator returns 1.0 by boundary"],
         ["Broad capability snapshot?", "MMLU, GSM8K, HumanEval, GPQA", "8.4 \u2014 read the format column; execution-scored ones resist most gaming"],
@@ -50,7 +50,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "The table is keyed on the question, which is the actual skill",
       body: [
         { t: "p", text: "Every row starts with what you want to know rather than with a metric, and that ordering is the discipline. 8.1\u2019s first question \u2014 is this a model question or an application question? \u2014 determines which half of the table you are in before any metric is chosen." },
-        { t: "p", text: "The failure mode is picking a metric because it is available and then deciding what it means. That is how a team ends up reporting BLEU on open-ended chat, or comparing perplexity across tokenizers, or quoting an Elo rank without its interval." },
+        { t: "p", text: "The failure mode is picking a metric because it is available and then deciding what it means. That is how a team ends up reporting BLEU on open-ended chat, or comparing perplexity across tokenisers, or quoting an Elo rank without its interval." },
         { t: "p", text: "So the practical habit is to write the question down first, in a sentence, and only then choose. If the sentence does not name a unit \u2014 a token, an answer, a trajectory, a session \u2014 it is not yet a question a metric can answer." }
       ] },
 
@@ -146,7 +146,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "good", title: "And the recurring structural lesson of the module",
       body: [
-        { t: "p", text: "**A metric whose denominator is a judgement needs that judgement reported.** Perplexity needs its corpus and tokenizer (8.2). Precision@k needs its k (8.8). \u03ba needs its class balance (8.6). pass@k needs n and temperature (8.3). Faithfulness needs its claim-extraction and derivation policy (8.12)." },
+        { t: "p", text: "**A metric whose denominator is a judgement needs that judgement reported.** Perplexity needs its corpus and tokeniser (8.2). Precision@k needs its k (8.8). \u03ba needs its class balance (8.6). pass@k needs n and temperature (8.3). Faithfulness needs its claim-extraction and derivation policy (8.12)." },
         { t: "p", text: "**And an aggregate hides a failure confined to a slice.** 6.5 measured an image row of 0.00 behind a 0.76 headline; 7.10 measured voting improving an aggregate while degrading a sub-50% slice; 8.7 required toxicity disaggregated; 8.10 gates per slice for the same reason." },
         { t: "p", text: "Those two sentences are most of what this module teaches. Everything else is which metric answers which question \u2014 and the cheat sheet above is that, with the measurements behind each row." }
       ] },
@@ -282,7 +282,7 @@ for s in STRATEGY:
     "**And the module's own framing needed correcting** \u2014 LMSYS does publish Elo intervals; secondary reporting drops them.",
     "**Build in cost order**: four cheap steps, then judge calibration, then everything cheap again at roughly 3,000\u00d7 less per label.",
     "**Judge calibration is the step that gets skipped** and the one that licenses every number after it \u2014 100 labels with 30 doubled is enough.",
-    "**A metric whose denominator is a judgement needs that judgement reported**: corpus and tokenizer, k, class balance, n and temperature, claim policy.",
+    "**A metric whose denominator is a judgement needs that judgement reported**: corpus and tokeniser, k, class balance, n and temperature, claim policy.",
     "**An aggregate hides a failure confined to a slice**, which is why metrics are reported per slice and gates fail per slice.",
     "**Never ship a single aggregate quality number**, because that is exactly what conceals a regression in one language or query type.",
     "**Offline gates, online decides** \u2014 and the loop from production traces back into the golden set is what makes the suite improve rather than ossify."
@@ -309,7 +309,7 @@ for s in STRATEGY:
           "Cohen's \u03ba, which needs its class balance"
         ],
         answer: 1,
-        why: "Schema validity is a parse that either succeeds or fails, so there is no judgement to report. The other three all have a judgement or a parameter in the denominator \u2014 faithfulness depends on how aggressively claims are split and whether derived claims count, precision@k is bounded by the relevant-item count over k, and \u03ba is not comparable across different marginal distributions. Perplexity and pass@k belong to the same family, needing corpus plus tokenizer and n plus temperature respectively." },
+        why: "Schema validity is a parse that either succeeds or fails, so there is no judgement to report. The other three all have a judgement or a parameter in the denominator \u2014 faithfulness depends on how aggressively claims are split and whether derived claims count, precision@k is bounded by the relevant-item count over k, and \u03ba is not comparable across different marginal distributions. Perplexity and pass@k belong to the same family, needing corpus plus tokeniser and n plus temperature respectively." },
 
       { stem: "Why is judge calibration described as the step that gets skipped?",
         options: [

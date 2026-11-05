@@ -223,7 +223,7 @@ d = deque(["a", "b", "c"])
 d.rotate(1)
 print(list(d))
 `,
-      out: `1
+      out: `0
 [3, 4, 5]
 ['c', 'a', 'b']`,
       caption: "The `maxlen` buffer is the underused one: a rolling window of the last N log lines, requests or measurements, with no manual trimming and no unbounded growth."

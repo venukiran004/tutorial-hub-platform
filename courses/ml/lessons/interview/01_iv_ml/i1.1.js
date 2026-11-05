@@ -134,10 +134,10 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "L1/L2 regularization — constrain \\(||w||\\)",
+      "L1/L2 regularisation — constrain \\(||w||\\)",
       "Dropout, weight decay in neural nets",
       "Cross-validation for model selection",
-      "Early stopping — implicit regularization",
+      "Early stopping — implicit regularisation",
       "Data augmentation — increase effective \\(n\\)",
       "Ensemble methods — reduce variance"
      ]
@@ -153,13 +153,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Parameter:** Learned during training by optimizing a loss function. e.g., \\(\\mathbf{w}\\) in linear regression, attention weights. Not set by the user.",
-      "**Hyperparameter:** Governs the learning process / model capacity. Set before training. e.g., \\(\\lambda\\) in regularization, \\(k\\) in KNN, tree depth, learning rate."
+      "**Parameter:** Learned during training by optimising a loss function. e.g., \\(\\mathbf{w}\\) in linear regression, attention weights. Not set by the user.",
+      "**Hyperparameter:** Governs the learning process / model capacity. Set before training. e.g., \\(\\lambda\\) in regularisation, \\(k\\) in KNN, tree depth, learning rate."
      ]
     },
     {
      "t": "p",
-     "text": "Hyperparameters cannot be optimized via the same training objective — they are tuned via cross-validation, Bayesian optimization, or random search."
+     "text": "Hyperparameters cannot be optimised via the same training objective — they are tuned via cross-validation, Bayesian optimisation, or random search."
     }
    ],
    "kind": ""
@@ -194,7 +194,7 @@ EC.receiveLesson({
      "items": [
       "Distance concentration: All pairwise distances converge as \\(d\\to\\infty\\)",
       "Data sparsity: \\(n\\) samples needed grows exponentially with \\(d\\)",
-      "KNN deteriorates: nearest neighbor is not much closer than farthest",
+      "KNN deteriorates: nearest neighbour is not much closer than farthest",
       "Volume concentration: For uniform data in \\([0,1]^d\\), 95% of data is within \\(\\epsilon\\) of the boundary"
      ]
     }
@@ -240,7 +240,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "What is regularization? Derive L1 and L2 from a Bayesian perspective.",
+   "q": "What is regularisation? Derive L1 and L2 from a Bayesian perspective.",
    "body": [
     {
      "t": "p",
@@ -440,7 +440,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Target leakage:** Features derived from the target variable",
-      "**Train-test contamination:** Normalization/imputation fitted on full dataset",
+      "**Train-test contamination:** Normalisation/imputation fitted on full dataset",
       "**Temporal leakage:** Using future signals to predict past events"
      ]
     },
@@ -656,7 +656,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Fixes: increase capacity (deeper/wider network, more trees), reduce regularization \\(\\lambda\\), add polynomial features, increase tree depth, train longer."
+     "text": "Fixes: increase capacity (deeper/wider network, more trees), reduce regularisation \\(\\lambda\\), add polynomial features, increase tree depth, train longer."
     }
    ],
    "kind": ""

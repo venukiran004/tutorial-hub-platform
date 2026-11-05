@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Learn representations from unlabeled data by creating supervised tasks from the data itself:"
+     "text": "**Answer:** Learn representations from unlabelled data by creating supervised tasks from the data itself:"
     },
     {
      "t": "code",
@@ -29,7 +29,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Labels are expensive. Self-supervised learning eliminates labeling need. Foundation of: BERT (NLP), SimCLR (vision), wav2vec (audio). Now dominant paradigm for foundation models."
+     "text": "**Explanation:** Labels are expensive. Self-supervised learning eliminates labelling need. Foundation of: BERT (NLP), SimCLR (vision), wav2vec (audio). Now dominant paradigm for foundation models."
     }
    ],
    "kind": ""
@@ -154,7 +154,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "57",
-   "q": "What is masked image modeling?",
+   "q": "What is masked image modelling?",
    "body": [
     {
      "t": "p",
@@ -203,7 +203,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Visual tokenizer converts continuous patches to discrete codes. Predicting tokens may be easier/better than predicting raw pixels. BEiT v2 improves with better visual tokenizer."
+     "text": "**Explanation:** Visual tokeniser converts continuous patches to discrete codes. Predicting tokens may be easier/better than predicting raw pixels. BEiT v2 improves with better visual tokeniser."
     }
    ],
    "kind": ""
@@ -291,7 +291,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Variance-Invariance-Covariance Regularization:"
+     "text": "**Answer:** Variance-Invariance-Covariance Regularisation:"
     },
     {
      "t": "code",
@@ -300,7 +300,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**No negatives needed.** Explicit regularization prevents collapse."
+     "text": "**No negatives needed.** Explicit regularisation prevents collapse."
     },
     {
      "t": "p",
@@ -325,7 +325,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Good pretext task forces learning semantically meaningful features. Modern approach: masked modeling or contrastive (found to be best pretext tasks)."
+     "text": "**Explanation:** Good pretext task forces learning semantically meaningful features. Modern approach: masked modelling or contrastive (found to be best pretext tasks)."
     }
    ],
    "kind": ""
@@ -353,7 +353,7 @@ EC.receiveLesson({
      "items": [
       "Negative pairs (contrastive learning)",
       "Momentum encoder (BYOL, DINO)",
-      "Variance regularization (VICReg)",
+      "Variance regularisation (VICReg)",
       "Asymmetric architecture (predictor head)",
       "Stop-gradient on one branch"
      ]
@@ -381,7 +381,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Purely self-supervised — data is its own label. Scales with data and compute (scaling laws). Learns: grammar, facts, reasoning, code. Foundation of GPT-1/2/3/4, LLaMA, etc. No labeled data needed."
+     "text": "**Explanation:** Purely self-supervised — data is its own label. Scales with data and compute (scaling laws). Learns: grammar, facts, reasoning, code. Foundation of GPT-1/2/3/4, LLaMA, etc. No labelled data needed."
     }
    ],
    "kind": ""
@@ -389,7 +389,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "65",
-   "q": "What is BERT-style masked language modeling?",
+   "q": "What is BERT-style masked language modelling?",
    "body": [
     {
      "t": "p",
@@ -423,11 +423,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Result:** Learn speech representations from unlabeled audio → fine-tune with small labeled data for ASR."
+     "text": "**Result:** Learn speech representations from unlabelled audio → fine-tune with small labelled data for ASR."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Same masked prediction idea applied to audio. Dramatically reduces labeled data need for speech recognition. 10 min labeled data → competitive ASR."
+     "text": "**Explanation:** Same masked prediction idea applied to audio. Dramatically reduces labelled data need for speech recognition. 10 min labelled data → competitive ASR."
     }
    ],
    "kind": ""
@@ -469,7 +469,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Augmentations define what the model should be invariant to. Random crop: spatial invariance. Color jitter: color invariance. If augmentation is too weak, model learns shortcut features."
+     "text": "**Explanation:** Augmentations define what the model should be invariant to. Random crop: spatial invariance. Colour jitter: colour invariance. If augmentation is too weak, model learns shortcut features."
     }
    ],
    "kind": ""
@@ -486,8 +486,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Self-supervised:** ALL data is unlabeled. Create labels from data itself.",
-      "**Semi-supervised:** Mix of labeled + unlabeled data. Use unlabeled to improve labeled performance."
+      "**Self-supervised:** ALL data is unlabelled. Create labels from data itself.",
+      "**Semi-supervised:** Mix of labelled + unlabelled data. Use unlabelled to improve labelled performance."
      ]
     },
     {
@@ -496,7 +496,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Self-supervised: BERT/GPT pretraining. Semi-supervised: pseudo-labeling, consistency regularization. In practice: pretrain self-supervised on massive unlabeled data → fine-tune with few labels = best results."
+     "text": "**Explanation:** Self-supervised: BERT/GPT pretraining. Semi-supervised: pseudo-labelling, consistency regularisation. In practice: pretrain self-supervised on massive unlabelled data → fine-tune with few labels = best results."
     }
    ],
    "kind": ""

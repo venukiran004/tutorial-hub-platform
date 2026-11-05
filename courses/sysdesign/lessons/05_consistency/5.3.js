@@ -4,10 +4,10 @@
 EC.receiveLesson({
   id: "5.3",
 
-  lede: "\"Consistent\" means nothing until you say *which* consistency. The models form a ladder, from **linearizable** — the system behaves as one copy and every read sees the latest completed write — down to **eventual**, which promises only that replicas converge if writes stop. Each rung down buys latency and availability. Leaderless stores let you pick your rung per request with two numbers: write to **W** replicas, read from **R**, and if **R + W > N** every read set overlaps every write set, so the newest value is always among the answers.",
+  lede: "\"Consistent\" means nothing until you say *which* consistency. The models form a ladder, from **linearisable** — the system behaves as one copy and every read sees the latest completed write — down to **eventual**, which promises only that replicas converge if writes stop. Each rung down buys latency and availability. Leaderless stores let you pick your rung per request with two numbers: write to **W** replicas, read from **R**, and if **R + W > N** every read set overlaps every write set, so the newest value is always among the answers.",
 
   objectives: [
-    "Order the main consistency models from linearizable to eventual and say what each guarantees",
+    "Order the main consistency models from linearisable to eventual and say what each guarantees",
     "Recognise a linearizability violation on a timeline",
     "Explain why R + W > N guarantees a read overlaps the latest write, and measure it",
     "Trade staleness, latency and availability by choosing W and R",
@@ -24,7 +24,7 @@ EC.receiveLesson({
     { t: "diagram", kind: "layers", title: "Consistency models, strongest first",
       caption: "Each rung implies everything below it. The session guarantees in the middle (4.1) are what users notice — seeing their own write, never going backwards — and they are cheap to provide with sticky routing or version tokens, even on top of an eventually consistent store.",
       items: [
-        { label: "Linearizable", sub: "a read sees every write that completed before it began · etcd, Spanner", tone: "accent" },
+        { label: "Linearisable", sub: "a read sees every write that completed before it began · etcd, Spanner", tone: "accent" },
         { label: "Sequential", sub: "one order all clients agree on, but not tied to real time · rarely offered alone", tone: "accent" },
         { label: "Causal", sub: "if A could have influenced B, everyone sees A before B · MongoDB causal sessions", tone: "violet" },
         { label: "Session guarantees", sub: "read-your-writes · monotonic reads · writes follow reads · sticky or token-based routing", tone: "teal" },
@@ -44,7 +44,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "insight", title: "Where linearizability is non-negotiable",
       body: [
-        { t: "p", text: "Anything used to make a single decision among many contenders: a lock or a lease (8.4), leader election (8.3), a uniqueness check such as \"is this username taken\", the last seat or the last unit of stock. If two clients can read different \"latest\" values, two can win. That is why coordination services — etcd, ZooKeeper, Consul — are linearizable even though it costs them latency and availability, and why everything else should use them sparingly." }
+        { t: "p", text: "Anything used to make a single decision among many contenders: a lock or a lease (8.4), leader election (8.3), a uniqueness check such as \"is this username taken\", the last seat or the last unit of stock. If two clients can read different \"latest\" values, two can win. That is why coordination services — etcd, ZooKeeper, Consul — are linearisable even though it costs them latency and availability, and why everything else should use them sparingly." }
       ] },
 
     { t: "h2", n: "02", id: "quorums", text: "Quorums: R + W > N",
@@ -200,20 +200,20 @@ W=5, R=1             0.0%         22.80%               15.4`,
       body: [
         { t: "p", text: "**Symptom.** A social app discovered pairs of accounts with identical usernames — about forty pairs, all created within a second of each other during a celebrity's launch-day sign-up rush. Login by username returned whichever account a replica happened to hold." },
         { t: "p", text: "**Mechanism.** Sign-up checked availability with a read at consistency ONE and then wrote the account at ONE, on a five-replica eventually consistent store. Two sign-ups for the same name, landing on different replicas, each read \"free\" and each wrote — a uniqueness decision made on the bottom rung of the ladder, where it cannot be made. With last-writer-wins on the username index, the earlier account's index entry was silently overwritten." },
-        { t: "p", text: "**Fix.** Username claims moved to a lightweight transaction (Cassandra's `INSERT … IF NOT EXISTS`, a Paxos round — linearizable for that one operation) and everything else stayed at ONE or QUORUM. The duplicates were resolved by hand. The rule: **any check-then-act on a shared name, seat or balance needs a linearizable operation**; quorum reads and writes are not enough, because they do not make check-and-act atomic." }
+        { t: "p", text: "**Fix.** Username claims moved to a lightweight transaction (Cassandra's `INSERT … IF NOT EXISTS`, a Paxos round — linearisable for that one operation) and everything else stayed at ONE or QUORUM. The duplicates were resolved by hand. The rule: **any check-then-act on a shared name, seat or balance needs a linearisable operation**; quorum reads and writes are not enough, because they do not make check-and-act atomic." }
       ] }
   ],
 
   takeaways: [
-    "Consistency is a ladder: **linearizable → sequential → causal → session guarantees → eventual**, cheaper and more available as you go down.",
-    "**Linearizable** means one copy in real time: after a write completes, no read may return the older value.",
+    "Consistency is a ladder: **linearisable → sequential → causal → session guarantees → eventual**, cheaper and more available as you go down.",
+    "**Linearisable** means one copy in real time: after a write completes, no read may return the older value.",
     "Locks, leader election, uniqueness and last-unit decisions **need linearizability**; most other reads do not.",
     "Leaderless stores write to **W** and read from **R** of **N** replicas; if **R + W > N** the sets overlap and the read includes the latest acknowledged write.",
     "Measured for N = 3: every R + W > N setting had **0% stale** reads on immediate read-back; W = R = 1 was stale about two-thirds of the time.",
     "Overlap costs availability: needing all replicas on one side failed about **one operation in seven** when each replica was down 5% of the time. **W = 2, R = 2** balances both for N = 3.",
     "Replicas converge by **read repair**, **anti-entropy** (Merkle trees) and **hinted handoff**; sloppy quorums break the overlap guarantee until hints land.",
     "**Last-writer-wins on wall clocks silently drops writes**; use single writers, conditional writes, version vectors or CRDTs.",
-    "Check-then-act on a shared name needs a **linearizable compare-and-set**, not a quorum read followed by a quorum write."
+    "Check-then-act on a shared name needs a **linearisable compare-and-set**, not a quorum read followed by a quorum write."
   ],
 
   quiz: {
@@ -237,7 +237,7 @@ W=5, R=1             0.0%         22.80%               15.4`,
       { stem: "Two sign-ups for the same username both read \"available\" at QUORUM and both write at QUORUM. Why can both succeed?",
         options: ["QUORUM is not durable", "Quorum reads and writes do not make the check and the write atomic; both can read before either writes", "R + W ≤ N", "The replicas are partitioned"],
         answer: 1,
-        why: "Each read correctly returned the latest completed write — there was none yet — and then each wrote; overlap guarantees freshness of individual reads, not atomicity of read-then-write across clients. A linearizable compare-and-set such as INSERT … IF NOT EXISTS is needed. QUORUM writes are durable, 2 + 2 > 3 does overlap, and no partition is required for this race." }
+        why: "Each read correctly returned the latest completed write — there was none yet — and then each wrote; overlap guarantees freshness of individual reads, not atomicity of read-then-write across clients. A linearisable compare-and-set such as INSERT … IF NOT EXISTS is needed. QUORUM writes are durable, 2 + 2 > 3 does overlap, and no partition is required for this race." }
     ]
   },
 

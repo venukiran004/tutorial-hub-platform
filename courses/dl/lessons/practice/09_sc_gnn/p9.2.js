@@ -56,13 +56,13 @@ EC.receiveLesson({
      "items": [
       "**Reweighting:** Assign higher loss weight to minority class nodes",
       "**Oversampling:** GraphSMOTE — generate synthetic minority nodes with edges",
-      "**Self-training:** Use confident predictions on unlabeled nodes to augment minority class",
+      "**Self-training:** Use confident predictions on unlabelled nodes to augment minority class",
       "**Architecture:** Separate aggregation for different classes"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Fraud detection is highly imbalanced (<1% fraud). Label propagation from few labeled nodes makes it worse — majority class dominates."
+     "text": "**Explanation:** Fraud detection is highly imbalanced (<1% fraud). Label propagation from few labelled nodes makes it worse — majority class dominates."
     }
    ],
    "kind": ""
@@ -91,7 +91,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Drug discovery: generate molecules with target properties. Optimization: find graph structure that maximizes objective."
+     "text": "**Explanation:** Drug discovery: generate molecules with target properties. Optimisation: find graph structure that maximises objective."
     }
    ],
    "kind": ""
@@ -114,7 +114,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard GNNs struggle with heterophily because averaging neighbor features (same class) is useful for homophily but harmful for heterophily. Solutions: separate ego and neighbor representations, learn when to aggregate vs separate."
+     "text": "**Explanation:** Standard GNNs struggle with heterophily because averaging neighbour features (same class) is useful for homophily but harmful for heterophily. Solutions: separate ego and neighbour representations, learn when to aggregate vs separate."
     }
    ],
    "kind": ""
@@ -135,7 +135,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Key insight: batch includes target nodes + their sampled neighborhoods. Only compute loss on target nodes, but need neighbor features for message passing."
+     "text": "**Explanation:** Key insight: batch includes target nodes + their sampled neighbourhoods. Only compute loss on target nodes, but need neighbour features for message passing."
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Allow deeper GNNs by preserving early-layer information. JKNet lets model adaptively select neighborhood scale per node."
+     "text": "**Explanation:** Allow deeper GNNs by preserving early-layer information. JKNet lets model adaptively select neighbourhood scale per node."
     }
    ],
    "kind": ""
@@ -299,7 +299,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "36",
-   "q": "What is the neighborhood explosion problem in deep GNNs?",
+   "q": "What is the neighbourhood explosion problem in deep GNNs?",
    "body": [
     {
      "t": "p",
@@ -307,7 +307,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Example:** d=50, K=3 → 125,000 neighbor nodes per target node."
+     "text": "**Example:** d=50, K=3 → 125,000 neighbour nodes per target node."
     },
     {
      "t": "p",
@@ -316,7 +316,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Neighbor sampling (GraphSAGE): fix sample size per layer",
+      "Neighbour sampling (GraphSAGE): fix sample size per layer",
       "Layer-wise sampling (FastGCN): sample nodes per layer",
       "Subgraph sampling (Cluster-GCN): train on subgraphs"
      ]
@@ -335,7 +335,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Classify nodes/graphs with very few labeled examples per class."
+     "text": "**Answer:** Classify nodes/graphs with very few labelled examples per class."
     },
     {
      "t": "p",
@@ -344,9 +344,9 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Meta-learning:** MAML adapted for graphs — learn initialization that adapts quickly",
+      "**Meta-learning:** MAML adapted for graphs — learn initialisation that adapts quickly",
       "**Metric learning:** Prototypical networks on graph embeddings",
-      "**Graph augmentation:** Generate more examples from few labeled nodes"
+      "**Graph augmentation:** Generate more examples from few labelled nodes"
      ]
     },
     {
@@ -374,7 +374,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**GNN implications:** Message-passing captures local neighborhood properties well. Global properties require deep networks or explicit global readouts."
+     "text": "**GNN implications:** Message-passing captures local neighbourhood properties well. Global properties require deep networks or explicit global readouts."
     },
     {
      "t": "p",
@@ -398,13 +398,13 @@ EC.receiveLesson({
       "**Zero imputation:** Simple, but may bias learning",
       "**Mean/median imputation:** Use statistics from observed features",
       "**Learnable embeddings:** Learn default feature vectors",
-      "**GNN-based imputation:** Use neighbor features to predict missing ones",
+      "**GNN-based imputation:** Use neighbour features to predict missing ones",
       "**Feature propagation:** Diffuse known features through graph structure"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Missing features are common — not all users have complete profiles. GNNs can naturally leverage neighbor information to compensate."
+     "text": "**Explanation:** Missing features are common — not all users have complete profiles. GNNs can naturally leverage neighbour information to compensate."
     }
    ],
    "kind": ""
@@ -431,7 +431,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Relation to GNNs:** Node2vec is a shallow embedding method. GNNs learn function of features. GNNs generalize better but node2vec is simpler for structure-only graphs."
+     "text": "**Relation to GNNs:** Node2vec is a shallow embedding method. GNNs learn function of features. GNNs generalise better but node2vec is simpler for structure-only graphs."
     }
    ],
    "kind": ""
@@ -457,7 +457,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Regularization for GNNs. Unlike image augmentation (flips, crops), graph augmentation must respect structural properties. Too aggressive augmentation can destroy important structure."
+     "text": "**Explanation:** Regularisation for GNNs. Unlike image augmentation (flips, crops), graph augmentation must respect structural properties. Too aggressive augmentation can destroy important structure."
     }
    ],
    "kind": ""
@@ -477,7 +477,7 @@ EC.receiveLesson({
       "**AST (Abstract Syntax Tree):** Parse code into tree/graph, GNN learns code representations",
       "**Control flow graph:** Capture execution paths",
       "**Data flow graph:** Track variable dependencies",
-      "**Applications:** Bug detection, code clone detection, vulnerability finding, code summarization"
+      "**Applications:** Bug detection, code clone detection, vulnerability finding, code summarisation"
      ]
     },
     {
@@ -531,7 +531,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Separate aggregation:** Different weights for incoming vs outgoing neighbors",
+      "**Separate aggregation:** Different weights for incoming vs outgoing neighbours",
       "**Magnetic Laplacian:** Complex-valued spectral approach for directed graphs",
       "**Convert to undirected:** Add reverse edges (loses direction information)",
       "**Edge-type encoding:** Treat direction as edge type in R-GCN framework"
@@ -555,11 +555,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**PageRank:** `PR(v) = (1-d)/n + d * Σ PR(u)/deg(u)` for neighbors u"
+     "text": "**PageRank:** `PR(v) = (1-d)/n + d * Σ PR(u)/deg(u)` for neighbours u"
     },
     {
      "t": "p",
-     "text": "**APPNP (GNN):** Uses personalized PageRank propagation: combine initial features with propagated features with teleport probability α."
+     "text": "**APPNP (GNN):** Uses personalised PageRank propagation: combine initial features with propagated features with teleport probability α."
     },
     {
      "t": "p",
@@ -614,10 +614,10 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Check if graph connectivity is correct (edge_index format)",
-      "Verify feature normalization",
+      "Verify feature normalisation",
       "Start with simple model (1-2 layers, small hidden dim)",
       "Check for trivial solutions (majority class baseline)",
-      "Visualize learned embeddings (t-SNE)",
+      "Visualise learned embeddings (t-SNE)",
       "Test on synthetic graph first (Stochastic Block Model)",
       "Ensure proper train/val/test split (no information leakage through edges)"
      ]
@@ -652,7 +652,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "GNNs use sparse connectivity (local neighbors)",
+      "GNNs use sparse connectivity (local neighbours)",
       "Transformers use dense attention (all pairs)",
       "GNNs are permutation equivariant by design",
       "Transformers need positional encoding"
@@ -680,18 +680,18 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**GNN approach:** Separate aggregation for positive and negative neighbors:"
+     "text": "**GNN approach:** Separate aggregation for positive and negative neighbours:"
     },
     {
      "t": "ul",
      "items": [
-      "Positive neighbors: similar embeddings",
-      "Negative neighbors: dissimilar embeddings"
+      "Positive neighbours: similar embeddings",
+      "Negative neighbours: dissimilar embeddings"
      ]
     },
     {
      "t": "p",
-     "text": "**Applications:** Social network analysis, political polarization, sentiment analysis."
+     "text": "**Applications:** Social network analysis, political polarisation, sentiment analysis."
     }
    ],
    "kind": ""
@@ -714,7 +714,7 @@ EC.receiveLesson({
       "**Dynamic graphs:** Efficiently handle temporal evolution",
       "**Explainability:** Why did GNN make this prediction?",
       "**Pre-training:** Foundation models for graphs (like BERT for text)",
-      "**Out-of-distribution:** Generalize to unseen graph structures"
+      "**Out-of-distribution:** Generalise to unseen graph structures"
      ]
     },
     {

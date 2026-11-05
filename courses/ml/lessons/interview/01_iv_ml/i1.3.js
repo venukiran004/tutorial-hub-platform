@@ -56,8 +56,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Standardization (Z-score):** Mean=0, Std=1.",
-      "**Min-Max Normalization:** Scale to [0, 1]."
+      "**Standardisation (Z-score):** Mean=0, Std=1.",
+      "**Min-Max Normalisation:** Scale to [0, 1]."
      ]
     },
     {
@@ -130,7 +130,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Detect: IQR method (< Q1 - 1.5*IQR or > Q3 + 1.5*IQR), Z-score, visualization. Handle: Remove, cap/floor (winsorization), transform (log), use robust models (tree-based, L1 regression)."
+     "text": "Detect: IQR method (< Q1 - 1.5*IQR or > Q3 + 1.5*IQR), Z-score, visualisation. Handle: Remove, cap/floor (winsorization), transform (log), use robust models (tree-based, L1 regression)."
     }
    ],
    "kind": ""
@@ -166,7 +166,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Reducing the number of features while preserving information. Benefits: reduces overfitting, speeds up training, removes noise, helps visualization."
+     "text": "Reducing the number of features while preserving information. Benefits: reduces overfitting, speeds up training, removes noise, helps visualisation."
     }
    ],
    "kind": ""
@@ -198,7 +198,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "64",
-   "q": "What is binning / discretization?",
+   "q": "What is binning / discretisation?",
    "body": [
     {
      "t": "p",

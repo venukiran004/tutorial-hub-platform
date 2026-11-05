@@ -87,7 +87,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "166",
-   "q": "What is `np.char` for vectorized string operations?",
+   "q": "What is `np.char` for vectorised string operations?",
    "body": [
     {
      "t": "code",

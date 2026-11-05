@@ -22,7 +22,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The pipeline is a list", id: "pipeline" },
 
-    {"kind": "layers", "title": "Six components, one shared encoder, and the order is a dependency graph", "caption": "**`tok2vec` computes the token vectors every downstream component reads — shared, so the encoder runs once rather than per component**, which is why §04's timings behave the way they do. And the order is not arbitrary: **the lemmatizer needs the POS tag, which is why it runs after the tagger**, and `attribute_ruler` sits between them applying rule-based fixes over the statistical output. **Nothing here is hidden — you can print the list, reorder it, remove from it and add to it.**", "items": [{"label": "tok2vec", "sub": "the token vectors everything else reads", "tone": "violet", "side": "shared"}, {"label": "tagger", "sub": "token.tag_, the fine Penn Treebank tag", "tone": "good", "side": "statistical"}, {"label": "parser", "sub": "token.dep_, token.head - and doc.sents", "tone": "good", "side": "expensive"}, {"label": "attribute_ruler", "sub": "rule fixes, and tag_ -> pos_", "tone": "accent", "side": "rules"}, {"label": "lemmatizer", "sub": "needs the POS tag - hence the order", "tone": "accent", "side": "dependent"}, {"label": "ner", "sub": "doc.ents, as spans", "tone": "good", "side": "expensive"}], "t": "diagram", "id": "dg-3_1-01-0"},
+    {"kind": "layers", "title": "Six components, one shared encoder, and the order is a dependency graph", "caption": "**`tok2vec` computes the token vectors every downstream component reads — shared, so the encoder runs once rather than per component**, which is why §04's timings behave the way they do. And the order is not arbitrary: **the lemmatiser needs the POS tag, which is why it runs after the tagger**, and `attribute_ruler` sits between them applying rule-based fixes over the statistical output. **Nothing here is hidden — you can print the list, reorder it, remove from it and add to it.**", "items": [{"label": "tok2vec", "sub": "the token vectors everything else reads", "tone": "violet", "side": "shared"}, {"label": "tagger", "sub": "token.tag_, the fine Penn Treebank tag", "tone": "good", "side": "statistical"}, {"label": "parser", "sub": "token.dep_, token.head - and doc.sents", "tone": "good", "side": "expensive"}, {"label": "attribute_ruler", "sub": "rule fixes, and tag_ -> pos_", "tone": "accent", "side": "rules"}, {"label": "lemmatiser", "sub": "needs the POS tag - hence the order", "tone": "accent", "side": "dependent"}, {"label": "ner", "sub": "doc.ents, as spans", "tone": "good", "side": "expensive"}], "t": "diagram", "id": "dg-3_1-01-0"},
 
 
 
@@ -44,7 +44,7 @@ EC.receiveLesson({
       ["tagger", "Part-of-speech tags. Fills `token.tag_`, the fine-grained Penn Treebank tag."],
       ["parser", "Dependency parse. Fills `token.dep_` and `token.head`, and it is what makes `doc.sents` available."],
       ["attribute_ruler", "Rule-based fixes over the statistical output, and the mapping from fine tags to coarse `token.pos_`."],
-      ["lemmatizer", "Dictionary lemmas, which need the POS tag — which is why it runs after the tagger."],
+      ["lemmatiser", "Dictionary lemmas, which need the POS tag — which is why it runs after the tagger."],
       ["ner", "Named entity spans. Fills `doc.ents`."]
     ] },
 
@@ -98,7 +98,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "04", text: "Making it fast", id: "fast" },
 
-    {"kind": "trace", "title": "The parser and NER are the cost; everything after that is tok2vec", "caption": "**Dropping the parser and NER roughly halved the time — 0.988s to 0.550s — and dropping everything else after that bought almost nothing (0.534s), because `tok2vec` is still running and it is the shared cost underneath.** So the lever is those two components, not the component count. The second measurement compounds with it: **`nlp.pipe` on 500 documents is 2.30× faster than calling `nlp` in a loop.** And if you genuinely only want tokens, **`nlp.make_doc` skips the pipeline altogether.**", "left": "configuration", "codeW": 210, "vars": ["time", "what is still running"], "steps": [{"code": "disable=[]", "state": ["0.988s", "everything"], "tone": "crit"}, {"code": "disable parser", "state": ["0.844s", "tok2vec, tagger, ner, ..."], "changed": [0, 1], "tone": "warn"}, {"code": "disable parser + ner", "state": ["0.550s", "tok2vec, tagger, lemmatizer"], "changed": [0, 1], "tone": "good", "note": "roughly halved"}, {"code": "disable all five", "state": ["0.534s", "tok2vec - the floor"], "changed": [0, 1], "tone": "good", "note": "bought almost nothing"}, {"code": "500 docs: loop vs nlp.pipe", "state": ["3.218s vs 1.397s", "2.30x"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-04-3"},
+    {"kind": "trace", "title": "The parser and NER are the cost; everything after that is tok2vec", "caption": "**Dropping the parser and NER roughly halved the time — 0.988s to 0.550s — and dropping everything else after that bought almost nothing (0.534s), because `tok2vec` is still running and it is the shared cost underneath.** So the lever is those two components, not the component count. The second measurement compounds with it: **`nlp.pipe` on 500 documents is 2.30× faster than calling `nlp` in a loop.** And if you genuinely only want tokens, **`nlp.make_doc` skips the pipeline altogether.**", "left": "configuration", "codeW": 210, "vars": ["time", "what is still running"], "steps": [{"code": "disable=[]", "state": ["0.988s", "everything"], "tone": "crit"}, {"code": "disable parser", "state": ["0.844s", "tok2vec, tagger, ner, ..."], "changed": [0, 1], "tone": "warn"}, {"code": "disable parser + ner", "state": ["0.550s", "tok2vec, tagger, lemmatiser"], "changed": [0, 1], "tone": "good", "note": "roughly halved"}, {"code": "disable all five", "state": ["0.534s", "tok2vec - the floor"], "changed": [0, 1], "tone": "good", "note": "bought almost nothing"}, {"code": "500 docs: loop vs nlp.pipe", "state": ["3.218s vs 1.397s", "2.30x"], "changed": [0, 1], "tone": "violet"}], "t": "diagram", "id": "dg-3_1-04-3"},
 
 
 
@@ -219,8 +219,8 @@ EC.receiveLesson({
       body: [{ t: "p", text: "When the task is classification or generation rather than linguistic annotation, spaCy is the wrong shape — you want HuggingFace and a fine-tuned model, which lesson 3.3 covers. When you need state-of-the-art NER on a specialised domain, spaCy's pretrained pipelines will underperform a domain-tuned transformer, though you can wrap one in a spaCy component and keep the surrounding machinery. And for one-off research or teaching, NLTK's breadth of corpora and algorithms is genuinely more useful, which is the subject of the next lesson." }] },
 
     { t: "exercise", title: "Take the pipeline apart",
-      tasks: [
-        "Print `nlp.pipe_names`, then load with each component disabled in turn and find which attributes go empty. Confirm the lemmatizer degrades when the tagger is off.",
+      requirements: [
+        "Print `nlp.pipe_names`, then load with each component disabled in turn and find which attributes go empty. Confirm the lemmatiser degrades when the tagger is off.",
         "Time your own workload with and without `nlp.pipe`, and sweep `batch_size` from 1 to 1000. Plot it and find where the curve flattens.",
         "Write a component that tags each sentence with its token count, registered as a `Span` extension rather than a `Doc` one.",
         "Add a negation window to the sentiment component so `not good` scores negative, then find an input that still fools it.",
@@ -240,7 +240,7 @@ EC.receiveLesson({
   ],
 
   quiz: { title: "Check yourself", questions: [
-    { stem: "Why did disabling the tagger and lemmatizer barely change runtime after the parser and NER were already off?",
+    { stem: "Why did disabling the tagger and lemmatiser barely change runtime after the parser and NER were already off?",
       options: ["They were never running", "Because `tok2vec` is the shared cost underneath and it still runs", "Because the document was too short", "Because spaCy caches results"],
       answer: 1,
       why: "Timing went 0.988s to 0.550s when the parser and NER came out, then only to 0.534s when everything else did. The tok2vec component computes the token vectors all downstream components read, and it dominates what remains. To skip it entirely you need `nlp.make_doc`, which runs only the tokeniser." },

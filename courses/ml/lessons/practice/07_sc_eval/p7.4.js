@@ -41,7 +41,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Overfitting to the validation set — the search finds hyperparameters that coincidentally perform well on validation folds but don't generalize."
+     "text": "**Answer:** Overfitting to the validation set — the search finds hyperparameters that coincidentally perform well on validation folds but don't generalise."
     },
     {
      "t": "p",
@@ -89,7 +89,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Model parameters:** Learned from data during training (weights, coefficients, splits)",
-      "**Hyperparameters:** Set before training, control the learning process (learning rate, regularization, tree depth)"
+      "**Hyperparameters:** Set before training, control the learning process (learning rate, regularisation, tree depth)"
      ]
     },
     {
@@ -187,11 +187,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "84",
-   "q": "What is the Pareto front in multi-objective optimization?",
+   "q": "What is the Pareto front in multi-objective optimisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Set of solutions where no solution is better in ALL objectives than another. Trade-offs between objectives are visualized."
+     "text": "**Answer:** Set of solutions where no solution is better in ALL objectives than another. Trade-offs between objectives are visualised."
     },
     {
      "t": "p",
@@ -260,7 +260,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** `'balanced'` adjusts inversely proportional to class frequency. Custom weights let you fine-tune. Optimize using recall, F1, or PR-AUC — not accuracy."
+     "text": "**Explanation:** `'balanced'` adjusts inversely proportional to class frequency. Custom weights let you fine-tune. Optimise using recall, F1, or PR-AUC — not accuracy."
     }
    ],
    "kind": ""
@@ -293,11 +293,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** The scoring metric determines what the search optimizes for. Different metrics → different optimal hyperparameters."
+     "text": "**Answer:** The scoring metric determines what the search optimises for. Different metrics → different optimal hyperparameters."
     },
     {
      "t": "p",
-     "text": "**Example:** Optimizing for 'accuracy' vs 'f1' on imbalanced data: accuracy-optimal model may predict all-majority; F1-optimal model balances precision/recall."
+     "text": "**Example:** Optimising for 'accuracy' vs 'f1' on imbalanced data: accuracy-optimal model may predict all-majority; F1-optimal model balances precision/recall."
     },
     {
      "t": "p",
@@ -325,11 +325,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "91",
-   "q": "How do you handle categorical hyperparameters in optimization?",
+   "q": "How do you handle categorical hyperparameters in optimisation?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Bayesian optimization handles them by creating separate surrogate models or using specialized kernels. RandomSearch samples uniformly."
+     "text": "**Answer:** Bayesian optimisation handles them by creating separate surrogate models or using specialised kernels. RandomSearch samples uniformly."
     },
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Grid search handles naturally. For Bayesian optimization, categorical params create branching search spaces."
+     "text": "**Explanation:** Grid search handles naturally. For Bayesian optimisation, categorical params create branching search spaces."
     }
    ],
    "kind": ""
@@ -370,7 +370,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** AutoML searches over algorithms AND hyperparameters jointly. More comprehensive than tuning one model. Useful as baseline and for non-experts. May miss domain-specific optimizations."
+     "text": "**Explanation:** AutoML searches over algorithms AND hyperparameters jointly. More comprehensive than tuning one model. Useful as baseline and for non-experts. May miss domain-specific optimisations."
     }
    ],
    "kind": ""
@@ -391,7 +391,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Custom scorers align optimization with business objectives. Use `needs_proba=True` for probability-based metrics."
+     "text": "**Explanation:** Custom scorers align optimisation with business objectives. Use `needs_proba=True` for probability-based metrics."
     }
    ],
    "kind": ""
@@ -434,7 +434,7 @@ EC.receiveLesson({
       "Start with coarse random search to identify promising regions",
       "Fine-tune with grid or Bayesian search in promising region",
       "Use cheaper proxy (smaller data, fewer epochs) for initial screening",
-      "Parallelize with `n_jobs=-1`",
+      "Parallelise with `n_jobs=-1`",
       "Use early stopping / pruning (Hyperband, Optuna pruning)"
      ]
     },
@@ -505,7 +505,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Reduce via: fewer folds (3 instead of 10), fewer combinations (random search), faster convergence (Bayesian), parallelization."
+     "text": "**Explanation:** Reduce via: fewer folds (3 instead of 10), fewer combinations (random search), faster convergence (Bayesian), parallelisation."
     }
    ],
    "kind": ""

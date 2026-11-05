@@ -128,7 +128,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Extension of SMOTE for categorical/nominal features. Uses Value Difference Metric (VDM) instead of Euclidean distance, and uses most common value among neighbors instead of interpolation."
+     "text": "**Answer:** Extension of SMOTE for categorical/nominal features. Uses Value Difference Metric (VDM) instead of Euclidean distance, and uses most common value among neighbours instead of interpolation."
     },
     {
      "t": "p",
@@ -180,11 +180,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "34",
-   "q": "What is the condensed nearest neighbor (CNN) rule for undersampling?",
+   "q": "What is the condensed nearest neighbour (CNN) rule for undersampling?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Iteratively removes majority samples that don't affect nearest-neighbor classification. Keeps only samples needed for correct classification."
+     "text": "**Answer:** Iteratively removes majority samples that don't affect nearest-neighbour classification. Keeps only samples needed for correct classification."
     },
     {
      "t": "p",
@@ -284,7 +284,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Trees split to minimize impurity (Gini/entropy). With imbalance, most splits ignore minority because majority dominance minimizes overall impurity."
+     "text": "**Answer:** Trees split to minimise impurity (Gini/entropy). With imbalance, most splits ignore minority because majority dominance minimises overall impurity."
     },
     {
      "t": "p",
@@ -380,7 +380,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** SMOTE needs at least k+1 minority samples (k = number of nearest neighbors, default 5), so minimum 6 minority samples."
+     "text": "**Answer:** SMOTE needs at least k+1 minority samples (k = number of nearest neighbours, default 5), so minimum 6 minority samples."
     },
     {
      "t": "p",
@@ -410,7 +410,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Traditional regression minimizes MSE, dominated by common target range. Rare high values get underfit."
+     "text": "**Explanation:** Traditional regression minimises MSE, dominated by common target range. Rare high values get underfit."
     }
    ],
    "kind": ""
@@ -459,15 +459,15 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Optimizing recall → threshold lowering or aggressive oversampling",
-      "Optimizing precision → conservative threshold, targeted oversampling",
-      "Optimizing F1 → balanced approach",
-      "Optimizing PR-AUC → overall discrimination improvement"
+      "Optimising recall → threshold lowering or aggressive oversampling",
+      "Optimising precision → conservative threshold, targeted oversampling",
+      "Optimising F1 → balanced approach",
+      "Optimising PR-AUC → overall discrimination improvement"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Strategy and metric must be aligned. Optimizing accuracy with SMOTE: may show improvement but actual minority recall may not improve."
+     "text": "**Explanation:** Strategy and metric must be aligned. Optimising accuracy with SMOTE: may show improvement but actual minority recall may not improve."
     }
    ],
    "kind": ""

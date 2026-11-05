@@ -174,7 +174,7 @@ EC.receiveLesson({
         "Non-zero CFS throttling with healthy CPU usage graphs is the signature of a CPU limit set too close to the request."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual findings are a memory limit set to a round number nobody measured and a QoS class nobody knew they had. The round number is often fine and occasionally four megabytes short, which is the 256 MB case here: a crash loop with exit code 137 and no application log." },
           { t: "p", text: "The reaction-time calculation is the one that changes behaviour, because it reframes autoscaling as a tool for sustained load and makes the baseline replica count the thing that actually absorbs bursts." }
         ]

@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NumPy provides N-dimensional array objects (`ndarray`) with C-optimized, vectorized operations. It is the foundation of the Python scientific ecosystem (Pandas, SciPy, TensorFlow, PyTorch internals). Enables 100–1000× speedup over pure Python loops for numerical computation."
+     "text": "NumPy provides N-dimensional array objects (`ndarray`) with C-optimised, vectorised operations. It is the foundation of the Python scientific ecosystem (Pandas, SciPy, TensorFlow, PyTorch internals). Enables 100–1000× speedup over pure Python loops for numerical computation."
     }
    ],
    "kind": ""
@@ -56,7 +56,7 @@ EC.receiveLesson({
       ],
       [
        "Operations",
-       "Vectorized (C speed)",
+       "Vectorised (C speed)",
        "Python loops"
       ],
       [

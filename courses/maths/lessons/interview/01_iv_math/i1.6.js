@@ -60,7 +60,7 @@ EC.receiveLesson({
       ],
       [
        "Fix: More features, complex model",
-       "Fix: More data, regularization, dropout"
+       "Fix: More data, regularisation, dropout"
       ]
      ]
     }
@@ -70,7 +70,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "87",
-   "q": "Explain L1 vs L2 regularization mathematically.",
+   "q": "Explain L1 vs L2 regularisation mathematically.",
    "body": [
     {
      "t": "p",
@@ -137,8 +137,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**VAE loss:** \\(\\mathcal{L} = \\text{reconstruction} + D_{KL}(q(z|x) \\| p(z))\\) — regularizes latent space toward \\(\\mathcal{N}(0,1)\\)",
-      "**Knowledge distillation:** Student network minimizes KL from teacher's soft labels",
+      "**VAE loss:** \\(\\mathcal{L} = \\text{reconstruction} + D_{KL}(q(z|x) \\| p(z))\\) — regularises latent space toward \\(\\mathcal{N}(0,1)\\)",
+      "**Knowledge distillation:** Student network minimises KL from teacher's soft labels",
       "**PPO/TRPO:** Constrains policy updates: \\(D_{KL}(\\pi_{\\text{old}} \\| \\pi_{\\text{new}}) < \\delta\\)",
       "**Mutual information:** \\(I(X;Y) = D_{KL}(P(X,Y) \\| P(X)P(Y))\\)"
      ]
@@ -201,7 +201,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Since \\(H(P)\\) is constant during training, minimizing cross-entropy = minimizing KL divergence."
+     "text": "Since \\(H(P)\\) is constant during training, minimising cross-entropy = minimising KL divergence."
     }
    ],
    "kind": ""
@@ -227,7 +227,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Cramér-Rao bound:** \\(\\text{Var}(\\hat{\\theta}) \\geq \\mathcal{I}(\\theta)^{-1}\\) — lower bound on estimator variance",
-      "**Natural gradient:** \\(\\theta_{t+1} = \\theta_t - \\eta \\mathcal{I}^{-1} \\nabla \\mathcal{L}\\) — invariant to parameterization",
+      "**Natural gradient:** \\(\\theta_{t+1} = \\theta_t - \\eta \\mathcal{I}^{-1} \\nabla \\mathcal{L}\\) — invariant to parameterisation",
       "**EWC (Elastic Weight Consolidation):** Uses Fisher to identify important weights for continual learning"
      ]
     }
@@ -252,7 +252,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**M-step:** Maximize \\(Q\\) with respect to \\(\\theta\\) \\(\\theta^{(t+1)} = \\arg\\max_\\theta Q(\\theta | \\theta^{(t)})\\)"
+      "**M-step:** Maximise \\(Q\\) with respect to \\(\\theta\\) \\(\\theta^{(t+1)} = \\arg\\max_\\theta Q(\\theta | \\theta^{(t)})\\)"
      ]
     },
     {
@@ -275,7 +275,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "Volume of space grows exponentially → data becomes sparse",
-      "Distance between nearest and farthest neighbors converges → distance metrics lose meaning",
+      "Distance between nearest and farthest neighbours converges → distance metrics lose meaning",
       "Number of samples needed grows exponentially to maintain density"
      ]
     },
@@ -373,7 +373,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Low-rank matrix approximation (minimize \\(\\|A - \\hat{A}\\|_F\\))",
+      "Low-rank matrix approximation (minimise \\(\\|A - \\hat{A}\\|_F\\))",
       "Weight decay in neural networks",
       "Not to be confused with the nuclear norm (sum of singular values), the convex relaxation of rank"
      ]
@@ -384,7 +384,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "98",
-   "q": "Explain the reparameterization trick in VAEs.",
+   "q": "Explain the reparameterisation trick in VAEs.",
    "body": [
     {
      "t": "p",
@@ -419,8 +419,8 @@ EC.receiveLesson({
      "items": [
       "**WGAN:** Discriminator must be 1-Lipschitz (enforced by weight clipping or gradient penalty)",
       "**Robustness:** Small Lipschitz constant → small input perturbations cause small output changes",
-      "**Generalization:** Lipschitz constraint bounds generalization gap",
-      "**Spectral normalization:** Divides weights by spectral norm to enforce Lipschitz"
+      "**Generalisation:** Lipschitz constraint bounds generalisation gap",
+      "**Spectral normalisation:** Divides weights by spectral norm to enforce Lipschitz"
      ]
     }
    ],
@@ -429,7 +429,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "100",
-   "q": "What is the difference between convex optimization and non-convex optimization?",
+   "q": "What is the difference between convex optimisation and non-convex optimisation?",
    "body": [
     {
      "t": "p",

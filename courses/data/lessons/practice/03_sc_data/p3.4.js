@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Analyze at both granularities: (1) Transaction level: distributions of amounts, frequencies, types over time, (2) User level: aggregate transaction features per user (count, sum, mean, recency, max), (3) Cross-level: how do user demographics relate to transaction patterns? (4) Temporal: user cohort analysis — do different sign-up periods show different behavior? Use groupby operations to move between levels. EDA at the wrong granularity misrepresents patterns — per-transaction analysis ignores that heavy users dominate."
+     "text": "Analyse at both granularities: (1) Transaction level: distributions of amounts, frequencies, types over time, (2) User level: aggregate transaction features per user (count, sum, mean, recency, max), (3) Cross-level: how do user demographics relate to transaction patterns? (4) Temporal: user cohort analysis — do different sign-up periods show different behaviour? Use groupby operations to move between levels. EDA at the wrong granularity misrepresents patterns — per-transaction analysis ignores that heavy users dominate."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Document length distribution (words per document per class), (2) vocabulary analysis — unique words, word frequency distribution, OOV rate, (3) most frequent n-grams per class (TF-IDF weighted), (4) word clouds per class for quick visual comparison, (5) label distribution and any class imbalance, (6) language detection — are there mixed languages? (7) character-level analysis — emojis, special characters, encodings, (8) topic modeling (LDA) to discover latent topics, (9) embedding visualization (BERT embeddings + UMAP) to see if classes form clusters in semantic space."
+     "text": "(1) Document length distribution (words per document per class), (2) vocabulary analysis — unique words, word frequency distribution, OOV rate, (3) most frequent n-grams per class (TF-IDF weighted), (4) word clouds per class for quick visual comparison, (5) label distribution and any class imbalance, (6) language detection — are there mixed languages? (7) character-level analysis — emojis, special characters, encodings, (8) topic modelling (LDA) to discover latent topics, (9) embedding visualisation (BERT embeddings + UMAP) to see if classes form clusters in semantic space."
     }
    ],
    "kind": ""
@@ -74,7 +74,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Class distribution — count per class, identify imbalance, (2) image size distribution — are all images the same resolution? (3) visual inspection — random samples per class to verify labels, (4) intensity/color histograms per class — are there systematic differences? (5) mean image per class — often reveals dominant patterns, (6) problematic images — corrupted, duplicated, mislabeled, too dark/bright, (7) similarity analysis — find near-duplicate images using perceptual hashing, (8) augmentation preview — check if augmentations produce realistic images. Dataset quality is crucial for computer vision."
+     "text": "(1) Class distribution — count per class, identify imbalance, (2) image size distribution — are all images the same resolution? (3) visual inspection — random samples per class to verify labels, (4) intensity/color histograms per class — are there systematic differences? (5) mean image per class — often reveals dominant patterns, (6) problematic images — corrupted, duplicated, mislabelled, too dark/bright, (7) similarity analysis — find near-duplicate images using perceptual hashing, (8) augmentation preview — check if augmentations produce realistic images. Dataset quality is crucial for computer vision."
     }
    ],
    "kind": ""
@@ -106,11 +106,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "83",
-   "q": "You're analyzing customer lifetime value (CLV) data and notice the distribution is right-skewed with a long tail and many zeros. How do you approach EDA?",
+   "q": "You're analysing customer lifetime value (CLV) data and notice the distribution is right-skewed with a long tail and many zeros. How do you approach EDA?",
    "body": [
     {
      "t": "p",
-     "text": "This is a zero-inflated continuous distribution — common in revenue data. EDA approach: (1) separate analysis for zero vs non-zero customers (what predicts zero revenue?), (2) for non-zero, analyze the log-transformed distribution, (3) quantile analysis — compute percentile breakdowns (P50, P75, P90, P99), (4) investigate if zeros mean \"never purchased\" vs \"recently acquired\", (5) plot CLV by cohort — is it growing over time? (6) consider modeling as a two-part problem: P(purchase) × E[revenue|purchase]."
+     "text": "This is a zero-inflated continuous distribution — common in revenue data. EDA approach: (1) separate analysis for zero vs non-zero customers (what predicts zero revenue?), (2) for non-zero, analyse the log-transformed distribution, (3) quantile analysis — compute percentile breakdowns (P50, P75, P90, P99), (4) investigate if zeros mean \"never purchased\" vs \"recently acquired\", (5) plot CLV by cohort — is it growing over time? (6) consider modelling as a two-part problem: P(purchase) × E[revenue|purchase]."
     }
    ],
    "kind": ""
@@ -122,7 +122,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "This is MNAR (Missing Not At Random) — the missingness itself is a signal. (1) Create a binary feature `feature_is_missing`, (2) don't impute with mean/median — that destroys the signal, (3) use imputation + flag approach: impute with a constant outside the normal range (e.g., -999) or impute with a separate value, (4) analyze why missingness is predictive (e.g., high-income users don't report income → missing income correlates with high credit score), (5) document this insight — it may be domain-relevant."
+     "text": "This is MNAR (Missing Not At Random) — the missingness itself is a signal. (1) Create a binary feature `feature_is_missing`, (2) don't impute with mean/median — that destroys the signal, (3) use imputation + flag approach: impute with a constant outside the normal range (e.g., -999) or impute with a separate value, (4) analyse why missingness is predictive (e.g., high-income users don't report income → missing income correlates with high credit score), (5) document this insight — it may be domain-relevant."
     }
    ],
    "kind": ""
@@ -130,11 +130,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "85",
-   "q": "You're analyzing A/B test data and notice the control and treatment groups have slightly different demographics. How do you proceed?",
+   "q": "You're analysing A/B test data and notice the control and treatment groups have slightly different demographics. How do you proceed?",
    "body": [
     {
      "t": "p",
-     "text": "This suggests randomization wasn't perfect (or pre-treatment differences exist). (1) Quantify imbalance: compare means and distributions of key demographics between groups, (2) run statistical tests (chi-squared for categorical, t-test for continuous), (3) if imbalances are significant, they can confound the treatment effect. Mitigation: use CUPED (variance reduction), stratified analysis, propensity score matching, or regression adjustment to control for confounders. Report both unadjusted and adjusted treatment effects."
+     "text": "This suggests randomisation wasn't perfect (or pre-treatment differences exist). (1) Quantify imbalance: compare means and distributions of key demographics between groups, (2) run statistical tests (chi-squared for categorical, t-test for continuous), (3) if imbalances are significant, they can confound the treatment effect. Mitigation: use CUPED (variance reduction), stratified analysis, propensity score matching, or regression adjustment to control for confounders. Report both unadjusted and adjusted treatment effects."
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Normalize within market: (1) create market-specific percentile ranks instead of raw values, (2) use z-scores within each market, (3) alternatively, create market-specific bins (high/medium/low based on market percentiles), (4) ensure training and test respect market boundaries. A raw feature value of 700 means \"excellent\" in the US but \"moderate\" in the UK — treating them equally misleads the model. Add an interaction feature `credit_score × market` or train separate models per market."
+     "text": "Normalise within market: (1) create market-specific percentile ranks instead of raw values, (2) use z-scores within each market, (3) alternatively, create market-specific bins (high/medium/low based on market percentiles), (4) ensure training and test respect market boundaries. A raw feature value of 700 means \"excellent\" in the US but \"moderate\" in the UK — treating them equally misleads the model. Add an interaction feature `credit_score × market` or train separate models per market."
     }
    ],
    "kind": ""
@@ -158,7 +158,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "This means the features don't fully determine the target — there's inherent randomness or missing features. Also check: (1) are these true duplicates (same entity measured twice) — if so, they should have the same target, conflicting targets suggest labeling errors, (2) are features too coarse (only capturing broad categories)? (3) is there a missing confounding feature? This puts a ceiling on model performance — perfect accuracy is impossible. The Bayes error rate is at least 10% for these cases."
+     "text": "This means the features don't fully determine the target — there's inherent randomness or missing features. Also check: (1) are these true duplicates (same entity measured twice) — if so, they should have the same target, conflicting targets suggest labelling errors, (2) are features too coarse (only capturing broad categories)? (3) is there a missing confounding feature? This puts a ceiling on model performance — perfect accuracy is impossible. The Bayes error rate is at least 10% for these cases."
     }
    ],
    "kind": ""
@@ -170,7 +170,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Node degree distribution — usually power law in real networks, (2) connected components — how many disconnected subgraphs? (3) clustering coefficient — are friends-of-friends also friends? (4) centrality measures (degree, betweenness, PageRank) — identify influential nodes, (5) community detection (Louvain) — find natural groupings, (6) edge attribute analysis — weights, types, timestamps, (7) network visualization of a sample (full network is too dense), (8) assortativity — do high-degree nodes connect to high-degree nodes? These structural features are often highly predictive."
+     "text": "(1) Node degree distribution — usually power law in real networks, (2) connected components — how many disconnected subgraphs? (3) clustering coefficient — are friends-of-friends also friends? (4) centrality measures (degree, betweenness, PageRank) — identify influential nodes, (5) community detection (Louvain) — find natural groupings, (6) edge attribute analysis — weights, types, timestamps, (7) network visualisation of a sample (full network is too dense), (8) assortativity — do high-degree nodes connect to high-degree nodes? These structural features are often highly predictive."
     }
    ],
    "kind": ""
@@ -194,7 +194,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Focus on business insights, not statistical techniques: (1) start with data overview — what data you have, time period, sample size, (2) key finding #1 — the most actionable insight, presented as a narrative, (3) visualization — simple charts (bar, line, scatter) with clear labels and takeaways, (4) avoid jargon — say \"average\" not \"mean\", \"spread\" not \"standard deviation\", (5) end with recommendations — what should the business do based on findings? (6) keep backup/technical slides for Q&A. Effective EDA communication is as important as the analysis itself."
+     "text": "Focus on business insights, not statistical techniques: (1) start with data overview — what data you have, time period, sample size, (2) key finding #1 — the most actionable insight, presented as a narrative, (3) visualisation — simple charts (bar, line, scatter) with clear labels and takeaways, (4) avoid jargon — say \"average\" not \"mean\", \"spread\" not \"standard deviation\", (5) end with recommendations — what should the business do based on findings? (6) keep backup/technical slides for Q&A. Effective EDA communication is as important as the analysis itself."
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "This is the spurious correlation problem. (1) Detrend both features and target: subtract the time trend or use differences (month-over-month changes), (2) after detrending, recompute correlations — if they disappear, the relationship was spurious, (3) use time-based splits (train on past, test on future) — spurious relationships won't generalize, (4) check if the feature-target relationship holds within each time period (yearly analysis). This is critical for avoiding models that seem accurate but are just fitting time trends."
+     "text": "This is the spurious correlation problem. (1) Detrend both features and target: subtract the time trend or use differences (month-over-month changes), (2) after detrending, recompute correlations — if they disappear, the relationship was spurious, (3) use time-based splits (train on past, test on future) — spurious relationships won't generalise, (4) check if the feature-target relationship holds within each time period (yearly analysis). This is critical for avoiding models that seem accurate but are just fitting time trends."
     }
    ],
    "kind": ""
@@ -242,7 +242,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "(1) Dimensionality reduction for visualization: t-SNE or UMAP to 2D, colored by class/target, (2) check if classes form separable clusters — if yes, simple classifiers will work, (3) analyze the distribution of embedding norms — are they normalized? (4) compute pairwise cosine similarity matrix for a sample, (5) check for degenerate dimensions (near-constant values), (6) PCA to understand explained variance — how many components capture 95% of variance? (7) feature-level statistics: are any dimensions bimodal, heavy-tailed, or constant?"
+     "text": "(1) Dimensionality reduction for visualisation: t-SNE or UMAP to 2D, coloured by class/target, (2) check if classes form separable clusters — if yes, simple classifiers will work, (3) analyse the distribution of embedding norms — are they normalised? (4) compute pairwise cosine similarity matrix for a sample, (5) check for degenerate dimensions (near-constant values), (6) PCA to understand explained variance — how many components capture 95% of variance? (7) feature-level statistics: are any dimensions bimodal, heavy-tailed, or constant?"
     }
    ],
    "kind": ""
@@ -250,11 +250,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "95",
-   "q": "You're doing EDA on rare event data (fraud: 0.1% positive rate). Standard visualizations are dominated by the majority class. How do you adapt?",
+   "q": "You're doing EDA on rare event data (fraud: 0.1% positive rate). Standard visualisations are dominated by the majority class. How do you adapt?",
    "body": [
     {
      "t": "p",
-     "text": "(1) Separate analysis: analyze fraud and non-fraud cases independently, (2) use log scale for counts when comparing, (3) plot conditional distributions: P(feature|fraud) vs P(feature|non-fraud) rather than overall, (4) use lift charts and rate-based metrics instead of counts, (5) oversample positives for visual analysis only (not for statistical tests), (6) focus your EDA on what makes fraud cases different: which features have the highest lift between fraud and non-fraud? (7) anomaly detection perspective: are fraud cases outliers in feature space?"
+     "text": "(1) Separate analysis: analyse fraud and non-fraud cases independently, (2) use log scale for counts when comparing, (3) plot conditional distributions: P(feature|fraud) vs P(feature|non-fraud) rather than overall, (4) use lift charts and rate-based metrics instead of counts, (5) oversample positives for visual analysis only (not for statistical tests), (6) focus your EDA on what makes fraud cases different: which features have the highest lift between fraud and non-fraud? (7) anomaly detection perspective: are fraud cases outliers in feature space?"
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Heteroscedasticity means: (1) standard errors and confidence intervals are incorrect (too narrow where variance is high), (2) linear regression coefficients are still unbiased but inefficient, (3) prediction intervals vary by feature value. In EDA: plot residuals vs predicted values to visualize. For modeling: use weighted least squares, robust standard errors, or models that predict both mean and variance. Log-transforming the target often stabilizes variance. Report segment-specific metrics rather than overall metrics."
+     "text": "Heteroscedasticity means: (1) standard errors and confidence intervals are incorrect (too narrow where variance is high), (2) linear regression coefficients are still unbiased but inefficient, (3) prediction intervals vary by feature value. In EDA: plot residuals vs predicted values to visualise. For modelling: use weighted least squares, robust standard errors, or models that predict both mean and variance. Log-transforming the target often stabilises variance. Report segment-specific metrics rather than overall metrics."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Prioritize by: (1) impact on model performance — findings that change feature engineering or model choice, (2) data quality issues — must be fixed before modeling (missing data, leakage, errors), (3) business relevance — insights stakeholders will find actionable, (4) statistical significance — is the pattern robust or could it be noise? (5) reproducibility — does it hold across time periods and subsets? Create three categories: \"must fix before modeling\", \"should investigate further\", and \"interesting but not actionable\". Document everything for future reference."
+     "text": "Prioritise by: (1) impact on model performance — findings that change feature engineering or model choice, (2) data quality issues — must be fixed before modelling (missing data, leakage, errors), (3) business relevance — insights stakeholders will find actionable, (4) statistical significance — is the pattern robust or could it be noise? (5) reproducibility — does it hold across time periods and subsets? Create three categories: \"must fix before modelling\", \"should investigate further\", and \"interesting but not actionable\". Document everything for future reference."
     }
    ],
    "kind": ""

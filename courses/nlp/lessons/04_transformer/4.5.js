@@ -190,7 +190,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "The encoder runs once per input. Its output becomes the keys and values for every decoder step, so cross-attention costs one projection of the source up front and then only the query projection per generated token. This is the same structural idea as the KV cache in a decoder-only model — the expensive, reusable part is computed once and held. It is also why encoder-decoder models remain strong for translation and summarisation: the source is fully encoded bidirectionally before a single output token is produced." }] },
 
     { t: "exercise", title: "Verify the masking and the gap",
-      tasks: [
+      requirements: [
         "Apply a causal mask and assert that every masked weight is exactly 0.0, not merely small.",
         "Mask with -10, -1e4 and -inf in float32, then repeat in float16, and record which combinations leak or produce NaN.",
         "Time a single teacher-forced pass against naive token-by-token generation for the same sequence, and compute your own ratio.",

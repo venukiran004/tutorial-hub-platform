@@ -186,7 +186,7 @@ stB = read_state()          # both read the same serial -- this is the race
         "A plan that proposes `forces replacement` on anything stateful is the one to stop and read carefully."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual discovery is drift on exactly the attributes an autoscaler owns, which is the `ignore_changes` case rather than a problem with anyone's discipline. The second usual discovery is that nobody has run `plan` against production in weeks, so the drift has been accumulating and the next apply will be large." },
           { t: "p", text: "Scheduling a plan-only run daily and alerting on non-empty output converts that from a surprise during an urgent change into a ticket. It is the same argument lesson 3.1 made for a scheduled retrain: the run that happens regularly is the run that still works when you need it." }
         ]

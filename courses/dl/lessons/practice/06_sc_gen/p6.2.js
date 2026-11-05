@@ -167,7 +167,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Auxiliary classifier + cycle consistency + adversarial loss. Domain c is concatenated with input. Eficiently handles many domains (hair color, age, expression)."
+     "text": "**Explanation:** Auxiliary classifier + cycle consistency + adversarial loss. Domain c is concatenated with input. Eficiently handles many domains (hair colour, age, expression)."
     }
    ],
    "kind": ""
@@ -183,7 +183,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Original (Gatys et al.):** Optimization-based — slow. Not GAN."
+     "text": "**Original (Gatys et al.):** Optimisation-based — slow. Not GAN."
     },
     {
      "t": "p",
@@ -196,7 +196,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**AdaIN:** Adaptive Instance Normalization — real-time arbitrary style transfer."
+     "text": "**AdaIN:** Adaptive Instance Normalisation — real-time arbitrary style transfer."
     },
     {
      "t": "p",
@@ -267,7 +267,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Instead of trying to maximize D(G(z)), match internal feature representations. More stable training signal. Prevents generator from focusing on fooling D's final decision."
+     "text": "**Explanation:** Instead of trying to maximise D(G(z)), match internal feature representations. More stable training signal. Prevents generator from focusing on fooling D's final decision."
     }
    ],
    "kind": ""
@@ -396,7 +396,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Gradient reversal layer negates domain classifier gradient. Features become domain-invariant → model transfers from labeled source to unlabeled target domain."
+     "text": "**Explanation:** Gradient reversal layer negates domain classifier gradient. Features become domain-invariant → model transfers from labelled source to unlabelled target domain."
     }
    ],
    "kind": ""
@@ -413,13 +413,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Explicit:** Model defines P(x) explicitly. Can compute density. VAE, normalizing flows.",
+      "**Explicit:** Model defines P(x) explicitly. Can compute density. VAE, normalising flows.",
       "**Implicit:** Model generates samples but P(x) is not tractable. GANs."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** GANs: can sample from distribution but can't compute P(x) for a given x. VAEs: can compute P(x) approximately. Normalizing flows: exact P(x) via change of variables. Diffusion: explicit density via ELBO."
+     "text": "**Explanation:** GANs: can sample from distribution but can't compute P(x) for a given x. VAEs: can compute P(x) approximately. Normalising flows: exact P(x) via change of variables. Diffusion: explicit density via ELBO."
     }
    ],
    "kind": ""
@@ -461,7 +461,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Architecture improvements: deeper networks, better normalization, skip connections, attention. StyleGAN's mapping network (z→w) was key innovation for controllability."
+     "text": "**Explanation:** Architecture improvements: deeper networks, better normalisation, skip connections, attention. StyleGAN's mapping network (z→w) was key innovation for controllability."
     }
    ],
    "kind": ""

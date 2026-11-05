@@ -106,7 +106,7 @@ EC.receiveLesson({
     { t: "p", text: "The dividing question is whether your true matches **share characters**. Typos, abbreviations and reorderings do, and TF-IDF over n-grams handles them. *IBM* and *International Business Machines* do not, and no surface method will ever connect them — that needs either an embedding or, more reliably, an alias table. In practice a lookup table of known aliases outperforms an embedding for the specific entities you care about, and the embedding is for the long tail." },
 
     { t: "exercise", title: "Build a matcher",
-      tasks: [
+      requirements: [
         "Fit a TF-IDF vectoriser on your own records and print the ten lowest-idf tokens. Consider whether each should be stripped.",
         "Reproduce the boilerplate failure, then strip legal suffixes and re-measure the same pairs.",
         "Compare `char_wb` against `char` n-grams and note which handles multi-word names better.",

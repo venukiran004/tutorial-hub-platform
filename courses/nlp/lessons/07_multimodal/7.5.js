@@ -115,7 +115,7 @@ EC.receiveLesson({
       caption: "`return_timestamps=True` is what makes a transcript usable for anything but reading." },
     { t: "p", text: "Two practical notes. **Whisper’s encoder is fixed at 30 seconds (§02’s 1500 tokens), so the pipeline chunks longer audio and stitches the results** — which is where most transcription errors at segment boundaries come from, not from the model. And `speaker_wav` is the voice-cloning argument: **a reference clip of a few seconds is the whole enrollment**, which is §06’s VALL-E row arriving as a keyword parameter in an installable package." },
     { t: "exercise", title: "Compute the budgets",
-      tasks: [
+      requirements: [
         "Compute the sequence length for your audio at several hop sizes, and check it against your model's limit.",
         "Work out the token count for a video length and frame rate you care about, and compare it against your context window.",
         "Compute the factorisation saving for your frame count and patch count.",

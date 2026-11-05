@@ -132,7 +132,7 @@ def pipeline(as_of: str):
         "If the overhead fraction is above about a fifth, the decomposition is costing more than it buys."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual finding is that two or three steps are seconds of work wrapped in a container start, and merging them loses nothing — the boundary was drawn for readability, which a function already provides." },
           { t: "p", text: "The undeclared-input list is the more valuable output. Each entry is a case where a re-run can silently reuse a stale artifact, and the fix is the same one lesson 1.3 argued for: identify the data by content or by an explicit as-of parameter, never by 'latest'." }
         ]

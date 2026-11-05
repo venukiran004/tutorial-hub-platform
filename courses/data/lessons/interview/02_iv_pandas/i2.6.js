@@ -184,7 +184,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Using `iterrows` or `itertuples` in loops (use vectorized ops).",
+      "Using `iterrows` or `itertuples` in loops (use vectorised ops).",
       "Repeatedly appending rows in a loop (use `pd.concat` once at the end).",
       "Not using `dtype` specification when reading CSVs.",
       "Modifying slices (triggers copy warnings and bugs).",
@@ -261,7 +261,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Applies visual formatting (colors, bold, bars) to DataFrames displayed in Jupyter notebooks:"
+     "text": "Applies visual formatting (colours, bold, bars) to DataFrames displayed in Jupyter notebooks:"
     },
     {
      "t": "code",

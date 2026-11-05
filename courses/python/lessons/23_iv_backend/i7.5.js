@@ -389,13 +389,13 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Your webhook URL is public, so anyone could POST fake events. Defenses:"
+     "text": "Your webhook URL is public, so anyone could POST fake events. Defences:"
     },
     {
      "t": "ol",
      "items": [
       "**Verify the signature.** Providers sign the raw request body with a shared secret (usually HMAC-SHA256) and send it in a header (e.g. `Stripe-Signature`). Recompute the HMAC over the **raw bytes** and compare with a constant-time check.",
-      "**Use the raw body**, not the parsed JSON — re-serializing changes bytes and breaks the signature.",
+      "**Use the raw body**, not the parsed JSON — re-serialising changes bytes and breaks the signature.",
       "**Check timestamps** to reject replayed old events.",
       "**Return 2xx fast**, then process asynchronously (offload to a task queue) so the provider doesn't time out and retry."
      ]

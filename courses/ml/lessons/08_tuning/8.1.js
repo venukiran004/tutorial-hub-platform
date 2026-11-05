@@ -191,7 +191,7 @@ outer_scores = cross_val_score(search, X, y, cv=outer, scoring="roc_auc")   # ea
       rows: [
         ["Grid", "Fully", "Discrete lists", "≤ 2–3 axes with a few values each; reproducing a published sweep", "Continuous axes at fine resolution; many axes", "`GridSearchCV`"],
         ["Random", "Fully", "Any distribution", "A first pass; many axes; unknown ranges", "Trials are very expensive and few", "`RandomizedSearchCV`"],
-        ["Bayesian (GP)", "Sequential (batch variants)", "Continuous, low-dimensional", "Expensive trials, smooth response", "Hundreds of trials; conditional spaces", "scikit-optimize, BoTorch"],
+        ["Bayesian (GP)", "Sequential (batch variants)", "Continuous, low-dimensional", "Expensive trials, smooth response", "Hundreds of trials; conditional spaces", "scikit-optimise, BoTorch"],
         ["TPE", "Sequential (batch OK)", "Mixed, conditional, integer", "Large mixed spaces with tens to hundreds of trials", "Very few trials (its start-up is random)", "Optuna, Hyperopt"],
         ["Successive halving", "Fully", "Any", "The resource predicts the final ranking: boosting iterations, epochs", "Sample-size subsets change the optimum (the SVM: 0.9477)", "`HalvingRandomSearchCV`"],
         ["Hyperband", "Fully", "Any", "Unknown best starting resource: several halving brackets", "Same as halving", "Optuna's HyperbandPruner, Ray Tune"]

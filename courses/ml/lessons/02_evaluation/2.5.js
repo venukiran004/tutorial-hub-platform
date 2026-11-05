@@ -294,7 +294,8 @@ def ece(y, p, bins=5):
         m = (p >= lo) & ((p < hi) | (hi == 1))
         if m.sum(): e += m.mean() * abs(p[m].mean() - y[m].mean())
     return e
-def cost(p, t): pred = p >= t; tp = (pred & (y_test == 1)).sum(); fp = (pred & (y_test == 0)).sum(); fn = ((~pred) & (y_test == 1)).sum()
+def cost(p, t):
+    pred = p >= t; tp = (pred & (y_test == 1)).sum(); fp = (pred & (y_test == 0)).sum(); fn = ((~pred) & (y_test == 1)).sum()
     return 5 * (tp + fp) + 100 * (fn + 0.6 * tp)
 for name, m in variants.items():
     p = m.predict_proba(X_test)[:, 1]

@@ -160,7 +160,7 @@ ENTRYPOINT python -m uvicorn src.app:app` },
         "The artifact decision is the one to write down rather than leave implicit, because it silently defines your rollback procedure."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The requirements split and the install ordering are usually the two biggest wins and both are a few minutes of work. The SIGTERM test is the one that surprises people: shell-form entrypoints are common, and the symptom — dropped requests on every deploy — is usually blamed on the load balancer." },
           { t: "p", text: "The artifact question rarely has a wrong answer, but leaving it undecided does: teams end up with a model baked into an image *and* a volume override in one environment, at which point nobody can say what is serving." }
         ]

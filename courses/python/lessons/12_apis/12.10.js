@@ -45,7 +45,7 @@ hmac.compare_digest(provided_token, expected_token)   # constant time
 
     { t: "p", text: "**OAuth2 is an authorisation framework**: it lets an application obtain limited access to a resource on a user's behalf without ever seeing the user's password — the delegation behind 'Sign in with Google' and 'let this app read your calendar'. **OpenID Connect is a thin authentication layer on top**: it adds an ID token, a JWT that says who the user is. OAuth2 gives access; OIDC gives identity." },
 
-    { t: "diagram", kind: "flow", title: "Authorization Code flow with PKCE", caption: "The browser is redirected to the provider, the user consents, the provider sends a short-lived code back to your redirect URI, and your backend exchanges the code plus the PKCE verifier for tokens. The user's password never touches your app; the code is useless without the verifier.", cols: 5, nodes: [
+    { t: "diagram", kind: "flow", title: "Authorisation Code flow with PKCE", caption: "The browser is redirected to the provider, the user consents, the provider sends a short-lived code back to your redirect URI, and your backend exchanges the code plus the PKCE verifier for tokens. The user's password never touches your app; the code is useless without the verifier.", cols: 5, nodes: [
       { id: "app", label: "your app", sub: "generates verifier + challenge" },
       { id: "prov", label: "provider login", sub: "user authenticates, consents", tone: "accent" },
       { id: "code", label: "redirect with code", sub: "short-lived, one use", tone: "warn" },
@@ -55,7 +55,7 @@ hmac.compare_digest(provided_token, expected_token)   # constant time
 
     { t: "table", head: ["Grant type", "Use it for", "Note"],
       rows: [
-        ["**Authorization Code + PKCE**", "Web apps, SPAs and mobile apps logging in a user via a provider", "PKCE is mandatory for public clients — it defeats interception of the code"],
+        ["**Authorisation Code + PKCE**", "Web apps, SPAs and mobile apps logging in a user via a provider", "PKCE is mandatory for public clients — it defeats interception of the code"],
         ["**Client Credentials**", "Machine to machine, no user — a service calling another service", "The service authenticates with its own client_id and secret"],
         ["Refresh Token", "Exchanging a refresh token for a new access token", "Rotate on use; revoke the family on reuse (lesson 12.8)"],
         ["Device Code", "Input-constrained devices: TVs, CLIs", "The user approves on another device"],
@@ -206,7 +206,7 @@ fix 1 first: it is exploitable today by any logged-in accountant with a URL`,
 
   takeaways: [
     "Tokens come from secrets, never random; secrets are compared with hmac.compare_digest, never ==.",
-    "OAuth2 delegates access, OIDC adds identity; Authorization Code + PKCE for anything with a user, Client Credentials for machines, never Implicit or ROPC for third parties.",
+    "OAuth2 delegates access, OIDC adds identity; Authorisation Code + PKCE for anything with a user, Client Credentials for machines, never Implicit or ROPC for third parties.",
     "RBAC for coarse roles, ABAC for attribute policies, scopes for what a client may do — and the object-level ownership check on every handler that takes an id.",
     "Service-to-service: hashed, scoped, rotated API keys or client-credentials tokens; log the key id, never the key.",
     "HTTPS with HSTS, cookies Secure + HttpOnly + SameSite, CORS with explicit origins, CSRF tokens for cookie-authenticated writes, parameterised everything.",
@@ -219,7 +219,7 @@ fix 1 first: it is exploitable today by any logged-in accountant with a URL`,
       answer: 1,
       why: "A short-circuiting comparison finishes faster when the mismatch is early, and an attacker measuring response times can recover the secret one byte at a time. compare_digest takes the same time regardless of where the strings differ — measured here at 66 ns either way — and costs nothing worth mentioning." },
     { stem: "A single-page app needs to log users in via Google. Which OAuth2 flow?",
-      options: ["Implicit", "Resource Owner Password, with the app collecting the credentials", "Authorization Code with PKCE", "Client Credentials, using the app's own client secret"],
+      options: ["Implicit", "Resource Owner Password, with the app collecting the credentials", "Authorisation Code with PKCE", "Client Credentials, using the app's own client secret"],
       answer: 2,
       why: "A SPA is a public client that cannot keep a secret, so the code flow needs PKCE: a verifier the app generates and a challenge it sends, so an intercepted authorisation code cannot be exchanged without the verifier. Implicit is deprecated for putting tokens in the URL; ROPC hands the password to the app; client credentials has no user." },
     { stem: "A user with the 'accountant' role can read any invoice by changing the id in the URL. Which OWASP category, and what is missing?",

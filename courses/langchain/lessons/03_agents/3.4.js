@@ -104,7 +104,7 @@ EC.receiveLesson({
     ] },
     { t: "h2", n: "04", id: "middleware", text: "Middleware", sub: "Hooks around every model and tool call" },
 
-    {"kind": "matrix", "title": "Five middleware, all of them cross-cutting concerns the loop body would otherwise carry", "caption": "Middleware runs **around each model call and each tool call inside the loop**, which is the only place several of these can work at all. Summarisation has to happen *before* each model call, not once at the start. Human-in-the-loop has to interrupt *between* a decision and its execution. And tool gating has to filter the tool list *per user* at the moment the model is asked, which no static construction can do.", "cols": ["What it does", "Why it must be there"], "rows": ["summarization", "human-in-the-loop", "PII redaction", "tool gating", "fallbacks"], "cells": [["trim or summarise before each model call", {"text": "before EACH call, not once", "tone": "violet"}], ["pause for approval before a tool runs", {"text": "between decision and execution", "tone": "violet"}], ["strip identifiers in and out", "on every boundary crossing"], ["hide tools this user may not call", {"text": "per user, at ask time", "tone": "violet"}], ["swap the model mid-loop on failure", "inside the loop, not around it"]], "t": "diagram", "id": "dg-3_4-04-3"},
+    {"kind": "matrix", "title": "Five middleware, all of them cross-cutting concerns the loop body would otherwise carry", "caption": "Middleware runs **around each model call and each tool call inside the loop**, which is the only place several of these can work at all. Summarisation has to happen *before* each model call, not once at the start. Human-in-the-loop has to interrupt *between* a decision and its execution. And tool gating has to filter the tool list *per user* at the moment the model is asked, which no static construction can do.", "cols": ["What it does", "Why it must be there"], "rows": ["summarisation", "human-in-the-loop", "PII redaction", "tool gating", "fallbacks"], "cells": [["trim or summarise before each model call", {"text": "before EACH call, not once", "tone": "violet"}], ["pause for approval before a tool runs", {"text": "between decision and execution", "tone": "violet"}], ["strip identifiers in and out", "on every boundary crossing"], ["hide tools this user may not call", {"text": "per user, at ask time", "tone": "violet"}], ["swap the model mid-loop on failure", "inside the loop, not around it"]], "t": "diagram", "id": "dg-3_4-04-3"},
 
 
 
@@ -125,7 +125,7 @@ EC.receiveLesson({
 
     { t: "p", text: "The LangChain 1.0 `create_agent` adds middleware: functions that run around each model call and each tool call inside the loop. They exist for cross-cutting concerns that would otherwise be written into the loop body." },
     { t: "table", head: ["Middleware", "What it does"], rows: [
-      ["summarization", "trim or summarise history before each model call (3.6, 13.3)"],
+      ["summarisation", "trim or summarise history before each model call (3.6, 13.3)"],
       ["human-in-the-loop", "pause for approval before a tool runs (9.7)"],
       ["PII redaction", "strip identifiers on the way in and out (4.7)"],
       ["tool gating", "hide tools the current user may not call"],

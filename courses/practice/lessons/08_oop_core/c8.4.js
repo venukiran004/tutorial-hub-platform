@@ -428,7 +428,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Alice`, `Alice`, `True` **Explanation:** Dictionary subclass that normalizes keys to lowercase."
+     "text": "**Answer:** `Alice`, `Alice`, `True` **Explanation:** Dictionary subclass that normalises keys to lowercase."
     }
    ],
    "prompt": [
@@ -518,7 +518,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `C`, then MRO: `(D, B, C, A, object)` **Explanation:** MRO (Method Resolution Order) follows C3 linearization. `D→B→C→A`. `B` doesn't override, so `C.method` is found."
+     "text": "**Answer:** `C`, then MRO: `(D, B, C, A, object)` **Explanation:** MRO (Method Resolution Order) follows C3 linearisation. `D→B→C→A`. `B` doesn't override, so `C.method` is found."
     }
    ],
    "prompt": [

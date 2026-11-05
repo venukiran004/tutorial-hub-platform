@@ -221,7 +221,7 @@ return {n: Task(n, make(n), needs[n], retries=2) for n in names}` },
         "A blanket retry on a validation error is worse than no retry: it delays the failure and hides the cause."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The two findings that recur: retries are blanket rather than per-exception, so deterministic failures burn three attempts and arrive later with a less useful error; and at least one task is not idempotent, usually one that appends rather than overwrites a partition." },
           { t: "p", text: "The `now()` audit is the highest-value grep in the list. It is the same defect as lesson 1.4's `CURRENT_DATE` window, and finding it in pipeline code usually means the training set has been built from a window relative to the build date all along." }
         ]

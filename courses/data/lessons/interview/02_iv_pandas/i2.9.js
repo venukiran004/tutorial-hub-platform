@@ -22,7 +22,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "141",
-   "q": "What is vectorization and why is it critical for Pandas performance?",
+   "q": "What is vectorisation and why is it critical for Pandas performance?",
    "body": [
     {
      "t": "code",
@@ -152,7 +152,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "147",
-   "q": "How do you optimize DataFrame memory using downcasting?",
+   "q": "How do you optimise DataFrame memory using downcasting?",
    "body": [
     {
      "t": "code",
@@ -325,7 +325,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "160",
-   "q": "What is `pd.read_csv` with `dtype` parameter for optimization?",
+   "q": "What is `pd.read_csv` with `dtype` parameter for optimisation?",
    "body": [
     {
      "t": "code",

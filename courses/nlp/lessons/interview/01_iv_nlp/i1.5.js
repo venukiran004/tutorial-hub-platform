@@ -74,7 +74,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "85",
-   "q": "What is tokenizer alignment and why does it matter for NER?",
+   "q": "What is tokeniser alignment and why does it matter for NER?",
    "body": [
     {
      "t": "code",
@@ -237,7 +237,7 @@ EC.receiveLesson({
        "Opacus"
       ],
       [
-       "**Anonymization**",
+       "**Anonymisation**",
        "Replace with fake data",
        "Faker library"
       ]
@@ -286,7 +286,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "All modern LLMs use subword tokenization — best balance of vocabulary size, OOV handling, and sequence length."
+     "text": "All modern LLMs use subword tokenisation — best balance of vocabulary size, OOV handling, and sequence length."
     }
    ],
    "kind": ""
@@ -318,9 +318,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Tokenizer:** SentencePiece (script-agnostic, operates on Unicode codepoints)",
+      "**Tokeniser:** SentencePiece (script-agnostic, operates on Unicode codepoints)",
       "**Model:** XLM-R (100 languages), mT5, BLOOM (46 languages + 13 programming languages)",
-      "**Preprocessing:** Unicode normalization (NFC), script detection, right-to-left handling",
+      "**Preprocessing:** Unicode normalisation (NFC), script detection, right-to-left handling",
       "**Evaluation:** Per-language metrics (not averaged across languages)"
      ]
     }
@@ -398,7 +398,7 @@ EC.receiveLesson({
       [
        "Use case",
        "Classification, NER",
-       "Summarization, QA",
+       "Summarisation, QA",
        "General assistant, reasoning"
       ]
      ]
@@ -457,7 +457,7 @@ EC.receiveLesson({
       ],
       [
        "**On-device models**",
-       "Phi-3, Gemma, quantized LLaMA for mobile/edge"
+       "Phi-3, Gemma, quantised LLaMA for mobile/edge"
       ],
       [
        "**Structured generation**",

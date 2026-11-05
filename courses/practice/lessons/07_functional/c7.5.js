@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `25`, `125` **Explanation:** `partial` pre-fills some function arguments, creating specialized versions."
+     "text": "**Answer:** `25`, `125` **Explanation:** `partial` pre-fills some function arguments, creating specialised versions."
     }
    ],
    "prompt": [

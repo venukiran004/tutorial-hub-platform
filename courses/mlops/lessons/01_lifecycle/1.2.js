@@ -262,7 +262,7 @@ auc2 = roc_auc_score(yte, m2.predict_proba(Xte)[:, 1])`,
         "Early stopping, n_jobs, auto dtype selection and memory-reduced batch sizes are the usual silent overriders."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The common outcome is that run id and params are available, the data is identified only by a table name, and the environment is absent. That ordering is not an accident: params are what the tracking library makes easiest to log, and data and environment are what it leaves to you." },
           { t: "p", text: "The smallest useful fix is almost always the data fingerprint, because it is the one that converts *unreproducible* into *a different dataset* — and as the 0.0013 AUC difference above shows, you will otherwise spend the morning looking for a bug that is not there." }
         ]

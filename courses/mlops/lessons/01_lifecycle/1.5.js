@@ -226,7 +226,7 @@ def corrupt_dupes(df):      # a retry duplicates 20% of rows. Every value is val
         "Decide block-or-warn from the measured harm, not from how serious the corruption sounds."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "Two findings are near-universal. The pipeline has a schema check — because the warehouse enforces one — and no range or volume checks at all, which is precisely the inverted ordering this lesson measured: the check that exists catches the harmless corruption." },
           { t: "p", text: "The other is that nobody can say what the expected row count is, because it was never written down. That makes the duplicate and partial-file cases undetectable, and it is a one-line fix: record the count per batch, alert on a deviation from the trailing median." }
         ]

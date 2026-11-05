@@ -152,7 +152,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "In Post-LN every block ends with a normalisation, so the stack output is normalised by construction. In Pre-LN it is not — the last thing that happens is a residual addition. Every real Pre-LN implementation therefore applies a final `LayerNorm` after the loop, and if you write the stack yourself it is the single easiest thing to leave out. The symptom is a model that trains, slowly and badly, with a loss that plateaus higher than it should. Check for it before you check anything else." }] },
 
     { t: "exercise", title: "Build and instrument a stack",
-      tasks: [
+      requirements: [
         "Assemble an encoder block from your own MultiHeadAttention and confirm input and output shapes match exactly.",
         "Count parameters per sublayer and reproduce the 33/67 attention-to-FFN split.",
         "Stack 24 blocks and plot residual-stream RMS against depth. Compare Pre-LN with Post-LN.",

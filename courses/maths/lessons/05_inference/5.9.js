@@ -598,7 +598,7 @@ boot_ci(control, treatment)                    # e.g. (0.31, 1.94)
 # 4. WHAT WOULD CHANGE THE ANSWER: if lifetime value per customer
 #    exceeds roughly 2.3x first-order value, the conversion loss
 #    outweighs the AOV gain over a year.
-c["conversion"]*1.0 vs t["conversion"]*1.30    # the break-even ratio
+# compare c["conversion"]*1.0 with t["conversion"]*1.30: the break-even ratio
 break_even = (c["conversion"] / t["conversion"]) / (t["aov"]/c["aov"])
 break_even                                     # ~0.88 -- see below
 #

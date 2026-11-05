@@ -8,7 +8,7 @@ EC.receiveLesson({
 
   objectives: [
     "Write the same server against mcp.server.lowlevel.Server",
-    "Say what FastMCP fills in for you during initialize",
+    "Say what FastMCP fills in for you during initialise",
     "Declare capabilities deliberately, including tools_changed",
     "Send a list-changed notification and know why it matters to consumers",
     "Decide which of the two APIs a given server should use"

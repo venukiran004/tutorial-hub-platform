@@ -193,7 +193,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1807",
-   "q": "Program 1807: Barrier Synchronization",
+   "q": "Program 1807: Barrier Synchronisation",
    "body": [
     {
      "t": "code",

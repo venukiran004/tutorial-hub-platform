@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "overhead", text: "First, a thing that is not the problem",
       sub: "Framework overhead per request, measured against model time" },
 
-    {"kind": "trace", "title": "The framework overhead everyone argues about is 0.01%", "caption": "Comparisons often open with request-handling overhead — Python against Rust, async against threads — so it is worth knowing the size of that term before weighing it. Measured across every non-model stage of a short request: tokenizing is 0.090 ms, detokenizing 0.029 ms, and the model is **99.99% of a 922.5 ms answer**. Which does not make frameworks equivalent; it means the differences between them are in scheduling, batching and cache management, not in the server's language.", "left": "stage", "codeW": 180, "vars": ["median ms", "share of a 20-token answer"], "steps": [{"code": "tokenize the prompt", "state": ["0.090", ""], "tone": "good"}, {"code": "prefill, 9 tokens", "state": ["75.698", ""], "tone": "accent"}, {"code": "one decode step", "state": ["42.334", ""], "tone": "accent"}, {"code": "detokenize", "state": ["0.029", ""], "tone": "good"}, {"code": "model work", "state": ["922.4", "99.99%"], "changed": [1], "tone": "violet"}, {"code": "tokenizer work", "state": ["0.118", "0.01%"], "changed": [1], "tone": "crit", "note": "the argued-about term"}], "t": "diagram", "id": "dg-3_7-01-0"},
+    {"kind": "trace", "title": "The framework overhead everyone argues about is 0.01%", "caption": "Comparisons often open with request-handling overhead — Python against Rust, async against threads — so it is worth knowing the size of that term before weighing it. Measured across every non-model stage of a short request: tokenising is 0.090 ms, detokenising 0.029 ms, and the model is **99.99% of a 922.5 ms answer**. Which does not make frameworks equivalent; it means the differences between them are in scheduling, batching and cache management, not in the server's language.", "left": "stage", "codeW": 180, "vars": ["median ms", "share of a 20-token answer"], "steps": [{"code": "tokenize the prompt", "state": ["0.090", ""], "tone": "good"}, {"code": "prefill, 9 tokens", "state": ["75.698", ""], "tone": "accent"}, {"code": "one decode step", "state": ["42.334", ""], "tone": "accent"}, {"code": "detokenize", "state": ["0.029", ""], "tone": "good"}, {"code": "model work", "state": ["922.4", "99.99%"], "changed": [1], "tone": "violet"}, {"code": "tokenizer work", "state": ["0.118", "0.01%"], "changed": [1], "tone": "crit", "note": "the argued-about term"}], "t": "diagram", "id": "dg-3_7-01-0"},
 
 
 
@@ -61,7 +61,7 @@ print("tokenizer ", tok_ms + det_ms,      100 * (tok_ms + det_ms) / total)`,
     model work       922.4 ms  (99.99%)
     tokenizer work   0.118 ms  (0.01%)`,
       hl: [6, 7],
-      caption: "Tokenization and detokenization together are 118 microseconds against 922 milliseconds of model work." },
+      caption: "Tokenisation and detokenisation together are 118 microseconds against 922 milliseconds of model work." },
 
     { t: "callout", kind: "insight", title: "A framework would have to be catastrophically slow for its overhead to register",
       body: [
@@ -99,7 +99,7 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
 
     { t: "callout", kind: "insight", title: "Prefix caching gets better with scale, which almost nothing else does",
       body: [
-        { t: "p", text: "Most optimisations have a fixed ceiling — quantization halves bytes, GQA divides the cache by the group size. Prefix caching saves **48.5% at two requests and 96.2% at 128**, because the denominator keeps growing while the cached prefix is paid for once." },
+        { t: "p", text: "Most optimisations have a fixed ceiling — quantisation halves bytes, GQA divides the cache by the group size. Prefix caching saves **48.5% at two requests and 96.2% at 128**, because the denominator keeps growing while the cached prefix is paid for once." },
         { t: "p", text: "It also compounds with context length rather than fighting it. A long system prompt is usually a liability; with prefix caching it is a liability you pay once per cache lifetime instead of per request." },
         { t: "p", text: "The practical consequence: **put the variable part last**. A prompt that interpolates the user's name into the system instruction, or puts a timestamp at the top, has no shared prefix at all and gets none of this. That is the most common way teams lose the feature without knowing they had it." }
       ] },
@@ -157,11 +157,11 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
 
 
     { t: "dl", items: [
-      { k: "vLLM", v: "`from vllm import LLM, SamplingParams`, then `LLM(model=...).generate(prompts, SamplingParams(temperature=0.7, max_tokens=256))` — or the OpenAI-compatible server, which is what most deployments use. The default for GPU serving. It originated PagedAttention (3.2) and continuous batching (3.5), has prefix caching, tensor parallelism and an OpenAI-compatible API, and supports the common quantization formats. Choose it unless you have a specific reason not to." },
+      { k: "vLLM", v: "`from vllm import LLM, SamplingParams`, then `LLM(model=...).generate(prompts, SamplingParams(temperature=0.7, max_tokens=256))` — or the OpenAI-compatible server, which is what most deployments use. The default for GPU serving. It originated PagedAttention (3.2) and continuous batching (3.5), has prefix caching, tensor parallelism and an OpenAI-compatible API, and supports the common quantisation formats. Choose it unless you have a specific reason not to." },
       { k: "TGI (Hugging Face)", v: "Comparable capability, a Rust server, and tighter integration with the Hub and the Inference Endpoints product. The reason to pick it is usually operational — you are already in that ecosystem — rather than a performance argument." },
       { k: "TensorRT-LLM", v: "Reached either through its own `trtllm-build` step or, more commonly now, by compiling from PyTorch with `torch_tensorrt`. Highest throughput on NVIDIA hardware, obtained by compiling the model into an engine for a specific GPU, precision and batch shape. The cost is that the engine is a build artefact: changing model, GPU or max batch means rebuilding, which is a real constraint on a team that ships weekly." },
       { k: "SGLang", v: "Built for programs rather than requests — branching, loops, multi-turn structure — with RadixAttention sharing cache across forks. Its advantage is largest exactly where the request graph has shared structure." },
-      { k: "llama.cpp", v: "C++ with no Python runtime, GGUF quantization, and genuinely good CPU and Apple-silicon performance. The reference implementation for running a model where there is no GPU." },
+      { k: "llama.cpp", v: "C++ with no Python runtime, GGUF quantisation, and genuinely good CPU and Apple-silicon performance. The reference implementation for running a model where there is no GPU." },
       { k: "Ollama", v: "A packaging layer over llama.cpp: model pulls, a local daemon, an OpenAI-compatible endpoint. It optimises developer experience rather than throughput, which makes it the right local-development tool and the wrong production server." }
     ] },
 
@@ -187,14 +187,14 @@ print(n_shared, tot, n_shared + uniq, 100 * (tot - n_shared - uniq) / tot)`,
       sub: "Most disappointing deployments are a default away from fine" },
 
     { t: "ladder", title: "Bringing up a 7B model on one 80 GB GPU", rungs: [
-      { level: "bad", label: "Defaults, then conclude the framework is slow", why: "A default configuration leaves memory on the table, prefix caching off in older versions, and no quantization. The resulting throughput is then attributed to the framework rather than to the configuration.",
+      { level: "bad", label: "Defaults, then conclude the framework is slow", why: "A default configuration leaves memory on the table, prefix caching off in older versions, and no quantisation. The resulting throughput is then attributed to the framework rather than to the configuration.",
         code: `llm = LLM(model="meta-llama/Llama-2-7b-chat-hf")`,
         note: "This is the configuration behind most \"we benchmarked vLLM and it was disappointing\" claims." },
       { level: "ok", label: "Raise the memory fraction and cap the context", why: "The two settings with the largest effect: give the cache more of the device, and stop one request from reserving space for a context nobody sends. Already most of the available win.",
         code: `llm = LLM(model="meta-llama/Llama-2-7b-chat-hf",
           gpu_memory_utilization=0.90,
           max_model_len=4096)` },
-      { level: "best", label: "Add quantization, prefix caching and a token budget", why: "Quantization halves the weights and frees that space for cache (3.3); prefix caching removes most of the prefill on repeated prompts; the token budget holds the latency target (3.5). Each addresses a different bottleneck, so they compose.",
+      { level: "best", label: "Add quantisation, prefix caching and a token budget", why: "Quantisation halves the weights and frees that space for cache (3.3); prefix caching removes most of the prefill on repeated prompts; the token budget holds the latency target (3.5). Each addresses a different bottleneck, so they compose.",
         code: `llm = LLM(model="meta-llama/Llama-2-7b-chat-hf",
           quantization="awq",
           gpu_memory_utilization=0.90,
@@ -242,7 +242,7 @@ llm.generate(["Summarise this ticket:"], SamplingParams(max_tokens=200))
         "Model a request as shared_prefix + user_turn prefill, then N decode steps",
         "Report total request time with and without prefix caching for answer lengths of 5, 20, 100 and 500 tokens",
         "Give the saving as a percentage of the whole request, not of prefill",
-        "State the condition under which prefix caching is worth more than, say, quantization's 1.7× on decode"
+        "State the condition under which prefix caching is worth more than, say, quantisation's 1.7× on decode"
       ],
       hint: "Prefix caching removes a fixed amount of work. Decode adds a variable amount. So the interesting quantity is a ratio, and it has a crossover.",
       solution: { lang: "python", title: "g37_ex.py — prefix caching as a share of the whole request", code: `PREFILL_MS_PER_TOK = 75.698 / 9        # measured
@@ -283,10 +283,10 @@ for n in (5, 20, 100, 500):
   n=100   prefix caching  32.9%   quantization  27.0%   winner: prefix caching
   n=500   prefix caching   9.0%   quantization  37.0%   winner: quantization`,
         notes: [
-          { t: "p", text: "**The crossover is between 100 and 500 output tokens.** Prefix caching removes a fixed cost, so its share of the request shrinks as the answer grows: 88.3% on a five-token answer down to 9.0% on a 500-token one. Quantization works on decode, so its share grows in exactly the opposite direction." },
+          { t: "p", text: "**The crossover is between 100 and 500 output tokens.** Prefix caching removes a fixed cost, so its share of the request shrinks as the answer grows: 88.3% on a five-token answer down to 9.0% on a 500-token one. Quantisation works on decode, so its share grows in exactly the opposite direction." },
           { t: "p", text: "That makes the two complementary rather than competing, and it tells you which to reach for first from one property of your traffic: the **ratio of prompt tokens to output tokens**. A classification or extraction service with huge prompts and three-token answers is almost entirely prefill, and prefix caching is close to the only thing that matters. A long-form writing assistant is the reverse." },
           { t: "p", text: "The decode-share column is the number to internalise. Below about 30% decode share, decode optimisations are rounding errors on your request; above about 70%, prefill optimisations are. Most teams have one of these workloads and tune for the other, because the advice they read was written for the other." },
-          { t: "p", text: "Two caveats on the arithmetic. Prefill cost per token is not really constant — it has a quadratic term from attention, which I am ignoring because it is small at 259 tokens (3.4 puts attention at 25% of the work at 512 tokens). And the 1.69× quantization figure comes from 3.3's CPU measurement, which is noisy; the structure of the conclusion survives a different multiplier, the exact crossover point does not." }
+          { t: "p", text: "Two caveats on the arithmetic. Prefill cost per token is not really constant — it has a quadratic term from attention, which I am ignoring because it is small at 259 tokens (3.4 puts attention at 25% of the work at 512 tokens). And the 1.69× quantisation figure comes from 3.3's CPU measurement, which is noisy; the structure of the conclusion survives a different multiplier, the exact crossover point does not." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
@@ -302,32 +302,32 @@ for n in (5, 20, 100, 500):
         { t: "p", text: "First: is prefix caching enabled, and does the prompt actually have a shared prefix? A RAG prompt usually has a constant system block and a variable retrieved section — and if the retrieved documents are interpolated *before* the instructions, the shared prefix is zero tokens long and the feature is doing nothing. Reordering the template to put everything constant first is a one-line change that I measured at 84.8% of prefill tokens avoided across eight requests." },
         { t: "p", text: "Second: chunked prefill. 3,000-token prefills serialise against everyone else's decode steps — measured, a 512-token prefill is worth 33.9 decode steps, so a 3,000-token one is worth several hundred. Without chunking, one arrival stalls every active stream, which shows up as a throughput number nobody can attribute." },
         { t: "p", text: "Third: the memory settings, because they bound concurrency. The default memory fraction plus an uncapped `max_model_len` means each admitted request reserves cache for a context it will not use, so the batch is smaller than the device can hold (3.2)." },
-        { t: "p", text: "What I would *not* do first is reach for quantization, even though it is the famous lever. On this workload it only touches the 30% of the request that is decode — and my own numbers put prefix caching ahead of it until the answers get past roughly 100 tokens." }
+        { t: "p", text: "What I would *not* do first is reach for quantisation, even though it is the famous lever. On this workload it only touches the 30% of the request that is decode — and my own numbers put prefix caching ahead of it until the answers get past roughly 100 tokens." }
       ] }
   ],
 
   takeaways: [
-    "**Framework overhead is not the deciding factor.** Measured, tokenization and detokenization are 0.01% of a 20-token request; the competition is over memory management and scheduling.",
+    "**Framework overhead is not the deciding factor.** Measured, tokenisation and detokenisation are 0.01% of a 20-token request; the competition is over memory management and scheduling.",
     "**Prefix caching is the one feature with arithmetic worth doing.** A 251-token shared prefix removed 84.8% of prefill tokens across eight requests and 96.2% across 128.",
-    "**Its saving improves with scale**, unlike quantization or GQA, because the cached prefix is paid for once and amortised over everything after it.",
+    "**Its saving improves with scale**, unlike quantisation or GQA, because the cached prefix is paid for once and amortised over everything after it.",
     "**Put the constant part of the prompt first.** The cache matches an exact token prefix, so one timestamp or interpolated name at the top reduces the hit to zero tokens.",
     "**RadixAttention generalises a prefix to a tree**, which is why SGLang's advantage appears on branching agent programs and not on plain chat.",
     "**vLLM is the default for GPU serving**; TensorRT-LLM buys the last 20–40% at the cost of a per-GPU, per-shape build artefact; llama.cpp is the one designed for CPU; Ollama optimises the development loop rather than throughput.",
     "**Treat any feature matrix as dated.** The table already has entries worth re-checking, and the durable part of it is the list of properties to ask about.",
-    "**Four settings cover four different bottlenecks**: quantization for bytes per weight, memory fraction for cache size, prefix caching for repeated prefill, token budget for step latency.",
+    "**Four settings cover four different bottlenecks**: quantisation for bytes per weight, memory fraction for cache size, prefix caching for repeated prefill, token budget for step latency.",
     "**Raise the memory fraction together with the context cap**, since activation headroom scales with the largest batch and longest sequence you admit.",
-    "**Choose your optimisation from the prompt-to-output ratio.** Prefix caching beat quantization on everything up to about 100 output tokens in my arithmetic, and lost beyond roughly 500."
+    "**Choose your optimisation from the prompt-to-output ratio.** Prefix caching beat quantisation on everything up to about 100 output tokens in my arithmetic, and lost beyond roughly 500."
   ],
 
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Tokenization and detokenization measured 0.118 ms against 922 ms of model work. What follows for framework choice?",
+      { stem: "Tokenisation and detokenisation measured 0.118 ms against 922 ms of model work. What follows for framework choice?",
         options: [
           "Python-based frameworks are unsuitable for production serving",
           "The decision should rest on KV cache management and scheduling, not on request-handling speed",
           "Framework choice barely matters, since the model dominates either way",
-          "Detokenization should be moved to a background thread"
+          "Detokenisation should be moved to a background thread"
         ],
         answer: 1,
         why: "At 0.01% of a request, the non-model path could get 100× slower and still be under 1% — so it cannot explain a throughput difference. What does differ by factors between frameworks is how finely KV cache is packed into the device and which request gets the next step, which is exactly the subject of 3.2 and 3.5. Framework choice matters a great deal; it just does not matter for the reason the overhead argument suggests." },
@@ -344,13 +344,13 @@ for n in (5, 20, 100, 500):
 
       { stem: "A service has 3,000-token prompts and 150-token answers and is below its throughput budget. Which lever should be checked first?",
         options: [
-          "Quantizing the weights to int4",
+          "Quantising the weights to int4",
           "Prefix caching and prompt ordering",
           "Speculative decoding with a small draft model",
           "Increasing the maximum batch size"
         ],
         answer: 1,
-        why: "A 20:1 prompt-to-output ratio makes the request prefill-dominated, and prefix caching is the only optimisation that attacks repeated prefill directly — measured, it beat quantization's share of the request on everything up to about 100 output tokens. Quantization and speculative decoding both act on decode, which is the minority of this request. A bigger batch helps throughput but does nothing about the fact that most of the work is re-prefilling identical tokens." },
+        why: "A 20:1 prompt-to-output ratio makes the request prefill-dominated, and prefix caching is the only optimisation that attacks repeated prefill directly — measured, it beat quantisation's share of the request on everything up to about 100 output tokens. Quantisation and speculative decoding both act on decode, which is the minority of this request. A bigger batch helps throughput but does nothing about the fact that most of the work is re-prefilling identical tokens." },
 
       { stem: "Why is TensorRT-LLM's engine compilation a real constraint rather than a one-off setup cost?",
         options: [

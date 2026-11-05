@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "12.5",
 
-  lede: "What to record now so that a change in the model is visible when it happens. One line does most of the work: **log what you were actually served, not what you asked for**, and alert on any mismatch \u2014 that single alert catches silent alias re-points, regional routing differences and provider-side fallbacks on the day they occur. Seven of the eight detectors are free. And one failure mode has **no practical detector at all**: a 4.9% tokenizer shift moves cost by 3.9%, which no 15% alert will ever see.",
+  lede: "What to record now so that a change in the model is visible when it happens. One line does most of the work: **log what you were actually served, not what you asked for**, and alert on any mismatch \u2014 that single alert catches silent alias re-points, regional routing differences and provider-side fallbacks on the day they occur. Seven of the eight detectors are free. And one failure mode has **no practical detector at all**: a 4.9% tokeniser shift moves cost by 3.9%, which no 15% alert will ever see.",
 
   objectives: [
     "Log the served model rather than the requested one, and alert on mismatch",
@@ -60,7 +60,7 @@ log.info("llm_call", extra={
         ["Mean output tokens per endpoint", "Verbosity change \u2192 cost and latency creep", "\u0394 > 20% week on week"],
         ["JSON-parse / tool-call failure rate", "Structured-output shape change", "\u0394 > 2\u00d7 baseline"],
         ["p50/p95 latency per model ID", "Capacity or routing change", "Standard SLO breach"],
-        ["Cost per 1k requests per model ID", "Tokenizer or pricing change", "\u0394 > 15%"],
+        ["Cost per 1k requests per model ID", "Tokeniser or pricing change", "\u0394 > 15%"],
         ["Refusal / empty-answer rate", "Safety-boundary shift", "\u0394 > 2\u00d7 baseline"]
       ] },
 
@@ -74,21 +74,21 @@ log.info("llm_call", extra={
     { t: "h2", n: "03", id: "gap", text: "The failure mode monitoring cannot catch",
       sub: "Measured" },
 
-    {"kind": "trace", "title": "A 15% cost alert cannot see a 10% tokenizer change", "caption": "The signal is assigned to catch a tokenizer *or* a pricing change, and **it catches pricing fine, because a price change moves cost directly.** A tokenizer change does not: input tokens are only part of the bill, so a 10% token-count shift moves cost by **7.9% and the 15% alert does not fire.** Even 20% only just trips it. **And this is not a bad threshold** — lowering it to 5% would fire on ordinary traffic-mix variation. The signal simply cannot see this failure, and the thing that can is a per-request token-count monitor.", "left": "token-count shift", "codeW": 190, "vars": ["cost change", "15% alert"], "steps": [{"code": "4.9% - the measured spread", "state": ["+3.9%", "does not fire"], "tone": "crit"}, {"code": "10.0%", "state": ["+7.9%", "does not fire"], "changed": [0], "tone": "crit"}, {"code": "20.0%", "state": ["+15.9%", "FIRES"], "changed": [1], "tone": "warn", "note": "only just"}, {"code": "lower it to 5%?", "state": ["", "fires on traffic mix"], "tone": "violet"}], "t": "diagram", "id": "dg-12_5-03-2"},
+    {"kind": "trace", "title": "A 15% cost alert cannot see a 10% tokeniser change", "caption": "The signal is assigned to catch a tokeniser *or* a pricing change, and **it catches pricing fine, because a price change moves cost directly.** A tokeniser change does not: input tokens are only part of the bill, so a 10% token-count shift moves cost by **7.9% and the 15% alert does not fire.** Even 20% only just trips it. **And this is not a bad threshold** — lowering it to 5% would fire on ordinary traffic-mix variation. The signal simply cannot see this failure, and the thing that can is a per-request token-count monitor.", "left": "token-count shift", "codeW": 190, "vars": ["cost change", "15% alert"], "steps": [{"code": "4.9% - the measured spread", "state": ["+3.9%", "does not fire"], "tone": "crit"}, {"code": "10.0%", "state": ["+7.9%", "does not fire"], "changed": [0], "tone": "crit"}, {"code": "20.0%", "state": ["+15.9%", "FIRES"], "changed": [1], "tone": "warn", "note": "only just"}, {"code": "lower it to 5%?", "state": ["", "fires on traffic mix"], "tone": "violet"}], "t": "diagram", "id": "dg-12_5-03-2"},
 
 
 
 
 
-    { t: "code", lang: "text", title: "What a tokenizer shift does to the cost alert", code: `  a 4.9% token-count shift -> cost +3.9% -> a 15% alert does NOT fire
+    { t: "code", lang: "text", title: "What a tokeniser shift does to the cost alert", code: `  a 4.9% token-count shift -> cost +3.9% -> a 15% alert does NOT fire
   a 10.0% token-count shift -> cost +7.9% -> a 15% alert does NOT fire
   a 20.0% token-count shift -> cost +15.9% -> a 15% alert FIRES`,
       hl: [1, 3],
-      caption: "The 4.9% spread measured across five tokenizers in 12.4 produces a 3.9% cost change." },
+      caption: "The 4.9% spread measured across five tokenisers in 12.4 produces a 3.9% cost change." },
 
-    { t: "callout", kind: "trap", title: "So the tokenizer failure mode has no practical detector",
+    { t: "callout", kind: "trap", title: "So the tokeniser failure mode has no practical detector",
       body: [
-        { t: "p", text: "The reference assigns \u2018cost per 1k requests, \u0394 > 15%\u2019 to catch a tokenizer or pricing change. It catches **pricing** changes fine, because those are large. It cannot catch a tokenizer change, because the realistic magnitude is far too small \u2014 it takes a **20%** token shift to move cost by 15%, and 12.4 measured the real spread at 4.9%." },
+        { t: "p", text: "The reference assigns \u2018cost per 1k requests, \u0394 > 15%\u2019 to catch a tokeniser or pricing change. It catches **pricing** changes fine, because those are large. It cannot catch a tokeniser change, because the realistic magnitude is far too small \u2014 it takes a **20%** token shift to move cost by 15%, and 12.4 measured the real spread at 4.9%." },
         { t: "p", text: "That is not a flaw in the threshold. Lowering it to 5% would make it fire on ordinary traffic-mix variation, which 10.12\u2019s arithmetic says is exactly how an alert gets disabled. The signal-to-noise is simply unfavourable." },
         { t: "p", text: "So this failure mode has to be caught **before** the migration, by tokenising a representative document against the target model and re-deriving the truncation guard \u2014 which is 12.4\u2019s exercise, and 12.6\u2019s shadow step. Some failure modes are prevented rather than detected, and knowing which is the useful distinction." }
       ] },
@@ -110,7 +110,7 @@ log.info("llm_call", extra={
         { t: "p", text: "Run it per model ID rather than in aggregate, which is 10.8\u2019s slicing point: during a gradual roll you are serving two models, and an aggregate score averages them into a number that moves a fifth as much as the real effect." }
       ] },
 
-    { t: "viz", title: "Eight detectors, and the one gap", caption: "Measured: a 4.9% tokenizer shift moves cost 3.9% \u2014 no 15% alert sees it.",
+    { t: "viz", title: "Eight detectors, and the one gap", caption: "Measured: a 4.9% tokeniser shift moves cost 3.9% \u2014 no 15% alert sees it.",
       svg: `<svg viewBox="0 0 760 320" width="100%" role="img" aria-label="Eight drift detectors with their alert conditions and the undetectable failure mode">
   <text x="16" y="20" class="s-label">ANY SINGLE OCCURRENCE IS ACTIONABLE &#8212; NO RATE, NO WINDOW, NO SIGMA</text>
   <rect x="16" y="30" width="356" height="34" rx="4" class="s-fill" style="stroke:var(--good)" stroke-width="1.8"/>
@@ -150,7 +150,7 @@ log.info("llm_call", extra={
         "All eight signals with their alert conditions and cost to add",
         "Each failure mode mapped to the detector that fires first",
         "Detectors ranked by first-detection coverage",
-        "The cost impact of a realistic tokenizer shift, computed",
+        "The cost impact of a realistic tokeniser shift, computed",
         "The pairing rule's four cases and the action for each"
       ],
       hint: "Check the magnitude a signal needs in order to cross its threshold, not just whether the signal is related to the failure. A detector that needs a 20% move to catch a 5% effect is not a detector.",
@@ -311,16 +311,16 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
         notes: [
           { t: "p", text: "**Seven of eight detectors are free** \u2014 they read fields the response already carries, or counts you already have. Only the nightly golden-set eval needs building, which makes this one of the cheapest instrumentation lists in the course." },
           { t: "p", text: "**Deprecation headers catch three of nine modes first**, more than any other detector, and they are the earliest signal available because they arrive while the model still works. The usual treatment nobody reads deprecation feeds, which is precisely the argument for making it an automated monitor." },
-          { t: "p", text: "**The tokenizer mode is the real finding.** Its assigned detector needs a 20% token shift to fire, and the measured spread across five tokenizers is 4.9% \u2014 producing a 3.9% cost change. The detector catches *pricing* changes fine, because those are large, and cannot catch tokenizer changes at all." },
+          { t: "p", text: "**The tokeniser mode is the real finding.** Its assigned detector needs a 20% token shift to fire, and the measured spread across five tokenisers is 4.9% \u2014 producing a 3.9% cost change. The detector catches *pricing* changes fine, because those are large, and cannot catch tokeniser changes at all." },
           { t: "p", text: "**And lowering the threshold does not help.** A 5% cost alert would fire on ordinary traffic-mix variation, which is how an alert gets disabled. The signal-to-noise is unfavourable, so this mode has to be **prevented** by pre-migration measurement rather than detected." },
           { t: "p", text: "**That distinction \u2014 prevented against detected \u2014 is worth carrying.** Most of this module is about detection, and the one failure mode with the worst consequences is the one where detection is not available." },
-          { t: "p", text: "The mapping from modes to detectors is my judgement rather than a measurement, so the ranking is arguable. What is measured is the tokenizer arithmetic, and that is the part the conclusion rests on." }
+          { t: "p", text: "The mapping from modes to detectors is my judgement rather than a measurement, so the ranking is arguable. What is measured is the tokeniser arithmetic, and that is the part the conclusion rests on." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Log what you were served, not what you asked for, and alert on any mismatch \u2014 one comparison catching alias re-points, regional routing and provider fallbacks on the day they happen. Seven of the eight detectors are free, and two of them are actionable on a single occurrence with no rate or window." },
-        { t: "p", text: "Log `(model_id, prompt_version)` together, because a prompt is only valid against a model and separately a regression is unattributable. And know the gap: a tokenizer change has no practical detector \u2014 4.9% of tokens is 3.9% of cost \u2014 so it must be prevented by measuring the guard against the target model before migrating." }
+        { t: "p", text: "Log `(model_id, prompt_version)` together, because a prompt is only valid against a model and separately a regression is unattributable. And know the gap: a tokeniser change has no practical detector \u2014 4.9% of tokens is 3.9% of cost \u2014 so it must be prevented by measuring the guard against the target model before migrating." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
@@ -330,7 +330,7 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
         { t: "p", text: "The requested field cannot do that job. An alias roll is gradual \u2014 I have seen a fifth of traffic move on day one and all of it on day two \u2014 and the requested field reads the same alias throughout. Only the response field moves, which has a second benefit: you can slice quality by responding version rather than by date, turning a mixed comparison into a clean one." },
         { t: "p", text: "Then the rest of the table, and the striking thing is that seven of eight are free \u2014 they read fields the response already carries. Deprecation headers, which catch more failure modes first than anything else and arrive while the model still works. Mean output tokens, for verbosity creep. JSON-parse and tool-call failure rate. Latency and cost per model ID. Refusal rate. Only the nightly golden-set eval needs building, and I would point it at the *floating alias in staging* so I discover the next model on my own schedule." },
         { t: "p", text: "Two of those are actionable on a single occurrence \u2014 a served-model mismatch and a deprecation header \u2014 which is rare and worth exploiting. Most signals need a baseline, a window and a two-sigma threshold before they mean anything; these are facts rather than estimates." },
-        { t: "p", text: "And I would be honest about one gap. The usual table assigns \u2018cost per thousand requests, delta over 15%\u2019 to catch a tokenizer or pricing change. It catches pricing fine, because price changes are large. It cannot catch a tokenizer change: when I measured five tokenizers on the same document the spread was 4.9%, which moves cost by 3.9% \u2014 it takes a 20% token shift to move cost 15%. And lowering the threshold to 5% would make it fire on ordinary traffic-mix variation, which is how alerts get switched off. So that failure mode has to be *prevented* by tokenising a representative document against the target model before migrating, not detected afterwards." },
+        { t: "p", text: "And I would be honest about one gap. The usual table assigns \u2018cost per thousand requests, delta over 15%\u2019 to catch a tokeniser or pricing change. It catches pricing fine, because price changes are large. It cannot catch a tokeniser change: when I measured five tokenisers on the same document the spread was 4.9%, which moves cost by 3.9% \u2014 it takes a 20% token shift to move cost 15%. And lowering the threshold to 5% would make it fire on ordinary traffic-mix variation, which is how alerts get switched off. So that failure mode has to be *prevented* by tokenising a representative document against the target model before migrating, not detected afterwards." },
         { t: "p", text: "Last, the pairing rule: always log the model id and the prompt version together. A prompt is only valid against a model, so if both changed you cannot attribute a regression and you will debug the wrong one. That is also why the model belongs inside the prompt artefact rather than beside it \u2014 then the log carries the pair by construction instead of by discipline." }
       ] }
   ],
@@ -345,8 +345,8 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
     "**Deprecation headers catch the most failure modes first**, and arrive while the model still works.",
     "**Point the nightly golden-set eval at the floating alias in staging**, so you discover the next model on your schedule.",
     "**Run that eval per model ID**, because during a gradual roll an aggregate averages two models together.",
-    "**Measured: a 4.9% tokenizer shift moves cost 3.9%** \u2014 it takes a 20% shift to fire a 15% cost alert.",
-    "**So a tokenizer change has no practical detector** and must be prevented by pre-migration measurement, not detected.",
+    "**Measured: a 4.9% tokeniser shift moves cost 3.9%** \u2014 it takes a 20% shift to fire a 15% cost alert.",
+    "**So a tokeniser change has no practical detector** and must be prevented by pre-migration measurement, not detected.",
     "**Log `(model_id, prompt_version)` together** \u2014 if both changed, a regression is unattributable."
   ],
 
@@ -373,15 +373,15 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
         answer: 1,
         why: "Most signals here are rates requiring a baseline, a window and a threshold before a movement means anything, whereas a mismatch between the requested and served model has exactly one explanation and a Sunset header is an announcement. That makes them the cheapest high-value alerts available \u2014 and the deprecation header is additionally the earliest signal, since it arrives while the model is still working normally." },
 
-      { stem: "The detector table assigns \u201ccost per 1k requests, \u0394 > 15%\u201d to catch a tokenizer change. Does it?",
+      { stem: "The detector table assigns \u201ccost per 1k requests, \u0394 > 15%\u201d to catch a tokeniser change. Does it?",
         options: [
-          "Yes \u2014 tokenizer changes typically shift costs well above 15%",
+          "Yes \u2014 tokeniser changes typically shift costs well above 15%",
           "No \u2014 a measured 4.9% token shift moves cost only 3.9%, and it takes a 20% shift to fire the alert",
           "Only for output-heavy workloads, where output pricing dominates",
           "Only if prompt caching is disabled"
         ],
         answer: 1,
-        why: "It catches pricing changes, which are large, and misses tokenizer changes, whose realistic magnitude is far too small \u2014 five tokenizers measured on the same document spanned only 4.9%. Lowering the threshold to 5% is not a fix either, since it would fire on ordinary traffic-mix variation and get disabled. This failure mode therefore has to be prevented by measuring the truncation guard against the target tokenizer before migrating." },
+        why: "It catches pricing changes, which are large, and misses tokeniser changes, whose realistic magnitude is far too small \u2014 five tokenisers measured on the same document spanned only 4.9%. Lowering the threshold to 5% is not a fix either, since it would fire on ordinary traffic-mix variation and get disabled. This failure mode therefore has to be prevented by measuring the truncation guard against the target tokeniser before migrating." },
 
       { stem: "Why log the model ID and prompt version together rather than separately?",
         options: [
@@ -411,7 +411,7 @@ and it is why 12.2 puts the model INSIDE the prompt artefact.`,
 
       { level: "advanced",
         q: "Is there a failure mode your monitoring cannot catch?",
-        strong: "A strong answer names the tokenizer and shows the arithmetic.",
+        strong: "A strong answer names the tokeniser and shows the arithmetic.",
         answer: [
           { t: "p", text: "Yes \u2014 a tokenizer change. The usual table assigns a cost-per-thousand-requests alert at 15% to catch it, and the arithmetic does not work." },
           { t: "p", text: "When I tokenised the same 3,000-word document with five tokenizers the spread was 4.9%, which moves cost by 3.9%. It takes a 20% token shift to move cost 15% and fire the alert, so the detector catches pricing changes \u2014 which are large \u2014 and not tokenizer changes." },

@@ -113,7 +113,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deployment optimization is as important as model design. Different hardware needs different optimization strategies — automate this selection."
+     "text": "**Explanation:** Deployment optimisation is as important as model design. Different hardware needs different optimisation strategies — automate this selection."
     }
    ],
    "kind": ""
@@ -182,7 +182,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Differentiable HPO treats hyperparameters as parameters optimized on validation set. Enables continuous optimization instead of discrete search."
+     "text": "**Explanation:** Differentiable HPO treats hyperparameters as parameters optimised on validation set. Enables continuous optimisation instead of discrete search."
     }
    ],
    "kind": ""
@@ -203,7 +203,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** LM NAS is challenging because training is expensive and scaling behavior is unpredictable. Most LLMs still use vanilla Transformer with minor modifications."
+     "text": "**Explanation:** LM NAS is challenging because training is expensive and scaling behaviour is unpredictable. Most LLMs still use vanilla Transformer with minor modifications."
     }
    ],
    "kind": ""
@@ -246,7 +246,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Different search spaces not comparable",
-      "Different training protocols (epochs, augmentation, regularization)",
+      "Different training protocols (epochs, augmentation, regularisation)",
       "Search cost not reported accurately",
       "Cherry-picked results (best of N runs)",
       "Unfair baselines (NAS with tricks vs baseline without)"
@@ -259,7 +259,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "NAS-Bench: Standardized evaluation",
+      "NAS-Bench: Standardised evaluation",
       "Same training pipeline for all architectures",
       "Report mean ± std over multiple runs",
       "Include search cost in total cost"
@@ -288,7 +288,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Not all layers are equally sensitive. First/last layers often need higher precision. Middle layers can be aggressively quantized."
+     "text": "**Explanation:** Not all layers are equally sensitive. First/last layers often need higher precision. Middle layers can be aggressively quantised."
     }
    ],
    "kind": ""
@@ -506,7 +506,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** NAS for finding novel architectures is less important now (Transformer dominates). NAS for deployment optimization remains critical."
+     "text": "**Explanation:** NAS for finding novel architectures is less important now (Transformer dominates). NAS for deployment optimisation remains critical."
     }
    ],
    "kind": ""
@@ -527,7 +527,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard AutoML assumes centralized data. Federated AutoML must operate under privacy constraints while finding good architectures for heterogeneous data."
+     "text": "**Explanation:** Standard AutoML assumes centralised data. Federated AutoML must operate under privacy constraints while finding good architectures for heterogeneous data."
     }
    ],
    "kind": ""
@@ -568,7 +568,7 @@ EC.receiveLesson({
       "**Hardware-software co-design:** Joint design of architecture + hardware accelerator",
       "**LLM-guided NAS:** Use LLMs to propose and evaluate architectures",
       "**AutoML 2.0:** Fully automated ML pipeline including problem formulation",
-      "**Domain-specific AutoML:** Biology, chemistry, physics — specialized search spaces",
+      "**Domain-specific AutoML:** Biology, chemistry, physics — specialised search spaces",
       "**Efficient foundation models:** NAS for Transformer-efficient variants",
       "**Democratization:** Make state-of-the-art ML accessible to non-experts",
       "**Sustainability:** Energy-efficient architecture search and deployment"

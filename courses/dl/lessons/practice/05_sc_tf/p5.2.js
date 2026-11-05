@@ -258,15 +258,15 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Absolute:** Simple, limited generalization to longer sequences."
+     "text": "**Absolute:** Simple, limited generalisation to longer sequences."
     },
     {
      "t": "p",
-     "text": "**Relative:** Better generalization, captures \"how far apart\" rather than \"where.\""
+     "text": "**Relative:** Better generalisation, captures \"how far apart\" rather than \"where.\""
     },
     {
      "t": "p",
-     "text": "**Explanation:** T5 uses relative bias. ALiBi adds linear bias based on distance. RoPE encodes relative position in rotation. Relative methods generalize better to unseen lengths."
+     "text": "**Explanation:** T5 uses relative bias. ALiBi adds linear bias based on distance. RoPE encodes relative position in rotation. Relative methods generalise better to unseen lengths."
     }
    ],
    "kind": ""
@@ -366,7 +366,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** SSMs address Transformer's O(n²) limitation. Mamba is the leading SSM architecture, showing Transformers may not be the final answer for sequence modeling."
+     "text": "**Explanation:** SSMs address Transformer's O(n²) limitation. Mamba is the leading SSM architecture, showing Transformers may not be the final answer for sequence modelling."
     }
    ],
    "kind": ""
@@ -490,7 +490,7 @@ EC.receiveLesson({
       "**Data parallelism:** Same model on multiple GPUs, different data batches",
       "**Tensor parallelism:** Split individual layers across GPUs (e.g., split attention heads)",
       "**Pipeline parallelism:** Different layers on different GPUs",
-      "**ZeRO:** Shard optimizer states, gradients, parameters across GPUs"
+      "**ZeRO:** Shard optimiser states, gradients, parameters across GPUs"
      ]
     },
     {
@@ -579,7 +579,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "46",
-   "q": "What is quantization of Transformers?",
+   "q": "What is quantisation of Transformers?",
    "body": [
     {
      "t": "p",
@@ -592,11 +592,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Methods:** Post-training quantization (PTQ), quantization-aware training (QAT), GPTQ, AWQ."
+     "text": "**Methods:** Post-training quantisation (PTQ), quantisation-aware training (QAT), GPTQ, AWQ."
     },
     {
      "t": "p",
-     "text": "**Explanation:** 70B model in FP16 = 140GB. In INT4 = 35GB (fits on single GPU). Quality degradation manageable. Essential for deployment. QLoRA = quantized base + LoRA adapters."
+     "text": "**Explanation:** 70B model in FP16 = 140GB. In INT4 = 35GB (fits on single GPU). Quality degradation manageable. Essential for deployment. QLoRA = quantised base + LoRA adapters."
     }
    ],
    "kind": ""

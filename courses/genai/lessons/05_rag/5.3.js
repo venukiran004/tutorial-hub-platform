@@ -323,7 +323,7 @@ for name in ("all-MiniLM-L6-v2", "all-mpnet-base-v2"):
           "Renormalisation after truncation recovers most of the lost information",
           "Information is unevenly distributed across dimensions, with the early ones carrying most of it",
           "Cosine similarity is invariant to the number of dimensions",
-          "The index uses product quantization below 256 dimensions"
+          "The index uses product quantisation below 256 dimensions"
         ],
         answer: 1,
         why: "A long flat region followed by a cliff at 64 and 32 dimensions is what you see when the leading dimensions carry most of the signal. Matryoshka embedding models are trained to make that property hold deliberately so truncation is safe; this measurement used naive truncation of a model not trained for it, which makes the result a floor. Renormalising is necessary for the comparison to be meaningful but does not restore information, and cosine is certainly not dimension-invariant." },

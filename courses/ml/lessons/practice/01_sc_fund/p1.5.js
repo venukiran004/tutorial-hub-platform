@@ -139,7 +139,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Alternatives:** (1) `multiprocessing` — creates separate processes, each with its own GIL, (2) `concurrent.futures.ProcessPoolExecutor`, (3) Use NumPy/pandas vectorized operations (they release the GIL internally), (4) Use C extensions (Cython, Numba), (5) Use `asyncio` ONLY if the task is I/O-bound, not CPU-bound."
+     "text": "**Alternatives:** (1) `multiprocessing` — creates separate processes, each with its own GIL, (2) `concurrent.futures.ProcessPoolExecutor`, (3) Use NumPy/pandas vectorised operations (they release the GIL internally), (4) Use C extensions (Cython, Numba), (5) Use `asyncio` ONLY if the task is I/O-bound, not CPU-bound."
     }
    ],
    "kind": ""
@@ -297,7 +297,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Question:** How do you optimize this?"
+     "text": "**Question:** How do you optimise this?"
     },
     {
      "t": "p",
@@ -306,8 +306,8 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Replace `apply` with built-in aggregations:** `agg('mean')`, `transform('sum')` — these are C-optimized.",
-      "**Use `transform` instead of `apply` where possible** — it's vectorized per group.",
+      "**Replace `apply` with built-in aggregations:** `agg('mean')`, `transform('sum')` — these are C-optimised.",
+      "**Use `transform` instead of `apply` where possible** — it's vectorised per group.",
       "**Reduce data first:** Filter unnecessary rows/columns before groupby.",
       "**Use `numba` engine:** `df.groupby('x')['y'].transform('mean', engine='numba')`.",
       "**Switch to Polars:** Same operation in Polars is often 10-50× faster due to Rust backend and lazy evaluation."
@@ -600,7 +600,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** This is **overfitting** — the model memorized training data instead of learning generalizable patterns."
+     "text": "**Answer:** This is **overfitting** — the model memorised training data instead of learning generalisable patterns."
     },
     {
      "t": "p",
@@ -613,7 +613,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Regularization:** Increase `max_depth` penalty, add L1/L2 (`reg_alpha`, `reg_lambda`)",
+      "**Regularisation:** Increase `max_depth` penalty, add L1/L2 (`reg_alpha`, `reg_lambda`)",
       "**Reduce complexity:** Lower `max_depth`, increase `min_child_weight`, fewer estimators",
       "**More data:** Often the best fix",
       "**Feature selection:** Remove noisy/irrelevant features",
@@ -680,7 +680,7 @@ EC.receiveLesson({
       "**Data leakage:** The feature might be derived from the target (check feature engineering pipeline!)",
       "**Non-linear relationship already captured:** Tree models may already capture this through other features",
       "**Feature is constant in test set:** High training correlation, zero variance in test",
-      "**Scale issues:** The feature might need normalization for distance-based models"
+      "**Scale issues:** The feature might need normalisation for distance-based models"
      ]
     },
     {
@@ -715,7 +715,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Target leakage:** A feature that is a consequence of the target (e.g., \"cancelled_order\" feature when predicting cancellation)",
-      "**Train-test contamination:** Normalizing/encoding on full dataset before splitting",
+      "**Train-test contamination:** Normalising/encoding on full dataset before splitting",
       "**Temporal leakage:** Using future data to predict past (time series must use time-based splits)",
       "**Duplicate rows:** Same record in both train and test",
       "**Preprocessing leakage:** Fitting scaler/encoder on train+test together"
@@ -807,7 +807,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You have a \"purchase_datetime\" column and need to predict customer behavior."
+     "text": "**Situation:** You have a \"purchase_datetime\" column and need to predict customer behaviour."
     },
     {
      "t": "p",
@@ -836,7 +836,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Question:** How do you standardize?"
+     "text": "**Question:** How do you standardise?"
     },
     {
      "t": "p",

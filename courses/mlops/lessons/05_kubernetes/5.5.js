@@ -149,7 +149,7 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
         "If CI does not wait, every deployment report is about acceptance rather than about serving."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The ConfigMap finding is the one that surprises people most: a value changed last month may still not be in effect on any replica that has not restarted since, and nothing anywhere reports that. The checksum annotation is three lines and makes config changes behave like code changes." },
           { t: "p", text: "The rollout parameters are usually the default, which means every deploy deliberately removes a quarter of capacity. At a 70% utilisation target that moves you to roughly 93% for the duration, which is the runaway end of lesson 5.3's queueing curve — so the deploy itself becomes the latency incident people blame on the new version." }
         ]

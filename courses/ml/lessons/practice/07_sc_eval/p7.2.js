@@ -44,7 +44,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** CV score estimates generalization on seen data distribution. Test set (held out completely) validates the final model on truly unseen data."
+     "text": "**Answer:** CV score estimates generalisation on seen data distribution. Test set (held out completely) validates the final model on truly unseen data."
     },
     {
      "t": "p",
@@ -124,7 +124,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Plot model performance vs hyperparameter value (e.g., tree depth, regularization strength)."
+     "text": "**Answer:** Plot model performance vs hyperparameter value (e.g., tree depth, regularisation strength)."
     },
     {
      "t": "p",
@@ -186,7 +186,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** When comparing models with different numbers of features. Adjusted R² penalizes for additional features that don't improve the model."
+     "text": "**Answer:** When comparing models with different numbers of features. Adjusted R² penalises for additional features that don't improve the model."
     },
     {
      "t": "p",
@@ -370,7 +370,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Offline is necessary but insufficient. Online captures real-world behavior, distribution shifts, and user interactions."
+     "text": "**Explanation:** Offline is necessary but insufficient. Online captures real-world behaviour, distribution shifts, and user interactions."
     }
    ],
    "kind": ""
@@ -404,7 +404,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Demographic parity:** Equal positive prediction rate across groups",
-      "**Equalized odds:** Equal TPR and FPR across groups",
+      "**Equalised odds:** Equal TPR and FPR across groups",
       "**Calibration:** Equal precision across groups",
       "**Individual fairness:** Similar individuals get similar predictions"
      ]

@@ -92,7 +92,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** This is why large neural networks generalize — gradient descent's implicit bias acts as regularization, preferring simpler solutions among many that fit the data."
+     "text": "**Explanation:** This is why large neural networks generalise — gradient descent's implicit bias acts as regularisation, preferring simpler solutions among many that fit the data."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "32",
-   "q": "What happens when you use batch normalization with batch size 1?",
+   "q": "What happens when you use batch normalisation with batch size 1?",
    "body": [
     {
      "t": "p",
@@ -163,7 +163,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "33",
-   "q": "What is the effect of input normalization on training?",
+   "q": "What is the effect of input normalisation on training?",
    "body": [
     {
      "t": "p",
@@ -176,7 +176,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Different scales create elongated loss landscape → gradient descent oscillates. Normalization creates circular contours → direct path to minimum."
+     "text": "**Explanation:** Different scales create elongated loss landscape → gradient descent oscillates. Normalisation creates circular contours → direct path to minimum."
     }
    ],
    "kind": ""
@@ -247,7 +247,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "What is the implicit regularization from data augmentation?",
+   "q": "What is the implicit regularisation from data augmentation?",
    "body": [
     {
      "t": "p",
@@ -344,7 +344,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** NTK theory explains why overparameterized networks converge — they behave like convex optimization. But feature learning (finite width) is what makes DL powerful."
+     "text": "**Explanation:** NTK theory explains why overparameterized networks converge — they behave like convex optimisation. But feature learning (finite width) is what makes DL powerful."
     }
    ],
    "kind": ""
@@ -386,7 +386,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Deep networks learn to compress irrelevant input information while preserving task-relevant signal. This compression correlates with generalization."
+     "text": "**Explanation:** Deep networks learn to compress irrelevant input information while preserving task-relevant signal. This compression correlates with generalisation."
     }
    ],
    "kind": ""
@@ -457,7 +457,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "47",
-   "q": "What is the effect of weight initialization scale?",
+   "q": "What is the effect of weight initialisation scale?",
    "body": [
     {
      "t": "p",
@@ -470,7 +470,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Initialization is solved for standard architectures but remains important for custom layers, unusual activations, or training from scratch."
+     "text": "**Explanation:** Initialisation is solved for standard architectures but remains important for custom layers, unusual activations, or training from scratch."
     }
    ],
    "kind": ""
@@ -512,7 +512,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Most DL failures are engineering failures, not modeling failures. Get the basics right before optimizing."
+     "text": "**Explanation:** Most DL failures are engineering failures, not modelling failures. Get the basics right before optimising."
     }
    ],
    "kind": ""

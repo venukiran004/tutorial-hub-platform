@@ -242,7 +242,7 @@ EC.receiveLesson({
       [
        "Empirical Bayes",
        "Use data to estimate prior hyperparameters",
-       "Marginal likelihood maximization"
+       "Marginal likelihood maximisation"
       ]
      ]
     },
@@ -359,7 +359,7 @@ EC.receiveLesson({
       [
        "LOF",
        "Local density",
-       "Compares density of point to neighbors"
+       "Compares density of point to neighbours"
       ]
      ]
     },
@@ -412,11 +412,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** Your model was trained on data from 2023. Now in 2024, user behavior has changed significantly."
+     "text": "**Situation:** Your model was trained on data from 2023. Now in 2024, user behaviour has changed significantly."
     },
     {
      "t": "p",
-     "text": "**Question:** How do you mathematically characterize and handle this shift?"
+     "text": "**Question:** How do you mathematically characterise and handle this shift?"
     },
     {
      "t": "p",
@@ -460,7 +460,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You compute a correlation matrix from data with missing values. When you try to use it for portfolio optimization, it fails because the matrix is not positive semi-definite."
+     "text": "**Situation:** You compute a correlation matrix from data with missing values. When you try to use it for portfolio optimisation, it fails because the matrix is not positive semi-definite."
     },
     {
      "t": "p",

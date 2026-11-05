@@ -143,7 +143,7 @@ EC.receiveLesson({
       [
        "Matrix multiply",
        "`A @ B`",
-       "Fastest — BLAS optimized"
+       "Fastest — BLAS optimised"
       ],
       [
        "Batched matmul",

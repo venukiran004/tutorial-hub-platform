@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Design an explanation API with batching, caching and drift monitoring on the explanations themselves"
   ],
 
-  prerequisites: ["9.2", "11.6", "8.5"],
+  prerequisites: ["9.2", "8.5"],
 
   blocks: [
 

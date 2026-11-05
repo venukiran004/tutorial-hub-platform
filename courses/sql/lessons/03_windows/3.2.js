@@ -205,7 +205,7 @@ GROUP  BY p.name ORDER BY rnk, p.name;
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "The three highest-paid people in each department",
       rungs: [
         { level: "bad", label: "Correlated subquery per row", code: `SELECT * FROM employees e

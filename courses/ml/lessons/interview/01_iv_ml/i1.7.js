@@ -16,13 +16,13 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Optimization & Training Dynamics",
+   "text": "Optimisation & Training Dynamics",
    "id": "set"
   },
   {
    "t": "drill",
    "n": "121",
-   "q": "What is the difference between first-order and second-order optimization?",
+   "q": "What is the difference between first-order and second-order optimisation?",
    "body": [
     {
      "t": "ul",
@@ -102,7 +102,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "124",
-   "q": "How does the Adam optimizer work?",
+   "q": "How does the Adam optimiser work?",
    "body": [
     {
      "t": "p",
@@ -156,7 +156,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "In deep models, gradients are products of many partial derivatives. If Jacobians < 1 repeatedly → gradients shrink to zero (vanishing). If > 1 → explode. Primarily affects RNNs and very deep networks. Fixed by normalization, gradient clipping, and skip connections."
+     "text": "In deep models, gradients are products of many partial derivatives. If Jacobians < 1 repeatedly → gradients shrink to zero (vanishing). If > 1 → explode. Primarily affects RNNs and very deep networks. Fixed by normalisation, gradient clipping, and skip connections."
     }
    ],
    "kind": ""
@@ -176,7 +176,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "128",
-   "q": "What is the saddle point problem in optimization?",
+   "q": "What is the saddle point problem in optimisation?",
    "body": [
     {
      "t": "p",
@@ -188,7 +188,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "129",
-   "q": "What is line search in optimization?",
+   "q": "What is line search in optimisation?",
    "body": [
     {
      "t": "p",
@@ -197,7 +197,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Exact:** Minimize loss along direction analytically (expensive).",
+      "**Exact:** Minimise loss along direction analytically (expensive).",
       "**Backtracking / Armijo:** Start with large step, reduce until sufficient decrease condition is met."
      ]
     },
@@ -215,7 +215,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Optimize one parameter at a time while holding others fixed. Efficient when each 1D minimization has a closed form (e.g., Lasso via soft thresholding). Used in sklearn's `LinearRegression` with `solver=\"coordinate_descent\"` for Lasso."
+     "text": "Optimise one parameter at a time while holding others fixed. Efficient when each 1D minimisation has a closed form (e.g., Lasso via soft thresholding). Used in sklearn's `LinearRegression` with `solver=\"coordinate_descent\"` for Lasso."
     }
    ],
    "kind": ""
@@ -223,7 +223,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "131",
-   "q": "What is the difference between convex and non-convex optimization in ML?",
+   "q": "What is the difference between convex and non-convex optimisation in ML?",
    "body": [
     {
      "t": "ul",
@@ -242,7 +242,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "For non-differentiable loss functions (e.g., hinge loss in SVM, L1 regularization). A subgradient is any element of the subdifferential. Convergence is slower than smooth gradient descent."
+     "text": "For non-differentiable loss functions (e.g., hinge loss in SVM, L1 regularisation). A subgradient is any element of the subdifferential. Convergence is slower than smooth gradient descent."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Handles regularized objectives by splitting into smooth + non-smooth parts:"
+     "text": "Handles regularised objectives by splitting into smooth + non-smooth parts:"
     },
     {
      "t": "math",
@@ -274,7 +274,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "134",
-   "q": "What is the generalization gap and how do training dynamics affect it?",
+   "q": "What is the generalisation gap and how do training dynamics affect it?",
    "body": [
     {
      "t": "p",
@@ -283,9 +283,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Learning rate (too high → noisy final solution, poor generalization).",
-      "Batch size (smaller batches → flatter minima → better generalization).",
-      "Number of epochs (more → overfitting without regularization).",
+      "Learning rate (too high → noisy final solution, poor generalisation).",
+      "Batch size (smaller batches → flatter minima → better generalisation).",
+      "Number of epochs (more → overfitting without regularisation).",
       "Model capacity vs dataset size."
      ]
     }
@@ -299,7 +299,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "The test error curve shows two U-shapes as model capacity increases. After the classical bias-variance peak (interpolation threshold), adding more capacity paradoxically reduces test error again. Observed in neural networks and other over-parameterized models."
+     "text": "The test error curve shows two U-shapes as model capacity increases. After the classical bias-variance peak (interpolation threshold), adding more capacity paradoxically reduces test error again. Observed in neural networks and other over-parameterised models."
     }
    ],
    "kind": ""
@@ -311,7 +311,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Visualization of loss as a function of model parameters. Sharp minima generalize poorly (sensitive to perturbations); flat minima generalize better. SGD's noise helps find flatter minima than full-batch gradient descent."
+     "text": "Visualisation of loss as a function of model parameters. Sharp minima generalise poorly (sensitive to perturbations); flat minima generalise better. SGD's noise helps find flatter minima than full-batch gradient descent."
     }
    ],
    "kind": ""
@@ -339,11 +339,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "138",
-   "q": "What is the effect of batch size on generalization?",
+   "q": "What is the effect of batch size on generalisation?",
    "body": [
     {
      "t": "p",
-     "text": "Larger batches → more accurate gradient estimates, faster convergence per epoch BUT often converge to sharper minima (worse generalization). \"Large batch training harm\" — mitigation: increase LR proportionally (linear scaling rule), use LR warmup."
+     "text": "Larger batches → more accurate gradient estimates, faster convergence per epoch BUT often converge to sharper minima (worse generalisation). \"Large batch training harm\" — mitigation: increase LR proportionally (linear scaling rule), use LR warmup."
     }
    ],
    "kind": ""
@@ -363,7 +363,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Often improves generalization and smooths out SGD's noise (implemented as `SWA` — Stochastic Weight Averaging in PyTorch)."
+     "text": "Often improves generalisation and smooths out SGD's noise (implemented as `SWA` — Stochastic Weight Averaging in PyTorch)."
     }
    ],
    "kind": ""
@@ -371,13 +371,13 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "140",
-   "q": "What is hyperparameter optimization beyond grid search?",
+   "q": "What is hyperparameter optimisation beyond grid search?",
    "body": [
     {
      "t": "ul",
      "items": [
       "**Random Search:** Sample random configs; better than grid for high-dimensional spaces.",
-      "**Bayesian Optimization:** Use Gaussian Process to model performance surface; prioritize promising regions.",
+      "**Bayesian Optimisation:** Use Gaussian Process to model performance surface; prioritise promising regions.",
       "**Hyperband:** Adaptive resource allocation — promote best candidates, early-stop others.",
       "**BOHB:** Combines Bayesian and Hyperband.",
       "Tools: Optuna, Ray Tune, Hyperopt."

@@ -196,7 +196,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "711",
-   "q": "BPE Tokenizer (Simplified)",
+   "q": "BPE Tokeniser (Simplified)",
    "body": [
     {
      "t": "code",
@@ -250,7 +250,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "714",
-   "q": "Text Summarization (Extractive)",
+   "q": "Text Summarisation (Extractive)",
    "body": [
     {
      "t": "code",
@@ -394,7 +394,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "722",
-   "q": "Attention Visualization",
+   "q": "Attention Visualisation",
    "body": [
     {
      "t": "code",

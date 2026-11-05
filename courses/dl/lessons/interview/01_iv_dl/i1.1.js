@@ -207,7 +207,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Zero-centered (unlike sigmoid) → faster training. Still saturates."
+     "text": "Zero-centreed (unlike sigmoid) → faster training. Still saturates."
     },
     {
      "t": "p",
@@ -336,7 +336,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "9",
-   "q": "What is weight initialization? Derive He and Glorot formulations.",
+   "q": "What is weight initialisation? Derive He and Glorot formulations.",
    "body": [
     {
      "t": "p",
@@ -364,7 +364,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**He initialization** (ReLU): Only positive half of distribution active → variance is halved:"
+     "text": "**He initialisation** (ReLU): Only positive half of distribution active → variance is halved:"
     },
     {
      "t": "math",
@@ -380,7 +380,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "10",
-   "q": "What is batch normalization? Derive forward and backward pass.",
+   "q": "What is batch normalisation? Derive forward and backward pass.",
    "body": [
     {
      "t": "p",
@@ -410,9 +410,9 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Reduces internal covariate shift — input distribution to each layer is stabilised",
-      "Acts as regularizer (noise from batch statistics)",
+      "Acts as regulariser (noise from batch statistics)",
       "Allows higher learning rates (landscape is smoother)",
-      "Reduces sensitivity to initialization"
+      "Reduces sensitivity to initialisation"
      ]
     },
     {
@@ -457,7 +457,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Regularization effect:** Adds noise \\(\\propto\\) activation magnitude → prevents co-adaptation. Equivalent to L2 regularization under certain assumptions."
+     "text": "**Regularisation effect:** Adds noise \\(\\propto\\) activation magnitude → prevents co-adaptation. Equivalent to L2 regularisation under certain assumptions."
     }
    ],
    "kind": ""
@@ -493,7 +493,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "13",
-   "q": "Derive SGD, RMSProp, and Adam optimizers.",
+   "q": "Derive SGD, RMSProp, and Adam optimisers.",
    "body": [
     {
      "t": "p",
@@ -609,13 +609,13 @@ EC.receiveLesson({
       [
        "SELU",
        "$\\lambda\\cdot$ELU",
-       "Self-normalizing networks"
+       "Self-normalising networks"
       ]
      ]
     },
     {
      "t": "p",
-     "text": "**Prevention:** He initialization, small learning rate, BatchNorm before activation."
+     "text": "**Prevention:** He initialisation, small learning rate, BatchNorm before activation."
     }
    ],
    "kind": ""
@@ -691,7 +691,7 @@ EC.receiveLesson({
      "rows": [
       [
        "Role",
-       "Optimized during training",
+       "Optimised during training",
        "Evaluates model"
       ],
       [
@@ -713,7 +713,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why not optimize metrics directly?**"
+     "text": "**Why not optimise metrics directly?**"
     },
     {
      "t": "ul",
@@ -732,11 +732,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "18",
-   "q": "Weight regularization in neural networks — L1, L2, and weight decay.",
+   "q": "Weight regularisation in neural networks — L1, L2, and weight decay.",
    "body": [
     {
      "t": "p",
-     "text": "**L2 regularization (weight decay):** Add \\(\\frac{\\lambda}{2}||\\boldsymbol\\theta||^2\\) to loss:"
+     "text": "**L2 regularisation (weight decay):** Add \\(\\frac{\\lambda}{2}||\\boldsymbol\\theta||^2\\) to loss:"
     },
     {
      "t": "math",
@@ -752,7 +752,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**L1 regularization:** Add \\(\\lambda||\\boldsymbol\\theta||_1\\):"
+     "text": "**L1 regularisation:** Add \\(\\lambda||\\boldsymbol\\theta||_1\\):"
     },
     {
      "t": "math",
@@ -764,7 +764,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Max-norm regularization:** Constrain \\(||\\mathbf{w}_i|| \\leq c\\) after each update. Used with dropout (prevents blow-up of unregularized weights)."
+     "text": "**Max-norm regularisation:** Constrain \\(||\\mathbf{w}_i|| \\leq c\\) after each update. Used with dropout (prevents blow-up of unregularized weights)."
     }
    ],
    "kind": ""
@@ -791,7 +791,7 @@ EC.receiveLesson({
      "items": [
       "Horizontal flip → left-right invariance",
       "Random crop → translation invariance",
-      "Color jitter → photometric invariance",
+      "Colour jitter → photometric invariance",
       "Mixup: \\(\\tilde{x} = \\lambda x_i + (1-\\lambda)x_j\\), \\(\\tilde{y} = \\lambda y_i + (1-\\lambda)y_j\\) — linear interpolation of examples and labels; improves calibration",
       "CutMix: replace patches from another image"
      ]

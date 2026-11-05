@@ -214,7 +214,7 @@ FROM   (VALUES (1, 10), (2, NULL), (3, NULL), (4, 40)) AS t(i, x) ORDER BY i;
       { t: "p", text: "`until_next`, `next_order_amount`, `final_status_of_customer` — anything computed with LEAD or a frame that reaches forward is known only after the fact. **They are excellent targets and forbidden inputs.** The test from Data Handling 8.3 applies: truncate the history at a date and any of these that change for earlier rows were reading the future." }
     ]},
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "Each customer's most recent order amount, on every one of their orders",
       rungs: [
         { level: "bad", label: "LAST_VALUE with the default frame", code: `LAST_VALUE(amount) OVER (PARTITION BY customer_id ORDER BY placed_at)`,

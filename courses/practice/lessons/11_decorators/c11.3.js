@@ -418,7 +418,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Parameterized logging decorator with configurable log level."
+     "text": "**Explanation:** Parameterised logging decorator with configurable log level."
     }
    ],
    "prompt": [

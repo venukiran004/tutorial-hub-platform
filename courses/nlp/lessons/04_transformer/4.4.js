@@ -137,7 +137,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Out of a possible 2.64 at 14 tokens, that is essentially a deterministic pointer — it attends to one position and nothing else, with a mean offset of −0.07, meaning roughly to itself. Early layers do this kind of sharp, local, positional work; later layers drift toward the `[SEP]` sink, from 7.6% at layer 0 to 86.4% at layer 11. This echoes what lesson 3.6 measured about sense separation peaking mid-stack: the interesting representational work happens in the middle, and the top layers specialise toward the pretraining objective." }] },
 
     { t: "exercise", title: "Probe your own model's heads",
-      tasks: [
+      requirements: [
         "Run a sentence through a model with `output_attentions=True` and compute the [SEP] mass for all heads. Rank them.",
         "Search all heads for the strongest previous-token, next-token and self-attention behaviours.",
         "Compute the pairwise cosine between heads in one layer and find the most and least similar pair.",

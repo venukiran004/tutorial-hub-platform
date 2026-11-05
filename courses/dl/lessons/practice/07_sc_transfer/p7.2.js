@@ -54,7 +54,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Sparse winning tickets from pre-training are also good initializations for target tasks. Suggests common structure across tasks captured by specific weight paths."
+     "text": "**Explanation:** Sparse winning tickets from pre-training are also good initialisations for target tasks. Suggests common structure across tasks captured by specific weight paths."
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "Low learning rate for pre-trained layers",
-      "L2 regularization toward pre-trained weights",
+      "L2 regularisation toward pre-trained weights",
       "EWC (Elastic Weight Consolidation)",
       "Replay: mix pre-training data with fine-tuning data"
      ]
@@ -199,7 +199,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** With 10 labeled examples: feature extraction. With 100: fine-tune last layers. With 1000: fine-tune more layers. With 10000+: fine-tune everything."
+     "text": "**Explanation:** With 10 labelled examples: feature extraction. With 100: fine-tune last layers. With 1000: fine-tune more layers. With 10000+: fine-tune everything."
     }
    ],
    "kind": ""
@@ -261,7 +261,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Maximize performance with minimal target data:"
+     "text": "**Answer:** Maximise performance with minimal target data:"
     },
     {
      "t": "code",
@@ -341,7 +341,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bias terms are a tiny fraction but significantly affect feature selection. Biases shift activation distributions → change which features are emphasized."
+     "text": "**Explanation:** Bias terms are a tiny fraction but significantly affect feature selection. Biases shift activation distributions → change which features are emphasised."
     }
    ],
    "kind": ""
@@ -381,7 +381,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Analyze what pre-trained models learn by training simple classifiers on frozen representations:"
+     "text": "**Answer:** Analyse what pre-trained models learn by training simple classifiers on frozen representations:"
     },
     {
      "t": "code",
@@ -513,7 +513,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Bridges domain gap between general pre-training and specific fine-tuning. Use the target domain's unlabeled data for continued pre-training."
+     "text": "**Explanation:** Bridges domain gap between general pre-training and specific fine-tuning. Use the target domain's unlabelled data for continued pre-training."
     }
    ],
    "kind": ""
@@ -539,7 +539,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Debug:** Compare with linear probing (if linear probe works but fine-tuning doesn't → optimization issue)."
+     "text": "**Debug:** Compare with linear probing (if linear probe works but fine-tuning doesn't → optimisation issue)."
     }
    ],
    "kind": ""
@@ -583,13 +583,13 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Small batch (8-16):** More gradient noise → better generalization. Less memory.",
+      "**Small batch (8-16):** More gradient noise → better generalisation. Less memory.",
       "**Large batch (64-256):** Smoother gradients → faster convergence. More memory."
      ]
     },
     {
      "t": "p",
-     "text": "**For fine-tuning:** Small batch sizes often work better (regularization effect)."
+     "text": "**For fine-tuning:** Small batch sizes often work better (regularisation effect)."
     },
     {
      "t": "p",

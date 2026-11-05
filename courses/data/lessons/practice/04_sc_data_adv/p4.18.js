@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Query understanding: parse intent — \"red\" is color modifier for \"shoes,\" not a brand, (2) attribute extraction: tag products with structured attributes (color, category, brand), (3) field boosting: match in product category > match in description > match in brand, (4) semantic search: BERT/sentence-transformer embeddings for query and products, (5) learning to rank (LTR): train ranking model on click-through data, (6) negative feedback: queries with high bounce rate → improve ranking, (7) query rewriting: \"red shoes\" → filter(category=shoes, color=red), (8) evaluation: NDCG on annotated queries."
+     "text": "**Answer:** (1) Query understanding: parse intent — \"red\" is colour modifier for \"shoes,\" not a brand, (2) attribute extraction: tag products with structured attributes (colour, category, brand), (3) field boosting: match in product category > match in description > match in brand, (4) semantic search: BERT/sentence-transformer embeddings for query and products, (5) learning to rank (LTR): train ranking model on click-through data, (6) negative feedback: queries with high bounce rate → improve ranking, (7) query rewriting: \"red shoes\" → filter(category=shoes, color=red), (8) evaluation: NDCG on annotated queries."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** \"(1) Define CLV: sum of future revenue from customer over N months (say 12), (2) Data: transaction history, customer demographics, engagement metrics, (3) Target variable: actual revenue in next 12 months for historical customers (need sufficient history), (4) Features: recency (days since last purchase), frequency (purchase count), monetary (average order value), tenure, product categories, channel mix, (5) Model: start with RFM-based heuristic → graduate to regression model, (6) Evaluation: MAE, RMSE on held-out customers, calibration plot, (7) Segmentation: bucket CLV into tiers (high/medium/low) for actionable marketing, (8) Deployment: score new customers monthly, feed into CRM, (9) Monitoring: compare predicted vs. actual CLV as actuals materialize.\""
+     "text": "**Answer:** \"(1) Define CLV: sum of future revenue from customer over N months (say 12), (2) Data: transaction history, customer demographics, engagement metrics, (3) Target variable: actual revenue in next 12 months for historical customers (need sufficient history), (4) Features: recency (days since last purchase), frequency (purchase count), monetary (average order value), tenure, product categories, channel mix, (5) Model: start with RFM-based heuristic → graduate to regression model, (6) Evaluation: MAE, RMSE on held-out customers, calibration plot, (7) Segmentation: bucket CLV into tiers (high/medium/low) for actionable marketing, (8) Deployment: score new customers monthly, feed into CRM, (9) Monitoring: compare predicted vs. actual CLV as actuals materialise.\""
     }
    ],
    "kind": ""
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** \"(1) Visualization: plot time series, look for repeating patterns, (2) autocorrelation plot: strong spikes at seasonal lags (lag 12 for monthly data with yearly seasonality), (3) decomposition: `seasonal_decompose()` — separates trend, seasonal, residual components, (4) Fourier transform: identify dominant frequencies, (5) tests: Kruskal-Wallis test by month/day-of-week, (6) handling: (a) seasonal differencing: subtract value from same period last year, (b) Fourier features: sin/cos terms at seasonal frequency, (c) SARIMA: explicit seasonal AR/MA terms, (d) include seasonal indicators as features in ML models, (7) multiple seasonalities: Prophet handles daily + weekly + yearly.\""
+     "text": "**Answer:** \"(1) Visualisation: plot time series, look for repeating patterns, (2) autocorrelation plot: strong spikes at seasonal lags (lag 12 for monthly data with yearly seasonality), (3) decomposition: `seasonal_decompose()` — separates trend, seasonal, residual components, (4) Fourier transform: identify dominant frequencies, (5) tests: Kruskal-Wallis test by month/day-of-week, (6) handling: (a) seasonal differencing: subtract value from same period last year, (b) Fourier features: sin/cos terms at seasonal frequency, (c) SARIMA: explicit seasonal AR/MA terms, (d) include seasonal indicators as features in ML models, (7) multiple seasonalities: Prophet handles daily + weekly + yearly.\""
     },
     {
      "t": "p",
@@ -122,7 +122,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data minimization: only share features strictly needed for the project, (2) anonymization: remove direct identifiers, aggregate or generalize quasi-identifiers, (3) k-anonymity: ensure each record is indistinguishable from k-1 others, (4) differential privacy: add calibrated noise to protect individuals, (5) legal: data sharing agreement (DSA) defining use, retention, deletion, (6) secure transfer: encrypted file transfer, not email, (7) alternative: federated learning — each party trains locally, share only model updates, (8) synthetic data: generate realistic synthetic data that preserves statistical properties, (9) monitoring: restrict partner's data access, audit usage."
+     "text": "**Answer:** (1) Data minimisation: only share features strictly needed for the project, (2) anonymisation: remove direct identifiers, aggregate or generalise quasi-identifiers, (3) k-anonymity: ensure each record is indistinguishable from k-1 others, (4) differential privacy: add calibrated noise to protect individuals, (5) legal: data sharing agreement (DSA) defining use, retention, deletion, (6) secure transfer: encrypted file transfer, not email, (7) alternative: federated learning — each party trains locally, share only model updates, (8) synthetic data: generate realistic synthetic data that preserves statistical properties, (9) monitoring: restrict partner's data access, audit usage."
     }
    ],
    "kind": ""
@@ -138,7 +138,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Complex Modeling Scenarios**"
+     "text": "**Theme: Complex Modelling Scenarios**"
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "435",
-   "q": "Your regression target has a long right tail (most values 0-100, some up to 10,000). What modeling strategies help?",
+   "q": "Your regression target has a long right tail (most values 0-100, some up to 10,000). What modelling strategies help?",
    "body": [
     {
      "t": "p",
@@ -162,7 +162,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Regression to the mean: model predictions gravitate toward overall mean, (2) this is expected behavior for models trained with MSE loss on noisy data, (3) solutions: (a) calibration: post-processing to adjust predictions, (b) quantile regression: different quantile estimates for different ranges, (c) binned recalibration: separate calibration per value range, (d) target encoding: log-transform might help if multiplicative errors, (4) check: is the model underfit? (can it capture extreme values at all?), (5) ensemble: mix base model with a model trained specifically on extreme values."
+     "text": "**Answer:** (1) Regression to the mean: model predictions gravitate toward overall mean, (2) this is expected behaviour for models trained with MSE loss on noisy data, (3) solutions: (a) calibration: post-processing to adjust predictions, (b) quantile regression: different quantile estimates for different ranges, (c) binned recalibration: separate calibration per value range, (d) target encoding: log-transform might help if multiplicative errors, (4) check: is the model underfit? (can it capture extreme values at all?), (5) ensemble: mix base model with a model trained specifically on extreme values."
     }
    ],
    "kind": ""
@@ -190,7 +190,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Filter: remove zero-variance, near-constant features (immediate), (2) correlation: remove highly correlated feature pairs (keep one), (3) mutual information: rank features by MI with target, keep top-N, (4) model-based: train random forest/XGBoost, rank by feature importance, (5) recursive elimination (RFE): iteratively remove least important features, (6) L1 regularization: Lasso drives unimportant features to zero, (7) SHAP: rank by mean absolute SHAP value, (8) final selection: intersection of top features from multiple methods, (9) validation: compare 50-feature model to 500-feature model on test set."
+     "text": "**Answer:** (1) Filter: remove zero-variance, near-constant features (immediate), (2) correlation: remove highly correlated feature pairs (keep one), (3) mutual information: rank features by MI with target, keep top-N, (4) model-based: train random forest/XGBoost, rank by feature importance, (5) recursive elimination (RFE): iteratively remove least important features, (6) L1 regularisation: Lasso drives unimportant features to zero, (7) SHAP: rank by mean absolute SHAP value, (8) final selection: intersection of top features from multiple methods, (9) validation: compare 50-feature model to 500-feature model on test set."
     }
    ],
    "kind": ""
@@ -198,7 +198,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "439",
-   "q": "Your features include both very stable features (demographics) and rapidly changing features (real-time behavior). How do you handle this in feature engineering?",
+   "q": "Your features include both very stable features (demographics) and rapidly changing features (real-time behaviour). How do you handle this in feature engineering?",
    "body": [
     {
      "t": "p",
@@ -218,7 +218,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multilingual models: XLM-RoBERTa, mBERT handle 100+ languages, (2) translate: translate all content to English, use existing English model (simpler but loses nuance), (3) per-language models: highest quality but 10x maintenance, (4) few-shot cross-lingual: train on English, evaluate on other languages (zero-shot transfer), (5) data collection: gather labeled data in each new language (even 1000 examples helps), (6) evaluation: per-language metrics — performance varies significantly across languages, (7) deployment: single multilingual model vs. language-routing to specialized models, (8) priority: start with highest-revenue languages, expand iteratively."
+     "text": "**Answer:** (1) Multilingual models: XLM-RoBERTa, mBERT handle 100+ languages, (2) translate: translate all content to English, use existing English model (simpler but loses nuance), (3) per-language models: highest quality but 10x maintenance, (4) few-shot cross-lingual: train on English, evaluate on other languages (zero-shot transfer), (5) data collection: gather labelled data in each new language (even 1000 examples helps), (6) evaluation: per-language metrics — performance varies significantly across languages, (7) deployment: single multilingual model vs. language-routing to specialised models, (8) priority: start with highest-revenue languages, expand iteratively."
     }
    ],
    "kind": ""
@@ -238,11 +238,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "442",
-   "q": "You need to anonymize a dataset for public release while keeping it useful for research. What techniques do you use?",
+   "q": "You need to anonymise a dataset for public release while keeping it useful for research. What techniques do you use?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Direct identifiers: remove names, emails, SSNs, (2) quasi-identifiers: generalize (exact age → age range, zip → first 3 digits), (3) k-anonymity: each combination of quasi-identifiers shared by k+ records, (4) l-diversity: sensitive attributes have l+ distinct values within each group, (5) t-closeness: distribution of sensitive attribute in group close to overall distribution, (6) differential privacy: add calibrated noise, (7) utility testing: verify key statistical properties are preserved after anonymization, (8) synthetic data: generate fully synthetic data that matches statistical properties, (9) risk assessment: attempt re-identification attacks on anonymized data."
+     "text": "**Answer:** (1) Direct identifiers: remove names, emails, SSNs, (2) quasi-identifiers: generalise (exact age → age range, zip → first 3 digits), (3) k-anonymity: each combination of quasi-identifiers shared by k+ records, (4) l-diversity: sensitive attributes have l+ distinct values within each group, (5) t-closeness: distribution of sensitive attribute in group close to overall distribution, (6) differential privacy: add calibrated noise, (7) utility testing: verify key statistical properties are preserved after anonymisation, (8) synthetic data: generate fully synthetic data that matches statistical properties, (9) risk assessment: attempt re-identification attacks on anonymised data."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Refactor into functions: each logical step becomes a function, (2) separate concerns: data loading, preprocessing, modeling, evaluation, (3) configuration: hardcoded values → config file (parameters, paths, thresholds), (4) error handling: add try/except, input validation, (5) testing: unit tests for each function, integration tests for pipeline, (6) logging: replace print statements with proper logging, (7) type hints: add type annotations for clarity, (8) documentation: docstrings, README, (9) version control: split into modules, Git, (10) orchestration: Airflow/Dagster DAG, not linear script."
+     "text": "**Answer:** (1) Refactor into functions: each logical step becomes a function, (2) separate concerns: data loading, preprocessing, modelling, evaluation, (3) configuration: hardcoded values → config file (parameters, paths, thresholds), (4) error handling: add try/except, input validation, (5) testing: unit tests for each function, integration tests for pipeline, (6) logging: replace print statements with proper logging, (7) type hints: add type annotations for clarity, (8) documentation: docstrings, README, (9) version control: split into modules, Git, (10) orchestration: Airflow/Dagster DAG, not linear script."
     }
    ],
    "kind": ""
@@ -266,7 +266,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Wrong metric: you optimize F1, users care about specific error types, (2) aggregate vs. individual: 90% accuracy means 10% bad experiences, (3) distribution mismatch: model tested on balanced data, production is skewed, (4) user expectations: users notice failures more than successes (negativity bias), (5) latency: technically correct but too slow feels \"wrong,\" (6) presentation: predictions without context or explanation feel arbitrary, (7) edge cases: model fails on cases users care most about, (8) action: collect specific failure examples from users, create targeted test set."
+     "text": "**Answer:** (1) Wrong metric: you optimise F1, users care about specific error types, (2) aggregate vs. individual: 90% accuracy means 10% bad experiences, (3) distribution mismatch: model tested on balanced data, production is skewed, (4) user expectations: users notice failures more than successes (negativity bias), (5) latency: technically correct but too slow feels \"wrong,\" (6) presentation: predictions without context or explanation feel arbitrary, (7) edge cases: model fails on cases users care most about, (8) action: collect specific failure examples from users, create targeted test set."
     }
    ],
    "kind": ""
@@ -302,7 +302,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Notebooks for: (1) EDA and exploration, (2) prototyping and visualization, (3) stakeholder presentations with inline results. Scripts for: (4) production code, (5) version control (cleaner diffs), (6) testing and CI/CD, (7) reusable modules and packages. Best practice: (8) prototype in notebooks → refactor to scripts for production, (9) use nbconvert to export notebooks to scripts, (10) Jupyter in VS Code: get best of both worlds, (11) review: notebooks in PRs are hard — use jupytext for notebook-as-Python-file."
+     "text": "**Answer:** Notebooks for: (1) EDA and exploration, (2) prototyping and visualisation, (3) stakeholder presentations with inline results. Scripts for: (4) production code, (5) version control (cleaner diffs), (6) testing and CI/CD, (7) reusable modules and packages. Best practice: (8) prototype in notebooks → refactor to scripts for production, (9) use nbconvert to export notebooks to scripts, (10) Jupyter in VS Code: get best of both worlds, (11) review: notebooks in PRs are hard — use jupytext for notebook-as-Python-file."
     }
    ],
    "kind": ""
@@ -310,11 +310,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "448",
-   "q": "Your ML model needs to run on a mobile device with limited compute (smartphone app). What constraints and optimizations apply?",
+   "q": "Your ML model needs to run on a mobile device with limited compute (smartphone app). What constraints and optimisations apply?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Model size: < 50MB ideally (storage constraint), (2) inference time: < 100ms for good UX, (3) quantization: FP32 → INT8 or FP16 (4x smaller, 2-4x faster), (4) pruning: remove unnecessary weights, (5) architecture: MobileNet, SqueezeNet, EfficientNet-Lite designed for mobile, (6) frameworks: TensorFlow Lite, ONNX Runtime Mobile, CoreML (iOS), (7) on-device vs. API: trade-off between latency (local) and model power (server), (8) battery: continuous inference drains battery — batch or trigger-based, (9) testing: test on low-end devices, not just flagship phones."
+     "text": "**Answer:** (1) Model size: < 50MB ideally (storage constraint), (2) inference time: < 100ms for good UX, (3) quantisation: FP32 → INT8 or FP16 (4x smaller, 2-4x faster), (4) pruning: remove unnecessary weights, (5) architecture: MobileNet, SqueezeNet, EfficientNet-Lite designed for mobile, (6) frameworks: TensorFlow Lite, ONNX Runtime Mobile, CoreML (iOS), (7) on-device vs. API: trade-off between latency (local) and model power (server), (8) battery: continuous inference drains battery — batch or trigger-based, (9) testing: test on low-end devices, not just flagship phones."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "450",
-   "q": "Summarize the top 10 things every data scientist should do on every project.",
+   "q": "Summarise the top 10 things every data scientist should do on every project.",
    "body": [
     {
      "t": "p",

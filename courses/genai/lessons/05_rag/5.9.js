@@ -163,7 +163,7 @@ SPARSE = np.array([np.argsort(-bm25.get_scores(tokenize(q))) for q, _, _ in QS])
       body: [
         { t: "p", text: "With `k = 10`, a first-place result scores 1/11 and a tenth-place result 1/20 \u2014 a ratio of 1.8, so being top matters a lot. With `k = 200` the same two score 1/201 and 1/210, a ratio of 1.04, so the fusion is nearly a vote on *appearing at all* rather than on placing well." },
         { t: "p", text: "Measured, 60 and 200 were identical here and 10 was slightly worse at k=5. The conventional default of 60 is a reasonable middle and this corpus gives no reason to move it \u2014 though with twenty questions I would not read the k=10 difference as more than one question." },
-        { t: "p", text: "What makes RRF genuinely useful is that it needs no calibration at all. Add a third retriever, swap the embedding model, change the BM25 tokenizer \u2014 the fusion keeps working, because ranks are comparable across systems in a way scores are not." }
+        { t: "p", text: "What makes RRF genuinely useful is that it needs no calibration at all. Add a third retriever, swap the embedding model, change the BM25 tokeniser \u2014 the fusion keeps working, because ranks are comparable across systems in a way scores are not." }
       ] },
 
     { t: "h2", n: "04", id: "rerank", text: "The cross-encoder, and when it hurts",
@@ -376,7 +376,7 @@ for base_label, BASE in (("dense", DENSE), ("RRF", rrf([DENSE, SPARSE]))):
           "Because scores cannot be summed across retrievers"
         ],
         answer: 1,
-        why: "A cosine similarity of 0.58 and a BM25 score of 14.2 are bounded differently, distributed differently and move differently across queries, so averaging them requires a weighting that is a guess and that breaks when the embedding model or tokenizer changes. Ranks are comparable across any retriever by construction, which is why RRF needs no calibration and survives swapping a component. Both are cheap to compute, and scores can be summed \u2014 the problem is that the sum is meaningless." },
+        why: "A cosine similarity of 0.58 and a BM25 score of 14.2 are bounded differently, distributed differently and move differently across queries, so averaging them requires a weighting that is a guess and that breaks when the embedding model or tokeniser changes. Ranks are comparable across any retriever by construction, which is why RRF needs no calibration and survives swapping a component. Both are cheap to compute, and scores can be summed \u2014 the problem is that the sum is meaningless." },
 
       { stem: "A cross-encoder re-ranker improves dense retrieval from 95% to 100% recall@5, and degrades an RRF-fused first stage from 100% to 90%. What explains this?",
         options: [

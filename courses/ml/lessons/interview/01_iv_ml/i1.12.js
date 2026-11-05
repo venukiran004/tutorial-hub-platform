@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "PCA creates new uncorrelated features (linear combinations) maximizing variance; the originals are lost, hurting interpretability. Feature selection keeps a subset of the original features."
+     "text": "PCA creates new uncorrelated features (linear combinations) maximising variance; the originals are lost, hurting interpretability. Feature selection keeps a subset of the original features."
     },
     {
      "t": "p",
@@ -124,7 +124,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Serialize the **entire Pipeline** with `joblib` so preprocessing travels with the model."
+     "text": "Serialise the **entire Pipeline** with `joblib` so preprocessing travels with the model."
     },
     {
      "t": "code",
@@ -133,7 +133,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Pin the scikit-learn version (cross-version unpickling is unsafe), and never load joblib/pickle files from untrusted sources — they can execute arbitrary code. For language-agnostic, optimized inference, export to ONNX."
+     "text": "**Key takeaway:** Pin the scikit-learn version (cross-version unpickling is unsafe), and never load joblib/pickle files from untrusted sources — they can execute arbitrary code. For language-agnostic, optimised inference, export to ONNX."
     }
    ],
    "kind": ""
@@ -183,7 +183,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Underfitting → add complexity/features; overfitting → regularize, add data, or simplify. The train–val gap is the key signal."
+     "text": "**Key takeaway:** Underfitting → add complexity/features; overfitting → regularise, add data, or simplify. The train–val gap is the key signal."
     }
    ],
    "kind": ""
@@ -246,7 +246,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Random Forest:** bagging — many independent deep trees averaged. Robust low-effort baseline, parallel (`n_jobs=-1`), hard to overfit, but a black box and can't extrapolate.",
-      "**XGBoost:** boosting with strong L1/L2 regularization, native NaN handling, GPU. Competition staple; more params, slower than LightGBM.",
+      "**XGBoost:** boosting with strong L1/L2 regularisation, native NaN handling, GPU. Competition staple; more params, slower than LightGBM.",
       "**LightGBM:** histogram + leaf-wise growth — fastest on large data, native categoricals, low memory; `num_leaves` can overfit small datasets.",
       "**CatBoost:** ordered target encoding for categoricals, great defaults, ordered boosting reduces target leakage; slower on purely numeric data."
      ]
@@ -269,7 +269,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Total error = bias² + variance + irreducible noise. High bias = underfitting (model too simple); high variance = overfitting (model memorizes noise). Diagnose with `learning_curve` (score vs training size) and `validation_curve` (score vs one hyperparameter): both curves low and close → high bias; large persistent train–val gap → high variance."
+     "text": "Total error = bias² + variance + irreducible noise. High bias = underfitting (model too simple); high variance = overfitting (model memorises noise). Diagnose with `learning_curve` (score vs training size) and `validation_curve` (score vs one hyperparameter): both curves low and close → high bias; large persistent train–val gap → high variance."
     },
     {
      "t": "code",
@@ -278,7 +278,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Underfit → add complexity/features; overfit → regularize, add data, or simplify. Bagging reduces variance; boosting reduces bias."
+     "text": "**Key takeaway:** Underfit → add complexity/features; overfit → regularise, add data, or simplify. Bagging reduces variance; boosting reduces bias."
     }
    ],
    "kind": ""
@@ -328,7 +328,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "(1) Center the data; (2) compute the covariance matrix; (3) eigen-decompose it — eigenvectors are the principal components, eigenvalues are the variance explained; (4) project onto the top-k eigenvectors. SVD is the numerically stable equivalent. It **fails** when relationships are non-linear (variance ≠ class separability), features aren't scaled, or outliers dominate the variance."
+     "text": "(1) Centre the data; (2) compute the covariance matrix; (3) eigen-decompose it — eigenvectors are the principal components, eigenvalues are the variance explained; (4) project onto the top-k eigenvectors. SVD is the numerically stable equivalent. It **fails** when relationships are non-linear (variance ≠ class separability), features aren't scaled, or outliers dominate the variance."
     },
     {
      "t": "code",
@@ -353,7 +353,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Both measure node impurity. **Gini** `= 1 − Σ pᵢ²` (binary: `2p(1−p)`); **entropy** `= −Σ pᵢ·log pᵢ`. A pure node = 0; a 50/50 binary split is maximal. At each node the tree picks the split maximizing information gain = `parent_impurity − weighted_child_impurity`."
+     "text": "Both measure node impurity. **Gini** `= 1 − Σ pᵢ²` (binary: `2p(1−p)`); **entropy** `= −Σ pᵢ·log pᵢ`. A pure node = 0; a 50/50 binary split is maximal. At each node the tree picks the split maximising information gain = `parent_impurity − weighted_child_impurity`."
     },
     {
      "t": "p",
@@ -365,7 +365,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "40",
-   "q": "Why does K-Means++ initialization beat random initialization?",
+   "q": "Why does K-Means++ initialisation beat random initialisation?",
    "body": [
     {
      "t": "p",
@@ -393,7 +393,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Dot products `Q·Kᵀ` have variance proportional to `dₖ` (sum of `dₖ` unit-variance products). Large values push softmax into saturation where gradients vanish, making attention nearly one-hot and untrainable. Dividing by `√dₖ` normalizes the variance back to ~1, keeping softmax in its sensitive region."
+     "text": "Dot products `Q·Kᵀ` have variance proportional to `dₖ` (sum of `dₖ` unit-variance products). Large values push softmax into saturation where gradients vanish, making attention nearly one-hot and untrainable. Dividing by `√dₖ` normalises the variance back to ~1, keeping softmax in its sensitive region."
     },
     {
      "t": "code",
@@ -410,7 +410,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "42",
-   "q": "How does BPE tokenization work and why do LLMs use it?",
+   "q": "How does BPE tokenisation work and why do LLMs use it?",
    "body": [
     {
      "t": "p",
@@ -442,7 +442,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Beam search optimizes likelihood and suits accuracy-critical tasks; for open-ended/creative generation, sampling (temperature, top-p) is preferred because beam search yields bland, repetitive text."
+     "text": "**Key takeaway:** Beam search optimises likelihood and suits accuracy-critical tasks; for open-ended/creative generation, sampling (temperature, top-p) is preferred because beam search yields bland, repetitive text."
     }
    ],
    "kind": ""

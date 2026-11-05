@@ -202,7 +202,7 @@ CANDIDATES = {
     "user_id_hashed":  "sha256:9ad1...",
     "query":           "why was my card declined on the 14th",
     "chunk_ids":       "[c-8812, c-8813]",
-    "chunk_text:      "Cardholder VENU K, last four 4412, declined ...",
+    "chunk_text":      "Cardholder VENU K, last four 4412, declined ...",
     "above_threshold": 6,
     "model_version":   "chat-large-2026-03-11",
 }

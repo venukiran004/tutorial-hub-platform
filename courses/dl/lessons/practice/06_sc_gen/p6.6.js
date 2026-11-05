@@ -245,7 +245,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Mathematically equivalent (connected by simple scaling). Denoising is more intuitive (remove noise). Score matching is more theoretically grounded (follow gradient of log density). Same model, different parameterizations."
+     "text": "**Explanation:** Mathematically equivalent (connected by simple scaling). Denoising is more intuitive (remove noise). Score matching is more theoretically grounded (follow gradient of log density). Same model, different parameterisations."
     }
    ],
    "kind": ""
@@ -253,7 +253,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "136",
-   "q": "What is the v-prediction parameterization?",
+   "q": "What is the v-prediction parameterisation?",
    "body": [
     {
      "t": "p",
@@ -576,14 +576,14 @@ EC.receiveLesson({
       "**Real-time generation:** 1-step models, streaming generation",
       "**Controllability:** Fine-grained spatial and temporal control",
       "**World models:** Generate consistent interactive environments",
-      "**Personalization:** Instant adaptation to user preferences",
+      "**Personalisation:** Instant adaptation to user preferences",
       "**Efficiency:** Smaller models, mobile generation",
       "**3D native:** Direct 3D generation (not 2D supervised)"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Moving from separate specialized models to unified architectures. Generation becoming a component of AI assistants, not standalone tool."
+     "text": "**Explanation:** Moving from separate specialised models to unified architectures. Generation becoming a component of AI assistants, not standalone tool."
     }
    ],
    "kind": ""

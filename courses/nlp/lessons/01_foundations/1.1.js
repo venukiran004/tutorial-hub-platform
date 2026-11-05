@@ -22,7 +22,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "01", text: "The vocabulary", id: "definitions" },
 
-    {"kind": "layers", "title": "Nine terms, and the one number that dates the whole list", "caption": "Every term above the line is a decision about **what a token is and how many of them there are**; every term below it is a decision about **how a token becomes a number**. The perplexity row is the one that shows how far the field moved: **a good trigram model sits near 80 and a modern LLM near 3–10**, which is the same metric reporting an order-of-magnitude different world.", "items": [{"label": "Corpus, token, tokenization", "sub": "what the atomic unit is", "tone": "accent", "side": "the split"}, {"label": "Stemming, lemmatisation, stopwords", "sub": "which distinctions you throw away", "tone": "accent", "side": "the squeeze"}, {"label": "Bag of Words, TF-IDF", "sub": "counts, then counts weighted by rarity", "tone": "good", "side": "sparse"}, {"label": "Word embedding", "sub": "a dense vector where near means similar", "tone": "violet", "side": "dense"}, {"label": "n-gram, perplexity", "sub": "the model, and how surprised it is", "tone": "teal", "side": "80 -> 3-10"}], "t": "diagram", "id": "dg-1_1-01-0"},
+    {"kind": "layers", "title": "Nine terms, and the one number that dates the whole list", "caption": "Every term above the line is a decision about **what a token is and how many of them there are**; every term below it is a decision about **how a token becomes a number**. The perplexity row is the one that shows how far the field moved: **a good trigram model sits near 80 and a modern LLM near 3–10**, which is the same metric reporting an order-of-magnitude different world.", "items": [{"label": "Corpus, token, tokenisation", "sub": "what the atomic unit is", "tone": "accent", "side": "the split"}, {"label": "Stemming, lemmatisation, stopwords", "sub": "which distinctions you throw away", "tone": "accent", "side": "the squeeze"}, {"label": "Bag of Words, TF-IDF", "sub": "counts, then counts weighted by rarity", "tone": "good", "side": "sparse"}, {"label": "Word embedding", "sub": "a dense vector where near means similar", "tone": "violet", "side": "dense"}, {"label": "n-gram, perplexity", "sub": "the model, and how surprised it is", "tone": "teal", "side": "80 -> 3-10"}], "t": "diagram", "id": "dg-1_1-01-0"},
 
 
 
@@ -40,7 +40,7 @@ EC.receiveLesson({
 
     { t: "dl", items: [
       ["Corpus / token", "A body of text / the atomic unit you split it into — word, subword or character."],
-      ["Tokenization", "Splitting text into tokens. Subword schemes like BPE and WordPiece handle rare words."],
+      ["Tokenisation", "Splitting text into tokens. Subword schemes like BPE and WordPiece handle rare words."],
       ["Stemming vs lemmatisation", "Crude suffix-chopping (`studies → studi`) against dictionary lookup (`studies → study`)."],
       ["Stopwords", "Very common words — *the*, *is*, *and* — often removed, but **not** for sentiment or question answering."],
       ["Bag of Words", "A document as word counts, ignoring order."],
@@ -56,7 +56,7 @@ EC.receiveLesson({
       caption: "Six stages. Modern transformer pipelines keep the first, second and fourth, and skip the rest.",
       items: [
         { label: "Preprocessing", sub: "lowercase, strip noise, fix encoding", tone: "accent" },
-        { label: "Tokenization", sub: "split into words, subwords or characters", tone: "accent" },
+        { label: "Tokenisation", sub: "split into words, subwords or characters", tone: "accent" },
         { label: "Normalisation", sub: "stem, lemmatise, drop stopwords", tone: "warn" },
         { label: "Vectorisation", sub: "BoW, TF-IDF, embeddings", tone: "teal" },
         { label: "Model", sub: "classification, NER, generation", tone: "good" },
@@ -94,8 +94,8 @@ EC.receiveLesson({
   "NYC's"    -> ["nyc's"]   (the possessive rides along)
   '2024' survived; '--' and '!' are gone entirely` },
 
-    { t: "callout", kind: "trap", title: "A regex tokenizer makes decisions you did not think about",
-      body: [{ t: "p", text: "`[a-z0-9']+` keeps the apostrophe, so `didn't` survives as one token — good. But the same rule has no opinion about hyphens, so **`e-mailed` becomes `e` and `mailed`**, and now your vocabulary contains a meaningless single letter. `NYC's` keeps its possessive, which may or may not be what you want. Every character class is a policy, and the policy applies to text you have not seen yet. This is the fundamental reason subword tokenizers took over: they *learn* the splits from the corpus instead of asserting them." }] },
+    { t: "callout", kind: "trap", title: "A regex tokeniser makes decisions you did not think about",
+      body: [{ t: "p", text: "`[a-z0-9']+` keeps the apostrophe, so `didn't` survives as one token — good. But the same rule has no opinion about hyphens, so **`e-mailed` becomes `e` and `mailed`**, and now your vocabulary contains a meaningless single letter. `NYC's` keeps its possessive, which may or may not be what you want. Every character class is a policy, and the policy applies to text you have not seen yet. This is the fundamental reason subword tokenisers took over: they *learn* the splits from the corpus instead of asserting them." }] },
 
     { t: "h2", n: "04", text: "Stopword removal is not free", id: "stopwords" },
 
@@ -208,7 +208,7 @@ EC.receiveLesson({
       ] },
 
     { t: "callout", kind: "insight", title: "The shift is from feature engineering to representation learning",
-      body: [{ t: "p", text: "Every stage in the classical pipeline exists to help a weak model — a linear classifier over sparse counts cannot learn that `cats` and `cat` are related, so you stem them together. A transformer trained on enough text learns that relationship from data, so the stage becomes not merely unnecessary but harmful, since it destroys information the model could have used. That is why a modern pipeline is *tokenize, embed, model*: three stages instead of six, with the subword tokenizer learned from the corpus rather than hand-written. Understanding the classical stages still matters, both because you will meet them in existing systems and because each one names a genuine property of language that the model now has to learn on its own." }] },
+      body: [{ t: "p", text: "Every stage in the classical pipeline exists to help a weak model — a linear classifier over sparse counts cannot learn that `cats` and `cat` are related, so you stem them together. A transformer trained on enough text learns that relationship from data, so the stage becomes not merely unnecessary but harmful, since it destroys information the model could have used. That is why a modern pipeline is *tokenise, embed, model*: three stages instead of six, with the subword tokeniser learned from the corpus rather than hand-written. Understanding the classical stages still matters, both because you will meet them in existing systems and because each one names a genuine property of language that the model now has to learn on its own." }] },
 
     { t: "exercise", kind: "practice", title: "Measure your own pipeline", difficulty: "foundation", minutes: 30,
       prompt: "Take a few hundred documents from any text source. Run them through each pipeline stage in turn and record the vocabulary size after each — raw, lowercased, punctuation stripped, stopwords removed, stemmed. Plot the curve. Then pick a task with a known answer, such as sentiment on labelled reviews, and train the same simple classifier on the output of each stage to see where accuracy peaks. Finally, find three documents where stopword removal changes the meaning.",
@@ -227,24 +227,24 @@ EC.receiveLesson({
   ],
 
   takeaways: [
-    "The classical pipeline is preprocess, tokenize, normalise, vectorise, model, post-process.",
+    "The classical pipeline is preprocess, tokenise, normalise, vectorise, model, post-process.",
     "Every stage discards information — the question is whether your task needed it.",
     "Stopword removal made 'this movie is not good' and 'this movie is good' identical.",
     "`not`, `who`, `what` and `where` are standard stopwords and are exactly what sentiment and QA depend on.",
-    "A regex tokenizer encodes policies you did not think about: `e-mailed` split into `e` and `mailed`.",
+    "A regex tokeniser encodes policies you did not think about: `e-mailed` split into `e` and `mailed`.",
     "Lowercasing cut a 15-type vocabulary to 10 — the compression that mattered for weak models.",
     "The field moved from feature engineering to representation learning, which is why modern pipelines are three stages."
   ],
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is stopword removal dangerous for sentiment analysis?",
-      options: ["It makes the vocabulary too small", "`not` is a standard stopword, so negated and non-negated sentences become identical", "It slows down training", "It breaks the tokenizer"],
+      options: ["It makes the vocabulary too small", "`not` is a standard stopword, so negated and non-negated sentences become identical", "It slows down training", "It breaks the tokeniser"],
       answer: 1,
       why: "Measured directly: 'this movie is not good' and 'this movie is good' both reduce to 'movie good' after standard stopword removal. The distinction is destroyed before the model sees the text, so no amount of downstream capacity can recover it. The same applies to question words in QA." },
-    { stem: "A regex tokenizer using `[a-z0-9']+` processes 'e-mailed'. What does it produce?",
+    { stem: "A regex tokeniser using `[a-z0-9']+` processes 'e-mailed'. What does it produce?",
       options: ["['e-mailed']", "['e', 'mailed']", "['email']", "['e-mail', 'ed']"],
       answer: 1,
-      why: "The hyphen is not in the character class, so it acts as a separator and the word splits into a meaningless single letter and a fragment. Every character class is a policy applied to text you have not seen yet — which is the argument for learned subword tokenizers over hand-written rules." },
+      why: "The hyphen is not in the character class, so it acts as a separator and the word splits into a meaningless single letter and a fragment. Every character class is a policy applied to text you have not seen yet — which is the argument for learned subword tokenisers over hand-written rules." },
     { stem: "Why do modern transformer pipelines skip most classical preprocessing?",
       options: ["It is too slow", "The model learns those relationships from data, so preprocessing only destroys information", "The libraries no longer support it", "Transformers require raw text"],
       answer: 1,
@@ -257,7 +257,7 @@ EC.receiveLesson({
 
   interview: { title: "Interview", sub: "NLP fundamentals", questions: [
     { level: "Core", q: "What is the standard NLP pipeline?",
-      strong: "Preprocess, tokenize, normalise, vectorise, model, post-process — and modern pipelines skip most of it.",
+      strong: "Preprocess, tokenise, normalise, vectorise, model, post-process — and modern pipelines skip most of it.",
       answer: [{ t: "p", text: "Classically: preprocessing to lowercase and strip noise, tokenization to split into units, normalisation through stemming, lemmatisation and stopword removal, vectorisation into bag of words, TF-IDF or embeddings, then the model, then post-processing to decode and validate. What I would add is that modern transformer pipelines skip most of the middle. They tokenize into subwords with a learned scheme and feed that straight to the model, because the normalisation stages exist to help a weak model — a linear classifier over counts cannot learn that `cats` and `cat` are related, so you stem them together, whereas a transformer learns that from data. Once the model can learn it, removing the information is actively harmful. So the classical stages are worth knowing because you meet them in existing systems and because each names a real property of language, but I would not add them to a new pipeline without a reason." }] },
     { level: "Core", q: "When would you not remove stopwords?",
       strong: "Sentiment, question answering, negation-sensitive extraction — anywhere function words carry meaning.",

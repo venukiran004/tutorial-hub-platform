@@ -106,7 +106,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Anchor-based (Faster R-CNN, YOLOv3):** Pre-defined reference boxes at various scales/ratios. Model predicts offsets from anchors.",
-      "**Anchor-free (FCOS, CenterNet):** Directly predict object center and size. No need to tune anchors."
+      "**Anchor-free (FCOS, CenterNet):** Directly predict object centre and size. No need to tune anchors."
      ]
     },
     {
@@ -210,7 +210,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unlike cross-entropy, Dice loss directly optimizes overlap. Less sensitive to class imbalance. Often combined: `Loss = CE + Dice` for stable training + overlap optimization."
+     "text": "**Explanation:** Unlike cross-entropy, Dice loss directly optimises overlap. Less sensitive to class imbalance. Often combined: `Loss = CE + Dice` for stable training + overlap optimisation."
     }
    ],
    "kind": ""
@@ -315,7 +315,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Content captured by feature map activations. Style captured by feature correlations (Gram matrix). Optimize input image to minimize both losses."
+     "text": "**Explanation:** Content captured by feature map activations. Style captured by feature correlations (Gram matrix). Optimise input image to minimise both losses."
     }
    ],
    "kind": ""
@@ -413,7 +413,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Resize:** Standardize all inputs (common, may lose aspect ratio)",
+      "**Resize:** Standardise all inputs (common, may lose aspect ratio)",
       "**Pad:** Add padding to match fixed size",
       "**Spatial Pyramid Pooling (SPP):** Pool at multiple scales to fixed output",
       "**Fully Convolutional:** Remove FC layers, use GAP",
@@ -450,7 +450,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** 3D convolutions capture temporal patterns in video or spatial patterns in 3D volumes (CT scans). Much more computationally expensive. Alternative for video: 2D conv + temporal modeling (LSTM, attention)."
+     "text": "**Explanation:** 3D convolutions capture temporal patterns in video or spatial patterns in 3D volumes (CT scans). Much more computationally expensive. Alternative for video: 2D conv + temporal modelling (LSTM, attention)."
     }
    ],
    "kind": ""
@@ -483,7 +483,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Visualization of which regions the model uses for classification:"
+     "text": "**Answer:** Visualisation of which regions the model uses for classification:"
     },
     {
      "t": "code",
@@ -496,7 +496,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Requires GAP before classification. Grad-CAM generalizes this to any layer using gradients. Useful for: model debugging, interpretability, weakly-supervised localization."
+     "text": "**Explanation:** Requires GAP before classification. Grad-CAM generalises this to any layer using gradients. Useful for: model debugging, interpretability, weakly-supervised localization."
     }
    ],
    "kind": ""
@@ -565,7 +565,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** GAP is more common because: (1) less prone to overfitting, (2) considers all spatial positions, (3) enables CAM visualization. GMP can miss distributed patterns."
+     "text": "**Explanation:** GAP is more common because: (1) less prone to overfitting, (2) considers all spatial positions, (3) enables CAM visualisation. GMP can miss distributed patterns."
     }
    ],
    "kind": ""
@@ -586,7 +586,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Benefits:** Faster initial training (small images), better generalization, acts as data augmentation."
+     "text": "**Benefits:** Faster initial training (small images), better generalisation, acts as data augmentation."
     },
     {
      "t": "p",
@@ -607,7 +607,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Verify data pipeline:** Display images + labels, check normalization",
+      "**Verify data pipeline:** Display images + labels, check normalisation",
       "**Overfit on 1 batch:** If it can't → architecture/optimization bug",
       "**Check learning rate:** Too high (loss oscillates) or too low (no progress)",
       "**Gradient analysis:** Are gradients flowing? Zero gradients = dead layers",
@@ -617,7 +617,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Systematic debugging: data → model → optimization → hyperparameters. Always overfit small data first."
+     "text": "**Explanation:** Systematic debugging: data → model → optimisation → hyperparameters. Always overfit small data first."
     }
    ],
    "kind": ""
@@ -625,7 +625,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "50",
-   "q": "What is the impact of input normalization on CNN training?",
+   "q": "What is the impact of input normalisation on CNN training?",
    "body": [
     {
      "t": "p",
@@ -643,14 +643,14 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Pre-trained models expect specific normalization — wrong values = garbage features",
-      "Normalizing to zero mean, unit variance helps gradient flow",
+      "Pre-trained models expect specific normalisation — wrong values = garbage features",
+      "Normalising to zero mean, unit variance helps gradient flow",
       "Different channels may have different scales"
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** Always match normalization with pre-training. For training from scratch, compute dataset-specific statistics. Forgetting normalization is a common bug."
+     "text": "**Explanation:** Always match normalisation with pre-training. For training from scratch, compute dataset-specific statistics. Forgetting normalisation is a common bug."
     }
    ],
    "kind": ""

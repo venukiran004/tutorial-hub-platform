@@ -132,7 +132,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Every expert must be in memory, because *any* token might route to it — you cannot know in advance. So the memory footprint is the **full** 60.1 GB while the compute is only the active 15.0 GB worth. That is exactly backwards from what a serving budget wants, and it is why MoE models are cheaper to train and to run per-FLOP but not cheaper to *host*. Two further problems compound it: routing is data-dependent, so different tokens in the same batch need different experts, which fragments the batched matrix multiplies that make GPUs fast; and in a distributed deployment, experts live on different devices, so routing becomes a **network** operation with all-to-all communication every layer. MoE is a training-efficiency and quality-per-FLOP win, not a deployment simplification." }] },
 
     { t: "exercise", title: "Build and break a router",
-      tasks: [
+      requirements: [
         "Implement the router and MoE layer and confirm the top-k weights sum to 1 for every token.",
         "Train without a load-balancing loss and plot per-expert token fraction against step.",
         "Add the auxiliary loss, sweep alpha from 0.001 to 0.5, and find where it starts hurting task loss.",

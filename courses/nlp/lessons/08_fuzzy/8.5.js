@@ -134,7 +134,7 @@ EC.receiveLesson({
       caption: "`score_cutoff` abandons a comparison that cannot reach the threshold; `workers=-1` uses every core." },
     { t: "p", text: "Both arguments attack §04’s arithmetic rather than the algorithm. **`score_cutoff` lets the distance computation stop as soon as the best achievable score falls below the threshold**, which on dissimilar pairs — most pairs — is most of the work avoided. **`process.cdist` with `workers=-1` computes the whole matrix across cores**, and `utils.default_process` is the normalisation step applied consistently to both sides: **lowercase, strip non-alphanumerics, collapse whitespace** — which is 8.4’s normalisation argument as a default rather than a decision." },
     { t: "exercise", title: "Build the system",
-      tasks: [
+      requirements: [
         "Run all five scorers on 20 pairs from your data and find one where each is wrong.",
         "Compute all-pairs comparisons for your record count and decide whether blocking is optional.",
         "Take known duplicates and measure what fraction share a block under each candidate key.",

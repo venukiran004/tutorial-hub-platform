@@ -74,7 +74,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "355",
-   "q": "You built a complex ensemble model. The model card requires documentation of model behavior. What do you include?",
+   "q": "You built a complex ensemble model. The model card requires documentation of model behaviour. What do you include?",
    "body": [
     {
      "t": "p",
@@ -130,7 +130,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Treat non-interactions as weak negatives (user saw item but didn't click), (2) negative sampling: randomly sample items user didn't interact with, (3) popularity-based negative sampling: sample proportional to item popularity (harder negatives), (4) exposure-aware modeling: only treat items the user was exposed to as potential negatives, (5) use BPR (Bayesian Personalized Ranking): learn from pairwise preferences (clicked > not clicked), (6) contrastive learning approaches."
+     "text": "**Answer:** (1) Treat non-interactions as weak negatives (user saw item but didn't click), (2) negative sampling: randomly sample items user didn't interact with, (3) popularity-based negative sampling: sample proportional to item popularity (harder negatives), (4) exposure-aware modelling: only treat items the user was exposed to as potential negatives, (5) use BPR (Bayesian Personalised Ranking): learn from pairwise preferences (clicked > not clicked), (6) contrastive learning approaches."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature distributions differ (income levels, demographics), (2) categorical values differ (product names, currencies, region codes), (3) label definitions may differ (what constitutes \"fraud\" varies), (4) regulatory differences (different protected classes, data rules), (5) cultural differences affecting behavior, (6) missing features in new country. Approaches: (1) domain adaptation, (2) transfer learning with fine-tuning, (3) retrain with local data, (4) feature engineering for country-agnostic representations, (5) start with local rules while collecting data."
+     "text": "**Answer:** (1) Feature distributions differ (income levels, demographics), (2) categorical values differ (product names, currencies, region codes), (3) label definitions may differ (what constitutes \"fraud\" varies), (4) regulatory differences (different protected classes, data rules), (5) cultural differences affecting behaviour, (6) missing features in new country. Approaches: (1) domain adaptation, (2) transfer learning with fine-tuning, (3) retrain with local data, (4) feature engineering for country-agnostic representations, (5) start with local rules while collecting data."
     },
     {
      "t": "p",
@@ -198,7 +198,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Stacking: train meta-learner on base model predictions, (2) weighted average: optimize weights on validation set, (3) voting: majority vote (classification) or average (regression), (4) diversity is key: models with different error patterns combine best, (5) use models with different inductive biases: tree-based + linear + neural, (6) blending: hold out fold for meta-learner training, (7) Bayesian model averaging for principled combination."
+     "text": "**Answer:** (1) Stacking: train meta-learner on base model predictions, (2) weighted average: optimise weights on validation set, (3) voting: majority vote (classification) or average (regression), (4) diversity is key: models with different error patterns combine best, (5) use models with different inductive biases: tree-based + linear + neural, (6) blending: hold out fold for meta-learner training, (7) Bayesian model averaging for principled combination."
     }
    ],
    "kind": ""
@@ -210,7 +210,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Cost-benefit analysis: (1) is 2% improvement worth 10x compute cost?, (2) can you distill the ensemble into a single student model (knowledge distillation)?, (3) try smaller ensembles: often 3 diverse models capture most of the gain, (4) remove the weakest models — typically 10→5 models loses <0.5%, (5) use model compression: prune or quantize ensemble members, (6) cache common predictions, (7) for batch predictions: latency less critical, ensemble is fine, (8) for real-time: distillation or smaller ensemble."
+     "text": "**Answer:** Cost-benefit analysis: (1) is 2% improvement worth 10x compute cost?, (2) can you distill the ensemble into a single student model (knowledge distillation)?, (3) try smaller ensembles: often 3 diverse models capture most of the gain, (4) remove the weakest models — typically 10→5 models loses <0.5%, (5) use model compression: prune or quantise ensemble members, (6) cache common predictions, (7) for batch predictions: latency less critical, ensemble is fine, (8) for real-time: distillation or smaller ensemble."
     }
    ],
    "kind": ""
@@ -238,7 +238,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pre-compute features that can be cached (user profiles, aggregate stats), (2) feature store: online store (Redis/DynamoDB) for low-latency feature retrieval, (3) model serving: TensorFlow Serving, Triton, or simple Flask/FastAPI with loaded model, (4) minimize feature computation at request time, (5) model format: ONNX for cross-framework optimization, (6) connection pooling for database lookups, (7) async feature enrichment where possible, (8) profile: data loading, feature computation, and inference separately."
+     "text": "**Answer:** (1) Pre-compute features that can be cached (user profiles, aggregate stats), (2) feature store: online store (Redis/DynamoDB) for low-latency feature retrieval, (3) model serving: TensorFlow Serving, Triton, or simple Flask/FastAPI with loaded model, (4) minimise feature computation at request time, (5) model format: ONNX for cross-framework optimisation, (6) connection pooling for database lookups, (7) async feature enrichment where possible, (8) profile: data loading, feature computation, and inference separately."
     }
    ],
    "kind": ""
@@ -262,7 +262,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature store with online serving: precompute rolling aggregates updated continuously, (2) Redis sorted sets: store recent transactions per user, compute aggregates on read, (3) Kafka Streams with state stores: maintain per-user rolling windows, (4) DynamoDB streams for event-driven updates, (5) materialized view pattern: update aggregate features on each new transaction, (6) TTL on state entries to control memory, (7) approximate aggregates (HyperLogLog, Count-Min Sketch) for high-cardinality features."
+     "text": "**Answer:** (1) Feature store with online serving: precompute rolling aggregates updated continuously, (2) Redis sorted sets: store recent transactions per user, compute aggregates on read, (3) Kafka Streams with state stores: maintain per-user rolling windows, (4) DynamoDB streams for event-driven updates, (5) materialised view pattern: update aggregate features on each new transaction, (6) TTL on state entries to control memory, (7) approximate aggregates (HyperLogLog, Count-Min Sketch) for high-cardinality features."
     }
    ],
    "kind": ""
@@ -286,11 +286,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "371",
-   "q": "You're building a credit risk model. Regulators require the model to be explainable. What modeling approach do you take?",
+   "q": "You're building a credit risk model. Regulators require the model to be explainable. What modelling approach do you take?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Logistic regression as primary model — fully interpretable coefficients, (2) scorecard model: discretize features into bins, assign points, (3) use WoE (Weight of Evidence) and IV (Information Value) for feature selection, (4) monotonic constraints on key features (more income → lower risk), (5) use EBM (Explainable Boosting Machine) for near-GBM performance with interpretability, (6) model documentation per SR 11-7 regulatory guidance, (7) include adverse action reasons per ECOA requirements."
+     "text": "**Answer:** (1) Logistic regression as primary model — fully interpretable coefficients, (2) scorecard model: discretise features into bins, assign points, (3) use WoE (Weight of Evidence) and IV (Information Value) for feature selection, (4) monotonic constraints on key features (more income → lower risk), (5) use EBM (Explainable Boosting Machine) for near-GBM performance with interpretability, (6) model documentation per SR 11-7 regulatory guidance, (7) include adverse action reasons per ECOA requirements."
     }
    ],
    "kind": ""
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Anomaly detection: learn normal behavior, flag deviations, (2) remaining useful life (RUL) prediction using survival analysis, (3) multi-class: healthy, degraded, failure states, (4) time-series features: rolling statistics, rate of change, fourier components of sensor readings, (5) handle imbalance: SMOTE, class weights, anomaly detection approach, (6) cost-sensitive: false negative (missed failure) costs much more than false positive (unnecessary inspection), (7) alert at \"degraded\" stage for planned maintenance."
+     "text": "**Answer:** (1) Anomaly detection: learn normal behaviour, flag deviations, (2) remaining useful life (RUL) prediction using survival analysis, (3) multi-class: healthy, degraded, failure states, (4) time-series features: rolling statistics, rate of change, fourier components of sensor readings, (5) handle imbalance: SMOTE, class weights, anomaly detection approach, (6) cost-sensitive: false negative (missed failure) costs much more than false positive (unnecessary inspection), (7) alert at \"degraded\" stage for planned maintenance."
     }
    ],
    "kind": ""

@@ -451,7 +451,7 @@ EC.receiveLesson({
      "rows": [
       [
        "Sequential dependency",
-       "Cannot parallelize training",
+       "Cannot parallelise training",
        "Full parallelism"
       ],
       [
@@ -570,7 +570,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Masked Language Modeling (BERT):** 15% of tokens replaced with [MASK]. Model predicts:"
+     "text": "**Masked Language Modelling (BERT):** 15% of tokens replaced with [MASK]. Model predicts:"
     },
     {
      "t": "math",

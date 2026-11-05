@@ -587,7 +587,7 @@
           { id: "i1.6", title: "Advanced Architectures", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with hidden answers, from deep learning interview bank.",
             keywords: ["deep", "learning", "interview", "bank"] },
-          { id: "i1.7", title: "Training Techniques & Regularization", difficulty: "advanced", minutes: 40, tier: "should",
+          { id: "i1.7", title: "Training Techniques & Regularisation", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with hidden answers, from deep learning interview bank.",
             keywords: ["deep", "learning", "interview", "bank"] },
           { id: "i1.8", title: "NLP & Sequence Models", difficulty: "advanced", minutes: 40, tier: "should",
@@ -611,10 +611,10 @@
           { id: "i2.1", title: "Algorithms & Coding · Machine Learning Fundamentals · Deep Learning & Neural Networks", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "9 questions with hidden answers, from glassdoor ai engineer.",
             keywords: ["glassdoor", "engineer"] },
-          { id: "i2.2", title: "NLP & Generative AI · Computer Vision · System Design for AI · AI Ethics & Responsible AI · Data Preprocessing & Engineering · Projects & Behavioral · Additional Algorithms & Coding", difficulty: "advanced", minutes: 20, tier: "should",
+          { id: "i2.2", title: "NLP & Generative AI · Computer Vision · System Design for AI · AI Ethics & Responsible AI · Data Preprocessing & Engineering · Projects & Behavioural · Additional Algorithms & Coding", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "10 questions with hidden answers, from glassdoor ai engineer.",
             keywords: ["glassdoor", "engineer"] },
-          { id: "i2.3", title: "Additional Deep Learning · Additional NLP & GenAI · Additional System Design & Production AI · Additional Ethics & Responsible AI · Additional Behavioral & Projects · Additional NLP & Text Processing", difficulty: "advanced", minutes: 20, tier: "should",
+          { id: "i2.3", title: "Additional Deep Learning · Additional NLP & GenAI · Additional System Design & Production AI · Additional Ethics & Responsible AI · Additional Behavioural & Projects · Additional NLP & Text Processing", difficulty: "advanced", minutes: 20, tier: "should",
             summary: "10 questions with hidden answers, from glassdoor ai engineer.",
             keywords: ["glassdoor", "engineer"] }
         ]

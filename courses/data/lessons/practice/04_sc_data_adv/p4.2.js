@@ -38,11 +38,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "27",
-   "q": "You need to optimize delivery routes for 200 daily orders in a city. What's your approach?",
+   "q": "You need to optimise delivery routes for 200 daily orders in a city. What's your approach?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Vehicle Routing Problem (VRP) formulation, (2) Google OR-Tools for exact/heuristic solutions, (3) features: order locations (geocoded), time windows, vehicle capacity, traffic patterns, (4) clustering: group nearby orders into route clusters (K-means on geo coordinates), (5) within cluster: solve TSP (Traveling Salesman Problem), (6) real-time adjustments: re-optimize when new orders come in, (7) historical analysis: average delivery time by zone and time of day, (8) constraints: driver hours, vehicle capacity, customer time windows, (9) evaluate: total distance, time, fuel cost, customer satisfaction (on-time delivery rate)."
+     "text": "**Answer:** (1) Vehicle Routing Problem (VRP) formulation, (2) Google OR-Tools for exact/heuristic solutions, (3) features: order locations (geocoded), time windows, vehicle capacity, traffic patterns, (4) clustering: group nearby orders into route clusters (K-means on geo coordinates), (5) within cluster: solve TSP (Travelling Salesman Problem), (6) real-time adjustments: re-optimise when new orders come in, (7) historical analysis: average delivery time by zone and time of day, (8) constraints: driver hours, vehicle capacity, customer time windows, (9) evaluate: total distance, time, fuel cost, customer satisfaction (on-time delivery rate)."
     }
    ],
    "kind": ""
@@ -50,7 +50,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "28",
-   "q": "You're analyzing store performance and suspect location is a key factor. How do you incorporate geospatial features?",
+   "q": "You're analysing store performance and suspect location is a key factor. How do you incorporate geospatial features?",
    "body": [
     {
      "t": "p",
@@ -70,7 +70,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) State: user profile, session context, current page, (2) action: ordering/ranking of products, (3) reward: click, add-to-cart, purchase (possibly with different weights), (4) start with contextual bandits (simpler than full RL): no state transitions needed for single-page ranking, (5) use REINFORCE or policy gradient for sequence optimization, (6) explore-exploit: show diverse orderings to learn, (7) off-policy evaluation: evaluate new policy using logged data from old policy, (8) practical: start with bandit approach, move to full RL if needed."
+     "text": "**Answer:** (1) State: user profile, session context, current page, (2) action: ordering/ranking of products, (3) reward: click, add-to-cart, purchase (possibly with different weights), (4) start with contextual bandits (simpler than full RL): no state transitions needed for single-page ranking, (5) use REINFORCE or policy gradient for sequence optimisation, (6) explore-exploit: show diverse orderings to learn, (7) off-policy evaluation: evaluate new policy using logged data from old policy, (8) practical: start with bandit approach, move to full RL if needed."
     }
    ],
    "kind": ""
@@ -82,7 +82,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Unsafe exploration: trying bad actions in production hurts users/business, (2) reward hacking: model finds loopholes (e.g., showing clickbait to maximize clicks), (3) instability: policy can oscillate or degrade suddenly, (4) difficult to debug: complex state-action-reward relationships, (5) data hungry: needs many interactions to learn, (6) delayed rewards: hard to attribute long-term outcomes to specific actions, (7) non-stationarity: user behavior changes. Mitigations: (a) constrained exploration (safe RL), (b) comprehensive reward design, (c) guardrails (business rules over RL), (d) A/B testing against baseline."
+     "text": "**Answer:** (1) Unsafe exploration: trying bad actions in production hurts users/business, (2) reward hacking: model finds loopholes (e.g., showing clickbait to maximise clicks), (3) instability: policy can oscillate or degrade suddenly, (4) difficult to debug: complex state-action-reward relationships, (5) data hungry: needs many interactions to learn, (6) delayed rewards: hard to attribute long-term outcomes to specific actions, (7) non-stationarity: user behaviour changes. Mitigations: (a) constrained exploration (safe RL), (b) comprehensive reward design, (c) guardrails (business rules over RL), (d) A/B testing against baseline."
     },
     {
      "t": "p",
@@ -110,7 +110,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Train model on: (a) real only, (b) synthetic only, (c) real + synthetic, (2) statistial fidelity: compare distributions of real vs. synthetic on all features, (3) utility test: does adding synthetic data improve test set performance?, (4) privacy: ensure synthetic data doesn't memorize real examples (nearest neighbor distance test), (5) downstream validity: evaluate on real holdout test set only, (6) overfitting risk: synthetic data from the same distribution doesn't add true new information, (7) best use: data augmentation where you know the transformation preserves labels (rotated images, etc.)."
+     "text": "**Answer:** (1) Train model on: (a) real only, (b) synthetic only, (c) real + synthetic, (2) statistical fidelity: compare distributions of real vs. synthetic on all features, (3) utility test: does adding synthetic data improve test set performance?, (4) privacy: ensure synthetic data doesn't memorise real examples (nearest neighbour distance test), (5) downstream validity: evaluate on real holdout test set only, (6) overfitting risk: synthetic data from the same distribution doesn't add true new information, (7) best use: data augmentation where you know the transformation preserves labels (rotated images, etc.)."
     },
     {
      "t": "p",
@@ -126,7 +126,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Check in order: (1) Data leakage in development: target information leaked to features, (2) feature pipeline mismatch: training features computed differently than serving features, (3) temporal leakage: training on future data, (4) population shift: production users differ from training population, (5) preprocessing differences: different normalization, encoding, (6) feature availability: some features unavailable at prediction time (computed after the fact), (7) sample selection: training data was a biased subset. Debug: (a) score training data through production pipeline, (b) compare feature distributions train vs. production, (c) check feature computation logic matches exactly."
+     "text": "**Answer:** Check in order: (1) Data leakage in development: target information leaked to features, (2) feature pipeline mismatch: training features computed differently than serving features, (3) temporal leakage: training on future data, (4) population shift: production users differ from training population, (5) preprocessing differences: different normalisation, encoding, (6) feature availability: some features unavailable at prediction time (computed after the fact), (7) sample selection: training data was a biased subset. Debug: (a) score training data through production pipeline, (b) compare feature distributions train vs. production, (c) check feature computation logic matches exactly."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Increase decision threshold from 0.5 to higher value, (2) per-label threshold optimization on validation set, (3) use label-wise calibration: Platt scaling per label, (4) constrain max labels per prediction (top-k), (5) add negative mining: hard negative examples during training, (6) label smoothing to prevent overconfidence, (7) hierarchical: predict parent labels first, children only if parent is positive, (8) post-processing rules: mutually exclusive labels can't co-occur."
+     "text": "**Answer:** (1) Increase decision threshold from 0.5 to higher value, (2) per-label threshold optimisation on validation set, (3) use label-wise calibration: Platt scaling per label, (4) constrain max labels per prediction (top-k), (5) add negative mining: hard negative examples during training, (6) label smoothing to prevent overconfidence, (7) hierarchical: predict parent labels first, children only if parent is positive, (8) post-processing rules: mutually exclusive labels can't co-occur."
     }
    ],
    "kind": ""
@@ -286,7 +286,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Data: (1) review text, metadata (timestamp, reviewer history, product info), (2) known labels: previously identified fake/genuine (even small labeled set). Features: (3) text: sentiment, length, readability, generic phrases, (4) behavioral: review velocity (many reviews in short time), (5) reviewer: account age, review count, category diversity, (6) temporal: reviews clustered around product launch, (7) network: reviewers reviewing same products (collusion). Model: (8) gradient boosting or neural network ensemble, (9) graph-based features (reviewer-product bipartite graph). System: (10) real-time scoring, (11) human review queue, (12) feedback loop from moderators."
+     "text": "**Answer:** Data: (1) review text, metadata (timestamp, reviewer history, product info), (2) known labels: previously identified fake/genuine (even small labelled set). Features: (3) text: sentiment, length, readability, generic phrases, (4) behavioural: review velocity (many reviews in short time), (5) reviewer: account age, review count, category diversity, (6) temporal: reviews clustered around product launch, (7) network: reviewers reviewing same products (collusion). Model: (8) gradient boosting or neural network ensemble, (9) graph-based features (reviewer-product bipartite graph). System: (10) real-time scoring, (11) human review queue, (12) feedback loop from moderators."
     }
    ],
    "kind": ""
@@ -322,7 +322,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't immediately rewrite — understand the current system first, (2) document what you learn: architecture, data flows, model decisions, (3) add monitoring first: understand current performance before changing anything, (4) add tests incrementally: start with critical paths, (5) talk to the team: understand why it's in this state (time pressure, turnover?), (6) propose gradual improvement plan: prioritize by risk, (7) use model refresh/retrain cycles to refactor, (8) lead by example: your new code follows best practices."
+     "text": "**Answer:** (1) Don't immediately rewrite — understand the current system first, (2) document what you learn: architecture, data flows, model decisions, (3) add monitoring first: understand current performance before changing anything, (4) add tests incrementally: start with critical paths, (5) talk to the team: understand why it's in this state (time pressure, turnover?), (6) propose gradual improvement plan: prioritise by risk, (7) use model refresh/retrain cycles to refactor, (8) lead by example: your new code follows best practices."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Use STAR format: **Situation**: \"We needed to deploy a model within 2 weeks for a time-sensitive marketing campaign.\" **Task**: \"Choose between a complex ensemble model (better accuracy) and a simple logistic regression (faster to deploy).\" **Action**: \"I analyzed the accuracy difference (2%), estimated deployment effort (1 week vs. 2 days), and evaluated business impact. I chose logistic regression with a plan to upgrade post-launch.\" **Result**: \"Deployed on time, captured $500K revenue from campaign, upgraded to ensemble in month 2 with 15% improvement in targeting.\" Key: show your decision-making process, not just the outcome."
+     "text": "**Answer:** Use STAR format: **Situation**: \"We needed to deploy a model within 2 weeks for a time-sensitive marketing campaign.\" **Task**: \"Choose between a complex ensemble model (better accuracy) and a simple logistic regression (faster to deploy).\" **Action**: \"I analysed the accuracy difference (2%), estimated deployment effort (1 week vs. 2 days), and evaluated business impact. I chose logistic regression with a plan to upgrade post-launch.\" **Result**: \"Deployed on time, captured $500K revenue from campaign, upgraded to ensemble in month 2 with 15% improvement in targeting.\" Key: show your decision-making process, not just the outcome."
     }
    ],
    "kind": ""
@@ -346,7 +346,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Good answer elements: (1) \"LLMs are changing how we interact with data — natural language querying, automated EDA, code generation, but they don't replace understanding,\" (2) \"AutoML democratizes basic modeling, so data scientists will focus more on problem framing, experimentation, and causal inference,\" (3) \"MLOps maturity — models in production with proper monitoring will be the norm, not the exception,\" (4) \"Real-time ML will become standard — streaming features, online learning,\" (5) \"Responsible AI will move from optional to mandatory — regulations are coming,\" (6) \"The role will split: ML engineers (production), applied scientists (research), analytics engineers (data).\""
+     "text": "**Answer:** Good answer elements: (1) \"LLMs are changing how we interact with data — natural language querying, automated EDA, code generation, but they don't replace understanding,\" (2) \"AutoML democratizes basic modelling, so data scientists will focus more on problem framing, experimentation, and causal inference,\" (3) \"MLOps maturity — models in production with proper monitoring will be the norm, not the exception,\" (4) \"Real-time ML will become standard — streaming features, online learning,\" (5) \"Responsible AI will move from optional to mandatory — regulations are coming,\" (6) \"The role will split: ML engineers (production), applied scientists (research), analytics engineers (data).\""
     }
    ],
    "kind": ""

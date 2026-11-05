@@ -1,14 +1,14 @@
 EC.receiveLesson({
   id: "3.9",
 
-  lede: "Quantization (3.3) keeps every weight and stores it in fewer bits. Compression removes weights instead — pruning deletes them, distillation trains a smaller model to imitate a larger one. The distinction that decides everything is whether the removal leaves a *shape* behind: I pruned 50% of GPT-2's weights to zero and the forward pass got no faster at all, because a dense kernel multiplies zeros at full price. Remove whole layers instead and the speedup is real — and the measurements turned up two results I did not expect. Dropping GPT-2's **layer 0 alone multiplies perplexity by 648×** while dropping any other single layer costs at most 1.75×. And layer importance **does not add up**: the three individually cheapest layers, removed together, were *worse* than simply dropping the last three.",
+  lede: "Quantisation (3.3) keeps every weight and stores it in fewer bits. Compression removes weights instead — pruning deletes them, distillation trains a smaller model to imitate a larger one. The distinction that decides everything is whether the removal leaves a *shape* behind: I pruned 50% of GPT-2's weights to zero and the forward pass got no faster at all, because a dense kernel multiplies zeros at full price. Remove whole layers instead and the speedup is real — and the measurements turned up two results I did not expect. Dropping GPT-2's **layer 0 alone multiplies perplexity by 648×** while dropping any other single layer costs at most 1.75×. And layer importance **does not add up**: the three individually cheapest layers, removed together, were *worse* than simply dropping the last three.",
 
   objectives: [
     "Explain why unstructured pruning gives no speedup on dense hardware",
     "Distinguish unstructured, structured and semi-structured pruning by what they remove",
     "Measure layer importance by ablation and say why the scores do not compose",
     "Describe knowledge distillation and what the temperature term is for",
-    "Choose between quantization, pruning and distillation from the constraint you actually have"
+    "Choose between quantisation, pruning and distillation from the constraint you actually have"
   ],
 
   prerequisites: ["3.3"],
@@ -229,9 +229,9 @@ for frac in (0.1, 0.3, 0.5, 0.7, 0.9):
       ] },
 
     { t: "h2", n: "04", id: "choosing", text: "Choosing between the three",
-      sub: "Mostly the answer is quantization" },
+      sub: "Mostly the answer is quantisation" },
 
-    {"kind": "matrix", "title": "Which of the three, and the fourth option people skip", "caption": "Quantization is nearly always the right **first** answer, because it needs no retraining and composes with everything else. Distillation is the only one of the three that can *beat* the original on your own distribution, because the student is trained on your data. And the last row is the honest one that gets skipped: **a smaller off-the-shelf model that passes your evaluation is strictly better than compressing a larger one**, because somebody else paid for the training.", "cols": ["When", "The catch"], "rows": ["Quantization", "Structured pruning", "Distillation", "None of them"], "cells": [[{"text": "smaller or faster, no retraining", "tone": "good"}, "nearly always the first answer"], ["you own the pipeline and need a shape", {"text": "budget the recovery fine-tune", "tone": "warn"}], [{"text": "a narrower task, teacher plus data", "tone": "good"}, "the only one that can beat the original"], [{"text": "a smaller model already passes", "tone": "violet"}, "strictly better - somebody else paid"]], "t": "diagram", "id": "dg-3_9-04-2"},
+    {"kind": "matrix", "title": "Which of the three, and the fourth option people skip", "caption": "Quantisation is nearly always the right **first** answer, because it needs no retraining and composes with everything else. Distillation is the only one of the three that can *beat* the original on your own distribution, because the student is trained on your data. And the last row is the honest one that gets skipped: **a smaller off-the-shelf model that passes your evaluation is strictly better than compressing a larger one**, because somebody else paid for the training.", "cols": ["When", "The catch"], "rows": ["Quantisation", "Structured pruning", "Distillation", "None of them"], "cells": [[{"text": "smaller or faster, no retraining", "tone": "good"}, "nearly always the first answer"], ["you own the pipeline and need a shape", {"text": "budget the recovery fine-tune", "tone": "warn"}], [{"text": "a narrower task, teacher plus data", "tone": "good"}, "the only one that can beat the original"], [{"text": "a smaller model already passes", "tone": "violet"}, "strictly better - somebody else paid"]], "t": "diagram", "id": "dg-3_9-04-2"},
 
 
 
@@ -261,14 +261,14 @@ for frac in (0.1, 0.3, 0.5, 0.7, 0.9):
       { level: "ok", label: "Drop the last four layers", why: "Real: parameters and forward time both fall, and keeping the first 8 of 12 cost 6.14× perplexity in my measurement. Usable if you then fine-tune to recover, which is a training project rather than a deployment setting.",
         code: `m.transformer.h = nn.ModuleList(m.transformer.h[:8])   # 8 of 12`,
         note: "Published layer-pruning results are much better than my raw 6.14×, because they heal the model afterwards." },
-      { level: "best", label: "Quantize to 4-bit", why: "26 GB to 6.5 GB with no retraining, no architecture change, and a quality cost that calibrated methods keep small — and because decode is memory-bound it gets faster too (3.3). Reach for compression only when quantization is already in place and still not enough.",
+      { level: "best", label: "Quantise to 4-bit", why: "26 GB to 6.5 GB with no retraining, no architecture change, and a quality cost that calibrated methods keep small — and because decode is memory-bound it gets faster too (3.3). Reach for compression only when quantisation is already in place and still not enough.",
         code: `llm = LLM(model="...-13b", quantization="awq")   # 6.5 GB`,
-        note: "Quantization is reversible and orthogonal; pruning and distillation are neither." }
+        note: "Quantisation is reversible and orthogonal; pruning and distillation are neither." }
     ] },
 
     { t: "dl", items: [
-      { k: "Use quantization when", v: "You need the model smaller or decode faster and you are not willing to retrain. This is nearly always the right first answer, and it composes with everything else." },
-      { k: "Use structured pruning when", v: "You own the training pipeline and need a specific smaller shape — a latency budget a quantized model still misses, or an edge device with a hard parameter ceiling. Budget for the recovery fine-tune; the raw numbers above are what you get without it." },
+      { k: "Use quantisation when", v: "You need the model smaller or decode faster and you are not willing to retrain. This is nearly always the right first answer, and it composes with everything else." },
+      { k: "Use structured pruning when", v: "You own the training pipeline and need a specific smaller shape — a latency budget a quantised model still misses, or an edge device with a hard parameter ceiling. Budget for the recovery fine-tune; the raw numbers above are what you get without it." },
       { k: "Use distillation when", v: "You need a genuinely smaller model for a narrower task, and you have the teacher plus unlabelled data in your domain. It is the only one of the three that can beat the original on *your* distribution, because the student is trained on your data." },
       { k: "Use none of them when", v: "A smaller off-the-shelf model passes your evaluation. That is strictly cheaper than any compression project, and 3.12's arithmetic puts model choice above every serving optimisation as a cost lever." }
     ] },
@@ -341,7 +341,7 @@ for label, drop in (("3 least damaging %s" % sorted(cheap), cheap),
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
-        { t: "p", text: "Quantization is writing the same book in a smaller typeface. Unstructured pruning is erasing words but keeping the blank spaces, so the book is exactly as heavy. Structured pruning is tearing out chapters — lighter, and you had better know which chapters. Distillation is hiring someone to read the book and write a shorter one." },
+        { t: "p", text: "Quantisation is writing the same book in a smaller typeface. Unstructured pruning is erasing words but keeping the blank spaces, so the book is exactly as heavy. Structured pruning is tearing out chapters — lighter, and you had better know which chapters. Distillation is hiring someone to read the book and write a shorter one." },
         { t: "p", text: "Only the typeface change is free. The other three all cost you something you then have to go and recover." }
       ] },
 
@@ -349,7 +349,7 @@ for label, drop in (("3 least damaging %s" % sorted(cheap), cheap),
       body: [
         { t: "p", text: "**\"We need our 13B model under 8 GB and 2× faster. An engineer proposes pruning 60% of the weights. What do you say?\"**" },
         { t: "p", text: "That it will not do either thing. Unstructured pruning leaves the tensors the same shape, so the checkpoint is the same size and a dense kernel multiplies the zeros at full price — I measured 50% pruning on GPT-2 at exactly zero speedup, with perplexity up 513×. The only sparsity that converts to speed on current hardware is the 2:4 pattern on Ampere and later, and that caps out around 2× with its own quality cost." },
-        { t: "p", text: "The thing that meets both targets is quantization. 13B at 4-bit is about 6.5 GB, which clears the memory budget, and because decode is memory-bandwidth-bound it is faster in proportion to the bytes saved — no retraining, no architecture change, and it composes with everything else we might do later." },
+        { t: "p", text: "The thing that meets both targets is quantisation. 13B at 4-bit is about 6.5 GB, which clears the memory budget, and because decode is memory-bandwidth-bound it is faster in proportion to the bytes saved — no retraining, no architecture change, and it composes with everything else we might do later." },
         { t: "p", text: "If 4-bit still misses the latency target, then structured pruning, and specifically dropping layers from the end — not the beginning. I measured keeping the first 10 of 12 blocks at 2.41× perplexity against 800× for keeping the last 10, the same parameter count either way. And I would budget for a recovery fine-tune, because raw post-pruning numbers are much worse than published ones precisely because the published ones heal the model." },
         { t: "p", text: "Two cautions from my own measurements. Do not pick which layers to drop by ranking them individually: the three cheapest layers in my ablation cost 1.03×, 0.98× and 0.97× alone and 5.01× together, which was worse than simply dropping the last three. And check whether a smaller off-the-shelf model passes evaluation first — that is cheaper than any of this and it is the comparison the proposal skipped." }
       ] }
@@ -418,7 +418,7 @@ for label, drop in (("3 least damaging %s" % sorted(cheap), cheap),
     sub: "Compression is where candidates propose pruning without knowing whether it makes anything faster",
     questions: [
       { level: "core",
-        q: "Compare quantization, pruning and distillation.",
+        q: "Compare quantisation, pruning and distillation.",
         strong: "A strong answer separates them by whether they change the tensor shapes and whether they need retraining.",
         answer: [
           { t: "p", text: "Quantization keeps every weight and stores it in fewer bits, so it needs no retraining and composes with everything. Because decode is memory-bandwidth-bound it is also the only one that reliably makes things faster for free — 13B goes from 26 GB to about 6.5 GB at 4-bit." },

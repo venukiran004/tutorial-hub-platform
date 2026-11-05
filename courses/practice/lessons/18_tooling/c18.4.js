@@ -248,7 +248,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `['FF0000', '00FF00']` **Explanation:** Hex color pattern: `#` followed by exactly 6 hex characters."
+     "text": "**Answer:** `['FF0000', '00FF00']` **Explanation:** Hex colour pattern: `#` followed by exactly 6 hex characters."
     }
    ],
    "prompt": [
@@ -368,7 +368,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `['3.14', '+', '2', '*', '(', '4', '-', '1', ')']` **Explanation:** Tokenizer extracts numbers and operators from mathematical expression."
+     "text": "**Answer:** `['3.14', '+', '2', '*', '(', '4', '-', '1', ')']` **Explanation:** Tokeniser extracts numbers and operators from mathematical expression."
     }
    ],
    "prompt": [
@@ -508,7 +508,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `get user name by id`, `getUserNameById` **Explanation:** Regex converts camelCase to words by inserting spaces before capitals. Reverse joins with capitalization."
+     "text": "**Answer:** `get user name by id`, `getUserNameById` **Explanation:** Regex converts camelCase to words by inserting spaces before capitals. Reverse joins with capitalisation."
     },
     {
      "t": "hr"

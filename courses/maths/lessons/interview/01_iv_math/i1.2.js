@@ -20,7 +20,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "Section 2: Calculus & Optimization",
+   "text": "Section 2: Calculus & Optimisation",
    "id": "set"
   },
   {
@@ -184,7 +184,7 @@ EC.receiveLesson({
        "**Adam**",
        "Adaptive LR with 1st/2nd moment estimates",
        "Works well out-of-box",
-       "May not generalize as well as SGD"
+       "May not generalise as well as SGD"
       ]
      ]
     }
@@ -253,11 +253,11 @@ EC.receiveLesson({
      "rows": [
       [
        "Vanishing",
-       "ReLU activation, residual connections, LSTM/GRU gates, proper initialization (He, Xavier)"
+       "ReLU activation, residual connections, LSTM/GRU gates, proper initialisation (He, Xavier)"
       ],
       [
        "Exploding",
-       "Gradient clipping, batch normalization, lower learning rate"
+       "Gradient clipping, batch normalisation, lower learning rate"
       ]
      ]
     }
@@ -279,7 +279,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "The Jacobian is the multivariate generalization of the derivative. In neural networks, each layer's Jacobian relates input perturbations to output perturbations. The chain rule in matrix form: \\(J_{\\text{total}} = J_L \\cdot J_{L-1} \\cdots J_1\\)."
+     "text": "The Jacobian is the multivariate generalisation of the derivative. In neural networks, each layer's Jacobian relates input perturbations to output perturbations. The chain rule in matrix form: \\(J_{\\text{total}} = J_L \\cdot J_{L-1} \\cdots J_1\\)."
     }
    ],
    "kind": ""
@@ -291,7 +291,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** **Lagrange multipliers** solve constrained optimization: minimize \\(f(x)\\) subject to \\(g(x) = 0\\)."
+     "text": "**Answer:** **Lagrange multipliers** solve constrained optimisation: minimise \\(f(x)\\) subject to \\(g(x) = 0\\)."
     },
     {
      "t": "math",
@@ -316,7 +316,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**ML relevance:** SVM optimization is solved using KKT conditions. Support vectors are the points where \\(\\lambda_i > 0\\)."
+     "text": "**ML relevance:** SVM optimisation is solved using KKT conditions. Support vectors are the points where \\(\\lambda_i > 0\\)."
     }
    ],
    "kind": ""
@@ -333,7 +333,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Local minimum:** \\(f(x^*) \\leq f(x)\\) for all \\(x\\) in a neighborhood",
+      "**Local minimum:** \\(f(x^*) \\leq f(x)\\) for all \\(x\\) in a neighbourhood",
       "**Global minimum:** \\(f(x^*) \\leq f(x)\\) for all \\(x\\) in the entire domain"
      ]
     },
@@ -355,7 +355,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "26",
-   "q": "Explain Taylor expansion and its use in optimization.",
+   "q": "Explain Taylor expansion and its use in optimisation.",
    "body": [
     {
      "t": "p",
@@ -374,7 +374,7 @@ EC.receiveLesson({
      "items": [
       "**Newton's method:** Set gradient of Taylor expansion to 0 → \\(x_{t+1} = x_t - H^{-1}\\nabla f\\)",
       "**Natural gradient:** Uses Fisher information (the expected Hessian of the negative log-likelihood) instead of \\(H\\)",
-      "**Trust region methods:** Optimize Taylor approximation within a trust region",
+      "**Trust region methods:** Optimise Taylor approximation within a trust region",
       "**L-BFGS:** Approximates inverse Hessian from past gradients"
      ]
     }
@@ -443,7 +443,7 @@ EC.receiveLesson({
      "items": [
       "Cross-entropy gradient doesn't saturate when predictions are confident but wrong",
       "It's the negative log-likelihood for categorical/Bernoulli distributions",
-      "Minimizing CE = maximizing likelihood = minimizing KL divergence"
+      "Minimising CE = maximising likelihood = minimising KL divergence"
      ]
     }
    ],
@@ -452,7 +452,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "29",
-   "q": "Explain the relationship between MLE, MAP, and regularization.",
+   "q": "Explain the relationship between MLE, MAP, and regularisation.",
    "body": [
     {
      "t": "p",
@@ -461,7 +461,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**MLE:** \\(\\hat{\\theta}_{MLE} = \\arg\\max_\\theta P(D|\\theta)\\) — maximize likelihood",
+      "**MLE:** \\(\\hat{\\theta}_{MLE} = \\arg\\max_\\theta P(D|\\theta)\\) — maximise likelihood",
       "**MAP:** \\(\\hat{\\theta}_{MAP} = \\arg\\max_\\theta P(\\theta|D) = \\arg\\max_\\theta P(D|\\theta)P(\\theta)\\) — add prior"
      ]
     },
@@ -472,9 +472,9 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "MLE → minimize \\(-\\log P(D|\\theta)\\) = loss function alone",
-      "MAP with Gaussian prior → minimize \\(\\mathcal{L} + \\lambda\\|\\theta\\|_2^2\\) = **L2 regularization (Ridge)**",
-      "MAP with Laplacian prior → minimize \\(\\mathcal{L} + \\lambda\\|\\theta\\|_1\\) = **L1 regularization (Lasso)**"
+      "MLE → minimise \\(-\\log P(D|\\theta)\\) = loss function alone",
+      "MAP with Gaussian prior → minimise \\(\\mathcal{L} + \\lambda\\|\\theta\\|_2^2\\) = **L2 regularisation (Ridge)**",
+      "MAP with Laplacian prior → minimise \\(\\mathcal{L} + \\lambda\\|\\theta\\|_1\\) = **L1 regularisation (Lasso)**"
      ]
     }
    ],

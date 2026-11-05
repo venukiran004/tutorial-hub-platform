@@ -30,7 +30,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature engineering: are you clustering on the right features? Add/remove features based on what makes business sense, (2) feature scaling: ensure all features are normalized (K-Means is sensitive to scale), (3) try different algorithms: DBSCAN (density-based, no fixed k), Gaussian Mixture Models (soft assignments), hierarchical clustering, (4) try different k: use elbow plot, silhouette analysis, gap statistic, (5) dimensionality reduction: PCA/UMAP before clustering to remove noise, (6) profile clusters with stakeholders: map features to business meaning, (7) iterative: cluster → review with business → refine features → re-cluster."
+     "text": "**Answer:** (1) Feature engineering: are you clustering on the right features? Add/remove features based on what makes business sense, (2) feature scaling: ensure all features are normalised (K-Means is sensitive to scale), (3) try different algorithms: DBSCAN (density-based, no fixed k), Gaussian Mixture Models (soft assignments), hierarchical clustering, (4) try different k: use elbow plot, silhouette analysis, gap statistic, (5) dimensionality reduction: PCA/UMAP before clustering to remove noise, (6) profile clusters with stakeholders: map features to business meaning, (7) iterative: cluster → review with business → refine features → re-cluster."
     }
    ],
    "kind": ""
@@ -70,7 +70,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) TF-IDF: extract high TF-IDF terms per time period, (2) RAKE (Rapid Automatic Keyword Extraction): unsupervised, fast, (3) KeyBERT: BERT embeddings + cosine similarity for contextual key phrases, (4) n-gram frequency analysis: bigrams/trigrams trending up over time, (5) for scale: batch process with Spark or Dask, (6) temporal analysis: compare key phrases month-over-month to find emerging trends, (7) topic modeling (BERTopic): topics evolve over time, (8) output: dashboard with trending phrases, sentiment per phrase, volume over time."
+     "text": "**Answer:** (1) TF-IDF: extract high TF-IDF terms per time period, (2) RAKE (Rapid Automatic Keyword Extraction): unsupervised, fast, (3) KeyBERT: BERT embeddings + cosine similarity for contextual key phrases, (4) n-gram frequency analysis: bigrams/trigrams trending up over time, (5) for scale: batch process with Spark or Dask, (6) temporal analysis: compare key phrases month-over-month to find emerging trends, (7) topic modelling (BERTopic): topics evolve over time, (8) output: dashboard with trending phrases, sentiment per phrase, volume over time."
     }
    ],
    "kind": ""
@@ -78,11 +78,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "105",
-   "q": "Your chatbot needs to detect user intent from free-text messages. You have 30 intents and 100 labeled examples per intent. How do you build this?",
+   "q": "Your chatbot needs to detect user intent from free-text messages. You have 30 intents and 100 labelled examples per intent. How do you build this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Fine-tune a pre-trained model: DistilBERT or MiniLM on 3000 examples, (2) data augmentation: paraphrase each example 3-5x using back-translation or LLM, (3) few-shot approach: SetFit works well with limited labeled data, (4) fallback intent: \"I don't understand\" for low-confidence predictions, (5) confidence threshold: below 0.7 → ask for clarification, (6) confusion matrix: identify intents that are frequently confused → add more examples or merge, (7) active learning: log ambiguous messages, have humans label them, (8) slot extraction: after intent detection, extract entities (dates, names, amounts)."
+     "text": "**Answer:** (1) Fine-tune a pre-trained model: DistilBERT or MiniLM on 3000 examples, (2) data augmentation: paraphrase each example 3-5x using back-translation or LLM, (3) few-shot approach: SetFit works well with limited labelled data, (4) fallback intent: \"I don't understand\" for low-confidence predictions, (5) confidence threshold: below 0.7 → ask for clarification, (6) confusion matrix: identify intents that are frequently confused → add more examples or merge, (7) active learning: log ambiguous messages, have humans label them, (8) slot extraction: after intent detection, extract entities (dates, names, amounts)."
     }
    ],
    "kind": ""
@@ -90,7 +90,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "106",
-   "q": "Your text summarization model sometimes \"hallucinates\" facts not in the original document. How do you detect and prevent this?",
+   "q": "Your text summarisation model sometimes \"hallucinates\" facts not in the original document. How do you detect and prevent this?",
    "body": [
     {
      "t": "p",
@@ -106,11 +106,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "107",
-   "q": "Your hiring model has equalized odds across gender but a disparate impact ratio of 0.75 (below the 80% rule). How do you reconcile?",
+   "q": "Your hiring model has equalised odds across gender but a disparate impact ratio of 0.75 (below the 80% rule). How do you reconcile?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Different fairness metrics can conflict — can't satisfy all simultaneously, (2) disparate impact ratio < 0.8 may violate EEOC guidelines regardless of equalized odds, (3) approaches: (a) threshold adjustment per group to achieve 80% rule, (b) re-weighting training data, (c) adversarial debiasing with disparate impact constraint, (4) business-legal decision: which fairness definition takes priority?, (5) consult legal team: regulatory requirements often dictate, (6) document tradeoffs: improving one metric may worsen another, (7) consider process fairness: is the model being used appropriately regardless of metrics?"
+     "text": "**Answer:** (1) Different fairness metrics can conflict — can't satisfy all simultaneously, (2) disparate impact ratio < 0.8 may violate EEOC guidelines regardless of equalised odds, (3) approaches: (a) threshold adjustment per group to achieve 80% rule, (b) re-weighting training data, (c) adversarial debiasing with disparate impact constraint, (4) business-legal decision: which fairness definition takes priority?, (5) consult legal team: regulatory requirements often dictate, (6) document tradeoffs: improving one metric may worsen another, (7) consider process fairness: is the model being used appropriately regardless of metrics?"
     }
    ],
    "kind": ""
@@ -166,7 +166,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Price elasticity estimation: regression of demand on price (using historical price changes), (2) causal approach: use past A/B tests or natural experiments with price changes, (3) instrumental variables: use cost shocks as instruments for exogenous price variation, (4) segment analysis: elasticity varies by customer segment, product category, (5) competitor response: will competitors match or hold prices?, (6) simulation: model revenue = quantity(price) × price, optimize, (7) uncertainty: provide range \"revenue likely changes between -2% to +5%\", (8) caveats: historical elasticity may not hold for large price changes."
+     "text": "**Answer:** (1) Price elasticity estimation: regression of demand on price (using historical price changes), (2) causal approach: use past A/B tests or natural experiments with price changes, (3) instrumental variables: use cost shocks as instruments for exogenous price variation, (4) segment analysis: elasticity varies by customer segment, product category, (5) competitor response: will competitors match or hold prices?, (6) simulation: model revenue = quantity(price) × price, optimise, (7) uncertainty: provide range \"revenue likely changes between -2% to +5%\", (8) caveats: historical elasticity may not hold for large price changes."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Identify products dependent on supplier X, (2) current inventory levels for those products, (3) demand forecast: expected sales during 2-week period, (4) substitution: can alternative suppliers fill the gap? At what cost?, (5) customer impact: lost sales, delayed orders, customer churn, (6) Monte Carlo simulation: vary demand, lead times, substitute availability, (7) scenario modeling: best case (minimal impact), expected case, worst case, (8) financial model: lost revenue + expediting costs + customer compensation, (9) prevention: what inventory buffer would mitigate this risk?"
+     "text": "**Answer:** (1) Identify products dependent on supplier X, (2) current inventory levels for those products, (3) demand forecast: expected sales during 2-week period, (4) substitution: can alternative suppliers fill the gap? At what cost?, (5) customer impact: lost sales, delayed orders, customer churn, (6) Monte Carlo simulation: vary demand, lead times, substitute availability, (7) scenario modelling: best case (minimal impact), expected case, worst case, (8) financial model: lost revenue + expediting costs + customer compensation, (9) prevention: what inventory buffer would mitigate this risk?"
     },
     {
      "t": "p",
@@ -194,7 +194,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Learning rate warmup + cosine annealing: explore then refine, (2) stochastic weight averaging (SWA): average weights from different training points, (3) random restarts: train multiple times with different initializations, (4) larger batch size + higher learning rate: smoother loss landscape, (5) shake-shake / shake-drop regularization, (6) cyclical learning rates: periodically increase LR to escape, (7) architecture changes: skip connections help with loss landscape, (8) label smoothing: softens the loss landscape, (9) knowledge distillation from a better model."
+     "text": "**Answer:** (1) Learning rate warmup + cosine annealing: explore then refine, (2) stochastic weight averaging (SWA): average weights from different training points, (3) random restarts: train multiple times with different initialisations, (4) larger batch size + higher learning rate: smoother loss landscape, (5) shake-shake / shake-drop regularisation, (6) cyclical learning rates: periodically increase LR to escape, (7) architecture changes: skip connections help with loss landscape, (8) label smoothing: softens the loss landscape, (9) knowledge distillation from a better model."
     }
    ],
    "kind": ""
@@ -206,7 +206,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Wasserstein GAN (WGAN): more stable gradient, (2) spectral normalization: stabilize discriminator, (3) progressive training: start low-resolution, progressively add layers, (4) minibatch discrimination: penalize lack of diversity, (5) feature matching: match statistics of real and generated distributions, (6) Fréchet Inception Distance (FID) monitoring during training, (7) unrolled GAN: discriminator sees multiple generator steps ahead, (8) diversity loss: explicitly reward diverse outputs, (9) practical: train discriminator more steps per generator step."
+     "text": "**Answer:** (1) Wasserstein GAN (WGAN): more stable gradient, (2) spectral normalisation: stabilise discriminator, (3) progressive training: start low-resolution, progressively add layers, (4) minibatch discrimination: penalise lack of diversity, (5) feature matching: match statistics of real and generated distributions, (6) Fréchet Inception Distance (FID) monitoring during training, (7) unrolled GAN: discriminator sees multiple generator steps ahead, (8) diversity loss: explicitly reward diverse outputs, (9) practical: train discriminator more steps per generator step."
     }
    ],
    "kind": ""
@@ -218,7 +218,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Mini-batch training: standard approach — load batches from disk, (2) gradient accumulation: simulate larger batch size with multiple forward/backward passes, (3) mixed precision: FP16 reduces memory 2x, (4) gradient checkpointing: trade compute for memory by recomputing activations, (5) model parallelism: split model across GPUs, (6) data parallelism: replicate model across GPUs, split data, (7) offloading: CPU offloading for optimizer states (DeepSpeed ZeRO), (8) efficient data loading: streaming datasets, memory-mapped files, (9) reduce model size: fewer layers/parameters if possible."
+     "text": "**Answer:** (1) Mini-batch training: standard approach — load batches from disk, (2) gradient accumulation: simulate larger batch size with multiple forward/backward passes, (3) mixed precision: FP16 reduces memory 2x, (4) gradient checkpointing: trade compute for memory by recomputing activations, (5) model parallelism: split model across GPUs, (6) data parallelism: replicate model across GPUs, split data, (7) offloading: CPU offloading for optimiser states (DeepSpeed ZeRO), (8) efficient data loading: streaming datasets, memory-mapped files, (9) reduce model size: fewer layers/parameters if possible."
     },
     {
      "t": "p",
@@ -262,7 +262,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Data Visualization Best Practices**"
+     "text": "**Theme: Data Visualisation Best Practices**"
     }
    ],
    "kind": ""
@@ -274,7 +274,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Start with \"what decisions do you make?\": each chart should support a decision, (2) hierarchy: 3-5 KPIs at top level, drill-down for details, (3) remove vanity metrics: charts that don't drive action, (4) group by theme: business performance, operations, customer, product, (5) progressive disclosure: summary → click for detail, (6) annotation: add context (\"this spike was due to Black Friday\"), (7) consistent design: same color scheme, axis conventions, (8) narrative: page-by-page tells a story — not just data dump, (9) rule of thumb: 5-8 charts per dashboard page maximum."
+     "text": "**Answer:** (1) Start with \"what decisions do you make?\": each chart should support a decision, (2) hierarchy: 3-5 KPIs at top level, drill-down for details, (3) remove vanity metrics: charts that don't drive action, (4) group by theme: business performance, operations, customer, product, (5) progressive disclosure: summary → click for detail, (6) annotation: add context (\"this spike was due to Black Friday\"), (7) consistent design: same colour scheme, axis conventions, (8) narrative: page-by-page tells a story — not just data dump, (9) rule of thumb: 5-8 charts per dashboard page maximum."
     }
    ],
    "kind": ""
@@ -282,7 +282,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "120",
-   "q": "You need to visualize model performance for a non-technical audience. What do you show?",
+   "q": "You need to visualise model performance for a non-technical audience. What do you show?",
    "body": [
     {
      "t": "p",
@@ -314,7 +314,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Heteroscedasticity: variance of errors depends on the prediction level. Impact: (1) coefficient estimates still unbiased but standard errors are wrong → invalid hypothesis tests. Detection: (2) Breusch-Pagan test, White test. Fixes: (3) log-transform the target (most common fix), (4) weighted least squares: weight observations inversely to their variance, (5) robust standard errors (Huber-White): correct SE without changing model, (6) Generalized Least Squares (GLS), (7) if using for prediction only (not inference): less critical — focus on prediction accuracy."
+     "text": "**Answer:** Heteroscedasticity: variance of errors depends on the prediction level. Impact: (1) coefficient estimates still unbiased but standard errors are wrong → invalid hypothesis tests. Detection: (2) Breusch-Pagan test, White test. Fixes: (3) log-transform the target (most common fix), (4) weighted least squares: weight observations inversely to their variance, (5) robust standard errors (Huber-White): correct SE without changing model, (6) Generalised Least Squares (GLS), (7) if using for prediction only (not inference): less critical — focus on prediction accuracy."
     },
     {
      "t": "p",

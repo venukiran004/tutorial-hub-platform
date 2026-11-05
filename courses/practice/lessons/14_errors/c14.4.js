@@ -91,7 +91,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "1693",
-   "q": "Program 1693: Serializing an Object Graph with Shared References",
+   "q": "Program 1693: Serialising an Object Graph with Shared References",
    "body": [
     {
      "t": "code",

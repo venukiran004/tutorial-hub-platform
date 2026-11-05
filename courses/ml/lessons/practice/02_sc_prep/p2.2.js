@@ -25,7 +25,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Distance to important locations (city center, nearest store)",
+      "Distance to important locations (city centre, nearest store)",
       "Cluster assignments (geographic regions)",
       "Grid/hexagonal binning",
       "Haversine distance features",
@@ -59,7 +59,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** 2 features, degree 2: [x1, x2, x1², x2², x1×x2]. Useful with regularization. Expensive for high degree."
+     "text": "**Explanation:** 2 features, degree 2: [x1, x2, x1², x2², x1×x2]. Useful with regularisation. Expensive for high degree."
     }
    ],
    "kind": ""
@@ -175,7 +175,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Language-specific preprocessing (tokenization, stopwords) needed. Multilingual models handle diversity."
+     "text": "**Explanation:** Language-specific preprocessing (tokenisation, stopwords) needed. Multilingual models handle diversity."
     }
    ],
    "kind": ""
@@ -214,7 +214,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Bag-of-Words:** Raw word counts per document",
-      "**TF-IDF:** Word frequency weighted by inverse document frequency — penalizes common words"
+      "**TF-IDF:** Word frequency weighted by inverse document frequency — penalises common words"
      ]
     },
     {
@@ -272,11 +272,11 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Standardization (mean=0, variance=1) is essential. PCA is sensitive to feature scales."
+     "text": "**Answer:** Standardisation (mean=0, variance=1) is essential. PCA is sensitive to feature scales."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Without scaling, features with larger scales dominate principal components. Mean centering is minimum requirement."
+     "text": "**Explanation:** Without scaling, features with larger scales dominate principal components. Mean centreing is minimum requirement."
     }
    ],
    "kind": ""
@@ -528,7 +528,7 @@ EC.receiveLesson({
      "items": [
       "**Sampling:** SMOTE, undersampling, ADASYN",
       "**Class weights:** Adjust loss function weights",
-      "**Threshold tuning:** Optimize classification threshold",
+      "**Threshold tuning:** Optimise classification threshold",
       "**Anomaly detection:** Treat as anomaly detection problem",
       "**Metric:** Use precision-recall AUC, not accuracy"
      ]
@@ -573,7 +573,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Pipeline chains preprocessing and modeling steps into a single estimator. Ensures:"
+     "text": "**Answer:** Pipeline chains preprocessing and modelling steps into a single estimator. Ensures:"
     },
     {
      "t": "ol",

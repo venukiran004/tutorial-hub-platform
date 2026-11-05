@@ -152,7 +152,7 @@ EC.receiveLesson({
         "Without a boundary on the threshold, the ratio comes from an interpolated quantile that lesson 7.2 measured 25.7% wrong at p95."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual outcome is discovering that the static threshold implies an SLO nobody chose, and that it is both too lax for a slow burn and too coarse for a severe one — which is the pair of failures measured in this lesson." },
           { t: "p", text: "The budget-as-a-count conversion is the part that changes conversations beyond alerting. Once a month's budget is 51,840 requests, a canary costing 2,282 of them is a priced decision rather than an argument, and so is a deploy that sheds a few hundred." }
         ]

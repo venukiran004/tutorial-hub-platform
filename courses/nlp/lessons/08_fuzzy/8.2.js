@@ -104,7 +104,7 @@ EC.receiveLesson({
       caption: "The same two numbers as the hand implementation — and `soundex` gives `Smith` and `Smyth` one key." },
     { t: "p", text: "`jellyfish` is the one to reach for when you want the phonetic functions as well, because **`soundex(\"Smith\")` and `soundex(\"Smyth\")` are both `S530`, which is 8.5’s phonetic blocking key in one call.** `rapidfuzz.distance.JaroWinkler` is the same metric with C++ internals, and it takes a `score_cutoff` — **so a comparison that cannot beat your threshold is abandoned early rather than computed in full**, which matters when the thing you are doing is millions of comparisons." },
     { t: "exercise", title: "Implement and calibrate",
-      tasks: [
+      requirements: [
         "Implement Jaro and reproduce 0.9444 for MARTHA/MARHTA before adding the Winkler bonus.",
         "Remove the `break` after a match and find a pair whose score inflates.",
         "Compute the window size for strings of length 3, 6 and 20, and find the shortest string where the window is 0.",

@@ -1,13 +1,13 @@
 EC.receiveLesson({
   id: "12.4",
 
-  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which it is commonly called \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokenizer changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenizers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
+  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which it is commonly called \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokeniser changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenisers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
 
   objectives: [
     "Distinguish the pinned-retirement and silent-upgrade failure shapes",
     "Name what breaks when a prompt moves to a new model",
     "Explain why structured output and tool calling are the highest-risk surface",
-    "Measure a tokenizer change rather than assuming it is small",
+    "Measure a tokeniser change rather than assuming it is small",
     "Say why an embedding deprecation is categorically more expensive"
   ],
 
@@ -72,17 +72,17 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
         { t: "p", text: "This is why 12.6\u2019s abstraction layer earns its keep on `tool_calls` specifically. Text is easy to abstract; tool-call and structured-output shapes are where provider differences actually live, and where a migration breaks an agent loop without raising anything." }
       ] },
 
-    { t: "h2", n: "03", id: "tokenizer", text: "Tokenizer changes, measured",
+    { t: "h2", n: "03", id: "tokenizer", text: "Tokeniser changes, measured",
       sub: "The worst class, because it is silent" },
 
-    {"kind": "trace", "title": "The real tokenizer spread is 4.9%, not 9.2%", "caption": "The usual illustration is 4,010 against 4,380 tokens — a 9.2% gap. Measured across five tokenizers on the same text the real spread is **4.9%**, narrower than advertised. Which sharpens rather than dismisses the risk: **the danger is less that models differ from each other and more that a context guard calibrated on an optimistic tokens-per-word figure is wrong in the unsafe direction.** t5-small at 1.527 tokens per word and roberta at the top of the range are both plausible assumptions, and only one of them overflows.", "left": "tokenizer", "codeW": 190, "vars": ["tokens", "tokens/word"], "steps": [{"code": "t5-small", "state": ["4,636", "1.527"], "tone": "good"}, {"code": "bert-base-uncased", "state": ["4,694", "1.546"], "tone": "accent"}, {"code": "gpt2", "state": ["4,861", "1.601"], "changed": [0], "tone": "warn"}, {"code": "spread across five", "state": ["4.9%", "not 9.2%"], "tone": "violet", "note": "narrower than claimed"}], "t": "diagram", "id": "dg-12_4-03-2"},
+    {"kind": "trace", "title": "The real tokeniser spread is 4.9%, not 9.2%", "caption": "The usual illustration is 4,010 against 4,380 tokens — a 9.2% gap. Measured across five tokenisers on the same text the real spread is **4.9%**, narrower than advertised. Which sharpens rather than dismisses the risk: **the danger is less that models differ from each other and more that a context guard calibrated on an optimistic tokens-per-word figure is wrong in the unsafe direction.** t5-small at 1.527 tokens per word and roberta at the top of the range are both plausible assumptions, and only one of them overflows.", "left": "tokenizer", "codeW": 190, "vars": ["tokens", "tokens/word"], "steps": [{"code": "t5-small", "state": ["4,636", "1.527"], "tone": "good"}, {"code": "bert-base-uncased", "state": ["4,694", "1.546"], "tone": "accent"}, {"code": "gpt2", "state": ["4,861", "1.601"], "changed": [0], "tone": "warn"}, {"code": "spread across five", "state": ["4.9%", "not 9.2%"], "tone": "violet", "note": "narrower than claimed"}], "t": "diagram", "id": "dg-12_4-03-2"},
 
 
 
 
 
 
-    { t: "code", lang: "text", title: "Measured: one 3,036-word mixed document, five tokenizers", code: `tokenizer                  tokens   tok/word  note
+    { t: "code", lang: "text", title: "Measured: one 3,036-word mixed document, five tokenisers", code: `tokenizer                  tokens   tok/word  note
 t5-small                     4636      1.527  SentencePiece unigram, 32k vocab
 bert-base-uncased            4694      1.546  WordPiece, 30k vocab, lowercased
 gpt2                         4861      1.601  gpt2 BPE, 50k vocab
@@ -95,7 +95,7 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
 
     { t: "callout", kind: "insight", title: "The inter-model spread is narrower than the illustration \u2014 and the problem is worse",
       body: [
-        { t: "p", text: "The usual illustration is 4,010 against 4,380 tokens, a 9.2% gap. Measured, the real spread across five tokenizers is **4.9%** \u2014 narrower. But every one of them lands at **1.53 to 1.60 tokens per word**, well above the illustration\u2019s implied 1.34 to 1.46, so **all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document." },
+        { t: "p", text: "The usual illustration is 4,010 against 4,380 tokens, a 9.2% gap. Measured, the real spread across five tokenisers is **4.9%** \u2014 narrower. But every one of them lands at **1.53 to 1.60 tokens per word**, well above the illustration\u2019s implied 1.34 to 1.46, so **all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document." },
         { t: "p", text: "So the sharper reading is: the risk is less about models differing from each other and more about a guard calibrated on an optimistic tokens-per-word estimate. Mixed content \u2014 code, tables, formatted numbers \u2014 tokenises far more densely than prose, and a guard set from a word count is wrong for every model at once." },
         { t: "p", text: "A detail worth flagging because it looks like a bug: gpt2, roberta-base and bert-base-cased all return **exactly 4,861**. The first two legitimately share GPT-2\u2019s byte-level BPE; the third matching to the token is coincidence, confirmed by checking a short string where they give 32, 32 and 36." }
       ] },
@@ -103,7 +103,7 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
     { t: "callout", kind: "trap", title: "Silent truncation is the worst class of migration bug",
       body: [
         { t: "p", text: "No exception, no alert, just worse answers \u2014 the tail of the document is simply not in the prompt. 11.3\u2019s third scenario is the downstream effect: a summary whose final paragraph invents content, because the content it needed was truncated away." },
-        { t: "p", text: "The guard therefore has to be expressed in the **target model\u2019s tokens** and re-measured on migration, not carried over as a constant. A guard of 4,096 means something different for every tokenizer, and the difference is 225 tokens of real content between the best and worst here." },
+        { t: "p", text: "The guard therefore has to be expressed in the **target model\u2019s tokens** and re-measured on migration, not carried over as a constant. A guard of 4,096 means something different for every tokeniser, and the difference is 225 tokens of real content between the best and worst here." },
         { t: "p", text: "The detectable symptom is on the generation span: 10.6 put `finish_reason` there, and `length` rather than `stop` is the signal. But that catches truncation of the **output**; input truncation that your own code performs before the call raises nothing at all, which is why it has to be measured rather than monitored." }
       ] },
 
@@ -117,7 +117,7 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
         { t: "p", text: "That last item is the one 12.6 measures, and it is the one teams skip. A `score_threshold = 0.78` abstain guard was calibrated on the old model\u2019s similarity distribution, and on the new model 0.78 may mean something entirely different \u2014 so the no-context guard either fires constantly or never fires." }
       ] },
 
-    { t: "viz", title: "Nine failure modes, by how loudly they fail", caption: "Measured: all five tokenizers exceed a 4,096 guard.",
+    { t: "viz", title: "Nine failure modes, by how loudly they fail", caption: "Measured: all five tokenisers exceed a 4,096 guard.",
       svg: `<svg viewBox="0 0 760 320" width="100%" role="img" aria-label="Nine model deprecation failure modes sorted by how loudly they fail">
   <text x="16" y="20" class="s-label">FAIL LOUDLY &#8212; YOU GET AN ERROR</text>
   <rect x="16" y="30" width="356" height="26" rx="3" class="s-fill" style="stroke:var(--good)" stroke-width="1.3"/>
@@ -148,17 +148,17 @@ spread: 4636 to 4861 tokens for the SAME text = 4.9% difference`,
   <text x="28" y="303" class="s-mono" style="font-size:9px;fill:var(--good)">PIN SNAPSHOTS IN PRODUCTION &#183; RUN THE ALIAS NIGHTLY IN STAGING &#183; LOG THE MODEL THE API RETURNED</text>
 </svg>` },
 
-    { t: "exercise", kind: "build", title: "Measure your own tokenizer exposure", difficulty: "core", minutes: 30,
-      body: "Build a representative document \u2014 prose, code, a table, formatted numbers \u2014 and tokenise it with several tokenizers. Report the spread, the tokens per word, and what a fixed truncation guard does to each. Then state what the guard should be expressed in.",
+    { t: "exercise", kind: "build", title: "Measure your own tokeniser exposure", difficulty: "core", minutes: 30,
+      body: "Build a representative document \u2014 prose, code, a table, formatted numbers \u2014 and tokenise it with several tokenisers. Report the spread, the tokens per word, and what a fixed truncation guard does to each. Then state what the guard should be expressed in.",
       requirements: [
         "A document with mixed content, not just prose",
-        "Several tokenizers measured on the same text",
+        "Several tokenisers measured on the same text",
         "The spread reported as a percentage",
-        "A fixed guard applied, with the tokens lost per tokenizer",
+        "A fixed guard applied, with the tokens lost per tokeniser",
         "A statement of what the guard should be measured in"
       ],
       hint: "Use mixed content deliberately. Code, tables and formatted numbers tokenise far more densely than prose, and a guard calibrated on prose will be wrong for every model.",
-      solution: { lang: "python", title: "the tokenizer spread, measured", code: `import os
+      solution: { lang: "python", title: "the tokeniser spread, measured", code: `import os
 os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 # a genuine ~3,000-word document: prose, code, a table, formatted numbers
@@ -278,17 +278,17 @@ simply is not in the prompt. which is why a truncation guard has to be
 expressed in the TARGET model's tokens, re-measured on migration.`,
         notes: [
           { t: "p", text: "**The inter-model spread is 4.9%, narrower than the illustrative 9.2%** \u2014 so models differ from each other less than the illustration suggests. That is the good news and it is not the finding." },
-          { t: "p", text: "**The finding is that all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document. Every tokenizer lands at 1.53\u20131.60 tokens per word against the illustration\u2019s implied 1.34\u20131.46, so a guard calibrated from a word count is wrong for every model simultaneously rather than for one of them." },
+          { t: "p", text: "**The finding is that all five exceed a 4,096 guard**, losing 11.6% to 15.7% of the document. Every tokeniser lands at 1.53\u20131.60 tokens per word against the illustration\u2019s implied 1.34\u20131.46, so a guard calibrated from a word count is wrong for every model simultaneously rather than for one of them." },
           { t: "p", text: "**Mixed content is why.** Code, markdown tables and formatted numbers tokenise far more densely than prose \u2014 `4412-9981-0022` and `$1,284.50` fragment into many tokens each. A guard tuned on prose understates a real document, which contains all of this." },
           { t: "p", text: "**gpt2, roberta-base and bert-base-cased all return exactly 4,861**, which looks like a bug and is not. The first two genuinely share GPT-2\u2019s byte-level BPE; the third matching to the token is coincidence, and I confirmed it by checking a short string where the three give 32, 32 and 36 tokens." },
-          { t: "p", text: "**At an 8,192 guard every tokenizer fits with 3,300 or more to spare**, which is the practical mitigation and worth stating: the cheapest fix for tokenizer risk is headroom, not precision. A guard at 80% of the window costs you almost nothing and absorbs a 5% tokenizer shift." },
-          { t: "p", text: "These are open-weight tokenizers rather than the frontier ones a migration would actually involve, so the specific counts are a demonstration of method. The method is the point: tokenise your own representative document on both models before trusting any guard across a migration." }
+          { t: "p", text: "**At an 8,192 guard every tokeniser fits with 3,300 or more to spare**, which is the practical mitigation and worth stating: the cheapest fix for tokeniser risk is headroom, not precision. A guard at 80% of the window costs you almost nothing and absorbs a 5% tokeniser shift." },
+          { t: "p", text: "These are open-weight tokenisers rather than the frontier ones a migration would actually involve, so the specific counts are a demonstration of method. The method is the point: tokenise your own representative document on both models before trusting any guard across a migration." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",
       body: [
         { t: "p", text: "Two shapes: a pinned snapshot retired is a forced march with a deadline; a floating alias upgraded is the most common version incident and leaves an empty change log. So pin in production, run the alias nightly in staging so you discover the next model on your schedule, and log the model the API **returned**." },
-        { t: "p", text: "Prompts do not transfer \u2014 and two of the six breakages are fixed by *deleting* accumulated scaffolding. Structured output and tool calling are the highest-risk surface because they fail hard in untested paths. And silent truncation is the worst class: measured, five tokenizers all exceed a 4,096 guard on a mixed 3,000-word document, with no error raised." }
+        { t: "p", text: "Prompts do not transfer \u2014 and two of the six breakages are fixed by *deleting* accumulated scaffolding. Structured output and tool calling are the highest-risk surface because they fail hard in untested paths. And silent truncation is the worst class: measured, five tokenisers all exceed a 4,096 guard on a mixed 3,000-word document, with no error raised." }
       ] },
 
     { t: "callout", kind: "scenario", title: "Interview scenario",
@@ -297,7 +297,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
         { t: "p", text: "Nine things, and I would sort them by how loudly they fail, because that determines what you need to instrument rather than just fix." },
         { t: "p", text: "The loud ones are easy: a pinned model retires and calls start failing, a tool-call shape changes and the agent loop throws, the new model launches with a lower rate-limit tier and you get 429s on day one. Those hurt and they announce themselves." },
         { t: "p", text: "The quiet one that matters most is a floating alias being re-pointed \u2014 the single most common version incident. Your JSON parse failures go from 0.4% to 7.1% overnight with an empty change log, and on-call burns two hours before anyone thinks to check the model. The fix is one line and one habit: pin snapshots in production, and log the model ID the API *returned* rather than the one you sent. An alias roll is also gradual \u2014 I have seen 19.9% of traffic on day one and 100% on day two \u2014 so the requested field reads identically throughout and only the response field moves." },
-        { t: "p", text: "The one I would spend real time on is silent truncation from a tokenizer change, because it raises nothing at all. When I measured five tokenizers on the same 3,000-word document of mixed prose, code, a table and formatted numbers, they spanned 4,636 to 4,861 tokens \u2014 only a 4.9% spread, narrower than I expected. But every single one exceeded a 4,096 guard, losing between 11 and 16 per cent of the document, because mixed content runs at 1.5 to 1.6 tokens per word rather than the 1.3 a prose estimate suggests. So a guard calibrated from a word count is wrong for every model at once, the tail of the document silently is not in the prompt, and the summary invents its last paragraph. The cheap mitigation is headroom \u2014 at an 8,192 guard everything fit with 3,300 to spare." },
+        { t: "p", text: "The one I would spend real time on is silent truncation from a tokeniser change, because it raises nothing at all. When I measured five tokenisers on the same 3,000-word document of mixed prose, code, a table and formatted numbers, they spanned 4,636 to 4,861 tokens \u2014 only a 4.9% spread, narrower than I expected. But every single one exceeded a 4,096 guard, losing between 11 and 16 per cent of the document, because mixed content runs at 1.5 to 1.6 tokens per word rather than the 1.3 a prose estimate suggests. So a guard calibrated from a word count is wrong for every model at once, the tail of the document silently is not in the prompt, and the summary invents its last paragraph. The cheap mitigation is headroom \u2014 at an 8,192 guard everything fit with 3,300 to spare." },
         { t: "p", text: "On prompts, the thing I would warn about is that two of the common breakages are fixed by deleting prompt text, not adding it. A \u2018think step by step\u2019 instruction given to a model that reasons natively makes it over-think and inflates cost; a \u2018respond only in JSON\u2019 instruction is redundant once strict schema mode exists. Prompts accumulate scaffolding for weaknesses the new model does not have \u2014 which is why the changelog matters, because you can only safely delete a line whose purpose somebody recorded." },
         { t: "p", text: "And I would flag embedding deprecation as categorically different. Deprecating a chat model costs prompt work; deprecating an embedding model costs a full re-index, because vectors from two models are not comparable and there is no partial migration. The token cost is trivial \u2014 5 million chunks at 400 tokens is about $40 \u2014 and the real costs are the index rebuild, dual storage during cutover, and re-tuning every similarity threshold, which is the step teams skip." }
       ] }
@@ -312,7 +312,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
     "**Two of those are fixed by deleting prompt text** \u2014 scaffolding for weaknesses the new model does not have.",
     "**Structured output and tool calling are the highest-risk surface**, because they fail hard in untested code paths.",
     "**A reasoning model's thinking blocks corrupt a naive `content[0].text` parser silently**, because the parse succeeds.",
-    "**Measured: five tokenizers span 4,636\u20134,861 tokens on one 3,036-word mixed document** \u2014 a 4.9% spread.",
+    "**Measured: five tokenisers span 4,636\u20134,861 tokens on one 3,036-word mixed document** \u2014 a 4.9% spread.",
     "**But all five exceed a 4,096 guard**, losing 11.6\u201315.7%, because mixed content runs at 1.53\u20131.60 tokens per word.",
     "**Silent truncation is the worst class** \u2014 no exception, no alert, just worse answers.",
     "**An embedding deprecation is all-or-nothing** \u2014 vectors from two models are not comparable, so there is no partial migration."
@@ -331,15 +331,15 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
         answer: 1,
         why: "A retirement is scheduled and announced, so it is painful but predictable, whereas an alias re-point changes behaviour overnight with nothing in your git log \u2014 on-call sees an error-rate spike and no cause. The fix is to pin snapshots in production and log the model the API returned rather than the one requested, since the requested field reads identically before and after the roll." },
 
-      { stem: "Measured on a 3,036-word mixed document, what did five tokenizers show?",
+      { stem: "Measured on a 3,036-word mixed document, what did five tokenisers show?",
         options: [
           "A 9.2% spread, matching the illustration",
           "A 4.9% spread \u2014 narrower than illustrated \u2014 but all five exceeded a 4,096 guard, losing 11.6% to 15.7%",
-          "Identical token counts, since modern tokenizers converge",
+          "Identical token counts, since modern tokenisers converge",
           "A spread of over 20%, driven by the code and table content"
         ],
         answer: 1,
-        why: "The inter-model variation was smaller than the illustration suggested, which sounds reassuring and is not the finding: every tokenizer ran at 1.53 to 1.60 tokens per word against the illustration's implied 1.34 to 1.46, so a guard set from a word count fails for all of them simultaneously. Mixed content is the cause \u2014 code, markdown tables and formatted numbers fragment far more than prose." },
+        why: "The inter-model variation was smaller than the illustration suggested, which sounds reassuring and is not the finding: every tokeniser ran at 1.53 to 1.60 tokens per word against the illustration's implied 1.34 to 1.46, so a guard set from a word count fails for all of them simultaneously. Mixed content is the cause \u2014 code, markdown tables and formatted numbers fragment far more than prose." },
 
       { stem: "Why is silent truncation described as the worst class of migration bug?",
         options: [
@@ -349,7 +349,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
           "Because it only manifests under high load"
         ],
         answer: 1,
-        why: "A truncation your own code performs before the call produces a perfectly successful request with less context, so there is nothing to alert on \u2014 and the downstream symptom is a model confabulating the section it never received. Output truncation at least sets a `length` finish reason that can be monitored; input truncation has no equivalent signal, which is why it has to be measured on the target tokenizer rather than watched for." },
+        why: "A truncation your own code performs before the call produces a perfectly successful request with less context, so there is nothing to alert on \u2014 and the downstream symptom is a model confabulating the section it never received. Output truncation at least sets a `length` finish reason that can be monitored; input truncation has no equivalent signal, which is why it has to be measured on the target tokeniser rather than watched for." },
 
       { stem: "Why is an embedding-model deprecation categorically more expensive than a chat-model one?",
         options: [
@@ -378,7 +378,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
         ] },
 
       { level: "advanced",
-        q: "What is the most dangerous thing about a tokenizer change?",
+        q: "What is the most dangerous thing about a tokeniser change?",
         strong: "A strong answer has measured it.",
         answer: [
           { t: "p", text: "That it fails silently. A different tokenizer means the same text is a different token count, so your context budget, truncation thresholds and cost forecasts are all quietly wrong \u2014 and a truncation your own code performs raises no exception at all." },

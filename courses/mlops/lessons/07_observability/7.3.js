@@ -112,7 +112,7 @@ log.info("prediction served", extra={"correlation_id": cid,
 
     { t: "p", text: "A span is a timed operation with a name, a parent and attributes. A trace is the tree of spans for one request. The useful discipline is choosing boundaries that correspond to things you might fix." },
 
-    { t: "p", text: "For the service measured in lesson 2.1, the spans are the stages whose costs that lesson had to instrument by hand: deserialize and validate, fetch features, transform, infer, serialize. Its finding — **inference at 0.581 ms of 1.936 ms, thirty percent** — is exactly what a trace shows per request, and lesson 12.1's whole triage is reading that decomposition." },
+    { t: "p", text: "For the service measured in lesson 2.1, the spans are the stages whose costs that lesson had to instrument by hand: deserialise and validate, fetch features, transform, infer, serialise. Its finding — **inference at 0.581 ms of 1.936 ms, thirty percent** — is exactly what a trace shows per request, and lesson 12.1's whole triage is reading that decomposition." },
 
     { t: "p", text: "Two span attributes are worth setting on every ML trace: **`model.version`**, so a canary's traces are separable (lesson 3.3), and **a cache hit flag** where there is a cache, because a hit and a miss are different distributions and a mean across both is meaningless — lesson 12.3's measurement depends on the distinction." },
 
@@ -151,7 +151,7 @@ log.info("prediction served", extra={"correlation_id": cid,
         "At 1% head-based sampling you kept roughly 1% of the incident's slow traces, which is usually a handful or none."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "The usual finding is that the three signals exist and share no identifier, so investigations proceed by timestamp correlation — which works until two requests arrive in the same second. Adopting one id, generated at the edge and returned to the caller, is a small change that removes a whole class of investigative friction." },
           { t: "p", text: "The feature-logging check is the one worth acting on immediately if it finds something. The fix is not to stop recording features — lesson 16.2 needs them — but to move them to a governed prediction log with its own retention and access control, leaving identifiers and derived values in the operational log." }
         ]
@@ -169,7 +169,7 @@ log.info("prediction served", extra={"correlation_id": cid,
     "**Levels answer one question — does somebody need to act?** An ERROR nobody acts on has trained everyone to ignore the level.",
     "**DEBUG is enabled per correlation id or per sampled trace**, never as a global switch at production volume.",
     "**Never log a raw feature vector at INFO.** It puts your most sensitive dataset in a log store with broad access and weeks of retention; features belong in the governed prediction log.",
-    "**Spans are the stages you might fix** — deserialize, fetch, transform, infer, serialize — which is lesson 2.1's 30% decomposition per request, for free.",
+    "**Spans are the stages you might fix** — deserialise, fetch, transform, infer, serialise — which is lesson 2.1's 30% decomposition per request, for free.",
     "**Set `model.version` and a cache-hit flag on every ML span**: the first separates a canary's traces, the second because hit and miss are different distributions.",
     "**Head-based sampling keeps a representative sample of the ordinary requests**, which is the opposite of what an incident needs.",
     "**Tail-based: keep every error, everything over the SLO, every canary request, and 1% as a baseline** — and never sample metrics, nor compute a rate from sampled logs."

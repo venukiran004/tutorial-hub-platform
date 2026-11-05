@@ -38,7 +38,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Buddy (5)`, `Canis familiaris`, `Canis familiaris` **Explanation:** `species` is a class attribute shared by all instances. `__str__` customizes print output."
+     "text": "**Answer:** `Buddy (5)`, `Canis familiaris`, `Canis familiaris` **Explanation:** `species` is a class attribute shared by all instances. `__str__` customises print output."
     }
    ],
    "prompt": [
@@ -118,7 +118,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `True`, `True`, `Circle(5)` **Explanation:** Dunder methods customize comparison and representation."
+     "text": "**Answer:** `True`, `True`, `Circle(5)` **Explanation:** Dunder methods customise comparison and representation."
     }
    ],
    "prompt": [
@@ -338,7 +338,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `3`, `True`, `3` **Explanation:** `push` returns `self` for chaining. `__bool__` customizes truthiness."
+     "text": "**Answer:** `3`, `True`, `3` **Explanation:** `push` returns `self` for chaining. `__bool__` customises truthiness."
     }
    ],
    "prompt": [

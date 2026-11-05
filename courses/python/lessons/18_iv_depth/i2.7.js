@@ -66,7 +66,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`collections` provides **specialized container datatypes** that extend the built-in `dict`, `list`, `tuple`, and `set`. They make common patterns faster and cleaner."
+     "text": "`collections` provides **specialised container datatypes** that extend the built-in `dict`, `list`, `tuple`, and `set`. They make common patterns faster and cleaner."
     },
     {
      "t": "table",
@@ -906,7 +906,7 @@ EC.receiveLesson({
        "`defaultdict(list)`"
       ],
       [
-       "Auto-initialize missing keys",
+       "Auto-initialise missing keys",
        "`defaultdict`"
       ],
       [

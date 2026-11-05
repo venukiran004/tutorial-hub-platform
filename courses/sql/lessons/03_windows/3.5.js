@@ -201,7 +201,7 @@ FROM   employees ORDER BY salary;
       ]
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Sessions from an event stream",
       rungs: [
         { level: "bad", label: "Fetch everything and loop in Python", code: `rows = cur.execute("SELECT customer_id, occurred_at, event_type FROM events ORDER BY 1, 2").fetchall()

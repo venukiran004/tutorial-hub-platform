@@ -237,7 +237,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "68",
-   "q": "Data Serialization Comparison",
+   "q": "Data Serialisation Comparison",
    "body": [
     {
      "t": "code",

@@ -200,7 +200,7 @@ EC.receiveLesson({
     "Answer",
     "Validation",
     "Parsing/coercion",
-    "Serialization",
+    "Serialisation",
     "Schema generation",
     "Key takeaway"
    ],
@@ -211,7 +211,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Pydantic handles: - **Validation** — incoming JSON is validated against model types/constraints; failures return 422. - **Parsing/coercion** — JSON → typed Python objects. - **Serialization** — Python/ORM objects → JSON via `response_model`. - **Schema generation** — produces the JSON Schema that powers `/docs` and `/openapi.json`."
+     "text": "Pydantic handles: - **Validation** — incoming JSON is validated against model types/constraints; failures return 422. - **Parsing/coercion** — JSON → typed Python objects. - **Serialisation** — Python/ORM objects → JSON via `response_model`. - **Schema generation** — produces the JSON Schema that powers `/docs` and `/openapi.json`."
     },
     {
      "t": "code",
@@ -1246,7 +1246,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Most wins come from correct async usage, connection pooling, caching, and right-sized worker counts — not micro-optimizing handler code."
+     "text": "**Key takeaway:** Most wins come from correct async usage, connection pooling, caching, and right-sized worker counts — not micro-optimising handler code."
     }
    ]
   },

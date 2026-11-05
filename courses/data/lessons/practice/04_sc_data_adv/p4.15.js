@@ -42,7 +42,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Sliding window: crop image into overlapping tiles (512×512), detect per tile, stitch results, (2) super-resolution: upscale regions of interest before detection, (3) small object detectors: YOLO-nano, SSD with feature pyramid network (FPN), (4) anchor sizes: customize anchor boxes for small objects, (5) attention mechanisms: focus computation on promising areas, (6) avoid excessive downsampling: modified backbone that preserves resolution, (7) evaluation: use per-pixel metrics, not just bounding box IoU."
+     "text": "**Answer:** (1) Sliding window: crop image into overlapping tiles (512×512), detect per tile, stitch results, (2) super-resolution: upscale regions of interest before detection, (3) small object detectors: YOLO-nano, SSD with feature pyramid network (FPN), (4) anchor sizes: customise anchor boxes for small objects, (5) attention mechanisms: focus computation on promising areas, (6) avoid excessive downsampling: modified backbone that preserves resolution, (7) evaluation: use per-pixel metrics, not just bounding box IoU."
     }
    ],
    "kind": ""
@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Wasserstein loss (WGAN): more stable training, prevents mode collapse, (2) spectral normalization: stabilize discriminator, (3) minibatch discrimination: discriminator considers batches not individual samples, (4) progressive training: start with low-res, gradually increase, (5) diversity regularization: penalize generator for producing similar outputs, (6) check training data: enough diversity in real data?, (7) StyleGAN: architecture designed to avoid mode collapse, (8) monitor: track FID and diversity metrics during training."
+     "text": "**Answer:** (1) Wasserstein loss (WGAN): more stable training, prevents mode collapse, (2) spectral normalisation: stabilise discriminator, (3) minibatch discrimination: discriminator considers batches not individual samples, (4) progressive training: start with low-res, gradually increase, (5) diversity regularisation: penalise generator for producing similar outputs, (6) check training data: enough diversity in real data?, (7) StyleGAN: architecture designed to avoid mode collapse, (8) monitor: track FID and diversity metrics during training."
     },
     {
      "t": "p",
@@ -82,7 +82,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Central intake: all requests go through one channel (Jira, Notion board), (2) prioritization framework: impact × urgency × feasibility scoring, (3) stakeholder alignment meeting: quarterly, agree on top priorities together, (4) transparency: published roadmap showing what's being worked on and ETAs, (5) capacity planning: show stakeholders the math — \"we have X hours, your projects take Y hours,\" (6) say no with data: \"project A has 5x ROI vs project B,\" (7) buffer: keep 20% capacity for urgent requests."
+     "text": "**Answer:** (1) Central intake: all requests go through one channel (Jira, Notion board), (2) prioritisation framework: impact × urgency × feasibility scoring, (3) stakeholder alignment meeting: quarterly, agree on top priorities together, (4) transparency: published roadmap showing what's being worked on and ETAs, (5) capacity planning: show stakeholders the math — \"we have X hours, your projects take Y hours,\" (6) say no with data: \"project A has 5x ROI vs project B,\" (7) buffer: keep 20% capacity for urgent requests."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Take-home: messy dataset with real-world issues — EDA, cleaning, modeling, communication (4-hour limit), (2) evaluate: (a) data quality investigation (found issues?), (b) feature engineering creativity, (c) model selection rationale, (d) code quality and reproducibility, (e) communication of findings (narrative, not just code), (3) live: pair programming on data problem — how do they think?, (4) avoid: LeetCode-style algorithm questions (unless role requires it), (5) assess: curiosity, business thinking, not just technical skills."
+     "text": "**Answer:** (1) Take-home: messy dataset with real-world issues — EDA, cleaning, modelling, communication (4-hour limit), (2) evaluate: (a) data quality investigation (found issues?), (b) feature engineering creativity, (c) model selection rationale, (d) code quality and reproducibility, (e) communication of findings (narrative, not just code), (3) live: pair programming on data problem — how do they think?, (4) avoid: LeetCode-style algorithm questions (unless role requires it), (5) assess: curiosity, business thinking, not just technical skills."
     },
     {
      "t": "p",
@@ -130,11 +130,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "359",
-   "q": "Your data has a lurking variable you can't measure. How do you minimize its confounding effect?",
+   "q": "Your data has a lurking variable you can't measure. How do you minimise its confounding effect?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Randomized experiment: if possible, randomization balances unmeasured confounders, (2) instrumental variables: find a variable that affects treatment but not outcome except through treatment, (3) difference-in-differences: compare treated vs. untreated before/after, (4) regression discontinuity: if treatment assignment has a cutoff, compare just above/below, (5) sensitivity analysis: how strong would the confounder need to be to explain the result?, (6) proxy variables: find measurable variables that approximate the lurking variable, (7) acknowledge the limitation clearly in your analysis."
+     "text": "**Answer:** (1) Randomised experiment: if possible, randomisation balances unmeasured confounders, (2) instrumental variables: find a variable that affects treatment but not outcome except through treatment, (3) difference-in-differences: compare treated vs. untreated before/after, (4) regression discontinuity: if treatment assignment has a cutoff, compare just above/below, (5) sensitivity analysis: how strong would the confounder need to be to explain the result?, (6) proxy variables: find measurable variables that approximate the lurking variable, (7) acknowledge the limitation clearly in your analysis."
     },
     {
      "t": "p",
@@ -178,7 +178,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Risk scoring: rank patients by no-show probability, (2) interventions: (a) high-risk: phone reminder + overbooking, (b) medium-risk: SMS reminder, (c) low-risk: standard notification, (3) overbooking strategy: if model predicts 3/15 slots will no-show, book 18 patients, (4) cost asymmetry: false positive (unnecessary reminder) is cheap, false negative (unexpected no-show) is expensive (wasted doctor time), (5) optimize threshold for revenue, not accuracy, (6) feedback loop: track whether reminders change behavior."
+     "text": "**Answer:** (1) Risk scoring: rank patients by no-show probability, (2) interventions: (a) high-risk: phone reminder + overbooking, (b) medium-risk: SMS reminder, (c) low-risk: standard notification, (3) overbooking strategy: if model predicts 3/15 slots will no-show, book 18 patients, (4) cost asymmetry: false positive (unnecessary reminder) is cheap, false negative (unexpected no-show) is expensive (wasted doctor time), (5) optimise threshold for revenue, not accuracy, (6) feedback loop: track whether reminders change behaviour."
     }
    ],
    "kind": ""
@@ -234,7 +234,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** \"In a customer churn project: (1) High bias model (logistic regression with 3 features): 65% accuracy consistently — underfits, misses non-linear patterns, (2) High variance model (deep neural network): 95% training, 70% test — memorizes noise, (3) Sweet spot (gradient boosting with regularization): 78% train, 76% test — captures patterns without overfitting, (4) How I tuned: started simple (bias), added complexity (reduced bias, increased variance), used cross-validation to find the knee of the curve, (5) Regularization (L2, max_depth, min_samples_leaf) was key to controlling variance.\""
+     "text": "**Answer:** \"In a customer churn project: (1) High bias model (logistic regression with 3 features): 65% accuracy consistently — underfits, misses non-linear patterns, (2) High variance model (deep neural network): 95% training, 70% test — memorises noise, (3) Sweet spot (gradient boosting with regularisation): 78% train, 76% test — captures patterns without overfitting, (4) How I tuned: started simple (bias), added complexity (reduced bias, increased variance), used cross-validation to find the knee of the curve, (5) Regularisation (L2, max_depth, min_samples_leaf) was key to controlling variance.\""
     }
    ],
    "kind": ""
@@ -274,7 +274,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Load test: simulate 10K req/sec to find bottlenecks, (2) horizontal scaling: auto-scaling behind load balancer, (3) model optimization: TensorRT, ONNX runtime for faster inference, (4) caching: cache frequent prediction requests (Redis), (5) batching: batch nearby requests for efficient GPU utilization, (6) architecture: move from synchronous to async (message queue + workers), (7) CDN: if predictions are cacheable per user segment, pre-compute, (8) quantization: INT8 inference for 2-4x speedup, (9) edge: move inference closer to users for latency."
+     "text": "**Answer:** (1) Load test: simulate 10K req/sec to find bottlenecks, (2) horizontal scaling: auto-scaling behind load balancer, (3) model optimisation: TensorRT, ONNX runtime for faster inference, (4) caching: cache frequent prediction requests (Redis), (5) batching: batch nearby requests for efficient GPU utilisation, (6) architecture: move from synchronous to async (message queue + workers), (7) CDN: if predictions are cacheable per user segment, pre-compute, (8) quantisation: INT8 inference for 2-4x speedup, (9) edge: move inference closer to users for latency."
     }
    ],
    "kind": ""
@@ -340,7 +340,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Architecture: (1) **Real-time path**: transaction → feature computation (Redis lookups: user history, device fingerprint) → lightweight model (LightGBM served via ONNX) → decision in <50ms, (2) **Near-real-time enrichment**: Kafka stream → aggregate features (velocity, graph features) → update feature store, (3) **Batch**: daily deep model retrain on labeled fraud cases, (4) rule layer: hard rules (blocklisted IPs, known fraud patterns) evaluated first — fast reject, (5) model layer: ML scoring for remaining transactions, (6) risk tiers: auto-approve (score<0.1), manual review (0.1-0.7), auto-block (>0.7), (7) feedback: analyst decisions flow back as training data."
+     "text": "**Answer:** Architecture: (1) **Real-time path**: transaction → feature computation (Redis lookups: user history, device fingerprint) → lightweight model (LightGBM served via ONNX) → decision in <50ms, (2) **Near-real-time enrichment**: Kafka stream → aggregate features (velocity, graph features) → update feature store, (3) **Batch**: daily deep model retrain on labelled fraud cases, (4) rule layer: hard rules (blocklisted IPs, known fraud patterns) evaluated first — fast reject, (5) model layer: ML scoring for remaining transactions, (6) risk tiers: auto-approve (score<0.1), manual review (0.1-0.7), auto-block (>0.7), (7) feedback: analyst decisions flow back as training data."
     }
    ],
    "kind": ""
@@ -348,7 +348,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "374",
-   "q": "You're designing a personalized news feed. What ML components are needed?",
+   "q": "You're designing a personalised news feed. What ML components are needed?",
    "body": [
     {
      "t": "p",
@@ -356,7 +356,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Specialized Data Science Topics**"
+     "text": "**Theme: Specialised Data Science Topics**"
     }
    ],
    "kind": ""
@@ -364,11 +364,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "375",
-   "q": "You need to implement a multi-armed bandit for website optimization (choosing which banner to show). When is this better than A/B testing?",
+   "q": "You need to implement a multi-armed bandit for website optimisation (choosing which banner to show). When is this better than A/B testing?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) A/B test: fixed allocation, only learns at the end, (2) bandit: adaptive allocation, learns during the test, (3) bandit better when: (a) opportunity cost of showing worse variant is high, (b) many variants (>3), (c) continuous optimization (not one-time decision), (d) non-stationary environment (best option changes), (4) algorithm: Thompson Sampling or UCB, (5) implementation:"
+     "text": "**Answer:** (1) A/B test: fixed allocation, only learns at the end, (2) bandit: adaptive allocation, learns during the test, (3) bandit better when: (a) opportunity cost of showing worse variant is high, (b) many variants (>3), (c) continuous optimisation (not one-time decision), (d) non-stationary environment (best option changes), (4) algorithm: Thompson Sampling or UCB, (5) implementation:"
     },
     {
      "t": "code",

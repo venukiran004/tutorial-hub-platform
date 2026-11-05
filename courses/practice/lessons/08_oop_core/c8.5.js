@@ -218,7 +218,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `Hello, World!`, `Goodbye, World!` **Explanation:** `__init_subclass__` with keyword args customizes subclasses at definition time."
+     "text": "**Answer:** `Hello, World!`, `Goodbye, World!` **Explanation:** `__init_subclass__` with keyword args customises subclasses at definition time."
     }
    ],
    "prompt": [
@@ -508,7 +508,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `DecoratorB(DecoratorA(ConcreteComponent))` **Explanation:** Decorator pattern — layers of wrapping, each adding behavior."
+     "text": "**Answer:** `DecoratorB(DecoratorA(ConcreteComponent))` **Explanation:** Decorator pattern — layers of wrapping, each adding behaviour."
     }
    ],
    "prompt": [

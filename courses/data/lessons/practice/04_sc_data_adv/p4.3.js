@@ -50,11 +50,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "53",
-   "q": "Design a pricing optimization system for a ride-sharing company.",
+   "q": "Design a pricing optimisation system for a ride-sharing company.",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) **Objective**: maximize revenue while maintaining rider satisfaction and driver supply. (2) **Demand forecasting**: predict ride requests by zone/time. (3) **Supply forecasting**: predict available drivers by zone/time. (4) **Surge pricing**: when demand > supply, increase prices. (5) **Price elasticity model**: how demand changes with price per segment. (6) **Constraints**: max surge multiplier (PR/regulatory), minimum driver earnings, area-specific regulations. (7) **A/B testing**: test pricing strategies against control. (8) **Real-time**: adjust every 5 minutes per geo-zone. (9) **Monitor**: rider cancellation rates, driver utilization, wait times, revenue."
+     "text": "**Answer:** (1) **Objective**: maximise revenue while maintaining rider satisfaction and driver supply. (2) **Demand forecasting**: predict ride requests by zone/time. (3) **Supply forecasting**: predict available drivers by zone/time. (4) **Surge pricing**: when demand > supply, increase prices. (5) **Price elasticity model**: how demand changes with price per segment. (6) **Constraints**: max surge multiplier (PR/regulatory), minimum driver earnings, area-specific regulations. (7) **A/B testing**: test pricing strategies against control. (8) **Real-time**: adjust every 5 minutes per geo-zone. (9) **Monitor**: rider cancellation rates, driver utilisation, wait times, revenue."
     }
    ],
    "kind": ""
@@ -78,7 +78,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) **Data**: appointment history, patient demographics, appointment details (type, time, provider), weather. (2) **Features**: patient's historical no-show rate, days since scheduling, day of week, distance to hospital, appointment type, insurance type, number of prior reschedules. (3) **Model**: gradient boosting, predict P(no-show). (4) **Action**: high-risk → send reminders (SMS, call), double-book slots, offer telehealth alternative. (5) **Evaluation**: not just accuracy but impact on schedule utilization. (6) **Fairness**: ensure reminder strategy doesn't disadvantage any group. (7) **Business metric**: slot utilization increase, revenue captured."
+     "text": "**Answer:** (1) **Data**: appointment history, patient demographics, appointment details (type, time, provider), weather. (2) **Features**: patient's historical no-show rate, days since scheduling, day of week, distance to hospital, appointment type, insurance type, number of prior reschedules. (3) **Model**: gradient boosting, predict P(no-show). (4) **Action**: high-risk → send reminders (SMS, call), double-book slots, offer telehealth alternative. (5) **Evaluation**: not just accuracy but impact on schedule utilisation. (6) **Fairness**: ensure reminder strategy doesn't disadvantage any group. (7) **Business metric**: slot utilisation increase, revenue captured."
     },
     {
      "t": "p",
@@ -106,7 +106,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Average spend per visit: Gamma prior (positive, right-skewed) — parameterized from historical average, (2) purchase frequency: Poisson/Gamma (count data), (3) customer lifetime: Exponential/Weibull prior (time-to-event), (4) BG/NBD model: Beta-Geometric for churn, Negative Binomial for frequency. Why Bayesian?: (a) posterior for each customer → personalized predictions, (b) uncertainty quantification → confidence in each estimate, (c) regularization through priors → stable estimates for new customers with few transactions, (d) prior strength reflects how much we trust historical data vs. individual behavior."
+     "text": "**Answer:** (1) Average spend per visit: Gamma prior (positive, right-skewed) — parameterised from historical average, (2) purchase frequency: Poisson/Gamma (count data), (3) customer lifetime: Exponential/Weibull prior (time-to-event), (4) BG/NBD model: Beta-Geometric for churn, Negative Binomial for frequency. Why Bayesian?: (a) posterior for each customer → personalised predictions, (b) uncertainty quantification → confidence in each estimate, (c) regularisation through priors → stable estimates for new customers with few transactions, (d) prior strength reflects how much we trust historical data vs. individual behaviour."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Diffuse priors in high dimensions can create problematic posteriors (masses at extreme values), (2) improper priors: flat priors may not integrate to 1, causing MCMC issues, (3) likelihood may be multimodal — diffuse priors don't constrain sampling, (4) prior-posterior conflict: data conflicts with flat prior assumptions, (5) parameterization issues: use non-centered parameterization for hierarchical models. Fixes: (a) use weakly informative priors instead (constrain to reasonable range), (b) prior predictive checks: simulate data from prior, check if it's reasonable, (c) check MCMC diagnostics: divergences, R-hat, effective sample size."
+     "text": "**Answer:** (1) Diffuse priors in high dimensions can create problematic posteriors (masses at extreme values), (2) improper priors: flat priors may not integrate to 1, causing MCMC issues, (3) likelihood may be multimodal — diffuse priors don't constrain sampling, (4) prior-posterior conflict: data conflicts with flat prior assumptions, (5) parameterisation issues: use non-centreed parameterisation for hierarchical models. Fixes: (a) use weakly informative priors instead (constrain to reasonable range), (b) prior predictive checks: simulate data from prior, check if it's reasonable, (c) check MCMC diagnostics: divergences, R-hat, effective sample size."
     },
     {
      "t": "p",
@@ -134,7 +134,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Anomaly detection approach: learn \"normal\" appearance, flag deviations — good when defects are diverse, (2) classification approach: normal vs. defect types — need labeled examples per defect type, (3) data collection: high-res cameras at consistent angles/lighting, (4) data augmentation: rotate, brightness variation, simulate defects on normal images, (5) architecture: EfficientNet or ResNet backbone, fine-tuned, (6) metrics: recall is critical (don't miss defects), (7) false positive handling: separate human review station for flagged items, (8) edge deployment: inference on-line with low latency."
+     "text": "**Answer:** (1) Anomaly detection approach: learn \"normal\" appearance, flag deviations — good when defects are diverse, (2) classification approach: normal vs. defect types — need labelled examples per defect type, (3) data collection: high-res cameras at consistent angles/lighting, (4) data augmentation: rotate, brightness variation, simulate defects on normal images, (5) architecture: EfficientNet or ResNet backbone, fine-tuned, (6) metrics: recall is critical (don't miss defects), (7) false positive handling: separate human review station for flagged items, (8) edge deployment: inference on-line with low latency."
     }
    ],
    "kind": ""
@@ -146,7 +146,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data augmentation: random rotation, crop, color jitter, Gaussian blur, occlusion, (2) domain-specific augmentation: simulate real conditions, (3) training on diverse data: collect images from multiple sources, conditions, (4) test-time augmentation (TTA): predict on multiple augmented versions, average, (5) adversarial training: train on adversarially perturbed images, (6) style transfer augmentation: apply different visual styles to training images, (7) normalize preprocessing: standardize brightness, contrast, (8) ensemble of models trained on different augmentations."
+     "text": "**Answer:** (1) Data augmentation: random rotation, crop, colour jitter, Gaussian blur, occlusion, (2) domain-specific augmentation: simulate real conditions, (3) training on diverse data: collect images from multiple sources, conditions, (4) test-time augmentation (TTA): predict on multiple augmented versions, average, (5) adversarial training: train on adversarially perturbed images, (6) style transfer augmentation: apply different visual styles to training images, (7) normalise preprocessing: standardise brightness, contrast, (8) ensemble of models trained on different augmentations."
     },
     {
      "t": "p",
@@ -178,7 +178,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Theme: Optimization & Operations Research**"
+     "text": "**Theme: Optimisation & Operations Research**"
     }
    ],
    "kind": ""
@@ -186,11 +186,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "63",
-   "q": "Your company needs to decide where to open 5 new warehouses to minimize average delivery distance. How do you solve this?",
+   "q": "Your company needs to decide where to open 5 new warehouses to minimise average delivery distance. How do you solve this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Facility location problem: (1) formulate as integer programming: minimize sum of (customer × warehouse distance × demand), subject to capacity constraints, (2) K-medoids clustering: cluster customer locations, use medoid as warehouse location, (3) mixed-integer programming solver: PuLP, Gurobi, OR-Tools, (4) features: customer density, demand patterns, transportation infrastructure, (5) constraints: budget, minimum distance between warehouses, zoning regulations, (6) sensitivity analysis: how does the solution change with different assumptions?, (7) multi-objective: balance cost, delivery speed, and risk (natural disasters)."
+     "text": "**Answer:** Facility location problem: (1) formulate as integer programming: minimise sum of (customer × warehouse distance × demand), subject to capacity constraints, (2) K-medoids clustering: cluster customer locations, use medoid as warehouse location, (3) mixed-integer programming solver: PuLP, Gurobi, OR-Tools, (4) features: customer density, demand patterns, transportation infrastructure, (5) constraints: budget, minimum distance between warehouses, zoning regulations, (6) sensitivity analysis: how does the solution change with different assumptions?, (7) multi-objective: balance cost, delivery speed, and risk (natural disasters)."
     }
    ],
    "kind": ""
@@ -202,7 +202,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Constraint satisfaction / optimization problem: (1) hard constraints: minimum staffing levels, maximum hours per week, required skills per shift, rest time between shifts, (2) soft constraints: nurse preferences, fairness in shift distribution, (3) formulate as mixed-integer programming (MIP), (4) OR-Tools CP-SAT solver for constraint programming, (5) genetic algorithms for large problem instances, (6) rolling horizon: solve one week at a time, carry forward, (7) feedback: nurses rate schedules, improve soft constraints, (8) real-time adjustment: handle sick calls and swaps."
+     "text": "**Answer:** Constraint satisfaction / optimisation problem: (1) hard constraints: minimum staffing levels, maximum hours per week, required skills per shift, rest time between shifts, (2) soft constraints: nurse preferences, fairness in shift distribution, (3) formulate as mixed-integer programming (MIP), (4) OR-Tools CP-SAT solver for constraint programming, (5) genetic algorithms for large problem instances, (6) rolling horizon: solve one week at a time, carry forward, (7) feedback: nurses rate schedules, improve soft constraints, (8) real-time adjustment: handle sick calls and swaps."
     },
     {
      "t": "p",
@@ -242,7 +242,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Evaluation: (1) look beyond mean: percentile errors (p90, p95, p99 error), (2) plot residual distribution — heavy tails indicate extreme errors, (3) identify: what characterizes samples with huge errors?, (4) log-transform target if errors are multiplicative, (5) robust metrics: median absolute error, trimmed mean error. Fix: (1) feature engineering for the problematic subgroup, (2) outlier detection: flag extreme predictions for human review, (3) quantile regression: predict bounds to catch extremes, (4) separate model for the subgroup with large errors, (5) winsorize predictions: cap at reasonable bounds."
+     "text": "**Answer:** Evaluation: (1) look beyond mean: percentile errors (p90, p95, p99 error), (2) plot residual distribution — heavy tails indicate extreme errors, (3) identify: what characterises samples with huge errors?, (4) log-transform target if errors are multiplicative, (5) robust metrics: median absolute error, trimmed mean error. Fix: (1) feature engineering for the problematic subgroup, (2) outlier detection: flag extreme predictions for human review, (3) quantile regression: predict bounds to catch extremes, (4) separate model for the subgroup with large errors, (5) winsorize predictions: cap at reasonable bounds."
     },
     {
      "t": "p",
@@ -258,7 +258,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Features: RFM (recency, frequency, monetary), engagement, demographics, (2) K-means clustering with k=4,5,6 — evaluate silhouette scores, (3) profile each cluster: what makes each group different?, (4) name them meaningfully: \"Loyal High-Spenders,\" \"At-Risk,\" \"New Explorers,\" \"Bargain Hunters,\" (5) visualize: radar charts showing each segment's profile, (6) validate with stakeholders: \"do these groups match your intuition?\", (7) actionability: each segment should have a distinct marketing strategy, (8) size: segments shouldn't be too small (<5%) or too large (>40%), (9) stability: re-run monthly, track segment migrations."
+     "text": "**Answer:** (1) Features: RFM (recency, frequency, monetary), engagement, demographics, (2) K-means clustering with k=4,5,6 — evaluate silhouette scores, (3) profile each cluster: what makes each group different?, (4) name them meaningfully: \"Loyal High-Spenders,\" \"At-Risk,\" \"New Explorers,\" \"Bargain Hunters,\" (5) visualise: radar charts showing each segment's profile, (6) validate with stakeholders: \"do these groups match your intuition?\", (7) actionability: each segment should have a distinct marketing strategy, (8) size: segments shouldn't be too small (<5%) or too large (>40%), (9) stability: re-run monthly, track segment migrations."
     }
    ],
    "kind": ""
@@ -270,7 +270,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data: email send time, open/click timestamps, customer timezone, (2) per-customer analysis: historical open rates by hour/day, (3) cold start: use segment-level optimal times for new subscribers, (4) multi-armed bandit: randomly vary send times, learn optimal per customer, (5) features: timezone, job type (B2B → weekday mornings, B2C → evenings/weekends), (6) model: predict P(open | send_time, customer_features), (7) optimize: choose send_time maximizing P(open), (8) constraints: don't send at 3 AM, batch sends for email infrastructure, (9) A/B test: personalized times vs. fixed time."
+     "text": "**Answer:** (1) Data: email send time, open/click timestamps, customer timezone, (2) per-customer analysis: historical open rates by hour/day, (3) cold start: use segment-level optimal times for new subscribers, (4) multi-armed bandit: randomly vary send times, learn optimal per customer, (5) features: timezone, job type (B2B → weekday mornings, B2C → evenings/weekends), (6) model: predict P(open | send_time, customer_features), (7) optimise: choose send_time maximising P(open), (8) constraints: don't send at 3 AM, batch sends for email infrastructure, (9) A/B test: personalised times vs. fixed time."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Feature noise: smoothing (moving average, Savitzky-Golay filter), (2) multiple sensor readings: average to reduce noise, (3) Kalman filter: optimal state estimation from noisy measurements, (4) noise-aware modeling: include measurement uncertainty in model (Gaussian processes), (5) regularization: prevents fitting to noise, (6) feature engineering: aggregate features (hourly averages) reduce noise, (7) ensemble methods: naturally robust to moderate noise, (8) data augmentation: add Gaussian noise during training for robustness."
+     "text": "**Answer:** (1) Feature noise: smoothing (moving average, Savitzky-Golay filter), (2) multiple sensor readings: average to reduce noise, (3) Kalman filter: optimal state estimation from noisy measurements, (4) noise-aware modelling: include measurement uncertainty in model (Gaussian processes), (5) regularisation: prevents fitting to noise, (6) feature engineering: aggregate features (hourly averages) reduce noise, (7) ensemble methods: naturally robust to moderate noise, (8) data augmentation: add Gaussian noise during training for robustness."
     },
     {
      "t": "p",
@@ -326,7 +326,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Options: (1) Federated learning: train locally in each region, aggregate model updates centrally, (2) Data minimization: only move anonymized/aggregated data, (3) Region-specific models: separate model per region (may sacrifice global patterns), (4) Differential privacy: add noise to ensure individual privacy, share noisy statistics, (5) Synthetic data: generate privacy-safe synthetic data in each region, combine centrally, (6) Secure computation: multi-party computation allows joint training without sharing raw data, (7) Compliance: GDPR, CCPA, PIPL have different requirements — legal review essential."
+     "text": "**Answer:** Options: (1) Federated learning: train locally in each region, aggregate model updates centrally, (2) Data minimisation: only move anonymised/aggregated data, (3) Region-specific models: separate model per region (may sacrifice global patterns), (4) Differential privacy: add noise to ensure individual privacy, share noisy statistics, (5) Synthetic data: generate privacy-safe synthetic data in each region, combine centrally, (6) Secure computation: multi-party computation allows joint training without sharing raw data, (7) Compliance: GDPR, CCPA, PIPL have different requirements — legal review essential."
     }
    ],
    "kind": ""
@@ -354,7 +354,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Pruning: remove low-magnitude weights (50-90% sparsity with minimal accuracy loss), (2) quantization: FP32 → INT8 (4x smaller, 2-3x faster), (3) knowledge distillation: train smaller \"student\" model to mimic large \"teacher,\" (4) architecture efficiency: replace with MobileNet, EfficientNet-lite, (5) weight sharing: cluster weights and share across parameters, (6) tensor decomposition: low-rank factorization of weight matrices, (7) ONNX Runtime Mobile / TensorFlow Lite for optimized mobile inference, (8) progressive: prune → quantize → distill in sequence for maximum compression."
+     "text": "**Answer:** (1) Pruning: remove low-magnitude weights (50-90% sparsity with minimal accuracy loss), (2) quantisation: FP32 → INT8 (4x smaller, 2-3x faster), (3) knowledge distillation: train smaller \"student\" model to mimic large \"teacher,\" (4) architecture efficiency: replace with MobileNet, EfficientNet-lite, (5) weight sharing: cluster weights and share across parameters, (6) tensor decomposition: low-rank factorization of weight matrices, (7) ONNX Runtime Mobile / TensorFlow Lite for optimised mobile inference, (8) progressive: prune → quantise → distill in sequence for maximum compression."
     }
    ],
    "kind": ""

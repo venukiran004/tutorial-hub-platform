@@ -32,7 +32,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Magnitude pruning:** Remove weights with smallest |w|.",
-      "**Structured pruning:** Remove entire neurons/heads → actual speedup without specialized hardware.",
+      "**Structured pruning:** Remove entire neurons/heads → actual speedup without specialised hardware.",
       "After pruning, typically fine-tune to recover accuracy."
      ]
     }
@@ -42,11 +42,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "162",
-   "q": "What is INT8 quantization-aware training (QAT)?",
+   "q": "What is INT8 quantisation-aware training (QAT)?",
    "body": [
     {
      "t": "p",
-     "text": "Simulate quantization effects during training by inserting fake quantization ops. The model learns to be robust to quantization before it's applied:"
+     "text": "Simulate quantisation effects during training by inserting fake quantisation ops. The model learns to be robust to quantisation before it's applied:"
     },
     {
      "t": "code",
@@ -55,7 +55,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Better accuracy than post-training quantization (PTQ)."
+     "text": "Better accuracy than post-training quantisation (PTQ)."
     }
    ],
    "kind": ""
@@ -67,7 +67,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Open Neural Network Exchange: an open format for representing ML models. Export from PyTorch/TensorFlow, run with ONNX Runtime for optimized inference across platforms:"
+     "text": "Open Neural Network Exchange: an open format for representing ML models. Export from PyTorch/TensorFlow, run with ONNX Runtime for optimised inference across platforms:"
     },
     {
      "t": "code",
@@ -84,12 +84,12 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "NVIDIA's high-performance inference optimizer. Converts PyTorch/ONNX models to TRT engines:"
+     "text": "NVIDIA's high-performance inference optimiser. Converts PyTorch/ONNX models to TRT engines:"
     },
     {
      "t": "ul",
      "items": [
-      "Graph optimization (layer fusion, kernel autotuning).",
+      "Graph optimisation (layer fusion, kernel autotuning).",
       "Precision calibration (INT8/FP16).",
       "2–10× latency reduction on NVIDIA GPUs vs vanilla PyTorch."
      ]
@@ -104,7 +104,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "A hardware-aware exact attention algorithm that avoids materializing the full N×N attention matrix:"
+     "text": "A hardware-aware exact attention algorithm that avoids materialising the full N×N attention matrix:"
     },
     {
      "t": "ul",
@@ -174,7 +174,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "In-flight batching: New requests join when existing ones finish.",
-      "Maximizes GPU utilization (10-20× throughput vs static batching)."
+      "Maximises GPU utilisation (10-20× throughput vs static batching)."
      ]
     },
     {
@@ -253,16 +253,16 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "173",
-   "q": "What is ZeRO (Zero Redundancy Optimizer)?",
+   "q": "What is ZeRO (Zero Redundancy Optimiser)?",
    "body": [
     {
      "t": "p",
-     "text": "DeepSpeed's memory optimization — partitions optimizer states, gradients, and parameters across GPUs (ZeRO-1, 2, 3):"
+     "text": "DeepSpeed's memory optimisation — partitions optimiser states, gradients, and parameters across GPUs (ZeRO-1, 2, 3):"
     },
     {
      "t": "ul",
      "items": [
-      "ZeRO-1: Partition optimizer states.",
+      "ZeRO-1: Partition optimiser states.",
       "ZeRO-2: + Gradient partitioning.",
       "ZeRO-3: + Parameter partitioning."
      ]
@@ -281,7 +281,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Optimizes the decoding phase of attention (when KV cache is long). Parallelizes across sequence length dimension (not batch) for attention computation. 8× speedup for long context decoding."
+     "text": "Optimises the decoding phase of attention (when KV cache is long). Parallelises across sequence length dimension (not batch) for attention computation. 8× speedup for long context decoding."
     }
    ],
    "kind": ""
@@ -289,11 +289,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "175",
-   "q": "What is AWQ (Activation-aware Weight Quantization)?",
+   "q": "What is AWQ (Activation-aware Weight Quantisation)?",
    "body": [
     {
      "t": "p",
-     "text": "Quantize weights to INT4 while preserving the precision of salient weights (identified by activation magnitude). Better accuracy than naive INT4 quantization:"
+     "text": "Quantise weights to INT4 while preserving the precision of salient weights (identified by activation magnitude). Better accuracy than naive INT4 quantisation:"
     },
     {
      "t": "ul",
@@ -337,7 +337,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "4-bit quantized base model (NF4 quantization) + LoRA adapters in float16. Enables fine-tuning 65B parameter models on a single A100 GPU. Key innovations: NF4 (Normal Float 4), double quantization, paged optimizers."
+     "text": "4-bit quantised base model (NF4 quantisation) + LoRA adapters in float16. Enables fine-tuning 65B parameter models on a single A100 GPU. Key innovations: NF4 (Normal Float 4), double quantisation, paged optimisers."
     }
    ],
    "kind": ""
@@ -345,7 +345,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "178",
-   "q": "What is DPO (Direct Preference Optimization)?",
+   "q": "What is DPO (Direct Preference Optimisation)?",
    "body": [
     {
      "t": "p",
@@ -372,7 +372,7 @@ EC.receiveLesson({
      "items": [
       "**SFT:** Fine-tune LLM on high-quality demonstrations.",
       "**Reward model:** Train on human comparisons of outputs.",
-      "**PPO:** Fine-tune LLM with RL to maximize reward model score while staying close to SFT model (KL penalty)."
+      "**PPO:** Fine-tune LLM with RL to maximise reward model score while staying close to SFT model (KL penalty)."
      ]
     },
     {
@@ -431,7 +431,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Dramatically improves zero-shot generalization to new instructions. FLAN, Alpaca, LLaMA-Instruct are examples."
+     "text": "Dramatically improves zero-shot generalisation to new instructions. FLAN, Alpaca, LLaMA-Instruct are examples."
     }
    ],
    "kind": ""
@@ -451,7 +451,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "184",
-   "q": "What is emergent behavior in LLMs?",
+   "q": "What is emergent behaviour in LLMs?",
    "body": [
     {
      "t": "p",

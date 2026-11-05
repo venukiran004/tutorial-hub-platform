@@ -94,7 +94,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "7",
-   "q": "Vectorized Operations",
+   "q": "Vectorised Operations",
    "body": [
     {
      "t": "code",

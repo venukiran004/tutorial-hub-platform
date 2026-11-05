@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `True`, `{'connection': 'pool'}` **Explanation:** Lazy initialization with double-checked locking. Factory called only once per key."
+     "text": "**Answer:** `True`, `{'connection': 'pool'}` **Explanation:** Lazy initialisation with double-checked locking. Factory called only once per key."
     }
    ],
    "prompt": [
@@ -258,7 +258,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `All reached phase: 1`, `All same: True` **Explanation:** Phaser synchronizes threads at phase boundaries. All reach same phase."
+     "text": "**Answer:** `All reached phase: 1`, `All same: True` **Explanation:** Phaser synchronises threads at phase boundaries. All reach same phase."
     }
    ],
    "prompt": [
@@ -378,7 +378,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `['from_t2', 'from_t1']` **Explanation:** Exchanger allows two threads to swap values at a synchronization point."
+     "text": "**Answer:** `['from_t2', 'from_t1']` **Explanation:** Exchanger allows two threads to swap values at a synchronisation point."
     }
    ],
    "prompt": [
@@ -398,7 +398,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** `4950`, `Caught async error` **Explanation:** Custom Future with event-based signaling. Exceptions propagated to caller."
+     "text": "**Answer:** `4950`, `Caught async error` **Explanation:** Custom Future with event-based signalling. Exceptions propagated to caller."
     }
    ],
    "prompt": [

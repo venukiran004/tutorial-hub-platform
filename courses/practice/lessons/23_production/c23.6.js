@@ -108,7 +108,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2842",
-   "q": "Program 2842: Database normalization",
+   "q": "Program 2842: Database normalisation",
    "body": [
     {
      "t": "code",
@@ -131,7 +131,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2843",
-   "q": "Program 2843: Denormalization trade-offs",
+   "q": "Program 2843: Denormalisation trade-offs",
    "body": [
     {
      "t": "code",
@@ -338,7 +338,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2852",
-   "q": "Program 2852: Materialized views",
+   "q": "Program 2852: Materialised views",
    "body": [
     {
      "t": "code",

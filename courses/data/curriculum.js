@@ -531,7 +531,7 @@
           { id: "i1.7", title: "Advanced Array Indexing", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with the answers folded away.",
             keywords: ["advanced", "array", "indexing"] },
-          { id: "i1.8", title: "Broadcasting & Vectorization", difficulty: "advanced", minutes: 40, tier: "should",
+          { id: "i1.8", title: "Broadcasting & Vectorisation", difficulty: "advanced", minutes: 40, tier: "should",
             summary: "20 questions with the answers folded away.",
             keywords: ["broadcasting", "vectorization"] },
           { id: "i1.9", title: "Numerical Methods & Scientific Computing", difficulty: "advanced", minutes: 40, tier: "should",

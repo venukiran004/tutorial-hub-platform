@@ -26,7 +26,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "First, analyze the missingness pattern — is it MCAR, MAR, or MNAR. If the data is MAR (e.g., higher earners skip income questions), use multiple imputation or model-based imputation (e.g., KNN imputer, iterative imputer). If MNAR, create a binary flag `income_missing=1` and impute with median. Never drop 30% of rows — that loses too much data. Validate by comparing model performance with different imputation strategies on a holdout set."
+     "text": "First, analyse the missingness pattern — is it MCAR, MAR, or MNAR. If the data is MAR (e.g., higher earners skip income questions), use multiple imputation or model-based imputation (e.g., KNN imputer, iterative imputer). If MNAR, create a binary flag `income_missing=1` and impute with median. Never drop 30% of rows — that loses too much data. Validate by comparing model performance with different imputation strategies on a holdout set."
     }
    ],
    "kind": ""
@@ -34,7 +34,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "2",
-   "q": "Your dataset has a date column stored as strings in 5 different formats (MM/DD/YYYY, DD-MM-YYYY, YYYY.MM.DD, etc.). How do you standardize?",
+   "q": "Your dataset has a date column stored as strings in 5 different formats (MM/DD/YYYY, DD-MM-YYYY, YYYY.MM.DD, etc.). How do you standardise?",
    "body": [
     {
      "t": "p",
@@ -46,7 +46,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "3",
-   "q": "You have a column with text entries like \"New York\", \"new york\", \"NEW YORK\", \"New York City\", \"NYC\". How do you normalize?",
+   "q": "You have a column with text entries like \"New York\", \"new york\", \"NEW YORK\", \"New York City\", \"NYC\". How do you normalise?",
    "body": [
     {
      "t": "p",
@@ -74,7 +74,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Create a schema mapping configuration (JSON/YAML) that maps each source's columns to a canonical schema. Build a transformation pipeline for each source that: renames columns, converts data types, standardizes units (e.g., km → miles), and applies source-specific cleaning rules. Use `pd.concat` with the canonical schema. Add a `data_source` column for traceability. Validate row counts match expectations."
+     "text": "Create a schema mapping configuration (JSON/YAML) that maps each source's columns to a canonical schema. Build a transformation pipeline for each source that: renames columns, converts data types, standardises units (e.g., km → miles), and applies source-specific cleaning rules. Use `pd.concat` with the canonical schema. Add a `data_source` column for traceability. Validate row counts match expectations."
     }
    ],
    "kind": ""
@@ -86,7 +86,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Group rare categories (frequency < threshold, e.g., < 50 occurrences) into an \"Other\" bucket. For the remaining categories, use target encoding (mean of target per category) with regularization to prevent overfitting, especially for categories with few samples. Alternatively, group by domain knowledge into meaningful hierarchical categories. Never use one-hot encoding with 500 categories — it creates sparse features."
+     "text": "Group rare categories (frequency < threshold, e.g., < 50 occurrences) into an \"Other\" bucket. For the remaining categories, use target encoding (mean of target per category) with regularisation to prevent overfitting, especially for categories with few samples. Alternatively, group by domain knowledge into meaningful hierarchical categories. Never use one-hot encoding with 500 categories — it creates sparse features."
     }
    ],
    "kind": ""
@@ -178,7 +178,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "14",
-   "q": "A currency column has values in different currencies ($, €, £) mixed together. How do you standardize?",
+   "q": "A currency column has values in different currencies ($, €, £) mixed together. How do you standardise?",
    "body": [
     {
      "t": "p",
@@ -194,7 +194,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Apply cleaning in layers: (1) strip HTML with BeautifulSoup or regex `re.sub(r'<[^>]+>', '', text)`, (2) remove/replace URLs, (3) decode HTML entities (`&amp;` → `&`), (4) handle emojis — either remove or convert to text descriptions (e.g., 😊 → \"smiling face\"), (5) normalize Unicode characters, (6) remove or standardize special characters based on task. Keep the original text — never clean in place. Different NLP tasks may need different cleaning levels."
+     "text": "Apply cleaning in layers: (1) strip HTML with BeautifulSoup or regex `re.sub(r'<[^>]+>', '', text)`, (2) remove/replace URLs, (3) decode HTML entities (`&amp;` → `&`), (4) handle emojis — either remove or convert to text descriptions (e.g., 😊 → \"smiling face\"), (5) normalise Unicode characters, (6) remove or standardise special characters based on task. Keep the original text — never clean in place. Different NLP tasks may need different cleaning levels."
     }
    ],
    "kind": ""
@@ -230,7 +230,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Compare distributions using statistical tests: KS test for continuous features, chi-squared test for categorical features. Calculate Population Stability Index (PSI) per feature — PSI > 0.2 indicates significant shift. Visualize distributions side-by-side using histograms. If drift is confirmed, decide whether to retrain the model or adapt the preprocessing (e.g., update scalers). Set up automated drift monitoring using Evidently AI."
+     "text": "Compare distributions using statistical tests: KS test for continuous features, chi-squared test for categorical features. Calculate Population Stability Index (PSI) per feature — PSI > 0.2 indicates significant shift. Visualise distributions side-by-side using histograms. If drift is confirmed, decide whether to retrain the model or adapt the preprocessing (e.g., update scalers). Set up automated drift monitoring using Evidently AI."
     }
    ],
    "kind": ""
@@ -254,7 +254,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "Build an entity resolution pipeline: (1) standardize names (lowercase, remove titles/suffixes), (2) use additional matching fields (email, phone, address) to increase confidence, (3) apply fuzzy string matching on names with Jaro-Winkler similarity (threshold > 0.9), (4) create clusters of matching records using connected components, (5) for each cluster, create a golden record by merging attributes (most recent address, first purchase date, etc.). Validate by manual review of a sample of merged records."
+     "text": "Build an entity resolution pipeline: (1) standardise names (lowercase, remove titles/suffixes), (2) use additional matching fields (email, phone, address) to increase confidence, (3) apply fuzzy string matching on names with Jaro-Winkler similarity (threshold > 0.9), (4) create clusters of matching records using connected components, (5) for each cluster, create a golden record by merging attributes (most recent address, first purchase date, etc.). Validate by manual review of a sample of merged records."
     }
    ],
    "kind": ""
@@ -310,7 +310,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "25",
-   "q": "Your pipeline needs to join a 100M row fact table with a 10K row dimension table, but performance is terrible. How do you optimize?",
+   "q": "Your pipeline needs to join a 100M row fact table with a 10K row dimension table, but performance is terrible. How do you optimise?",
    "body": [
     {
      "t": "p",

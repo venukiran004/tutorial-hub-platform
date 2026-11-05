@@ -691,7 +691,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Note:** Python 3.3+ uses hash randomization (`PYTHONHASHSEED`) for strings and bytes, so `hash(\"hello\")` varies across interpreter runs."
+     "text": "**Note:** Python 3.3+ uses hash randomisation (`PYTHONHASHSEED`) for strings and bytes, so `hash(\"hello\")` varies across interpreter runs."
     }
    ]
   },

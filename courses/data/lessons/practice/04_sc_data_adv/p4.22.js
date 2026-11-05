@@ -78,7 +78,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Apply multi-stage reduction: first remove zero/near-zero variance features, then remove highly correlated features (keep most interpretable from each group), use LASSO for regularization-based selection, rank by mutual information or SHAP importance. Build models at 10, 20, 50, 100, 200 features and plot performance vs feature count — often 20-30 features capture 95% of performance. Present the feature count vs accuracy tradeoff to stakeholders and let business context guide the final count."
+     "text": "**Answer:** Apply multi-stage reduction: first remove zero/near-zero variance features, then remove highly correlated features (keep most interpretable from each group), use LASSO for regularisation-based selection, rank by mutual information or SHAP importance. Build models at 10, 20, 50, 100, 200 features and plot performance vs feature count — often 20-30 features capture 95% of performance. Present the feature count vs accuracy tradeoff to stakeholders and let business context guide the final count."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Length-invariant approaches: TF-IDF with cosine similarity (inherently normalized), document embeddings from models that handle long text (Longformer, hierarchical attention), chunking long documents and using max/mean pooling of chunk embeddings, topic modeling (LDA) for distributional similarity, and key-phrase extraction followed by key-phrase set similarity. For very long documents: summarize first then compare summaries, or use hierarchical representations (paragraph → section → document embeddings)."
+     "text": "**Answer:** Length-invariant approaches: TF-IDF with cosine similarity (inherently normalised), document embeddings from models that handle long text (Longformer, hierarchical attention), chunking long documents and using max/mean pooling of chunk embeddings, topic modelling (LDA) for distributional similarity, and key-phrase extraction followed by key-phrase set similarity. For very long documents: summarise first then compare summaries, or use hierarchical representations (paragraph → section → document embeddings)."
     }
    ],
    "kind": ""
@@ -118,7 +118,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "532",
-   "q": "Scenario: You're analyzing clinical trial data with small sample sizes (N=50) and many measured outcomes.",
+   "q": "Scenario: You're analysing clinical trial data with small sample sizes (N=50) and many measured outcomes.",
    "body": [
     {
      "t": "p",
@@ -158,7 +158,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Adjust decision threshold using precision-recall curve analysis, implement multi-tier scoring (auto-approve < 0.3, review 0.3-0.7, auto-block > 0.7), add rule-based whitelisting for known good patterns, use customer-specific baselines (unusual for THIS customer, not unusual in general), implement velocity checks as secondary signal, add real-time customer verification for medium-risk transactions, use feedback from manual reviews to retrain model, and analyze false positive patterns to create specific exclusion rules."
+     "text": "**Answer:** Adjust decision threshold using precision-recall curve analysis, implement multi-tier scoring (auto-approve < 0.3, review 0.3-0.7, auto-block > 0.7), add rule-based whitelisting for known good patterns, use customer-specific baselines (unusual for THIS customer, not unusual in general), implement velocity checks as secondary signal, add real-time customer verification for medium-risk transactions, use feedback from manual reviews to retrain model, and analyse false positive patterns to create specific exclusion rules."
     }
    ],
    "kind": ""
@@ -182,7 +182,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "536",
-   "q": "Scenario: You're building a pricing optimization model but need to account for competitor pricing that you can only observe with a delay.",
+   "q": "Scenario: You're building a pricing optimisation model but need to account for competitor pricing that you can only observe with a delay.",
    "body": [
     {
      "t": "p",
@@ -206,7 +206,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Pre-compute features: use a feature store (Feast, Tecton) to pre-materialize features, compute features in batch and cache in Redis/Memcached for online lookup, use change-data-capture to keep feature cache updated. For features that must be real-time: simplify computation (approximate algorithms), compute in parallel, use compiled code (Cython, C++ extensions), and move feature computation to the edge. Design the feature set with latency budget in mind — sometimes simpler features with sub-ms lookup beat complex features."
+     "text": "**Answer:** Pre-compute features: use a feature store (Feast, Tecton) to pre-materialise features, compute features in batch and cache in Redis/Memcached for online lookup, use change-data-capture to keep feature cache updated. For features that must be real-time: simplify computation (approximate algorithms), compute in parallel, use compiled code (Cython, C++ extensions), and move feature computation to the edge. Design the feature set with latency budget in mind — sometimes simpler features with sub-ms lookup beat complex features."
     }
    ],
    "kind": ""
@@ -214,7 +214,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "538",
-   "q": "Scenario: You're training a language model for a specialized domain (legal, medical) and general-purpose models perform poorly.",
+   "q": "Scenario: You're training a language model for a specialised domain (legal, medical) and general-purpose models perform poorly.",
    "body": [
     {
      "t": "p",
@@ -254,7 +254,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Use AutoML when: standard tabular classification/regression, time-to-market is critical, limited ML expertise available, problem is well-defined with clean data, and baseline performance is sufficient. Build custom when: domain-specific architecture needed (custom loss functions, special layers), data requires significant preprocessing/domain knowledge, production constraints (latency, model size) need optimization, interpretability requirements are specific, problem is novel (few-shot, multi-modal, reinforcement learning), or competitive advantage depends on ML quality. Often start with AutoML as baseline, then invest in custom only where it significantly outperforms."
+     "text": "**Answer:** Use AutoML when: standard tabular classification/regression, time-to-market is critical, limited ML expertise available, problem is well-defined with clean data, and baseline performance is sufficient. Build custom when: domain-specific architecture needed (custom loss functions, special layers), data requires significant preprocessing/domain knowledge, production constraints (latency, model size) need optimisation, interpretability requirements are specific, problem is novel (few-shot, multi-modal, reinforcement learning), or competitive advantage depends on ML quality. Often start with AutoML as baseline, then invest in custom only where it significantly outperforms."
     }
    ],
    "kind": ""
@@ -262,15 +262,15 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "541",
-   "q": "Scenario: Your geospatial analysis model predicts property values but standard features don't capture neighborhood effects.",
+   "q": "Scenario: Your geospatial analysis model predicts property values but standard features don't capture neighbourhood effects.",
    "body": [
     {
      "t": "p",
-     "text": "**Question:** How do you engineer spatial features that capture neighborhood and proximity effects?"
+     "text": "**Question:** How do you engineer spatial features that capture neighbourhood and proximity effects?"
     },
     {
      "t": "p",
-     "text": "**Answer:** Create spatial features: distance to nearest POIs (schools, transit, parks), count of amenities within radius bands (500m, 1km, 2km), spatial lag of target variable (average price of K nearest properties), inverse distance weighted averages of neighbor features, walk score and transit score, clustering-based neighborhood segments, spatial autocorrelation indicators (Moran's I), and geospatial embeddings (hex2vec, location2vec). Use spatial cross-validation (spatial blocks) to avoid data leakage from spatial autocorrelation."
+     "text": "**Answer:** Create spatial features: distance to nearest POIs (schools, transit, parks), count of amenities within radius bands (500m, 1km, 2km), spatial lag of target variable (average price of K nearest properties), inverse distance weighted averages of neighbour features, walk score and transit score, clustering-based neighbourhood segments, spatial autocorrelation indicators (Moran's I), and geospatial embeddings (hex2vec, location2vec). Use spatial cross-validation (spatial blocks) to avoid data leakage from spatial autocorrelation."
     }
    ],
    "kind": ""
@@ -302,7 +302,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Implement: diversity-aware re-ranking (MMR — Maximal Marginal Relevance), inject exploration items (epsilon-greedy: 10% random diverse items), track and optimize for diversity metrics alongside relevance, use multi-objective optimization (relevance + diversity + novelty), implement category/topic coverage constraints, expose users to content from adjacent interest clusters, Thompson sampling for exploration-exploitation balance, and periodically reset user profiles to prevent extreme narrowing. Monitor long-term engagement metrics to verify diversity improves retention."
+     "text": "**Answer:** Implement: diversity-aware re-ranking (MMR — Maximal Marginal Relevance), inject exploration items (epsilon-greedy: 10% random diverse items), track and optimise for diversity metrics alongside relevance, use multi-objective optimisation (relevance + diversity + novelty), implement category/topic coverage constraints, expose users to content from adjacent interest clusters, Thompson sampling for exploration-exploitation balance, and periodically reset user profiles to prevent extreme narrowing. Monitor long-term engagement metrics to verify diversity improves retention."
     }
    ],
    "kind": ""
@@ -318,7 +318,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Hierarchical approaches: hierarchical classification (predict department → category → product), encode hierarchy as features (parent category, depth level, sibling count), hierarchical regularization (share parameters across related categories), entity embeddings that respect hierarchy (tree-structured embeddings), hierarchical Bayesian models for partial pooling, and aggregate features at each hierarchy level. For sparse leaf-level items, borrow strength from parent category statistics. Consider hierarchical loss functions that penalize errors differently based on hierarchy distance."
+     "text": "**Answer:** Hierarchical approaches: hierarchical classification (predict department → category → product), encode hierarchy as features (parent category, depth level, sibling count), hierarchical regularisation (share parameters across related categories), entity embeddings that respect hierarchy (tree-structured embeddings), hierarchical Bayesian models for partial pooling, and aggregate features at each hierarchy level. For sparse leaf-level items, borrow strength from parent category statistics. Consider hierarchical loss functions that penalise errors differently based on hierarchy distance."
     }
    ],
    "kind": ""
@@ -350,7 +350,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Features: historical no-show rate per patient, appointment lead time, day/time of appointment, distance to clinic, weather forecast, previous cancellation patterns, appointment type, and reminder acknowledgment. Ethical considerations: don't penalize patients for predicted no-shows (don't deny appointments), use predictions for positive interventions (extra reminders, transportation assistance), ensure model doesn't discriminate by demographics, avoid creating a self-fulfilling prophecy (overbooking based on predictions may worsen access), and be transparent about how predictions are used."
+     "text": "**Answer:** Features: historical no-show rate per patient, appointment lead time, day/time of appointment, distance to clinic, weather forecast, previous cancellation patterns, appointment type, and reminder acknowledgment. Ethical considerations: don't penalise patients for predicted no-shows (don't deny appointments), use predictions for positive interventions (extra reminders, transportation assistance), ensure model doesn't discriminate by demographics, avoid creating a self-fulfilling prophecy (overbooking based on predictions may worsen access), and be transparent about how predictions are used."
     }
    ],
    "kind": ""
@@ -366,7 +366,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Answer:** Data parallelism: replicate model on each GPU, split data across GPUs, synchronize gradients (most common, works when model fits on one GPU). Model parallelism: split model layers across GPUs (needed when model doesn't fit on one GPU). Pipeline parallelism: split model into stages across GPUs with micro-batching. Hybrid: combine data and model parallelism. Use: PyTorch DDP (DistributedDataParallel) for data parallelism, DeepSpeed/FSDP for large models, gradient accumulation to simulate larger batches. Key consideration: communication overhead — use NCCL for GPU-to-GPU, minimize synchronization frequency."
+     "text": "**Answer:** Data parallelism: replicate model on each GPU, split data across GPUs, synchronise gradients (most common, works when model fits on one GPU). Model parallelism: split model layers across GPUs (needed when model doesn't fit on one GPU). Pipeline parallelism: split model into stages across GPUs with micro-batching. Hybrid: combine data and model parallelism. Use: PyTorch DDP (DistributedDataParallel) for data parallelism, DeepSpeed/FSDP for large models, gradient accumulation to simulate larger batches. Key consideration: communication overhead — use NCCL for GPU-to-GPU, minimise synchronisation frequency."
     }
    ],
    "kind": ""

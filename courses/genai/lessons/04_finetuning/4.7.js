@@ -485,7 +485,7 @@ print(float((l1 - l2).abs().max()))`,
 
       { stem: "Why must the prompt format at inference match the one used in training?",
         options: [
-          "Because the tokenizer caches the format from the training run",
+          "Because the tokeniser caches the format from the training run",
           "Because the model learned from the examples that a particular marker is where its turn begins, and a different format asks it to generalise a convention it saw few times",
           "Because peft stores the format in adapter_config.json and validates it",
           "Because the attention mask is derived from the role markers"
@@ -507,7 +507,7 @@ print(float((l1 - l2).abs().max()))`,
         options: [
           "Always \u2014 merging loses the ability to detach",
           "When you have several variants, since they share one copy of the base: megabytes each instead of a full model each",
-          "When the base model is quantized, which prevents merging",
+          "When the base model is quantised, which prevents merging",
           "When the adapter rank exceeds 16"
         ],
         answer: 1,

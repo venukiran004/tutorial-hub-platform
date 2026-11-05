@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.5",
 
-  lede: "Three answers to BLEU\u2019s paraphrase blindness, each buying something different. METEOR matches on stems and synonyms; chrF drops to character n-grams and needs no tokenizer at all; BERTScore embeds every token and matches by cosine. BERTScore is the one that actually sees meaning \u2014 and it carries a warning the others do not: **its scores are not interpretable in absolute terms**, so a raw 0.85 can mean \u201cunrelated\u201d.",
+  lede: "Three answers to BLEU\u2019s paraphrase blindness, each buying something different. METEOR matches on stems and synonyms; chrF drops to character n-grams and needs no tokeniser at all; BERTScore embeds every token and matches by cosine. BERTScore is the one that actually sees meaning \u2014 and it carries a warning the others do not: **its scores are not interpretable in absolute terms**, so a raw 0.85 can mean \u201cunrelated\u201d.",
 
   objectives: [
     "Say what each of the three fixes about n-gram overlap and what it costs",
@@ -18,7 +18,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "three", text: "Three fixes",
       sub: "Ordered by what they require" },
 
-    {"kind": "matrix", "title": "Three fixes for n-gram overlap, at three prices", "caption": "Each one targets a specific failure of exact matching. **METEOR matches on stems and synonyms**, so a correct paraphrase stops scoring zero — at the cost of needing language resources, which is why it is rarely used outside English. **chrF works on character n-grams and needs no tokenizer at all**, which makes it robust to morphology and typos and almost free. BERTScore replaces matching with cosine similarity in embedding space, and needs a model pass per evaluation.", "cols": ["How it improves", "Cost"], "rows": ["METEOR", "chrF", "BERTScore"], "cells": [[{"text": "stems and synonyms; recall-weighted", "tone": "good"}, {"text": "needs language resources", "tone": "warn"}], [{"text": "character n-grams, no tokenizer", "tone": "good"}, {"text": "very cheap", "tone": "good"}], [{"text": "cosine similarity, greedily matched", "tone": "good"}, {"text": "a model pass", "tone": "warn"}]], "t": "diagram", "id": "dg-9_5-01-0"},
+    {"kind": "matrix", "title": "Three fixes for n-gram overlap, at three prices", "caption": "Each one targets a specific failure of exact matching. **METEOR matches on stems and synonyms**, so a correct paraphrase stops scoring zero — at the cost of needing language resources, which is why it is rarely used outside English. **chrF works on character n-grams and needs no tokeniser at all**, which makes it robust to morphology and typos and almost free. BERTScore replaces matching with cosine similarity in embedding space, and needs a model pass per evaluation.", "cols": ["How it improves", "Cost"], "rows": ["METEOR", "chrF", "BERTScore"], "cells": [[{"text": "stems and synonyms; recall-weighted", "tone": "good"}, {"text": "needs language resources", "tone": "warn"}], [{"text": "character n-grams, no tokeniser", "tone": "good"}, {"text": "very cheap", "tone": "good"}], [{"text": "cosine similarity, greedily matched", "tone": "good"}, {"text": "a model pass", "tone": "warn"}]], "t": "diagram", "id": "dg-9_5-01-0"},
 
 
 
@@ -33,13 +33,13 @@ EC.receiveLesson({
       head: ["Metric", "How it improves on n-gram overlap", "Cost"],
       rows: [
         ["**METEOR**", "Matches on **stems and synonyms** (WordNet), weights recall higher, adds a fragmentation penalty for reordering", "Needs language resources"],
-        ["**chrF**", "Overlap on **character** n-grams instead of words \u2014 robust to morphology and typos, and needs no tokenizer", "Very cheap"],
+        ["**chrF**", "Overlap on **character** n-grams instead of words \u2014 robust to morphology and typos, and needs no tokeniser", "Very cheap"],
         ["**BERTScore**", "Embeds every token with a transformer, then matches candidate tokens to reference tokens by **cosine similarity**, greedily", "Needs a model pass"]
       ] },
 
     { t: "callout", kind: "insight", title: "chrF is the underrated one, and the reason is tokenisation",
       body: [
-        { t: "p", text: "It needs no tokenizer. 9.2 measured how much damage a tokenizer choice can do \u2014 one model and one text reading perplexity anywhere from 86.10 to 183.80 \u2014 and a character-level metric sidesteps that class of problem entirely." },
+        { t: "p", text: "It needs no tokeniser. 9.2 measured how much damage a tokeniser choice can do \u2014 one model and one text reading perplexity anywhere from 86.10 to 183.80 \u2014 and a character-level metric sidesteps that class of problem entirely." },
         { t: "p", text: "It is also robust to morphology, which matters for agglutinative and heavily inflected languages where word-level n-grams fragment. \u201cwalk\u201d, \u201cwalked\u201d and \u201cwalking\u201d share no unigram and share most of their character 4-grams." },
         { t: "p", text: "And it is very cheap \u2014 no WordNet, no model pass, no vocabulary. For a multilingual regression suite it is often the best value of the three, which is not how it is usually ranked." }
       ] },
@@ -202,7 +202,7 @@ print("backbone roberta-large, rescaled with baseline = True")`,
     { t: "callout", kind: "scenario", title: "Interview scenario",
       body: [
         { t: "p", text: "**\u201cBLEU gives our correct paraphrases zero. What should we use instead?\u201d**" },
-        { t: "p", text: "Three options, and the one I would reach for first is probably not the one you expect. chrF scores character n-gram overlap, needs no tokenizer and no language resources, and is robust to morphology \u2014 \u2018walk\u2019, \u2018walked\u2019 and \u2018walking\u2019 share no word unigram and share most of their character 4-grams. For a multilingual regression suite it is the best value of the three." },
+        { t: "p", text: "Three options, and the one I would reach for first is probably not the one you expect. chrF scores character n-gram overlap, needs no tokeniser and no language resources, and is robust to morphology \u2014 \u2018walk\u2019, \u2018walked\u2019 and \u2018walking\u2019 share no word unigram and share most of their character 4-grams. For a multilingual regression suite it is the best value of the three." },
         { t: "p", text: "METEOR matches on stems and synonyms via WordNet and adds a fragmentation penalty for reordering, which directly addresses the paraphrase case. The catch is that WordNet coverage is excellent in English and thin elsewhere, so its advantage is largely an English one \u2014 awkward for a translation metric." },
         { t: "p", text: "BERTScore is the one that genuinely sees meaning: embed every token contextually, greedily match each candidate token to its best reference token by cosine, then take precision, recall and F1. Optionally weight by IDF." },
         { t: "p", text: "Two warnings I would give before anyone ships BERTScore. Its scores are not interpretable absolutely \u2014 a raw 0.85 can mean unrelated, because any two fluent English sentences embed fairly similarly. Use baseline rescaling so zero means no better than random, and compare scores only against each other, never against a fixed bar." },
@@ -213,7 +213,7 @@ print("backbone roberta-large, rescaled with baseline = True")`,
 
   takeaways: [
     "**Three fixes for paraphrase blindness**, ordered by what they require: chrF nothing, METEOR WordNet, BERTScore a model pass.",
-    "**chrF is underrated** \u2014 no tokenizer at all, which sidesteps the class of problem that makes perplexity incomparable, and robust to morphology and typos.",
+    "**chrF is underrated** \u2014 no tokeniser at all, which sidesteps the class of problem that makes perplexity incomparable, and robust to morphology and typos.",
     "**METEOR's synonymy is largely an English advantage**, since WordNet coverage is thin elsewhere \u2014 awkward for a metric built for translation.",
     "**Its fragmentation penalty catches reordering**, which 9.4 found ROUGE-1 completely blind to.",
     "**BERTScore is three steps**: contextual embeddings, greedy cosine matching per candidate token, then precision, recall and F1 \u2014 optionally IDF-weighted.",
@@ -252,12 +252,12 @@ print("backbone roberta-large, rescaled with baseline = True")`,
       { stem: "Why is chrF described as the underrated option?",
         options: [
           "Because it correlates better with human judgement than BERTScore",
-          "Because it needs no tokenizer and no language resources, and character n-grams are robust to morphology \u2014 making it strong value for a multilingual suite",
+          "Because it needs no tokeniser and no language resources, and character n-grams are robust to morphology \u2014 making it strong value for a multilingual suite",
           "Because it is the only one of the three that detects factual errors",
           "Because it provides interpretable absolute scores"
         ],
         answer: 1,
-        why: "Needing no tokenizer removes an entire class of comparability problem, and character n-grams handle inflection and typos that word-level n-grams fragment on \u2014 \"walk\", \"walked\" and \"walking\" share no word unigram but most character 4-grams. It is also very cheap. It does not detect factual errors; measured, it scored a factually inverted sentence higher than BLEU did, because character n-grams are even less sensitive to attachment." },
+        why: "Needing no tokeniser removes an entire class of comparability problem, and character n-grams handle inflection and typos that word-level n-grams fragment on \u2014 \"walk\", \"walked\" and \"walking\" share no word unigram but most character 4-grams. It is also very cheap. It does not detect factual errors; measured, it scored a factually inverted sentence higher than BLEU did, because character n-grams are even less sensitive to attachment." },
 
       { stem: "A correct paraphrase scores 0.5841 and a factually inverted sentence scores 0.9233 under BERTScore. What does this establish?",
         options: [

@@ -89,7 +89,7 @@ EC.receiveLesson({
         ["Depth", "Feature hierarchy", "Use a known architecture rather than choosing"]
       ] },
 
-    { t: "h2", n: "04b", text: "The shape arithmetic", id: "shapes" },
+    { t: "h2", n: "05", text: "The shape arithmetic", id: "shapes" },
 
     {"kind": "trace", "title": "The shape arithmetic, done once", "caption": "Every CNN bug that is not a leak is this table. Work it out for your own stack before training — the cost is two minutes and it catches the mismatch that otherwise appears as a runtime error twelve layers in, or worse, as a silently dropped row and column.", "left": "operation", "codeW": 200, "vars": ["in", "out", "why"], "steps": [{"code": "Conv2d(k=3, p=1, s=1)", "state": ["32", "32", "p = k//2 preserves"], "tone": "good"}, {"code": "MaxPool2d(2)", "state": ["32", "16", "halves it"], "tone": "accent"}, {"code": "Conv2d(k=3, p=1, s=2)", "state": ["16", "8", "stride halves instead"], "tone": "accent"}, {"code": "Conv2d(k=3, p=0, s=1)", "state": ["8", "6", "valid: loses k-1"], "tone": "warn"}, {"code": "AdaptiveAvgPool2d(1)", "state": ["6", "1", "any input, fixed output"], "tone": "good"}, {"code": "flatten", "state": ["1 x 1 x C", "C", "ready for the head"], "tone": "violet"}], "t": "diagram", "id": "dg-5_2-04b-4"},
 
@@ -110,7 +110,7 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "Receptive field grows slowly without stride",
       body: [{ t: "p", text: "Stacking 3x3 convolutions at stride 1 grows the receptive field by only 2 pixels per layer, so ten layers see 21 pixels — on a 224-pixel image that is a small fraction of the scene. Downsampling is what makes the receptive field grow multiplicatively rather than additively, which is why architectures interleave stride or pooling rather than simply stacking. If a model seems unable to use global context, compute the receptive field at the final layer before reaching for anything more exotic; it is often far smaller than people assume." }] },
 
-    { t: "h2", n: "05", text: "Honest strengths and weaknesses", id: "tradeoffs" },
+    { t: "h2", n: "06", text: "Honest strengths and weaknesses", id: "tradeoffs" },
 
     { t: "diagram", kind: "compare", title: "What convolutions are for",
       caption: "The weaknesses are all consequences of the assumption that makes them work.",

@@ -138,7 +138,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Chinchilla's finding was that most large models of its era were substantially *under-trained* for their size — the compute would have been better spent on more tokens through a smaller model. Since then the trend has run toward smaller models trained far longer, because inference cost scales with parameters and is paid on every request forever, while training cost is paid once. So when you see a parameter count, the useful follow-up question is how many tokens it saw, not how big it is." }] },
 
     { t: "exercise", title: "Predict before you measure",
-      tasks: [
+      requirements: [
         "Take a model card's configuration, compute 12·L·d² plus embeddings, then load the model and compare. Aim to be within 1%.",
         "Account for the residual exactly, as this lesson did for GPT-2's 82,944 biases.",
         "Compute the parameter count for the same budget spent on twice the depth against twice the width, and note the difference.",

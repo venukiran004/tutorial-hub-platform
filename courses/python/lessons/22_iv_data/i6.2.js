@@ -74,8 +74,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Series:** 1-D labeled array (one column).",
-      "**DataFrame:** 2-D labeled table; columns can have different dtypes.",
+      "**Series:** 1-D labelled array (one column).",
+      "**DataFrame:** 2-D labelled table; columns can have different dtypes.",
       "**Index:** the row/column labels (integer, string, datetime, or MultiIndex)."
      ]
     },
@@ -279,14 +279,14 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Prefer vectorized operations; among these, `map` > `transform` > `apply` for speed."
+     "text": "**Key takeaway:** Prefer vectorised operations; among these, `map` > `transform` > `apply` for speed."
     }
    ]
   },
   {
    "t": "drill",
    "n": "8",
-   "q": "What is vectorization and why is it preferred over `apply`?",
+   "q": "What is vectorisation and why is it preferred over `apply`?",
    "terms": [
     "Answer",
     "Key takeaway"
@@ -298,7 +298,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "Vectorized operations act on whole columns using NumPy in C, avoiding the Python-level loop that `apply` runs."
+     "text": "Vectorised operations act on whole columns using NumPy in C, avoiding the Python-level loop that `apply` runs."
     },
     {
      "t": "code",
@@ -308,7 +308,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** If logic can be expressed as element-wise column operations, vectorize it; reserve `apply(axis=1)` for genuinely row-dependent logic."
+     "text": "**Key takeaway:** If logic can be expressed as element-wise column operations, vectorise it; reserve `apply(axis=1)` for genuinely row-dependent logic."
     }
    ]
   },
@@ -672,7 +672,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Measure with `memory_usage(deep=True)`, then downcast and categorize — often a 50–90% reduction."
+     "text": "**Key takeaway:** Measure with `memory_usage(deep=True)`, then downcast and categorise — often a 50–90% reduction."
     }
    ]
   },
@@ -984,7 +984,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`.str` provides vectorized string methods on Series; `.str.extract` pulls regex groups into columns."
+     "text": "`.str` provides vectorised string methods on Series; `.str.extract` pulls regex groups into columns."
     },
     {
      "t": "code",
@@ -1130,7 +1130,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "`explode` turns a column of lists into one row per element, duplicating the other columns — useful for denormalized data like a tags column."
+     "text": "`explode` turns a column of lists into one row per element, duplicating the other columns — useful for denormalised data like a tags column."
     },
     {
      "t": "code",
@@ -1218,7 +1218,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "`iterrows()`/`itertuples()` loops instead of vectorized ops.",
+      "`iterrows()`/`itertuples()` loops instead of vectorised ops.",
       "Repeated `pd.concat` in a loop (O(n²)) — build a list and concat once.",
       "Modifying chained slices (`df[cond]['col'] = ...`).",
       "Not specifying `dtype`/`usecols` when reading CSVs.",
@@ -1227,7 +1227,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key takeaway:** Vectorize, batch your concatenations, and use `.loc`/`.copy()` correctly."
+     "text": "**Key takeaway:** Vectorise, batch your concatenations, and use `.loc`/`.copy()` correctly."
     }
    ]
   },

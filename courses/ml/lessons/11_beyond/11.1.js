@@ -191,7 +191,7 @@ for t, is_error in enumerate(model.predict(x_t) != y_t): adwin.update(is_error);
 # rollback = point the service at the previous artefact, re-run the golden test (0.0e+00 on its own stored predictions), AND restore its threshold`,
       caption: "A registry is a table of versions with their code, data hash, environment, metrics and stage (staging, production, archived) — MLflow, Weights & Biases and the cloud platforms' registries are the usual implementations, alongside experiment tracking that records every run's parameters and metrics, and an orchestrator (Airflow, Kubeflow Pipelines, Dagster) that runs the training, evaluation and registration steps as a versioned pipeline; a model card is the human-readable half — what it is for, what it was trained on, where it fails. The rollback shows why the threshold and the calibration belong in the artefact: two versions with identical AUC disagreed on half the decisions, because one was class-weighted and the other calibrated. Rolling back the model without rolling back the threshold would have sextupled the retention queue." },
 
-    { t: "ladder",
+    { t: "ladder", lang: "text",
       title: "Putting the churn model into production",
       rungs: [
         { level: "bad", label: "pickle.load in a Flask route; preprocessing copied from the notebook", code: `model = pickle.load(open("model.pkl", "rb"))

@@ -41,7 +41,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Exact match is usually introduced as brittle, which frames its defining property as a weakness. For extraction, SQL and structured output it is the right metric *because* formatting is part of correctness \u2014 a SQL query differing by a character may not run." },
         { t: "p", text: "6.3 made the general version of this argument: when a constraint is exactly expressible, express it exactly rather than approximating it. Reaching for a fuzzy metric on a task with a crisp answer adds noise and removes a guarantee you had for free." },
-        { t: "p", text: "And it is the only metric in this module that needs no judgement at all \u2014 no k, no claim policy, no class balance, no tokenizer. 8.13\u2019s rule about reporting the denominator has nothing to report here, which is worth something." }
+        { t: "p", text: "And it is the only metric in this module that needs no judgement at all \u2014 no k, no claim policy, no class balance, no tokeniser. 8.13\u2019s rule about reporting the denominator has nothing to report here, which is worth something." }
       ] },
 
     { t: "h2", n: "02", id: "normalisation", text: "Normalisation is the whole game",
@@ -256,7 +256,7 @@ print("\\nstring EM  %.1f   parsed EM  %.1f"
 
   takeaways: [
     "**Three metrics, three task shapes**: exact match for extraction and structured output, token F1 for short answers with varying wording, accuracy for multiple choice.",
-    "**These are the only metrics here with no judgement in the denominator** \u2014 no k, no claim policy, no class balance, no tokenizer.",
+    "**These are the only metrics here with no judgement in the denominator** \u2014 no k, no claim policy, no class balance, no tokeniser.",
     "**Brittleness is a feature where formatting is part of correctness**, as with SQL or structured extraction \u2014 a crisp metric on a crisp task beats a fuzzy one.",
     "**Normalisation is the whole game for exact match**: lowercase, strip punctuation, strip articles, collapse whitespace, in that order.",
     "**The normaliser is part of the metric definition**, so version it with the eval set \u2014 one step was worth 5.8 points of exact match on a real set.",

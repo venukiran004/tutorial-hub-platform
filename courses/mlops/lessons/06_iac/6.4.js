@@ -161,7 +161,7 @@ def gitops_model(events, period=5):
         "Any field in the repository that an HPA also writes will oscillate under selfHeal, which is lesson 6.1's ownership conflict in a new tool."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "Under push, the diff almost always finds something: a replica count changed during an incident, an annotation added by a tool, a resource limit raised. None of it is recorded anywhere, which is the point — the repository was a description of one past apply." },
           { t: "p", text: "The break-glass answer that works is *commit it*, with an approval path that takes a minute rather than a day. Every team that relies on suspending sync eventually leaves something suspended, and an alert on suspension duration is the cheapest control for that." }
         ]

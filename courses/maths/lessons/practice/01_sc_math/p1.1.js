@@ -30,7 +30,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Situation:** You run an A/B test on a checkout button color. With 13 million users, you get p = 0.01 and a conversion rate increase from 4.50% to 4.53%."
+     "text": "**Situation:** You run an A/B test on a checkout button colour. With 13 million users, you get p = 0.01 and a conversion rate increase from 4.50% to 4.53%."
     },
     {
      "t": "p",
@@ -150,7 +150,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Fix:** Check for sample ratio mismatch by segment. Analyze per-segment results. The treatment should NOT be shipped — it hurts both segments."
+     "text": "**Fix:** Check for sample ratio mismatch by segment. Analyse per-segment results. The treatment should NOT be shipped — it hurts both segments."
     }
    ],
    "kind": ""
@@ -288,10 +288,10 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Cluster randomization:** Randomize by geography, team, or social cluster",
-      "**Graph cluster randomization:** Use community detection to identify groups with few cross-connections",
+      "**Cluster randomisation:** Randomise by geography, team, or social cluster",
+      "**Graph cluster randomisation:** Use community detection to identify groups with few cross-connections",
       "**Switchback design:** Alternate treatment/control across time periods for the entire population",
-      "**Interference model:** Explicitly model the spillover as a function of fraction of treated neighbors"
+      "**Interference model:** Explicitly model the spillover as a function of fraction of treated neighbours"
      ]
     }
    ],

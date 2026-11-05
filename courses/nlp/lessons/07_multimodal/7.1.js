@@ -108,7 +108,7 @@ EC.receiveLesson({
       body: [{ t: "p", text: "Contrastive alignment needs hundreds of millions of paired examples and batch sizes in the tens of thousands, which very few organisations can run. The projection approach needs neither: it inherits a vision encoder someone else trained contrastively and an LLM someone else trained on text, and learns only the small map between them. It is the same dynamic as LoRA in lesson 5.6 — freeze the expensive parts, train the connector — and it is why open vision-language models proliferated so quickly after LLaVA showed it worked." }] },
 
     { t: "exercise", title: "Classify the architectures",
-      tasks: [
+      requirements: [
         "For three multimodal models you have used, identify where the modalities meet and what that permits.",
         "Work out whether a model you want to use could serve large-scale retrieval, from its fusion strategy alone.",
         "Compute the visual token count for your resolution, and decide whether a bottleneck is necessary.",

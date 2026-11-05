@@ -16,7 +16,7 @@ EC.receiveLesson({
   {
    "t": "h2",
    "n": "01",
-   "text": "System Design for ML · MLOps & Production · Math & Optimization · Behavioral & Projects · Additional Coding & ML Implementation",
+   "text": "System Design for ML · MLOps & Production · Math & Optimisation · Behavioural & Projects · Additional Coding & ML Implementation",
    "id": "set"
   },
   {
@@ -72,7 +72,7 @@ EC.receiveLesson({
      "items": [
       "**Task management:** Queue-based assignment, avoid duplicate labelling",
       "**Quality control:** Gold standard items (known answers), inter-annotator agreement (Cohen's Kappa)",
-      "**Active learning:** Prioritize uncertain samples for labelling",
+      "**Active learning:** Prioritise uncertain samples for labelling",
       "**Versioning:** Track label changes over time"
      ]
     },
@@ -193,7 +193,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Vectorized:**"
+     "text": "**Vectorised:**"
     },
     {
      "t": "math",
@@ -267,7 +267,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Build K-Means clustering without using sklearn. Include initialization strategies."
+     "text": "**Question:** Build K-Means clustering without using sklearn. Include initialisation strategies."
     },
     {
      "t": "p",
@@ -280,7 +280,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** K-Means++ initialization avoids poor convergence. Elbow method for optimal k. Inertia = within-cluster sum of squares. K-Means assumes spherical clusters with equal variance."
+     "text": "**Key Insight:** K-Means++ initialisation avoids poor convergence. Elbow method for optimal k. Inertia = within-cluster sum of squares. K-Means assumes spherical clusters with equal variance."
     }
    ],
    "kind": ""
@@ -292,7 +292,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Question:** Build binary logistic regression from scratch including regularization."
+     "text": "**Question:** Build binary logistic regression from scratch including regularisation."
     },
     {
      "t": "p",
@@ -305,7 +305,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Key Insight:** Sigmoid squashes to [0,1]. BCE loss is convex → guaranteed convergence. L2 regularization shrinks weights, L1 produces sparsity. Clip sigmoid input to avoid overflow."
+     "text": "**Key Insight:** Sigmoid squashes to [0,1]. BCE loss is convex → guaranteed convergence. L2 regularisation shrinks weights, L1 produces sparsity. Clip sigmoid input to avoid overflow."
     }
    ],
    "kind": ""

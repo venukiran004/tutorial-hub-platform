@@ -249,7 +249,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** The 270 removed features added noise, not signal. Less noise → cleaner decision boundary → better generalization."
+     "text": "**Explanation:** The 270 removed features added noise, not signal. Less noise → cleaner decision boundary → better generalisation."
     }
    ],
    "kind": ""
@@ -280,7 +280,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "89",
-   "q": "How would you validate that selected features generalize to new data?",
+   "q": "How would you validate that selected features generalise to new data?",
    "body": [
     {
      "t": "p",
@@ -297,7 +297,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** If features selected on training data aren't important on test data, selection captured noise. Stability and consistency across samples = generalizable selection."
+     "text": "**Explanation:** If features selected on training data aren't important on test data, selection captured noise. Stability and consistency across samples = generalisable selection."
     }
    ],
    "kind": ""
@@ -334,7 +334,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** For each sample, finds nearest same-class (hit) and nearest different-class (miss) neighbors. Features that differ more from misses and less from hits get higher scores."
+     "text": "**Answer:** For each sample, finds nearest same-class (hit) and nearest different-class (miss) neighbours. Features that differ more from misses and less from hits get higher scores."
     },
     {
      "t": "p",
@@ -427,7 +427,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Concrete Dropout can provide feature importance. Not traditional feature selection but achieves similar regularization effect."
+     "text": "**Explanation:** Concrete Dropout can provide feature importance. Not traditional feature selection but achieves similar regularisation effect."
     }
    ],
    "kind": ""
@@ -468,7 +468,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Rule of thumb: need n >> d. With n=50 and d=500, almost any feature subset can fit perfectly. Use strong regularization and conservative selection thresholds."
+     "text": "**Explanation:** Rule of thumb: need n >> d. With n=50 and d=500, almost any feature subset can fit perfectly. Use strong regularisation and conservative selection thresholds."
     }
    ],
    "kind": ""

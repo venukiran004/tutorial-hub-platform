@@ -164,7 +164,7 @@ USER appuser` },
         "The socket audit is the highest-value item: it is usually in a CI job nobody reviews, and it is root on the host."
       ],
       solution: {
-        body: [
+        notes: [
           { t: "p", text: "Doing the extraction yourself is what changes behaviour. The measurement in this lesson used synthetic tars to show the mechanism cleanly; against a real image it takes three commands, and the fact that it needs no exploit and no privilege beyond pull access is the part that is hard to un-learn." },
           { t: "p", text: "The `docker history` check often finds something worse than a file, because an ARG-passed token is in the command string and needs no extraction. And the socket audit usually finds one CI job that mounts it, which is a root-on-host grant sitting in a config file nobody has read in a year." }
         ]

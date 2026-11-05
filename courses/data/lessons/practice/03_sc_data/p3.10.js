@@ -22,11 +22,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "226",
-   "q": "Your text summarization model sometimes \"hallucinates\" — generates facts not in the source document. How do you detect and prevent this?",
+   "q": "Your text summarisation model sometimes \"hallucinates\" — generates facts not in the source document. How do you detect and prevent this?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Detection: (1) NLI-based: check if summary is entailed by source, (2) entity verification: are entities in summary present in source?, (3) fact extraction and matching. Prevention: (1) use extractive summarization (only select source sentences), (2) constrained decoding — restrict generation to source vocabulary, (3) add faithfulness reward in training, (4) hybrid: extractive selection then abstractive compression, (5) human evaluation for critical applications."
+     "text": "**Answer:** Detection: (1) NLI-based: check if summary is entailed by source, (2) entity verification: are entities in summary present in source?, (3) fact extraction and matching. Prevention: (1) use extractive summarisation (only select source sentences), (2) constrained decoding — restrict generation to source vocabulary, (3) add faithfulness reward in training, (4) hybrid: extractive selection then abstractive compression, (5) human evaluation for critical applications."
     }
    ],
    "kind": ""
@@ -34,11 +34,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "227",
-   "q": "You need to classify customer support tickets into 50 categories. Labeled data is scarce. What do you do?",
+   "q": "You need to classify customer support tickets into 50 categories. Labelled data is scarce. What do you do?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Few-shot learning with language models: provide category descriptions and examples in prompt, (2) zero-shot classification: use `facebook/bart-large-mnli` with candidate labels, (3) semi-supervised learning: label a small set, propagate labels with self-training, (4) data augmentation: paraphrase, back-translation, (5) hierarchical: first classify into 10 groups, then subcategorize, (6) active learning: have humans label the most uncertain examples first, (7) use embeddings + KNN with few labeled examples per class."
+     "text": "**Answer:** (1) Few-shot learning with language models: provide category descriptions and examples in prompt, (2) zero-shot classification: use `facebook/bart-large-mnli` with candidate labels, (3) semi-supervised learning: label a small set, propagate labels with self-training, (4) data augmentation: paraphrase, back-translation, (5) hierarchical: first classify into 10 groups, then subcategorize, (6) active learning: have humans label the most uncertain examples first, (7) use embeddings + KNN with few labelled examples per class."
     }
    ],
    "kind": ""
@@ -62,7 +62,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Choose TF-IDF + LR when: (1) dataset is small (< 5000 labeled examples) — BERT overfits, (2) latency requirements are strict (TF-IDF inference in ms, BERT in 10-100ms), (3) interpretability is important — coefficients are meaningful, (4) limited compute (no GPU), (5) documents are long — BERT has 512 token limit, (6) simple domain without nuanced language, (7) as a strong baseline before investing in BERT fine-tuning."
+     "text": "**Answer:** Choose TF-IDF + LR when: (1) dataset is small (< 5000 labelled examples) — BERT overfits, (2) latency requirements are strict (TF-IDF inference in ms, BERT in 10-100ms), (3) interpretability is important — coefficients are meaningful, (4) limited compute (no GPU), (5) documents are long — BERT has 512 token limit, (6) simple domain without nuanced language, (7) as a strong baseline before investing in BERT fine-tuning."
     }
    ],
    "kind": ""
@@ -74,7 +74,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Better preprocessing: remove stop words, lemmatize, remove very frequent and very rare words, (2) experiment with number of topics (try 5, 10, 15, 20, 30), (3) filter short documents (< 20 words), (4) use coherence score (c_v) to evaluate topic quality, (5) try alternative models: NMF, BERTopic (uses embeddings), Top2Vec, (6) increase iterations for LDA convergence, (7) use bigrams/trigrams for multi-word topics, (8) seed topics with domain keywords."
+     "text": "**Answer:** (1) Better preprocessing: remove stop words, lemmatise, remove very frequent and very rare words, (2) experiment with number of topics (try 5, 10, 15, 20, 30), (3) filter short documents (< 20 words), (4) use coherence score (c_v) to evaluate topic quality, (5) try alternative models: NMF, BERTopic (uses embeddings), Top2Vec, (6) increase iterations for LDA convergence, (7) use bigrams/trigrams for multi-word topics, (8) seed topics with domain keywords."
     },
     {
      "t": "p",
@@ -102,7 +102,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Optimize model: quantization, pruning, ONNX conversion, (2) horizontal scaling: multiple replicas behind load balancer, (3) caching: Redis for repeated predictions, (4) batching: group requests for GPU efficiency, (5) async processing: queue non-critical predictions, (6) feature precomputation: store computed features in feature store, (7) use production serving frameworks: TensorFlow Serving, TorchServe, Triton, (8) CDN for static model resources, (9) autoscaling based on traffic."
+     "text": "**Answer:** (1) Optimise model: quantisation, pruning, ONNX conversion, (2) horizontal scaling: multiple replicas behind load balancer, (3) caching: Redis for repeated predictions, (4) batching: group requests for GPU efficiency, (5) async processing: queue non-critical predictions, (6) feature precomputation: store computed features in feature store, (7) use production serving frameworks: TensorFlow Serving, TorchServe, Triton, (8) CDN for static model resources, (9) autoscaling based on traffic."
     }
    ],
    "kind": ""
@@ -110,11 +110,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "233",
-   "q": "Your model retraining pipeline takes 6 hours. Business wants daily retraining. How do you optimize?",
+   "q": "Your model retraining pipeline takes 6 hours. Business wants daily retraining. How do you optimise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Incremental/online learning instead of full retraining, (2) use warm-start: initialize from previous model, (3) reduce data volume: sample or window recent data, (4) distributed training across multiple machines, (5) use mixed precision (FP16) for 2x speedup, (6) optimize feature engineering (cache intermediate results), (7) use efficient data formats (Parquet over CSV), (8) profile pipeline to find bottlenecks (data loading? feature eng? training?)."
+     "text": "**Answer:** (1) Incremental/online learning instead of full retraining, (2) use warm-start: initialise from previous model, (3) reduce data volume: sample or window recent data, (4) distributed training across multiple machines, (5) use mixed precision (FP16) for 2x speedup, (6) optimise feature engineering (cache intermediate results), (7) use efficient data formats (Parquet over CSV), (8) profile pipeline to find bottlenecks (data loading? feature eng? training?)."
     }
    ],
    "kind": ""
@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Implement MLOps best practices: (1) model registry (MLflow) for versioned artifacts, (2) CI/CD pipeline (Jenkins/GitHub Actions) for automated testing and deployment, (3) containerization (Docker) for reproducible environments, (4) infrastructure-as-code (Terraform/Kubernetes), (5) automated testing: unit tests, integration tests, model validation tests, (6) staging environment matching production, (7) monitoring and alerting post-deployment, (8) feature store for consistent feature computation."
+     "text": "**Answer:** Implement MLOps best practices: (1) model registry (MLflow) for versioned artifacts, (2) CI/CD pipeline (Jenkins/GitHub Actions) for automated testing and deployment, (3) containerisation (Docker) for reproducible environments, (4) infrastructure-as-code (Terraform/Kubernetes), (5) automated testing: unit tests, integration tests, model validation tests, (6) staging environment matching production, (7) monitoring and alerting post-deployment, (8) feature store for consistent feature computation."
     }
    ],
    "kind": ""
@@ -158,7 +158,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "237",
-   "q": "Your model works differently in Python 3.8 (dev) and Python 3.11 (prod) due to numpy behavior changes. How do you prevent this?",
+   "q": "Your model works differently in Python 3.8 (dev) and Python 3.11 (prod) due to numpy behaviour changes. How do you prevent this?",
    "body": [
     {
      "t": "p",
@@ -214,7 +214,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** It tells you: categorical variables are not independent (there IS a relationship). It doesn't tell you: (1) the direction or strength of association — use Cramér's V, (2) which specific cells deviate from expected — check standardized residuals, (3) causation — only association, (4) practical significance — large samples can make tiny effects significant, (5) which category pairs drive the association. Always report effect size alongside p-value."
+     "text": "**Answer:** It tells you: categorical variables are not independent (there IS a relationship). It doesn't tell you: (1) the direction or strength of association — use Cramér's V, (2) which specific cells deviate from expected — check standardised residuals, (3) causation — only association, (4) practical significance — large samples can make tiny effects significant, (5) which category pairs drive the association. Always report effect size alongside p-value."
     }
    ],
    "kind": ""
@@ -262,7 +262,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Multicollinearity! — features are correlated with each other, inflating individual standard errors while the collective model still predicts well. Fix: (1) check VIF for each predictor (remove VIF > 10), (2) use Ridge regression to stabilize coefficients, (3) PCA to create uncorrelated components, (4) drop highly correlated features, (5) the F-test tests all coefficients jointly (features collectively matter even if individually uncertain)."
+     "text": "**Answer:** Multicollinearity! — features are correlated with each other, inflating individual standard errors while the collective model still predicts well. Fix: (1) check VIF for each predictor (remove VIF > 10), (2) use Ridge regression to stabilise coefficients, (3) PCA to create uncorrelated components, (4) drop highly correlated features, (5) the F-test tests all coefficients jointly (features collectively matter even if individually uncertain)."
     }
    ],
    "kind": ""
@@ -270,7 +270,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "246",
-   "q": "You're asked to analyze the causal effect of a marketing campaign using observational data. What methods do you use?",
+   "q": "You're asked to analyse the causal effect of a marketing campaign using observational data. What methods do you use?",
    "body": [
     {
      "t": "p",

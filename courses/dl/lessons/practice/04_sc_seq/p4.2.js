@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Loss function for sequence labeling when alignment between input and output is unknown:"
+     "text": "**Answer:** Loss function for sequence labelling when alignment between input and output is unknown:"
     },
     {
      "t": "p",
@@ -54,7 +54,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** More efficient than one-hot encoding + linear layer (mathematically equivalent). Weights are learned during training. Can initialize with pre-trained embeddings (GloVe, Word2Vec)."
+     "text": "**Explanation:** More efficient than one-hot encoding + linear layer (mathematically equivalent). Weights are learned during training. Can initialise with pre-trained embeddings (GloVe, Word2Vec)."
     }
    ],
    "kind": ""
@@ -75,7 +75,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Used in:** Text summarization (copy important words), question answering, code generation."
+     "text": "**Used in:** Text summarisation (copy important words), question answering, code generation."
     },
     {
      "t": "p",
@@ -160,7 +160,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Uses dilated causal convolutions instead of RNNs for sequence modeling:"
+     "text": "**Answer:** Uses dilated causal convolutions instead of RNNs for sequence modelling:"
     },
     {
      "t": "code",
@@ -174,7 +174,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Parallelizable (no sequential dependency)",
+      "Parallelisable (no sequential dependency)",
       "Stable gradients (no vanishing/exploding)",
       "Flexible receptive field"
      ]
@@ -198,11 +198,11 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "**Hidden state visualization:** t-SNE of hidden states shows clustering by class/pattern",
-      "**Gate activations:** Visualize forget/input gate values over time",
+      "**Hidden state visualisation:** t-SNE of hidden states shows clustering by class/pattern",
+      "**Gate activations:** Visualise forget/input gate values over time",
       "**Saliency maps:** Gradient of output w.r.t. input tokens",
       "**Probing tasks:** Train simple classifiers on hidden states",
-      "**Attention weights:** If attention is used, visualize what model attends to"
+      "**Attention weights:** If attention is used, visualise what model attends to"
      ]
     },
     {
@@ -225,10 +225,10 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Vanishing/exploding gradients:** Use LSTM/GRU, gradient clipping",
-      "**Slow training:** Sequential nature prevents parallelization",
+      "**Slow training:** Sequential nature prevents parallelisation",
       "**Long-range dependencies:** Even LSTMs struggle beyond ~500 steps",
       "**Overfitting:** Dropout between layers, not within recurrent connections",
-      "**Input normalization:** Normalize features for stable training"
+      "**Input normalisation:** Normalise features for stable training"
      ]
     },
     {
@@ -281,7 +281,7 @@ EC.receiveLesson({
      "t": "ol",
      "items": [
       "**Segment recurrence:** Reuses previous segment's representations",
-      "**Relative positional encoding:** Generalizes to longer sequences than training"
+      "**Relative positional encoding:** Generalises to longer sequences than training"
      ]
     },
     {
@@ -294,7 +294,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "37",
-   "q": "What is the difference between seq2seq and sequence labeling?",
+   "q": "What is the difference between seq2seq and sequence labelling?",
    "body": [
     {
      "t": "p",
@@ -303,8 +303,8 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Seq2Seq:** Variable-length output different from input (translation, summarization)",
-      "**Sequence labeling:** One label per input token (NER, POS tagging)"
+      "**Seq2Seq:** Variable-length output different from input (translation, summarisation)",
+      "**Sequence labelling:** One label per input token (NER, POS tagging)"
      ]
     },
     {
@@ -313,7 +313,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Sequence labeling:** Single encoder. Output length = input length. Often uses CRF on top for label dependencies."
+     "text": "**Sequence labelling:** Single encoder. Output length = input length. Often uses CRF on top for label dependencies."
     }
    ],
    "kind": ""
@@ -360,7 +360,7 @@ EC.receiveLesson({
     {
      "t": "ol",
      "items": [
-      "Normalize each feature independently",
+      "Normalise each feature independently",
       "Feature selection matters (irrelevant features add noise)",
       "Different features may have different temporal dynamics",
       "Consider separate encoders per feature then combine"
@@ -454,7 +454,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Pure generation struggles with rare words and named entities. Copy mechanism points to input positions. Essential for abstractive summarization, data-to-text generation."
+     "text": "**Explanation:** Pure generation struggles with rare words and named entities. Copy mechanism points to input positions. Essential for abstractive summarisation, data-to-text generation."
     }
    ],
    "kind": ""
@@ -475,11 +475,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why:** Different masks at each step is equivalent to adding noise to recurrent hidden state. Same mask correctly regularizes the recurrent weights."
+     "text": "**Why:** Different masks at each step is equivalent to adding noise to recurrent hidden state. Same mask correctly regularises the recurrent weights."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Standard dropout between RNN layers is fine. Variational dropout for recurrent connections. Significantly better regularization."
+     "text": "**Explanation:** Standard dropout between RNN layers is fine. Variational dropout for recurrent connections. Significantly better regularisation."
     }
    ],
    "kind": ""
@@ -512,7 +512,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "46",
-   "q": "What is the importance of hidden state initialization?",
+   "q": "What is the importance of hidden state initialisation?",
    "body": [
     {
      "t": "p",
@@ -521,14 +521,14 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "**Zero initialization:** Default. Works well for short sequences.",
-      "**Learned initialization:** Learn initial hidden state as parameter. Better for tasks where initial context matters.",
+      "**Zero initialisation:** Default. Works well for short sequences.",
+      "**Learned initialisation:** Learn initial hidden state as parameter. Better for tasks where initial context matters.",
       "**Warm-up:** Process a prefix sequence to build context before actual input."
      ]
     },
     {
      "t": "p",
-     "text": "**Explanation:** For most tasks, zero initialization is fine. Learned initialization helps when the model needs a strong prior (e.g., conditional generation)."
+     "text": "**Explanation:** For most tasks, zero initialisation is fine. Learned initialisation helps when the model needs a strong prior (e.g., conditional generation)."
     }
    ],
    "kind": ""
@@ -640,7 +640,7 @@ EC.receiveLesson({
      "items": [
       "Sufficient compute and data",
       "Need to capture long-range dependencies well",
-      "Can parallelize training",
+      "Can parallelise training",
       "State-of-the-art performance needed"
      ]
     },

@@ -20,7 +20,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Agent learns to make decisions by interacting with an environment to maximize cumulative reward:"
+     "text": "**Answer:** Agent learns to make decisions by interacting with an environment to maximise cumulative reward:"
     },
     {
      "t": "code",
@@ -33,7 +33,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Unlike supervised learning (labeled data) or unsupervised (no labels), RL learns from interaction and delayed rewards. Trial and error. Credit assignment: which action caused the reward?"
+     "text": "**Explanation:** Unlike supervised learning (labelled data) or unsupervised (no labels), RL learns from interaction and delayed rewards. Trial and error. Credit assignment: which action caused the reward?"
     }
    ],
    "kind": ""
@@ -130,7 +130,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why target network:** Stabilizes training by reducing moving target problem."
+     "text": "**Why target network:** Stabilises training by reducing moving target problem."
     }
    ],
    "kind": ""
@@ -142,7 +142,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Directly optimize policy parameters by gradient ascent on expected return:"
+     "text": "**Answer:** Directly optimise policy parameters by gradient ascent on expected return:"
     },
     {
      "t": "code",
@@ -184,7 +184,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "8",
-   "q": "What is PPO (Proximal Policy Optimization)?",
+   "q": "What is PPO (Proximal Policy Optimisation)?",
    "body": [
     {
      "t": "p",
@@ -219,7 +219,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Exploration:** Try new actions to discover better strategies",
-      "**Exploitation:** Use best known action to maximize immediate reward"
+      "**Exploitation:** Use best known action to maximise immediate reward"
      ]
     },
     {
@@ -249,7 +249,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Designing reward functions that lead to desired behavior:"
+     "text": "**Answer:** Designing reward functions that lead to desired behaviour:"
     },
     {
      "t": "code",
@@ -258,7 +258,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Reward hacking:** Agent finds unintended way to maximize reward without achieving goal."
+     "text": "**Reward hacking:** Agent finds unintended way to maximise reward without achieving goal."
     },
     {
      "t": "p",
@@ -316,7 +316,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Prioritized replay:** Sample more important transitions (high TD error) more often."
+     "text": "**Prioritised replay:** Sample more important transitions (high TD error) more often."
     }
    ],
    "kind": ""
@@ -398,7 +398,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** AlphaStar (StarCraft), OpenAI Five (Dota 2). Emergent behaviors: agents develop communication, strategies, deception."
+     "text": "**Explanation:** AlphaStar (StarCraft), OpenAI Five (Dota 2). Emergent behaviours: agents develop communication, strategies, deception."
     }
    ],
    "kind": ""
@@ -419,7 +419,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Specifying rewards is hard. Learning from demonstrations is easier. IRL recovers \"what the expert was optimizing for.\" Used in: autonomous driving (learn from human drivers), robot manipulation."
+     "text": "**Explanation:** Specifying rewards is hard. Learning from demonstrations is easier. IRL recovers \"what the expert was optimising for.\" Used in: autonomous driving (learn from human drivers), robot manipulation."
     }
    ],
    "kind": ""
@@ -473,7 +473,7 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "19",
-   "q": "What is DPO (Direct Preference Optimization)?",
+   "q": "What is DPO (Direct Preference Optimisation)?",
    "body": [
     {
      "t": "p",
@@ -486,7 +486,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**No reward model needed.** Directly optimize policy from preference data."
+     "text": "**No reward model needed.** Directly optimise policy from preference data."
     },
     {
      "t": "p",
@@ -511,11 +511,11 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Solutions:** Domain randomization (vary simulator parameters), system identification, progressive adaptation."
+     "text": "**Solutions:** Domain randomisation (vary simulator parameters), system identification, progressive adaptation."
     },
     {
      "t": "p",
-     "text": "**Explanation:** Real-world training is: slow, expensive, dangerous (robot can break). Simulation enables millions of episodes. Domain randomization: train on many sim variations → robust to real-world differences."
+     "text": "**Explanation:** Real-world training is: slow, expensive, dangerous (robot can break). Simulation enables millions of episodes. Domain randomisation: train on many sim variations → robust to real-world differences."
     }
    ],
    "kind": ""
@@ -611,7 +611,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Why:** Stabilizes learning across different environments. Prevents one high-reward event from dominating."
+     "text": "**Why:** Stabilises learning across different environments. Prevents one high-reward event from dominating."
     },
     {
      "t": "p",
@@ -619,7 +619,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Used in Atari DQN. Alternative: reward normalization (running mean/std)."
+     "text": "**Explanation:** Used in Atari DQN. Alternative: reward normalisation (running mean/std)."
     }
    ],
    "kind": ""

@@ -54,7 +54,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Same patient in both train and test → data leakage: model memorizes patient-specific patterns. Use GroupKFold: (1) ensure all records from a patient are in the same fold, (2) `from sklearn.model_selection import GroupKFold`, (3) groups defined by patient_id, (4) evaluate: does performance differ between GroupKFold and regular k-fold? If yes, you had leakage, (5) for stratified groups: StratifiedGroupKFold balances target distribution AND respects groups, (6) leave-one-group-out for small number of groups."
+     "text": "**Answer:** Same patient in both train and test → data leakage: model memorises patient-specific patterns. Use GroupKFold: (1) ensure all records from a patient are in the same fold, (2) `from sklearn.model_selection import GroupKFold`, (3) groups defined by patient_id, (4) evaluate: does performance differ between GroupKFold and regular k-fold? If yes, you had leakage, (5) for stratified groups: StratifiedGroupKFold balances target distribution AND respects groups, (6) leave-one-group-out for small number of groups."
     }
    ],
    "kind": ""
@@ -94,7 +94,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Switch to multi-label classification: (1) one-vs-rest classifiers per label, (2) multi-label BERT: sigmoid outputs per class (not softmax), (3) threshold per label: optimize on validation set, (4) label co-occurrence matrix: understand which labels appear together, (5) hierarchical: primary issue + secondary issues, (6) output: ranked list of applicable labels with confidence, (7) evaluation: hamming loss, subset accuracy, per-label F1, (8) routing: ticket goes to team matching highest-confidence label."
+     "text": "**Answer:** Switch to multi-label classification: (1) one-vs-rest classifiers per label, (2) multi-label BERT: sigmoid outputs per class (not softmax), (3) threshold per label: optimise on validation set, (4) label co-occurrence matrix: understand which labels appear together, (5) hierarchical: primary issue + secondary issues, (6) output: ranked list of applicable labels with confidence, (7) evaluation: hamming loss, subset accuracy, per-label F1, (8) routing: ticket goes to team matching highest-confidence label."
     },
     {
      "t": "p",
@@ -122,7 +122,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Don't deploy until performance is equitable across groups, (2) root cause: training data under-represents dark-skinned faces, (3) collect more diverse training data, (4) evaluate per-subgroup: age × gender × skin tone, (5) augmentation: vary lighting, skin tone in training, (6) fairness constraint during training: equalize error rates across groups, (7) if disparities persist: consider whether the application should exist (surveillance vs. photo organization), (8) transparency: publish model performance by demographic group."
+     "text": "**Answer:** (1) Don't deploy until performance is equitable across groups, (2) root cause: training data under-represents dark-skinned faces, (3) collect more diverse training data, (4) evaluate per-subgroup: age × gender × skin tone, (5) augmentation: vary lighting, skin tone in training, (6) fairness constraint during training: equalise error rates across groups, (7) if disparities persist: consider whether the application should exist (surveillance vs. photo organisation), (8) transparency: publish model performance by demographic group."
     },
     {
      "t": "p",
@@ -138,7 +138,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) **Define success**: what makes search \"good\"? Relevance, speed, user satisfaction? (2) **Metrics**: MRR (Mean Reciprocal Rank), NDCG, click-through rate, zero-result rate, (3) **Baseline**: start with Elasticsearch/BM25 — already good for keyword search, (4) **MVP**: BM25 + typo correction + synonym expansion, (5) **V2**: add ML re-ranking (learning-to-rank) on top of BM25 candidates, (6) **V3**: semantic search with embeddings for understanding intent, (7) **Data needed**: search logs (query, clicks, no-clicks), relevance judgments, (8) **Timeline**: MVP in 2-4 weeks, ML-powered in 2-3 months, (9) **Infrastructure**: search index, embedding service, re-ranking model serving."
+     "text": "**Answer:** (1) **Define success**: what makes search \"good\"? Relevance, speed, user satisfaction? (2) **Metrics**: MRR (Mean Reciprocal Rank), NDCG, click-through rate, zero-result rate, (3) **Baseline**: start with Elasticsearch/BM25 — already good for keyword search, (4) **MVP**: BM25 + typo correction + synonym expansion, (5) **V2**: add ML re-ranking (learning-to-rank) on top of BM25 candidates, (6) **V3**: semantic search with embeddings for understanding intent, (7) **Data needed**: search logs (query, clicks, no-clicks), relevance judgements, (8) **Timeline**: MVP in 2-4 weeks, ML-powered in 2-3 months, (9) **Infrastructure**: search index, embedding service, re-ranking model serving."
     }
    ],
    "kind": ""
@@ -150,7 +150,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Define \"better\": more clicks? more purchases? more diversity? higher retention?, (2) current state: what metrics does the current system achieve?, (3) user research: what do users complain about? (irrelevant, repetitive, not personalized?), (4) hypothesis: \"adding collaborative filtering will increase CTR by 15%,\" (5) success metric: pick ONE primary metric (e.g., purchase conversion from recommendations), (6) guardrail metrics: engagement, diversity, revenue per user shouldn't decrease, (7) scope: specific recommendation surface (homepage, PDP, email), (8) timeline and milestones: weeks 1-2 data prep, weeks 3-4 model, week 5 A/B test."
+     "text": "**Answer:** (1) Define \"better\": more clicks? more purchases? more diversity? higher retention?, (2) current state: what metrics does the current system achieve?, (3) user research: what do users complain about? (irrelevant, repetitive, not personalised?), (4) hypothesis: \"adding collaborative filtering will increase CTR by 15%,\" (5) success metric: pick ONE primary metric (e.g., purchase conversion from recommendations), (6) guardrail metrics: engagement, diversity, revenue per user shouldn't decrease, (7) scope: specific recommendation surface (homepage, PDP, email), (8) timeline and milestones: weeks 1-2 data prep, weeks 3-4 model, week 5 A/B test."
     },
     {
      "t": "p",
@@ -166,7 +166,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Extract functions into .py modules: data loading, preprocessing, modeling, (2) use notebooks only for exploration and visualization, (3) structure: `src/` for code, `notebooks/` for exploration, `configs/` for parameters, (4) configuration: move hardcoded values to config files, (5) add docstrings and type hints to extracted functions, (6) testing: unit tests for critical transformations, (7) pipeline: convert to script-based pipeline (MLflow, Prefect), (8) version control: .py files diff better than .ipynb in Git, (9) template: cookie-cutter project structure for future projects."
+     "text": "**Answer:** (1) Extract functions into .py modules: data loading, preprocessing, modelling, (2) use notebooks only for exploration and visualisation, (3) structure: `src/` for code, `notebooks/` for exploration, `configs/` for parameters, (4) configuration: move hardcoded values to config files, (5) add docstrings and type hints to extracted functions, (6) testing: unit tests for critical transformations, (7) pipeline: convert to script-based pipeline (MLflow, Prefect), (8) version control: .py files diff better than .ipynb in Git, (9) template: cookie-cutter project structure for future projects."
     }
    ],
    "kind": ""
@@ -174,11 +174,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "87",
-   "q": "You need to run the same analysis on multiple datasets with different schemas. How do you parameterize your code?",
+   "q": "You need to run the same analysis on multiple datasets with different schemas. How do you parameterise your code?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Configuration files: YAML/JSON specifying column mappings, (2) abstract data adapter pattern: standardized interface, dataset-specific implementations, (3) CLI with argparse: `python analyze.py --dataset=retail --target=revenue`, (4) dataclass for config:"
+     "text": "**Answer:** (1) Configuration files: YAML/JSON specifying column mappings, (2) abstract data adapter pattern: standardised interface, dataset-specific implementations, (3) CLI with argparse: `python analyze.py --dataset=retail --target=revenue`, (4) dataclass for config:"
     },
     {
      "t": "code",
@@ -215,7 +215,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Multi-task learning: shared model with product-specific output heads, (2) transfer learning: pre-train on largest dataset, fine-tune on others, (3) meta-learning: MAML or Reptile — learn initialization that adapts quickly to new tasks, (4) global model with product identifier features, (5) hierarchical/mixed-effects model: shared effects + product-specific random effects, (6) ensemble: train per-product models + global model, combine predictions, (7) feature sharing: features useful for one product often useful for others."
+     "text": "**Answer:** (1) Multi-task learning: shared model with product-specific output heads, (2) transfer learning: pre-train on largest dataset, fine-tune on others, (3) meta-learning: MAML or Reptile — learn initialisation that adapts quickly to new tasks, (4) global model with product identifier features, (5) hierarchical/mixed-effects model: shared effects + product-specific random effects, (6) ensemble: train per-product models + global model, combine predictions, (7) feature sharing: features useful for one product often useful for others."
     }
    ],
    "kind": ""
@@ -227,7 +227,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Prototypical Networks: compute class prototypes from few examples, classify by nearest prototype, (2) MAML: learn initialization for fast adaptation via gradient descent, (3) Siamese/Matching Networks: learn similarity metric, (4) prompt-based learning with LLMs: provide few examples in prompt, (5) fine-tuning pre-trained models: with careful regularization (head-only, then progressive unfreezing), (6) data augmentation to expand 5 examples, (7) nearest-neighbor in embedding space: use pre-trained embeddings, kNN on examples."
+     "text": "**Answer:** (1) Prototypical Networks: compute class prototypes from few examples, classify by nearest prototype, (2) MAML: learn initialisation for fast adaptation via gradient descent, (3) Siamese/Matching Networks: learn similarity metric, (4) prompt-based learning with LLMs: provide few examples in prompt, (5) fine-tuning pre-trained models: with careful regularisation (head-only, then progressive unfreezing), (6) data augmentation to expand 5 examples, (7) nearest-neighbour in embedding space: use pre-trained embeddings, kNN on examples."
     },
     {
      "t": "p",
@@ -243,7 +243,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Data parallelism: split batches across multiple GPUs (PyTorch DDP), (2) mixed precision training: FP16 computation, 2x speedup, (3) gradient accumulation: simulate larger batch size without more memory, (4) learning rate scheduling: reduce time on learning rate warmup, (5) data loading optimization: num_workers, prefetching, memory-mapped data, (6) model architecture: smaller model (EfficientNet vs. ResNet-152), (7) progressive resizing: start with smaller inputs, increase during training, (8) cloud spot instances: 70% cheaper, with checkpointing for interruptions."
+     "text": "**Answer:** (1) Data parallelism: split batches across multiple GPUs (PyTorch DDP), (2) mixed precision training: FP16 computation, 2x speedup, (3) gradient accumulation: simulate larger batch size without more memory, (4) learning rate scheduling: reduce time on learning rate warmup, (5) data loading optimisation: num_workers, prefetching, memory-mapped data, (6) model architecture: smaller model (EfficientNet vs. ResNet-152), (7) progressive resizing: start with smaller inputs, increase during training, (8) cloud spot instances: 70% cheaper, with checkpointing for interruptions."
     }
    ],
    "kind": ""
@@ -255,7 +255,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Horizontal scaling: more model replicas behind load balancer, (2) batching: collect requests, batch inference (GPU utilization), (3) caching: cache frequent predictions, (4) model optimization: ONNX Runtime, TensorRT for faster inference, (5) async processing: queue requests, return results via webhook, (6) CDN/edge caching for static predictions, (7) tiered architecture: simple model for 90% requests, complex model for 10%, (8) auto-scaling: scale replicas based on request queue depth, (9) quantization: INT8 inference 2-4x faster."
+     "text": "**Answer:** (1) Horizontal scaling: more model replicas behind load balancer, (2) batching: collect requests, batch inference (GPU utilisation), (3) caching: cache frequent predictions, (4) model optimisation: ONNX Runtime, TensorRT for faster inference, (5) async processing: queue requests, return results via webhook, (6) CDN/edge caching for static predictions, (7) tiered architecture: simple model for 90% requests, complex model for 10%, (8) auto-scaling: scale replicas based on request queue depth, (9) quantisation: INT8 inference 2-4x faster."
     },
     {
      "t": "p",
@@ -295,7 +295,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Safety-critical: false negatives (missed pedestrian) can be fatal, (2) real-time: must process at 30+ FPS, (3) multi-modal: cameras, LiDAR, radar — sensor fusion, (4) edge cases: unusual objects, rare scenarios, adversarial weather, (5) long-tail distribution: most driving is routine, critical scenarios are rare, (6) domain shift: different cities, weather, lighting conditions, (7) labeling cost: 3D bounding box annotation is expensive, (8) evaluation: need millions of miles of testing, including simulation, (9) regulatory: validation standards, interpretability requirements, (10) distribution shift detection: know when the model is uncertain and yield to human."
+     "text": "**Answer:** (1) Safety-critical: false negatives (missed pedestrian) can be fatal, (2) real-time: must process at 30+ FPS, (3) multi-modal: cameras, LiDAR, radar — sensor fusion, (4) edge cases: unusual objects, rare scenarios, adversarial weather, (5) long-tail distribution: most driving is routine, critical scenarios are rare, (6) domain shift: different cities, weather, lighting conditions, (7) labelling cost: 3D bounding box annotation is expensive, (8) evaluation: need millions of miles of testing, including simulation, (9) regulatory: validation standards, interpretability requirements, (10) distribution shift detection: know when the model is uncertain and yield to human."
     },
     {
      "t": "p",
@@ -311,7 +311,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Multi-stage approach: (1) Remove zero-variance features, (2) remove highly correlated pairs (r > 0.95, keep one), (3) univariate: mutual information or chi-squared to rank features, drop bottom 50%, (4) model-based: L1 regularization (Lasso) sets irrelevant coefficients to zero, (5) permutation importance: shuffle each feature, measure accuracy drop, (6) recursive feature elimination (RFE): iteratively remove least important, (7) Boruta: random forest-based method comparing against shadow features, (8) final validation: compare model with all features vs. selected features — should be comparable or better."
+     "text": "**Answer:** Multi-stage approach: (1) Remove zero-variance features, (2) remove highly correlated pairs (r > 0.95, keep one), (3) univariate: mutual information or chi-squared to rank features, drop bottom 50%, (4) model-based: L1 regularisation (Lasso) sets irrelevant coefficients to zero, (5) permutation importance: shuffle each feature, measure accuracy drop, (6) recursive feature elimination (RFE): iteratively remove least important, (7) Boruta: random forest-based method comparing against shadow features, (8) final validation: compare model with all features vs. selected features — should be comparable or better."
     }
    ],
    "kind": ""
@@ -323,7 +323,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Yes, this signals instability: (1) features are marginally relevant — small data changes flip selection, (2) possible overfitting in feature selection, (3) solutions: (a) stability selection: run many times on bootstrap samples, keep features selected > 60% of the time, (b) regularization path: features consistently selected across λ values are robust, (c) domain knowledge: keep features that make theoretical sense regardless of statistical significance, (4) cross-validated feature selection: evaluate within CV loop to get unbiased performance."
+     "text": "**Answer:** Yes, this signals instability: (1) features are marginally relevant — small data changes flip selection, (2) possible overfitting in feature selection, (3) solutions: (a) stability selection: run many times on bootstrap samples, keep features selected > 60% of the time, (b) regularisation path: features consistently selected across λ values are robust, (c) domain knowledge: keep features that make theoretical sense regardless of statistical significance, (4) cross-validated feature selection: evaluate within CV loop to get unbiased performance."
     },
     {
      "t": "p",
@@ -335,11 +335,11 @@ EC.receiveLesson({
   {
    "t": "drill",
    "n": "98",
-   "q": "Your XGBoost model is overfitting (training AUC=0.99, validation AUC=0.82). How do you regularize?",
+   "q": "Your XGBoost model is overfitting (training AUC=0.99, validation AUC=0.82). How do you regularise?",
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** Reduce overfitting: (1) max_depth: decrease from 6 → 3-4, (2) min_child_weight: increase (more samples per leaf), (3) subsample: 0.7-0.8 (row subsampling), (4) colsample_bytree: 0.7-0.8 (column subsampling), (5) reg_alpha (L1) and reg_lambda (L2): increase regularization, (6) n_estimators: fewer trees with early stopping, (7) learning_rate: lower (0.01-0.05) with more trees, (8) gamma: minimum loss reduction for split — increase it, (9) check for: data leakage (too-good training AUC is suspicious)."
+     "text": "**Answer:** Reduce overfitting: (1) max_depth: decrease from 6 → 3-4, (2) min_child_weight: increase (more samples per leaf), (3) subsample: 0.7-0.8 (row subsampling), (4) colsample_bytree: 0.7-0.8 (column subsampling), (5) reg_alpha (L1) and reg_lambda (L2): increase regularisation, (6) n_estimators: fewer trees with early stopping, (7) learning_rate: lower (0.01-0.05) with more trees, (8) gamma: minimum loss reduction for split — increase it, (9) check for: data leakage (too-good training AUC is suspicious)."
     }
    ],
    "kind": ""
@@ -351,7 +351,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "p",
-     "text": "**Answer:** (1) Learning rate: try warm restarts (cosine annealing), reduce on plateau, (2) architecture: is network large enough? Add layers/neurons, (3) batch normalization: add if not present, (4) skip connections (residual): help gradient flow, (5) data augmentation: more variation in training data, (6) optimizer: switch (Adam → SGD with momentum, or vice versa), (7) weight initialization: try different schemes (He, Xavier), (8) gradient clipping if gradients are exploding, (9) check: is the loss actually at the minimum? (maybe it's a good model), (10) learning rate finder: sweep to find optimal range."
+     "text": "**Answer:** (1) Learning rate: try warm restarts (cosine annealing), reduce on plateau, (2) architecture: is network large enough? Add layers/neurons, (3) batch normalisation: add if not present, (4) skip connections (residual): help gradient flow, (5) data augmentation: more variation in training data, (6) optimiser: switch (Adam → SGD with momentum, or vice versa), (7) weight initialisation: try different schemes (He, Xavier), (8) gradient clipping if gradients are exploding, (9) check: is the loss actually at the minimum? (maybe it's a good model), (10) learning rate finder: sweep to find optimal range."
     }
    ],
    "kind": ""

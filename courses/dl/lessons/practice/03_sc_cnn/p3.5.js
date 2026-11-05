@@ -152,7 +152,7 @@ EC.receiveLesson({
      "t": "ul",
      "items": [
       "**Anchor-based (Faster R-CNN, SSD, YOLOv3):** Pre-define anchor boxes of various sizes/ratios. Model predicts offsets from anchors.",
-      "**Anchor-free (FCOS, CenterNet, YOLOv8):** Directly predict object center/corners. No anchor hyperparameters."
+      "**Anchor-free (FCOS, CenterNet, YOLOv8):** Directly predict object centre/corners. No anchor hyperparameters."
      ]
     },
     {
@@ -268,7 +268,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Applications:** Video stabilization, action recognition, autonomous driving, video interpolation."
+     "text": "**Applications:** Video stabilisation, action recognition, autonomous driving, video interpolation."
     },
     {
      "t": "p",
@@ -353,7 +353,7 @@ EC.receiveLesson({
     {
      "t": "ul",
      "items": [
-      "Color jitter, brightness, contrast, saturation"
+      "Colour jitter, brightness, contrast, saturation"
      ]
     },
     {
@@ -515,7 +515,7 @@ EC.receiveLesson({
     },
     {
      "t": "p",
-     "text": "**Explanation:** Optimization-based (original Gatys): slow. Feed-forward networks (Johnson): real-time. AdaIN: arbitrary style transfer with single forward pass."
+     "text": "**Explanation:** Optimisation-based (original Gatys): slow. Feed-forward networks (Johnson): real-time. AdaIN: arbitrary style transfer with single forward pass."
     }
    ],
    "kind": ""
@@ -725,7 +725,7 @@ EC.receiveLesson({
      "items": [
       "**Semantic:** Cross-entropy loss per pixel (standard classification)",
       "— Weighted CE for class imbalance",
-      "— Dice loss for overlap optimization",
+      "— Dice loss for overlap optimisation",
       "— Focal loss for hard pixels",
       "**Instance:** Mask prediction + classification + box regression",
       "— Mask R-CNN: binary mask loss per instance",

@@ -169,7 +169,7 @@ COMMIT;                                                COMMIT;
       caption: "The executed output was `A saw 2 B saw 2 on call now: 0`. Write skew is the reason the phrase 'I checked before I wrote' is not a defence; the check and the write must be one indivisible unit, by lock, by single-row arithmetic, or by SERIALIZABLE."
     },
 
-    { t: "ladder",
+    { t: "ladder", lang: "sql",
       title: "Reserving the last seat",
       rungs: [
         { level: "bad", label: "Check then insert", code: `SELECT COUNT(*) FROM bookings WHERE event_id = 7;   -- 99 of 100
