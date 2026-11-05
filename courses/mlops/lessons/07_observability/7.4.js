@@ -184,32 +184,35 @@ EC.receiveLesson({
       {
         stem: "Your alert fires when the error rate exceeds 1%. Your SLO is 99.9% over 30 days. What does the alert miss?",
         options: [
-          "Nothing — 1% is ten times the budgeted rate, so it is appropriately sensitive",
-          "A sustained 0.2% error rate: it never fires, and it exhausts the entire month's budget in 360 hours with every dashboard green",
-          "Short spikes, because the evaluation window is too long"
+          "Nothing: 1% is ten times the budgeted rate, so it is suitably sensitive",
+          "A sustained 0.2%: it never fires, yet it burns the budget in 360 hours",
+          "Short spikes, because the rule's evaluation window is too long to see them",
+          "Errors in the first hour, because a 30-day SLO is evaluated only monthly"
         ],
         answer: 1,
-        why: "0.2% is a fifth of the threshold and twice the budgeted rate — a 2x burn. The static rule also makes the opposite mistake: 2% and 35% both trip it and page identically, though one leaves 36 hours of margin and the other 2.1."
+        why: "0.2% is a fifth of the threshold and twice the budgeted rate — a 2x burn. The static rule also makes the opposite mistake: 2% and 35% both trip it and page identically, though one leaves 36 hours of margin and the other 2.1. The SLO's window sets the budget and does not delay the alert, which evaluates continuously."
       },
       {
         stem: "Why pair a 6-hour burn-rate alert with a shorter window?",
         options: [
-          "To reduce the query cost of evaluating a long window",
-          "So the alert clears after recovery — the 6-hour window still contains the incident for up to six hours, and requiring a short window to also be over threshold lets it resolve",
-          "Because burn rate is undefined over windows longer than an hour"
+          "To reduce the query cost of evaluating such a long window on every cycle",
+          "So that it clears after recovery: the short window forgets the incident first",
+          "Because burn rate is undefined over any window longer than about an hour",
+          "To catch brief spikes that a 6-hour window would otherwise average away entirely"
         ],
         answer: 1,
-        why: "An alert that stays red after the problem is fixed teaches responders to ignore it, which costs more than the alert was worth. The short window is typically a twelfth of the long one, so it recovers quickly while the long window still remembers."
+        why: "An alert that stays red after the problem is fixed teaches responders to ignore it, which costs more than the alert was worth. The short window is typically a twelfth of the long one, so it recovers quickly while the long window still remembers. The alert needs both windows over threshold, so the short one cannot fire on a spike by itself."
       },
       {
         stem: "Which signal should page for a model service, besides latency and errors?",
         options: [
-          "Input feature drift, since it is computable without labels",
-          "The prediction distribution — a 5-point move is detectable in under 2 minutes with no labels, and it would have caught a unit change that took the approval rate from 0.447 to 0.036",
-          "Model accuracy, evaluated continuously on recent traffic"
+          "Input feature drift, since it can be computed without any labels at all",
+          "The prediction distribution: a 5-point move shows in under 2 minutes",
+          "Model accuracy, evaluated continuously on the most recent live traffic",
+          "GPU utilisation, since a model in trouble stops using its accelerator"
         ],
         answer: 1,
-        why: "Input drift fired for eleven months in lesson 1.1 while accuracy improved, so it is a ticket. Accuracy is 45 days behind and gates retraining. The prediction distribution is the fastest harm-correlated signal available — while being blind to concept drift, which the runbook must say."
+        why: "Input drift fired for eleven months in lesson 1.1 while accuracy improved, so it is a ticket. Accuracy is 45 days behind and gates retraining. The prediction distribution is the fastest harm-correlated signal available — while being blind to concept drift, which the runbook must say. GPU utilisation describes the machine, and a wrong model uses it at the same rate as a right one."
       }
     ]
   },

@@ -210,31 +210,34 @@ EC.receiveLesson({
         stem: "A Dockerfile has `COPY . .` followed by `RUN pip install -r requirements.txt`. What happens when you change one line of source?",
         options: [
           "Only the COPY layer rebuilds, since pip has nothing to do with your source",
-          "The COPY layer's key changes, which invalidates every layer above it, so pip re-downloads and rebuilds all dependencies — measured here as 186.3 MB against 0.03 MB for the correct order",
-          "Nothing rebuilds, because pip detects the packages are already installed"
+          "COPY's key changes, which invalidates every later layer, so pip runs again",
+          "Nothing rebuilds, because pip detects the packages are already installed",
+          "The whole image rebuilds, including the base layer pulled at the very start"
         ],
         answer: 1,
-        why: "A layer's cache key includes its parent's digest, so invalidation always propagates upward. The dependency install has no relationship to your source code and is redone anyway — a 7,346x difference in work per edit, fixed by moving one line."
+        why: "A layer's cache key includes its parent's digest, so invalidation always propagates upward. The dependency install has no relationship to your source code and is redone anyway — a 7,346x difference in work per edit, fixed by moving one line. Layers below the changed one keep their cache keys, so the base image is untouched."
       },
       {
         stem: "Your image is 200 MB but builds are slow even when nothing has changed. What should you measure?",
         options: [
-          "The image's layer count, since more layers means slower pulls",
-          "The build context — a realistic working tree measured 414.2 MB here, against 0.188 MB with a .dockerignore, and the context is sent before any instruction runs",
-          "The base image's pull time from the registry"
+          "The image's layer count, since more layers means more work for every pull",
+          "The build context, which is sent to the builder before any instruction runs",
+          "The base image's pull time from the registry at the start of each build",
+          "The compression level applied when the finished layers are pushed to the registry"
         ],
         answer: 1,
-        why: "The context and the image are different sizes and are reduced by different means: .dockerignore shrinks the context, multi-stage and a slim base shrink the image. The context cost is paid on every build and is nearly invisible in the log."
+        why: "The context and the image are different sizes and are reduced by different means: .dockerignore shrinks the context, multi-stage and a slim base shrink the image. The context cost is paid on every build and is nearly invisible in the log. Pushing happens after the build, so it cannot slow a build in which nothing changed. The context here was 414.2 MB before a .dockerignore and 0.188 MB after it."
       },
       {
         stem: "Why does `.venv` in the build context cause more than just a size problem?",
         options: [
-          "It makes the image larger by 210 MB",
-          "A broad `COPY . .` bakes it in and it can shadow the dependencies installed in the image — an environment built for a different platform taking precedence",
-          "pip refuses to install when a virtual environment is present"
+          "It makes the image larger by 210 MB and does nothing worse than that",
+          "`COPY . .` bakes it in, and it can shadow the packages the image installed",
+          "pip refuses to install anything while a virtual environment is present",
+          "Docker follows its symlinks and copies the host's Python into the top layer"
         ],
         answer: 1,
-        why: "It was the largest single context contributor at 210 MB, but the worse failure is a copied-in environment built for the developer's platform shadowing the one the image installed. Excluding it fixes both, and an allow-list .dockerignore prevents the whole class."
+        why: "It was the largest single context contributor at 210 MB, but the worse failure is a copied-in environment built for the developer's platform shadowing the one the image installed. Excluding it fixes both, and an allow-list .dockerignore prevents the whole class. COPY keeps symlinks as symlinks, so the host's Python stays on the host."
       }
     ]
   },

@@ -24,13 +24,13 @@ EC.receiveLesson({
       rows: [
         ["python:3.11", "~1 GB", "Full Debian with a build toolchain. Convenient, and most of it is never used at run time."],
         ["python:3.11-slim", "~150 MB", "The usual right answer. Debian without the toolchain; manylinux wheels install fine."],
-        ["python:3.11-alpine", "~50 MB", "musl libc, so manylinux wheels do not apply — numpy and scipy compile from source, slowly, or fail."],
+        ["python:3.11-alpine", "~50 MB", "musl libc, so manylinux wheels do not apply — numpy and scipy have musllinux wheels, scikit-learn has none and compiles from source."],
         ["distroless / scratch", "~20 MB + deps", "No shell, no package manager. Smallest and hardest to debug; a multi-stage target, not a build base."]
       ] },
 
     { t: "callout", kind: "trap", title: "Alpine is usually the wrong choice for ML, and for a specific reason",
       body: [
-        { t: "p", text: "Alpine uses musl rather than glibc, and the Python wheel ecosystem's binary compatibility tag — `manylinux` — is glibc-based. So `pip install scipy` on alpine does not find a compatible wheel and attempts to build from source, which needs a Fortran compiler, BLAS headers and considerable patience, and often fails." },
+        { t: "p", text: "Alpine uses musl rather than glibc, and the Python wheel ecosystem's main binary compatibility tag — `manylinux` — is glibc-based. musl needs its own `musllinux` wheels, and coverage is package by package: numpy and scipy publish them, scikit-learn does not. So `pip install scikit-learn` on alpine finds no compatible wheel and builds from source, which needs a C++ compiler, OpenMP and considerable patience. Check every dependency's wheels on PyPI before choosing a musl base." },
         { t: "p", text: "The base saves perhaps 100 MB against `slim` while adding a toolchain to the build and a long compile. Lesson 4.2 measured scipy alone at **112.7 MB** installed; building it rather than downloading a wheel is not a trade worth making to save less than that." }
       ] },
 
@@ -170,7 +170,7 @@ ENTRYPOINT python -m uvicorn src.app:app` },
 
   takeaways: [
     "**`python:3.11-slim` is the usual right base.** Full python is ~1 GB of mostly-unused toolchain; distroless is a multi-stage target, not a build base.",
-    "**Alpine is usually wrong for ML**: musl rather than glibc means manylinux wheels do not apply, so numpy and scipy compile from source — to save less than scipy's own 112.7 MB.",
+    "**Alpine is usually wrong for ML**: musl rather than glibc means manylinux wheels do not apply, so anything without a musllinux wheel, scikit-learn included, compiles from source — to save less than scipy's own 112.7 MB.",
     "**Multi-stage exists to discard the compiler.** `build-essential` is ~200 MB in the build stage and reaches the runtime image not at all.",
     "**Install into a virtualenv at `/opt/venv`** so the whole dependency tree is one directory `COPY --from=build` can move as a unit.",
     "**Set `OMP_NUM_THREADS` explicitly** to the container's CPU limit, because lesson 4.1 showed cgroup limits are not virtualised and BLAS sizes itself from the node.",
@@ -190,32 +190,35 @@ ENTRYPOINT python -m uvicorn src.app:app` },
       {
         stem: "Your service drops in-flight requests on every deployment. The Dockerfile ends `ENTRYPOINT python -m uvicorn src.app:app`. What is wrong?",
         options: [
-          "The grace period is too short and should be increased",
-          "Shell form makes /bin/sh pid 1, and sh does not forward SIGTERM — so the server never learns it is shutting down and is SIGKILLed when the grace period elapses",
-          "uvicorn does not support graceful shutdown and needs gunicorn"
+          "The grace period is too short and needs to be increased for this service",
+          "Shell form makes /bin/sh pid 1, and sh never forwards SIGTERM to it",
+          "uvicorn has no graceful shutdown of its own, so it needs gunicorn in front",
+          "The readiness probe keeps passing, so the pod never leaves rotation at all"
         ],
         answer: 1,
-        why: "In shell form the ENTRYPOINT becomes `/bin/sh -c \"...\"`, so the signal goes to the shell rather than the server. The exec form — a JSON array — makes uvicorn pid 1, and it handles SIGTERM properly. This is also why a rolling update cannot be zero-downtime without it."
+        why: "In shell form the ENTRYPOINT becomes `/bin/sh -c \"...\"`, so the signal goes to the shell rather than the server. The exec form — a JSON array — makes uvicorn pid 1, and it handles SIGTERM properly. This is also why a rolling update cannot be zero-downtime without it. A terminating pod leaves the Service's endpoints whatever its probe says."
       },
       {
         stem: "Why is `python:3.11-alpine` usually a poor base for a scikit-learn service?",
         options: [
           "Alpine images lack a Python interpreter suitable for scientific work",
-          "Alpine uses musl rather than glibc, so glibc-based manylinux wheels do not apply and numpy and scipy build from source — to save less than scipy's own installed size",
-          "Alpine does not support multi-stage builds"
+          "Alpine uses musl, and scikit-learn has no wheel for it, so it compiles",
+          "Alpine does not support the multi-stage builds that this image relies on",
+          "Alpine's package manager cannot install Python at the version you pinned"
         ],
         answer: 1,
-        why: "The saving is around 100 MB against slim, while scipy alone was measured at 112.7 MB installed. Paying a from-source Fortran build, a toolchain in the image, and frequent failures to save less than one dependency's footprint is a poor trade."
+        why: "The saving is around 100 MB against slim, while scipy alone was measured at 112.7 MB installed. Paying a from-source build and a toolchain in the image to save less than one dependency's footprint is a poor trade. The official image already ships the pinned interpreter, so apk is not involved."
       },
       {
         stem: "You pull the model artifact from object storage at container startup instead of baking it in. What have you given up?",
         options: [
-          "Nothing — this is strictly better, since models can change without a rebuild",
-          "The image digest no longer identifies the behaviour, startup now depends on the object store on every pod start, and the version must be emitted on each response to remain answerable",
-          "The ability to roll back, since the previous model is no longer available"
+          "Nothing: this is strictly better, since models can change without a rebuild",
+          "The digest stops identifying behaviour, and startup needs the object store",
+          "The ability to roll back, since the previous model is no longer available",
+          "Layer caching, since every code change now re-downloads the model at build"
         ],
         answer: 1,
-        why: "It is a real trade rather than an upgrade: you gain the ability to change models by configuration — which makes rollback a config change rather than a redeploy — and you lose the single-value identification of code plus model, while adding a hard runtime dependency at every pod start."
+        why: "It is a real trade rather than an upgrade: you gain the ability to change models by configuration — which makes rollback a config change rather than a redeploy — and you lose the single-value identification of code plus model, while adding a hard runtime dependency at every pod start. The model is fetched at startup, not at build, so the layer cache is not involved."
       }
     ]
   },
@@ -245,9 +248,9 @@ ENTRYPOINT python -m uvicorn src.app:app` },
       {
         level: "mid",
         q: "Why is Alpine usually the wrong base image for ML?",
-        strong: "It uses musl rather than glibc, so manylinux wheels do not apply and numpy and scipy compile from source.",
+        strong: "It uses musl rather than glibc, so manylinux wheels do not apply and anything without a musllinux wheel, such as scikit-learn, compiles from source.",
         answer: [
-          { t: "p", text: "The appeal is a small base, but the saving is smaller than scipy's own 112.7 MB, and the cost is that prebuilt manylinux wheels stop applying. numpy and scipy then compile from source." },
+          { t: "p", text: "The appeal is a small base, but the saving is smaller than scipy's own 112.7 MB, and the cost is that prebuilt manylinux wheels stop applying. numpy and scipy publish musllinux wheels, but scikit-learn does not, so it compiles from source." },
           { t: "p", text: "The usual right base is `python:3.11-slim`. Full python is about 1 GB of mostly unused toolchain, and distroless is a multi-stage target rather than a build base. If compilers are needed, a multi-stage build keeps `build-essential` out of the runtime image altogether." }
         ]
       }

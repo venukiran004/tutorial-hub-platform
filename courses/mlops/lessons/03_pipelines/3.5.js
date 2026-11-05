@@ -161,32 +161,35 @@ def pipeline(as_of: str):
       {
         stem: "A managed pipeline caches steps on input identity. Your ingest step reads 'the latest partition' of a warehouse table and takes no parameters. What happens on a re-run after new data lands?",
         options: [
-          "The step re-runs, because the underlying table changed",
-          "The step is a cache hit and the pipeline silently reuses the old data — the table version is an input that is not in the cache key",
-          "The cache is invalidated automatically on any upstream table change"
+          "The step re-runs, because the underlying table has changed since the last run",
+          "The step is a cache hit: the table version is not part of the cache key",
+          "The cache is invalidated automatically on any upstream table change",
+          "The run fails, because a step with no parameters cannot be cached at all"
         ],
         answer: 1,
-        why: "The cache key covers declared inputs, parameters and the image. Reading 'latest' makes the real input invisible to the runtime, so you get yesterday's answer with no error — lesson 1.3's argument for identifying data by content, arriving as a caching bug."
+        why: "The cache key covers declared inputs, parameters and the image. Reading 'latest' makes the real input invisible to the runtime, so you get yesterday's answer with no error — lesson 1.3's argument for identifying data by content, arriving as a caching bug. A step with no parameters is cached like any other, on its image and declared inputs."
       },
       {
         stem: "When is making every pipeline step a separate container a poor trade?",
         options: [
-          "Whenever you are not on Kubernetes",
-          "When the steps are short relative to the startup cost — pod scheduling, image pull, interpreter and imports are paid per step per cache miss, against a floor of seconds",
-          "When steps need different library versions"
+          "Whenever the pipeline runs on anything other than a Kubernetes cluster",
+          "When steps are short relative to the startup cost paid on each cache miss",
+          "When the steps need different library versions from one another to run",
+          "When steps share data, because containers cannot exchange any files at all"
         ],
         answer: 1,
-        why: "The overhead is fixed per step, so it is the ratio to step runtime that matters: twenty-minute steps absorb it invisibly, four-second steps are mostly overhead. The third option is the strongest reason *for* containers per step, not against."
+        why: "The overhead is fixed per step, so it is the ratio to step runtime that matters: twenty-minute steps absorb it invisibly, four-second steps are mostly overhead. The third option is the strongest reason *for* containers per step, not against. Containers exchange data through shared storage, which is what typed artifacts pass between steps."
       },
       {
         stem: "What does a typed artifact (`Input[Dataset]`, `Output[Model]`) give you over passing a file path?",
         options: [
-          "Faster I/O, because the runtime optimises artifact storage",
-          "Wiring errors caught at compile time plus runtime-owned paths, so a step cannot be connected to the wrong kind of output or write to the wrong place",
-          "Automatic schema validation of the data inside the artifact"
+          "Faster I/O, because the runtime optimises how each artifact is stored",
+          "Wiring errors caught at compile time, plus paths owned by the runtime",
+          "Automatic schema validation of the data held inside the artifact itself",
+          "Automatic retries of any step whose output artifact has failed to upload"
         ],
         answer: 1,
-        why: "The third option is a common misreading: the type describes the artifact's role, not its contents, so data validation remains your job — lesson 1.5's checks still have to run. The real gains are compile-time wiring safety and not owning the paths."
+        why: "The third option is a common misreading: the type describes the artifact's role, not its contents, so data validation remains your job — lesson 1.5's checks still have to run. The real gains are compile-time wiring safety and not owning the paths. Retry policy is configured per step and has nothing to do with the artifact's type."
       }
     ]
   },

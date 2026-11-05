@@ -189,32 +189,35 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
       {
         stem: "A dashboard shows `avg by (service) (histogram_quantile(0.99, rate(bucket[5m])))` across ten replicas. What is wrong?",
         options: [
-          "The window is too short for ten replicas",
-          "The quantile is computed per replica and then averaged — measured at 46.4% understated against the pooled truth, because a percentile is a position and positions do not average",
-          "`avg` should be `max` to capture the worst replica"
+          "The five-minute window is too short to cover all ten of the replicas",
+          "Per-replica quantiles are averaged, which understated p99 by 46.4%",
+          "`avg` should be `max`, so that the panel shows the worst of the replicas",
+          "`rate` must wrap `histogram_quantile` rather than sit inside it as it does"
         ],
         answer: 1,
-        why: "The sum must be inside: `histogram_quantile(0.99, sum(rate(bucket[5m])) by (le))`, which reconstructs the pooled distribution from the cumulative buckets and was accurate to +2.7%. `max` is also wrong — it reports one replica's tail, not what users experienced."
+        why: "The sum must be inside: `histogram_quantile(0.99, sum(rate(bucket[5m])) by (le))`, which reconstructs the pooled distribution from the cumulative buckets and was accurate to +2.7%. `max` is also wrong — it reports one replica's tail, not what users experienced. `rate` belongs inside, on the raw counters, and the defect is where the `sum` sits."
       },
       {
         stem: "Your p99 latency panel displays `+Inf`. What does that tell you?",
         options: [
-          "No requests were observed in the window",
-          "The p99 lies above your largest finite bucket boundary, so there is no upper bound to interpolate toward — the observations are in `le=\"+Inf\"` with no resolution",
-          "The metric was registered as a Summary rather than a Histogram"
+          "No requests at all were observed during the window of this panel",
+          "The p99 lies above your largest finite bucket, so it has no upper bound",
+          "The metric was registered as a Summary rather than as a Histogram",
+          "A bucket counter has reset, because a replica restarted during the window"
         ],
         answer: 1,
-        why: "Measured: a layout whose last finite bucket was 3 ms returned +Inf for both p95 and p99. The data exists but the bucket layout cannot resolve it, which is why the largest finite boundary is the largest latency you can ever report."
+        why: "Measured: a layout whose last finite bucket was 3 ms returned +Inf for both p95 and p99. The data exists but the bucket layout cannot resolve it, which is why the largest finite boundary is the largest latency you can ever report. `rate` handles counter resets, so a restart does not produce +Inf."
       },
       {
         stem: "Your service's measured p50 is 2 ms. Your histogram's first bucket boundary is 5 ms. What happens to the reported p50?",
         options: [
           "It is reported accurately, since the median falls within the first bucket",
-          "It is substantially overstated — measured at +31.6% — because every observation under 5 ms is in one undifferentiated bucket and interpolation has nothing to work with",
-          "It is reported as 0, since no bucket boundary is below it"
+          "It is overstated, by 31.6% here: everything under 5 ms is one bucket",
+          "It is reported as 0, since there is no bucket boundary below it at all",
+          "It is reported as 5 ms exactly, the upper edge of that first bucket"
         ],
         answer: 1,
-        why: "This is what happens when default buckets intended for hundred-millisecond web requests are applied to a millisecond-scale service. Boundaries have to come from a measurement of the actual distribution, spaced geometrically, with one on the SLO threshold."
+        why: "This is what happens when default buckets intended for hundred-millisecond web requests are applied to a millisecond-scale service. Boundaries have to come from a measurement of the actual distribution, spaced geometrically, with one on the SLO threshold. Interpolation gives a point inside the bucket rather than its edge, which is why the error was 31.6% and not 150%."
       }
     ]
   },

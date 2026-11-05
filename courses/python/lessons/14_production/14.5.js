@@ -277,7 +277,7 @@ CMD ["uvicorn", "app.main:app"]
         ["`gcr.io/distroless/python3`", "~50 MB", "No shell, no package manager. **Secure and hard to debug**"],
         ["`ubuntu:24.04` + python", "~180 MB", "When you need specific system packages"]
       ],
-      caption: "**Alpine is usually the wrong optimisation for Python.** manylinux wheels target glibc, so on musl pip builds from source — turning a 30-second install into fifteen minutes, and the resulting image is often *larger* once compilers are involved."
+      caption: "**Alpine is usually the wrong optimisation for Python.** manylinux wheels target glibc, so on musl pip builds any package without a musllinux wheel from source — turning a 30-second install into fifteen minutes, and the resulting image is often *larger* once compilers are involved."
     },
 
     { t: "callout", kind: "insight", title: "What running as root actually risks", body: [
@@ -680,7 +680,7 @@ CMD ["gunicorn", "app.wsgi:application", \\
   takeaways: [
     "**Order instructions least-frequently-changed first.** Copy the lockfile and install, *then* copy the source — a code change should not reinstall dependencies.",
     "**Use a multi-stage build** so compilers and build tools never reach the runtime image; they are most of the size and most of the CVEs.",
-    "**`python:3.12-slim` is the right default.** Alpine uses musl, so manylinux wheels do not apply and pip compiles from source.",
+    "**`python:3.12-slim` is the right default.** Alpine uses musl, so manylinux wheels do not apply and pip compiles anything without a musllinux wheel.",
     "**Write a `.dockerignore`.** Without one, `.git`, `.venv` and any local `.env` are in the build context and can end up in a layer.",
     "**A secret in a layer is permanent.** Layers are immutable and additive, so deleting the file later adds a layer without removing the earlier one.",
     "**Supply secrets at runtime.** For build-time needs, use BuildKit secret mounts, which never write to a layer.",
@@ -721,7 +721,7 @@ CMD ["gunicorn", "app.wsgi:application", \\
       {
         stem: "Why is `python:3.12-alpine` often a poor choice for a Python service?",
         options: [
-          "musl means no manylinux wheels, so pip compiles from source and the image grows",
+          "musl means no manylinux wheels, so pip compiles many packages and the image grows",
           "Alpine lacks a Python interpreter",
           "Alpine images cannot run processes as a non-root user, which most clusters require",
           "Alpine ships far more known CVEs than Debian slim, so security scanners block the image"

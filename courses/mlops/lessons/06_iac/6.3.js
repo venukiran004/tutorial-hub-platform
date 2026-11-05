@@ -221,32 +221,35 @@ jobs:
       {
         stem: "You reorder a pipeline to run its cheapest stages first. What changes?",
         options: [
-          "More runs pass, because expensive stages are reached less often",
-          "Only the expected cost — measured at 8.55 against 9.88 minutes, 16% — while the pass rate is identical at 70.3% in both orderings",
-          "Nothing measurable; stage ordering is a style preference"
+          "More runs pass, because the expensive stages are reached less often",
+          "Only the expected cost: 8.55 against 9.88 minutes, at the same pass rate",
+          "Nothing measurable, because the order of stages is a matter of style only",
+          "The pass rate falls, because the cheap stages now reject more runs earlier"
         ],
         answer: 1,
-        why: "The product of the pass probabilities does not depend on their order, so ordering cannot change whether a run fails. The argument is economic — runner cost and, just as importantly, feedback latency: thirty seconds to a lint failure instead of nine minutes."
+        why: "The product of the pass probabilities does not depend on their order, so ordering cannot change whether a run fails. The argument is economic — runner cost and, just as importantly, feedback latency: thirty seconds to a lint failure instead of nine minutes. Rejecting a run earlier does not reject more of them: the rate is 70.3% in both orderings."
       },
       {
         stem: "A workflow caches pip with `key: pip-cache`. What is the consequence?",
         options: [
           "The cache is too small to be useful and should include a path hash",
-          "The key never changes, so the cache always restores and CI silently tests whatever dependency set was current when it was first populated — a requirements bump has no effect",
-          "The cache is invalidated on every run because the key is not unique"
+          "The key never changes, so CI keeps testing the first dependency set cached",
+          "The cache is invalidated on every run, because the key is not unique enough",
+          "Two branches writing to one key will corrupt each other's cached packages"
         ],
         answer: 1,
-        why: "This is a correctness problem wearing an optimisation's clothes: the pipeline appears green while testing a frozen environment, and the divergence surfaces only when the deployed image behaves differently. The key must hash the requirements files and include the OS and Python version, since wheels are platform-specific."
+        why: "This is a correctness problem wearing an optimisation's clothes: the pipeline appears green while testing a frozen environment, and the divergence surfaces only when the deployed image behaves differently. The key must hash the requirements files and include the OS and Python version, since wheels are platform-specific. An Actions cache entry cannot be overwritten, which is why this key freezes rather than corrupts."
       },
       {
         stem: "Your OIDC trust policy allows `repo:acme/loan-model:*` to assume the production role. What is wrong?",
         options: [
-          "Nothing — the repository is correctly pinned",
-          "The `sub` claim includes the ref, so the wildcard is satisfied by a workflow on any branch, including a pull request branch — which can therefore assume the production role",
-          "Wildcards are not supported in OIDC trust conditions"
+          "Nothing: the repository is pinned by name, and that is all a policy needs",
+          "`sub` includes the ref, so a workflow on any branch can assume the role",
+          "Wildcards are not supported in OIDC trust conditions, so it never matches",
+          "The `aud` condition must name the repository rather than the STS service"
         ],
         answer: 1,
-        why: "Pin the ref with StringEquals and keep separate roles for PR and default-branch workflows. The `if: github.ref == 'refs/heads/main'` guard in the workflow is defence in depth only, because the workflow file itself is editable in a pull request."
+        why: "Pin the ref with StringEquals and keep separate roles for PR and default-branch workflows. The `if: github.ref == 'refs/heads/main'` guard in the workflow is defence in depth only, because the workflow file itself is editable in a pull request. `aud` stays `sts.amazonaws.com`, the audience the AWS credentials action requests."
       }
     ]
   },

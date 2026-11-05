@@ -171,32 +171,35 @@ EC.receiveLesson({
       {
         stem: "Your CI runs `kubectl apply -f deploy.yaml`, gets exit code 0, and reports the deployment successful. What is wrong?",
         options: [
-          "Nothing — a zero exit code from apply means the pods are running",
-          "`apply` only means the object was accepted and written to etcd; scheduling, image pull and container start all happen afterwards and can each fail. CI must wait on `kubectl rollout status`",
-          "`apply` should be `create` for a new deployment"
+          "Nothing: a zero exit code from `apply` means that the pods are now running",
+          "`apply` only means the object was accepted, so CI must await `rollout status`",
+          "`apply` should have been `create`, because this is a brand new Deployment",
+          "`apply` returns before validation, so CI must run a `--dry-run` straight after it"
         ],
         answer: 1,
-        why: "The asynchrony is the whole design: kubectl's job ends at the API server and six further actors react independently. This is the same distinction GitOps controllers draw between synced and healthy."
+        why: "The asynchrony is the whole design: kubectl's job ends at the API server and six further actors react independently. This is the same distinction GitOps controllers draw between synced and healthy. Validation and admission happen before `apply` returns, so a dry run would add nothing."
       },
       {
         stem: "You delete a pod that belongs to a Deployment and it reappears seconds later. Why?",
         options: [
-          "Deletion of managed pods is blocked by the API server",
-          "The ReplicaSet's desired replica count is unchanged, so the controller observed a gap between desired and actual and closed it",
-          "kubectl automatically recreates pods it detects as missing"
+          "Deletion of managed pods is blocked by the API server and never happened",
+          "The ReplicaSet still declares the same count, so it closes the gap",
+          "kubectl automatically recreates any pods that it detects as missing",
+          "The kubelet restarts the container, because `restartPolicy` is Always"
         ],
         answer: 1,
-        why: "The deletion genuinely succeeded. Nothing prevented it and nothing recreated that pod — a new one was created because the declared count still said three. This is the same mechanism that handles a node dying, which is why failure recovery needs no separate code."
+        why: "The deletion genuinely succeeded. Nothing prevented it and nothing recreated that pod — a new one was created because the declared count still said three. This is the same mechanism that handles a node dying, which is why failure recovery needs no separate code. `restartPolicy` restarts containers inside a live pod, and this pod was deleted."
       },
       {
         stem: "Why can't you store a 5 MB model file in a ConfigMap?",
         options: [
-          "ConfigMaps only accept text, not binary data",
-          "All state lives in etcd, which is a consistent key-value store with an object size limit around 1 MB — it is not a blob store",
-          "ConfigMaps are mounted read-only, so the model could not be loaded"
+          "ConfigMaps only accept text, never binary data such as a model",
+          "All state lives in etcd, which has an object size limit around 1 MB",
+          "ConfigMaps are mounted read-only, so the model could not be loaded",
+          "The kubelet refuses to mount any volume that holds a single large file"
         ],
         answer: 1,
-        why: "ConfigMaps do accept binary via binaryData, so the first option is wrong for the stated reason. The limit is etcd's, which also rules out embedding tables and large feature lists — and the rejection arrives at admission time with a message about size that is easy to misread."
+        why: "ConfigMaps do accept binary via binaryData, so the first option is wrong for the stated reason. The limit is etcd's, which also rules out embedding tables and large feature lists — and the rejection arrives at admission time with a message about size that is easy to misread. The rejection happens at the API server, long before a kubelet sees the pod."
       }
     ]
   },

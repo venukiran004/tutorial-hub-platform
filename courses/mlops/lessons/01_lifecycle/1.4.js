@@ -259,32 +259,35 @@ vector = store.get_online_features(
       {
         stem: "Your training features come from `WHERE event_ts >= CURRENT_DATE - INTERVAL '90 days'`. Labels are events from the past two years. What is wrong?",
         options: [
-          "Nothing, as long as the same query runs at serving time",
-          "The window is relative to the day the query runs, so for every historical row it covers a period after that row's decision — measured here as a 2.5-point drop between offline and deployed AUC",
-          "The window is too short to capture seasonal behaviour"
+          "Nothing, as long as the identical query also runs at serving time",
+          "The window follows the query's run date, so each old row sees its future",
+          "The window is too short to capture seasonal behaviour in the features",
+          "Two years of labels is too long, so older rows will outweigh recent behaviour"
         ],
         answer: 1,
-        why: "The first option is the tempting one: running the same query at serving time does make the two consistent for new rows, but it cannot retroactively fix the training set, which was built from post-decision data. The window has to be relative to each row's own timestamp."
+        why: "The first option is the tempting one: running the same query at serving time does make the two consistent for new rows, but it cannot retroactively fix the training set, which was built from post-decision data. The window has to be relative to each row's own timestamp. Two years of labels is ordinary history: the defect is in the feature window, and it cost 2.5 points between offline and deployed AUC."
       },
       {
         stem: "A five-fold cross-validated model scores 0.82 AUC offline and 0.71 in production, with no infrastructure problems. Which explanation does cross-validation fail to rule out?",
         options: [
-          "Overfitting to the training set",
-          "A point-in-time leak — every fold was built by the same pipeline, so all five contain the same future information and all five agree",
-          "Insufficient regularisation"
+          "Overfitting to the particular rows that each fold was fitted on",
+          "A point-in-time leak: all five folds hold the same future information",
+          "Too little regularisation for the amount of training data available to it",
+          "Random noise between the folds that the average of all five has hidden away"
         ],
         answer: 1,
-        why: "Cross-validation tests whether the fit generalises to unseen rows from the same distribution. If the pipeline put future information into every row, every fold inherits it and the procedure validates a wrongly-posed question. A temporal split, or recomputing a few rows as-of their timestamps, is what distinguishes this."
+        why: "Cross-validation tests whether the fit generalises to unseen rows from the same distribution. If the pipeline put future information into every row, every fold inherits it and the procedure validates a wrongly-posed question. A temporal split, or recomputing a few rows as-of their timestamps, is what distinguishes this. Variation between folds is small and averaging reduces it, so it cannot open an 11-point gap."
       },
       {
         stem: "What does adopting a feature store NOT give you?",
         options: [
-          "Point-in-time correct training sets",
-          "Freedom from skew between training and serving — it removes the transformation half while introducing a freshness half, because the online store is a copy that can lag",
-          "Low-latency online feature reads"
+          "Point-in-time correct training sets built from the stored feature history",
+          "Freedom from skew: it cures reimplementation, but its online copy can lag",
+          "Low-latency online feature reads served from a dedicated key-value store",
+          "One shared definition of each feature across the training and serving code"
         ],
         answer: 1,
-        why: "One definition read by two paths genuinely removes reimplementation skew, which is lesson 13.1's bug. But materialisation is a new moving part: if the job lags, serving reads stale values while training read fresh ones. A better trade, not a free one."
+        why: "One definition read by two paths genuinely removes reimplementation skew, which is lesson 13.1's bug. But materialisation is a new moving part: if the job lags, serving reads stale values while training read fresh ones. A better trade, not a free one. That shared definition is exactly what it does give you."
       }
     ]
   },

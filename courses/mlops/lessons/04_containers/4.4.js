@@ -188,32 +188,35 @@ volumes:
       {
         stem: "Your API container cannot reach its database at `localhost:5432`, though both are in the same Compose file. Why?",
         options: [
-          "The database has not published port 5432 to the host",
-          "Each container has its own network namespace, so `localhost` means that container — the database is reachable by its service name, `db:5432`, via the network's embedded DNS",
-          "Compose requires an explicit `links` entry between the two services"
+          "The database has not published port 5432 to the host machine yet",
+          "`localhost` is the container itself: use the service name, `db:5432`",
+          "Compose requires an explicit `links` entry between the two services",
+          "Postgres listens only on a Unix socket until TCP is explicitly enabled"
         ],
         answer: 1,
-        why: "Publishing is irrelevant here: containers on the same user-defined network reach each other on the container port with nothing published. The first option describes a different problem — reaching the database from the host — and `links` has been superseded by user-defined networks and their DNS."
+        why: "Publishing is irrelevant here: containers on the same user-defined network reach each other on the container port with nothing published. The first option describes a different problem — reaching the database from the host — and `links` has been superseded by user-defined networks and their DNS. The official Postgres image listens on TCP by default, so the socket is not the problem."
       },
       {
         stem: "A service with `depends_on: [db]` crashes on the first `docker compose up` and works on the second. What is happening?",
         options: [
-          "The image is not fully built on the first run",
-          "`depends_on` waits only for the db container to start, not for Postgres to accept connections — and on the first run the fresh volume makes initialisation slow enough to lose the race",
-          "The network is created after the containers, so DNS is not ready initially"
+          "The image is not fully built until the first run has finished using it",
+          "`depends_on` waits for the container, not for Postgres to be ready",
+          "The network is created after the containers, so DNS is not ready at first",
+          "The database crashed on its first run, and Compose restarted it for you"
         ],
         answer: 1,
-        why: "The works-on-the-second-try signature is the fingerprint: by then the volume is initialised and the database starts quickly enough. `condition: service_healthy` fixes the local case; connecting lazily with retry is the fix that also holds in production, where there is no depends_on."
+        why: "The works-on-the-second-try signature is the fingerprint: by then the volume is initialised and the database starts quickly enough. `condition: service_healthy` fixes the local case; connecting lazily with retry is the fix that also holds in production, where there is no depends_on. Nothing crashed or restarted on the database side: it was still initialising its fresh volume."
       },
       {
         stem: "Why does a bind mount often fail with 'Permission denied' in a container that runs as a non-root user?",
         options: [
-          "Bind mounts are always read-only unless explicitly marked writable",
-          "The host directory's uid/gid comes through unchanged, so a directory owned by host uid 1000 is not writable by the container's uid 10001",
-          "The daemon drops write capabilities for bind-mounted paths"
+          "Bind mounts are always read-only unless they are explicitly marked writable",
+          "Host ownership passes through, so uid 10001 cannot write uid 1000's files",
+          "The daemon drops the write capability for every path that is bind-mounted in",
+          "The image's USER instruction applies only to paths inside the image layers"
         ],
         answer: 1,
-        why: "A named volume avoids this because the daemon initialises its ownership from the image's content. The error message mentions nothing about uid mapping, which is why this is a disproportionately long debugging session the first time."
+        why: "A named volume avoids this because the daemon initialises its ownership from the image's content. The error message mentions nothing about uid mapping, which is why this is a disproportionately long debugging session the first time. USER sets the process's uid everywhere, which is exactly why the kernel denies it here."
       }
     ]
   },

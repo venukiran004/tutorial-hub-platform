@@ -206,32 +206,35 @@ def healthz():
       {
         stem: "Your endpoint's p50 is 1.9 ms and the model takes 0.58 ms of it. A team proposes quantising the model to halve inference time. What is the end-to-end gain?",
         options: [
-          "About 50%, since inference is the dominant cost",
-          "About 15% — the model is 30% of the request, so halving it removes 15% of the total",
-          "None, because quantisation does not affect latency"
+          "About 50%, since inference is the dominant cost of every request",
+          "About 15%: the model is 30% of the request, so halving it removes 15%",
+          "None at all, because quantisation does not affect how long a request takes",
+          "About 30%, since the time saved applies across the whole of the request"
         ],
         answer: 1,
-        why: "Thirty percent of the request halved is fifteen percent of the whole. The 1.356 ms of HTTP, validation and JSON is the larger term and is untouched by anything done to the model. Measure the split before choosing the optimisation."
+        why: "Thirty percent of the request halved is fifteen percent of the whole. The 1.356 ms of HTTP, validation and JSON is the larger term and is untouched by anything done to the model. Measure the split before choosing the optimisation. 30% is the model's share of the request, and halving that share saves half of it."
       },
       {
         stem: "Why does batching 100 rows per request give 59x the throughput of one row per request?",
         options: [
-          "The model is 59x faster on batches due to vectorisation",
-          "The per-request fixed cost — socket, ASGI, validation, JSON — is paid once per request rather than once per row, so it divides by 100; vectorisation adds to that",
-          "The network transfers 100 rows in the same time as one"
+          "The model is 59x faster on batches, purely because of vectorisation",
+          "The fixed per-request cost is divided by 100; vectorisation adds to that",
+          "The network transfers 100 rows in about the same time as a single row",
+          "The server's worker pool starts extra threads when a large payload arrives"
         ],
         answer: 1,
-        why: "Amortisation of fixed cost is the dominant term: 1.356 ms per request becomes 0.0136 ms per row. Vectorisation contributes too — the in-process figure reaches 406,190/s — but the step from 474 to 27,807 is mostly overhead being divided."
+        why: "Amortisation of fixed cost is the dominant term: 1.356 ms per request becomes 0.0136 ms per row. Vectorisation contributes too — the in-process figure reaches 406,190/s — but the step from 474 to 27,807 is mostly overhead being divided. Worker count is fixed at startup, so the payload's size adds no threads."
       },
       {
         stem: "A readiness probe returns {\"ok\": true} without touching the model. What goes wrong in Kubernetes?",
         options: [
-          "Nothing; the probe correctly reports that the process is alive",
-          "The pod reports ready before the model is loaded, so it receives traffic it cannot serve — and the 11.9x cold start lands on real users",
-          "The probe will time out during model loading and the pod will be restarted"
+          "Nothing: the probe correctly reports that the process is alive and well",
+          "The pod goes ready before the model loads, so traffic hits the cold start",
+          "The probe will time out during model loading and the pod will be restarted",
+          "The Service drops the pod from rotation each time the model is reloaded"
         ],
         answer: 1,
-        why: "Liveness asks whether the process should be killed; readiness asks whether it should receive traffic, and those are different questions. A probe that returns the model version can only answer once the model is loaded, which is what makes it a real gate."
+        why: "Liveness asks whether the process should be killed; readiness asks whether it should receive traffic, and those are different questions. A probe that returns the model version can only answer once the model is loaded, which is what makes it a real gate. A probe that never touches the model cannot notice a reload, so nothing removes the pod from rotation."
       }
     ]
   },

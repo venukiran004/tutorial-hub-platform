@@ -182,31 +182,34 @@ log.info("prediction served", extra={"correlation_id": cid,
         stem: "Your p99 latency alert fires. Why can metrics not tell you which requests were slow?",
         options: [
           "They can, by querying the histogram for observations above the threshold",
-          "Metrics are aggregated at write time and a request id would be an unbounded label — lesson 7.1's arithmetic put one such label at 144 million series, so the information is discarded by construction",
-          "They can, provided the scrape interval is short enough"
+          "Metrics aggregate at write time, and request ids would be an unbounded label",
+          "They can, provided the scrape interval is made short enough to catch each one",
+          "Prometheus deletes all per-request detail after its two-hour head block closes"
         ],
         answer: 1,
-        why: "A histogram bucket knows how many observations exceeded a boundary, never which ones. That is the cardinality division: metrics answer how much and since when, traces answer which request and where the time went, logs answer why."
+        why: "A histogram bucket knows how many observations exceeded a boundary, never which ones. That is the cardinality division: metrics answer how much and since when, traces answer which request and where the time went, logs answer why. The head block is about storage, and no per-request detail ever entered it."
       },
       {
         stem: "You sample 1% of traces head-based. An incident produces 400 slow requests. Roughly how many of their traces do you have?",
         options: [
-          "All 400, because slow requests are retained preferentially",
-          "About 4 — head-based sampling decides before the outcome is known, so it keeps a representative sample of ordinary requests rather than the interesting ones",
-          "None, because sampling excludes requests that exceed the latency budget"
+          "All 400, because slow requests are retained preferentially by the sampler",
+          "About 4: head sampling decides before the outcome of a request is known",
+          "None, because sampling excludes requests that exceed the latency budget",
+          "About 40, because each slow request passes through ten separately sampled spans"
         ],
         answer: 1,
-        why: "This is the argument for tail-based sampling: buffer the spans and decide once duration and outcome are known, keeping every error, everything over the SLO, every canary request, and 1% as a baseline for comparison."
+        why: "This is the argument for tail-based sampling: buffer the spans and decide once duration and outcome are known, keeping every error, everything over the SLO, every canary request, and 1% as a baseline for comparison. The decision is made once per trace, so the rate applies to requests and not to spans."
       },
       {
         stem: "Where should a prediction's feature values be recorded?",
         options: [
           "In the operational log at INFO, alongside the correlation id and score",
-          "In the prediction log — a governed dataset with its own access control and retention — while the operational log carries only identifiers and derived values",
-          "As metric labels, so distributions can be monitored directly"
+          "In the prediction log, a governed dataset with its own access control",
+          "As metric labels, so that their distributions can be monitored directly",
+          "As span attributes on the trace, so that each is linked to its request"
         ],
         answer: 1,
-        why: "Features are usually personal data, and an operational log store has broad read access and a different compliance posture from a warehouse. The third option is lesson 7.1's per-feature cardinality trap. The prediction log also has a longer lifetime, since labels arrive weeks later."
+        why: "Features are usually personal data, and an operational log store has broad read access and a different compliance posture from a warehouse. The third option is lesson 7.1's per-feature cardinality trap. The prediction log also has a longer lifetime, since labels arrive weeks later. Trace stores have the same broad read access as logs, and sampling would lose most of the rows."
       }
     ]
   },

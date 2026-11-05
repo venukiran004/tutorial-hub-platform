@@ -250,32 +250,35 @@ return {n: Task(n, make(n), needs[n], retries=2) for n in names}` },
       {
         stem: "Your data validation task fails. What should the status of the downstream training task be?",
         options: [
-          "FAILED, since the pipeline as a whole did not succeed",
-          "SKIPPED — it is not broken, it was never given a chance, and the distinction means one task to investigate instead of five",
-          "SUCCESS with a warning, so the run can complete"
+          "FAILED, since the pipeline as a whole did not succeed on this particular run",
+          "SKIPPED: it never ran, which leaves one task to investigate instead of five",
+          "SUCCESS with a warning, so that the run can still complete on schedule",
+          "QUEUED, so that it trains automatically once the data has been corrected"
         ],
         answer: 1,
-        why: "SKIPPED also carries the operational guarantee that matters: train never executed, so nothing was fitted on unvalidated data and no model with corrupt lineage exists to be promoted later. The third option is how corrupt data reaches a model."
+        why: "SKIPPED also carries the operational guarantee that matters: train never executed, so nothing was fitted on unvalidated data and no model with corrupt lineage exists to be promoted later. The third option is how corrupt data reaches a model. A queued task would start unattended later, and a re-run is a decision someone should make."
       },
       {
         stem: "A task writes its completion marker before performing its work rather than after. What goes wrong?",
         options: [
-          "Nothing, as long as the marker is removed on failure",
-          "A crash mid-task leaves the marker in place, so the task is believed complete for ever and is silently skipped on every re-run",
-          "The task will be retried indefinitely"
+          "Nothing, as long as the marker is removed again on any kind of failure",
+          "A crash mid-task leaves the marker, so every re-run silently skips the task",
+          "The task will be retried indefinitely, because it can never count as finished",
+          "The task's output is written twice, because the marker hides the first copy"
         ],
         answer: 1,
-        why: "The marker is an assertion that the side effect is durable, so it must follow the side effect. The first option is not reliable: a process killed by the OOM killer or a node eviction gets no chance to clean up."
+        why: "The marker is an assertion that the side effect is durable, so it must follow the side effect. The first option is not reliable: a process killed by the OOM killer or a node eviction gets no chance to clean up. A marker makes a task skip, never repeat, so nothing is written twice."
       },
       {
         stem: "Why can a pipeline containing `datetime.now()` not be backfilled?",
         options: [
-          "Because the scheduler cannot override the system clock",
-          "Because the task computes its window from the present rather than from the run's logical date, so re-running it for a past date produces today's answer under that date's label",
-          "Because backfills must run in chronological order"
+          "Because the scheduler has no way of overriding the machine's system clock",
+          "Because a re-run for a past date computes its window from today instead",
+          "Because backfills must always run in strict chronological order, oldest first",
+          "Because `datetime.now()` returns UTC while the schedule uses local time"
         ],
         answer: 1,
-        why: "This is lesson 1.4's point-in-time failure in a different syntax — `WHERE ts >= CURRENT_DATE - 90` is the same defect. The logical date must be an input to every task, which is also what makes a pipeline testable against a known-correct output."
+        why: "This is lesson 1.4's point-in-time failure in a different syntax — `WHERE ts >= CURRENT_DATE - 90` is the same defect. The logical date must be an input to every task, which is also what makes a pipeline testable against a known-correct output. A timezone mismatch shifts a window by hours, whereas this defect moves it to the present."
       }
     ]
   },

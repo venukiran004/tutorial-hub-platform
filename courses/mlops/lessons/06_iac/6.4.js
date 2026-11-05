@@ -192,32 +192,35 @@ def gitops_model(events, period=5):
       {
         stem: "Someone runs `kubectl scale` on a Deployment by hand. What happens under push deployment versus GitOps with selfHeal?",
         options: [
-          "Both revert it on the next CI run",
-          "Push leaves it in place indefinitely with nothing recording the divergence; GitOps reverts it within one sync period and logs the diff",
-          "Push reverts it immediately; GitOps records it as the new desired state"
+          "Both revert it on the next CI run, because CI owns the manifests in git",
+          "Push leaves it in place; GitOps reverts it within a sync and logs the diff",
+          "Push reverts it immediately; GitOps records it as the new desired state",
+          "Both keep it, because a manual change also updates the manifest held in git"
         ],
         answer: 1,
-        why: "Measured in the simulation: the manual change at t=10 survived to the end under push, and was reverted at t=15 under pull. Nothing in the push model is comparing the cluster to the repository, which is why the manifest in git degrades into a description of one past apply."
+        why: "Measured in the simulation: the manual change at t=10 survived to the end under push, and was reverted at t=15 under pull. Nothing in the push model is comparing the cluster to the repository, which is why the manifest in git degrades into a description of one past apply. Nothing in the cluster writes back to git, so the repository still says what it said."
       },
       {
         stem: "Your GitOps application reports Synced but the new version is not serving. Is the controller working?",
         options: [
-          "No — Synced should only be reported once pods are ready",
-          "Yes, perfectly: Synced means the cluster matches the repository, which is the controller's job. Healthy is the separate status saying those objects work, and Synced + Degraded is the normal state of a failed deploy",
-          "No — Synced indicates a partial sync that needs retrying"
+          "No: Synced should only ever be reported once all the pods are ready",
+          "Yes: Synced means the cluster matches git; Healthy is a separate status",
+          "No: Synced indicates a partial sync that still has to be retried in full",
+          "No: a working controller would have rolled the bad version back by now"
         ],
         answer: 1,
-        why: "This is lesson 5.1's point that `kubectl apply` succeeding means only that objects were accepted. A pipeline gating on Synced will report a broken deploy as a success; it has to gate on Healthy, which is the equivalent of `kubectl rollout status`."
+        why: "This is lesson 5.1's point that `kubectl apply` succeeding means only that objects were accepted. A pipeline gating on Synced will report a broken deploy as a success; it has to gate on Healthy, which is the equivalent of `kubectl rollout status`. Reverting needs a change in git, because the controller's only job is to match the repository."
       },
       {
         stem: "A HorizontalPodAutoscaler manages replicas and the repository also specifies `replicas: 3`, with selfHeal enabled. What happens?",
         options: [
           "The HPA takes precedence, since it is a controller inside the cluster",
-          "They fight: the HPA scales up and the GitOps controller reverts to 3 every sync period, producing an oscillating cluster and an incident nobody can explain",
-          "The GitOps controller detects the HPA and stops managing that field"
+          "They fight: the HPA scales up and GitOps reverts to 3 on every sync",
+          "The GitOps controller detects the HPA and stops managing that field",
+          "The API server rejects the HPA, as the Deployment already sets replicas"
         ],
         answer: 1,
-        why: "Two systems believing they own one field — lesson 6.1's ownership conflict in a different tool. The fix is `ignoreDifferences` on `/spec/replicas`, which is `ignore_changes` by another name, or removing the field from the repository entirely."
+        why: "Two systems believing they own one field — lesson 6.1's ownership conflict in a different tool. The fix is `ignoreDifferences` on `/spec/replicas`, which is `ignore_changes` by another name, or removing the field from the repository entirely. The API server accepts both, which is why the conflict only appears at runtime."
       }
     ]
   },

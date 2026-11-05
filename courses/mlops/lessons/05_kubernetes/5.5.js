@@ -179,32 +179,35 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
       {
         stem: "A deploy changed both a Deployment and a ConfigMap. The new version is bad. What does `kubectl rollout undo` on the Deployment leave you with?",
         options: [
-          "The previous state, since the Deployment is what was deployed",
-          "The old code with the new ConfigMap — rollout undo reverts one Deployment's pod template and knows nothing about other objects, which is a combination nobody tested",
-          "A failed command, because the ConfigMap no longer matches the pod template"
+          "The previous state, since the Deployment is what was actually deployed",
+          "Old code with the new ConfigMap, a combination nobody has tested",
+          "A failed command, because the ConfigMap no longer matches the pod template",
+          "The previous state, because the ReplicaSet kept a copy of the ConfigMap"
         ],
         answer: 1,
-        why: "This is the specific thing a Helm release buys: `helm rollback` reverts every object the chart manages together. The Deployment-only undo is correct for its scope and that scope is usually narrower than the change was."
+        why: "This is the specific thing a Helm release buys: `helm rollback` reverts every object the chart manages together. The Deployment-only undo is correct for its scope and that scope is usually narrower than the change was. A ReplicaSet holds a pod template, which names the ConfigMap without copying it."
       },
       {
         stem: "Your Deployment has 4 replicas and the default rollout strategy. What happens to per-replica load during a deploy?",
         options: [
-          "Nothing — Kubernetes adds a new pod before removing an old one",
-          "It can rise by a third: maxUnavailable defaults to 25%, so the service may run on 3 replicas, which at a 70% utilisation target moves you to roughly 93% and the steep part of the latency curve",
-          "It halves, because maxSurge adds four more pods"
+          "Nothing: Kubernetes always adds a new pod before it removes an old one",
+          "It can rise by a third, because 25% may be unavailable, leaving 3 replicas",
+          "It halves, because maxSurge adds four more pods for the length of the rollout",
+          "It rises by a quarter, because one of the four pods is out of service"
         ],
         answer: 1,
-        why: "The first option describes maxUnavailable: 0, which is what you have to set explicitly. The default deliberately trades capacity for rollout speed, and lesson 5.3's queueing table shows what that costs: 3.3x the service time at 70%, 10x at 90%."
+        why: "The first option describes maxUnavailable: 0, which is what you have to set explicitly. The default deliberately trades capacity for rollout speed, and lesson 5.3's queueing table shows what that costs: 3.3x the service time at 70%, 10x at 90%. Four pods' work on three is 4/3 of the load, a rise of a third rather than a quarter."
       },
       {
         stem: "You update a threshold in a ConfigMap consumed as an environment variable. Nothing changes. Why?",
         options: [
-          "The ConfigMap update failed silently",
-          "The Deployment's pod template is unchanged, so no new ReplicaSet is created and no pod restarts — and env vars are read once at process start",
-          "ConfigMap changes require a manual `kubectl rollout restart` by design"
+          "The ConfigMap update failed silently and needs to be applied a second time",
+          "The pod template is unchanged, so no pod restarts and env vars stay put",
+          "ConfigMap changes require a manual `kubectl rollout restart` by design",
+          "The kubelet's sync period has not elapsed, so the variable is still stale"
         ],
         answer: 1,
-        why: "The third option is a workaround rather than the reason. The fix is a checksum annotation on the pod template so its hash changes with the ConfigMap's content, producing a normal rolling update. Mounted files avoid the problem entirely by updating in place."
+        why: "The third option is a workaround rather than the reason. The fix is a checksum annotation on the pod template so its hash changes with the ConfigMap's content, producing a normal rolling update. Mounted files avoid the problem entirely by updating in place. The kubelet's sync refreshes mounted files only, so waiting changes nothing for an env var."
       }
     ]
   },

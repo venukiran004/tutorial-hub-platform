@@ -204,32 +204,35 @@ EC.receiveLesson({
       {
         stem: "A pod specifies only `limits` and no `requests`. What QoS class does it get?",
         options: [
-          "Burstable, since requests are unspecified",
-          "Guaranteed — Kubernetes defaults the requests to equal the limits",
-          "BestEffort, because a request is what the scheduler needs"
+          "Burstable, since the requests have been left unspecified in the spec",
+          "Guaranteed: Kubernetes defaults each request to equal its limit",
+          "BestEffort, because a request is what the scheduler needs to place a pod",
+          "Guaranteed, but only if the CPU and memory limits are the same number"
         ],
         answer: 1,
-        why: "This is the counterintuitive case: the minimal complete specification and the most careful one land in the same class, while the apparently reasonable middle — requests below limits — is Burstable and can be evicted when it exceeds its request."
+        why: "This is the counterintuitive case: the minimal complete specification and the most careful one land in the same class, while the apparently reasonable middle — requests below limits — is Burstable and can be evicted when it exceeds its request. CPU and memory limits may differ from each other: Guaranteed asks only that each request equals its own limit."
       },
       {
         stem: "Your model service is OOMKilled at startup with a 256 MB limit, though the model file is only 1.6 MB. Why?",
         options: [
-          "The model is decompressed in memory to many times its file size",
-          "The resident floor is dominated by imports — measured at 260.9 MB, of which scipy alone was 112.7 MB and the model 1.6 MB — so 256 MB is 4.9 MB short of starting",
-          "The limit must account for the image size as well as the process"
+          "The model is decompressed in memory to many times its size on disk",
+          "Imports dominate: the process needs 260.9 MB before the model matters",
+          "The limit must account for the image's size as well as for the process",
+          "Python's garbage collector reserves the whole limit as soon as it starts"
         ],
         answer: 1,
-        why: "The model is 0.6% of the footprint and a thousand-row batch adds 0.03 MB, so memory is almost entirely the fixed cost of the scientific Python stack. The symptom is exit code 137 with no application log, since the kill happens during imports."
+        why: "The model is 0.6% of the footprint and a thousand-row batch adds 0.03 MB, so memory is almost entirely the fixed cost of the scientific Python stack. The symptom is exit code 137 with no application log, since the kill happens during imports. CPython reserves nothing up front: this memory is imported code and data, with scipy alone at 112.7 MB."
       },
       {
         stem: "Why is CPU utilisation a poor HPA metric for a model service?",
         options: [
-          "CPU metrics are scraped too infrequently to be useful",
-          "It is a proxy for occupancy and a weak one: a GPU model can be at 100% GPU and 15% CPU, a request blocked on a feature fetch occupies a worker without using CPU, and 70% of the measured request was framework rather than model",
-          "CPU limits cause throttling, which makes the metric unreliable"
+          "CPU metrics are scraped far too infrequently to be of any practical use",
+          "It is a weak proxy for occupancy: a blocked request uses no CPU at all",
+          "CPU limits cause throttling, which makes the metric itself unreliable",
+          "The HPA cannot read CPU at all unless a custom metrics adapter is installed"
         ],
         answer: 1,
-        why: "The queueing curve is what justifies a utilisation target at all — latency is 3.3x the service time at 70% and 10x at 90% — but the target needs a metric that measures occupancy. In-flight requests or queue depth do; CPU merely correlates, and for inference often does not."
+        why: "The queueing curve is what justifies a utilisation target at all — latency is 3.3x the service time at 70% and 10x at 90% — but the target needs a metric that measures occupancy. In-flight requests or queue depth do; CPU merely correlates, and for inference often does not. CPU is the HPA's built-in metric, served by metrics-server, and custom adapters are what in-flight requests need."
       }
     ]
   },

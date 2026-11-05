@@ -145,32 +145,35 @@ EC.receiveLesson({
       {
         stem: "A container is limited to 2 CPUs on a 64-core node. What does `os.cpu_count()` return inside it, and why does that matter?",
         options: [
-          "2, because cgroups virtualise the CPU count",
-          "64 — cgroups cap consumption without rewriting what the process sees, so every library defaulting its thread pool to the CPU count creates 64 threads for 2 cores of quota",
-          "64, but libraries detect the cgroup limit automatically"
+          "2, because cgroups virtualise the CPU count that the process can see",
+          "64: cgroups cap use, so default thread pools make 64 threads for 2 cores",
+          "64, but every library detects the cgroup limit automatically and adapts to it",
+          "2, because Docker rewrites /proc/cpuinfo at the moment the limit is applied"
         ],
         answer: 1,
-        why: "The resulting contention makes throughput worse than a single thread and produces latency that resembles queueing without being it. The fix is to set OMP_NUM_THREADS, torch's thread count and joblib's n_jobs explicitly from the limit."
+        why: "The resulting contention makes throughput worse than a single thread and produces latency that resembles queueing without being it. The fix is to set OMP_NUM_THREADS, torch's thread count and joblib's n_jobs explicitly from the limit. Docker rewrites nothing: /proc/cpuinfo still lists the node's 64 cores."
       },
       {
         stem: "Your PyTorch training job fails with 'DataLoader worker (pid 1234) is killed by signal: Bus error'. What is the most likely cause?",
         options: [
           "The container's memory limit is too low and the OOM killer intervened",
-          "/dev/shm is at Docker's 64 MB default, and DataLoader workers pass tensors through shared memory",
-          "The dataset is corrupt at the index the worker was reading"
+          "/dev/shm is at its 64 MB default, and workers share tensors there",
+          "The dataset is corrupt at the index the worker was reading from disk",
+          "The GPU driver does not match the CUDA userland in the training image"
         ],
         answer: 1,
-        why: "A bus error from a DataLoader worker is the signature of exhausted shared memory, and the message names nothing relevant. An OOM kill presents differently — SIGKILL with the cgroup's memory events recording it. The fix is --shm-size or a Memory-backed emptyDir on /dev/shm."
+        why: "A bus error from a DataLoader worker is the signature of exhausted shared memory, and the message names nothing relevant. An OOM kill presents differently — SIGKILL with the cgroup's memory events recording it. The fix is --shm-size or a Memory-backed emptyDir on /dev/shm. A driver mismatch fails when the GPU is first used, in the main process rather than a DataLoader worker."
       },
       {
         stem: "Why can't a container run a different kernel version from its host?",
         options: [
           "Because the container runtime forbids it for security reasons",
-          "Because there is only one kernel and containers are namespaced views of it — the kernel is not part of the image",
-          "Because images do not include a bootloader"
+          "Because containers are namespaced views of the host's one kernel",
+          "Because images do not include the bootloader needed to start a kernel",
+          "Because the image's own kernel is ignored whenever its version is older"
         ],
         answer: 1,
-        why: "This single fact also explains why a Linux container cannot run on a Windows kernel (Docker Desktop runs a Linux VM), why custom kernel modules and eBPF need a VM, and why the isolation boundary is weaker than a hypervisor's."
+        why: "This single fact also explains why a Linux container cannot run on a Windows kernel (Docker Desktop runs a Linux VM), why custom kernel modules and eBPF need a VM, and why the isolation boundary is weaker than a hypervisor's. An image has no kernel to ignore, whatever its base."
       }
     ]
   },

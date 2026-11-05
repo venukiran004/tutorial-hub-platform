@@ -185,32 +185,35 @@ volumes:
       {
         stem: "A developer has permission to create pods in a namespace but not to read Secrets. Can they obtain a Secret's value?",
         options: [
-          "No — RBAC denies the read, so the value is protected",
-          "Yes: they can create a pod that mounts the Secret and prints it, so `create pods` is effectively read on every Secret in the namespace",
-          "Only if the Secret is mounted as an environment variable rather than a file"
+          "No: RBAC denies the read, so the value stays protected from them",
+          "Yes: a pod they create can mount the Secret and print its value",
+          "Only if the Secret is mounted as an environment variable rather than a file",
+          "Only with `pods/exec` as well, which lets them look inside a running pod"
         ],
         answer: 1,
-        why: "A pod whose command is `cat /secrets/password` is an ordinary pod. This is why a Secret is an access-control boundary rather than a cryptographic one, and why high-stakes credentials belong in an external store reached through workload identity."
+        why: "A pod whose command is `cat /secrets/password` is an ordinary pod. This is why a Secret is an access-control boundary rather than a cryptographic one, and why high-stakes credentials belong in an external store reached through workload identity. Exec adds nothing: the pod's own command can send the value anywhere."
       },
       {
         stem: "You rotate a database password delivered to pods as an environment variable from a Secret. What is required for the change to take effect?",
         options: [
-          "Nothing — the kubelet updates environment variables within about a minute",
-          "A restart of every consuming pod, because environment variables are read once at process start; a mounted file would be updated in place instead",
-          "A new Secret with a different name, referenced by an updated Deployment"
+          "Nothing: the kubelet updates environment variables within about a minute",
+          "A restart of every consuming pod, as env vars are read at process start",
+          "A new Secret with a different name, referenced by an updated Deployment",
+          "A `kubectl apply` of the Secret, which signals each pod to reload its value"
         ],
         answer: 1,
-        why: "Mounted files are updated in place by the kubelet, so an application that re-reads on failure picks up a rotated credential without a restart. As an env var, rotation is a rolling restart of every consumer — which is a deploy, and worth knowing before the rotation is urgent."
+        why: "Mounted files are updated in place by the kubelet, so an application that re-reads on failure picks up a rotated credential without a restart. As an env var, rotation is a rolling restart of every consumer — which is a deploy, and worth knowing before the rotation is urgent. Applying the Secret changes only the stored object, and no signal reaches a process."
       },
       {
         stem: "Why is a PersistentVolume a poor place for a serving model's artifact?",
         options: [
-          "PersistentVolumes are too slow to load a model from",
-          "It becomes unversioned mutable state with no record of who changed it, and a ReadWriteOnce volume attaches to a single node, so replicas cannot be scheduled across nodes",
-          "Kubernetes does not permit read-only mounts of PersistentVolumes"
+          "PersistentVolumes are too slow to load a model from during startup",
+          "It is unversioned mutable state, and RWO pins replicas to a single node",
+          "Kubernetes does not permit read-only mounts of any PersistentVolume at all",
+          "A PersistentVolume is wiped whenever the pod using it is rescheduled"
         ],
         answer: 1,
-        why: "The scheduling constraint is the one that bites first: most block storage is ReadWriteOnce, so the Deployment is pinned to one node. ReadWriteMany means a network filesystem whose latency enters the model load path. A serving model is a versioned artifact, not state — it belongs in the image or an emptyDir."
+        why: "The scheduling constraint is the one that bites first: most block storage is ReadWriteOnce, so the Deployment is pinned to one node. ReadWriteMany means a network filesystem whose latency enters the model load path. A serving model is a versioned artifact, not state — it belongs in the image or an emptyDir. Surviving a reschedule is what a PersistentVolume is for."
       }
     ]
   },

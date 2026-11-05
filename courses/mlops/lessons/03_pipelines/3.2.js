@@ -203,32 +203,35 @@ EC.receiveLesson({
       {
         stem: "A challenger scores +0.0019 AUC over the incumbent with a paired bootstrap 95% interval of [+0.0002, +0.0035]. The noise floor is 0.0017. What should the gate do?",
         options: [
-          "Reject: the improvement is smaller than the noise floor",
-          "Promote, marginally: the interval's lower bound clears zero, so the improvement is real although small — and the risk appetite for a marginal gain is a policy decision",
-          "Rerun the comparison until the interval is wider"
+          "Reject: the improvement is smaller than the noise floor of this gate",
+          "Promote, marginally: the interval excludes zero, so the gain is real",
+          "Rerun the comparison again and again until the interval has become wider",
+          "Hold: a gain below 0.01 AUC should never be allowed to reach production at all"
         ],
         answer: 1,
-        why: "The floor describes what two identical models do; this candidate's interval excludes zero, so the difference is not seed noise. The point estimate 0.0019 exceeding the 0.0017 half-width is consistent with that. Whether a 0.19-point gain justifies a deployment is a separate, legitimate judgement."
+        why: "The floor describes what two identical models do; this candidate's interval excludes zero, so the difference is not seed noise. The point estimate 0.0019 exceeding the 0.0017 half-width is consistent with that. Whether a 0.19-point gain justifies a deployment is a separate, legitimate judgement. A fixed 0.01 bar ignores the holdout size that the floor comes from, and the gain worth deploying is a policy decision."
       },
       {
         stem: "Why must the bootstrap be paired when comparing two models?",
         options: [
-          "To halve the computation, since one resample serves both models",
-          "Because both models see the same holdout rows, so the holdout's own variance is common to them and should cancel — an unpaired interval counts it twice and becomes too wide to detect any realistic improvement",
-          "Because AUC is not defined on an unpaired resample"
+          "To halve the computation, since one resample serves both of the models",
+          "Both models see the same rows, so the holdout's own variance cancels out",
+          "Because AUC is not defined on an unpaired resample of the holdout rows",
+          "To keep the two models' random seeds identical across every bootstrap replicate"
         ],
         answer: 1,
-        why: "Pairing is what makes a 0.0017 half-width achievable on 6,000 rows. It is the same reasoning as a paired t-test, and getting it wrong is the usual reason a gate cannot detect improvements it should."
+        why: "Pairing is what makes a 0.0017 half-width achievable on 6,000 rows. It is the same reasoning as a paired t-test, and getting it wrong is the usual reason a gate cannot detect improvements it should. A bootstrap resamples holdout rows after training, so training seeds play no part."
       },
       {
         stem: "Which stage would catch a model trained on features that leaked future information?",
         options: [
-          "The quality gate, since a leaky model performs worse",
-          "The skew test — the leaky model scored 2.6 points better offline in lesson 1.4, so the metric gate would have promoted it enthusiastically",
-          "Data validation, since the leaked column is out of range"
+          "The quality gate, since a leaky model performs worse on its holdout rows",
+          "The skew test: a leak scores better offline, so the metric gate promotes it",
+          "Data validation, since the leaked column will fall outside its training range",
+          "The canary, since leaked features are missing at serving time and raise errors"
         ],
         answer: 1,
-        why: "A leak inflates the offline metric, so the gate's comparison actively prefers it. Only a check that recomputes features as of the row's timestamp, or compares the training and serving paths on the same row, can see the defect — which is why the stage list has four entries rather than one."
+        why: "A leak inflates the offline metric, so the gate's comparison actively prefers it. Only a check that recomputes features as of the row's timestamp, or compares the training and serving paths on the same row, can see the defect — which is why the stage list has four entries rather than one. The leak in lesson 1.4 is a window that also exists at serving time, so nothing raises."
       }
     ]
   },

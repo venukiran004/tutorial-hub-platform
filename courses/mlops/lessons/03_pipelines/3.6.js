@@ -149,32 +149,35 @@ EC.receiveLesson({
       {
         stem: "Which of these practices cannot be meaningfully retrofitted later?",
         options: [
-          "A promotion gate with a derived threshold",
-          "A prediction log — unlogged traffic is permanently unevaluable, so a month without it is a month whose accuracy can never be computed even once labels arrive",
-          "Shared feature code between training and serving"
+          "A promotion gate with a threshold derived from the size of the holdout",
+          "A prediction log: traffic that was never logged can never be evaluated",
+          "Shared feature code between the training path and the serving path",
+          "A canary stage in front of the full rollout of each newly trained model"
         ],
         answer: 1,
-        why: "The other two are expensive to retrofit but possible: a gate can be added to the next promotion, and divergent feature code can be unified painfully. A log is different in kind — the data it would have held does not exist, and no later effort recovers it."
+        why: "The others are expensive to retrofit but possible: a gate can be added to the next promotion, and divergent feature code can be unified painfully. A log is different in kind — the data it would have held does not exist, and no later effort recovers it. A canary stage can likewise be added before the next rollout."
       },
       {
         stem: "Why should input drift not trigger an automatic retrain?",
         options: [
-          "Because retraining is computationally expensive",
-          "Because it is not reliably correlated with harm — a KS test fired from month 2 and reached p=9.8e-87 while accuracy held and AUC improved, so the trigger would have fired eleven unnecessary retrains",
-          "Because drift detection is too slow at 16.7 minutes to 80% power"
+          "Because retraining is computationally expensive to run every single time",
+          "Because it does not track harm reliably: it fired while AUC improved",
+          "Because drift detection is far too slow, at 16.7 minutes to reach 80% power",
+          "Because a retrain on recent data always overfits to the shifted population"
         ],
         answer: 1,
-        why: "The same measurement shows the converse: in the world where accuracy fell 20.2 points, the drift test never fired. So the signal is both a false alarm and a false reassurance. Retraining should be gated on labels, a business metric, or an adjudicated review sample."
+        why: "The same measurement shows the converse: in the world where accuracy fell 20.2 points, the drift test never fired. So the signal is both a false alarm and a false reassurance. Retraining should be gated on labels, a business metric, or an adjudicated review sample. Retraining on recent data is often right once harm is established, and nothing about it always overfits."
       },
       {
         stem: "Your gate requires a challenger to beat the incumbent by any positive margin. What is wrong?",
         options: [
-          "Nothing, as long as the holdout is large enough",
-          "A positive margin can be the model's own random seed — retraining the identical model with a different seed moved AUC by 0.0011, so the gate needs an interval that excludes zero and a threshold derived from the holdout size",
-          "The gate should compare against a fixed metric target instead"
+          "Nothing, as long as the holdout used for the comparison is large enough",
+          "A positive margin can be seed noise, so the interval must exclude zero",
+          "The gate should compare against a fixed metric target instead of a model",
+          "A positive margin is too strict, so small regressions should be allowed through"
         ],
         answer: 1,
-        why: "Measured: the noise floor is 0.17 AUC points on 6,000 rows and 0.67 on 500, so 'any positive margin' promotes noise at small holdout sizes. The third option is worse — a fixed target decays into meaninglessness as the data changes, which is why the comparison is always against the incumbent artifact."
+        why: "Measured: the noise floor is 0.17 AUC points on 6,000 rows and 0.67 on 500, so 'any positive margin' promotes noise at small holdout sizes. The third option is worse — a fixed target decays into meaninglessness as the data changes, which is why the comparison is always against the incumbent artifact. Allowing regressions solves the opposite problem: this gate is too loose, not too strict."
       }
     ]
   },

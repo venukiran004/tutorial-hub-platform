@@ -194,32 +194,35 @@ USER appuser` },
       {
         stem: "A Dockerfile copies a credentials file, uses it, then runs `RUN rm -rf /root/.aws`. Is the secret in the image?",
         options: [
-          "No — the file is deleted, so the final filesystem does not contain it",
-          "Yes, in full: the earlier layer's tar is immutable and the deletion only writes a whiteout marker, so `docker save` plus `tar -xf` recovers it",
-          "Only if the build used `--no-cache`"
+          "No: the file is deleted, so the final filesystem does not contain it",
+          "Yes: the earlier layer is immutable, so `docker save` can recover it",
+          "Only if the build ran with `--no-cache` and kept every intermediate layer",
+          "Only in the build cache on that machine, which is never pushed to a registry"
         ],
         answer: 1,
-        why: "Measured in this lesson: the `rm` produced two zero-byte whiteout files while the 63-byte credential sat untouched in layer 1 and was read straight back out. The running container genuinely cannot see the file, which is what makes this undetectable by inspecting a container."
+        why: "Measured in this lesson: the `rm` produced two zero-byte whiteout files while the 63-byte credential sat untouched in layer 1 and was read straight back out. The running container genuinely cannot see the file, which is what makes this undetectable by inspecting a container. The layer is part of the image, so it travels with every push and pull."
       },
       {
         stem: "Your CI job mounts `/var/run/docker.sock` into a build container. What does that grant?",
         options: [
           "The ability to build and run containers, scoped to that container's namespace",
-          "Root on the host — the daemon runs as root with no authorisation model, so the client can start a privileged container that bind-mounts the host's root filesystem",
-          "Read-only access to the daemon's container list"
+          "Root on the host: the client can start a privileged container mounting `/`",
+          "Read-only access to the daemon's list of containers and what they are running",
+          "Control of that CI job's own containers, as long as the job runs as non-root"
         ],
         answer: 1,
-        why: "There is no privilege separation in the daemon API: any client that can reach the socket can do anything the daemon can, and starting a `--privileged` container with `/` mounted is one obvious step. This is why rootless builders and daemonless tools exist."
+        why: "There is no privilege separation in the daemon API: any client that can reach the socket can do anything the daemon can, and starting a `--privileged` container with `/` mounted is one obvious step. This is why rootless builders and daemonless tools exist. The user inside the container matters only for opening the socket, and the daemon itself runs as root."
       },
       {
         stem: "An image scan comes back clean. What has it established?",
         options: [
-          "The image contains no secrets and no vulnerable code",
-          "Only that no installed package matches a known CVE in that database as of that moment — it cannot see baked-in secrets, your own code, or which CVEs are reachable",
-          "That the image is safe to run as root"
+          "The image contains no secrets and no vulnerable code anywhere inside it",
+          "Only that no installed package matches a CVE in that database today",
+          "That the image is safe to run as root in production from now on",
+          "That no installed package can be reached from the network by an attacker"
         ],
         answer: 1,
-        why: "A scanner enumerates packages and compares versions. The 63-byte credential from this lesson matches no CVE and appears in no package manifest, so a clean scan is entirely consistent with a leaked credential. Secret scanning is a separate tool, and reachability is a separate question again."
+        why: "A scanner enumerates packages and compares versions. The 63-byte credential from this lesson matches no CVE and appears in no package manifest, so a clean scan is entirely consistent with a leaked credential. Secret scanning is a separate tool, and reachability is a separate question again. A scanner has no view of the network or of what is reachable at runtime."
       }
     ]
   },

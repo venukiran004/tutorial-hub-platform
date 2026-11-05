@@ -193,32 +193,35 @@ EC.receiveLesson({
       {
         stem: "You run a canary until it reaches statistical significance. How does reducing the share from 10% to 1% change the number of bad predictions served before detection?",
         options: [
-          "It reduces it tenfold, which is the point of a small canary",
-          "It does not change it — detection needs a fixed number of canary observations and every one is a bad prediction, so exposure is 2,282 either way; only the time changes, from 19 minutes to 3.2 hours",
-          "It increases it, because the longer window serves more total traffic"
+          "It reduces it tenfold, which is the whole point of having a small canary",
+          "It does not: the sample needed is fixed, so exposure stays at 2,282",
+          "It increases it, because the longer window serves more total traffic",
+          "It reduces it a little, because a smaller share needs fewer observations"
         ],
         answer: 1,
-        why: "Share sets the rate and the duration compensates exactly, so the product is pinned by the sample size. The intuition behind the first option is right only for a fixed-duration canary — and at 1% a fixed window usually cannot reach significance at all."
+        why: "Share sets the rate and the duration compensates exactly, so the product is pinned by the sample size. The intuition behind the first option is right only for a fixed-duration canary — and at 1% a fixed window usually cannot reach significance at all. The observations needed do not depend on the share: a smaller share only takes longer to collect them, 3.2 hours against 19 minutes."
       },
       {
         stem: "Your labels arrive 45 days after the prediction. What can a canary gate on?",
         options: [
-          "Accuracy, provided the canary runs for 45 days",
-          "Infrastructure signals and the prediction distribution — error rate in about 11 minutes and approval rate in 38 at a 5% share; model quality needs shadow mode, which serves no users",
-          "Nothing useful; a canary is pointless with delayed labels"
+          "Accuracy, provided the canary is left running for the full 45 days",
+          "Error rate and the prediction distribution; quality needs shadow mode",
+          "Nothing useful, since a canary is pointless whenever labels are delayed",
+          "Feature drift alone, since no output of the model can be trusted yet"
         ],
         answer: 1,
-        why: "A 45-day canary is a 45-day partial rollout, which is not a canary. The division of labour is that the canary answers 'does it behave' in minutes and shadow answers 'is it right' over however long the labels take, serving nobody while it waits."
+        why: "A 45-day canary is a 45-day partial rollout, which is not a canary. The division of labour is that the canary answers 'does it behave' in minutes and shadow answers 'is it right' over however long the labels take, serving nobody while it waits. Outputs can be compared without labels: error rate took about 11 minutes and approval rate 38 at a 5% share."
       },
       {
         stem: "A team runs a 1% canary for 30 minutes at 20 requests per second, then promotes. What is wrong?",
         options: [
-          "Nothing — 30 minutes is a reasonable soak and 1% is appropriately cautious",
-          "The canary accumulates only 360 observations against the ~2,282 needed, so the comparison has no power and the promotion decision carries no information",
-          "The canary share is too high for a 30-minute window"
+          "Nothing: 30 minutes is a reasonable soak, and 1% is suitably cautious",
+          "It collects only 360 of the ~2,282 observations it needs, so it has no power",
+          "The canary share is too high for a window that lasts only 30 minutes",
+          "A canary must run for at least a full day, whatever the share and traffic rate"
         ],
         answer: 1,
-        why: "It is lesson 2.2's power problem in a rollout costume: the process feels careful and is uninformative, with the real risk arriving at the subsequent full rollout. Solving n / (rate × window) gives a minimum share near 6.3% for that window."
+        why: "It is lesson 2.2's power problem in a rollout costume: the process feels careful and is uninformative, with the real risk arriving at the subsequent full rollout. Solving n / (rate × window) gives a minimum share near 6.3% for that window. The required window comes from the sample size and the rate, so no fixed length is right."
       }
     ]
   },

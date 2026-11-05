@@ -290,32 +290,35 @@ auc2 = roc_auc_score(yte, m2.predict_proba(Xte)[:, 1])`,
       {
         stem: "Two runs in your store have identical metrics to ten decimal places but different recorded hyperparameters. What is the most likely explanation?",
         options: [
-          "A bug in the tracking code wrote the same metrics twice",
-          "The library silently overrode the differing parameter, so both runs executed the same computation — measured here as early stopping halting max_iter=100 and max_iter=250 at the same 73 iterations",
-          "The metric has saturated and is insensitive to that parameter"
+          "A bug in the tracking code wrote the same set of metrics to both of the runs",
+          "The library overrode the differing parameter, so both did the same work",
+          "The metric has saturated and is insensitive to that particular parameter",
+          "The second run was a cache hit, restored from the first run's stored results"
         ],
         answer: 1,
-        why: "Identical to ten decimals means the same computation, not a similar one. The third option is the tempting misreading: it concludes something about the model when the truth is that the second configuration never ran. Logging the realised value — n_iter_ — distinguishes them in one column."
+        why: "Identical to ten decimals means the same computation, not a similar one. The third option is the tempting misreading: it concludes something about the model when the truth is that the second configuration never ran. Logging the realised value — n_iter_ — distinguishes them in one column. No cache was involved: early stopping halted max_iter=100 and max_iter=250 at the same 73 iterations."
       },
       {
         stem: "Your tracking store records run id, params, metrics and the git commit. A colleague cannot reproduce a three-month-old run. What is the first thing to check?",
         options: [
           "Whether the training data is the same bytes as it was then",
-          "Whether the model's random seed was recorded",
-          "Whether the metric was computed with the same function"
+          "Whether the model's random seed was recorded in the run's params",
+          "Whether the metric was computed with the same function as then",
+          "Whether the machine had the same GPU model as the original run"
         ],
         answer: 0,
-        why: "Data is regenerated, filtered and backfilled far more often than environments or metric code change, so it is both the most likely cause and the cheapest to check. Without a data fingerprint recorded at the time, though, this check is impossible — which is why it is the highest-value field to add to a store that lacks it."
+        why: "Data is regenerated, filtered and backfilled far more often than environments or metric code change, so it is both the most likely cause and the cheapest to check. Without a data fingerprint recorded at the time, though, this check is impossible — which is why it is the highest-value field to add to a store that lacks it. Hardware differences move the last few digits, not the result as a whole."
       },
       {
         stem: "A run is recorded with commit 967ccb7 and dirty=True. What does the commit id tell you about the code that ran?",
         options: [
-          "It identifies the code exactly, since the commit is the version that was checked out",
-          "Almost nothing — there were uncommitted changes, so the tree that ran was not the tree at that commit and is not recoverable from it",
-          "It identifies the code, and dirty only refers to untracked files"
+          "It identifies the code exactly, since that commit was what was checked out",
+          "Almost nothing: uncommitted changes mean the tree that ran is not that commit",
+          "It identifies the code exactly, because dirty refers only to untracked files",
+          "It identifies the parent of the code, and a `git diff` against it recovers the rest"
         ],
         answer: 1,
-        why: "This is why the flag is worth one subprocess call. The useful policy follows from it: dirty runs are fine for exploration and must not be promotable, which turns an unreproducible production model into a pipeline rejection."
+        why: "This is why the flag is worth one subprocess call. The useful policy follows from it: dirty runs are fine for exploration and must not be promotable, which turns an unreproducible production model into a pipeline rejection. A later `git diff` shows today's working tree, not the changes that were present during the run."
       }
     ]
   },

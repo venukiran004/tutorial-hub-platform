@@ -183,32 +183,35 @@ spec:
       {
         stem: "A training script is deployed as a Deployment with one replica. What happens?",
         options: [
-          "It trains once and the pod stays in Completed state",
-          "It retrains for ever: the script exits 0, the Deployment controller sees fewer running pods than declared, and starts it again",
-          "The Deployment fails admission because the container is not a long-running service"
+          "It trains once, and the pod then stays in the Completed state for good",
+          "It retrains for ever: a clean exit counts as a gap, so it is started again",
+          "The Deployment fails admission, as the container is not a long-running service",
+          "It trains once, and the Deployment scales itself down to zero replicas"
         ],
         answer: 1,
-        why: "A Deployment's contract is 'keep N running', so a successful exit is indistinguishable from a crash. The symptom is a climbing RESTARTS count and a quietly growing bill. A Job's contract is the opposite, and it brings retry limits, deadlines and parallelism as well."
+        why: "A Deployment's contract is 'keep N running', so a successful exit is indistinguishable from a crash. The symptom is a climbing RESTARTS count and a quietly growing bill. A Job's contract is the opposite, and it brings retry limits, deadlines and parallelism as well. Nothing scales a Deployment to zero on its own: the declared count stays at one."
       },
       {
         stem: "Your liveness and readiness probes both hit `/healthz`, which queries the database. The database is briefly slow. What happens?",
         options: [
-          "The pods leave rotation until the database recovers, then return",
-          "Both probes fail on every replica at once — so every pod leaves rotation and is also killed, turning a brief dependency blip into a cluster-wide restart storm",
-          "Kubernetes prioritises the readiness probe and defers liveness during dependency failures"
+          "The pods leave rotation until the database recovers, and then they all return",
+          "Every pod leaves rotation and is killed as well, causing a restart storm",
+          "Kubernetes prioritises readiness and defers liveness during a dependency failure",
+          "Only the slowest replica fails, and traffic shifts to the healthy replicas"
         ],
         answer: 1,
-        why: "The failure is correlated across replicas by construction, because they share the dependency. Readiness may depend on dependencies — being out of rotation is recoverable. Liveness must depend only on the process, which is why it needs a separate trivial endpoint."
+        why: "The failure is correlated across replicas by construction, because they share the dependency. Readiness may depend on dependencies — being out of rotation is recoverable. Liveness must depend only on the process, which is why it needs a separate trivial endpoint. All replicas share the database, so none of them stays healthy."
       },
       {
         stem: "A Service exists, pods are Running, and callers get connection refused. What do you check first?",
         options: [
           "Whether the Service type should be LoadBalancer instead of ClusterIP",
-          "`kubectl get endpoints` — an empty list means either the label selector matches nothing or no pod is passing its readiness probe",
-          "Whether the cluster DNS is resolving the Service name"
+          "`kubectl get endpoints`: empty means a bad selector or no ready pods",
+          "Whether the cluster DNS is resolving the Service name to an address at all",
+          "`kubectl logs` on each pod, to see whether the requests are arriving"
         ],
         answer: 1,
-        why: "Both causes leave every object looking healthy, which is what makes endpoints the right first command. A selector typo is a working Service with no backends; an unready pod is correctly excluded, which is the behaviour you want during a broken rollout."
+        why: "Both causes leave every object looking healthy, which is what makes endpoints the right first command. A selector typo is a working Service with no backends; an unready pod is correctly excluded, which is the behaviour you want during a broken rollout. Connection refused with no endpoints means nothing reached a pod, so its logs show nothing."
       }
     ]
   },

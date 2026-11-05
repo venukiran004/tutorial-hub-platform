@@ -217,31 +217,34 @@ stB = read_state()          # both read the same serial -- this is the race
         stem: "Someone scaled an endpoint from 2 to 6 instances in the console during an incident. What does the next `terraform plan` propose?",
         options: [
           "To update the configuration to match reality, since the world is authoritative",
-          "To take the endpoint back from 6 instances to 2 — the configuration is the source of truth, so the plan closes the gap by removing the manual change",
-          "Nothing, because Terraform only tracks resources it created"
+          "To take it from 6 back to 2, because the configuration is the source of truth",
+          "Nothing, because Terraform only tracks the resources that it created itself",
+          "To import the four extra instances into state and leave them all running"
         ],
         answer: 1,
-        why: "Measured: the diff prints `'count': (6, 2)`. Terraform is working as designed, which is why drift is dangerous rather than merely untidy. The two correct responses are to commit the change or to declare `ignore_changes` for an attribute something else legitimately owns."
+        why: "Measured: the diff prints `'count': (6, 2)`. Terraform is working as designed, which is why drift is dangerous rather than merely untidy. The two correct responses are to commit the change or to declare `ignore_changes` for an attribute something else legitimately owns. Import is a step you run deliberately, and a plan never proposes it on its own."
       },
       {
         stem: "Two engineers run `terraform apply` at the same time against a backend with no locking. What is the worst outcome?",
         options: [
-          "One apply fails with a conflict and has to be retried",
-          "Both succeed and the second write clobbers the first, leaving a real resource that exists in the world and not in state — never updated, never destroyed, and proposed for re-creation",
-          "The state file is corrupted and becomes unparseable"
+          "One apply fails with a conflict and has to be retried by hand afterwards",
+          "Both succeed, the second write wins, and a real resource is lost from state",
+          "The state file is corrupted and can no longer be parsed by Terraform at all",
+          "Every resource is created twice, so the cloud bill quietly doubles from then on"
         ],
         answer: 1,
-        why: "Measured: `aws_s3_bucket.features` ended up in the world and absent from state. Both reads saw serial 1, both wrote serial 2, and the later write simply replaced the earlier. The file stays perfectly valid, which is what makes this silent."
+        why: "Measured: `aws_s3_bucket.features` ended up in the world and absent from state. Both reads saw serial 1, both wrote serial 2, and the later write simply replaced the earlier. The file stays perfectly valid, which is what makes this silent. Each apply creates its own resources once, and what is lost is the record of one of them."
       },
       {
         stem: "Which of these should NOT be managed by Terraform?",
         options: [
-          "The S3 bucket that stores model artifacts",
-          "The replica count of a deployment that a HorizontalPodAutoscaler owns",
-          "The IAM role a training job assumes"
+          "The S3 bucket that stores the model artifacts for every team",
+          "The replica count of a deployment that an autoscaler owns",
+          "The IAM role that a training job assumes each time it runs",
+          "The VPC and subnets that the cluster's nodes are placed in"
         ],
         answer: 1,
-        why: "Two things would believe they own that number, producing drift on every plan — which is an ownership conflict rather than a discipline failure. Declare `ignore_changes` for it, or do not manage the resource. Terraform is for things created once and changed rarely."
+        why: "Two things would believe they own that number, producing drift on every plan — which is an ownership conflict rather than a discipline failure. Declare `ignore_changes` for it, or do not manage the resource. Terraform is for things created once and changed rarely. A VPC is created once and changed rarely, which is exactly what Terraform is for."
       }
     ]
   },

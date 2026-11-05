@@ -234,32 +234,35 @@ def version(i):
       {
         stem: "A colleague says you cannot commit a 40 MB CSV that changes monthly because git stores every version in full. What is wrong with the reasoning?",
         options: [
-          "Nothing — that is exactly how git works for files it cannot diff",
-          "Git packfiles delta-compress successive versions, including binary; measured here, CSV history came to 0.6x a single copy and the marginal version cost 0.23 MB",
-          "Git compresses only text, so the claim holds for binary but not CSV"
+          "Nothing: that is exactly how git behaves for any file it cannot diff",
+          "Packfiles delta-compress versions: CSV history came to 0.6x a single copy",
+          "Git compresses only text, so the claim holds for binary files but not CSV",
+          "Git LFS is built in, so any file over 10 MB moves out of history by itself"
         ],
         answer: 1,
-        why: "The third option is the half-truth worth discarding: binary deltas also worked, costing 0.41 MB per version of a 5.6 MB .npy. The real reason to use a pointer is that clone transfers all history — 13.09 MB against 0.03 MB here — not that storage is large."
+        why: "The third option is the half-truth worth discarding: binary deltas also worked, costing 0.41 MB per version of a 5.6 MB .npy. The real reason to use a pointer is that clone transfers all history — 13.09 MB against 0.03 MB here — not that storage is large. LFS is a separate extension you install and configure, and nothing moves out of history by itself."
       },
       {
         stem: "You move a versioned dataset from git into a DVC-style content-addressed cache. What happens to total bytes stored?",
         options: [
-          "It falls, because the pointer is only 142 bytes",
-          "It rises, often several-fold — each version is stored whole because content addressing has no delta between versions; measured at 29.11 MB against git's 7.05 MB",
-          "It is unchanged, since the same data is being stored either way"
+          "It falls, because the pointer committed to git is only 142 bytes long",
+          "It rises: each version is stored whole, at 29.11 MB against git's 7.05 MB",
+          "It is unchanged, since the same data is stored by both systems either way",
+          "It rises slightly, because the cache keeps only deltas plus a hash per version"
         ],
         answer: 1,
-        why: "The pointer shrinks the repository, not the storage bill. Two files differing by two hundred rows hash completely differently, so the cache keeps both in full. You are trading total storage for clone size, and that trade is good at gigabyte scale and poor at megabyte scale."
+        why: "The pointer shrinks the repository, not the storage bill. Two files differing by two hundred rows hash completely differently, so the cache keeps both in full. You are trading total storage for clone size, and that trade is good at gigabyte scale and poor at megabyte scale. A content-addressed cache stores no deltas, which is the whole reason the total rises several-fold."
       },
       {
         stem: "Your data versioning records a pointer with the file path and a sha256. A run from four months ago cannot be reproduced. What is this pointer unable to tell you?",
         options: [
-          "Whether the bytes are the same — that is what the hash is for",
-          "Whether the data can be regenerated, and what library versions produced the result — a hash identifies bytes you still have, not a version you can rebuild",
-          "Nothing; a content hash is sufficient provenance"
+          "Whether the bytes are the same, which is exactly what the hash is for",
+          "Whether the data can be rebuilt, and which library versions were used",
+          "Nothing at all: a content hash on its own is sufficient provenance here",
+          "Where the file lived at the time, because a hash says nothing about location"
         ],
         answer: 1,
-        why: "A hash verifies bytes you possess. If the cache entry has been pruned, the hash names something unrecoverable. That is why a version must be reproducible from its identifier — the determinism point — and why env_sha from 1.2 belongs beside it."
+        why: "A hash verifies bytes you possess. If the cache entry has been pruned, the hash names something unrecoverable. That is why a version must be reproducible from its identifier — the determinism point — and why env_sha from 1.2 belongs beside it. The path is the other field in the pointer, so that much it does record."
       }
     ]
   },

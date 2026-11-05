@@ -207,32 +207,35 @@ mu_b, sd_b = Xtr[perm].mean(0), Xtr[perm].std(0)
       {
         stem: "Two training runs report AUC 0.8510956526 to ten decimal places. Is the training reproducible?",
         options: [
-          "Yes — agreement to ten decimals is conclusive",
-          "Unknown: two torch runs here matched on AUC to ten decimals and had different prediction digests, because AUC is a rank statistic that absorbs a great deal of per-prediction movement",
-          "No — any two runs of the same code must differ"
+          "Yes: agreement to ten decimals is conclusive evidence of reproducibility",
+          "Unknown: AUC is a rank statistic, so matching runs can differ per prediction",
+          "No: any two runs of the same code are bound to differ in some way or other",
+          "Yes, provided that both runs also recorded the same random seed in their params"
         ],
         answer: 1,
-        why: "AUC over 6,000 values can be identical while individual probabilities differ, the same way int8 quantisation in lesson 2.3 moved probabilities by 0.045 while accuracy moved 0.0007. Compare a hash of the whole prediction vector; it is one line and it is unambiguous."
+        why: "AUC over 6,000 values can be identical while individual probabilities differ, the same way int8 quantisation in lesson 2.3 moved probabilities by 0.045 while accuracy moved 0.0007. Compare a hash of the whole prediction vector; it is one line and it is unambiguous. Recording a seed shows what was requested, and only comparing the predictions shows what happened."
       },
       {
         stem: "A feature list is built with `list({\"income\", \"dti\", \"credit_score\", \"tenure\"})`. What is the risk?",
         options: [
-          "None — sets contain the same elements regardless of order",
-          "Column order varies between processes because string hashing is randomised per process, so a model trained under one order and served under another receives features in the wrong positions and raises nothing",
-          "The set may silently drop a duplicate feature name"
+          "None, because a set holds the same elements whatever order they come in",
+          "Column order varies by process, so serving can misplace features silently",
+          "The set may silently drop a duplicate feature name when the list is built",
+          "Rebuilding the list on every call adds measurable latency to each prediction"
         ],
         answer: 1,
-        why: "Measured: four PYTHONHASHSEED values gave four different orders from that one line. Within a single process it is harmless because training and inference agree; across the boundary it is training-serving skew with no code difference at all. `sorted(feats)` fixes it entirely."
+        why: "Measured: four PYTHONHASHSEED values gave four different orders from that one line. Within a single process it is harmless because training and inference agree; across the boundary it is training-serving skew with no code difference at all. `sorted(feats)` fixes it entirely. Building a four-item list costs a microsecond or so, which no latency budget would notice."
       },
       {
         stem: "A rebuild of last quarter's model produces predictions differing by at most 5e-16, with no decision changed. Is it reproduced?",
         options: [
-          "No — the predictions are not bit-identical, so reproducibility failed",
-          "Yes, behaviourally: it agrees on every decision and the metric matches well inside the noise floor, which is the standard worth holding unless a regulator requires an identical artifact",
-          "Cannot say without rerunning with a fixed thread count"
+          "No: the predictions are not bit-identical, so reproducibility has failed",
+          "Yes, behaviourally: all decisions agree and the metric is inside the floor",
+          "Cannot say without rerunning it under a fixed thread count on the same CPU",
+          "Only if the two model files also have matching sha256 digests from the build"
         ],
         answer: 1,
-        why: "Bit-exactness is defeated by row order, thread count, a patch release or a different CPU, so demanding it costs real engineering for little benefit. The useful definition is agreement on decisions plus metrics inside lesson 3.2's measured 0.17-point floor — with bit-exactness bought deliberately only where it is a requirement."
+        why: "Bit-exactness is defeated by row order, thread count, a patch release or a different CPU, so demanding it costs real engineering for little benefit. The useful definition is agreement on decisions plus metrics inside lesson 3.2's measured 0.17-point floor — with bit-exactness bought deliberately only where it is a requirement. Matching digests is bit-exactness under another name, and that is needed only where a regulator requires an identical artifact."
       }
     ]
   },

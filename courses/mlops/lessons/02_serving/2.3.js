@@ -217,32 +217,35 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
       {
         stem: "You quantise a model to int8. Accuracy falls by 0.0007 and no decisions change on your test set. What else must you check before shipping it?",
         options: [
-          "Nothing — unchanged decisions and negligible accuracy loss is a pass",
-          "How far individual probabilities moved: int8 shifted them by up to 0.045 here, which matters if the score feeds a threshold, a price, a ranking or a review queue",
-          "Whether the model file is smaller than the original"
+          "Nothing: unchanged decisions and negligible accuracy loss count as a pass",
+          "How far each probability moved, if scores feed a threshold or a price",
+          "Whether the model file has got smaller than the original artifact was",
+          "Whether AUC on the test set has moved by more than the accuracy did"
         ],
         answer: 1,
-        why: "Aggregate accuracy is too coarse to see probability movement that changes no decision on your test set but does change downstream behaviour. The acceptance test is decision agreement plus max and p99 probability deltas — three numbers, not one."
+        why: "Aggregate accuracy is too coarse to see probability movement that changes no decision on your test set but does change downstream behaviour. The acceptance test is decision agreement plus max and p99 probability deltas — three numbers, not one. int8 moved probabilities by up to 0.045 here, and AUC would not show that either, because it only measures rank."
       },
       {
         stem: "A 0.7 KB logistic regression matches a 163.7 KB gradient-boosted ensemble's accuracy and AUC. What does that tell you?",
         options: [
-          "The distillation worked well and the teacher's soft labels were informative",
-          "The ensemble's extra capacity was never buying anything on this problem — a modelling finding, consistent with a hyperparameter sweep that moved AUC only 0.3 points",
-          "The test set is too small to distinguish the models"
+          "The distillation worked well, and the teacher's soft labels were informative",
+          "The ensemble's extra capacity was buying nothing on this particular problem",
+          "The test set is too small to distinguish the two models from each other",
+          "The ensemble has overfitted badly, and regularising it would beat both models"
         ],
         answer: 1,
-        why: "The logistic trained on hard labels did just as well as the one trained on teacher labels (0.7692 vs 0.7678), so distillation contributed nothing. The signal is about model class: if tuning buys nothing and a linear model matches the ensemble, capacity was not the binding constraint."
+        why: "The logistic trained on hard labels did just as well as the one trained on teacher labels (0.7692 vs 0.7678), so distillation contributed nothing. The signal is about model class: if tuning buys nothing and a linear model matches the ensemble, capacity was not the binding constraint. A hyperparameter sweep moved AUC only 0.3 points, so tuning the ensemble will not open a gap."
       },
       {
         stem: "Besides speed, what does exporting to ONNX give you?",
         options: [
-          "Smaller files, because the format is more compact than pickle",
-          "An artifact versioned independently of the training framework — a declared graph with an opset, rather than a pickle embedding class paths and attribute layouts",
-          "Automatic quantisation of the model weights"
+          "Smaller files, because the format is more compact than a pickle is",
+          "An artifact versioned apart from the framework, with a declared opset",
+          "Automatic quantisation of all the model weights during the export step",
+          "Encryption of the weights, so the file cannot be read without the runtime"
         ],
         answer: 1,
-        why: "The first option happened to be true here (0.59x) but is not guaranteed. The durable benefit is decoupling the artifact from the library that produced it, which removes the silent-behaviour-change risk of loading a pickle under a different scikit-learn."
+        why: "The first option happened to be true here (0.59x) but is not guaranteed. The durable benefit is decoupling the artifact from the library that produced it, which removes the silent-behaviour-change risk of loading a pickle under a different scikit-learn. ONNX is an open format, so anyone with the file can read the graph and its weights."
       }
     ]
   },

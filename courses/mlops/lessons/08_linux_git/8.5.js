@@ -213,7 +213,7 @@ exit $fail`,
           "`git commit --amend` with the fix, then a force-push so that the bad commit disappears"
         ],
         answer: 1,
-        why: "The first, third and fourth all rewrite history, so colleagues' repositories disagree with the remote about which commits exist and the same change can end up applied twice. Revert grows history instead, leaves the mistake visible — which is honest — and is itself a reviewable change."
+        why: "The other three all rewrite history, so colleagues' repositories disagree with the remote about which commits exist and the same change can end up applied twice. Revert grows history instead, leaves the mistake visible — which is honest — and is itself a reviewable change."
       },
       {
         stem: "Your pre-commit hook rejects files containing AWS keys. Is that sufficient protection?",

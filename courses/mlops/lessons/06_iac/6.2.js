@@ -181,32 +181,35 @@ EC.receiveLesson({
       {
         stem: "You delete a task from an Ansible playbook that installed a package. What happens on the next run?",
         options: [
-          "The package is removed, since it is no longer declared",
-          "Nothing — Ansible has no state file, so it has no record that the task ever ran and cannot un-apply it; the package stays installed everywhere",
-          "The run fails because the host no longer matches the playbook"
+          "The package is removed, since it is no longer declared anywhere",
+          "Nothing: with no state, Ansible cannot know the task ever ran",
+          "The run fails because the host no longer matches the playbook",
+          "The package stays, but the next run reports the host as drifted"
         ],
         answer: 1,
-        why: "This is the sharpest difference from Terraform, where in-state-and-absent-from-config means destroy. Ansible asserts conditions rather than owning resources, which is a limitation and also what makes it safe to run against hosts it does not own."
+        why: "This is the sharpest difference from Terraform, where in-state-and-absent-from-config means destroy. Ansible asserts conditions rather than owning resources, which is a limitation and also what makes it safe to run against hosts it does not own. With no record of what it did, Ansible has nothing to call drift."
       },
       {
         stem: "Which of these is a genuine reason an ML platform might need Ansible?",
         options: [
-          "To deploy model serving containers to the cluster",
-          "To install and pin GPU drivers on nodes — a container cannot supply a kernel driver, and the version must match the CUDA userland in the images",
-          "To create the cloud instances the nodes run on"
+          "To deploy the model serving containers on to the cluster's nodes",
+          "To install and pin GPU drivers, which no container can supply",
+          "To create the cloud instances that the cluster's nodes run on",
+          "To version the model artifacts that each serving image will load"
         ],
         answer: 1,
-        why: "The first is Kubernetes' job and the third is Terraform's. The driver case is genuine because of lesson 4.1's shared kernel: the driver belongs to the kernel, not to an image, so something has to configure the host — and that version coupling is a real source of nodes where images fail."
+        why: "Deploying containers is Kubernetes' job and creating instances is Terraform's. The driver case is genuine because of lesson 4.1's shared kernel: the driver belongs to the kernel, not to an image, so something has to configure the host — and that version coupling is a real source of nodes where images fail. Versioning artifacts belongs to the registry and the pipeline."
       },
       {
         stem: "Why is `ansible-playbook --check` less trustworthy than `terraform plan`?",
         options: [
-          "It runs more slowly and times out on large inventories",
-          "Check mode is implemented per module, a `shell` task cannot predict its own effect, and a task depending on an earlier task's result may report wrongly because that task did not run",
-          "It cannot connect to hosts without making changes"
+          "It runs more slowly and times out on large inventories of hosts",
+          "Check mode is per module, and a `shell` task cannot predict its effect",
+          "It cannot connect to any host without making changes to that host first",
+          "It runs against one host only, so the rest of the inventory goes unchecked"
         ],
         answer: 1,
-        why: "A Terraform plan file is the exact set of API calls that will be made. A clean Ansible check is reassurance rather than a guarantee, which is a good reason to prefer Terraform for anything it can express and to keep `shell` tasks to a minimum."
+        why: "A Terraform plan file is the exact set of API calls that will be made. A clean Ansible check is reassurance rather than a guarantee, which is a good reason to prefer Terraform for anything it can express and to keep `shell` tasks to a minimum. `--check` covers the same hosts as a real run."
       }
     ]
   },

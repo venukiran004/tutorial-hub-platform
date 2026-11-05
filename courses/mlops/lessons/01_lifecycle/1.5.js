@@ -254,32 +254,35 @@ def corrupt_dupes(df):      # a retry duplicates 20% of rows. Every value is val
       {
         stem: "An upstream team changes an income column from units to thousands. Your pipeline checks dtypes and null fractions. What happens?",
         options: [
-          "The dtype check fails, because the magnitude changed",
-          "Both checks pass, the model raises nothing, and predictions change severely — measured here as accuracy 0.7760 to 0.5853 and approval 0.447 to 0.036",
-          "The model raises a ValueError on out-of-range input"
+          "The dtype check fails, because the column's magnitude has changed so much",
+          "Both checks pass and nothing raises, while predictions change severely",
+          "The model raises a ValueError on input outside its training range",
+          "The null check fails, because the new values round down to missing ones"
         ],
         answer: 1,
-        why: "The column is still a float and still complete, so neither check has anything to say, and an estimator is a numerical function with no notion of meaning. Only a range check derived from the training distribution sees it — and it sees it unambiguously, at 100% of values outside the expected bounds."
+        why: "The column is still a float and still complete, so neither check has anything to say, and an estimator is a numerical function with no notion of meaning. Only a range check derived from the training distribution sees it — and it sees it unambiguously, at 100% of values outside the expected bounds. Nothing turns into a null, and accuracy fell from 0.7760 to 0.5853 with every check green."
       },
       {
         stem: "A retry duplicates 20% of rows in a batch. Which class of check detects it?",
         options: [
           "The distribution check, since the batch no longer matches the reference",
-          "None of the column-level checks — every value is valid and a random duplication moves no mean; it needs a row-count, uniqueness or batch-overlap assertion",
-          "The null check, because duplicated keys produce nulls on join"
+          "None of the column checks: it needs a row-count or uniqueness assertion",
+          "The null check, because duplicated keys produce nulls on the next join",
+          "The range check, because duplicated rows push the maximum above its bound"
         ],
         answer: 1,
-        why: "Measured: no check fired and the approval rate moved from 0.447 to 0.448. The damage is to aggregates rather than values — upweighted training rows, leakage across the split, inflated volumes, and overconfident drift statistics. That requires a batch-level assertion, which most column-oriented validators cannot express."
+        why: "Measured: no check fired and the approval rate moved from 0.447 to 0.448. The damage is to aggregates rather than values — upweighted training rows, leakage across the split, inflated volumes, and overconfident drift statistics. That requires a batch-level assertion, which most column-oriented validators cannot express. Range checks look at each value, and a duplicated value is as valid as the original."
       },
       {
         stem: "Which validation finding should block a pipeline rather than warn?",
         options: [
-          "A feature's mean has shifted half a standard deviation from the training reference",
-          "100% of a column's values fall outside the range ever seen in training — the data cannot be correct, as against merely being different",
-          "Any finding at all; validation should be strict by default"
+          "A feature's mean has shifted half a standard deviation from the reference",
+          "Every value in a column falls outside the range ever seen in training",
+          "Any finding at all, because validation should be strict by default",
+          "A column's null fraction has risen by one point against the reference"
         ],
         answer: 1,
-        why: "The distinction is possible-versus-impossible. A half-sd shift is ordinary population movement — it cost 0.4 points here and is lesson 1.1's World A, where acting on it is usually wrong. Blocking on everything is how a validator gets disabled, which is strictly worse than not having one."
+        why: "The distinction is possible-versus-impossible. A half-sd shift is ordinary population movement — it cost 0.4 points here and is lesson 1.1's World A, where acting on it is usually wrong. Blocking on everything is how a validator gets disabled, which is strictly worse than not having one. A one-point rise in nulls is a change worth a warning, not proof the data is wrong."
       }
     ]
   },

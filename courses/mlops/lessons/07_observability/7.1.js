@@ -210,31 +210,34 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
         stem: "Your four-minute training Job records its final metrics. Why will Prometheus probably not have them?",
         options: [
           "Job metrics are written to a different endpoint that Prometheus ignores",
-          "Prometheus pulls on an interval, and a process that exits between scrapes is invisible — the final values go with the pod, so a short-lived job needs a Pushgateway",
-          "Prometheus cannot scrape pods whose restartPolicy is Never"
+          "Prometheus pulls on an interval, and an exited process cannot be scraped",
+          "Prometheus cannot scrape any pod whose restartPolicy has been set to Never",
+          "Prometheus drops any series that has existed for less than five minutes"
         ],
         answer: 1,
-        why: "This is the pull model's one genuine gap, and the Pushgateway exists specifically for it. It is also commonly misused for service metrics, where pushing destroys the `up` signal and makes a stale value indistinguishable from a steady one."
+        why: "This is the pull model's one genuine gap, and the Pushgateway exists specifically for it. It is also commonly misused for service metrics, where pushing destroys the `up` signal and makes a stale value indistinguishable from a steady one. Prometheus keeps whatever it scraped, however short-lived the series, and these values were never scraped."
       },
       {
         stem: "You instrument latency as a Summary. Later you want fleet-wide p99 across ten replicas. What is the problem?",
         options: [
-          "Summaries are more expensive to store than histograms",
-          "A Summary's quantiles are computed inside each process, so there is no operation that combines ten p99s into the fleet's p99 — and fixing it means re-instrumenting and losing history",
-          "Summaries do not expose a count, so a weighted average is impossible"
+          "Summaries are more expensive to store than histograms are at this scale",
+          "Quantiles are computed per process, so ten p99s cannot be combined",
+          "Summaries do not expose a count, so a weighted average is impossible",
+          "Summaries can track only one quantile, so p99 would have to replace p50"
         ],
         answer: 1,
-        why: "Histogram buckets are cumulative counts and therefore add, which is why `sum(rate(bucket[5m])) by (le)` works. This is the one metric-type choice that cannot be reversed cheaply — lesson 7.2 measures the error from trying to average quantiles at 46%."
+        why: "Histogram buckets are cumulative counts and therefore add, which is why `sum(rate(bucket[5m])) by (le)` works. This is the one metric-type choice that cannot be reversed cheaply — lesson 7.2 measures the error from trying to average quantiles at 46%. A Summary can track several quantiles, and each one is still local to its process."
       },
       {
         stem: "A metric has labels with 3, 2, 4, 5 and 3 values and 8 histogram buckets. Someone adds a `customer_id` label with 50,000 values. What happens to the series count?",
         options: [
-          "It increases by 50,000, from 2,880 to 52,880",
-          "It is multiplied: 2,880 becomes 144,000,000, because cardinality is the product of label value counts",
-          "Prometheus deduplicates unused combinations, so the practical increase is small"
+          "It increases by 50,000, from 2,880 to 52,880, one new series per value",
+          "It is multiplied: 2,880 becomes 144,000,000, as cardinality is a product",
+          "Prometheus deduplicates unused combinations, so the practical increase is small",
+          "It doubles, from 2,880 to 5,760, because one new label is one new dimension"
         ],
         answer: 1,
-        why: "Cardinality is a product, not a sum — this is the arithmetic that makes an apparently harmless instrumentation change take a monitoring system down. Anything per-request or per-entity belongs in a log or a trace, which is lesson 7.3's division of labour."
+        why: "Cardinality is a product, not a sum — this is the arithmetic that makes an apparently harmless instrumentation change take a monitoring system down. Anything per-request or per-entity belongs in a log or a trace, which is lesson 7.3's division of labour. Each new dimension multiplies by its number of values, so this one multiplies by 50,000, not 2."
       }
     ]
   },

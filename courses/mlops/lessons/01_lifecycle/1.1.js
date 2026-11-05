@@ -291,32 +291,35 @@ def label(X, t, rng):                   # t=0 launch rule, t=1 downturn rule
       {
         stem: "A drift dashboard has flagged your main input feature every day for three weeks. Offline accuracy on a freshly labelled sample is unchanged. What is the most likely situation?",
         options: [
-          "The model is degrading and the accuracy sample is too small to show it",
-          "Covariate shift with the rule intact — the inputs genuinely moved, and because P(Y|X) did not change the model's answers are still correct",
-          "The drift detector is misconfigured and should be removed"
+          "The model is degrading, and the labelled sample is too small to show it yet",
+          "Covariate shift with the rule intact: inputs moved, and the model is still right",
+          "The drift detector is misconfigured, and its alert should simply be removed now",
+          "Concept drift: the rule has changed, and the labels have not caught up with it yet"
         ],
         answer: 1,
-        why: "This is World A. The p-value is real and its operational meaning is nil: the population moved into a different part of a function the model still gets right. The detector is not broken and should not be deleted — but it should be an alert you look at, not a page, and the thing that gates a retrain has to be correlated with harm."
+        why: "This is World A. The p-value is real and its operational meaning is nil: the population moved into a different part of a function the model still gets right. The detector is not broken and should not be deleted — but it should be an alert you look at, not a page, and the thing that gates a retrain has to be correlated with harm. A changed rule would show in freshly labelled data, and that accuracy has not moved."
       },
       {
         stem: "Your model's prediction distribution is being monitored and has been stable for months. What does that rule out?",
         options: [
-          "Concept drift, since a changed rule would change the output mix",
-          "Almost nothing — the approval rate held at 0.450 through a 20-point accuracy collapse, because the model approved the same share of applicants and the wrong ones",
-          "Data quality problems upstream"
+          "Concept drift, since a changed rule would have to change the output mix",
+          "Almost nothing: approval held at 0.450 while accuracy fell by 20 points",
+          "Data quality problems upstream, since bad inputs would move the outputs",
+          "Any model degradation at all, as long as the inputs have stayed stable too"
         ],
         answer: 1,
-        why: "Output-distribution monitoring detects a change in how generous the model is, not a change in whether it is right. Measured here: 0.451 at launch, 0.450 at month 12, with accuracy down from 0.7667 to 0.5643 in between."
+        why: "Output-distribution monitoring detects a change in how generous the model is, not a change in whether it is right. Measured here: 0.451 at launch, 0.450 at month 12, with accuracy down from 0.7667 to 0.5643 in between. Stable inputs add nothing: in this same world the input drift test never fired."
       },
       {
         stem: "A rule change arrives that makes every applicant's score uniformly stricter, preserving their order. What happens to a deployed model's AUC?",
         options: [
-          "It falls sharply, because P(Y|X) changed",
-          "It is largely unharmed, because AUC measures ranking and the ranking was preserved — the first version of this experiment did exactly this and accuracy rose",
-          "It is unaffected, because AUC is threshold-independent and therefore drift-independent"
+          "It falls sharply, because P(Y|X) has changed and AUC depends directly on it",
+          "It is largely unharmed, because AUC measures ranking and the order held",
+          "It is unaffected, because AUC is threshold-independent so drift-independent",
+          "It cannot be measured, because the old labels no longer describe the new rule"
         ],
         answer: 1,
-        why: "Concept drift damages a model in proportion to how much it reorders. A monotone sharpening leaves ranking intact, so a ranking metric barely moves; the calibration and the decision threshold are what need attention. The knee and the sign flip in World B reorder, which is why they cost 21 points of AUC."
+        why: "Concept drift damages a model in proportion to how much it reorders. A monotone sharpening leaves ranking intact, so a ranking metric barely moves; the calibration and the decision threshold are what need attention. The knee and the sign flip in World B reorder, which is why they cost 21 points of AUC. New labels are collected under the new rule, so AUC can be measured on them as usual."
       }
     ]
   },

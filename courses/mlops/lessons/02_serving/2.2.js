@@ -192,32 +192,35 @@ n_model = n_for_proportion(0.7167, 0.7667)    # accuracy -5 points`,
       {
         stem: "Why does model-quality monitoring take 45 days here when the statistics need only 1,789 rows — 89 seconds of traffic?",
         options: [
-          "Because accuracy is expensive to compute at scale",
-          "Because the labels do not exist yet — a loan performs or defaults months after the decision, so the delay is the label, not the statistics",
-          "Because 1,789 rows is not enough for a reliable accuracy estimate"
+          "Because accuracy is too expensive to compute at this volume of live traffic",
+          "Because the labels do not exist yet: loans default months after the decision",
+          "Because 1,789 rows is still too few to give a reliable estimate of accuracy",
+          "Because the prediction log is loaded into the warehouse in large monthly batches"
         ],
         answer: 1,
-        why: "This separation matters: the sample size is trivially achievable and the wait is entirely about ground truth arriving. It is also why the prediction log is the key investment — the labels can be joined retrospectively, making accuracy computable for a past period rather than lost."
+        why: "This separation matters: the sample size is trivially achievable and the wait is entirely about ground truth arriving. It is also why the prediction log is the key investment — the labels can be joined retrospectively, making accuracy computable for a past period rather than lost. A log-loading schedule is an engineering choice, and no schedule makes a label arrive sooner."
       },
       {
         stem: "Your drift check runs hourly on 2,000 samples and fires about once a day, inconsistently. The underlying shift is real and persistent. What is happening?",
         options: [
-          "The shift is intermittent, appearing and disappearing",
-          "The test is underpowered at that window size — power was 0.05 at n=2,000 and 0.41 at n=10,000, so it detects a persistent shift only occasionally",
-          "The alpha threshold is set too low"
+          "The shift is intermittent, appearing and disappearing from hour to hour",
+          "The test is underpowered at that window: power was 0.05 at n=2,000",
+          "The alpha threshold is the wrong value for a check that runs this often",
+          "The reference window is refreshed hourly, so it keeps absorbing the shift"
         ],
         answer: 1,
-        why: "An underpowered test produces a random-looking alert schedule against a constant world, which is how monitors lose credibility. The fix is a larger window or an explicitly accepted minimum detectable shift, not a different statistic."
+        why: "An underpowered test produces a random-looking alert schedule against a constant world, which is how monitors lose credibility. The fix is a larger window or an explicitly accepted minimum detectable shift, not a different statistic. A reference that absorbed the shift would silence the alert for good, not fire it at random."
       },
       {
         stem: "Which signal should trigger an automatic retrain?",
         options: [
-          "A statistically significant input drift alert",
-          "None on its own — drift alerts fired for 11 months in lesson 1.1 while accuracy held, so retraining should be gated on labels or a business metric that establishes harm",
-          "A 5-point move in the prediction distribution"
+          "A statistically significant input drift alert from the hourly check",
+          "None on its own: a retrain should be gated on evidence of harm",
+          "A 5-point move in the prediction distribution over the past few hours",
+          "A fixed weekly schedule, so that the model never has time to go stale"
         ],
         answer: 1,
-        why: "Retraining on input drift alone would have triggered eleven unnecessary cycles in World A, each one a cost and a risk. Fast signals are for paging a human; the decision to change the model needs evidence of harm, which means labels or a downstream business metric."
+        why: "Retraining on input drift alone would have triggered eleven unnecessary cycles in World A, each one a cost and a risk. Fast signals are for paging a human; the decision to change the model needs evidence of harm, which means labels or a downstream business metric. A calendar is not a signal: it retrains through weeks when nothing is wrong and ignores harm between runs."
       }
     ]
   },
