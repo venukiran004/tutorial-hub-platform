@@ -170,32 +170,35 @@ EC.receiveLesson({
       {
         stem: "Why does rebasing change commit hashes even though the file contents are identical?",
         options: [
-          "Because rebase recomputes the timestamp on each commit",
-          "Because a commit's hash is computed from its content including its parent, so replaying onto a new base produces different content and therefore a new id — git creates new commits and abandons the originals",
-          "Because rebase compresses the commits into a smaller packfile"
+          "Because rebase resets the timestamp on each commit, and the hash is taken from that alone",
+          "Because a commit's hash covers its parent, so a new base means new content and a new id",
+          "Because rebase compresses the commits into a smaller packfile with different object ids",
+          "Because git adds a random salt whenever it rewrites a commit, to keep the old ids unique"
         ],
         answer: 1,
-        why: "Measured: the same feature commits were 7218650/933afd3 after a merge and e954b24/8ea9e02 after a rebase. This is the same content addressing as a data store or an image layer, and it is what makes rebasing shared commits unsafe rather than merely untidy."
+        why: "Measured: the same feature commits were 7218650/933afd3 after a merge and e954b24/8ea9e02 after a rebase. This is the same content addressing as a data store or an image layer, and it is what makes rebasing shared commits unsafe rather than merely untidy. Hashing is deterministic: there is no salt, and the timestamp is only one of several inputs."
       },
       {
         stem: "A colleague has your feature branch checked out. You rebase it and force-push. What happens to them?",
         options: [
-          "Their next pull fast-forwards cleanly to your rewritten history",
-          "Their repository still has the old commits, so a pull merges your new ones alongside them and the same change appears twice under two hashes",
-          "Git refuses the force-push because the branch is checked out elsewhere"
+          "Their next pull fast-forwards cleanly on to your rewritten history, and nothing is lost",
+          "A pull merges your new commits with their old ones, so each change appears twice",
+          "Git refuses the force-push, because the branch is checked out on another machine",
+          "Their old commits are deleted from their clone the next time they fetch from the remote"
         ],
         answer: 1,
-        why: "This is why the rule is to rebase only commits nobody else has. `--force-with-lease` does not prevent this case — it protects against overwriting commits you have not fetched — so the real control is the convention about which branches are rewritable."
+        why: "This is why the rule is to rebase only commits nobody else has. `--force-with-lease` does not prevent this case — it protects against overwriting commits you have not fetched — so the real control is the convention about which branches are rewritable. Fetching never deletes local commits, and a remote cannot see what anyone has checked out."
       },
       {
         stem: "Which of these can destroy work that no git command can recover?",
         options: [
           "`git reset --hard` on uncommitted changes in the working tree",
           "`git reset --hard` on commits that exist only on a local branch",
-          "`git rebase` on commits that have been pushed"
+          "`git rebase` on commits that have already been pushed to a remote",
+          "`git branch -D` on a branch whose commits were never merged anywhere"
         ],
         answer: 0,
-        why: "Committed work is reachable through the reflog, which lesson 8.5 measures recovering. Uncommitted changes in the working tree were never stored as objects, so there is nothing to recover — which is the one genuinely irreversible everyday git operation."
+        why: "Committed work is reachable through the reflog, which lesson 8.5 measures recovering. Uncommitted changes in the working tree were never stored as objects, so there is nothing to recover — which is the one genuinely irreversible everyday git operation. A deleted branch is recoverable the same way, because its commits stay in the reflog."
       }
     ]
   },

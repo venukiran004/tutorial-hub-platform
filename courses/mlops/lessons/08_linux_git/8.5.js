@@ -196,32 +196,35 @@ exit $fail`,
       {
         stem: "You accidentally run `git reset --hard HEAD~2` on a branch with two commits of work. Is it recoverable?",
         options: [
-          "No — a hard reset permanently deletes the commits",
-          "Yes: reset moves the branch pointer, so the commits are merely unreachable. The reflog still holds their hashes and they survive until gc, roughly 90 days",
-          "Only if the branch was pushed to a remote first"
+          "No: a hard reset deletes the commits from the object store, so they are gone for good",
+          "Yes: reset only moves the branch pointer, and the reflog still holds both hashes",
+          "Only if the branch was pushed to a remote first, since that holds the only other copy",
+          "Only if you stop work at once, because the next commit overwrites the orphaned objects"
         ],
         answer: 1,
-        why: "Measured: the log showed one commit where there had been three, the reflog held both 'lost' hashes, and `reset --hard 664ec22` restored the branch exactly. What is *not* recoverable is uncommitted working-tree work, because git never created an object for it."
+        why: "Measured: the log showed one commit where there had been three, the reflog held both 'lost' hashes, and `reset --hard 664ec22` restored the branch exactly. What is *not* recoverable is uncommitted working-tree work, because git never created an object for it. New commits overwrite nothing: objects are removed only by garbage collection."
       },
       {
         stem: "A bad commit is on `main`, which several people have pulled. How do you undo it?",
         options: [
-          "`git reset --hard` to the previous commit and force-push",
-          "`git revert` it, creating a new inverse commit — the only one of these operations that is safe on history others already have",
-          "`git rebase -i` to drop the commit, then force-push with lease"
+          "`git reset --hard` to the previous commit, then a force-push to update the remote",
+          "`git revert` it, which adds an inverse commit and leaves the existing history alone",
+          "`git rebase -i` to drop the commit, then a force-push with lease to protect others",
+          "`git commit --amend` with the fix, then a force-push so that the bad commit disappears"
         ],
         answer: 1,
-        why: "The first and third both rewrite history, so colleagues' repositories disagree with the remote about which commits exist and the same change can end up applied twice. Revert grows history instead, leaves the mistake visible — which is honest — and is itself a reviewable change."
+        why: "The first, third and fourth all rewrite history, so colleagues' repositories disagree with the remote about which commits exist and the same change can end up applied twice. Revert grows history instead, leaves the mistake visible — which is honest — and is itself a reviewable change."
       },
       {
         stem: "Your pre-commit hook rejects files containing AWS keys. Is that sufficient protection?",
         options: [
-          "Yes — the hook runs before every commit",
-          "No: `.git/hooks` is not version-controlled so a fresh clone has none, and `--no-verify` bypasses it. Enforcement needs a CI check or provider push protection",
-          "No, because hooks cannot read staged file contents"
+          "Yes: the hook runs before every commit, so a key can never reach the repository",
+          "No: hooks are not cloned and `--no-verify` skips them, so enforce it server-side",
+          "No, because a hook can only see file names and cannot read staged file contents",
+          "Yes, as long as the hook script itself is committed to the repository's `.git` folder"
         ],
         answer: 1,
-        why: "A local hook helps the person who installed it. The pre-commit framework makes the local half shareable via a committed config, but the enforcement has to be server-side. And once a secret is committed it is in an object for ever, so the response is rotate first, rewrite second."
+        why: "A local hook helps the person who installed it. The pre-commit framework makes the local half shareable via a committed config, but the enforcement has to be server-side. And once a secret is committed it is in an object for ever, so the response is rotate first, rewrite second. Nothing under `.git` is ever committed, and section 4's hook reads staged content with `git show`."
       }
     ]
   },

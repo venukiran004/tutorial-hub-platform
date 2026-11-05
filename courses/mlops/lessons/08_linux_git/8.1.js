@@ -165,32 +165,35 @@ python   4411  app    7w   REG  147G      0      983 /var/log/train.log (deleted
       {
         stem: "`df -h` reports a filesystem 99% full. `du -sh` on the same path totals less than a third of that. What is happening?",
         options: [
-          "`du` is excluding hidden files and needs `-a`",
-          "Files have been deleted while a process still holds them open — the space stays allocated until the descriptor closes, and `du` cannot see them because the names are gone",
-          "The filesystem needs an fsck to reclaim orphaned blocks"
+          "`du` skips hidden files, so it needs `-a` before the two totals will agree",
+          "Deleted files are still held open by a process, so `df` counts blocks `du` cannot see",
+          "The filesystem has orphaned blocks left by a crash that need an fsck to reclaim",
+          "Reserved root blocks are counted by `df` and ignored by `du`, which explains the whole gap"
         ],
         answer: 1,
-        why: "`lsof +L1` lists files with a link count of zero and names the holding process. `rm` cannot help because there is no longer a name to remove — only closing the descriptor, usually by restarting the process, frees the space. A bad log rotation is the classic cause."
+        why: "`lsof +L1` lists files with a link count of zero and names the holding process. `rm` cannot help because there is no longer a name to remove — only closing the descriptor, usually by restarting the process, frees the space. A bad log rotation is the classic cause. Reserved blocks are usually about 5% of a filesystem, nowhere near two thirds of it."
       },
       {
         stem: "Your container runs as uid 10001 and cannot write to a bind-mounted host directory owned by uid 1000. Why does the error say only 'Permission denied'?",
         options: [
-          "The mount is read-only and the error is misleading",
-          "The kernel compares uid numbers rather than names, and the container and host each have their own /etc/passwd — so nothing in the error can mention a mapping that does not exist",
-          "Bind mounts require the container to run as root"
+          "The mount is read-only, and the kernel reports that as a generic permission error",
+          "The kernel compares numeric uids, and each side has its own /etc/passwd to name them",
+          "Bind mounts only accept writes from processes running as root inside the container",
+          "The container runtime strips the uid mapping out of error messages for security reasons"
         ],
         answer: 1,
-        why: "A uid is an integer; the name is a userspace lookup. `appuser` inside and a developer's account outside are the same entity only if the numbers match. `fsGroup` in a pod spec sets group ownership of the mount to a gid the container's user has, and a named volume avoids the issue entirely."
+        why: "A uid is an integer; the name is a userspace lookup. `appuser` inside and a developer's account outside are the same entity only if the numbers match. `fsGroup` in a pod spec sets group ownership of the mount to a gid the container's user has, and a named volume avoids the issue entirely. The runtime strips nothing: the message comes from the kernel, which never had a name to print."
       },
       {
         stem: "A training pod writes checkpoints to an emptyDir with no `ephemeral-storage` limit. It fills the node's disk. What happens?",
         options: [
-          "Writes begin to fail with ENOSPC but the pod keeps running",
-          "The kubelet evicts the pod to protect the node — not throttled like CPU, not OOMKilled like memory — and it may be rescheduled onto another node to do the same thing",
-          "The emptyDir is automatically capped at the node's available disk"
+          "Writes start failing with ENOSPC, but the pod keeps running until someone restarts it",
+          "The kubelet evicts the pod to protect the node, and it may be rescheduled elsewhere",
+          "The emptyDir is capped automatically at whatever disk the node has available",
+          "The container is OOMKilled, because every emptyDir write is charged to its memory limit"
         ],
         answer: 1,
-        why: "Ephemeral storage is the third resource with its own failure mode: eviction. Because the limit is usually omitted, the checkpoint directory is bounded only by the node's disk, and the eviction takes neighbouring pods' stability with it — which looks like a scheduling problem rather than a storage one."
+        why: "Ephemeral storage is the third resource with its own failure mode: eviction. Because the limit is usually omitted, the checkpoint directory is bounded only by the node's disk, and the eviction takes neighbouring pods' stability with it — which looks like a scheduling problem rather than a storage one. Only an emptyDir with `medium: Memory` is charged to memory, and this one is on disk."
       }
     ]
   },

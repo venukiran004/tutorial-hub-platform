@@ -185,32 +185,35 @@ Environment=OMP_NUM_THREADS=2    # lesson 4.1: limits are not virtualised` },
       {
         stem: "Your containerised server drops in-flight requests on every deploy. It has a SIGTERM handler. What is the most likely cause?",
         options: [
-          "The handler is too slow and the grace period is too short",
-          "A shell-form ENTRYPOINT: /bin/sh is pid 1 and does not forward SIGTERM, so the handler never runs — the 'no handler' row, after which SIGKILL arrives and cannot be caught",
-          "SIGTERM cannot be handled by a Python process"
+          "The handler is too slow, and the grace period expires before it finishes draining",
+          "A shell-form ENTRYPOINT makes /bin/sh pid 1, and it never forwards SIGTERM to the server",
+          "SIGTERM cannot be caught by a Python process, so the handler never actually runs",
+          "Kubernetes sends SIGKILL first during a rolling deploy, and SIGTERM only on a manual delete"
         ],
         answer: 1,
-        why: "The measurement showed that a handler is useless if the signal never reaches the process. Exec form makes the server pid 1 so the signal is delivered. The first option is a real but different problem, and it is distinguishable because a drain would at least start to be logged."
+        why: "The measurement showed that a handler is useless if the signal never reaches the process. Exec form makes the server pid 1 so the signal is delivered. The first option is a real but different problem, and it is distinguishable because a drain would at least start to be logged. Kubernetes always sends SIGTERM first, and SIGKILL only when the grace period ends."
       },
       {
         stem: "A process is in state `D` and `kill -9` has no effect. Why?",
         options: [
-          "The process has a SIGKILL handler installed",
-          "`D` is uninterruptible sleep inside a kernel call, so the signal cannot be delivered until that call returns — usually blocked I/O such as a hung network mount",
-          "Only root can send SIGKILL to that process"
+          "The process installed a SIGKILL handler, which is running and has not finished yet",
+          "`D` is uninterruptible sleep in a kernel call, so the signal waits for it to return",
+          "Only root can send SIGKILL, and the shell that ran `kill` is not running as root",
+          "The process is a zombie, so it has already exited and nothing is left that can be killed"
         ],
         answer: 1,
-        why: "SIGKILL cannot be handled, so the first option is impossible. `D` is the one state where 'kill -9 did nothing' is literally true, and the fix is to resolve whatever I/O the process is blocked on rather than to try harder to kill it."
+        why: "SIGKILL cannot be handled, so the first option is impossible. `D` is the one state where 'kill -9 did nothing' is literally true, and the fix is to resolve whatever I/O the process is blocked on rather than to try harder to kill it. A zombie is state `Z`, not `D`."
       },
       {
         stem: "A cron job runs `python retrain.py` and works when you run it by hand. From cron it silently does nothing. Why?",
         options: [
-          "cron requires the full crontab path syntax for scripts",
-          "cron provides a minimal environment and sources no profile, so `python` resolves differently or not at all — and with no output redirection the error goes to a mail spool nobody reads",
-          "cron jobs cannot execute Python without a shebang"
+          "cron needs the full crontab path syntax for scripts, or it skips the entry without warning",
+          "cron sources no profile, so `python` resolves differently and the error goes unread",
+          "cron cannot execute a Python script unless the file starts with a shebang line",
+          "cron runs every job as root, so the virtualenv refuses to activate for a different user"
         ],
         answer: 1,
-        why: "Four fixes are needed together: an absolute interpreter path to pin the virtualenv, an explicit `cd` because cron starts in HOME, redirecting both streams to a file, and escaping `%` — which cron treats as a newline and which silently truncates a `date` format string."
+        why: "Four fixes are needed together: an absolute interpreter path to pin the virtualenv, an explicit `cd` because cron starts in HOME, redirecting both streams to a file, and escaping `%` — which cron treats as a newline and which silently truncates a `date` format string. A user's crontab runs as that user, and a plain `python file.py` needs no shebang."
       }
     ]
   },

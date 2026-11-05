@@ -202,32 +202,35 @@ serve: ## run the service locally with reload
       {
         stem: "A pod reports Ready but every external request is refused. `ss -ltnp` inside shows `127.0.0.1:8000`. What is wrong?",
         options: [
-          "The Service's target port does not match the container port",
-          "The server is bound to loopback, which is reachable only within that container's network namespace — so the probe succeeds from inside while nothing external can connect",
-          "The readiness probe is checking the wrong path"
+          "The Service's target port does not match the port the container is listening on",
+          "The server is bound to loopback, so only that network namespace can reach it",
+          "The readiness probe is checking the wrong path, so the pod is Ready when it should not be",
+          "A NetworkPolicy is dropping external traffic before it reaches the pod's interface"
         ],
         answer: 1,
-        why: "The readiness probe runs inside the pod and reaches localhost successfully, which is exactly why this passes its own health check and serves nothing. Uvicorn and Flask both default to 127.0.0.1, which is correct for development and wrong in a container — hence `--host 0.0.0.0`."
+        why: "The readiness probe runs inside the pod and reaches localhost successfully, which is exactly why this passes its own health check and serves nothing. Uvicorn and Flask both default to 127.0.0.1, which is correct for development and wrong in a container — hence `--host 0.0.0.0`. The other options can also refuse traffic, but none of them is what `127.0.0.1:8000` in the `ss` output shows."
       },
       {
         stem: "Your script runs `python train.py | tee train.log`. Training crashes. What is the script's exit code without `pipefail`?",
         options: [
-          "Non-zero, inherited from python",
-          "Zero — a pipeline's status is its last command's, and `tee` succeeded, so the failure is swallowed and CI reports green",
-          "Non-zero, because `set -e` catches it"
+          "Non-zero, because the pipeline inherits its exit code from the python process",
+          "Zero: a pipeline's status is its last command's, and `tee` succeeded",
+          "Non-zero, because `set -e` stops the script as soon as any pipeline stage fails",
+          "Zero, but only if `tee` finished writing the log before python crashed"
         ],
         answer: 1,
-        why: "`set -e` does not help: the pipeline as a whole succeeded. `set -o pipefail` makes the pipeline fail when any stage does, and `PIPESTATUS` holds the per-stage codes. This idiom is completely standard for keeping a training log, which is what makes the bug common."
+        why: "`set -e` does not help: the pipeline as a whole succeeded. `set -o pipefail` makes the pipeline fail when any stage does, and `PIPESTATUS` holds the per-stage codes. This idiom is completely standard for keeping a training log, which is what makes the bug common. The timing of `tee` plays no part: it exits 0 once its input closes, whenever that happens."
       },
       {
         stem: "You run `ssh -N -L 5432:db.internal:5432 gpu-box`, and `db.internal` does not resolve on your machine. Does it work?",
         options: [
-          "No — the hostname must resolve locally for the forward to be set up",
-          "Yes: the destination hostname is resolved on the remote host, which is the point of the forward — you reach a database the GPU box can see and you cannot",
-          "Only if you add the host to your /etc/hosts first"
+          "No: the hostname must resolve on your machine before the forward can be set up",
+          "Yes: the destination hostname is resolved on the remote host, which can see the db",
+          "Only if you add the host to your /etc/hosts first, so that SSH can look it up",
+          "Only with `-R`, because `-L` can reach nothing beyond the remote machine's own localhost"
         ],
         answer: 1,
-        why: "This is the detail that makes `-L` useful rather than merely a port shuffle. The corollary is that writing `localhost` as the destination means the *remote's* localhost, which is what the notebook-forwarding case relies on."
+        why: "This is the detail that makes `-L` useful rather than merely a port shuffle. The corollary is that writing `localhost` as the destination means the *remote's* localhost, which is what the notebook-forwarding case relies on. `-R` opens the port on the far side, which is the wrong direction here."
       }
     ]
   },
