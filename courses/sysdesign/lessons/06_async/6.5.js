@@ -233,12 +233,12 @@ event-time, sliding          caught 20 of 20 stolen cards, 0 false alarms`,
     title: "Check yourself",
     questions: [
       { stem: "A stream processor counts events per minute by processing time. It pauses for 90 seconds and then catches up. What does the dashboard show?",
-        options: ["Accurate counts", "A drop to near zero, then a spike, though real traffic was steady", "Only a short delay in the numbers", "Duplicated counts for every minute"],
+        options: ["Accurate per-minute counts", "A false drop, then a false spike", "Only a short delay in the numbers", "Duplicated counts for every minute"],
         answer: 1,
         why: "Processing-time windows assign events to the minute they arrived, so the stalled minute receives almost nothing and the catch-up minute receives its own events plus the backlog — the measured 0 and double. Event-time windows would put each event in the minute it happened. Nothing is duplicated; events are just attributed to the wrong window." },
 
       { stem: "What does a watermark with an allowed lateness of 60 seconds mean?",
-        options: ["Events older than 60 seconds are deleted from the log", "A window is considered complete once the stream has seen event times 60 seconds past its end; events for it arriving after that are late", "Every event is delayed by 60 seconds", "Windows are 60 seconds long"],
+        options: ["Events over 60 s old are deleted", "Windows close 60 s past their end", "Every event is delayed by 60 s", "Every window is 60 s long"],
         answer: 1,
         why: "The watermark is the maximum event time seen minus the allowed lateness; when it passes a window's end, that window is finalised, and stragglers for it are late. The log is untouched, events are not artificially delayed, and window length is a separate setting." },
 
@@ -248,7 +248,7 @@ event-time, sliding          caught 20 of 20 stolen cards, 0 false alarms`,
         why: "\"Any sixty seconds\" is a sliding span, and it refers to when the transactions happened, so a per-card sliding window on event time matches the rule — it caught all twenty stolen cards. Tumbling boundaries split bursts and processing time mis-orders them; a one-hour session or a lifetime count answers different questions." },
 
       { stem: "What is the main operational cost of event-driven architecture?",
-        options: ["Higher CPU usage per request", "The end-to-end flow is spread across services, so tracing, schema contracts and lag monitoring become essential", "It requires synchronous calls", "It prevents adding new consumers"],
+        options: ["Higher CPU usage per request", "Flows span services: tracing, schemas, lag", "It requires synchronous calls throughout", "It prevents adding new consumers later"],
         answer: 1,
         why: "Publishers do not know their consumers and no code contains the whole flow, so answering where a given order is stuck needs trace ids carried through events, versioned schemas and per-consumer lag alerts. CPU is not the issue, the style is asynchronous by design, and adding consumers is its main benefit." }
     ]

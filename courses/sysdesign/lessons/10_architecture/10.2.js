@@ -261,22 +261,22 @@ fields used by more than one context: product_id [1, 2, 3], sku [2, 4]`,
     title: "Check yourself",
     questions: [
       { stem: "Catalogue, inventory, pricing and shipping all need \"product\" data. What does DDD recommend?",
-        options: ["One Product table shared by all four, to avoid duplication", "A separate product model per context with only the fields it needs, linked by a shared product ID and events", "Merge the four teams", "Store all product data in a document database"],
+        options: ["One Product table shared by all four contexts", "A model per context, linked by a shared product ID", "Merge the four teams into a single product team", "Store all product data in one document database"],
         answer: 1,
         why: "Each context's notion of a product differs and changes for different reasons, so each keeps its own model; identifiers and events connect them. A shared table couples all four teams, merging teams avoids the question, and the storage technology does not change the coupling." },
 
       { stem: "Popular products get hundreds of reviews per minute, and review writes keep failing with optimistic-lock conflicts. What is the likely design problem?",
-        options: ["The database is too slow", "Reviews were modelled inside the Product aggregate, so every review contends for the product's version", "Optimistic locking should be replaced with no locking", "Reviews need a cache"],
+        options: ["The database is too slow for review writes", "Reviews sit inside the Product aggregate", "Optimistic locking should be removed entirely", "Reviews need a cache in front of them"],
         answer: 1,
         why: "An aggregate is a unit of contention; putting reviews inside the product makes every review a write to the same aggregate. Making each review its own aggregate removed all conflicts in the simulation. Dropping concurrency control would lose writes, and neither a faster database nor a cache addresses the contention." },
 
       { stem: "Your payments context integrates with an external provider whose API uses its own statuses, amounts in minor units and error codes. Which context-map relationship fits?",
-        options: ["Shared kernel", "Anti-corruption layer: translate the provider's model at the boundary so it does not leak into yours", "Conformist: use the provider's model everywhere", "Separate ways"],
+        options: ["Shared kernel with the provider's own team", "Anti-corruption layer translating at the boundary", "Conformist: use the provider's model everywhere", "Separate ways, with no integration at all"],
         answer: 1,
         why: "An anti-corruption layer — an adapter at context scale — protects your model from a foreign one. Conforming would spread the provider's statuses and units through your code, a shared kernel is for two internal contexts, and you cannot go separate ways from your payment provider." },
 
       { stem: "Which subdomain should get the most modelling effort and the strongest engineers?",
-        options: ["Generic, because it is used by everyone", "Core, because it is what differentiates the business", "Supporting, because there are more of them", "Whichever has the most code"],
+        options: ["Generic, because everyone uses it", "Core, because it differentiates the business", "Supporting, because there are more of them", "Whichever subdomain has the most code"],
         answer: 1,
         why: "The core domain is the competitive advantage, so it repays careful modelling. Generic subdomains like identity or email are best bought, and supporting ones built simply. Code volume is not a measure of business value." }
     ]

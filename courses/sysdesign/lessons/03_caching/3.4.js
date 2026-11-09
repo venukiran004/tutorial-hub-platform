@@ -287,22 +287,22 @@ asyncio.run(main())`,
     title: "Check yourself",
     questions: [
       { stem: "A key read 5,000 times a second takes 200 ms to rebuild. With plain cache-aside, roughly how many rebuilds happen when it expires?",
-        options: ["1", "About 1,000 — every request in the 200 ms window misses and rebuilds", "5,000", "None — the cache rebuilds it automatically"],
+        options: ["Exactly 1", "About 1,000", "About 5,000", "None at all"],
         answer: 1,
         why: "Until the first rebuild finishes and writes the key, every arriving request misses; 5,000 per second × 0.2 s ≈ 1,000 identical queries, which the simulation confirmed. One rebuild is what single-flight achieves, 5,000 would be a full second of misses, and in cache-aside nothing rebuilds automatically — the application does, once per miss." },
 
       { stem: "What does stale-while-revalidate give up in exchange for nobody waiting?",
-        options: ["Durability: writes may be lost", "Freshness: requests during the rebuild get the previous value", "Availability: the key is unavailable during the rebuild", "Nothing; it is strictly better than single-flight"],
+        options: ["Durability: writes may be lost", "Freshness: readers get the old value", "Availability: the key is unavailable", "Nothing; it is strictly better"],
         answer: 1,
         why: "It serves the old value immediately while one background rebuild runs, so for the rebuild's duration responses are slightly stale. No writes are involved, and availability is the thing it improves. It is not strictly better: for data that must be current at the moment of expiry, single-flight's brief wait is the right trade." },
 
       { stem: "Ten thousand keys warmed at deploy time all have a one-hour TTL. What is the cheapest protection against them expiring together?",
-        options: ["A longer TTL", "Random jitter on each key's TTL", "A bigger database", "Disabling expiry"],
+        options: ["A longer TTL", "Random TTL jitter", "A bigger database", "Disabling expiry"],
         answer: 1,
         why: "Jitter gives each key a slightly different expiry, so reloads spread over minutes instead of landing in one second — one line of code. A longer TTL only moves the synchronised expiry later; a bigger database pays for the problem rather than removing it; and disabling expiry removes the backstop against stale data (3.3)." },
 
       { stem: "An attacker requests random product ids that do not exist. Why does negative caching alone not help, and what does?",
-        options: ["Negative caching is too slow; use a bigger cache", "Each id is new, so nothing repeats to hit the negative entry; a Bloom filter of existing ids rejects them before the database", "The attacker's requests are cached as hits", "Rate limiting is the only answer"],
+        options: ["Negative caching is too slow; grow the cache", "Ids never repeat; a Bloom filter rejects them", "The attacker's requests are cached as hits", "Rate limiting is the only real answer"],
         answer: 1,
         why: "Negative caching only stops repeats of the same missing key, and an attacker can avoid repeating forever. A Bloom filter answers \"definitely not present\" for almost all of them in memory, so they never reach the database. Cache size is irrelevant when keys never repeat, nothing is cached as a hit, and rate limiting (7.3) is a useful complement rather than the only answer." }
     ]

@@ -282,22 +282,22 @@ for label, followers in (
     title: "Check yourself",
     questions: [
       { stem: "A five-node Raft cluster is partitioned into groups of two and three. The leader is in the group of two. What happens?",
-        options: ["Both sides keep committing writes", "The two-node side cannot commit; the three-node side elects a new leader in a higher term and continues", "Both sides stop until the partition heals", "The leader keeps committing because it was elected first"],
+        options: ["Both sides keep committing writes as before", "The three-node side elects a new leader and continues", "Both sides stop until the partition heals", "The old leader keeps committing as it was elected first"],
         answer: 1,
         why: "Committing needs a majority — three of five — so the old leader can accept writes but never commit them; the three nodes time out, elect a leader in a new term and commit normally, as the simulation showed. Only the majority side makes progress, and having been elected earlier gives no authority once a higher term exists." },
 
       { stem: "Why can a Raft leader never be missing a committed entry?",
-        options: ["Leaders copy logs from every node before starting", "Committed entries are on a majority, a leader needs a majority's votes, and nodes only vote for candidates at least as up to date as themselves", "Clocks are synchronised", "Followers never crash"],
+        options: ["Leaders copy logs from every node before starting", "Votes go only to candidates at least as up to date", "All node clocks are kept tightly synchronised", "Followers are assumed never to crash or restart"],
         answer: 1,
         why: "The voting majority and the majority holding the entry overlap in at least one node, and that node refuses to vote for a candidate whose log lacks the entry. No timing, clock or reliability assumption is needed, and leaders do not collect every log at election time." },
 
       { stem: "Why are consensus clusters usually 3 or 5 nodes rather than 4 or 6?",
-        options: ["Even numbers cannot elect a leader", "An even-sized cluster tolerates no more failures than the odd size below it, while adding cost and a replica on the write path", "Raft only supports odd sizes", "Even sizes are slower to elect"],
+        options: ["Even numbers can never elect a single leader", "Even sizes tolerate no more failures, at higher cost", "Raft only supports clusters of odd sizes", "Even-sized clusters are always slower to elect"],
         answer: 1,
         why: "A majority of 4 is 3, so 4 nodes survive one failure — the same as 3 — and a majority of 6 is 4, surviving two, the same as 5. Even sizes elect leaders and work correctly; they just buy no extra tolerance." },
 
       { stem: "A client's write was accepted by the Raft leader, which then lost its majority to a partition. Is the write durable?",
-        options: ["Yes — the leader wrote it to disk", "Not necessarily: only committed entries are durable, and an uncommitted entry may be overwritten by a new leader", "Yes, once the partition heals", "No write is ever durable in Raft"],
+        options: ["Yes, because the leader wrote it to its disk", "Not necessarily: an uncommitted entry can be overwritten", "Yes, as soon as the partition finally heals", "No, because no write is ever durable in Raft"],
         answer: 1,
         why: "Raft guarantees durability for entries committed on a majority; an entry held only by a minority can be replaced by the new leader's log after healing — exactly what happened to x=2 in the simulation. That is why leaders acknowledge clients only after commit." }
     ]

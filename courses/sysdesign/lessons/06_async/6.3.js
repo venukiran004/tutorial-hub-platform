@@ -200,22 +200,22 @@ one transaction  deliveries  556   balance  5000   (correct: 5000)`,
     title: "Check yourself",
     questions: [
       { stem: "A consumer commits its offset and then processes the message. It crashes after committing. What happens to that message?",
-        options: ["It is redelivered", "It is lost — the restarted consumer resumes after it", "It is processed twice", "It goes to a dead-letter queue"],
+        options: ["It is redelivered on restart", "It is lost: resumption skips it", "It is processed twice", "It goes to a dead-letter queue"],
         answer: 1,
         why: "The committed offset says the message was handled, so the restarted consumer begins after it and the message is never processed — at-most-once, 137 losses in the simulation. Redelivery is what happens when processing comes before the commit. Nothing reached the dead-letter queue, because no processing attempt failed." },
 
       { stem: "Which statement about exactly-once delivery is accurate?",
-        options: ["Kafka guarantees exactly-once effects in any database you write to", "Exactly-once is impossible in every sense", "It holds within a system that can commit output and progress atomically; across systems it is at-least-once plus idempotent processing", "It requires two-phase commit with every consumer"],
+        options: ["Kafka guarantees it in any database you write to", "Exactly-once is impossible in every sense", "Within one atomic system; across, idempotent retries", "It requires two-phase commit with every consumer"],
         answer: 2,
         why: "Kafka transactions make read-process-write within Kafka exactly-once; once an effect lands elsewhere, delivery is at-least-once and the consumer must deduplicate. It is not impossible in every sense, Kafka cannot extend its guarantee to your database, and 2PC with every consumer is neither required nor typical." },
 
       { stem: "A consumer checks a processed-events table, applies a credit, then inserts the event id, each in its own transaction. What can still go wrong?",
-        options: ["Nothing; the table prevents duplicates", "A crash after the credit and before the insert leads to the credit being applied again on redelivery", "The table grows too fast", "Messages are lost"],
+        options: ["Nothing; the table blocks duplicates", "A crash between steps re-applies it", "The table grows far too fast", "Messages are lost on redelivery"],
         answer: 1,
         why: "The check and the record are separate from the effect, so the window between applying the credit and recording the id is exactly where a crash makes redelivery look new — the exercise's separate-steps balance overshot. Putting the insert and the credit in one transaction closes it. Growth is a retention concern, and processing first means nothing is lost." },
 
       { stem: "Who should generate an idempotency key for a payment request, and when?",
-        options: ["The server, when it receives the request", "The caller, once per logical payment, before the first attempt", "A new random key for every retry", "The database, as an auto-increment id"],
+        options: ["The server, on receipt", "The caller, once per payment", "A new key for every retry", "The database, auto-increment"],
         answer: 1,
         why: "Only the caller knows that two requests are attempts at the same payment, so it must create the key once and reuse it on every retry. A server-generated or per-retry key differs between attempts and cannot identify duplicates, and an auto-increment id is assigned after the server has already treated the request as new." }
     ]

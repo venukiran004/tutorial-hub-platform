@@ -497,22 +497,22 @@ access logs / SIEM: EU personal data in us-west-2                -> pseudonymise
     title: "Check yourself",
     questions: [
       { stem: "A webhook handler receives about 50,000 requests a day, mostly in office hours. On cost, functions or containers?",
-        options: ["Containers, which are always cheaper per request", "Functions: at well under one request a second on average, the containers' floor of two tasks around the clock costs many times more", "They cost the same", "Virtual machines"],
+        options: ["Containers, which are always cheaper per request", "Functions: two always-on tasks cost far more", "They cost the same at this request volume", "Virtual machines, reserved for a full year"],
         answer: 1,
         why: "50,000 a day is about 0.6 requests a second on average. In breakeven.py, functions at that level cost a few dollars a month against the containers' flat floor of about fifty; the crossover is near ten requests a second." },
 
       { stem: "After quiet periods, the first requests to a function take 300 ms longer than the rest. What is happening, and what helps most directly?",
-        options: ["The database is slower at night", "Cold starts: new instances load the runtime, dependencies and connections before serving; keep instances warm with provisioned concurrency, trim dependencies, and initialise outside the handler", "Network congestion", "Too much memory configured"],
+        options: ["The database is slower at night", "Cold starts; keep instances warm", "Network congestion after idle periods", "Too much memory has been configured"],
         answer: 1,
         why: "With no idle instance available, the platform starts one, and the first request pays for loading everything — about a quarter of a second in coldstart.py. Warm instances avoid it entirely; lighter packages shorten it." },
 
       { stem: "A plan for a small change shows \"-/+ aws_subnet.app_c (forces replacement)\". What should the reviewer do?",
-        options: ["Approve it; a replacement is just an update", "Stop: the subnet, and everything in it, would be destroyed and recreated; find a non-destructive change, such as adding a new subnet", "Apply it twice", "Approve it if the policy checks passed"],
+        options: ["Approve it; a replacement is just an update", "Stop: it destroys and recreates the subnet", "Apply it twice to make sure it sticks", "Approve it if the policy checks passed"],
         answer: 1,
         why: "Some attributes cannot change in place, so the tool destroys and recreates the resource — for a subnet, that means everything placed in it. Policies pass on what the code declares; only a human reading the plan notices the blast radius." },
 
       { stem: "Why does tokenising card numbers at the edge reduce compliance cost?",
-        options: ["Tokens are encrypted card numbers", "Systems that only see tokens neither store, process nor transmit card data, so they — and systems connected only to them — leave PCI scope", "PCI DSS does not apply in the cloud", "It removes the need for any audit"],
+        options: ["Tokens are just encrypted card numbers", "Systems seeing only tokens leave PCI scope", "PCI DSS does not apply in the cloud", "It removes the need for any audit"],
         answer: 1,
         why: "Scope follows card data and connections to it. In scope.py, tokenisation left only the tokeniser, the vault and the systems directly connected to them in scope: four of fourteen systems instead of eleven of twelve." }
     ]

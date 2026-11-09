@@ -319,22 +319,22 @@ optimistic               10          0            0`,
     title: "Check yourself",
     questions: [
       { stem: "Two transactions at REPEATABLE READ each check that two doctors are on call, then each takes a different doctor off call. What happens in PostgreSQL?",
-        options: ["The second transaction blocks until the first commits", "Both commit, leaving nobody on call — write skew", "The second aborts with a serialisation failure", "Both abort"],
+        options: ["The second blocks until the first commits", "Both commit: nobody on call, write skew", "The second aborts with a serialisation error", "Both transactions abort"],
         answer: 1,
         why: "Snapshot isolation detects conflicting writes to the same row, but these update different rows, so both commit and the cross-row invariant is broken — the run showed 0 doctors on call. Only SERIALIZABLE, which tracks read–write dependencies, aborts one of them. Updates to different rows do not block each other." },
 
       { stem: "Code reads qty, subtracts 1 in the application, and writes the result, at READ COMMITTED. Twenty requests run at once on a row with qty = 10. What is the worst case?",
-        options: ["Exactly 10 sales", "Twenty sales and stock reduced by only one", "A deadlock", "The database refuses the extra writes"],
+        options: ["Exactly 10 sales, stock at 0", "20 sales, stock down by 1", "A deadlock aborts most requests", "Extra writes refused with an error"],
         answer: 1,
         why: "Every request can read 10 before any writes, so nearly all of them write 9: twenty orders while stock falls by one or two — what the exercise measured. READ COMMITTED does not detect this lost update, the updates queue rather than deadlock on a single row, and nothing refuses them because each statement is valid on its own." },
 
       { stem: "How does MVCC let a long report read consistent data while writers keep updating?",
-        options: ["It locks every row the report reads", "Writers create new row versions, and the report's snapshot keeps seeing the versions committed before it started", "It copies the table before the report starts", "Writers are paused until the report finishes"],
+        options: ["It locks every row the report reads", "The report's snapshot keeps old versions", "It copies the table before the report", "Writers pause until the report ends"],
         answer: 1,
         why: "An MVCC update writes a new version rather than overwriting, and each transaction's snapshot selects the versions that were committed when it began — the mvcc.py run shows a reader still seeing 100 after a committed update to 70. No locks or pauses are needed, and nothing is copied up front; old versions simply remain until no snapshot needs them." },
 
       { stem: "A team switches a booking service to SERIALIZABLE and starts seeing errors under load. What is missing?",
-        options: ["Nothing; SERIALIZABLE is broken", "A retry loop: serialisation failures are expected and the transaction must be re-run", "An index on every column", "A switch back to READ UNCOMMITTED"],
+        options: ["Nothing; SERIALIZABLE is simply broken", "A retry loop for serialisation errors", "An index on every column of the table", "A switch down to READ UNCOMMITTED"],
         answer: 1,
         why: "SERIALIZABLE prevents anomalies by aborting transactions that would make the outcome non-serialisable, and the contract is that the application retries them; without retries, correctness becomes user-visible errors. Indexes can reduce false conflicts in some engines but do not remove the need to retry, and lowering isolation brings the anomalies back." }
     ]

@@ -294,22 +294,22 @@ priority shedding  checkout served  99.8%   browse served  64.1%`,
     title: "Check yourself",
     questions: [
       { stem: "A service with an unbounded queue receives 20% more requests than it can handle for half a minute. Clients time out after one second. What happens to useful output?",
-        options: ["It stays at full capacity", "It drops sharply, because queued requests wait past the timeout and are served after their clients have gone", "It rises, because the queue absorbs the spike", "It drops by about 20%"],
+        options: ["It stays at full capacity throughout", "It collapses: served after clients leave", "It rises as the queue absorbs the burst", "It drops by about 20%, then recovers"],
         answer: 1,
         why: "The backlog grows until waits approach the timeout, so most completed requests arrive after their clients gave up — throughput stays at capacity while goodput collapsed to about a fifth in the simulation. A 20% drop would be the bounded-queue outcome, and the queue absorbing the spike only helps if the waits stay well under the timeout." },
 
       { stem: "Why can a bounded queue that rejects requests produce more successful responses than an unbounded one that accepts all of them?",
-        options: ["Rejection frees capacity", "It keeps waiting time short, so the requests it does accept finish while their clients are still waiting", "Rejected requests are counted as successes", "Bounded queues process requests faster"],
+        options: ["Rejection frees capacity for later retries", "Accepted requests finish before clients give up", "Rejected requests are counted as successes", "Bounded queues process each request faster"],
         answer: 1,
         why: "The worker's capacity is the same either way; what changes is whether completed work is still wanted. Capping the queue caps the wait, so accepted requests are answered in time, and refused clients get an immediate answer they can act on. Rejection costs almost nothing and is not a success, and the processing speed per request is unchanged." },
 
       { stem: "During overload, which requests should be shed first?",
-        options: ["The oldest, always", "The lowest-priority ones — background and deferrable work — so critical requests like checkout survive", "Random requests, to be fair", "Requests from the newest clients"],
+        options: ["The oldest requests, in every case", "The lowest-priority, deferrable work first", "Random requests, so shedding stays fair", "Requests from the most recently seen clients"],
         answer: 1,
         why: "Shedding can only decide who receives limited capacity, and the business value of requests differs enormously; priority shedding served nearly every checkout while fair FIFO lost about 30% of them. Random or age-based shedding treats a recommendation the same as a payment." },
 
       { stem: "Which design breaks backpressure?",
-        options: ["A bounded channel between two stages", "A consumer that pulls messages only when it has capacity", "An unbounded in-memory queue between a fast producer and a slow consumer", "Returning 503 with Retry-After"],
+        options: ["A bounded channel between two pipeline stages", "A consumer that pulls only when it has capacity", "An unbounded queue from fast producer to slow consumer", "Returning 503 with a Retry-After header"],
         answer: 2,
         why: "An unbounded queue absorbs the overload instead of signalling it, so the producer never slows and the backlog grows until latency or memory fails. Bounded channels, pull-based consumption and explicit 503s all propagate the signal to the sender." }
     ]

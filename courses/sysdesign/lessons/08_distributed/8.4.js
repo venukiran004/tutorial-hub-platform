@@ -222,22 +222,22 @@ with fencing tokens    days the nightly payout ran twice:  0   days it did not r
     title: "Check yourself",
     questions: [
       { stem: "Client A holds a lease lock, pauses for longer than the lease, and resumes. What does it know?",
-        options: ["That the lease expired", "Nothing — from its point of view no time passed, so it believes it still holds the lock", "That client B now holds the lock", "That it must re-acquire"],
+        options: ["That its lease has already expired", "Nothing; it believes it still holds the lock", "That client B now holds the lock instead", "That it must re-acquire the lock first"],
         answer: 1,
         why: "A paused process does not observe the pause; it resumes mid-instruction believing its earlier state is current. Unless it checks the time and the lock before every action — and even then it can pause between the check and the action — it will act as holder. That is why the resource must fence." },
 
       { stem: "How does a fencing token prevent a paused former holder from corrupting data?",
-        options: ["It encrypts the write", "Each new holder gets a larger token, and the storage rejects writes carrying a token older than the highest it has seen", "It extends the lease automatically", "It wakes the paused process"],
+        options: ["It encrypts every write sent to storage", "Storage rejects writes carrying an older token", "It extends the lease automatically on use", "It wakes the paused process before it writes"],
         answer: 1,
         why: "Monotonic tokens let the storage order holders without relying on clocks or the holders' beliefs: once the new holder writes with token 2, any later write with token 1 is refused — as the Redis demonstration showed. The token has nothing to do with encryption, leases or waking processes." },
 
       { stem: "When is a plain lease lock (without fencing) acceptable?",
-        options: ["Never", "When it only prevents duplicate work whose occasional double execution is harmless", "For moving money", "For electing a database primary"],
+        options: ["Never, in any production system", "When an occasional double run is harmless", "For moving money between accounts", "For electing a database primary"],
         answer: 1,
         why: "A lease lock reduces duplicates but cannot rule them out, so it suits efficiency — not recomputing a cache twice, not sending a report twice — where a rare double is harmless. Payments and primaries are the cases where a double is incorrect, and they need fencing, consensus-based election or idempotency." },
 
       { stem: "A leader is elected via etcd. What should it use as its fencing token?",
-        options: ["Its hostname", "The wall-clock time it was elected", "The revision of its election key (or its term)", "A random UUID"],
+        options: ["Its hostname", "The wall-clock time of election", "Its election key's revision", "A random UUID per election"],
         answer: 2,
         why: "The revision increases with every change agreed by etcd's consensus, so a later leader always has a larger one, independent of clocks. Hostnames and UUIDs do not order holders, and wall-clock times are subject to skew (8.2)." }
     ]

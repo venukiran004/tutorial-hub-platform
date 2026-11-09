@@ -230,7 +230,7 @@ largest gap between an HLC stamp and its node's own clock: 414 ms`,
     title: "Check yourself",
     questions: [
       { stem: "Two replicas resolve conflicts by keeping the value with the later timestamp. One replica's clock is 300 ms fast. What can happen?",
-        options: ["Nothing; 300 ms is negligible", "A newer write from another replica within 300 ms of the fast replica's write is discarded", "Both writes are kept", "The fast replica rejects writes"],
+        options: ["Nothing; 300 ms is negligible in practice", "A newer write within 300 ms can be discarded", "Both writes are kept side by side", "The fast replica starts rejecting all writes"],
         answer: 1,
         why: "The fast replica's stamps are 300 ms too large, so any genuinely later write elsewhere within that window carries a smaller stamp and loses — about one consecutive edit in nine in the simulation. LWW keeps exactly one value, and nothing in plain LWW detects or rejects a skewed clock." },
 
@@ -245,7 +245,7 @@ largest gap between an HLC stamp and its node's own clock: 414 ms`,
         why: "Neither is less than or equal to the other in every entry — the first is ahead in A's entry, the second in B's — so neither event knew of the other: they are concurrent, which a replicated store treats as a conflict to merge or resolve." },
 
       { stem: "What does a hybrid logical clock provide that a Lamport clock does not?",
-        options: ["Detection of concurrent events", "Timestamps that respect causality while staying close to physical time", "Perfectly synchronised wall clocks", "One counter per node"],
+        options: ["Detection of truly concurrent events", "Causal timestamps that stay near physical time", "Perfectly synchronised wall clocks everywhere", "A separate counter for every node in the cluster"],
         answer: 1,
         why: "An HLC carries physical time in its l component and uses a counter only to break ties and preserve causality, so its stamps are both causally consistent and within the clock skew of real time — useful for snapshots at a point in time. Like Lamport clocks it does not detect concurrency, it does not synchronise clocks, and it is a single (time, counter) pair rather than a vector." }
     ]

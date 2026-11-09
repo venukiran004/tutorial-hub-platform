@@ -296,22 +296,22 @@ two relays, SKIP LOCKED, by aggregate  published 300, duplicates 0, out of order
     title: "Check yourself",
     questions: [
       { stem: "A service commits an order, then publishes OrderPlaced, retrying the publish three times on failure. What can still go wrong?",
-        options: ["Nothing; retries make it reliable", "The process can crash after the commit, and the event is never published", "The order can be committed twice", "The event can be published before the order exists"],
+        options: ["Nothing; the retries make it reliable", "A crash after commit loses the event", "The order can be committed twice", "The event can precede the order"],
         answer: 1,
         why: "Retries live in the process's memory, so a crash after the database commit leaves no one to publish — the order exists and nobody downstream knows. Committing first prevents phantom events, which is the opposite ordering's failure, and nothing here commits the order twice." },
 
       { stem: "What does the transactional outbox guarantee?",
-        options: ["Exactly-once delivery to consumers", "The state change and the event record commit together, so an event is published at least once for every committed change and never for an uncommitted one", "Events are delivered faster", "Global ordering across all events"],
+        options: ["Exactly-once delivery to every consumer", "State and event commit together, always", "Events are delivered faster than before", "Global ordering across all the events"],
         answer: 1,
         why: "Because the outbox row is written in the same transaction as the change, either both exist or neither does, and the relay keeps trying until each row is published — at least once, possibly twice. It does not provide exactly-once delivery, it adds a little latency rather than removing it, and it gives no ordering beyond what the relay and keys preserve." },
 
       { stem: "A CDC stream is read from PostgreSQL's logical decoding. A transaction updates a row and then rolls back. What does the stream show?",
-        options: ["The update, followed by a compensating update", "Nothing — rolled-back changes are not decoded", "The update only", "An error event"],
+        options: ["The update, then a compensating update", "Nothing: rollbacks are not decoded", "The update only, as committed", "An error event in the stream"],
         answer: 1,
         why: "Logical decoding emits changes from committed transactions, in commit order; a transaction that rolls back never commits, so its changes never appear — the cdc.py run shows the rolled-back price change absent. No compensating or error events are generated." },
 
       { stem: "Why is an abandoned replication slot dangerous?",
-        options: ["It slows down reads", "The database keeps all WAL the slot has not consumed, which can fill the disk and stop writes", "It duplicates every write", "It locks the tables it watches"],
+        options: ["It slows down reads", "Retained WAL fills the disk", "It duplicates every write", "It locks the tables it watches"],
         answer: 1,
         why: "A slot guarantees its consumer will be able to read every change, so the database retains WAL from the slot's position onward; with no consumer, retention grows without limit until the disk is full. Reads are unaffected, writes are not duplicated, and logical decoding takes no table locks." }
     ]

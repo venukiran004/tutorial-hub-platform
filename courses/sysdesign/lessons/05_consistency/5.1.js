@@ -249,17 +249,17 @@ split                9.9%              23.5%                    0 of 20`,
     title: "Check yourself",
     questions: [
       { stem: "What does CAP actually force you to choose between, and when?",
-        options: ["Any two of C, A and P, at design time", "Consistency or availability, for operations that happen while the network is partitioned", "Latency or throughput, always", "SQL or NoSQL"],
+        options: ["Any two of C, A and P, chosen at design time", "Consistency or availability during a partition", "Latency or throughput, at every moment", "SQL or NoSQL, when choosing the database"],
         answer: 1,
         why: "Partition tolerance is not optional on a real network, so the choice is between refusing (C) and answering locally (A), and it only arises during a partition. \"Any two\" implies a meaningful CA option, which for a distributed system does not exist. Latency versus consistency is PACELC's else-clause, and the theorem says nothing about database categories." },
 
       { stem: "A three-node CP store is partitioned with one node alone. What happens to requests sent to that node?",
-        options: ["They are served from its local copy", "They are refused or time out, because it cannot reach a majority", "They are forwarded through the partition", "They succeed and conflicts are resolved later"],
+        options: ["Served from its local copy", "Refused: it lacks a majority", "Forwarded through the partition", "Accepted, resolved later"],
         answer: 1,
         why: "A CP system will not answer what it cannot confirm with a majority, so the isolated node refuses — a third of requests in the simulation — while the two-node side continues. Serving locally and reconciling later is AP behaviour. Nothing can be forwarded across a partition; that is what a partition is." },
 
       { stem: "Two regions 70 ms apart replicate a database with no failures at all. Why might writes still be slow?",
-        options: ["CAP forces slowness at all times", "A consistent write must wait for the other region's replica — PACELC's latency–consistency trade", "Replication is always synchronous", "Regions throttle each other"],
+        options: ["CAP forces slowness even without failures", "Consistent writes wait for the far replica", "Replication is always synchronous by default", "The two regions throttle each other's traffic"],
         answer: 1,
         why: "With no partition CAP is silent, but a write that must be consistent across regions waits at least one 70 ms round trip, which is exactly the else-clause of PACELC. Choosing eventual consistency removes the wait. Replication is not always synchronous — that is the choice being made — and regions do not throttle each other." },
 

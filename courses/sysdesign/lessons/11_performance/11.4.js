@@ -400,22 +400,22 @@ autoscale so each instance sees at most ~480 req/s (80% of capacity at the SLO)`
     title: "Check yourself",
     questions: [
       { stem: "Demand triples within a minute and instances take three minutes to boot. What does a reactive CPU-target autoscaler do?",
-        options: ["Adds exactly the right capacity within a minute", "Adds capacity in steps several minutes late, because CPU caps at 100% and new instances take minutes to become ready", "Scales in", "Nothing, because CPU is already at its target"],
+        options: ["Adds exactly the right capacity within a minute", "Adds capacity in late steps, as CPU caps at 100%", "Scales in, because requests are timing out", "Nothing, because CPU already sits at its target"],
         answer: 1,
         why: "Reactive scaling waits for the metric window, the evaluation, and the boot. CPU pinned at 100% understates a demand that is three times capacity, so each round adds too little. The simulation lost about 670,000 requests this way." },
 
       { stem: "Why is request rate per instance often a better scaling signal than CPU for a web service?",
-        options: ["It is cheaper to collect", "It measures demand directly and does not saturate, so the scaler can compute the capacity actually needed", "CPU is always inaccurate", "Request rate never changes"],
+        options: ["It is cheaper to collect than CPU metrics", "It measures demand directly and never saturates", "CPU readings are always inaccurate in containers", "Request rate never changes during the day"],
         answer: 1,
         why: "CPU tops out at 100% however overloaded the service is; request rate keeps rising with demand, so the desired instance count can be computed in one step. CPU is accurate below saturation and remains a useful secondary signal." },
 
       { stem: "A load test finds the service saturates at 800 req/s per instance. The SLO is p99 ≤ 50 ms, met up to 600 req/s. What capacity should autoscaling and planning use?",
-        options: ["800 req/s", "600 req/s, with the scaling target below it — about 480 req/s", "1,000 req/s", "400 req/s exactly"],
+        options: ["800 req/s, the measured saturation", "600 req/s, scaling at about 480", "1,000 req/s, with burst headroom", "400 req/s exactly, to be safe"],
         answer: 1,
         why: "Capacity at the SLO is the useful number; at 800 req/s latency is ten times the objective. Targeting about 80% of it leaves headroom for bursts and for scaling delay." },
 
       { stem: "Which test would find a slow memory leak in a service?",
-        options: ["A spike test", "A soak test: normal load for many hours", "A stress test", "A unit test"],
+        options: ["A short spike test", "A soak test over many hours", "A stress test to breaking point", "A unit test of the allocator"],
         answer: 1,
         why: "Leaks of memory, connections or file handles show up as gradual growth over hours under normal load. Spike and stress tests are too short and focus on peaks and limits." }
     ]

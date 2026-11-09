@@ -257,22 +257,22 @@ upload 40 MB       : 413 too large`,
     title: "Check yourself",
     questions: [
       { stem: "A posts table stores comment_count, incremented by the create-comment endpoint. What is the most likely way it becomes wrong?",
-        options: ["Integer overflow", "Another code path adds or deletes comments without updating the count", "The index on comments is missing", "Reads are too frequent"],
+        options: ["Integer overflow on the counter", "Another path skips the update", "The index on comments is missing", "Reads of the count are too frequent"],
         answer: 1,
         why: "A denormalised counter is correct only if every path that changes comments also changes the count; bulk imports, admin SQL and rolled-back requests are the usual leaks, which is why it should be updated in one transaction or by trigger and reconciled periodically. Overflow is implausible for a comment count, a missing index affects speed not correctness, and read frequency does not change the stored value." },
 
       { stem: "A dashboard aggregates a billion rows and may be up to 15 minutes old. What fits best?",
-        options: ["Run the aggregate on every page load", "A materialised view or summary table refreshed every 15 minutes", "Cache each raw row in Redis", "Add an index on every column"],
+        options: ["Run the aggregate on each page load", "A view refreshed every 15 minutes", "Cache every raw row in Redis", "Add an index on every column"],
         answer: 1,
         why: "The tolerance of 15 minutes is exactly what a scheduled refresh provides, and the reader then scans a small precomputed result instead of a billion rows. Running it per page load repeats the expensive work for every viewer; caching raw rows does not avoid aggregating them; and indexes help selective lookups, not full aggregates." },
 
       { stem: "Why are user-uploaded videos better stored in object storage than in a database column?",
-        options: ["Databases cannot store binary data", "They inflate backups, replicas and memory pressure, and tie up database connections while being served", "Object storage has stronger transactions", "Object storage is faster for small rows"],
+        options: ["Databases cannot store binary data", "They bloat backups and tie up connections", "Object storage has stronger transactions", "Object storage is faster for small rows"],
         answer: 1,
         why: "Databases can store binary data, but every replica, backup and failover then copies large immutable files, they compete with hot pages for the buffer cache, and every download occupies a connection — all costs object storage avoids at a lower price per gigabyte. Object storage has weaker, not stronger, transactional semantics, and it is not optimised for small rows." },
 
       { stem: "In a presigned upload, why must the server, not the client, choose the object key?",
-        options: ["Clients cannot generate UUIDs", "A client-chosen key could overwrite another user's object or write outside its own prefix", "The signature cannot include the key", "Object stores require server-chosen keys"],
+        options: ["Clients cannot generate UUIDs", "A client key could overwrite others", "The signature cannot include the key", "Object stores require server keys"],
         answer: 1,
         why: "The URL authorises whatever key it was signed for; if the client picks it, a user can target someone else's file or path. A server-generated key under the user's own prefix, with a random component, prevents both. Clients can generate UUIDs, the key is part of the signed string, and object stores accept any key the signer authorises." }
     ]

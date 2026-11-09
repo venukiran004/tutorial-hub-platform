@@ -340,22 +340,22 @@ database queries so far     : 7`,
     title: "Check yourself",
     questions: [
       { stem: "With cache-aside and delete-on-write, how can the cache end up holding a value older than the database?",
-        options: ["It cannot; delete-on-write prevents all staleness", "A reader that missed and read the old row sets it into the cache after the writer's delete", "Redis reorders commands", "The TTL was too short"],
+        options: ["It cannot; deletes prevent all staleness", "A slow reader refills it after the delete", "Redis reorders the two commands", "The TTL was set too short"],
         answer: 1,
         why: "The reader read the row before the update, was paused, and its SET landed after the writer's DELETE, so the old value is cached until the TTL — the race traced in section 01. Delete-on-write prevents concurrent writers from leaving old values, not this. Redis executes each client's commands in order, and a shorter TTL shortens the damage rather than causing it." },
 
       { stem: "What does a lease token let the cache do?",
-        options: ["Expire keys faster", "Refuse a fill whose read happened before the most recent invalidation", "Encrypt cached values", "Store keys without memory limits"],
+        options: ["Expire keys faster than the TTL", "Refuse a fill older than the invalidation", "Encrypt the cached values at rest", "Store keys without any memory limit"],
         answer: 1,
         why: "A miss issues a token, a delete revokes outstanding tokens, and a set must present a valid token — so a reader whose read predates the delete is refused, and the next reader loads the current row. Leases are unrelated to expiry speed, encryption or memory limits; they are an ordering check performed by the cache itself." },
 
       { stem: "Category pages are cached per sort order and page number. One product changes. What is the cheapest correct invalidation?",
-        options: ["SCAN for all keys matching the category and delete them", "Increment a per-category generation number that every page key includes", "Flush the whole cache", "Wait for the TTL"],
+        options: ["SCAN for matching keys and delete them", "Bump a per-category generation number", "Flush the entire cache for everyone", "Wait for every cached page's TTL"],
         answer: 1,
         why: "Bumping the generation changes the key every reader looks for, so all old pages become unreachable with one atomic write, and their TTLs clean them up. SCAN across a large key space on every write is slow and racy, flushing the whole cache causes a stampede, and waiting for the TTL serves stale pages for its full length." },
 
       { stem: "Why does an LRU cache's hit ratio drop after a large batch job reads many keys once?",
-        options: ["LRU expires keys after a scan", "Each one-off key becomes most-recently-used and pushes out the genuinely hot keys", "The job holds locks on the cache", "LRU only works for writes"],
+        options: ["LRU expires keys after a scan", "One-off keys push out the hot ones", "The job holds locks on the cache", "LRU only works for writes"],
         answer: 1,
         why: "LRU admits every key it sees, so thousands of single-use keys each become the most recent and evict the hot set; afterwards hot traffic misses until it re-warms. Frequency-aware admission refuses newcomers seen fewer times than the eviction victim, which is why it barely moved in the measurement. LRU has no notion of expiry or locks." }
     ]

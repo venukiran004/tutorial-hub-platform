@@ -369,17 +369,17 @@ SingleFlightProxy  3 bursts of 20 requests ->  2 calls to the price service`,
         why: "It changes the interface the caller sees — different types, units and exceptions — to fit the one the domain expects, which is an adapter. A decorator and a proxy keep the interface identical, and a facade simplifies a whole subsystem rather than translating one component." },
 
       { stem: "Two Flask views are decorated with a timing decorator that does not use functools.wraps. What happens at start-up?",
-        options: ["Nothing; decorators never affect registration", "Both views are named 'wrapper', so the second registration collides with the first", "The timing is recorded twice", "The docstrings are merged"],
+        options: ["Nothing; decorators never affect registration", "Both views are named 'wrapper' and collide", "The timing is recorded twice per request", "The two views' docstrings are merged together"],
         answer: 1,
         why: "Without functools.wraps the returned function is the inner wrapper, with its own name. Frameworks that key endpoints by function name see two functions called wrapper and refuse the second. Timing and docstrings are not merged; the docstring is simply lost." },
 
       { stem: "A page renders 50 users and reads user.name and user.email on ORM objects whose fields are lazy-loaded from another service. What is the problem and the fix?",
-        options: ["Too many template variables; use fewer fields", "Each attribute access is a remote call — 100 round trips; fetch the users in one batch or eager-load them", "The ORM caches too aggressively; disable caching", "The service needs more replicas"],
+        options: ["Too many template variables; render fewer fields", "100 remote calls; batch-fetch or eager-load users", "The ORM caches too aggressively; disable caching", "The remote service needs more replicas to keep up"],
         answer: 1,
         why: "The lazy-loading remote proxy makes network calls look like attribute reads, giving an N+1 pattern. Batching or eager loading turns 100 calls into one. Fewer fields still leaves one call per row, disabling caching makes it worse, and more replicas do not remove the round trips." },
 
       { stem: "Twenty concurrent requests miss a caching proxy for the same key at the same moment. What does single-flight change?",
-        options: ["It rejects nineteen of the requests", "Only the first request calls the backend; the others wait for and share its result", "It serves a default value to the other nineteen", "It lowers the TTL"],
+        options: ["It rejects nineteen of the twenty requests", "One request calls the backend; the rest share it", "It serves a default value to the other nineteen", "It lowers the cache TTL for that key"],
         answer: 1,
         why: "Single-flight coalesces concurrent misses for one key into one backend call whose result every waiter receives, preventing a stampede. Nothing is rejected or defaulted, and the TTL is unchanged." }
     ]

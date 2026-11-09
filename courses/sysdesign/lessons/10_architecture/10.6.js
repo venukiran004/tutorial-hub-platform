@@ -334,22 +334,22 @@ rows 7 and 8: [(7, 'renamed by OLD'), (8, 'renamed by NEW')]`,
     title: "Check yourself",
     questions: [
       { stem: "What is the purpose of a shadow run in a strangler-fig migration?",
-        options: ["To load-test the legacy system", "To send real requests to the new implementation as well, compare its answers with the legacy system's, and discard them — finding differences before any user is affected", "To route half the users to the new system", "To back up the legacy database"],
+        options: ["To load-test the legacy system under real traffic", "To compare new and legacy answers before users see them", "To route half of the users to the new system", "To back up the legacy database before cut-over"],
         answer: 1,
         why: "In shadow mode the legacy system still serves every response; the new one runs in parallel only so its results can be compared. The penny-rounding difference on 28% of carts was found this way with no customer impact. Routing users comes later, and it is neither a load test nor a backup." },
 
       { stem: "Why do schema changes need expand–contract during a rolling deploy?",
-        options: ["Databases forbid renaming columns", "Two application versions run at once, so the schema must work for both until the old version is gone", "It is faster than ALTER TABLE", "It avoids needing backups"],
+        options: ["Databases forbid renaming columns in place", "Two app versions run, so the schema must suit both", "It is always faster than running ALTER TABLE", "It avoids the need for database backups"],
         answer: 1,
         why: "A rolling deploy means old and new code share the database for a while. Expanding first (both forms present and in sync) and contracting only after the old version is gone keeps both working. Databases can rename columns, but the old code would break; speed and backups are not the point." },
 
       { stem: "Each customer is assigned 2 random nodes out of 8. One customer's poison request crashes both of its nodes. Roughly what fraction of customers lose all their nodes?",
-        options: ["100%", "25%", "About 3.6% — only those with the same pair, 1 of 28", "0%"],
+        options: ["All of them, 100%", "About 25% of them", "About 3.6% (1 in 28)", "None of them, 0%"],
         answer: 2,
         why: "There are 28 possible pairs, so about 1 in 28 customers share both nodes with the poison customer — 3.6% in the simulation. Others sharing one node are degraded but served by their second node. Fixed cells of two nodes would lose 25%; one shared fleet, everyone." },
 
       { stem: "What belongs in an architecture decision record?",
-        options: ["The complete design document for the system", "The context, the options considered, the decision, its consequences and when to revisit it — for one decision", "Only the final decision, in one line", "Meeting minutes"],
+        options: ["The complete design document for the whole system", "Context, options, decision and consequences, for one choice", "Only the final decision, written as a single line", "Minutes from every meeting where it was discussed"],
         answer: 1,
         why: "An ADR is short and about one decision, and its value is the reasoning: why this option over the others, what it costs, and what would make it worth revisiting. A full design document is too broad, a one-line decision loses the why, and minutes record discussion rather than conclusions." }
     ]

@@ -551,22 +551,22 @@ checked 6 VPCs and 54 subnets against each other and on-prem, legacy VPC: 0 over
     title: "Check yourself",
     questions: [
       { stem: "What makes a subnet public?",
-        options: ["A \"public\" setting on the subnet", "Its route table sends 0.0.0.0/0 to an internet gateway (and its instances have public addresses)", "It contains a NAT gateway", "Its security groups allow 0.0.0.0/0"],
+        options: ["A \"public\" setting on the subnet itself", "A route sending 0.0.0.0/0 to an internet gateway", "It contains a NAT gateway for outbound traffic", "Its security groups allow 0.0.0.0/0 inbound"],
         answer: 1,
         why: "Public and private are properties of routing. A subnet whose default route points at the internet gateway is public; one pointing at a NAT gateway is private with outbound access; one with no default route is isolated. Security groups filter traffic but cannot create a route." },
 
       { stem: "An app instance in a private subnet calls an external payment API. How does the request leave, and can the API open a connection to the instance later?",
-        options: ["Directly through the internet gateway; yes", "Through the NAT gateway, which rewrites the source address; no — the NAT lets in only replies to connections that went out", "It cannot reach the API at all", "Through VPC peering; yes"],
+        options: ["Directly through the internet gateway; yes", "Through the NAT gateway; no, only replies come in", "It cannot reach the external API at all", "Through VPC peering with the provider; yes"],
         answer: 1,
         why: "The app route table sends the default route to the NAT gateway, which tracks each outgoing connection. Replies match a tracked connection and are translated back; anything unsolicited, like routes.py's scanner, is dropped." },
 
       { stem: "The database's security group allows port 5432 from the app's security group rather than from the app subnets' address range. What does that give you?",
-        options: ["Nothing; the two are equivalent", "Access follows role rather than address: newly launched app instances are allowed automatically, and other things in those subnets are not", "Encryption of the traffic", "A stateless rule"],
+        options: ["Nothing; the two rules are equivalent", "Access follows role, not address", "Encryption of the database traffic", "A stateless rule instead of a stateful one"],
         answer: 1,
         why: "A group reference matches whatever instances currently carry the group, so app-9 in sg.py was allowed the minute it launched. An address-range rule would also admit anything else placed in those subnets, and an address list would go stale with every replacement." },
 
       { stem: "During every deploy about forty requests fail, although the old instances finish their in-flight requests before exiting. What is the likely cause?",
-        options: ["The new instances start too slowly", "The balancer keeps routing to an old instance for a moment after SIGTERM, and it has already stopped accepting; it should fail readiness and keep serving until deregistered", "SIGTERM is never delivered in containers", "The health check on the new instances is too strict"],
+        options: ["The new instances start too slowly to serve", "Old instances stop accepting before deregistration", "SIGTERM is never delivered inside containers", "The new instances' health checks are too strict"],
         answer: 1,
         why: "Removal from the balancer and SIGTERM happen in parallel, so for a moment traffic still arrives. drain.py's second mode shows exactly this: in-flight requests were saved but about forty were refused. Serving on while failing readiness (or a preStop sleep) closes the gap." }
     ]

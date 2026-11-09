@@ -294,7 +294,7 @@ hits 117, misses 5, hit ratio 96%`,
     title: "Check yourself",
     questions: [
       { stem: "Why is deleting a cached key on write safer than writing the new value into the cache?",
-        options: ["Deleting is faster than setting", "Two concurrent writers can set the cache in the wrong order, leaving an old value; deletes are order-independent", "Redis cannot overwrite keys", "Setting the value would bypass the database"],
+        options: ["Deleting is faster than setting", "Racing sets can leave an old value", "Redis cannot overwrite existing keys", "Setting would bypass the database"],
         answer: 1,
         why: "If A and B both update and then set the cache, a delayed A can overwrite B's newer value, and nothing corrects it until the TTL. Whichever delete runs last, the key is simply absent and the next read loads the current database row. Speed is similar, Redis overwrites keys freely, and setting the cache does not skip the database write — the problem is purely ordering." },
 
@@ -304,7 +304,7 @@ hits 117, misses 5, hit ratio 96%`,
         why: "Write-behind acknowledges once the cache holds the value and flushes to the database later, so anything not yet flushed exists only in the cache — 33 writes in the simulation. Write-through writes the database before acknowledging, and cache-aside and read-through write the database directly, so in all three a cache crash only loses copies, never the data." },
 
       { stem: "A user changes their display name and the next page still shows the old one for five minutes. Which strategy is in use?",
-        options: ["Write-through", "Cache-aside with delete-on-write", "Write-around: the database is updated and the cached copy left to expire", "Write-behind"],
+        options: ["Write-through, synchronous update", "Cache-aside, delete on write", "Write-around, left to expire", "Write-behind, flushed by a queue"],
         answer: 2,
         why: "The database has the new name but the cached copy was neither deleted nor updated, so reads return it until its TTL expires — the behaviour of write-around. Write-through would have updated the cache, and delete-on-write would have removed the key so the next read loaded the new name. Write-behind serves reads from the cache, which already holds the new value." },
 

@@ -243,22 +243,22 @@ for target in (0.70, 0.80, 0.90):
     title: "Check yourself",
     questions: [
       { stem: "A cache's hit ratio improves from 90% to 99%. What happens to the read load on the database?",
-        options: ["It falls by about 10%", "It falls tenfold, from 10% of reads to 1%", "It is unchanged; only latency improves", "It doubles because of more writes"],
+        options: ["It falls by about 10%", "It falls tenfold", "It stays the same", "It doubles"],
         answer: 1,
         why: "The database sees only the misses, so its load is the miss ratio: 10% of reads becomes 1%, a tenfold reduction — 2,000 reads a second to 200 in the worked numbers. The hit ratio rose only nine points, which is why thinking in hits understates the change. Latency improves too, and reads are not converted into writes." },
 
       { stem: "A service's cache hit ratio is 95% and its p99 latency is still close to the database's. Why?",
-        options: ["The cache is slower than the database", "5% of requests miss, so the 99th percentile is a miss", "p99 only measures writes", "The cache's TTL is too long"],
+        options: ["The cache is slower than the database", "5% miss, so p99 is a database read", "p99 only measures write requests", "The cache's TTL is set too long"],
         answer: 1,
         why: "With 5% of requests missing, more than 1% of all requests pay the database's latency, so the 99th-percentile request is one of them; the simulation shows p99 dropping only once the hit ratio passes 99%. The cache is far faster than the database, p99 covers whatever requests are measured, and a longer TTL would if anything raise the hit ratio." },
 
       { stem: "A nightly job reads each of 10 million customer records once, through the same LRU cache as the website. What is the main risk?",
-        options: ["The job will be very fast", "The job's one-off reads evict the website's hot keys, so site hit ratio collapses", "The cache will run out of keys", "Nothing — LRU handles this automatically"],
+        options: ["The job will run much faster than usual", "One-off reads evict the site's hot keys", "The cache will run out of free key slots", "Nothing; LRU copes well with this pattern"],
         answer: 1,
         why: "Each record the job reads becomes the most recently used entry, pushing out the genuinely hot keys the website depends on, so after the scan the site's hit ratio drops and the database takes the load. The job gains nothing, because it reads each key only once. LRU is exactly the policy that is vulnerable to this, which is why scan-resistant policies exist (3.3)." },
 
       { stem: "Why can a hit ratio be capped below 100% even with unlimited cache memory?",
-        options: ["Redis limits hit ratios to 99%", "The first request for each key is always a miss", "Cached values expire immediately", "LRU evicts keys randomly"],
+        options: ["Redis caps hit ratios at 99%", "Each key's first request misses", "Cached values expire at once", "LRU evicts keys at random"],
         answer: 1,
         why: "A key cannot be in the cache before it has been read once, so every first request is a compulsory miss; a workload with many new or rarely seen keys has a ceiling no capacity removes — the exercise could not reach 90%. Redis imposes no such limit, expiry depends on the TTL you choose, and LRU evicts the least recently used key, not a random one." }
     ]

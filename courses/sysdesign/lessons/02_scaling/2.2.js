@@ -263,22 +263,22 @@ least connections            16        103`,
     title: "Check yourself",
     questions: [
       { stem: "One server in a round-robin pool slows to 40% of its normal speed. What happens to its queue at 80% overall utilisation?",
-        options: ["It stays short, because round robin is fair", "It grows without limit, because it still receives a tenth of the traffic but can only serve 40% of a server's worth", "The balancer automatically sends it less", "It empties, because slower servers receive fewer requests"],
+        options: ["It stays short, as round robin is fair", "It grows without limit at 40% speed", "The balancer sends it less automatically", "It empties, as slow servers get less"],
         answer: 1,
         why: "Round robin sends each server the same share regardless of state, so the slow server receives 0.8 of a normal server's load and can process 0.4 — arrivals exceed service and the queue grows for as long as the condition lasts; the simulation's p99 reached minutes. \"Fair\" share is the problem, not the solution. Only a load-aware policy sends it less, and nothing about round robin reduces a slow server's share." },
 
       { stem: "Why might many independent load balancers each choosing \"the least-loaded server\" perform badly?",
-        options: ["Least-loaded is expensive to compute", "They all pick the same server at the same moment and overload it — a herd", "Least-loaded ignores health checks", "It only works with HTTP/1.1"],
+        options: ["Least-loaded is expensive to compute", "They all pick the same server at once", "Least-loaded ignores health checks", "It only works with HTTP/1.1"],
         answer: 1,
         why: "Each balancer sees the same momentarily idle server and sends to it simultaneously, so it goes from least loaded to most loaded in an instant. Power of two choices avoids this by sampling randomly, spreading the decisions. Computing a minimum over a fleet is cheap; health checking is independent of the selection policy; and protocol version is unrelated." },
 
       { stem: "A health endpoint returns 200 only if the app can query the shared primary database. The database fails over, taking 4 seconds. What happens?",
-        options: ["Requests are routed to the database's replica", "Every app server fails its check at once and is ejected, causing a full outage until checks pass again", "Only the server that noticed first is ejected", "Nothing — health checks ignore short failures"],
+        options: ["Requests are routed to the replica", "Every server fails at once: full outage", "Only the first server to notice is ejected", "Nothing; checks ignore short failures"],
         answer: 1,
         why: "All servers share the database, so all fail the check at the same moment and the balancer removes the whole fleet — a four-second blip becomes an outage lasting until enough checks pass to re-admit them. Health checks do not reroute database traffic, there is nothing server-specific about the failure to single one out, and whether a short failure is ignored depends entirely on the thresholds — a common configuration ejects after two or three failed probes." },
 
       { stem: "Why combine passive outlier detection with active health checks rather than using only one?",
-        options: ["Passive detection reacts in milliseconds to failures traffic sees; active probes find dead servers receiving no traffic and control re-admission", "Active checks are always more accurate", "Passive detection cannot detect errors", "It is required by HTTP/2"],
+        options: ["Passive reacts fast; active finds idle dead nodes", "Active checks are always the more accurate", "Passive detection cannot see any errors", "Using both is required by the HTTP/2 spec"],
         answer: 0,
         why: "Passive detection uses real traffic, so under load it ejects a failing server after a handful of errors — five requests in the example instead of thousands — but it cannot see a server that is receiving no traffic, and it needs a way to decide when to let a server back. Active probes cover both. Neither is always more accurate, passive detection is precisely error detection, and the protocol version has nothing to do with it." }
     ]

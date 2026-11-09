@@ -243,22 +243,22 @@ for label, sh, norm, utm in (("40 PoPs, clean URLs", False, True, 0.0),
     title: "Check yourself",
     questions: [
       { stem: "A CDN has 40 PoPs and a 61% offload ratio. Adding a regional origin shield raises it to 92%. Why?",
-        options: ["The shield caches longer than the PoPs", "Each PoP was fetching every object from the origin separately; the shield is shared, so the origin sees one fetch per object per TTL", "The shield compresses responses", "The shield blocks bots"],
+        options: ["The shield caches for longer than PoPs do", "One shared shield fetch replaces one per PoP", "The shield compresses each response", "The shield blocks bot traffic"],
         answer: 1,
         why: "Without a shield, forty independent caches each miss on every object at least once per TTL, and small PoPs miss on most of the long tail; with a shared shield those misses are satisfied one tier up, so the origin is asked once instead of up to forty times. The TTL in the simulation was the same at both tiers, and compression and bot filtering do not change how often an object is fetched." },
 
       { stem: "Which header lets a CDN cache an API response for 60 seconds while making browsers revalidate every time?",
-        options: ["Cache-Control: max-age=60", "Cache-Control: max-age=0, s-maxage=60", "Cache-Control: private, max-age=60", "Cache-Control: no-store"],
+        options: ["Cache-Control: max-age=60", "max-age=0, s-maxage=60", "Cache-Control: private", "Cache-Control: no-store"],
         answer: 1,
         why: "s-maxage applies only to shared caches such as CDNs and overrides max-age there, so the edge keeps the response 60 seconds while browsers, seeing max-age=0, revalidate. max-age=60 alone would let browsers keep it too; private forbids the CDN from caching it at all; and no-store forbids every cache." },
 
       { stem: "How do content-hashed file names (app.3f9a1c.js) remove the need to purge on deploy?",
-        options: ["The CDN detects the hash and purges automatically", "Each new build produces a new URL, so the old cached file is simply never requested again", "Hashes make the file smaller", "Browsers do not cache hashed files"],
+        options: ["The CDN reads the hash and purges old copies", "New builds get new URLs; old ones go unused", "Hashes make the files smaller to transfer", "Browsers never cache files with hashed names"],
         answer: 1,
         why: "Because the name is derived from the contents, a changed file gets a new URL, and the HTML that references it — itself not long-cached — points to the new one; the old entry is orphaned and expires. That is what makes a one-year immutable cache safe. CDNs do not interpret hashes, compression is unrelated, and browsers cache hashed files for exactly as long as the headers allow." },
 
       { stem: "An endpoint returning the logged-in user's basket has no Cache-Control header, and a CDN rule caches API responses by default. What can happen?",
-        options: ["Nothing; CDNs never cache personal data", "The first user's basket is cached under the shared URL and served to other users of that PoP", "The basket is cached in the user's browser only", "The request is blocked"],
+        options: ["Nothing; CDNs never cache personal data", "One user's basket is served to others", "It is cached in that user's browser only", "The request is blocked by the CDN"],
         answer: 1,
         why: "A shared cache keys on the URL, so without private or no-store the first response for /api/basket becomes the cached answer for everyone at that PoP until it expires — the data leak in the scenario. CDNs have no way to recognise personal data by themselves, and nothing restricts the response to the browser unless the header says private." }
     ]

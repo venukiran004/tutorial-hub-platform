@@ -404,22 +404,22 @@ line 10: private key block                                  -----BEGIN OPENSSH P
     title: "Check yourself",
     questions: [
       { stem: "A service presents a valid certificate from the mesh CA, but payments refuses its call with 403. What happened?",
-        options: ["The TLS handshake failed", "Authentication succeeded — its identity was proven — but the authorisation policy does not allow that identity to call payments", "Its certificate expired", "The mesh CA is compromised"],
+        options: ["The TLS handshake failed partway through", "Identity was proven, but policy forbids the call", "Its certificate expired before the call", "The mesh CA has been compromised"],
         answer: 1,
         why: "A completed handshake with a valid certificate proves who the caller is. The 403 is a separate policy decision about what that identity may do, as with the recommendations service in mtls.py. Expired or untrusted certificates fail the handshake instead." },
 
       { stem: "GET /orders/{id} checks that the user is logged in and returns the order. What is missing?",
-        options: ["Nothing", "An object-level check that the order belongs to the caller (or that they have permission), plus an allow-list of returned fields", "HTTPS", "A longer ID"],
+        options: ["Nothing; the login check is enough here", "An object-level ownership check on the order", "HTTPS for the order endpoint and its links", "A longer, harder-to-guess order ID format"],
         answer: 1,
         why: "Authentication is not authorisation for a specific object — that gap is BOLA, OWASP's top API risk. Returning only permitted fields addresses the property-level variant. HTTPS and longer IDs do not stop a logged-in user from reading others' objects." },
 
       { stem: "Why does envelope encryption make key rotation cheap?",
-        options: ["It uses weaker encryption", "Rotating the key-encryption key only re-wraps the small per-record data keys; the data itself stays encrypted under unchanged data keys", "It skips encryption for old data", "It stores keys next to the data in plaintext"],
+        options: ["It uses weaker, faster encryption", "Rotation only re-wraps the small data keys", "It skips encryption for old data", "It stores keys beside the data in plaintext"],
         answer: 1,
         why: "Data is encrypted under data keys; only those keys are encrypted under the KEK. Changing the KEK means unwrapping and re-wrapping 32-byte keys — 2,000 of them in milliseconds — not re-encrypting the data." },
 
       { stem: "A developer commits an API key and removes it in the next commit. What should happen first?",
-        options: ["Rewrite git history to remove it", "Rotate (revoke and replace) the key, because it must be assumed compromised; clean history afterwards", "Nothing, since the latest commit is clean", "Make the repository private"],
+        options: ["Rewrite git history to remove it", "Rotate the key, as it is compromised", "Nothing, since the latest commit is clean", "Make the repository private at once"],
         answer: 1,
         why: "The key remains in the history and may already have been copied by scanners that watch public repositories within minutes. Revoking it removes the risk; history cleaning and visibility changes only reduce future exposure." }
     ]

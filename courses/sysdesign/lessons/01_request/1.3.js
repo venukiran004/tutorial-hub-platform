@@ -271,17 +271,17 @@ L7 routes to: api-pool-canary  (by path + cookie)`,
         why: "The path is inside the HTTP request, which is encrypted inside TLS, so only a box that terminates TLS and parses HTTP — layer 7 — can see it. A layer-4 balancer sees addresses and ports, and every HTTPS request arrives on port 443 whatever its path. DNS resolves host names and never sees a path at all." },
 
       { stem: "What distinguishes an API gateway from a service mesh most cleanly?",
-        options: ["The gateway uses Envoy and the mesh does not", "The gateway handles north–south traffic entering the system; the mesh handles east–west traffic between services", "The gateway is layer 4 and the mesh is layer 7", "There is no difference; they are synonyms"],
+        options: ["The gateway runs Envoy and the mesh does not", "Gateway: north–south; mesh: east–west traffic", "The gateway is layer 4; the mesh is layer 7", "None; the two terms are synonyms"],
         answer: 1,
         why: "The gateway is the front door, applying identity, quotas and routing to traffic arriving from outside; the mesh puts a proxy beside every service to govern calls between them. Both commonly use Envoy, so the implementation does not separate them; both operate at layer 7 for HTTP; and they solve different problems, so they are not synonyms." },
 
       { stem: "A team adds one NGINX load balancer in front of three app servers to remove the single point of failure. What have they actually done?",
-        options: ["Removed the single point of failure", "Moved the single point of failure from the app tier to the balancer", "Made the system slower with no benefit", "Required the app servers to be stateful"],
+        options: ["Removed the single point of failure", "Moved the single point to the balancer", "Made it slower with no benefit at all", "Forced the app servers to keep state"],
         answer: 1,
         why: "The app tier is now redundant, but every request passes through one NGINX instance on one machine, so losing that machine still takes everything down. The balancer itself must be redundant — a failover pair, several behind DNS or anycast, or a managed multi-zone balancer. The added latency is well under a millisecond, and balancing works best with stateless servers, not stateful ones." },
 
       { stem: "Which requirement does NOT belong on an API gateway?",
-        options: ["Rate limiting per API key", "Validating that an access token is signed and unexpired", "Checking that a discount code is valid for the items in the basket", "Routing /v1 and /v2 to different backends"],
+        options: ["Rate limiting each API key", "Checking token signature and expiry", "Validating a basket discount code", "Routing /v1 and /v2 to backends"],
         answer: 2,
         why: "Whether a discount applies to a basket is a business rule that needs the meaning of the request and of the catalogue; it belongs in the service that owns pricing, where it is tested and deployed with the code. Per-key quotas, token signature checks and version routing need only the key, the token and the path — information the gateway already sees — and applying them once at the front door is exactly what the gateway is for." }
     ]

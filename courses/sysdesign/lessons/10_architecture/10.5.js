@@ -313,12 +313,12 @@ C fast (200 ms)  deadline propagated   user gets ok      at  550 ms; work after 
     title: "Check yourself",
     questions: [
       { stem: "What is the difference between an API gateway and a load balancer?",
-        options: ["They are the same thing", "A load balancer spreads traffic across instances of a service; a gateway is the front door for many services, adding auth, rate limits, routing and aggregation", "A gateway only handles internal traffic", "A load balancer authenticates users"],
+        options: ["They are the same thing with different names", "A gateway fronts many services with auth and routing", "A gateway only ever handles internal traffic", "A load balancer authenticates users itself"],
         answer: 1,
         why: "Load balancers distribute requests among instances. A gateway routes external requests to many services and applies cross-cutting policy. Gateways handle north–south traffic, and load balancers generally do not authenticate end users." },
 
       { stem: "An instance crashes and clients keep getting errors from it for almost a minute. Which change helps most without adding registry load?",
-        options: ["Increase the number of instances", "Passive outlier ejection in the client or sidecar: stop sending to an instance after a few consecutive failures", "Increase the registry TTL", "Disable health checks"],
+        options: ["Increase the number of running instances", "Eject an instance after consecutive failures", "Increase the service registry's entry TTL", "Disable health checks for the crashed service"],
         answer: 1,
         why: "Outlier ejection reacts to real failures within a few requests — four errors instead of 500 in the simulation — without changing heartbeat or refresh rates. More instances only dilute the errors, a longer TTL makes it worse, and disabling health checks removes the protection entirely." },
 
@@ -328,7 +328,7 @@ C fast (200 ms)  deadline propagated   user gets ok      at  550 ms; work after 
         why: "Each layer retries the whole of the layer below: 3 × 3 × 3 = 27, as measured. Retries in one layer would give 3; two layers 9. The count is bounded, but a 27-fold amplification is enough to keep a recovering backend down." },
 
       { stem: "What does deadline propagation achieve in a call chain?",
-        options: ["It makes every call faster", "Each hop knows the time left for the whole request, so it can refuse work that cannot finish in time and stop work the user has abandoned", "It removes the need for timeouts", "It retries calls automatically"],
+        options: ["It makes every downstream call faster", "Each hop knows the request's remaining time", "It removes the need for any timeouts", "It retries failed calls automatically"],
         answer: 1,
         why: "Passing an absolute deadline lets every hop make the same decision the gateway will: in the exercise the slow call was refused at once, the user heard back at 350 ms instead of 800 ms, and no orphaned work ran. It does not speed up calls, replace timeouts, or retry anything." }
     ]

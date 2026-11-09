@@ -499,22 +499,22 @@ monthly: $7,884 -> $2,888  (63% less), without touching the busy service`,
     title: "Check yourself",
     questions: [
       { stem: "What makes fault injection a chaos experiment rather than just breaking things?",
-        options: ["Running it in production", "A defined steady state, a hypothesis, a limited blast radius and an automatic stop condition, with the results measured", "Using a commercial tool", "Running it without telling anyone"],
+        options: ["Running it directly in production", "A steady state, hypothesis, blast radius and stop", "Using a commercial chaos-engineering tool", "Running it without telling anyone in advance"],
         answer: 1,
         why: "The method is what matters: measured normal behaviour, a prediction, a bounded fault and a way to stop. Production is a later stage, not the definition; tools are optional; and surprise without preparation is just an incident." },
 
       { stem: "Checkout calls an optional service with an 80 ms timeout. That service becomes slow. With 20 threads at 400 req/s and 5 ms of local work, why does checkout still fail?",
-        options: ["80 ms is too long for users", "Each request now holds a thread for about 85 ms, so 20 threads can serve only about 235 req/s — less than the 400 arriving", "Timeouts do not work in Python", "The optional service is still being called correctly"],
+        options: ["80 ms is simply too long for users to wait", "Threads held ~85 ms cap throughput near 235 req/s", "Timeouts do not work at all in Python", "The optional service is still called correctly"],
         answer: 1,
         why: "Little's law: capacity = threads ÷ time per request = 20 ÷ 0.085 s ≈ 235 req/s. The timeout bounds each wait but every request still waits it out. A circuit breaker stops calling the dependency, so requests take only 5 ms." },
 
       { stem: "A workload has a constant baseline, a daily peak and nightly batch jobs. Which purchase plan is usually cheapest without risking reliability?",
-        options: ["Reserve capacity for the peak around the clock", "Reserve the baseline, autoscale on-demand capacity for the peak, and run interruptible batch jobs on spot", "Everything on spot", "Everything on demand, sized for the peak"],
+        options: ["Reserve capacity for the peak around the clock", "Reserve baseline, autoscale peaks, batch on spot", "Run everything on spot instances", "Everything on demand, sized for the peak"],
         answer: 1,
         why: "Reserved capacity is cheapest only when it is used all the time, so it fits the baseline; on-demand autoscaling fits the peak; spot fits work that can be interrupted and retried. Reserving the peak pays for idle hours, all-spot risks reclamation of critical capacity, and peak-sized on-demand is the most expensive." },
 
       { stem: "A right-sizing tool suggests halving an instance whose p95 CPU is 45%. What happens to its p95 utilisation, and should you do it?",
-        options: ["It stays at 45%; yes", "It roughly doubles to about 90%; no — that removes the headroom bursts and failures need", "It halves; yes", "It cannot be predicted"],
+        options: ["It stays at 45%; yes, go ahead", "Roughly 90%; no, it loses headroom", "It halves to about 22%; yes", "It cannot be predicted in advance"],
         answer: 1,
         why: "Half the capacity for the same load doubles utilisation, to around 90% at p95 — where 11.2's queueing curve makes latency explode. A sensible guardrail keeps p95 under about 60% after resizing." }
     ]

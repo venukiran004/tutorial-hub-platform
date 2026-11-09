@@ -366,12 +366,12 @@ open loop (sends on schedule)         6000 samples  p50     2 ms  p99  1530 ms  
     title: "Check yourself",
     questions: [
       { stem: "A service's mean latency is 29 ms and its p99 is 175 ms. Which statement is correct?",
-        options: ["Most requests take about 29 ms", "One request in a hundred takes 175 ms or more, and the mean is pulled up by that tail rather than describing a typical request", "The p99 must be a measurement error", "The median must also be about 29 ms"],
+        options: ["Most requests take about 29 ms, so users are fine", "1% take 175 ms or more; the tail inflates the mean", "The p99 must be a measurement error to discard", "The median must also be about 29 ms as a result"],
         answer: 1,
         why: "p99 = 175 ms means 1% of requests are at least that slow. The mean is the average of a skewed distribution, so it sits above the median (21 ms here) and below the tail, describing no actual request. Skewed tails are normal, not errors." },
 
       { stem: "You have the p99 of each of ten servers. How do you get the fleet's p99?",
-        options: ["Average the ten values", "Take the maximum of the ten", "Compute it from all the underlying samples, or merge the servers' histograms and read the p99", "Take the median of the ten"],
+        options: ["Average the ten per-server p99 values", "Take the maximum of the ten values", "Merge the servers' histograms and read p99", "Take the median of the ten values"],
         answer: 2,
         why: "Percentiles are not additive: averages, maxima or medians of per-server p99s are not the p99 of the combined requests. Merging the raw data or mergeable histograms gives the right answer." },
 
@@ -381,7 +381,7 @@ open loop (sends on schedule)         6000 samples  p50     2 ms  p99  1530 ms  
         why: "1 − 0.99¹⁰⁰ ≈ 0.63. Each call is very likely fast, but with 100 independent chances, most pages hit at least one slow call. 1% would be true for a single call, and it never quite reaches 100%." },
 
       { stem: "A load generator waits for each response before sending the next request. During a 2-second server freeze, what does it record?",
-        options: ["Every request users would have sent during the freeze, each with its full delay", "Only one slow sample, because it stopped sending while waiting — so the tail is badly understated", "Nothing, because it times out", "The same results as an open-loop generator"],
+        options: ["Every request users would have sent, fully delayed", "Only one slow sample, so the tail is understated", "Nothing at all, because the request times out", "The same results as an open-loop generator"],
         answer: 1,
         why: "This is coordinated omission: the tester pauses with the server, so the requests that real users would have queued are never sent or measured. The simulation's closed-loop p99 was 2 ms against 1,530 ms on schedule." }
     ]

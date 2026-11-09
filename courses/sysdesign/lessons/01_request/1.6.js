@@ -267,12 +267,12 @@ final state per order   : {900: 'evt_8', 901: 'evt_5', 902: 'evt_6', 903: 'evt_7
         why: "The traffic is one-way, server to client, which is exactly what SSE provides — over plain HTTP, with reconnection built into the browser. WebSockets would work but add a second direction nobody uses and lose proxy and HTTP tooling. Polling every second wastes requests and still delays updates by half a second on average. Webhooks are calls to a server's URL, and a browser does not have one." },
 
       { stem: "Why does adding WebSockets to a chat feature complicate horizontal scaling?",
-        options: ["WebSockets cannot be load-balanced", "Each user's connection lives on one server, so messages must be routed to the server holding the recipient", "WebSockets require a separate database", "WebSocket messages are larger than HTTP requests"],
+        options: ["WebSockets cannot be load-balanced", "Each connection lives on one server", "WebSockets require their own database", "WebSocket frames are larger than HTTP"],
         answer: 1,
         why: "Statelessness let any server answer any request; a held socket ties a user to one server, so a message sent via server 1 must reach server 7 where the recipient is connected — hence a pub-sub backplane and a presence store. WebSockets can be load-balanced at connection time; the problem is routing messages afterwards. They need no special database, and their frames are typically smaller than HTTP requests." },
 
       { stem: "A webhook handler verifies the signature against the request body after parsing it and re-serialising it as JSON. Genuine requests sometimes fail verification. Why?",
-        options: ["The secret has expired", "Re-serialising changes whitespace or key order, so the bytes differ from what was signed", "HMAC is non-deterministic", "The timestamp tolerance is too short"],
+        options: ["The signing secret has expired", "Re-serialising changes the signed bytes", "HMAC is non-deterministic", "The timestamp tolerance is too short"],
         answer: 1,
         why: "The provider signed the exact bytes it sent; parsing and re-serialising can reorder keys or change spacing, producing different bytes and a different HMAC — the script shows a re-serialised body rejected. HMAC is deterministic for the same key and bytes. An expired secret would fail every request, not some, and a tolerance problem would reject on the timestamp check with a different error." },
 

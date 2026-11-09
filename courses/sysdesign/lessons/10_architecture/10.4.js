@@ -384,22 +384,22 @@ balances: {'GBP': '39.80', 'EUR': '9.00'}`,
     title: "Check yourself",
     questions: [
       { stem: "How does an event store with PRIMARY KEY (stream_id, version) prevent two concurrent withdrawals from both succeeding?",
-        options: ["It locks the account row for the whole transaction", "Both writers try to append the same next version; the second insert violates the key, so that writer must reload and re-check its rule", "It sorts the withdrawals by time", "It rejects all concurrent writes"],
+        options: ["It locks the account row for the whole transaction", "The second append of the same version violates the key", "It sorts the competing withdrawals by timestamp", "It rejects every concurrent write to the store"],
         answer: 1,
         why: "Each writer appends version N+1 based on the version it loaded. Only one insert of that version can succeed; the loser reloads the stream, sees the new state and re-applies the business rule. No lock is held across the check, nothing is sorted by time, and non-conflicting streams proceed concurrently." },
 
       { stem: "A stream has 100,000 events and commands are slow. What is the standard fix?",
-        options: ["Delete old events", "Store periodic snapshots of the folded state and load the latest snapshot plus the events after it", "Move the events to a faster disk", "Split the stream randomly into ten streams"],
+        options: ["Delete the oldest events from the stream", "Load the latest snapshot plus later events", "Move the event store onto a faster disk", "Split the stream randomly into ten streams"],
         answer: 1,
         why: "Snapshots bound the replay to the events since the last snapshot — 437 instead of 100,437 in the measurement. Deleting events destroys the source of truth, faster disks only shave a constant factor, and splitting a stream randomly breaks per-aggregate ordering and concurrency." },
 
       { stem: "A user places an order and the order summary page, served from a CQRS read model, does not show it yet. What is a good fix?",
-        options: ["Make the projector synchronous for every query", "Return the event's position from the command, and have the next read wait until the read model reaches it (or read this user's own new data from the write side)", "Disable CQRS", "Cache the summary page longer"],
+        options: ["Make the projector synchronous for every query", "Have the next read wait for the event's position", "Disable CQRS for the whole order service", "Cache the order summary page for longer"],
         answer: 1,
         why: "Read-your-writes for the writer is enough: wait for the read model to catch up to the command's position, or answer that user's own change from the write side. Making every query wait on projection removes the benefit, disabling CQRS is drastic, and longer caching makes staleness worse." },
 
       { stem: "Events from 2019 store amounts as float pounds; today's code expects integer pence and a currency. What is the recommended approach?",
-        options: ["Rewrite the old events in place", "Upcast old events to the current schema when they are read, keeping the stored log unchanged", "Ignore old events", "Store every new event in all three schemas"],
+        options: ["Rewrite the old events in place", "Upcast old events when they are read", "Ignore the old events from 2019", "Store new events in all three schemas"],
         answer: 1,
         why: "Upcasters convert on read, step by step, so the log stays immutable and projections see one schema. Rewriting events in place destroys the audit trail, ignoring them gives wrong balances, and writing every schema multiplies storage and still needs a reader for the old ones." }
     ]

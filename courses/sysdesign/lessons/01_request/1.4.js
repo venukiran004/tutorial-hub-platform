@@ -302,12 +302,12 @@ C  as B, TLS terminated at the edge               290 ms`,
     title: "Check yourself",
     questions: [
       { stem: "A client's PUT /users/7/address times out. Is it safe for the client library to retry automatically?",
-        options: ["No — any write might be applied twice", "Yes — PUT replaces the resource, so applying it twice leaves the same state as once", "Only if the server returned 500", "Only with an Idempotency-Key header"],
+        options: ["No, any write might be applied twice", "Yes: PUT replaces, so repeats are safe", "Only if the server returned a 500", "Only with an Idempotency-Key header"],
         answer: 1,
         why: "PUT is idempotent by definition: it replaces the resource with the given representation, so a duplicate leaves the same final state. That is why infrastructure retries it. The \"any write\" worry applies to POST, which is neither safe nor idempotent. A timeout gives no status code at all, and an idempotency key is the tool for making a POST safe to retry, not something PUT needs." },
 
       { stem: "A user is logged in but requests another user's invoice. Which status code is correct?",
-        options: ["401 Unauthorized", "403 Forbidden (or 404 to avoid revealing it exists)", "400 Bad Request", "409 Conflict"],
+        options: ["401 Unauthorized, or 400", "403 Forbidden, or 404", "400 Bad Request, or 422", "409 Conflict, or 412"],
         answer: 1,
         why: "The server knows who the user is — authentication succeeded — and is refusing permission, which is 403. Many APIs return 404 instead, so as not to confirm that the invoice exists. 401 asks the client to authenticate, which would not help. The request is well-formed, so 400 is wrong, and 409 is for a conflict with the resource's current state." },
 
@@ -317,7 +317,7 @@ C  as B, TLS terminated at the edge               290 ms`,
         why: "One round trip for the TCP handshake, one for the TLS 1.3 handshake, and the request travels with the client's Finished message, so the response arrives at the end of the third. Four is TLS 1.2, which needs two round trips for its handshake. Two is QUIC, whose transport handshake includes TLS. One is a reused, already-established connection." },
 
       { stem: "Why can HTTP/2 perform worse than HTTP/1.1 on a lossy mobile network?",
-        options: ["HTTP/2 headers are larger", "All of HTTP/2's streams share one TCP connection, so one lost packet stalls them all", "HTTP/2 does not support TLS", "HTTP/2 opens too many connections"],
+        options: ["HTTP/2 headers are much larger", "One lost packet stalls every stream", "HTTP/2 does not support TLS", "HTTP/2 opens too many connections"],
         answer: 1,
         why: "TCP delivers bytes strictly in order, so while one lost packet is retransmitted, every stream multiplexed on the connection waits. HTTP/1.1's six separate connections lose only one request's worth of progress. HTTP/2 headers are compressed and smaller, it is used with TLS almost universally, and it opens fewer connections, not more. HTTP/3 moved to QUIC precisely to fix this." }
     ]

@@ -241,7 +241,7 @@ C  rename one product: records to rewrite          1 rows     328 docs`,
     title: "Check yourself",
     questions: [
       { stem: "Orders are stored as documents with each product's name copied in. A product is renamed. What is the cost?",
-        options: ["None — the document store updates references automatically", "Every order document containing that product must be rewritten, or it keeps the old name", "Only new orders are affected, and that is always correct", "The rename is impossible in a document store"],
+        options: ["None; references update automatically", "Every order containing it must be rewritten", "Only new orders change, which is always right", "Renaming is impossible in a document store"],
         answer: 1,
         why: "Denormalising copies the name into each order, so a rename either touches every copy — 328 documents in the measurement, against one relational row — or leaves stale names behind. Document stores do not maintain references between documents. Whether old orders should keep the old name is a product decision: for a price paid it is right, for a display name usually not. The rename is entirely possible, just expensive." },
 
@@ -251,12 +251,12 @@ C  rename one product: records to rewrite          1 rows     328 docs`,
         why: "A transfer changes two records that must change together or not at all, which is a multi-record ACID transaction — the relational model's defining strength. Sessions with expiry are a key-value pattern with built-in TTLs. A million appends a second, partitioned by sensor, suit a wide-column or time-series store. Shortest paths over relationships are a graph traversal." },
 
       { stem: "Why did the revenue-by-product report take longer on the document model?",
-        options: ["JSON is slower to store than integers", "The documents were designed for fetching one order, so an aggregate across all of them requires reading and parsing every document in application code", "Document stores cannot store numbers", "The relational model caches the answer"],
+        options: ["JSON is slower to store than integers", "Shaped for one order, so totals scan all", "Document stores cannot store numbers", "The relational model cached the answer"],
         answer: 1,
         why: "The document shape optimises one access pattern — fetch an order — and an aggregation across every order is not that pattern, so it becomes a full scan with parsing and summing done outside the database. The relational model expresses it as one GROUP BY the engine executes directly. Storage format speed is not the issue, documents store numbers fine, and no cache was involved." },
 
       { stem: "A team plans to put a fraud graph, a search index and a ledger in three different databases. What makes this sound rather than chaotic?",
-        options: ["Using the same vendor for all three", "Each fact has one system of record, and the other stores are derived views fed from it", "Writing to all three in every request", "Avoiding transactions entirely"],
+        options: ["Using the same vendor for all three", "One record system; the rest are derived", "Writing to all three in every request", "Avoiding transactions entirely"],
         answer: 1,
         why: "Polyglot persistence works when the ledger is the source of truth and the graph and search index are rebuilt from it by events or CDC, so they can be lost and regenerated. Writing to all three in each request is the dual-write problem — they drift apart on any partial failure (6.4). The vendor is irrelevant, and the ledger needs transactions." }
     ]

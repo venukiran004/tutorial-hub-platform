@@ -491,22 +491,22 @@ after inverting the dependency:
     title: "Check yourself",
     questions: [
       { stem: "Two functions both check that a string is 3 to 20 characters long: one for usernames, one for product names. Should they share one implementation?",
-        options: ["Yes: identical code is always a DRY violation", "Only if they represent the same rule with the same owner, so they must change together; otherwise keep them separate", "No: DRY only applies across services", "Yes, but add a parameter for each future difference"],
+        options: ["Yes: identical code is always a DRY violation", "Only if it is one rule that must change together", "No: DRY only applies across service boundaries", "Yes, with a parameter for each future difference"],
         answer: 1,
         why: "DRY concerns duplicated knowledge. These are two business rules that happen to coincide today; merging them couples their futures, as the 80-character usernames showed. Adding parameters for each difference is how the wrong abstraction grows, and DRY applies at every scale, not only across services." },
 
       { stem: "A team builds a plugin system for export formats nobody has asked for yet, and later the first real request needs a different shape. Which YAGNI costs were paid?",
-        options: ["Only the cost of building it", "Build, delay and carry, plus the repair of reworking it", "None, because it was eventually used", "Only the cost of repair"],
+        options: ["Only the cost of building it up front", "Build, delay and carry, plus the repair", "None, because it was eventually used", "Only the later cost of the repair work"],
         answer: 1,
         why: "The plugin system was built early (build), displaced other work (delay), had to be maintained and worked around until needed (carry), and then needed rework because the guess was wrong (repair). Even a correct guess pays build, delay and carry." },
 
       { stem: "In the composition example, why did logging outside the retry show no failures while the network failed 40% of attempts?",
-        options: ["The retry wrapper suppressed logging", "The outer logger only sees the result of each retried send, which succeeded; the failed attempts happened inside, where it cannot see them", "The random seed differed between runs", "Logging only records successful calls by design"],
+        options: ["The retry wrapper suppressed all logging calls", "The logger only saw each retried send's final result", "The random seed differed between the two runs", "Logging only records successful calls by design"],
         answer: 1,
         why: "Each wrapper sees only what passes through its own interface. Outside the retry, the logger sees one call per message and its final outcome. Inside, it sees each attempt. The seed was the same in all runs, and the logger records failures when it is placed where they are visible." },
 
       { stem: "A configuration value is read and parsed only when the first refund is processed. What is the main risk?",
-        options: ["Slower start-up", "A typo passes start-up and health checks, reaches every instance, and fails only when that code path first runs — possibly hours later, everywhere at once", "Higher memory use", "The value cannot be changed at run time"],
+        options: ["Slower start-up for every instance", "A typo surfaces hours later, everywhere at once", "Higher memory use while parsing lazily", "The value can no longer change at run time"],
         answer: 1,
         why: "Lazy parsing hides the error from start-up and readiness checks, so a rolling deployment proceeds to all instances. The failure appears on a rare path, far from the change that caused it. Validating at start-up stops the rollout at the first instance. Start-up time and memory are negligible either way." }
     ]

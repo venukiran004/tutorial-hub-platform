@@ -459,7 +459,7 @@ waited on, in order: catalog: SELECT item -> pricing: SELECT promotions -> produ
     title: "Check yourself",
     questions: [
       { stem: "Which is an SLO?",
-        options: ["The share of requests answered in under 300 ms without an error", "99.9% of requests answered in under 300 ms without an error, measured over 30 days", "A refund of 10% of the monthly fee if availability falls below 99.5%", "CPU utilisation below 70%"],
+        options: ["Share of requests answered in 300 ms without error", "99.9% answered in under 300 ms, measured over 30 days", "A 10% refund if availability falls below 99.5%", "CPU utilisation kept below 70% across the fleet"],
         answer: 1,
         why: "An SLO is a target for an SLI over a window. The first option is the SLI itself, the third is an SLA term, and CPU utilisation is a resource metric rather than a measure of user experience." },
 
@@ -469,12 +469,12 @@ waited on, in order: catalog: SELECT item -> pricing: SELECT promotions -> produ
         why: "0.1% of 30 days is 43.2 minutes. 4.3 minutes is the budget at 99.99%, 7.2 hours at 99%. In practice the budget is spent by failed requests, so partial failures over longer periods spend it too." },
 
       { stem: "Errors rise from 0.05% to 0.5% and stay there for three days. Which alert catches it?",
-        options: ["\"Errors above 1% for 5 minutes\"", "A slow-burn rule: budget consumed at more than the sustainable rate over 3 days, confirmed over 6 hours", "A CPU alert", "None should; 0.5% is low"],
+        options: ["\"Errors above 1% for 5 minutes\"", "A slow-burn budget rule over 3 days", "A CPU utilisation alert on the fleet", "None should; 0.5% is already low"],
         answer: 1,
         why: "0.5% never crosses a 1% threshold, but for a 99.9% SLO it burns budget five times faster than sustainable — 47% of the month's budget in the simulation. A long-window burn-rate rule catches it, as a ticket rather than a page." },
 
       { stem: "A trace shows a 100 ms recommendation call running in parallel with a 142 ms pricing call. What happens to page latency if recommendations becomes twice as fast?",
-        options: ["It falls by about 50 ms", "Almost nothing, because the page waits for the longer parallel branch, pricing, which is on the critical path", "It doubles", "It falls by 100 ms"],
+        options: ["It falls by about 50 ms, half the call", "Almost nothing: pricing is on the critical path", "It roughly doubles because of extra overhead", "It falls by about 100 ms, the whole call"],
         answer: 1,
         why: "With parallel calls the page waits for the slowest branch. Recommendations finished before pricing, so it is not on the critical path, and shortening it changes nothing; shortening pricing would help." }
     ]

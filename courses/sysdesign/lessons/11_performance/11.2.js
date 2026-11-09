@@ -388,7 +388,7 @@ for workers in (21, 22, 24, 26, 28, 30, 35):
         why: "Amdahl's ceiling is 1 ÷ S = 1 ÷ 0.05 = 20×, approached only as processors go to infinity. The serial part takes the same time however many processors run the rest." },
 
       { stem: "Four workers can serve requests either from one shared queue or from a queue each, with requests assigned at random. Which waits less, and why?",
-        options: ["Separate queues, because each queue is shorter", "The shared queue, because a request never waits behind a busy worker while another worker is idle", "They are identical", "Separate queues, because of less locking"],
+        options: ["Separate queues, because each queue is shorter", "The shared queue: nobody waits behind a busy worker", "They are identical, as the workers are the same", "Separate queues, because there is less locking"],
         answer: 1,
         why: "With separate queues, one can back up while another worker sits idle; a shared queue hands each request to the first free worker. At 90% utilisation the simulation's shared queue averaged 29 ms against about 99 ms for a single-worker queue." }
     ]

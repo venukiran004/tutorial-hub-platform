@@ -417,22 +417,22 @@ exhausted pool             no connection free within 0.1 s`,
     title: "Check yourself",
     questions: [
       { stem: "A service enforces an API limit with a RateLimiter singleton. It runs as 3 pods with 4 worker processes each. What limit does it actually enforce?",
-        options: ["The configured limit, because a singleton has exactly one instance", "Up to 12 times the configured limit, because each process has its own instance", "Up to 3 times the limit, one per pod", "Half the limit, because instances share the count"],
+        options: ["Exactly the limit, as a singleton has one instance", "Up to 12 times the limit, one per process", "Up to 3 times the limit, one per pod", "Half the limit, because instances share the count"],
         answer: 1,
         why: "A singleton is one object per process. Twelve processes hold twelve independent limiters, each allowing the full limit. Pods do not share memory either, and nothing makes instances share a count. A fleet-wide limit needs shared state such as Redis." },
 
       { stem: "Why does the lazy singleton in singleton.py create eight instances when eight threads call it at start-up?",
-        options: ["Python creates one instance per thread by design", "Between checking that no instance exists and storing the new one, other threads also see none and create their own", "The class attribute is copied per thread", "time.sleep resets class attributes"],
+        options: ["Python creates one instance per thread by design", "Threads race between the check and the store", "The class attribute is copied into each thread", "time.sleep resets class attributes on wake-up"],
         answer: 1,
         why: "Check-then-act without a lock is a race: every thread that checks before the first one finishes creating sees None. The delay simply widens the window that loading a file or making a network call would create anyway. Class attributes are shared across threads, which is why the lock fixes it." },
 
       { stem: "What does an abstract factory give you that a set of independent per-component factories does not?",
-        options: ["Faster object creation", "A guarantee that the components built together are a consistent family, so invalid combinations cannot be configured", "Automatic thread safety", "The ability to create objects without classes"],
+        options: ["Faster creation of each individual object", "Components built together form a consistent family", "Automatic thread safety for every product", "Creating objects without defining any classes"],
         answer: 1,
         why: "Choosing each component separately allows mismatches, such as an AWS queue carrying links to Google Cloud Storage. An abstract factory chooses the whole family at once. It has no effect on speed or thread safety, and still creates instances of classes." },
 
       { stem: "A query builder accepts where(\"name = '\" + name + \"'\"). What is the real fix?",
-        options: ["Escape quotes in name before concatenating", "Accept only known columns and operators and pass values as bound parameters, separately from the SQL text", "Use an ORM for this one query", "Validate that name contains only letters"],
+        options: ["Escape quotes in name before concatenating", "Allow-list columns and bind values as parameters", "Use an ORM for this one query only", "Validate that name contains only letters"],
         answer: 1,
         why: "Parameters keep values out of the SQL text entirely, so no value can change the query's structure. Escaping by hand is error-prone and database-specific, allow-listing letters breaks legitimate names, and an ORM helps only because it does exactly this underneath." }
     ]

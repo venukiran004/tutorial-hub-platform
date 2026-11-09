@@ -304,22 +304,22 @@ reordered  reserve stock -> authorise payment -> capture payment -> book courier
     title: "Check yourself",
     questions: [
       { stem: "In two-phase commit, a participant has voted yes and the coordinator crashes before sending the decision. What may the participant do?",
-        options: ["Commit, since everyone probably voted yes", "Abort, to release its locks", "Wait, holding its locks, until it learns the decision", "Ask another participant and follow the majority"],
+        options: ["Commit, since everyone probably agreed", "Abort, to release its held locks", "Wait, holding locks, for the decision", "Ask a peer and follow the majority"],
         answer: 2,
         why: "Having voted yes, the participant has promised to commit if told to, and the coordinator may have decided either way — committing or aborting unilaterally could contradict the others. So it blocks with its locks held, which is 2PC's defining weakness. Asking peers helps only if one of them already received the decision; if none did, they are all equally in the dark." },
 
       { stem: "What does a saga give up compared with a distributed ACID transaction?",
-        options: ["Durability", "Isolation: other transactions can see its intermediate states", "The ability to fail", "Ordering of steps"],
+        options: ["Durability", "Isolation", "Failure handling", "Step ordering"],
         answer: 1,
         why: "Each saga step commits locally and immediately, so the half-finished business transaction — a charge before its refund, a reservation for a cancelled order — is visible to everyone else. Each step is durable, sagas fail and compensate by design, and their steps are explicitly ordered." },
 
       { stem: "Where should an irreversible step such as sending a confirmation email go in a saga?",
-        options: ["First, so the customer is informed early", "Immediately before the pivot", "After the pivot, when the saga can only go forward", "In parallel with every step"],
+        options: ["First, to inform the customer early", "Immediately before the pivot step", "After the pivot, once only forward", "In parallel with every other step"],
         answer: 2,
         why: "Before the pivot the saga may still roll back, and an email cannot be unsent, so a cancellation would leave a customer told their order is confirmed — the exercise counted exactly those. After the pivot, the saga only moves forward, so the email can never contradict the outcome." },
 
       { stem: "A saga's compensation calls POST /refunds and retries on timeout. Customers receive several refunds. What is the fix?",
-        options: ["Stop retrying compensations", "Make the compensation idempotent with a key derived from the saga and step, stored with the result", "Use 2PC instead", "Increase the timeout"],
+        options: ["Stop retrying the compensations", "Idempotency key from saga and step", "Use two-phase commit instead", "Increase the request timeout"],
         answer: 1,
         why: "Compensations must be retried — a lost compensation leaves the saga half-undone — so they must also be idempotent; a key per saga step lets the payment service return the original refund for a retry. Not retrying risks no refund at all, 2PC is not available against a payment provider, and a longer timeout narrows the window without closing it." }
     ]

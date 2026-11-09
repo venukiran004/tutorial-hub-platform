@@ -329,17 +329,17 @@ cycles between modules: billing <-> orders`,
         why: "Availabilities multiply along a chain where every service must succeed: 0.999¹⁰ ≈ 0.990, and the simulation measured 99.00%. 99.9% would hold only if failures never coincided with requests through the others; 90% would need each at 99%; 99.99% is better than any single service." },
 
       { stem: "Which is the clearest sign of a distributed monolith?",
-        options: ["Services written in different languages", "Several services read and write the same database tables and must be released together", "More than ten services", "An API gateway in front of the services"],
+        options: ["Services written in several different languages", "Services share tables and must release together", "More than ten services deployed in production", "An API gateway in front of all the services"],
         answer: 1,
         why: "Shared tables and lockstep releases mean the services cannot change or deploy independently — the coupling of a monolith with the costs of a network. Language diversity, service count and a gateway say nothing about coupling." },
 
       { stem: "Why is a modular monolith often a better first step than microservices?",
-        options: ["It cannot scale, so it is cheaper", "It keeps function calls and transactions while building enforced boundaries, so a module can be extracted later without a redesign", "It avoids the need for module boundaries", "It requires no database"],
+        options: ["It cannot scale, so it costs less to run", "It keeps local calls while enforcing boundaries", "It avoids the need for module boundaries", "It requires no database for its modules"],
         answer: 1,
         why: "The modular monolith keeps in-process calls, single transactions and one deployment, and develops the boundaries that make later extraction cheap. It scales horizontally like any stateless monolith, its whole point is boundaries, and it has a database — one schema with tables owned per module." },
 
       { stem: "A team wants microservices \"so the system can scale\". What should you ask first?",
-        options: ["Which programming language they prefer", "Which specific component needs to scale, deploy or fail independently of the rest, and why a horizontally scaled monolith is not enough", "How many services they plan to create", "Whether they will use Kubernetes"],
+        options: ["Which programming language the team prefers", "Which component must scale independently, and why", "How many services they plan to create in total", "Whether they will run everything on Kubernetes"],
         answer: 1,
         why: "A stateless monolith already scales horizontally. The case for splitting is a concrete part with different scaling, release or isolation needs, or teams that need autonomy. Language, service counts and orchestration platforms are implementation details that follow from that answer." }
     ]

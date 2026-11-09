@@ -230,12 +230,12 @@ W=5, R=1             0.0%         22.80%               15.4`,
         why: "Linearizability requires that once a write has completed, every read that starts afterwards returns it (or something newer) — a later read returning the old value after the new one has been observed is the defining violation. Eventual consistency permits it. Read-your-writes concerns a client's own writes, and the reading client here did not write." },
 
       { stem: "Why can sloppy quorums break the R + W > N guarantee?",
-        options: ["They reduce N", "Writes may be accepted by stand-in nodes that are not the key's home replicas, which a later read quorum need not include", "They disable read repair", "They use last-writer-wins"],
+        options: ["They reduce the replication factor N", "Stand-in nodes accept writes reads may miss", "They disable read repair entirely", "They use last-writer-wins resolution"],
         answer: 1,
         why: "When home replicas are unreachable, a sloppy quorum lets other nodes accept the write with a hint to forward it, so the W acknowledgements can come from nodes outside the key's replica set; a read from the home replicas can then miss the write until the hints are delivered. N is unchanged, read repair still runs, and the conflict-resolution rule is a separate choice." },
 
       { stem: "Two sign-ups for the same username both read \"available\" at QUORUM and both write at QUORUM. Why can both succeed?",
-        options: ["QUORUM is not durable", "Quorum reads and writes do not make the check and the write atomic; both can read before either writes", "R + W ≤ N", "The replicas are partitioned"],
+        options: ["QUORUM writes are not durable", "Check and write are not atomic", "Because R + W ≤ N here", "The replicas are partitioned"],
         answer: 1,
         why: "Each read correctly returned the latest completed write — there was none yet — and then each wrote; overlap guarantees freshness of individual reads, not atomicity of read-then-write across clients. A linearisable compare-and-set such as INSERT … IF NOT EXISTS is needed. QUORUM writes are durable, 2 + 2 > 3 does overlap, and no partition is required for this race." }
     ]

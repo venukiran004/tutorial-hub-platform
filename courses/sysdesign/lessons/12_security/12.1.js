@@ -284,22 +284,22 @@ can user:eve   viewer doc:public-faq   -> True`,
     title: "Check yourself",
     questions: [
       { stem: "Why should passwords be hashed with Argon2id or scrypt rather than SHA-256?",
-        options: ["SHA-256 is broken and produces collisions", "They are deliberately slow and memory-hard, so each guess costs an attacker far more — about ten guesses a second per core instead of over a million", "They are reversible, so passwords can be recovered", "They do not need salts"],
+        options: ["SHA-256 is broken and produces collisions", "They are slow and memory-hard, so guesses cost more", "They are reversible, so passwords can be recovered", "They do not need salts, unlike SHA-256"],
         answer: 1,
         why: "Password hashing needs to be expensive to brute-force, and general-purpose hashes are built for speed. SHA-256 is not broken for collisions in this sense; password hashes must never be reversible; and they all need per-user salts." },
 
       { stem: "A malicious app registers the same custom URL scheme as your mobile app and intercepts the authorisation code. What stops it from getting tokens?",
-        options: ["The state parameter", "PKCE: exchanging the code requires the code_verifier, which never left the real app", "HTTPS", "The access token's expiry"],
+        options: ["The state parameter in the request", "PKCE: the exchange needs the code_verifier", "HTTPS on the redirect to the app", "The access token's short expiry"],
         answer: 1,
         why: "The code alone is not enough: the token endpoint checks that the verifier hashes to the challenge sent at the start, and only the real app has it. state protects against forged callbacks, HTTPS does not help when the redirect itself is delivered to the wrong app, and expiry does not prevent the exchange." },
 
       { stem: "What does OpenID Connect add to OAuth 2.0?",
-        options: ["Encryption of access tokens", "Authentication: a signed ID token describing who logged in, and a standard user-info endpoint", "A replacement for refresh tokens", "Role-based access control"],
+        options: ["Encryption of every access token", "Authentication via a signed ID token", "A replacement for refresh tokens", "Role-based access control rules"],
         answer: 1,
         why: "OAuth 2.0 is about delegated authorisation — access tokens for APIs. OIDC standardises login on top of it with the ID token and identity claims. It does not encrypt access tokens, replace refresh tokens or define authorisation models." },
 
       { stem: "Users share documents with individuals, teams and nested teams, and documents inherit access from folders. Which authorisation model fits best?",
-        options: ["RBAC with one role per document", "ReBAC: permissions as relationships, with nested groups and inheritance evaluated as a graph", "No authorisation; rely on obscure URLs", "ABAC with only time-of-day rules"],
+        options: ["RBAC with one role per document", "ReBAC: relationships evaluated as a graph", "No authorisation; rely on obscure URLs", "ABAC with only time-of-day rules"],
         answer: 1,
         why: "Sharing structures are graphs of relationships, which is exactly what ReBAC models. Per-document roles explode, unguessable URLs are not access control, and attributes such as time of day do not express who shared what with whom." }
     ]

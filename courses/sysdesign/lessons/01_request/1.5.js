@@ -271,22 +271,22 @@ Errors, everywhere:
     title: "Check yourself",
     questions: [
       { stem: "Why is OFFSET pagination slow on deep pages even with an index on the sort column?",
-        options: ["The index is not used with LIMIT", "The database must still walk past every skipped row before returning the page", "OFFSET forces a full sort of the table", "It is not slow; only COUNT(*) is"],
+        options: ["The index is not used with LIMIT", "It still walks every skipped row", "OFFSET forces a full table sort", "It is not slow; only COUNT(*) is"],
         answer: 1,
         why: "OFFSET is defined by position, so the database reaches row 1,000,000 by stepping over the 999,999 before it, even when it walks them in index order — the measurement shows cost growing with the page number. The index is used, which is why the walk is ordered rather than a sort. A cursor's WHERE id > ? seeks directly to the start of the page instead, which is why it stays flat." },
 
       { stem: "A public partner API is being designed. Which style is the strongest default, and why?",
-        options: ["gRPC, because it is fastest", "GraphQL, because it avoids over-fetching", "REST, because it is cacheable, browser- and curl-friendly, and partners know it", "Any — the choice does not matter for partners"],
+        options: ["gRPC, because it is the fastest protocol", "GraphQL, because it avoids over-fetching", "REST: cacheable, curl-friendly, familiar", "Any of them; partners do not care"],
         answer: 2,
         why: "For partners, the costs that matter are integration effort, debuggability and caching, and REST wins on all three: any HTTP client works, responses are readable, and CDNs cache GET responses by URL. gRPC's speed matters most inside a data centre and its tooling burden falls on every partner. GraphQL suits front ends with nested screens but needs cost limits before it is safe to expose publicly." },
 
       { stem: "A GraphQL query for 50 orders and their items is slow, though it is a single HTTP request. What is the likely cause?",
-        options: ["GraphQL responses cannot be compressed", "The items resolver runs one database query per order — N+1 on the server", "POST requests are slower than GET", "The schema is too large"],
+        options: ["GraphQL responses cannot be compressed", "The items resolver issues N+1 queries", "POST requests are slower than GET", "The schema is too large to parse"],
         answer: 1,
         why: "GraphQL removes client round trips by walking the tree on the server, and a naive resolver for `items` runs once per order — 51 queries for one request. A batching loader collects all 50 order ids and fetches their items in one query. Compression works on GraphQL like any HTTP body, POST is not inherently slower, and schema size does not affect execution of one query." },
 
       { stem: "A client retries a create request after a timeout, sending the same Idempotency-Key with a different body. What should the server do?",
-        options: ["Create a second resource with the new body", "Return the original response, ignoring the new body", "Reject it with an error saying the key was reused with a different request", "Overwrite the original resource with the new body"],
+        options: ["Create a second resource from the new body", "Return the first response, ignoring the body", "Reject it: the key was reused with a new body", "Overwrite the original resource with it"],
         answer: 2,
         why: "A key identifies one logical operation, so the same key with a different body is a client bug — usually a key being reused across operations. Rejecting it loudly surfaces the bug. Returning the original silently loses the second order; creating a second resource defeats the key's purpose; and overwriting turns a create into an update nobody asked for." }
     ]

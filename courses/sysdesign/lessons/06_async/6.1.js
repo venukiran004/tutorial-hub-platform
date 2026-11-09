@@ -271,22 +271,22 @@ autoscale lag: worst wait  260 s,   188 consumer-hours/day (3-minute scaling del
     title: "Check yourself",
     questions: [
       { stem: "Consumers process 600 messages/s; arrivals are 400/s after a spike left 54,000 messages queued. How long until the backlog clears?",
-        options: ["90 seconds", "About 4.5 minutes", "54 seconds", "It never clears"],
+        options: ["About 90 seconds", "About 4.5 minutes", "About 54 seconds", "It never clears at all"],
         answer: 1,
         why: "Only the spare capacity drains the backlog: 600 − 400 = 200 messages a second, and 54,000 ÷ 200 = 270 seconds. 90 s would be the backlog divided by full capacity, ignoring that new messages keep arriving; 54 s has no basis; and it does clear because capacity exceeds arrivals." },
 
       { stem: "Which metric best tells you a queue's consumers are failing to keep up with what users need?",
-        options: ["Consumer CPU usage", "Number of consumers", "Age of the oldest unprocessed message", "Total messages ever processed"],
+        options: ["Consumer CPU usage", "Number of consumers", "Age of oldest message", "Messages ever processed"],
         answer: 2,
         why: "The oldest message's age is the delay users actually experience, and compared against the processing target it says directly whether the queue is too far behind. CPU can be high while keeping up or low while waiting on a slow dependency; consumer count and lifetime totals say nothing about delay." },
 
       { stem: "A malformed message fails every time it is processed. In a strictly ordered queue without a dead-letter queue, what happens?",
-        options: ["It is skipped automatically", "It is redelivered forever and blocks the messages behind it", "It is deleted after the visibility timeout", "The queue reorders around it"],
+        options: ["It is skipped automatically", "Redelivered forever, blocking the rest", "Deleted after the visibility timeout", "The queue reorders around it"],
         answer: 1,
         why: "An unacknowledged message is redelivered, and in strict order nothing behind it is processed until it succeeds — which it never will; the simulation processed one healthy message in fifty attempts. Visibility timeouts cause redelivery, not deletion, and an ordered queue by definition does not reorder." },
 
       { stem: "Average arrival rate permanently exceeds consumer capacity. What does adding a larger queue achieve?",
-        options: ["It solves the problem", "It postpones the failure: the backlog and message age grow without bound", "It reduces arrivals", "It speeds up consumers"],
+        options: ["It solves the problem for good", "It only postpones the failure", "It reduces the arrival rate", "It speeds up the consumers"],
         answer: 1,
         why: "A queue only smooths bursts around an average the consumers can handle; when the average exceeds capacity, the backlog grows forever and messages get older until they expire or are useless. Only more capacity, less work, or backpressure to producers addresses it." }
     ]

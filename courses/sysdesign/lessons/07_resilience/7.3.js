@@ -261,22 +261,22 @@ Lua token bucket     8 gateways sent 1,600 in 0.30 s -> accepted  130 (limit all
     title: "Check yourself",
     questions: [
       { stem: "A fixed-window limiter allows 100 requests per minute. What is the most a client can send successfully within two seconds?",
-        options: ["100", "200 — 100 at the end of one window and 100 at the start of the next", "50", "3"],
+        options: ["100 requests", "200 requests", "50 requests", "300 requests"],
         answer: 1,
         why: "The counter resets at the boundary, so a client can use a full allowance just before it and another just after, 200 in a moment — the boundary burst measured at 2× the limit. Sliding algorithms prevent this by looking back a full window at every request." },
 
       { stem: "What do a token bucket's two parameters control?",
-        options: ["Window length and key size", "Capacity sets the largest burst after idleness; refill rate sets the long-run rate", "Number of gateways and Redis shards", "Timeout and retry count"],
+        options: ["Window length and key size", "Burst capacity and long-run rate", "Gateway count and Redis shards", "Timeout and retry count"],
         answer: 1,
         why: "Tokens accumulate up to the capacity while a client is idle, so capacity bounds the burst it can then send; the refill rate is the steady rate it can sustain. That independence is why token buckets suit APIs. The other options name unrelated settings." },
 
       { stem: "Eight gateways enforce a shared limit by reading a Redis counter, comparing in code, and writing the new value. What goes wrong under load?",
-        options: ["Redis becomes inconsistent", "Concurrent gateways read the same value in the gap and all allow, so the limit is exceeded several times over", "Requests are double-counted and the limit is too strict", "Nothing — Redis serialises commands"],
+        options: ["Redis becomes inconsistent", "Racing read-then-write overshoots", "Requests are double-counted", "Nothing; Redis serialises it"],
         answer: 1,
         why: "Redis serialises individual commands, but GET and SET are separate commands with application logic between them, so several gateways read the same count before any writes — the exercise admitted several times the allowance. Doing the decision inside Redis, via INCR or a Lua script, makes it atomic." },
 
       { stem: "An API's per-key limit is 1,000 requests per minute, and one endpoint scans millions of rows per call. What is the problem?",
-        options: ["The limit is too high for cheap endpoints", "Counting requests treats every request as equal cost, so a few hundred expensive calls within quota can overload the backend", "Rate limits cannot apply to exports", "The limit should be per IP"],
+        options: ["The limit is too high for cheap calls", "Equal counting ignores per-call cost", "Rate limits cannot apply to exports", "The limit should be per IP address"],
         answer: 1,
         why: "A request-count limit is a proxy for cost, and it fails when one endpoint costs thousands of times more than another — the export incident. Expensive operations need their own limit, a cost-based token charge, or asynchronous execution with concurrency limits. Per-IP limits would not help with an authenticated integration." }
     ]

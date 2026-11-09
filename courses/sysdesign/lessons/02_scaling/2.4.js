@@ -254,17 +254,17 @@ after two indexes
         why: "Equality first then sort: the index seeks to one customer's block, which is already in created_at order, so the first 20 entries are the answer with no sort step. (created_at, customer_id) is sorted by time and must be walked checking every customer — measured slower than no index. Two separate indexes cannot do both jobs at once, so one still sorts, and (created_at) alone scans by time." },
 
       { stem: "An index exists on (region, status, created_at). Which query can use it to seek?",
-        options: ["WHERE status = 'paid'", "WHERE created_at > ?", "WHERE region = 'eu' AND status = 'paid'", "WHERE status = 'paid' AND created_at > ?"],
+        options: ["WHERE status = 'paid' alone", "WHERE created_at > ? alone", "WHERE region and status match", "WHERE status and created_at"],
         answer: 2,
         why: "By the leftmost-prefix rule, a composite index can seek on its first column, its first two, or all three. region + status is a prefix, so the seek goes straight to that block. Any query that does not constrain region first cannot seek — the index is sorted by region, so status values are scattered across every region's block." },
 
       { stem: "A table receives 20,000 inserts a second and has nine indexes, most added years ago. Writes are slow. What should you check first?",
-        options: ["Whether the table needs more indexes", "Which indexes are actually used, since each one is maintained on every insert", "Whether to switch to a NoSQL store", "Whether the primary key is too long"],
+        options: ["Whether the table needs more indexes", "Which indexes are actually used", "Whether to switch to a NoSQL store", "Whether the primary key is too long"],
         answer: 1,
         why: "Every index is updated on every insert, so nine indexes means nine structures maintained per row; unused ones are pure cost. PostgreSQL's pg_stat_user_indexes shows scan counts per index, and dropping the unused ones is the cheapest write-speed fix available. More indexes make writes slower, a store migration is a vastly bigger change, and key length is a minor factor next to index count." },
 
       { stem: "Why does the planner ignore an index on status for WHERE status = 'shipped', when 89% of rows are shipped?",
-        options: ["The index is corrupt", "Following the index to 89% of the rows costs more than reading the table sequentially", "Indexes cannot be used on text columns", "The statistics are always wrong"],
+        options: ["The index has become corrupt", "Reading 89% via the index costs more", "Indexes cannot cover text columns", "The planner statistics are wrong"],
         answer: 1,
         why: "An index pays off when it selects a small fraction of rows; jumping from index entries to 890,000 scattered rows is more random I/O than one sequential scan, and the cost-based planner correctly chooses the scan. Text columns index perfectly well, nothing suggests corruption, and statistics are usually accurate enough for this decision. A partial index on the rare values is the tool for low-selectivity columns." }
     ]

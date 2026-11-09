@@ -302,22 +302,22 @@ for mt, f in ((1_000, 4), (1_000, 10), (5_000, 4), (5_000, 10), (20_000, 4)):
     title: "Check yourself",
     questions: [
       { stem: "Why can an LSM-tree sustain higher write throughput than a B-tree on random keys?",
-        options: ["It does not write to disk", "It buffers writes in memory and writes them out sequentially in sorted batches, instead of rewriting a random page per write", "It skips the write-ahead log", "It stores less data"],
+        options: ["It never writes to disk at all", "Buffered, sorted, sequential writes", "It skips the write-ahead log", "It stores less data overall"],
         answer: 1,
         why: "The memtable absorbs writes and is flushed as one sequential sorted file, so random writes become sequential I/O, and repeated updates to a key collapse in memory. LSMs certainly write to disk, they rely on a WAL exactly as B-trees do, and they typically store more, not less, until compaction removes old versions." },
 
       { stem: "What does a Bloom filter per SSTable do for LSM reads?",
-        options: ["Compresses the file", "Lets a read skip files that definitely do not contain the key", "Sorts the keys", "Removes tombstones"],
+        options: ["Compresses the file on disk", "Skips files that lack the key", "Sorts the keys within each file", "Removes tombstones during reads"],
         answer: 1,
         why: "A Bloom filter answers \"definitely not here\" or \"possibly here\", so a read only searches files whose filter says possibly — about one run per read in the measurement instead of several. Compression, sorting and tombstone removal are separate mechanisms: files are sorted at flush, and tombstones go in compaction." },
 
       { stem: "A database acknowledges a commit after appending it to the WAL and calling fsync, but before writing the data page. It then crashes. What happens to the commit?",
-        options: ["It is lost because the page was never written", "It survives: recovery replays the log record and re-applies the change", "It is half applied", "It must be re-sent by the client"],
+        options: ["Lost, as the page was never written", "Survives: recovery replays the log", "It is left half applied", "The client must re-send it"],
         answer: 1,
         why: "That ordering is the entire point of a write-ahead log: once the record is fsynced, the change is durable, and recovery replays every log record after the last checkpoint to rebuild the pages. The page write is deliberately lazy. Nothing is half applied, because replay is idempotent at the record level, and the client was correctly told it succeeded." },
 
       { stem: "An LSM-based table is used as a work queue: rows are inserted, processed and deleted constantly. Reads of the oldest pending rows become slow. Why?",
-        options: ["The memtable is too small", "Each delete leaves a tombstone that reads must step over until compaction removes it", "LSMs cannot sort keys", "The WAL grows too large"],
+        options: ["The memtable is too small", "Reads step over tombstones", "LSMs cannot sort keys", "The WAL grows too large"],
         answer: 1,
         why: "Deletes in an LSM are tombstone writes kept until compaction merges them past older copies; a queue pattern creates them faster than they are removed, so a scan for the oldest live row walks through thousands of tombstones. Memtable size and WAL length do not cause that read cost, and LSMs keep keys sorted in every file." }
     ]

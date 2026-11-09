@@ -513,22 +513,22 @@ test passed: no SMTP server, no SMS provider`,
     title: "Check yourself",
     questions: [
       { stem: "Finance asks for a change to overtime pay. Afterwards, the operations team's legal hours report is wrong. Which principle was violated, and what is the repair?",
-        options: ["Open/closed: add a new overtime class instead of editing", "Single responsibility: two actors shared one class and helper; give each actor's rules their own home", "Liskov: the subclass broke the base contract", "Dependency inversion: inject the overtime threshold from configuration"],
+        options: ["Open/closed: add a new overtime class instead", "Single responsibility: give each actor its own home", "Liskov: the subclass broke the base contract", "Dependency inversion: inject the overtime threshold"],
         answer: 1,
         why: "The bug came from two actors — finance and operations — depending on one rule in one class, so a change for one moved the other's output. Splitting by actor is the repair. There is no subclass (not Liskov), configuration would still be shared by both actors, and an extension point does not separate owners." },
 
       { stem: "A team replaces an in-memory store with a replicated one that has exactly the same methods. Users start seeing their old profile name right after saving. What would have caught this before production?",
-        options: ["A type checker", "A contract test written against the Store interface and run against every implementation", "Making the replicated store a subclass of the in-memory store", "Adding more unit tests for the in-memory store"],
+        options: ["A stricter static type checker", "A contract test run against every Store", "Subclassing the in-memory store directly", "More unit tests for the in-memory store"],
         answer: 1,
         why: "The promise broken — read-your-writes — is behaviour, not a signature, so a type checker passes it. A contract test states the behaviour and runs against each implementation. Subclassing changes nothing about the replica's behaviour, and more tests of the old store never exercise the new one." },
 
       { stem: "A read-replica class implements a repository interface and raises NotImplementedError from put, delete, migrate and backup. Which principle is the root cause?",
-        options: ["Interface segregation: the interface is wider than what this implementation (and most clients) need", "Single responsibility: the replica does too much", "Open/closed: the interface should be extended", "Dependency inversion: the replica depends on a concrete class"],
+        options: ["Interface segregation: the interface is too wide", "Single responsibility: the replica does too much", "Open/closed: the interface should be extended", "Dependency inversion: it depends on a concrete class"],
         answer: 0,
         why: "The replica is forced to implement methods it cannot support because one wide interface bundles several roles. Splitting it into Reader, Writer and Admin lets the replica implement only Reader. The stubs are also Liskov violations, but they are a symptom of the fat interface, not the root cause." },
 
       { stem: "In dependency inversion, what exactly is inverted?",
-        options: ["The order of calls at run time: the vendor now calls the service", "The direction of the source-code dependency: the adapter depends on an interface owned by the domain, instead of the domain depending on the vendor", "The inheritance hierarchy is reversed", "The database now depends on the application schema"],
+        options: ["The run-time call order: the vendor calls the service", "The source dependency: adapters depend on domain interfaces", "The inheritance hierarchy is reversed top to bottom", "The database now depends on the application schema"],
         answer: 1,
         why: "At run time the service still calls the vendor through the adapter. What changes is which code knows about which: the domain defines the port, and the vendor-specific adapter imports it. Nothing is inherited in reverse, and the database is unaffected." }
     ]

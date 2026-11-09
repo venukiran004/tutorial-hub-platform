@@ -185,22 +185,22 @@ for sites in (2, 3, 4, 6):
     title: "Check yourself",
     questions: [
       { stem: "A database replicates asynchronously with up to 5 seconds of lag and fails over automatically in 40 seconds. What are its RPO and RTO?",
-        options: ["RPO 40 s, RTO 5 s", "RPO up to 5 s, RTO about 40 s", "Both zero", "RPO 0, RTO 45 s"],
+        options: ["RPO 40 s, RTO about 5 s", "RPO up to 5 s, RTO about 40 s", "Both are zero, as failover is automatic", "RPO 0 s, RTO about 45 s"],
         answer: 1,
         why: "RPO is the data that may be lost — writes in the replication lag window, up to 5 seconds — and RTO is the time to restore service, about 40 seconds. Swapping them confuses the backward-looking and forward-looking measures; zero RPO would need synchronous replication." },
 
       { stem: "In an automatic database failover, which step usually takes the longest once humans are removed?",
-        options: ["Promoting the replica", "Getting clients to connect to the new primary — DNS TTLs, reconnects, warm-up", "Writing the WAL", "Compiling the application"],
+        options: ["Promoting the replica to primary", "Getting clients to reach the new primary", "Writing the final WAL records", "Compiling and restarting the application"],
         answer: 1,
         why: "Promotion takes seconds; clients learning the new address and re-establishing pools and caches is the long tail — 75 seconds of the DNS-based design's three minutes. A proxy or virtual IP shortens it. WAL writing and compilation are not part of failover." },
 
       { stem: "Three active-active regions each run at 70% at peak. One fails. What happens?",
-        options: ["The other two absorb its traffic comfortably", "The survivors need about 105% of their capacity, so they overload", "Traffic is dropped from the failed region only", "Nothing changes; regions are independent"],
+        options: ["The other two absorb its traffic comfortably", "Survivors need about 105% capacity and overload", "Traffic is dropped from the failed region only", "Nothing changes; the regions are independent"],
         answer: 1,
         why: "The failed region's 70% splits across two survivors, adding 35% each, which takes them to 105% — overload, shedding or cascading failure. Each of three sites should run at no more than two-thirds at peak. Traffic is redirected, not simply dropped, and that redirection is exactly what loads the survivors." },
 
       { stem: "What is the most reliable way to know a failover will work?",
-        options: ["Review the architecture diagram", "Run it regularly, including in production with real traffic", "Buy a bigger standby", "Document the runbook carefully"],
+        options: ["Review the architecture diagram in detail", "Run it regularly, in production, with real traffic", "Buy a bigger standby than the primary", "Document every step of the runbook carefully"],
         answer: 1,
         why: "Only exercising the failover reveals stale replicas, undersized standbys, unreachable redirects, single-homed dependencies and outdated runbooks — the standby that had not replicated for 23 days looked fine on every diagram. Documentation and capacity help, but are themselves only verified by running the procedure." }
     ]

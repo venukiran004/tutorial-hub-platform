@@ -213,22 +213,22 @@ for interval, misses in ((0.5, 2), (1, 3), (2, 3), (3, 3), (5, 2), (10, 3)):
     title: "Check yourself",
     questions: [
       { stem: "A call to a payment service times out. What do you know?",
-        options: ["The payment failed", "The payment succeeded", "Nothing certain: it may have failed, succeeded, or still be running", "The service has crashed"],
+        options: ["The payment definitely failed at the provider", "The payment definitely succeeded at the provider", "Nothing certain: failed, succeeded or running", "The payment service has crashed and restarted"],
         answer: 2,
         why: "A timeout only means no response arrived in time; the request may have been lost, processed with the response lost, or still be in progress. Treating it as failure can tell a customer their payment failed when it succeeded. The safe responses are retrying with an idempotency key or querying the outcome." },
 
       { stem: "Why can no timeout value both detect crashes quickly and never suspect a healthy node?",
-        options: ["Timeouts are implemented incorrectly", "Healthy nodes sometimes pause or are delayed for longer than any short timeout, and a long timeout delays detection of real crashes by the same amount", "Crashes are always fast", "Networks have no delays"],
+        options: ["Timeouts are usually implemented incorrectly", "Healthy nodes can pause longer than a short timeout", "Crashes always happen faster than any pause", "Networks add no delay between healthy nodes"],
         answer: 1,
         why: "A live node's response time has a tail — GC pauses, retransmissions — so a short timeout misjudges it, and only a timeout longer than that tail avoids false suspicion; but a crashed node is then also only noticed after that long timeout. That is the slow-versus-dead ambiguity, measured in both simulations." },
 
       { stem: "Raft is designed for which failure model?",
-        options: ["Byzantine faults", "Crash-recovery with durable storage, and lost or delayed messages", "Only crash-stop", "No failures at all"],
+        options: ["Byzantine faults, including lying nodes", "Crash-recovery with durable storage and lossy links", "Only crash-stop, with perfectly reliable links", "No failures at all, only slow messages"],
         answer: 1,
         why: "Raft tolerates nodes that crash and restart with their persisted log, and messages that are lost, delayed or reordered, as long as a majority is available. It assumes nodes do not lie, so it is not Byzantine-tolerant; it handles more than crash-stop because recovered nodes rejoin." },
 
       { stem: "What practical lesson do real systems take from the two-generals problem?",
-        options: ["Always send three acknowledgements", "Certainty over a lossy channel is impossible, so make operations idempotent and safe to resend", "Use UDP instead of TCP", "Avoid acknowledgements entirely"],
+        options: ["Always send exactly three acknowledgements", "Make operations idempotent and safe to resend", "Use UDP instead of TCP for all messages", "Avoid acknowledgements entirely between peers"],
         answer: 1,
         why: "Every confirmation leaves its sender unsure whether it arrived, so no fixed number of acknowledgements produces certainty. Systems therefore design for resending: idempotent operations and deduplication make \"not sure it arrived\" harmless. The protocol choices in the other options do not change the underlying impossibility." }
     ]

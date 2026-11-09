@@ -366,17 +366,17 @@ with budget                1011 /s           1113 /s           30,000       30,0
     title: "Check yourself",
     questions: [
       { stem: "Why does a dependency that takes 30 seconds to respond do more damage than one that fails immediately?",
-        options: ["Slow responses use more bandwidth", "Callers hold threads and connections while waiting, saturate, and then fail their own callers", "Errors are logged more", "Slow responses are not retried"],
+        options: ["Slow responses use more bandwidth", "Waiting callers saturate, then fail too", "Slow errors get logged more", "Slow responses are never retried"],
         answer: 1,
         why: "Every waiting call occupies a thread or connection; at a modest request rate a 30-second wait exhausts a pool in seconds, after which even unrelated requests queue — and the caller's callers saturate the same way. An immediate error frees resources at once. Bandwidth and logging are not the mechanism, and slow responses are retried once they time out." },
 
       { stem: "Ten thousand clients use exponential backoff without jitter after a shared failure. What happens when the server recovers?",
-        options: ["Load is smooth", "The clients retry in synchronised waves, each the full ten thousand, further apart each time", "Every client succeeds on the first retry", "The clients stop retrying"],
+        options: ["Load arrives smoothly", "Synchronised retry waves", "All succeed on the first retry", "The clients stop retrying"],
         answer: 1,
         why: "Identical backoff schedules starting at the same moment keep the clients in lockstep, so each wave arrives together and exceeds capacity — recovery took over a minute in the simulation. Jitter randomises the delay within each interval, which is what smooths the load." },
 
       { stem: "A request passes through four services, each retrying a failed downstream call twice (three tries). The bottom service is down. How many calls reach it per user request?",
-        options: ["3", "12", "81", "4"],
+        options: ["3 calls", "12 calls", "81 calls", "4 calls"],
         answer: 2,
         why: "Each layer multiplies the attempts of the layer above: 3 × 3 × 3 × 3 = 81. Twelve would be additive, which is not how nested retries behave; three is what you get with retries in one place only; four counts layers, not attempts." },
 

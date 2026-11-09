@@ -274,22 +274,22 @@ conversation; giants by day              1.1x             2.6x                1.
     title: "Check yourself",
     questions: [
       { stem: "Orders are range-partitioned by created_at across eight shards. Storage is balanced. Why is the system still overloaded?",
-        options: ["Range partitioning cannot use indexes", "Every new order has the newest timestamp, so all writes go to the last shard", "The ranges overlap", "Old shards must be compacted"],
+        options: ["Range partitions cannot use indexes", "Every new order hits the last shard", "The ranges overlap each other", "Old shards must be compacted first"],
         answer: 1,
         why: "A monotonically increasing key puts every new row in the newest range, so one shard takes all the writes — 8× its fair share in the measurement — while the others serve only reads of old data. Range partitions use indexes normally, the ranges are disjoint by construction, and compaction is unrelated to where new writes land." },
 
       { stem: "Which shard key makes \"show this customer's order history\" a single-shard query and balances writes?",
-        options: ["hash(order_id)", "hash(customer_id)", "range(created_at)", "country"],
+        options: ["hash(order_id)", "hash(customer_id)", "range(created_at)", "country code"],
         answer: 1,
         why: "Hashing the customer puts all of one customer's orders on one shard, so the history query touches one shard, and with many customers the hash spreads writes evenly. hash(order_id) balances but scatters one customer's orders across all shards; range(created_at) scatters a customer's history across time and concentrates writes; country is low-cardinality and skewed." },
 
       { stem: "A multi-tenant system shards by hash(tenant_id). One tenant produces 17% of all traffic. What is the targeted fix?",
-        options: ["Add more shards", "Salt that tenant's key across several sub-shards, leaving other tenants on one shard each", "Switch to range partitioning by tenant name", "Replicate the whole database"],
+        options: ["Add more shards for everyone", "Salt that tenant across sub-shards", "Range-partition by tenant name", "Replicate the whole database"],
         answer: 1,
         why: "The tenant is one key, so it lands on one shard however many shards there are; splitting just that tenant across sub-keys spreads its load while preserving single-shard queries for everyone else — 3.4× to 1.4× in the measurement. More shards do not split a single key, range by name concentrates it the same way, and replicas do not divide writes." },
 
       { stem: "Which operation becomes expensive once a table is sharded by user_id?",
-        options: ["Fetching one user's rows", "Inserting a row for one user", "Enforcing that email addresses are globally unique", "Updating one user's profile"],
+        options: ["Fetching one user's rows", "Inserting a row for one user", "Globally unique email addresses", "Updating one user's profile"],
         answer: 2,
         why: "A unique constraint is checked within one database; with rows spread across shards by user, two users with the same email may land on different shards, so global uniqueness needs a separate lookup table or reservation step. The other three operations involve a single user and therefore a single shard, which is exactly what the key was chosen for." }
     ]

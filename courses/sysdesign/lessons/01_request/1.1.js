@@ -289,12 +289,12 @@ largest TTL that meets the RTO: 120 s`,
         why: "Each resolver cached the record at a different moment within the last hour, so expiries are spread uniformly across the next hour and about half have expired at the 30-minute mark — the simulation gives 50%. The authoritative server does answer correctly at once, but resolvers do not ask it until their copy expires. A full day is the behaviour of an 86,400-second TTL, and the IP version has nothing to do with caching." },
 
       { stem: "An outage starts and someone lowers the record's TTL from one day to 60 seconds. What effect does that have on the users currently being sent to the dead server?",
-        options: ["They switch within 60 seconds", "Almost none — their resolvers hold the old record with the old TTL", "They switch at the next browser refresh", "The record is purged from all caches"],
+        options: ["They switch over within 60 seconds", "Almost none: resolvers hold the old TTL", "They switch at their next browser refresh", "The record is purged from every cache"],
         answer: 1,
         why: "A resolver only sees the new TTL when it next asks the authoritative server, and it will not ask until its current copy — fetched with the one-day TTL — expires. So the change helps only resolvers that were going to refresh anyway. Browser refreshes reuse the OS and resolver caches, and there is no global purge mechanism for DNS. That is why the TTL must be lowered one old-TTL ahead of a planned change." },
 
       { stem: "Why does the stateless-by-default property of HTTP servers matter for scaling?",
-        options: ["It makes each request faster", "It lets any of many identical servers answer any request, so a load balancer can choose freely", "It removes the need for a database", "It makes the server unable to use cookies"],
+        options: ["It makes each individual request faster", "Any identical server can answer any request", "It removes the need for a database tier", "It stops the server from using cookies"],
         answer: 1,
         why: "If a request carries everything needed to answer it — in a cookie or token — then it does not matter which server receives it, and a load balancer can spread traffic and drop a failed server without losing anyone's session. Statelessness does not make an individual request faster, it does not remove the database (state moves there), and cookies are exactly how a stateless server receives the client's context." },
 

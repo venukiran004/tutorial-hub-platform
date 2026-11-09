@@ -270,22 +270,22 @@ asha logs in again             -> access-jwt(sub=asha, exp=+5min)`,
     title: "Check yourself",
     questions: [
       { stem: "Which statement about a JWT's payload is true?",
-        options: ["It is encrypted, so only the API can read it", "It is base64url-encoded and readable by anyone who has the token; the signature only prevents changes", "It is hashed, so it cannot be read", "It is safe for storing passwords"],
+        options: ["It is encrypted, so only the API can read it", "It is readable by anyone; signing only stops edits", "It is hashed, so nobody can read it back", "It is safe for storing user passwords"],
         answer: 1,
         why: "Decoding the payload needs no key — the demo printed it directly. The signature makes tampering detectable but hides nothing. Confidential claims need a JWE or should not be in the token at all." },
 
       { stem: "A verifier accepts any algorithm named in the token's header. What attack does this allow?",
-        options: ["None, if the signature is checked", "A token with alg \"none\" and no signature, or an RS256 public key misused as an HMAC secret, can pass verification", "A replay of an expired token", "Reading the payload"],
+        options: ["None, as long as the signature is checked", "alg \"none\" or key confusion can pass verification", "A replay of a token that has already expired", "Reading the payload of any issued token"],
         answer: 1,
         why: "Letting the token choose the algorithm lets an attacker choose a verification that always succeeds. Pin the expected algorithms in the verifier. Expiry and confidentiality are separate issues." },
 
       { stem: "An employee is dismissed and their account disabled. They still hold a JWT access token with a 60-minute lifetime. What happens?",
-        options: ["The token stops working immediately", "It keeps working until it expires — up to an hour — unless services check a revocation list", "It works for exactly 60 more minutes", "It is automatically refreshed"],
+        options: ["The token stops working the moment they leave", "It works until expiry unless revocation is checked", "It works for exactly 60 more minutes, no less", "It is automatically refreshed for another hour"],
         answer: 1,
         why: "JWTs are verified locally and stay valid until exp, so the remaining window is anywhere from zero to sixty minutes — thirty on average. Short lifetimes or a revocation check reduce it; disabling the refresh token stops renewals but not the current access token." },
 
       { stem: "With refresh-token rotation, a refresh token that has already been used is presented again. What should the server do?",
-        options: ["Issue new tokens as usual", "Revoke the entire token family, because one of the two holders must be an attacker", "Ignore it silently", "Extend its expiry"],
+        options: ["Issue new tokens as usual", "Revoke the entire token family", "Ignore the request silently", "Extend the token's expiry time"],
         answer: 1,
         why: "A rotated token should never be used twice, so reuse means it was copied. The server cannot tell which holder is legitimate, so it ends the session; the real user re-authenticates, and the attacker loses access." }
     ]

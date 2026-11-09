@@ -504,22 +504,22 @@ bounded counter, rights split 5 / 5:
     title: "Check yourself",
     questions: [
       { stem: "Why can a G-Counter's state be merged with max per slot, while a single shared number cannot?",
-        options: ["Max is faster to compute than addition", "Each replica writes only its own slot, so max per slot never loses another replica's increments and ignores repeated deliveries", "A G-Counter uses timestamps to choose the latest value", "A G-Counter needs a leader to order increments"],
+        options: ["Max is faster to compute than addition", "Each replica writes only its own slot", "It uses timestamps to choose the latest value", "It needs a leader to order every increment"],
         answer: 1,
         why: "Each slot has one writer and only grows, so its largest value is its latest one, and max is order-free and repeat-safe. On a single number, max keeps one replica's count and loses the rest. A G-Counter has no timestamps and no leader; speed has nothing to do with it." },
 
       { stem: "Two regions share 10 units of stock as a PN-counter. During a partition, each checks its local value and sells 8. What happens when the partition heals?",
-        options: ["The merge detects the conflict and cancels 6 orders", "The replicas disagree forever", "Both replicas converge on −6: the counter is correct, but the invariant was broken", "The CRDT refuses the sales during the partition"],
+        options: ["The merge detects the conflict and cancels 6 orders", "The two replicas disagree with each other forever", "Both converge on −6: correct count, broken invariant", "The CRDT refuses the sales during the partition"],
         answer: 2,
         why: "The PN-counter merges correctly to 10 − 16 = −6. CRDTs guarantee convergence, not business rules, and have no mechanism to cancel orders or refuse local operations. Protecting a threshold needs coordination or escrow." },
 
       { stem: "In Chandy-Lamport, a node has recorded its state and is recording channel C→N. A money message arrives on C→N before C's marker does. What happens to it?",
-        options: ["It is dropped", "It is added to the node's recorded state", "It is logged as the state of channel C→N: it was sent before C recorded, and was in flight at the cut", "It triggers a new snapshot"],
+        options: ["It is dropped as a duplicate", "It is added to the node's recorded state", "It is logged as in-flight on channel C→N", "It triggers a brand-new snapshot round"],
         answer: 2,
         why: "On a FIFO channel, anything arriving before C's marker was sent before C recorded, so it belongs to the snapshot but is not in either node's recorded state; it is the channel's state. Adding it to the node's already-recorded state would change a recorded value, and dropping it would lose money from the total." },
 
       { stem: "Why does tolerating one Byzantine node need four replicas, when tolerating one crash needs only three?",
-        options: ["Byzantine nodes are slower, so more replicas are needed for throughput", "Any two quorums must overlap in at least one honest node; with 3 nodes and a quorum of 2, the overlap can be just the liar, who votes for both values", "Four is the smallest number that works with signatures", "Byzantine tolerance requires an even number of replicas"],
+        options: ["Byzantine nodes are slower, so throughput needs more", "Two quorums must overlap in an honest node", "Four is the minimum that works with signatures", "Byzantine tolerance needs an even replica count"],
         answer: 1,
         why: "With crashes, a one-node overlap is enough because the shared node is honest. A liar in the overlap can vote both ways, so the overlap must exceed f, giving n = 3f + 1 — four for f = 1. It is about safety, not throughput; signatures prevent forgery but not equivocation; and the bound has nothing to do with parity." }
     ]

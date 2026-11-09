@@ -402,22 +402,22 @@ orders: big seller (customer 1) 200,000, small shop (customer 4243) 10`,
     title: "Check yourself",
     questions: [
       { stem: "A 16-core PostgreSQL server is slow at 800 connections. What is the most likely improvement?",
-        options: ["Raise max_connections to 2,000", "Put PgBouncer in front and give PostgreSQL a few dozen server connections", "Add more application instances", "Disable connection pooling"],
+        options: ["Raise max_connections to 2,000 or more", "Use PgBouncer with a few dozen connections", "Add more application instances in front", "Disable connection pooling entirely for now"],
         answer: 1,
         why: "Beyond roughly the core count, more connections add context switching and contention, as pgbench showed. A pooler lets many clients share a small number of busy server connections. More connections or instances make it worse, and removing pooling adds connection set-up to every query." },
 
       { stem: "A page shows 50 orders with their customer names and makes 51 queries. What is happening and how is it fixed?",
-        options: ["The database is missing an index", "A lazy-loaded relationship runs one query per order (N+1); eager-load with a join or one IN query", "The cache is cold", "The connection pool is too small"],
+        options: ["The orders table is missing an index", "N+1 lazy loading; eager-load with a join", "The cache is cold after a restart", "The connection pool is far too small"],
         answer: 1,
         why: "One query for the list plus one per row is the N+1 pattern. A join or a batched IN query fetches all names in one or two round trips. An index or a cache would make each of the 51 queries cheaper but would not remove the round trips." },
 
       { stem: "There is an index on email, but WHERE lower(email) = 'a@b.com' scans the whole table. Why?",
-        options: ["PostgreSQL cannot index text", "The index stores email values, not lower(email) values, so it cannot answer a comparison on the function's result; an expression index on lower(email) can", "The table needs VACUUM", "The query needs a LIMIT"],
+        options: ["PostgreSQL cannot index text columns at all", "It indexes email, not lower(email); add one on that", "The table needs a VACUUM before indexes work", "The query needs a LIMIT to use the index"],
         answer: 1,
         why: "An index can be used only when the query compares the same expression it indexes. Indexing lower(email) — or storing a normalised column — fixes it; the demo went from over 100 ms to about 0.1 ms. Text is indexable, and neither VACUUM nor LIMIT changes which expression is indexed." },
 
       { stem: "Which index best serves WHERE customer_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 20?",
-        options: ["(created_at)", "(customer_id)", "(customer_id, status, created_at DESC)", "(status)"],
+        options: ["(created_at DESC, customer_id, status)", "Separate (customer_id) and (status)", "(customer_id, status, created_at DESC)", "(customer_id, created_at DESC)"],
         answer: 2,
         why: "Equality columns first, then the sort column in the sort direction, lets the database jump to the matching range and read 20 entries already in order. Each single-column index failed for some customers in the exercise, and status alone matches a quarter of the table." }
     ]

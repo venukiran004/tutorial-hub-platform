@@ -237,22 +237,22 @@ email via a queue                             99.361%         56.0
     title: "Check yourself",
     questions: [
       { stem: "A request passes through a load balancer (99.9%), an app server (99.5%) and a database (99.5%), one of each. What is the path's availability?",
-        options: ["99.9%", "99.5%", "About 98.9%", "About 99.97%"],
+        options: ["About 99.9%", "About 99.5%", "About 98.9%", "About 99.97%"],
         answer: 2,
         why: "Components in series multiply: 0.999 × 0.995 × 0.995 ≈ 0.989, about 98.9%. The path is less available than its weakest component, so 99.5% overstates it, and 99.9% is the best single component. 99.97% would require redundancy that this path does not have." },
 
       { stem: "You run two app servers, each 99.5% available, in parallel. When does the formula 1 − (0.005)² stop being a good estimate?",
-        options: ["When there are more than two servers", "When the two servers share a failure domain such as a host, a zone or a configuration", "When the servers are stateless", "When the load balancer uses round robin"],
+        options: ["With more than two servers", "When they share a failure domain", "When the servers are stateless", "When the balancer uses round robin"],
         answer: 1,
         why: "The parallel formula assumes the copies fail independently; if they share a host, zone, power, deploy or config, they fail together and the true availability falls back towards one copy's. More copies extend the formula rather than break it, statelessness is what makes parallel copies possible, and the balancing algorithm does not change whether failures are correlated." },
 
       { stem: "A team splits a monolith's single server into an app server and a separate database server, each 99.5%. What happens to availability?",
-        options: ["It rises, because the load is shared", "It falls, to about 99.0%, because both must be up", "It is unchanged", "It rises to 99.9975%"],
+        options: ["It rises, as the load is shared", "It falls to ~99.0%: both must be up", "It stays exactly the same", "It rises to about 99.9975%"],
         answer: 1,
         why: "The request now needs both machines, so availabilities multiply: 0.995 × 0.995 ≈ 99.0%, doubling yearly downtime. Splitting is often still right — it allows each tier to scale and be made redundant separately — but by itself it adds a component in series. 99.9975% is the parallel formula, which would apply to two copies of the same thing." },
 
       { stem: "Which change most improves the availability of a checkout that synchronously calls an email provider (99.0%)?",
-        options: ["Retry the email call three times", "Send the email from a queue after checkout completes", "Use a faster email provider", "Add more app servers"],
+        options: ["Retry the email call three times inline", "Send the email from a queue afterwards", "Switch to a faster email provider", "Add more app servers behind the LB"],
         answer: 1,
         why: "Taking the email out of the synchronous path removes its 99.0% from the product of checkout's availability and replaces it with the queue's much higher availability; the measured downtime fell from 142 to 56 hours a year. Retries help with transient errors but not with a provider outage, and they lengthen the request. Speed and app-server count do not change a dependency's availability." }
     ]

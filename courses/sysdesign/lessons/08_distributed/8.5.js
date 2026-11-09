@@ -245,22 +245,22 @@ for k in (0, 1, 3, 5):
     title: "Check yourself",
     questions: [
       { stem: "Roughly how does the number of gossip rounds needed to inform every node grow with cluster size N?",
-        options: ["Linearly in N", "Logarithmically in N", "Quadratically in N", "It is constant"],
+        options: ["Linearly in N", "Logarithmically in N", "Quadratically in N", "Exponentially in N"],
         answer: 1,
         why: "The informed set roughly multiplies each round, so the rounds needed grow like log N — the simulation went from about 7 rounds at 10 nodes to about 23 at 10,000 with fan-out 1. Linear growth would be a coordinator telling nodes one by one; constant rounds would require each node to message everyone." },
 
       { stem: "Why does a phi-accrual detector produce fewer false suspicions than a fixed timeout on a node with jittery heartbeats?",
-        options: ["It uses a longer fixed timeout for everyone", "It computes suspicion from that node's own observed heartbeat intervals, so a node with high variance is given proportionally more slack", "It ignores heartbeats entirely", "It requires consensus before suspecting"],
+        options: ["It uses one longer fixed timeout for everyone", "It scales suspicion to each node's own jitter", "It ignores heartbeats entirely after startup", "It requires consensus before suspecting a node"],
         answer: 1,
         why: "Phi measures how unlikely the current silence is given the distribution of this node's past intervals, so a noisy node's threshold is effectively longer and a steady node's shorter — zero false suspicions on the noisy node against 175 for the fixed timeout. It is per node, not a global longer timeout, and it is a local computation." },
 
       { stem: "In SWIM, what happens when A's direct ping to B fails?",
-        options: ["A immediately declares B dead", "A asks several other members to ping B and only suspects B if none of them gets an answer", "A restarts B", "A waits for the next round and ignores it"],
+        options: ["A immediately declares B dead to everyone", "A asks other members to ping B indirectly", "A restarts B through the orchestration layer", "A waits for the next round and ignores it"],
         answer: 1,
         why: "Indirect probing separates a bad link between A and B from a dead B: if other members can reach B, it is alive. Declaring death on one failed ping is what produces the ~51% false-suspicion rate in the exercise; restarting or silently ignoring are not part of the protocol." },
 
       { stem: "Why can a two-node primary/standby cluster not safely fail over automatically on its own?",
-        options: ["Two nodes are too slow", "During a partition each node sees only itself — half the votes — and cannot tell a dead peer from an unreachable one, so automatic promotion risks two primaries", "Standbys cannot become primary", "Replication is impossible with two nodes"],
+        options: ["Two nodes are too slow to agree in time", "Neither can tell a dead peer from an unreachable one", "A standby can never be promoted to primary", "Replication is impossible with only two nodes"],
         answer: 1,
         why: "With two votes, neither side of a partition has a majority, and the information needed to choose is missing on both sides, so automatic promotion can create split brain. A third vote — a witness in another failure domain — or a consensus-backed manager supplies the majority. Speed, promotion and replication all work fine with two nodes." }
     ]

@@ -244,17 +244,17 @@ cache-3's keys spread over   : 9 surviving nodes`,
         why: "A key stays put only if its hash has the same remainder modulo 10 and modulo 11, which for a uniform hash is about one key in eleven, so roughly ten in eleven move — 90.7% measured. 1/11 is what consistent hashing achieves. Fifty per cent has no basis, and \"none\" would require the divisor not to matter." },
 
       { stem: "Why does a consistent-hash ring with one point per node balance load poorly?",
-        options: ["Hash functions are biased", "A few random points divide the circle into very unequal arcs, and each node's share is its arc", "Keys cluster near node points", "The ring is searched linearly"],
+        options: ["Hash functions are biased", "Few points make unequal arcs", "Keys cluster near node points", "The ring is searched linearly"],
         answer: 1,
         why: "Each node owns the arc before its point, and with only ten random points those arcs vary widely — the busiest node had about 2.5 times a fair share. Many virtual nodes per server average the arcs out. Good hash functions are not biased, keys are spread uniformly regardless of where nodes are, and the search method affects speed, not balance." },
 
       { stem: "With rendezvous hashing, one of ten nodes fails. Which keys move?",
-        options: ["All keys", "About half", "Only the failed node's keys, spread across the survivors", "Only the failed node's keys, all moved to one neighbour"],
+        options: ["All of the keys are remapped across nodes", "About half of the keys move to new nodes", "Only its keys, spread across survivors", "Only its keys, all to one neighbour"],
         answer: 2,
         why: "A key's owner is the node with the highest score for it; removing a node changes nothing for keys it did not own, and each of its keys goes to that key's second-highest scorer — which varies by key, so they spread over all survivors (nine in the exercise). Moving everything is the modulo behaviour, and dumping on one neighbour is what a ring without virtual nodes does." },
 
       { stem: "A database adds a node to its consistent-hash ring. What else must happen before the new node serves reads for its keys?",
-        options: ["Nothing; consistent hashing handles it", "The affected key ranges must be copied to it, with the old owner serving until the copy completes", "Every key must be rehashed", "The ring must be rebuilt from scratch"],
+        options: ["Nothing; consistent hashing handles it", "Copy the ranges; old owner serves meanwhile", "Every key must be rehashed", "The ring must be rebuilt from scratch"],
         answer: 1,
         why: "Consistent hashing identifies the roughly 1/N of keys whose owner changes, but the data still lives on the old owner; it must be streamed across and ownership switched only when the copy is complete, or reads hit a node that lacks the data. Only the affected ranges move, so nothing is rehashed wholesale, and adding a point does not require rebuilding the ring." }
     ]

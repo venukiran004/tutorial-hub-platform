@@ -281,22 +281,22 @@ for writes in (2_000, 4_000, 6_000, 8_000):
     title: "Check yourself",
     questions: [
       { stem: "A primary replicates asynchronously to two replicas with 2 seconds of lag and crashes. What is lost?",
-        options: ["Nothing — replicas have all committed data", "Up to 2 seconds of writes that were acknowledged to clients", "Only uncommitted transactions", "The replicas' data"],
+        options: ["Nothing; replicas have all committed data", "Up to 2 s of acknowledged writes", "Only uncommitted transactions", "The replicas' own data"],
         answer: 1,
         why: "With asynchronous replication the primary acknowledges after its own commit, so writes still in the lag window were confirmed to clients but exist only on the dead primary; the promoted replica never received them. Committed is exactly the problem — committed on one machine. Uncommitted transactions are lost in any mode, and the replicas keep everything they had applied." },
 
       { stem: "A user posts a comment, refreshes, and the comment is missing; a second refresh shows it. What is happening?",
-        options: ["The write failed and was retried", "The read went to a replica that had not yet applied the write — a read-your-writes violation", "The cache evicted the comment", "The primary lost the write"],
+        options: ["The write failed and was retried", "A lagging replica served the read", "The cache evicted the comment", "The primary lost the write"],
         answer: 1,
         why: "The write committed on the primary; the first read hit a lagging replica, and by the second refresh a replica had caught up. That is the classic replication-lag anomaly. A failed write would not reappear by itself, nothing in the description involves a cache, and a lost write would never appear." },
 
       { stem: "Why does adding read replicas eventually stop helping as the write rate grows?",
-        options: ["Replicas cannot serve reads during writes", "Each replica must apply every write, so its spare read capacity shrinks toward zero", "Replication requires a lock on the primary", "Replicas share one disk"],
+        options: ["Replicas cannot read during writes", "Every replica must apply every write", "Replication locks the primary", "The replicas share one disk"],
         answer: 1,
         why: "Each replica replays the whole write stream, so its read budget is total capacity minus the write rate; as writes approach capacity the budget approaches zero and the replica count needed explodes — 8 replicas at 2,000 writes/s, 119 at 8,000 in the exercise. Replicas serve reads concurrently with applying writes, replication does not lock the primary, and replicas have their own disks." },
 
       { stem: "Which read-routing rule guarantees read-your-writes while keeping most reads off the primary?",
-        options: ["Always read from a random replica", "Read from the primary for 60 seconds after any write", "Read from a replica only if its replayed log position is at least the user's last write position", "Read from the replica with the lowest CPU"],
+        options: ["Always read from a random replica", "Use the primary for 60 s after writes", "Use a replica caught up to the user's write", "Read from the replica with the lowest CPU"],
         answer: 2,
         why: "Comparing log positions sends a read to a replica exactly when that replica has the user's write, and to the primary only when no replica does — 0.1% of reads in the simulation. A random replica violates read-your-writes; a fixed time window works but can put most reads on the primary when users write often; and CPU says nothing about whether a replica has the data." }
     ]

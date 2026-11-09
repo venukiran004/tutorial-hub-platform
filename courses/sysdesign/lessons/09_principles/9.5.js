@@ -376,22 +376,22 @@ final state: returned | path: created -> paid -> shipped -> delivered -> returni
     title: "Check yourself",
     questions: [
       { stem: "An A/B test picks a ranking strategy with random.choice() on every search request. What goes wrong?",
-        options: ["The traffic split will not be close to 50/50", "Each user sees both variants, flipping between them, so the experience is inconsistent and the experiment cannot attribute behaviour to a variant", "Random choice is too slow for search", "Nothing, as long as the sample is large"],
+        options: ["The split will drift far away from 50/50 over time", "Users flip between variants, so nothing is attributable", "Random choice is far too slow for search ranking", "Nothing goes wrong, as long as the sample is large"],
         answer: 1,
         why: "The overall split is fine — 50.5% in the run — but assignment must be per user for the experiment to compare groups of users, and for each user to see one consistent product. A large sample does not fix contaminated groups, and random.choice is fast." },
 
       { stem: "Registration notifies three observers synchronously. The second raises an exception. What happens?",
-        options: ["Only the second observer is skipped", "The exception propagates to registration: the request fails, and observers after it never run", "The subject retries the observer automatically", "All observers run, then the exception is reported"],
+        options: ["Only the second observer is skipped", "Registration fails and later observers never run", "The subject retries the observer automatically", "All observers run, then the error is reported"],
         answer: 1,
         why: "Calling observers in turn makes their failures the subject's failures, and stops the loop at the first exception, so later observers never run. Nothing retries automatically. Isolation requires catching per observer or, better, queueing each one separately." },
 
       { stem: "A middleware chain runs a response cache keyed by URL before authentication. What is the risk?",
-        options: ["Slightly slower responses", "A personalised response cached for one user can be served to other users, including anonymous ones", "Authentication runs twice", "The cache never gets any hits"],
+        options: ["Responses become slightly slower overall", "One user's cached page can reach other users", "Authentication runs twice on every request", "The cache never gets any hits at all"],
         answer: 1,
         why: "A cache in front of authentication answers before identity is checked, and a URL-only key cannot tell users apart, so the first user's private page is served to everyone requesting that URL. It is a confidentiality breach, not a performance issue." },
 
       { stem: "Why does an event-driven order service benefit from an explicit state machine?",
-        options: ["It makes events arrive in order", "It lets the consumer ignore duplicate events and reject transitions that are impossible from the current state, in one readable table", "It removes the need for a database", "It makes the broker deliver exactly once"],
+        options: ["It makes events arrive in the order sent", "It rejects duplicate and impossible transitions", "It removes the need for a database entirely", "It makes the broker deliver exactly once"],
         answer: 1,
         why: "Brokers deliver at least once and producers can be wrong; a transition table plus seen event IDs makes the consumer idempotent and turns impossible events into explicit rejections. It does not reorder events, replace storage, or change the broker's delivery guarantee." }
     ]

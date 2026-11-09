@@ -237,22 +237,22 @@ for window, thr in ((10, 0.2), (20, 0.25), (50, 0.2), (20, 0.5), (100, 0.5)):
     title: "Check yourself",
     questions: [
       { stem: "A breaker is open. What happens when the cool-down expires?",
-        options: ["It closes and sends all traffic", "It moves to half-open and lets a few probe calls through; success closes it, failure re-opens it", "It stays open until restarted", "It resets the dependency"],
+        options: ["It closes and sends all traffic", "Half-open: probes decide its state", "It stays open until restarted", "It resets the dependency itself"],
         answer: 1,
         why: "Half-open is the cautious test: a handful of calls decide whether the dependency has recovered, so a still-broken dependency is not flooded and a recovered one is reinstated quickly. Closing straight away would send full traffic to something possibly still broken; staying open forever would need a human; and a breaker cannot reset another service." },
 
       { stem: "Endpoint A has a healthy dependency, endpoint B a hung one, and both share a pool of 100 threads. Why does A start failing?",
-        options: ["A's dependency is overloaded by B", "B's hung calls occupy the shared threads, so A's requests find none free", "The load balancer stops sending A traffic", "A and B share a database"],
+        options: ["B overloads A's dependency", "B's hung calls hold every thread", "The balancer stops routing to A", "A and B share one database"],
         answer: 1,
         why: "Hung calls hold threads until they time out; at 40 requests a second with 5-second hangs, B wants 200 threads and takes all 100, so A's fast requests are rejected — about half in the simulation — although A's dependency is fine. Separate pools confine B's damage. Nothing about A's dependency or the balancer changed." },
 
       { stem: "Which errors should count towards opening a circuit breaker?",
-        options: ["All errors, including 400 and 404", "Timeouts, connection failures and 5xx responses", "Only 404s", "Only successful responses that were slow"],
+        options: ["All errors, including 400 and 404", "Timeouts, connection failures, 5xx", "Only 404 Not Found responses", "Only slow but successful responses"],
         answer: 1,
         why: "The breaker's question is whether the dependency is unhealthy; timeouts, refused connections and server errors say so. 4xx errors usually mean the caller sent a bad request, and counting them lets one misbehaving client open the breaker for everyone. Slow successes may feed a latency-based breaker but are not the standard failure signal." },
 
       { stem: "A breaker opens if 2 of the last 10 calls failed. The dependency normally fails 2% of calls. What happens?",
-        options: ["It never opens in normal operation", "It opens frequently on chance alone, rejecting healthy traffic", "It opens only during real outages", "It cannot open at all"],
+        options: ["It never opens in normal operation", "It opens often on chance alone", "It opens only during real outages", "It cannot open at all"],
         answer: 1,
         why: "Two failures in ten calls occurs regularly by chance at a 2% error rate, so the breaker trips hundreds of times an hour on noise — the exercise measured it — and each trip rejects calls to a healthy dependency. A larger window and a threshold well above normal noise avoid it." }
     ]

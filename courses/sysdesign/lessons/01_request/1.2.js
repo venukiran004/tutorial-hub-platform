@@ -296,7 +296,7 @@ after, tax co-located   : 74.7 ms   floor = fraud scoring`,
         why: "170 ms is the physical floor for a London–Sydney round trip in fibre, so only reducing the distance reduces it — a CDN, a regional replica or a regional deployment. Faster CPUs and a compiled language shorten server work, not the round trip. HTTP/2 can reduce the number of round trips by multiplexing, which helps overall, but each remaining round trip is still at least 170 ms." },
 
       { stem: "\"The API is slow\" and \"we cannot handle peak traffic\" — what is the difference?",
-        options: ["None; both are throughput problems", "The first is latency per request, the second is throughput; they can have different fixes", "The first is about the database, the second about the network", "The first is solved by adding servers, the second by caching"],
+        options: ["None; both are throughput problems", "Latency per request versus throughput", "Database trouble versus network trouble", "Fixed by servers versus fixed by caching"],
         answer: 1,
         why: "Slowness per request is latency and is fixed by shortening the chain — caching, co-location, fewer round trips. Failing at peak is throughput and is fixed by adding capacity where the narrowest resource is. They are linked by Little's Law, but adding servers to an unsaturated system does nothing for latency. Neither complaint names a component, and the last option swaps the usual fixes around." }
     ]

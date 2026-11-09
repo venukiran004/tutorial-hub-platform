@@ -223,12 +223,12 @@ shared store                            0 / 300                    0 / 300`,
     title: "Check yourself",
     questions: [
       { stem: "A service keeps sessions in a local dict and runs on three servers behind a round-robin balancer. What happens?",
-        options: ["Nothing; round robin keeps each user on one server", "Most requests land on a server that has never seen the user's login", "Sessions are replicated automatically", "Only the first request fails"],
+        options: ["Nothing; round robin is sticky", "Most requests miss the login", "Sessions replicate automatically", "Only the first request fails"],
         answer: 1,
         why: "Round robin sends each request to the next server regardless of user, so with three servers about two in three requests reach one without the session — the simulation logged out 190 of 300 on one wave. Round robin is not sticky; that would be IP hash or cookie affinity. Nothing replicates a Python dict between processes, and the failure recurs on every request, not just the first." },
 
       { stem: "Why is scaling the application tier out usually easier than scaling the database out?",
-        options: ["Application servers are cheaper", "The application tier can be made stateless; the database is where the state is", "Databases cannot run on more than one machine", "Load balancers do not work with databases"],
+        options: ["Application servers are cheaper to buy", "Apps can be stateless; the database holds state", "Databases cannot run on more than one machine", "Load balancers do not work with databases"],
         answer: 1,
         why: "Once sessions, files and work have moved out, any app server can answer any request, so adding one is trivial. The database holds the state everything else moved into, so splitting it means replication, partitioning and consistency decisions (Modules 4 and 5). Databases certainly can run on many machines — that is what those modules are about — and price per core is similar for both kinds of server." },
 
@@ -238,7 +238,7 @@ shared store                            0 / 300                    0 / 300`,
         why: "Each copy counts only the requests it sees, so a client spread across ten copies can make 100 on each — up to 1,000. That is the silent failure mode of per-instance state: nothing errors, and the limiter appears to work. The counter has to be shared and atomic, typically Redis INCR with an expiry or a token bucket in Redis (7.3)." },
 
       { stem: "When is vertical scaling the better choice?",
-        options: ["Never — horizontal scaling is always preferred", "When the component is hard to distribute, such as a primary database, and a larger machine meets the need for the foreseeable future", "Only for stateless services", "When you need zero-downtime deploys"],
+        options: ["Never; horizontal is always preferred", "For hard-to-distribute parts, like the primary", "Only for stateless, easily copied services", "When you need zero-downtime rolling deploys"],
         answer: 1,
         why: "A bigger machine needs no code change and postpones the expensive work of partitioning state, so for a database that fits on one large machine it is often the right call for years. Stateless services are the ones that scale out most easily, so they rarely need it. Zero-downtime deploys are harder with one machine, not easier. \"Never\" ignores that sharding too early is a common, costly mistake." }
     ]

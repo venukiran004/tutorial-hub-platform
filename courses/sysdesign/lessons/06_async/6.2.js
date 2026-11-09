@@ -298,17 +298,17 @@ key = merchant_id + (customer_id % 8): busiest partition 1.8x fair share`,
         why: "Each partition is assigned to exactly one member of a group, so at most six consumers have work; the other four are idle standbys. Ten would require ten partitions, one is the single-consumer case, and sixty has no meaning in this model." },
 
       { stem: "Events for an order — created, paid, shipped — are published without a key to a 12-partition topic. What can happen?",
-        options: ["Nothing; Kafka preserves global order", "They land in different partitions and can be consumed out of order", "They are rejected", "They are deduplicated"],
+        options: ["Nothing; Kafka keeps global order", "Different partitions: out of order", "They are rejected by the broker", "They are deduplicated"],
         answer: 1,
         why: "Without a key the producer spreads messages across partitions, and order holds only within one partition, so a faster partition can deliver shipped before paid — the unkeyed run measured hundreds of such cases. Kafka never guarantees order across partitions, unkeyed messages are accepted, and nothing deduplicates them." },
 
       { stem: "What does keeping messages after consumption make possible that a work queue does not?",
-        options: ["Lower latency", "Several independent consumer groups, and rewinding an offset to replay events", "Exactly-once delivery by default", "Unlimited ordering across partitions"],
+        options: ["Lower end-to-end latency", "Many consumer groups, and replay", "Exactly-once delivery by default", "Unlimited cross-partition ordering"],
         answer: 1,
         why: "Because the log retains events, each group reads at its own pace from its own offsets, and a group can reset to an earlier offset to reprocess after a bug or to build a new read model. Retention does not lower latency or provide exactly-once delivery by itself, and ordering remains per partition." },
 
       { stem: "A topic's partition count is doubled from 16 to 32 while traffic is flowing. What risk does this create?",
-        options: ["Messages are lost", "Keys map to different partitions, so a key's new events can be consumed before its older events in the old partition", "Consumers stop", "Retention resets"],
+        options: ["Messages are lost from the topic", "Keys remap; new before old", "Consumers stop until rebalanced", "Retention resets on every partition"],
         answer: 1,
         why: "The default partitioner is hash(key) modulo the partition count, so most keys move to a new partition; their older events remain in the old one, and the two can be consumed in either order. No messages are lost, consumers rebalance rather than stop, and retention is unaffected." }
     ]
