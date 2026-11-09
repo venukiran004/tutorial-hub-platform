@@ -217,8 +217,8 @@ for s in servers: s.stop(0)`,
       caption: "With pick_first, the client connected to the first address and sent everything there. With round_robin over all resolved addresses, each replica took a third.",
       svg: `<svg viewBox="0 0 760 248" width="100%" role="img">
 <text x="200" y="31.0" text-anchor="end" class="s-label">pick_first: replica 1</text>
-<rect x="210" y="14" width="440.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
-<text x="658.0" y="31.0" class="s-sub">3,000 calls</text>
+<rect x="210" y="14" width="375.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
+<text x="593.0" y="31.0" class="s-sub">3,000 calls</text>
 <text x="200" y="69.0" text-anchor="end" class="s-label">pick_first: replica 2</text>
 <rect x="210" y="52" width="2.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
 <text x="220.0" y="69.0" class="s-sub">0</text>
@@ -226,14 +226,14 @@ for s in servers: s.stop(0)`,
 <rect x="210" y="90" width="2.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
 <text x="220.0" y="107.0" class="s-sub">0</text>
 <text x="200" y="145.0" text-anchor="end" class="s-label">round_robin: replica 1</text>
-<rect x="210" y="128" width="146.7" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
-<text x="364.7" y="145.0" class="s-sub">1,000</text>
+<rect x="210" y="128" width="125.0" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
+<text x="343.0" y="145.0" class="s-sub">1,000</text>
 <text x="200" y="183.0" text-anchor="end" class="s-label">round_robin: replica 2</text>
-<rect x="210" y="166" width="146.5" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
-<text x="364.5" y="183.0" class="s-sub">999</text>
+<rect x="210" y="166" width="124.9" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
+<text x="342.9" y="183.0" class="s-sub">999</text>
 <text x="200" y="221.0" text-anchor="end" class="s-label">round_robin: replica 3</text>
-<rect x="210" y="204" width="146.8" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
-<text x="364.8" y="221.0" class="s-sub">1,001</text>
+<rect x="210" y="204" width="125.1" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
+<text x="343.1" y="221.0" class="s-sub">1,001</text>
 </svg>` },
     { t: "dl",
       items: [

@@ -99,20 +99,20 @@ example: np.float32(0.12573022) as float32 -> json 0.1257302165031433 (18 chars)
       caption: "Standard-library JSON spent 20.7 bytes on each 4-byte float. orjson writes float32 values at their own shortest exact length, halving the size while staying exact.",
       svg: `<svg viewBox="0 0 760 210" width="100%" role="img">
 <text x="190" y="31.0" text-anchor="end" class="s-label">JSON, full precision</text>
-<rect x="200" y="14" width="443.6" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
-<text x="651.6" y="31.0" class="s-sub">20.7 bytes per value</text>
+<rect x="200" y="14" width="379.5" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
+<text x="587.5" y="31.0" class="s-sub">20.7 bytes per value</text>
 <text x="190" y="69.0" text-anchor="end" class="s-label">JSON, 6 significant</text>
-<rect x="200" y="52" width="218.6" height="26" rx="4" class="s-fill" style="stroke:var(--warn);stroke-width:1.8"/>
-<text x="426.6" y="69.0" class="s-sub">10.2 (and inexact)</text>
+<rect x="200" y="52" width="187.0" height="26" rx="4" class="s-fill" style="stroke:var(--warn);stroke-width:1.8"/>
+<text x="395.0" y="69.0" class="s-sub">10.2 (and inexact)</text>
 <text x="190" y="107.0" text-anchor="end" class="s-label">orjson</text>
-<rect x="200" y="90" width="233.6" height="26" rx="4" class="s-fill" style="stroke:var(--accent);stroke-width:1.8"/>
-<text x="441.6" y="107.0" class="s-sub">10.9</text>
+<rect x="200" y="90" width="199.8" height="26" rx="4" class="s-fill" style="stroke:var(--accent);stroke-width:1.8"/>
+<text x="407.8" y="107.0" class="s-sub">10.9</text>
 <text x="190" y="145.0" text-anchor="end" class="s-label">JSON + base64</text>
-<rect x="200" y="128" width="115.7" height="26" rx="4" class="s-fill" style="stroke:var(--violet);stroke-width:1.8"/>
-<text x="323.7" y="145.0" class="s-sub">5.4</text>
+<rect x="200" y="128" width="99.0" height="26" rx="4" class="s-fill" style="stroke:var(--violet);stroke-width:1.8"/>
+<text x="307.0" y="145.0" class="s-sub">5.4</text>
 <text x="190" y="183.0" text-anchor="end" class="s-label">raw float32</text>
-<rect x="200" y="166" width="85.7" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
-<text x="293.7" y="183.0" class="s-sub">4.0</text>
+<rect x="200" y="166" width="73.3" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
+<text x="281.3" y="183.0" class="s-sub">4.0</text>
 </svg>` },
     { t: "dl",
       items: [

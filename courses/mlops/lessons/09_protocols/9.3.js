@@ -89,14 +89,14 @@ print(f"  200 different records: JSON {len(batch_js):,} bytes, gzip {len(gzip.co
       caption: "Measured in Python. The repeated float field is compact on the wire but slow to turn into an array; a bytes field is compact and nearly free to decode.",
       svg: `<svg viewBox="0 0 760 172" width="100%" role="img">
 <text x="220" y="31.0" text-anchor="end" class="s-label">JSON (standard library)</text>
-<rect x="230" y="14" width="420.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
-<text x="658.0" y="31.0" class="s-sub">709 µs</text>
+<rect x="230" y="14" width="355.0" height="26" rx="4" class="s-fill" style="stroke:var(--crit);stroke-width:1.8"/>
+<text x="593.0" y="31.0" class="s-sub">709 µs</text>
 <text x="220" y="69.0" text-anchor="end" class="s-label">protobuf, repeated float</text>
-<rect x="230" y="52" width="105.4" height="26" rx="4" class="s-fill" style="stroke:var(--warn);stroke-width:1.8"/>
-<text x="343.4" y="69.0" class="s-sub">178 µs</text>
+<rect x="230" y="52" width="89.1" height="26" rx="4" class="s-fill" style="stroke:var(--warn);stroke-width:1.8"/>
+<text x="327.1" y="69.0" class="s-sub">178 µs</text>
 <text x="220" y="107.0" text-anchor="end" class="s-label">orjson</text>
-<rect x="230" y="90" width="35.5" height="26" rx="4" class="s-fill" style="stroke:var(--accent);stroke-width:1.8"/>
-<text x="273.5" y="107.0" class="s-sub">60 µs</text>
+<rect x="230" y="90" width="30.0" height="26" rx="4" class="s-fill" style="stroke:var(--accent);stroke-width:1.8"/>
+<text x="268.0" y="107.0" class="s-sub">60 µs</text>
 <text x="220" y="145.0" text-anchor="end" class="s-label">protobuf, raw bytes field</text>
 <rect x="230" y="128" width="2.0" height="26" rx="4" class="s-fill" style="stroke:var(--good);stroke-width:1.8"/>
 <text x="240.0" y="145.0" class="s-sub">3 µs</text>
