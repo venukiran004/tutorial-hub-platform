@@ -156,14 +156,96 @@ processor.decode(model.generate(**inputs, max_new_tokens=10)[0], skip_special_to
       caption: "**Only the Q-Former is trained: the vision encoder and the language model are both frozen**, so the learned component is around a hundred million parameters compressing an image into a handful of tokens the language model already knows how to read. That is the structural reason this family of models exists at all, and the reason a new vision encoder can be swapped in without retraining the language side." },
     { t: "p", text: "**The prompt format belongs to the checkpoint rather than to the task.** The OPT-based variants were trained with `Question: ... Answer:` and degrade visibly without it, while the Flan-T5 variants expect their own instruction phrasing — so a model card is not documentation here, it is part of the interface. The same asymmetry shows up in the failure mode: BLIP-2 answers fluently about an image it has partly misread, because the language model is doing the writing." },
 
-    { t: "exercise", title: "Probe a VLM's limits",
+    { t: "exercise", kind: "Challenge", title: "Probe a VLM's limits", difficulty: "core", minutes: 35,
       requirements: [
         "Caption five images from your domain unconditionally and count how many are accurate.",
         "Ask the same question three ways and measure how often the answers agree.",
         "Find a prefix that reliably gets a correct count, and one that reliably fails.",
         "Compute the projector size for a vision encoder and LLM you might pair, as a fraction of the total.",
         "Check whether your VLM can read text in an image, and compare it against a dedicated OCR model."
-      ] }
+      ],
+      hint: "BLIP's captioning model continues whatever prefix you give it, so a question-like prefix ('there are') is the cheapest way to probe counting without a separate VQA model.",
+      solution: {
+        lang: "python", title: "probe_vlm.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import BlipForConditionalGeneration, BlipProcessor
+name = "Salesforce/blip-image-captioning-base"
+proc = BlipProcessor.from_pretrained(name); blip = BlipForConditionalGeneration.from_pretrained(name).eval()
+def caption(img, prefix=None):
+    inp = proc(images=img, text=prefix, return_tensors="pt") if prefix else proc(images=img, return_tensors="pt")
+    with torch.no_grad(): return proc.decode(blip.generate(**inp, max_new_tokens=25)[0], skip_special_tokens=True)
+
+# 1. Unconditional captions against known content.
+tests = [("a red circle", scene([("circle", "red", (0.5, 0.5))])),
+         ("a blue square", scene([("square", "blue", (0.5, 0.5))])),
+         ("a green triangle", scene([("triangle", "green", (0.5, 0.5))])),
+         ("three red circles", count_scene(3)),
+         ("a red square left of a blue circle", scene([("square", "red", (0.25, 0.5)), ("circle", "blue", (0.75, 0.5))]))]
+for truth, img in tests: print(f"truth: {truth:36} caption: {caption(img)}")
+
+# 2-3. The same question three ways, and prefixes for counting.
+img = count_scene(4)
+for prefix in ("a picture of", "the number of circles is", "there are"):
+    print(f"prefix {prefix!r:28} -> {caption(img, prefix)}")
+
+# 4. Projector size as a fraction of the system (LLaVA-1.5 style: CLIP ViT-L 1024-d into a 4096-d 7B LLM, 2-layer MLP).
+proj = 1024 * 4096 + 4096 + 4096 * 4096 + 4096; total = 304e6 + 7e9 + proj
+print(f"\\nprojector {proj:,} parameters = {proj / total:.3%} of a {total / 1e9:.2f}B system")
+
+# 5. Reading text in an image.
+for t in ("INVOICE 4021", "Total: $1,250.00"):
+    print(f"text {t!r:22} -> caption: {caption(text_image(t))}")
+`,
+        out: `truth: a red circle                         caption: a red dot on a white background
+truth: a blue square                        caption: a blue square with a white background
+truth: a green triangle                     caption: a green triangle with a white background
+truth: three red circles                    caption: a red dot on a white background
+truth: a red square left of a blue circle   caption: a red and blue circle with a white background
+prefix 'a picture of'               -> a picture of a red dot on a white background
+prefix 'the number of circles is'   -> the number of circles is shown in red
+prefix 'there are'                  -> there are four dots on the same side
+
+projector 20,979,712 parameters = 0.286% of a 7.32B system
+text 'INVOICE 4021'         -> caption: invoice 421 - the best way to get money
+text 'Total: $1,250.00'     -> caption: a white background with the words, ' the price of a product '`,
+        notes: [
+          { t: "p", text: "Unconditional captions were accurate for single shapes, apart from calling a circle a 'dot'. They were wrong for the harder scenes: three circles became 'a red dot', and a red square beside a blue circle became 'a red and blue circle'. Captioning loses counts and relations first, which matters if you plan to index images by their captions (lesson 7.6)." },
+          { t: "p", text: "Prefixes change the answer more than the image does. 'there are' produced 'four dots', which is correct. 'the number of circles is' produced 'shown in red', which avoids the question. A prefix that reliably works on one image is not evidence it works on the next, so test prefixes on a labelled set." },
+          { t: "p", text: "A LLaVA-style two-layer projector is 21M parameters, 0.29% of a 7.3B system, which is why training only the projector is so cheap. Reading text failed in a revealing way: 'INVOICE 4021' became 'invoice 421 - the best way to get money'. A digit was dropped and the rest invented. Use a dedicated OCR model for text in images; this environment has none, so that comparison is not run here." },
+          { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
+        ]
+      } }
   ],
 
   takeaways: [

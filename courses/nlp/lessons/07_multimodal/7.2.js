@@ -109,14 +109,110 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "What CLIP is good and bad at",
       body: [{ t: "p", text: "It is excellent at recognising photographed objects, scenes and styles, because that is what web alt-text describes. It is weak at **reading text in images**, **counting**, **spatial relations** (*left of*, *above*) and **fine-grained distinctions** within a category — and all four weaknesses trace to the same source: captions rarely state those things. \"A photo of three cats on the left of a sofa\" is not how people caption images, so the training signal for counting and position is thin. That is worth knowing before deploying it: CLIP's failures are not random, they are a shadow of its training distribution." }] },
 
-    { t: "exercise", title: "Probe the alignment",
+    { t: "exercise", kind: "Challenge", title: "Probe the alignment", difficulty: "core", minutes: 40,
       requirements: [
         "Implement the contrastive loss and verify it approaches 0 on perfectly aligned data and exceeds ln(batch) on random data.",
         "Sweep batch size from 8 to 1024 on the same data and observe how the loss scales.",
         "Run zero-shot classification on your own images and find a category where it fails.",
         "Compare four prompt templates on the same image and measure the spread.",
         "Test CLIP on counting — three objects against five — and on spatial relations, and record how far it gets."
-      ] }
+      ],
+      hint: "The loss is the average of two cross-entropies over the same similarity matrix: rows (image → text) and columns (text → image), with the diagonal as the correct class in both.",
+      solution: {
+        lang: "python", title: "probe_alignment.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import os, math
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch, torch.nn.functional as F
+from transformers import CLIPModel, CLIPProcessor
+torch.manual_seed(0)
+
+# 1-2. The symmetric contrastive loss: aligned, random, and across batch sizes.
+def clip_loss(img, txt, t=0.07):
+    img, txt = F.normalize(img, dim=-1), F.normalize(txt, dim=-1)
+    logits = img @ txt.T / t; y = torch.arange(len(img))
+    return (F.cross_entropy(logits, y) + F.cross_entropy(logits.T, y)) / 2
+print("batch   aligned loss   random loss   ln(batch)")
+for B in (8, 64, 256, 1024):
+    e = torch.randn(B, 512)
+    print(f"{B:5}   {clip_loss(e, e):12.6f}   {clip_loss(torch.randn(B, 512), torch.randn(B, 512)):11.3f}   {math.log(B):9.3f}")
+
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval(); proc = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+def probs(img, caps):
+    with torch.no_grad(): return clip(**proc(text=caps, images=img, return_tensors="pt", padding=True)).logits_per_image.softmax(-1)[0]
+
+# 3. Zero-shot on synthetic images: colour and shape.
+labels = [f"a {c} {s}" for c in ("red", "blue", "green") for s in ("circle", "square", "triangle")]
+correct = 0
+for c in ("red", "blue", "green"):
+    for s in ("circle", "square", "triangle"):
+        p = probs(scene([(s, c, (0.5, 0.5))]), [f"a photo of {l}" for l in labels])
+        guess = labels[int(p.argmax())]; correct += guess == f"a {c} {s}"
+        if guess != f"a {c} {s}": print(f"  zero-shot miss: {c} {s} -> {guess}")
+print(f"zero-shot colour+shape: {correct}/9")
+
+# 4. Prompt templates on one image.
+img = scene([("circle", "red", (0.5, 0.5))])
+for tpl in ("{}", "a photo of {}", "a drawing of {}", "an icon of {}"):
+    p = probs(img, [tpl.format(l) for l in labels]); print(f"template {tpl!r:20} P(red circle) = {p[0]:.3f}")
+
+# 5. Counting and spatial relations.
+counts = ["one red circle", "two red circles", "three red circles", "four red circles", "five red circles"]
+for n in (3, 5):
+    p = probs(count_scene(n), [f"a picture of {c}" for c in counts]); print(f"{n} circles -> CLIP picks {counts[int(p.argmax())]!r} ({p.max():.2f})")
+p = probs(scene([("circle", "red", (0.5, 0.2)), ("square", "blue", (0.5, 0.8))]),
+          ["a red circle above a blue square", "a red circle below a blue square"])
+print(f"red circle above blue square: P(above) {p[0]:.3f}, P(below) {p[1]:.3f}")
+`,
+        out: `batch   aligned loss   random loss   ln(batch)
+    8       0.000006         2.036       2.079
+   64       0.000049         4.305       4.159
+  256       0.000195         5.710       5.545
+ 1024       0.000780         7.141       6.931
+  zero-shot miss: red square -> a red triangle
+zero-shot colour+shape: 8/9
+template '{}'                 P(red circle) = 0.782
+template 'a photo of {}'      P(red circle) = 0.872
+template 'a drawing of {}'    P(red circle) = 0.912
+template 'an icon of {}'      P(red circle) = 0.863
+3 circles -> CLIP picks 'three red circles' (0.31)
+5 circles -> CLIP picks 'five red circles' (0.39)
+red circle above blue square: P(above) 0.631, P(below) 0.369`,
+        notes: [
+          { t: "p", text: "Identical embeddings gave a loss near zero, and random ones gave slightly above ln(batch), as expected for a near-uniform softmax over the batch. The aligned loss rises slowly with batch size (6e-6 to 8e-4), because a larger batch contains more near-duplicates to confuse with. That is also why large batches make the task harder and the learned representation better." },
+          { t: "p", text: "Zero-shot colour-and-shape classification got 8 of 9, confusing a red square with a red triangle. The prompt template moved P(red circle) from 0.78 bare to 0.91 with 'a drawing of', a 13-point spread on an image the model already gets right. Prompt engineering for zero-shot CLIP is real tuning, not decoration." },
+          { t: "p", text: "On these clean images CLIP picked the right count for 3 and 5 circles and the right vertical relation. The confidences were low (0.31–0.63), and lesson 7.8 shows the same model failing most counts when the template changes. Treat a pass on one template as one data point." },
+          { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
+        ]
+      } }
   ],
 
   takeaways: [

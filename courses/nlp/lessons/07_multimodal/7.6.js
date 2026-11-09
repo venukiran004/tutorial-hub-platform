@@ -105,14 +105,105 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Parsing is where the information is lost",
       body: [{ t: "p", text: "PDF text extraction destroys exactly what makes documents comprehensible: table structure becomes a jumble of cells, figures vanish, column layout interleaves, and a chart's meaning disappears entirely. ColPali skips it — render the page, embed the image, retrieve on that. The document is preserved as it appears. This inverts the usual instinct that text is the canonical representation and images are a degraded form; for documents, **the rendered page is the canonical form** and the extracted text is the degradation. The cost is storage and compute per page, and that the retrieval model must be strong at reading text in images — which lesson 7.2 identified as one of CLIP's weakest areas, hence the specialised models." }] },
 
-    { t: "exercise", title: "Build and probe an index",
+    { t: "exercise", kind: "Challenge", title: "Build and probe an index", difficulty: "core", minutes: 40,
       requirements: [
         "Run cross-modal retrieval on your own images and check the gap between the correct match and the best distractor.",
         "Compute text-to-text similarity for pairs you understand, and confirm the ordering holds while absolute values do not compare across pairs.",
         "Caption 100 images with a VLM and count how many captions are accurate enough to index.",
         "Build both a caption index and a CLIP index over the same images, and compare recall@5.",
         "Take a PDF with tables and figures, extract it as text, and list what was lost."
-      ] }
+      ],
+      hint: "Normalise every embedding before taking dot products, and report the margin between the correct match and the best distractor, not just whether the correct one ranked first.",
+      solution: {
+        lang: "python", title: "build_index.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch, torch.nn.functional as F
+from transformers import CLIPModel, CLIPProcessor, BlipForConditionalGeneration, BlipProcessor
+
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval(); cp = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+bp = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base"); blip = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").eval()
+def feats(x):
+    return getattr(x, "pooler_output", x)
+def img_emb(imgs):
+    with torch.no_grad(): return F.normalize(feats(clip.get_image_features(**cp(images=imgs, return_tensors="pt"))), dim=-1)
+def txt_emb(txts):
+    with torch.no_grad(): return F.normalize(feats(clip.get_text_features(**cp(text=txts, return_tensors="pt", padding=True))), dim=-1)
+
+# A 16-image collection with known content.
+items = []
+for c in ("red", "blue", "green", "yellow"):
+    for s in ("circle", "square", "triangle"): items.append((f"a {c} {s}", scene([(s, c, (0.5, 0.5))])))
+for n, w in ((2, "two"), (3, "three"), (4, "four"), (5, "five")): items.append((f"{w} red circles", count_scene(n)))
+texts, imgs = [t for t, _ in items], [i for _, i in items]
+I = img_emb(imgs)
+
+# 1. Cross-modal retrieval: correct match against the best distractor.
+T = txt_emb(texts); S = T @ I.T
+gaps = [(S[i, i] - torch.cat([S[i, :i], S[i, i + 1:]]).max()).item() for i in range(len(items))]
+print(f"text->image recall@1 {sum(int(S[i].argmax()) == i for i in range(len(items)))}/{len(items)}; "
+      f"margin over best distractor: min {min(gaps):+.4f}, median {sorted(gaps)[len(gaps) // 2]:+.4f}")
+
+# 2. Text-text similarity: ordering holds, absolute values do not compare across pairs.
+pairs = [("a red circle", "a red disc"), ("a red circle", "a blue square"), ("an invoice total", "the amount due"), ("an invoice total", "a red circle")]
+for a, b in pairs: print(f"  sim({a!r}, {b!r}) = {(txt_emb([a]) @ txt_emb([b]).T).item():.3f}")
+
+# 3-4. Caption index (BLIP captions embedded as text) against the CLIP image index, recall@5.
+def caption(img):
+    with torch.no_grad(): return bp.decode(blip.generate(**bp(images=img, return_tensors="pt"), max_new_tokens=20)[0], skip_special_tokens=True)
+caps = [caption(i) for i in imgs]
+exact = sum(t.split()[-1].rstrip("s") in c and t.split()[-2] in c for t, c in zip(texts, caps))
+print(f"\\ncaptions mentioning both the colour/count word and the shape: {exact}/{len(caps)}; e.g. {caps[12]!r} for {texts[12]!r}")
+C = txt_emb(caps)
+for name, index in (("CLIP image index", I), ("caption index", C)):
+    hits = sum(i in (T[i] @ index.T).topk(5).indices.tolist() for i in range(len(items)))
+    print(f"{name:17} recall@5 {hits}/{len(items)}")
+`,
+        out: `text->image recall@1 9/16; margin over best distractor: min -0.0292, median +0.0119
+  sim('a red circle', 'a red disc') = 0.869
+  sim('a red circle', 'a blue square') = 0.749
+  sim('an invoice total', 'the amount due') = 0.883
+  sim('an invoice total', 'a red circle') = 0.760
+
+captions mentioning both the colour/count word and the shape: 9/16; e.g. 'a red dot on a white background' for 'two red circles'
+CLIP image index  recall@5 16/16
+caption index     recall@5 16/16`,
+        notes: [
+          { t: "p", text: "Text-to-image recall@1 was 9 of 16. The median margin over the best distractor was only +0.012, and the worst was negative. CLIP's similarities sit in a narrow band (anisotropy), so 'ranked first' can hang on the third decimal, and a fixed similarity threshold will not separate matches from near-misses." },
+          { t: "p", text: "Text-to-text similarities kept the right order within each pair, 'red disc' above 'blue square' for 'red circle', but the values do not compare across pairs. The unrelated pair ('invoice total', 'red circle') scored 0.76, higher than the related 'red circle' / 'blue square' pair at 0.75. Rank within a query; never threshold across queries." },
+          { t: "p", text: "BLIP's captions named both the colour (or count) and the shape for 9 of 16 images; 'two red circles' became 'a red dot on a white background'. At recall@5 both the image index and the caption index found all 16, because 16 images is too few to separate them. On a real collection, captions lose counts and relations, and the CLIP index keeps more visual detail. The PDF-extraction step needs a PDF parser and a real document, and is not run here." },
+          { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
+        ]
+      } }
   ],
 
   takeaways: [

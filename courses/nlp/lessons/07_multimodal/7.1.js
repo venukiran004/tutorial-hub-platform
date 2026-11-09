@@ -107,14 +107,91 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Why the projection approach dominates now",
       body: [{ t: "p", text: "Contrastive alignment needs hundreds of millions of paired examples and batch sizes in the tens of thousands, which very few organisations can run. The projection approach needs neither: it inherits a vision encoder someone else trained contrastively and an LLM someone else trained on text, and learns only the small map between them. It is the same dynamic as LoRA in lesson 5.6 — freeze the expensive parts, train the connector — and it is why open vision-language models proliferated so quickly after LLaVA showed it worked." }] },
 
-    { t: "exercise", title: "Classify the architectures",
+    { t: "exercise", kind: "Challenge", title: "Classify the architectures", difficulty: "core", minutes: 30,
       requirements: [
         "For three multimodal models you have used, identify where the modalities meet and what that permits.",
         "Work out whether a model you want to use could serve large-scale retrieval, from its fusion strategy alone.",
         "Compute the visual token count for your resolution, and decide whether a bottleneck is necessary.",
         "Find a task that late fusion structurally cannot do, and explain why.",
         "Compare the training data requirements of contrastive against projection alignment for your own domain."
-      ] }
+      ],
+      hint: "Decide retrieval suitability from one question: can each item be embedded once, without the query? If the image and the text must pass through the model together, every query costs one forward pass per candidate.",
+      solution: {
+        lang: "python", title: "classify_architectures.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import CLIPModel, CLIPProcessor
+
+# 1-2. Where the modalities meet, and whether that permits retrieval at scale.
+models = [("CLIP", "late fusion: two encoders, one dot product", "yes: embed the corpus once, index it"),
+          ("BLIP captioner", "cross-attention: text decoder reads image features", "no: every (query, image) pair needs a forward pass"),
+          ("LLaVA-style VLM", "bridge: image tokens projected into the LLM's input", "no: generative, one pass per image and question")]
+for name, fusion, retrieval in models: print(f"{name:16} {fusion:52} index at scale? {retrieval}")
+
+# 3. Visual tokens per image, and whether a bottleneck is needed for a 4K-token budget.
+for name, res, patch in (("ViT-B/32 224px", 224, 32), ("ViT-L/14 336px", 336, 14), ("ViT-L/14 672px", 672, 14)):
+    n = (res // patch) ** 2
+    print(f"{name:15} {n:5} visual tokens; with 8 images in a 4,096-token context: {8 * n / 4096:.0%} of the window"
+          + ("  -> bottleneck (e.g. 64 learned queries) needed" if 8 * n > 2048 else ""))
+
+# 4. A task late fusion cannot do: relational composition. The two captions use the same words.
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval(); proc = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+img = scene([("square", "red", (0.25, 0.5)), ("circle", "blue", (0.75, 0.5))])
+caps = ["a red square to the left of a blue circle", "a red square to the right of a blue circle",
+        "a blue square to the left of a red circle"]
+with torch.no_grad(): p = clip(**proc(text=caps, images=img, return_tensors="pt", padding=True)).logits_per_image.softmax(-1)[0]
+print()
+for c, v in zip(caps, p): print(f"  P = {v:.3f}  {c}")
+print("CLIP prefers the correct relation" if p[0] > max(p[1], p[2]) else "CLIP does not separate the relation from its mirror image")
+`,
+        out: `CLIP             late fusion: two encoders, one dot product           index at scale? yes: embed the corpus once, index it
+BLIP captioner   cross-attention: text decoder reads image features   index at scale? no: every (query, image) pair needs a forward pass
+LLaVA-style VLM  bridge: image tokens projected into the LLM's input  index at scale? no: generative, one pass per image and question
+ViT-B/32 224px     49 visual tokens; with 8 images in a 4,096-token context: 10% of the window
+ViT-L/14 336px    576 visual tokens; with 8 images in a 4,096-token context: 112% of the window  -> bottleneck (e.g. 64 learned queries) needed
+ViT-L/14 672px   2304 visual tokens; with 8 images in a 4,096-token context: 450% of the window  -> bottleneck (e.g. 64 learned queries) needed
+
+  P = 0.437  a red square to the left of a blue circle
+  P = 0.327  a red square to the right of a blue circle
+  P = 0.236  a blue square to the left of a red circle
+CLIP prefers the correct relation`,
+        notes: [
+          { t: "p", text: "Only the late-fusion model can serve large-scale retrieval, because its two encoders never meet until a dot product. BLIP's text decoder cross-attends to the image, and a LLaVA-style model puts image tokens inside the LLM's input. Both need a forward pass per (query, image) pair, which is fine for reranking a shortlist and impossible for searching millions of images." },
+          { t: "p", text: "Visual token counts decide whether a bottleneck is needed. At 224 px with 32-pixel patches an image costs 49 tokens. At 336 px with 14-pixel patches it costs 576, so eight images overflow a 4,096-token window. That is the regime where learned-query bottlenecks (a Q-Former with 32–64 queries) or token pooling become necessary." },
+          { t: "p", text: "The relational probe went better than the lesson predicts. CLIP put 0.44 on the correct 'left of' caption against 0.33 for its mirror image, so it is not blind to the relation on this clean image. The preference is weak, though, and lesson 7.8's probe suite shows it flipping with a small change of wording. Late fusion compresses the whole image into one vector before seeing the question, so fine relations are fragile rather than absent. Steps 1 and 5 ask about your own models and data; the table shows the reasoning to apply." },
+          { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
+        ]
+      } }
   ],
 
   takeaways: [

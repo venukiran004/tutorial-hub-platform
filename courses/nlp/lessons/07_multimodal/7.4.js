@@ -124,14 +124,94 @@ EC.receiveLesson({
 
     { t: "p", text: "Two trends are visible. The U-Net is being replaced by a **transformer** (DiT), which is the same convergence lesson 5.7 described for vision — once you can tokenise the input, the transformer block works. And the text encoder is moving from CLIP to T5, addressing exactly the conditioning weakness described above." },
 
-    { t: "exercise", title: "Work the diffusion arithmetic",
+    { t: "exercise", kind: "Challenge", title: "Work the diffusion arithmetic", difficulty: "core", minutes: 30,
       requirements: [
         "Implement the forward process and find the timestep at which correlation with the original drops below 0.1.",
         "Recover z_0 from z_t and the true epsilon, and confirm the error is floating-point noise.",
         "Compute the latent compression for a resolution you care about, and multiply by your step count.",
         "Sweep the guidance scale from 1 to 20 on one prompt and note where image quality peaks.",
         "Compute how many U-Net calls a 50-step generation with guidance actually costs."
-      ] }
+      ],
+      hint: "The forward process has a closed form: z_t = sqrt(ᾱ_t)·x_0 + sqrt(1 − ᾱ_t)·ε, with ᾱ_t the running product of (1 − β). Rearranging the same equation recovers x_0 exactly when ε is known.",
+      solution: {
+        lang: "python", title: "diffusion_arithmetic.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import numpy as np
+rng = np.random.default_rng(0)
+
+# 1. Forward process with a linear beta schedule: when does the image become noise?
+T = 1000; beta = np.linspace(1e-4, 0.02, T); abar = np.cumprod(1 - beta)
+x0 = np.asarray(count_scene(3), dtype=np.float64) / 127.5 - 1
+x0 = x0.ravel()
+eps = rng.standard_normal(x0.shape)
+def z(t): return np.sqrt(abar[t]) * x0 + np.sqrt(1 - abar[t]) * eps
+for t in (0, 100, 250, 400, 500, 600):
+    print(f"t={t:4}  sqrt(abar)={np.sqrt(abar[t]):.3f}  corr(z_t, x0) = {np.corrcoef(z(t), x0)[0, 1]:.3f}")
+first = next(t for t in range(T) if np.corrcoef(z(t), x0)[0, 1] < 0.1)
+print(f"correlation first drops below 0.1 at t = {first}")
+
+# 2. Recover z_0 from z_t and the true noise.
+t = 700; rec = (z(t) - np.sqrt(1 - abar[t]) * eps) / np.sqrt(abar[t])
+print(f"\\nrecovered x0 at t={t}: max error {np.abs(rec - x0).max():.2e}")
+
+# 3. Latent compression and work per generation.
+for res in (512, 768, 1024):
+    pix, lat = res * res * 3, (res // 8) ** 2 * 4
+    print(f"{res}px: {pix:,} values -> latent {lat:,} ({pix / lat:.0f}x smaller); 50 steps process {50 * lat:,} latent values")
+
+# 5. U-Net calls for 50 steps with classifier-free guidance.
+steps = 50
+print(f"\\n50 steps with guidance: {2 * steps} U-Net evaluations (conditional + unconditional each step), "
+      f"or {steps} if both are batched into one call of batch 2")
+`,
+        out: `t=   0  sqrt(abar)=1.000  corr(z_t, x0) = 1.000
+t= 100  sqrt(abar)=0.946  corr(z_t, x0) = 0.768
+t= 250  sqrt(abar)=0.722  corr(z_t, x0) = 0.395
+t= 400  sqrt(abar)=0.440  corr(z_t, x0) = 0.200
+t= 500  sqrt(abar)=0.279  corr(z_t, x0) = 0.121
+t= 600  sqrt(abar)=0.160  corr(z_t, x0) = 0.070
+correlation first drops below 0.1 at t = 537
+
+recovered x0 at t=700: max error 5.11e-15
+512px: 786,432 values -> latent 16,384 (48x smaller); 50 steps process 819,200 latent values
+768px: 1,769,472 values -> latent 36,864 (48x smaller); 50 steps process 1,843,200 latent values
+1024px: 3,145,728 values -> latent 65,536 (48x smaller); 50 steps process 3,276,800 latent values
+
+50 steps with guidance: 100 U-Net evaluations (conditional + unconditional each step), or 50 if both are batched into one call of batch 2`,
+        notes: [
+          { t: "p", text: "With the standard linear schedule, correlation with the original image falls to 0.40 by t = 250 and below 0.1 at t = 537. Roughly the last 460 of 1,000 steps operate on what is, by this measure, noise. That is why improved schedules (cosine) spend fewer steps near pure noise." },
+          { t: "p", text: "Given the true noise, x_0 is recovered with error 5e-15, so the forward process loses nothing. Generation is hard only because the model must predict ε. Latent diffusion's 8× downsampling to 4 channels is a 48× reduction at every resolution, and 50 steps at 1,024 px still process 3.3M latent values." },
+          { t: "p", text: "Classifier-free guidance doubles the U-Net work, 100 evaluations for 50 steps, unless the conditional and unconditional passes are batched together. The guidance-scale sweep needs a diffusion model, which this environment does not have, so it is not run. Expect quality to rise from 1 to around 5–9 and then degrade into over-saturated images." }
+        ]
+      } }
   ],
 
   takeaways: [

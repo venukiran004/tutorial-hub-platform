@@ -113,14 +113,118 @@ EC.receiveLesson({
       code: 'from torchmetrics.image.fid import FrechetInceptionDistance\nfrom torchmetrics.multimodal.clip_score import CLIPScore\n\nfid = FrechetInceptionDistance(feature=2048)\nfid.update(real_uint8, real=True)      # accumulate over MANY images\nfid.update(fake_uint8, real=False)\nfid.compute()\n\nclip = CLIPScore(model_name_or_path="openai/clip-vit-base-patch16")\nclip(image_uint8, "two blue squares")',
       caption: "`fid.update` twice, then `compute` once — the API itself says it is a set-level metric." },
     { t: "p", text: "The shape of the FID interface is the thing to notice: **`update` accumulates feature statistics and `compute` returns a single number, so there is no per-image FID to report** — §01’s point enforced by the library. In practice it needs **thousands** of images to be stable, and **a FID computed on 100 images is noise with a plausible-looking value.** `feature=2048` selects the Inception-v3 pool layer, and changing it changes the number, so **two FIDs are comparable only at the same feature setting.**" },
-    { t: "exercise", title: "Test the metrics",
+    { t: "exercise", kind: "Challenge", title: "Test the metrics", difficulty: "core", minutes: 40,
       requirements: [
         "Compute CLIPScore for a correct caption and a wrong-count variant on your own images, and record the gap.",
         "Check whether CLIPScore rises with caption length independently of accuracy.",
         "Compute FID on two samples drawn from the same real dataset and see how far from 0 it lands.",
         "Vary the FID sample size from 500 to 10,000 and note how much the number moves.",
         "Build ten synthetic probes with known counts and positions, and use them as a regression suite."
-      ] }
+      ],
+      hint: "CLIPScore is 2.5 × max(cosine(image, caption), 0). Compare a correct and a wrong caption on the same image: if the gap is near zero, the metric cannot see the property you changed.",
+      solution: {
+        lang: "python", title: "test_metrics.py",
+        code: `"""Synthetic test images with known content: counts, colours, shapes and positions are exact by construction."""
+import random
+from PIL import Image, ImageDraw, ImageFont
+COLOURS = {"red": (220, 30, 30), "blue": (30, 60, 220), "green": (30, 160, 60), "yellow": (240, 200, 20)}
+
+def scene(objects, size=224, bg=(245, 245, 245)):
+    """objects: list of (shape, colour, (cx, cy)) with centres in 0-1 coordinates."""
+    img = Image.new("RGB", (size, size), bg); d = ImageDraw.Draw(img); r = size // 10
+    for shape, colour, (cx, cy) in objects:
+        x, y = int(cx * size), int(cy * size); box = [x - r, y - r, x + r, y + r]
+        fill = COLOURS[colour]
+        if shape == "circle": d.ellipse(box, fill=fill)
+        elif shape == "square": d.rectangle(box, fill=fill)
+        else: d.polygon([(x, y - r), (x - r, y + r), (x + r, y + r)], fill=fill)
+    return img
+
+def count_scene(n, shape="circle", colour="red", seed=0):
+    rng = random.Random(seed); spots = [(0.2 + 0.3 * (i % 3), 0.2 + 0.3 * (i // 3)) for i in range(9)]
+    rng.shuffle(spots)
+    return scene([(shape, colour, spots[i]) for i in range(n)])
+
+def text_image(text, size=(448, 120)):
+    img = Image.new("RGB", size, "white"); d = ImageDraw.Draw(img)
+    try: font = ImageFont.truetype("arial.ttf", 40)
+    except OSError: font = ImageFont.load_default()
+    d.text((20, 35), text, fill="black", font=font)
+    return img
+
+# ---- the exercise ----
+import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch, torch.nn.functional as F
+from scipy import linalg
+from transformers import CLIPModel, CLIPProcessor
+clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").eval(); cp = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+feat = lambda x: getattr(x, "pooler_output", x)
+
+def clipscore(img, caption):
+    with torch.no_grad():
+        i = F.normalize(feat(clip.get_image_features(**cp(images=img, return_tensors="pt"))), dim=-1)
+        t = F.normalize(feat(clip.get_text_features(**cp(text=[caption], return_tensors="pt", padding=True))), dim=-1)
+    return 2.5 * max((i @ t.T).item(), 0)
+
+# 1. Correct count against a wrong count.
+for n, right, wrong in ((3, "three red circles", "five red circles"), (2, "two red circles", "four red circles")):
+    a, b = clipscore(count_scene(n), right), clipscore(count_scene(n), wrong)
+    print(f"{n} circles: CLIPScore correct {a:.4f}, wrong count {b:.4f}, gap {a - b:+.4f}")
+
+# 2. Length without accuracy.
+img = scene([("circle", "red", (0.5, 0.5))])
+for c in ("a red circle", "a red circle on a white background", "a red circle on a white background, centred, flat colour, simple vector graphic"):
+    print(f"  {clipscore(img, c):.4f}  {c}")
+
+# 3-4. FID between two samples of the same distribution, and its dependence on sample size.
+def fid(a, b):
+    mu1, mu2 = a.mean(0), b.mean(0); s1, s2 = np.cov(a, rowvar=False), np.cov(b, rowvar=False)
+    covmean = linalg.sqrtm(s1 @ s2).real
+    return float(((mu1 - mu2) ** 2).sum() + np.trace(s1 + s2 - 2 * covmean))
+rng = np.random.default_rng(0); d = 64
+print("\\nsamples   FID(same distribution, two draws)")
+for n in (500, 1000, 2000, 5000, 10000):
+    print(f"{n:7}   {fid(rng.standard_normal((n, d)), rng.standard_normal((n, d))):.3f}")
+
+# 5. A regression suite of synthetic probes with known answers.
+COUNT = ["one red circle", "two red circles", "three red circles", "four red circles", "five red circles"]
+probes = [(count_scene(k), COUNT[k - 1], COUNT) for k in range(1, 6)]
+probes += [(scene([("circle", "red", (0.5, 0.2)), ("square", "blue", (0.5, 0.8))]), "a red circle above a blue square",
+            ["a red circle above a blue square", "a red circle below a blue square"]),
+           (scene([("square", "red", (0.2, 0.5)), ("circle", "blue", (0.8, 0.5))]), "a red square left of a blue circle",
+            ["a red square left of a blue circle", "a red square right of a blue circle"])]
+passed = 0
+for img, truth, options in probes:
+    with torch.no_grad(): p = clip(**cp(text=options, images=img, return_tensors="pt", padding=True)).logits_per_image[0]
+    ok = options[int(p.argmax())] == truth; passed += ok
+    if not ok: print(f"  FAIL {truth!r}: model chose {options[int(p.argmax())]!r}")
+print(f"probe suite: {passed}/{len(probes)} pass")
+`,
+        out: `3 circles: CLIPScore correct 0.7774, wrong count 0.7776, gap -0.0002
+2 circles: CLIPScore correct 0.7748, wrong count 0.7933, gap -0.0185
+  0.7521  a red circle
+  0.8171  a red circle on a white background
+  0.8167  a red circle on a white background, centred, flat colour, simple vector graphic
+
+samples   FID(same distribution, two draws)
+    500   4.438
+   1000   2.181
+   2000   1.125
+   5000   0.449
+  10000   0.216
+  FAIL 'two red circles': model chose 'three red circles'
+  FAIL 'three red circles': model chose 'four red circles'
+  FAIL 'four red circles': model chose 'five red circles'
+  FAIL 'a red square left of a blue circle': model chose 'a red square right of a blue circle'
+probe suite: 3/7 pass`,
+        notes: [
+          { t: "p", text: "CLIPScore could not tell the count. For three circles the correct and wrong-count captions scored within 0.0002. For two circles the wrong count ('four') scored higher. Adding true but uninformative detail ('on a white background') raised the score from 0.75 to 0.82. A longer caption that describes more of the image wins regardless of whether it is more accurate about what matters." },
+          { t: "p", text: "FID between two samples of the same distribution is not zero: 4.4 at 500 samples, falling to 0.2 at 10,000, roughly in proportion to 1/n. FID numbers are only comparable at a fixed sample size, and a small gap between two models at 1,000 samples may be pure estimation bias. Here it is computed on 64-dimensional Gaussian features to isolate the statistics; real FID uses Inception features." },
+          { t: "p", text: "The probe suite passed 3 of 7: one circle, five circles and the vertical relation. It failed counts 2–4 and left/right. In lesson 7.2 the same model counted three and five correctly when every caption was prefixed 'a picture of', and in 7.1 it got left/right right when the caption said 'to the left of'. That sensitivity is the reason to keep a fixed suite: rerun the identical probes on every model or prompt change and treat any flip as a regression." },
+          { t: "p", text: "The images are drawn with PIL so their content is known exactly: counts, colours and positions are ground truth, which makes failures unambiguous. Synthetic flat shapes are easier than photographs in some ways and harder in others, so repeat the probes on your own images." }
+        ]
+      } }
   ],
 
   takeaways: [

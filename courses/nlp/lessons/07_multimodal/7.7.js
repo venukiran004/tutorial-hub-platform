@@ -116,14 +116,71 @@ EC.receiveLesson({
       code: 'from unstructured.partition.pdf import partition_pdf\n\nelements = partition_pdf("report.pdf",\n                         strategy="hi_res",\n                         infer_table_structure=True)\n\nfor el in elements:\n    el.category          # Title, NarrativeText, Table, Image, ...\n    el.metadata.page_number\n    el.metadata.text_as_html   # for a Table, the recovered grid',
       caption: "`infer_table_structure=True` is the argument that returns a grid rather than a jumble." },
     { t: "p", text: "The `category` field is the part that matters for §01’s argument: **the output is not a string, it is a list of typed elements with page numbers — so reading order and layout survive as data rather than being flattened away.** And `strategy=\"hi_res\"` runs a layout model rather than the PDF’s own text layer, which is slower and is the only mode that can produce `text_as_html` for a table. **§06’s first error class is exactly what that layout model gets wrong**, so its confidence is worth surfacing rather than trusting." },
-    { t: "exercise", title: "Measure your pipeline",
+    { t: "exercise", kind: "Challenge", title: "Measure your pipeline", difficulty: "core", minutes: 30,
       requirements: [
         "Take 50 documents and measure layout, OCR and extraction accuracy separately, then compare the product against the end-to-end number.",
         "Extract a two-column PDF as plain text and find where the columns interleave.",
         "Extract a table with merged cells and see what happens to the grid.",
         "Compare a general VLM against a document-specific model on the same pages and count errors.",
         "Add an arithmetic consistency check to your extraction and measure how many errors it catches."
-      ] }
+      ],
+      hint: "An arithmetic check needs no model: if the extracted line items do not sum to the extracted total, at least one field is wrong. It catches a whole class of OCR and extraction errors for free.",
+      solution: {
+        lang: "python", title: "measure_pipeline.py",
+        code: `import random
+random.seed(0)
+
+# 1. Stage accuracies multiply; compare with an end-to-end measurement on simulated documents.
+stages = {"layout": 0.95, "OCR": 0.97, "structure": 0.90, "extraction": 0.92}
+prod = 1.0
+for v in stages.values(): prod *= v
+docs, ok = 50, 0
+for _ in range(docs):
+    ok += all(random.random() < v for v in stages.values())
+print(f"product of stage accuracies {prod:.3f}; simulated end-to-end on {docs} documents {ok / docs:.2f} "
+      "(equal only because failures here are independent; real ones correlate)")
+
+# 2. A two-column page read line by line, as naive text extraction does.
+left = ["Revenue rose 12% in Q3,", "driven by subscriptions.", "Costs were flat."]
+right = ["Headcount fell to 210", "after the restructuring.", "Guidance is unchanged."]
+naive = " ".join(f"{l} {r}" for l, r in zip(left, right))
+print("\\ncolumn order:", " ".join(left), "|", " ".join(right))
+print("line order:  ", naive)
+
+# 3. A table with a merged header cell, flattened.
+grid = [["Region", "Q1", "Q2"], ["North (merged over two rows)", "120", "135"], ["", "98", "101"], ["South", "77", "80"]]
+print("\\nflattened table rows:", [" | ".join(r) for r in grid])
+print("the empty first cell of row 3 belongs to 'North', which flat extraction cannot tell")
+
+# 5. An arithmetic consistency check on extracted invoices with injected errors.
+def invoice(err):
+    items = [round(random.uniform(5, 200), 2) for _ in range(random.randint(2, 6))]
+    total = round(sum(items), 2)
+    if err == "digit": total = float(str(total).replace(str(total)[0], str((int(str(total)[0]) + 1) % 10), 1))
+    if err == "drop": items = items[:-1]
+    return items, total
+caught = {"digit": 0, "drop": 0, "none": 0}
+for kind in caught:
+    for _ in range(100):
+        items, total = invoice(kind if kind != "none" else None)
+        caught[kind] += abs(sum(items) - total) > 0.01
+print(f"\\nconsistency check flags: digit errors {caught['digit']}/100, dropped line items {caught['drop']}/100, clean invoices {caught['none']}/100")
+`,
+        out: `product of stage accuracies 0.763; simulated end-to-end on 50 documents 0.70 (equal only because failures here are independent; real ones correlate)
+
+column order: Revenue rose 12% in Q3, driven by subscriptions. Costs were flat. | Headcount fell to 210 after the restructuring. Guidance is unchanged.
+line order:   Revenue rose 12% in Q3, Headcount fell to 210 driven by subscriptions. after the restructuring. Costs were flat. Guidance is unchanged.
+
+flattened table rows: ['Region | Q1 | Q2', 'North (merged over two rows) | 120 | 135', ' | 98 | 101', 'South | 77 | 80']
+the empty first cell of row 3 belongs to 'North', which flat extraction cannot tell
+
+consistency check flags: digit errors 100/100, dropped line items 100/100, clean invoices 0/100`,
+        notes: [
+          { t: "p", text: "Four stages at 90–97% multiply to 0.76 end to end, and a simulation with independent failures lands near it (0.70 on 50 documents). Real stage errors are correlated: a page that defeats layout analysis usually defeats OCR too. So measure end to end on labelled documents as well, and use the product only as a sanity check." },
+          { t: "p", text: "Reading two columns line by line interleaves them: 'Revenue rose 12% in Q3, Headcount fell to 210 driven by subscriptions.' Each fragment is correctly transcribed and the sentence is meaningless. A merged table cell becomes an empty string in the next row, so a flat extractor cannot tell that the 98 and 101 still belong to 'North'." },
+          { t: "p", text: "The sum check flagged every invoice with a corrupted total digit and every invoice with a dropped line item, and none of the clean ones. It cannot catch an error that keeps the arithmetic consistent, such as a wrong date or vendor. Comparing a general VLM with a document model needs document pages and both models, which this environment lacks." }
+        ]
+      } }
   ],
 
   takeaways: [

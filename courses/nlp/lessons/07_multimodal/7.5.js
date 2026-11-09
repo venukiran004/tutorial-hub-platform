@@ -114,14 +114,60 @@ EC.receiveLesson({
       code: '# speech to text\nfrom transformers import pipeline\nasr = pipeline("automatic-speech-recognition", model="openai/whisper-small")\nasr("audio.wav", return_timestamps=True)["chunks"]\n\n# text to speech\nfrom TTS.api import TTS\ntts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")\ntts.tts_to_file(text="Hello there.", speaker_wav="ref.wav",\n                language="en", file_path="output.wav")',
       caption: "`return_timestamps=True` is what makes a transcript usable for anything but reading." },
     { t: "p", text: "Two practical notes. **Whisper’s encoder is fixed at 30 seconds (§02’s 1500 tokens), so the pipeline chunks longer audio and stitches the results** — which is where most transcription errors at segment boundaries come from, not from the model. And `speaker_wav` is the voice-cloning argument: **a reference clip of a few seconds is the whole enrollment**, which is §06’s VALL-E row arriving as a keyword parameter in an installable package." },
-    { t: "exercise", title: "Compute the budgets",
+    { t: "exercise", kind: "Challenge", title: "Compute the budgets", difficulty: "intro", minutes: 25,
       requirements: [
         "Compute the sequence length for your audio at several hop sizes, and check it against your model's limit.",
         "Work out the token count for a video length and frame rate you care about, and compare it against your context window.",
         "Compute the factorisation saving for your frame count and patch count.",
         "Load Whisper and verify the encoder-to-decoder parameter split for a larger variant.",
         "Extract Whisper's cross-attention on a real clip and check whether the alignment matches the spoken timing."
-      ] }
+      ],
+      hint: "Frames per second of audio is sample rate ÷ hop. Whisper's encoder then halves the 3,000 mel frames with a stride-2 convolution, so its attention sees 1,500 positions for 30 seconds.",
+      solution: {
+        lang: "python", title: "audio_video_budgets.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+from transformers import WhisperForConditionalGeneration
+
+# 1. Audio sequence length by hop size for 30 s at 16 kHz, against a 1,500-frame encoder limit.
+sr, secs = 16_000, 30
+for hop in (160, 320, 480):
+    frames = sr * secs // hop
+    print(f"hop {hop:3} samples ({1000 * hop / sr:.0f} ms): {frames:5} frames"
+          + ("" if frames <= 3000 else "  exceeds Whisper's 3,000 mel frames"))
+print("Whisper: 3,000 mel frames at a 10 ms hop -> stride-2 convolution -> 1,500 encoder positions")
+
+# 2-3. Video tokens and the saving from factorised space-time attention.
+for minutes, fps in ((1, 1), (10, 1), (10, 4)):
+    frames = minutes * 60 * fps; patches = 196
+    print(f"{minutes:2} min at {fps} fps: {frames:5} frames x {patches} patches = {frames * patches:>9,} tokens")
+F, P = 600, 196
+joint, factor = (F * P) ** 2, F * P * P + P * F * F
+print(f"joint attention {joint:.2e} entries vs factorised {factor:.2e} ({joint / factor:.0f}x fewer)")
+
+# 4. Whisper's encoder/decoder split, measured on the cached small model.
+m = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
+n = lambda mod: sum(p.numel() for p in mod.parameters())
+enc, dec = n(m.model.encoder), n(m.model.decoder)
+print(f"\\nwhisper-small: encoder {enc:,}, decoder {dec:,} (includes the {m.config.vocab_size:,} x {m.config.d_model} token embedding); "
+      f"encoder share {enc / (enc + dec):.1%}")
+`,
+        out: `hop 160 samples (10 ms):  3000 frames
+hop 320 samples (20 ms):  1500 frames
+hop 480 samples (30 ms):  1000 frames
+Whisper: 3,000 mel frames at a 10 ms hop -> stride-2 convolution -> 1,500 encoder positions
+ 1 min at 1 fps:    60 frames x 196 patches =    11,760 tokens
+10 min at 1 fps:   600 frames x 196 patches =   117,600 tokens
+10 min at 4 fps:  2400 frames x 196 patches =   470,400 tokens
+joint attention 1.38e+10 entries vs factorised 9.36e+07 (148x fewer)
+
+whisper-small: encoder 88,154,112, decoder 153,580,800 (includes the 51,865 x 768 token embedding); encoder share 36.5%`,
+        notes: [
+          { t: "p", text: "At a 10 ms hop, 30 seconds of audio is 3,000 mel frames, exactly Whisper's input size, and the convolution front end halves it to 1,500 positions. Doubling the hop halves the sequence but loses time resolution, which word-level timestamps need." },
+          { t: "p", text: "Video is far more expensive: ten minutes at 4 fps with 196 patches per frame is 470,400 tokens, beyond almost any context window. Factorised attention, spatial within a frame and then temporal across frames, uses 148 times fewer attention entries than joint attention for a 600-frame clip." },
+          { t: "p", text: "Measured on whisper-small, the encoder is 88M parameters and the decoder 154M. The decoder is the larger half here because it includes the 51,865 × 768 token embedding. So 'the encoder is most of Whisper' depends on which variant and whether embeddings are counted. The cross-attention alignment check needs a real speech clip, and none is available here." }
+        ]
+      } }
   ],
 
   takeaways: [
