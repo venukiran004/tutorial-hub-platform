@@ -142,14 +142,107 @@ EC.receiveLesson({
       ],
       edges: [["t","n1"],["n1","a"],["a","r1"],["r1","n2"],["n2","f"],["f","r2"],["r2","h"]] },
 
-    { t: "exercise", title: "Run both traces",
+    { t: "exercise", kind: "Challenge", title: "Run both traces", difficulty: "core", minutes: 30,
       requirements: [
         "Run the NumPy script unmodified and confirm it prints mat at 0.59.",
         "Change W_K to equal W_Q and see how the attention pattern collapses toward self-attention.",
         "Replace the mask value -1e9 with -10 and measure how much weight leaks to the future.",
         "Break the vocabulary's complementary pairing and confirm the logit antisymmetry disappears.",
         "For each component in the section 01 table, write the when-and-why in your own words without looking."
-      ] }
+      ],
+      hint: "W_O is not printed in the lesson, but its output is: each component of [1.895, 2.223, 2.315, 1.987] is the sum of two entries of Z = [0.987, 1.315, 0.908, 1.000]. Match the sums to recover which rows each column reads.",
+      solution: {
+        lang: "python", title: "both_traces.py",
+        code: `"""The module-6 toy transformer: 6-word vocabulary, d_model 4, one head, one block, weights tied."""
+import numpy as np
+np.set_printoptions(precision=4, suppress=True)
+VOCAB = ["the", "cat", "sat", "on", "mat", "<eos>"]
+E = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1], [1, 0, 0, 1], [0, 1, 0, 1]], float)
+
+def PE(pos):
+    """The lesson's 4-dimensional encoding: a fast pair (wavelength 2π) and a slow pair (2π·100)."""
+    return np.array([np.sin(pos), np.cos(pos), np.sin(pos / 100), np.cos(pos / 100)])
+
+def embed(words):
+    ids = [VOCAB.index(w) for w in words]
+    return E[ids] + np.stack([PE(p) for p in range(len(ids))])
+
+def softmax(s):
+    e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+
+def attention(X, WQ=None, WK=None, WV=None, mask_value=-np.inf):
+    I = np.eye(X.shape[1])
+    Q, K, V = X @ (I if WQ is None else WQ), X @ (I if WK is None else WK), X @ (I if WV is None else WV)
+    S = Q @ K.T / np.sqrt(K.shape[1])
+    S = np.where(np.triu(np.ones_like(S), 1) == 1, mask_value, S)
+    A = softmax(S); return A @ V, A
+
+def layernorm(x):
+    return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True))
+
+def block(X, b1=0.5, attn=None, emb=E):
+    a, A = attention(X) if attn is None else attn(X)
+    n = layernorm(X + a)
+    f = np.maximum(n + b1, 0)                      # W1 = W2 = I
+    h = layernorm(n + f)
+    logits = h @ emb.T                              # weight tying
+    return h, logits, softmax(logits), A
+
+# ---- the exercise ----
+# The lesson's script, with W_O recovered from its printed output (each column sums two rows of Z).
+ids = [0, 1, 2]                                   # "the cat sat"
+PE = np.array([[np.sin(p), np.cos(p), np.sin(p / 100), np.cos(p / 100)] for p in range(3)])
+X = E[ids] + PE
+WQ = np.array([[1, 0, 1, 0], [0, 1, 0, 1], [1, 0, 0, 1], [0, 1, 1, 0]], float)
+WK = np.array([[1, 0, 0, 1], [0, 1, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]], float)
+WO = np.array([[1, 0, 0, 1], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1]], float)
+
+def attend(WQ, WK, mask=-1e9):
+    S = (X @ WQ) @ (X @ WK).T / np.sqrt(4) + np.triu(np.ones((3, 3)), 1) * mask
+    return softmax(S)
+
+# 1. The part of the run the lesson shows: attention and the output projection.
+A = attend(WQ, WK); Z = A @ X
+print("attention rows:\\n", np.round(A, 3))
+print("O = Z W_O for 'sat':", np.round(Z[2] @ WO, 3), "(lesson: [1.895, 2.223, 2.315, 1.987])")
+
+# 2. W_K = W_Q: the score matrix becomes symmetric and attention drifts toward self.
+print("\\nW_K = W_Q:\\n", np.round(attend(WQ, WQ), 3))
+
+# 3. Mask value -10 instead of -1e9: weight leaking to future positions.
+leak = attend(WQ, WK, mask=-10)[np.triu_indices(3, 1)]
+print(f"\\nmask -10 leaks {leak.max():.2e} at worst ({leak.sum():.2e} in total across the masked cells)")
+
+# 4. Antisymmetry needs paired embeddings, whatever the FFN. Use an identity FFN here.
+def logits_for(emb):
+    h = layernorm(layernorm(X + Z @ WO)[2])          # residual + norm; identity FFN; final norm
+    return h @ emb.T
+pairs = [("the", "<eos>"), ("sat", "on"), ("cat", "mat")]
+sums = lambda lg: [round(float(lg[VOCAB.index(a)] + lg[VOCAB.index(b)]), 6) + 0.0 for a, b in pairs]
+E2 = E.copy(); E2[VOCAB.index("mat")] = [1, 0, 0.5, 1]
+print("paired logit sums, original vocabulary:", sums(logits_for(E)))
+print("paired logit sums, 'mat' changed:      ", sums(logits_for(E2)))
+`,
+        out: `attention rows:
+ [[1.    0.    0.   ]
+ [0.297 0.703 0.   ]
+ [0.238 0.661 0.101]]
+O = Z W_O for 'sat': [1.895 2.223 2.315 1.987] (lesson: [1.895, 2.223, 2.315, 1.987])
+
+W_K = W_Q:
+ [[1.    0.    0.   ]
+ [0.249 0.751 0.   ]
+ [0.256 0.32  0.424]]
+
+mask -10 leaks 9.94e-05 at worst (1.20e-04 in total across the masked cells)
+paired logit sums, original vocabulary: [0.0, 0.0, 0.0]
+paired logit sums, 'mat' changed:       [0.0, 0.0, -0.61099]`,
+        notes: [
+          { t: "p", text: "The lesson's script stops after the attention weights, and its 4→8→4 FFN weights are not published, so the 'mat at 0.59' step cannot be run as written. The part that can be run reproduces exactly: the attention rows [0.238, 0.661, 0.101], and the projected output [1.895, 2.223, 2.315, 1.987] using a W_O recovered from the lesson's printed numbers." },
+          { t: "p", text: "With W_K = W_Q the scores become symmetric and 'sat' moves weight toward itself (0.101 → 0.424). A mask value of −10 instead of −1e9 leaked at most 1e-4 of the weight into the future: small, but a real information leak in training, and it grows with larger score magnitudes." },
+          { t: "p", text: "The antisymmetry check uses an identity FFN because the lesson's FFN is unavailable. The property does not depend on the FFN: any network ending in LayerNorm, with tied output weights over a vocabulary whose pairs sum to a constant vector, gives paired logits that cancel. Changing 'mat' moved only its own pair (−0.611)." }
+        ]
+      } }
   ],
 
   takeaways: [

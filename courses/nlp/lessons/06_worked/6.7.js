@@ -107,14 +107,92 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Encoder-decoder against decoder-only, once more",
       body: [{ t: "p", text: "A decoder-only model drops the encoder and cross-attention entirely, concatenates source and target into one stream, and lets masked self-attention do both jobs. It is simpler, it scales, and lesson 5.1 covered why it won the general case. Encoder-decoder still wins where the input and output are genuinely *different* sequences or modalities — translation, speech-to-text, any clean source-to-target transformation — because the source gets a full bidirectional read before output begins, the encoder runs once, and cross-attention gives you an inspectable alignment matrix that a decoder-only model simply does not have." }] },
 
-    { t: "exercise", title: "Run the loop yourself",
+    { t: "exercise", kind: "Challenge", title: "Run the loop yourself", difficulty: "core", minutes: 30,
       requirements: [
         "Run the inference loop with a cap of 20 tokens and confirm it never emits <eos>.",
         "Compare the teacher-forced loss against free-running output quality, and state why the loss did not predict the failure.",
         "Add a repetition penalty to the decoding step and see whether the loop breaks.",
         "Count encoder and decoder passes for a 50-token output and compute the saving from caching the memory projections.",
         "Write out all twelve pipeline steps from memory, then check them against the table."
-      ] }
+      ],
+      hint: "Feed the decoder its own argmax at each step, stop at <eos> or the cap, and exclude <bos> from the choices. Apply the repetition penalty by dividing the probability of any token already generated.",
+      solution: {
+        lang: "python", title: "run_the_loop.py",
+        code: `"""The module-6 translation toy: "I love AI" -> "ich liebe KI", d_model 4, one head, one block each side.
+Embeddings are the lesson's. Its projection and FFN weights are not published, so this version
+states its own: identity Q/K/V projections, FFN = ReLU(x + 0.5), output layer tied to the target embeddings."""
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+SRC = {"I": [1, 0, 1, 0], "love": [0, 1, 0, 1], "AI": [1, 1, -1, 0], "today": [0, 0, 1, 1]}
+TGT_VOCAB = ["<bos>", "<eos>", "ich", "liebe", "KI"]
+TGT = np.array([[0, 0, .5, .5], [-.5, -.5, 0, 0], [1, 0, .5, -.5], [0, 1, -.5, .5], [1, 1, 0, -1]], float)
+
+def pe(n): return np.array([[np.sin(p), np.cos(p), np.sin(p / 100), np.cos(p / 100)] for p in range(n)])
+def softmax(s): e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+def ln(x): return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True) + 1e-9)
+def attn(q, k, v, causal=False):
+    s = q @ k.T / 2.0
+    if causal: s = s + np.triu(np.ones((len(q), len(k))), 1) * -1e9
+    w = softmax(s); return w @ v, w
+def ffn(x, on=True): return np.maximum(x + 0.5, 0) if on else x
+
+def encode(words, causal=False, ffn_on=True):
+    x = np.array([SRC[w] for w in words], float) + pe(len(words))
+    a, w = attn(x, x, x, causal); n = ln(x + a)
+    return ln(n + ffn(n, ffn_on)), w
+
+def decode(tgt_ids, memory, W_out=TGT):
+    y = TGT[tgt_ids] + pe(len(tgt_ids))
+    a, _ = attn(y, y, y, causal=True); n1 = ln(y + a)
+    c, cw = attn(n1, memory, memory); n2 = ln(n1 + c)
+    h = ln(n2 + ffn(n2))
+    return softmax(h @ W_out.T), cw, h
+
+# ---- the exercise ----
+mem, _ = encode(["I", "love", "AI"])       # the encoder runs once
+
+def run(cap=20, penalty=1.0):
+    out = [TGT_VOCAB.index("<bos>")]
+    for _ in range(cap):
+        p, _, _ = decode(out, mem)
+        logits = np.log(p[-1])
+        for t in set(out[1:]): logits[t] -= np.log(penalty)          # divide repeated tokens' probability by \`penalty\`
+        logits[TGT_VOCAB.index("<bos>")] = -np.inf                     # <bos> is never an output
+        nxt = int(np.argmax(logits)); out.append(nxt)
+        if TGT_VOCAB[nxt] == "<eos>": break
+    return [TGT_VOCAB[i] for i in out[1:]]
+
+# 1. Free running with a 20-token cap.
+seq = run(); print(f"greedy, cap 20: {' '.join(seq)}  ({len(seq)} tokens, <eos> reached: {'<eos>' in seq})")
+
+# 2. Teacher-forced loss against free-running quality.
+inp = [TGT_VOCAB.index(w) for w in ["<bos>", "ich", "liebe", "KI"]]; tgt = [TGT_VOCAB.index(w) for w in ["ich", "liebe", "KI", "<eos>"]]
+p, _, _ = decode(inp, mem); loss = -np.log(p[np.arange(4), tgt]).mean()
+print(f"teacher-forced loss {loss:.3f} nats, computed with the gold prefix the free-running loop never sees")
+
+# 3. A repetition penalty.
+for pen in (1.5, 3.0, 10.0):
+    s = run(penalty=pen); print(f"repetition penalty {pen:4}: {' '.join(s)}")
+
+# 4. Encoder and decoder passes for a 50-token output, and the saving from caching memory projections.
+steps, layers = 50, 6
+print(f"\\n50 tokens: encoder passes 1, decoder passes {steps}; memory K/V projections "
+      f"{steps * layers} uncached vs {layers} cached ({1 - layers / (steps * layers):.0%} saved)")
+`,
+        out: `greedy, cap 20: liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe  (20 tokens, <eos> reached: False)
+teacher-forced loss 2.869 nats, computed with the gold prefix the free-running loop never sees
+repetition penalty  1.5: liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe
+repetition penalty  3.0: liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe liebe
+repetition penalty 10.0: liebe <eos>
+
+50 tokens: encoder passes 1, decoder passes 50; memory K/V projections 300 uncached vs 6 cached (98% saved)`,
+        notes: [
+          { t: "p", text: "The lesson publishes this model's embeddings but not its projection or FFN weights, so these numbers come from stated stand-ins (identity Q/K/V, FFN = ReLU(x + 0.5), output tied to the target embeddings) and differ from the lesson's tables. Every behaviour the exercise asks about is a property of the architecture and appears with these weights too." },
+          { t: "p", text: "Free-running, the untrained model repeated 'liebe' for all 20 tokens and never produced <eos>, the same collapse the lesson reports with its own weights. The teacher-forced loss of 2.87 gave no hint of it, because teacher forcing always supplies the gold prefix. It never shows the model what happens after its own first mistake." },
+          { t: "p", text: "Repetition penalties of 1.5 and 3 did not break the loop; 'liebe' was still the most likely token after the penalty. At 10 the model produced 'liebe <eos>': it stopped, but it did not translate. A decoding trick can end a loop, but it cannot supply knowledge the weights do not have." },
+          { t: "p", text: "A 50-token output runs the encoder once and the decoder 50 times. Caching the memory's key and value projections cuts 300 projections to 6, a 98% saving on that part of the work." }
+        ]
+      } }
   ],
 
   takeaways: [

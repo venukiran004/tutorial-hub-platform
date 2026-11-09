@@ -114,14 +114,109 @@ EC.receiveLesson({
       ],
       edges: [["x","p"],["p","s"],["s","m"],["m","w"],["w","b"],["b","o"]] },
 
-    { t: "exercise", title: "Compute both versions",
+    { t: "exercise", kind: "Challenge", title: "Compute both versions", difficulty: "core", minutes: 30,
       requirements: [
         "Reproduce the identity-projection weights for all three rows and confirm the masked entries are exactly 0.",
         "Compute the 'cat' row under real projections and see whether it also attends to a linguistically sensible token.",
         "Swap W_Q and W_K and recompute. Explain why the attention pattern changes.",
         "Set W_K = W_Q and verify that self-attention reverts to self-similarity.",
         "Change W_V to read dimensions 0 and 1 instead of 2 and 3, and describe what the head now contributes."
-      ] }
+      ],
+      hint: "Keep W_Q, W_K and W_V as 4×2 matrices that select dimensions. Then each experiment is a one-line change to which matrix is passed where.",
+      solution: {
+        lang: "python", title: "both_versions.py",
+        code: `"""The module-6 toy transformer: 6-word vocabulary, d_model 4, one head, one block, weights tied."""
+import numpy as np
+np.set_printoptions(precision=4, suppress=True)
+VOCAB = ["the", "cat", "sat", "on", "mat", "<eos>"]
+E = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1], [1, 0, 0, 1], [0, 1, 0, 1]], float)
+
+def PE(pos):
+    """The lesson's 4-dimensional encoding: a fast pair (wavelength 2π) and a slow pair (2π·100)."""
+    return np.array([np.sin(pos), np.cos(pos), np.sin(pos / 100), np.cos(pos / 100)])
+
+def embed(words):
+    ids = [VOCAB.index(w) for w in words]
+    return E[ids] + np.stack([PE(p) for p in range(len(ids))])
+
+def softmax(s):
+    e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+
+def attention(X, WQ=None, WK=None, WV=None, mask_value=-np.inf):
+    I = np.eye(X.shape[1])
+    Q, K, V = X @ (I if WQ is None else WQ), X @ (I if WK is None else WK), X @ (I if WV is None else WV)
+    S = Q @ K.T / np.sqrt(K.shape[1])
+    S = np.where(np.triu(np.ones_like(S), 1) == 1, mask_value, S)
+    A = softmax(S); return A @ V, A
+
+def layernorm(x):
+    return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True))
+
+def block(X, b1=0.5, attn=None, emb=E):
+    a, A = attention(X) if attn is None else attn(X)
+    n = layernorm(X + a)
+    f = np.maximum(n + b1, 0)                      # W1 = W2 = I
+    h = layernorm(n + f)
+    logits = h @ emb.T                              # weight tying
+    return h, logits, softmax(logits), A
+
+# ---- the exercise ----
+X = embed(["the", "cat", "sat"])
+words = ["the", "cat", "sat"]
+WQ = np.array([[1, 0], [0, 1], [0, 0], [0, 0]], float)     # reads dims 0,1 in order
+WK = np.array([[0, 1], [1, 0], [0, 0], [0, 0]], float)     # reads dims 0,1 swapped
+WV = np.array([[0, 0], [0, 0], [1, 0], [0, 1]], float)     # reads dims 2,3
+
+def show(title, A):
+    print(title)
+    for w, row in zip(words, A): print(f"  {w:4} {np.round(row, 4)}")
+
+# 1. Identity projections, all three rows, masked entries exactly zero.
+_, A = attention(X); show("identity projections:", A)
+print("  masked entries exactly 0:", bool((A[np.triu_indices(3, 1)] == 0).all()))
+
+# 2. The 'cat' row under real projections.
+out, A = attention(X, WQ, WK, WV); show("\\nreal W_Q, W_K:", A)
+
+# 3. Swap W_Q and W_K.
+_, A = attention(X, WK, WQ, WV); show("\\nW_Q and W_K swapped:", A)
+
+# 4. W_K = W_Q restores self-similarity.
+_, A = attention(X, WQ, WQ, WV); show("\\nW_K = W_Q:", A)
+
+# 5. W_V reading dims 0,1 instead of 2,3.
+WV01 = np.array([[1, 0], [0, 1], [0, 0], [0, 0]], float)
+o23, _ = attention(X, WQ, WK, WV); o01, _ = attention(X, WQ, WK, WV01)
+print("\\nhead output for 'sat', W_V on dims 2,3:", np.round(o23[2], 4), " on dims 0,1:", np.round(o01[2], 4))
+`,
+        out: `identity projections:
+  the  [1. 0. 0.]
+  cat  [0.4123 0.5877 0.    ]
+  sat  [0.2442 0.2458 0.5101]
+  masked entries exactly 0: True
+
+real W_Q, W_K:
+  the  [1. 0. 0.]
+  cat  [0.4629 0.5371 0.    ]
+  sat  [0.2651 0.5149 0.22  ]
+
+W_Q and W_K swapped:
+  the  [1. 0. 0.]
+  cat  [0.4629 0.5371 0.    ]
+  sat  [0.2651 0.5149 0.22  ]
+
+W_K = W_Q:
+  the  [1. 0. 0.]
+  cat  [0.3789 0.6211 0.    ]
+  sat  [0.2048 0.2066 0.5886]
+
+head output for 'sat', W_V on dims 2,3: [0.7896 0.9999]  on dims 0,1: [1.1184 1.1867]`,
+        notes: [
+          { t: "p", text: "Under identity projections the lesson's weights reproduce exactly, including 0.5101 for 'sat' on itself, and every masked entry is exactly zero. With the real projections, 'cat' also shifts toward a linguistically sensible token, giving 0.537 to itself and 0.463 to 'the', its determiner, up from 0.412." },
+          { t: "p", text: "Swapping W_Q and W_K changed nothing here, and the reason is specific to these matrices. W_K is W_Q with its two columns swapped, so Q·Kᵀ = X W_Q P W_Qᵀ Xᵀ, where P is the swap. P is its own transpose, so the swapped version gives the same scores. With general learned matrices, swapping query and key transposes the score matrix and changes who attends to whom." },
+          { t: "p", text: "Setting W_K = W_Q makes every score a dot product of a token with itself or a same-space neighbour, and 'sat' returns to attending mostly to itself (0.589). Separate query and key matrices are what let a token look for something other than itself. Pointing W_V at dimensions 0–1 changed the head's output for 'sat' from [0.79, 1.00] to [1.12, 1.19]: the attention pattern is unchanged, but the content it delivers is different." }
+        ]
+      } }
   ],
 
   takeaways: [

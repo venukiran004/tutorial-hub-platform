@@ -94,14 +94,95 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "One loss updates both stacks",
       body: [{ t: "p", text: "The encoder has no loss of its own. It is trained entirely by gradient flowing backwards through **cross-attention** — the decoder's queries meeting the encoder's keys and values is the only path connecting the two. So the encoder learns to produce representations that happen to be useful for the decoder's cross-attention, which is a purely indirect signal. That is worth appreciating: nothing ever tells the encoder what a good source representation is, only whether the decoder managed to translate from it." }] },
 
-    { t: "exercise", title: "Compute and compare",
+    { t: "exercise", kind: "Challenge", title: "Compute and compare", difficulty: "core", minutes: 30,
       requirements: [
         "Run the script and confirm the loss of 2.532 to three decimals.",
         "Compute ln(vocab_size) and verify the model is worse than uniform.",
         "Compute the per-position loss and identify which position contributes most.",
         "Plot the cross-attention matrix as a heatmap and confirm there is no diagonal.",
         "Hand-modify W_out to raise p(ich) at position 0 and recompute the loss."
-      ] }
+      ],
+      hint: "A logit is h · w. Multiplying w by 2 doubles the logit, so if the logit is negative, scaling makes the word less likely. To raise it, move w toward the decoder state h.",
+      solution: {
+        lang: "python", title: "compute_and_compare.py",
+        code: `"""The module-6 translation toy: "I love AI" -> "ich liebe KI", d_model 4, one head, one block each side.
+Embeddings are the lesson's. Its projection and FFN weights are not published, so this version
+states its own: identity Q/K/V projections, FFN = ReLU(x + 0.5), output layer tied to the target embeddings."""
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+SRC = {"I": [1, 0, 1, 0], "love": [0, 1, 0, 1], "AI": [1, 1, -1, 0], "today": [0, 0, 1, 1]}
+TGT_VOCAB = ["<bos>", "<eos>", "ich", "liebe", "KI"]
+TGT = np.array([[0, 0, .5, .5], [-.5, -.5, 0, 0], [1, 0, .5, -.5], [0, 1, -.5, .5], [1, 1, 0, -1]], float)
+
+def pe(n): return np.array([[np.sin(p), np.cos(p), np.sin(p / 100), np.cos(p / 100)] for p in range(n)])
+def softmax(s): e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+def ln(x): return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True) + 1e-9)
+def attn(q, k, v, causal=False):
+    s = q @ k.T / 2.0
+    if causal: s = s + np.triu(np.ones((len(q), len(k))), 1) * -1e9
+    w = softmax(s); return w @ v, w
+def ffn(x, on=True): return np.maximum(x + 0.5, 0) if on else x
+
+def encode(words, causal=False, ffn_on=True):
+    x = np.array([SRC[w] for w in words], float) + pe(len(words))
+    a, w = attn(x, x, x, causal); n = ln(x + a)
+    return ln(n + ffn(n, ffn_on)), w
+
+def decode(tgt_ids, memory, W_out=TGT):
+    y = TGT[tgt_ids] + pe(len(tgt_ids))
+    a, _ = attn(y, y, y, causal=True); n1 = ln(y + a)
+    c, cw = attn(n1, memory, memory); n2 = ln(n1 + c)
+    h = ln(n2 + ffn(n2))
+    return softmax(h @ W_out.T), cw, h
+
+# ---- the exercise ----
+mem, _ = encode(["I", "love", "AI"])
+gold = ["ich", "liebe", "KI", "<eos>"]
+inp = [TGT_VOCAB.index(w) for w in ["<bos>"] + gold[:-1]]       # teacher forcing: gold shifted right
+tgt = [TGT_VOCAB.index(w) for w in gold]
+
+# 1-3. Teacher-forced loss, the uniform baseline, and per-position loss.
+probs, cw, h = decode(inp, mem)
+per = -np.log(probs[np.arange(len(tgt)), tgt])
+print(f"teacher-forced loss {per.mean():.4f} nats; uniform over 5 words ln(5) = {np.log(5):.4f}; "
+      f"{'worse' if per.mean() > np.log(5) else 'better'} than uniform")
+for w, l in zip(gold, per): print(f"  predicting {w:6} loss {l:.3f}")
+print("highest-loss position:", gold[int(per.argmax())])
+
+# 4. Cross-attention: target rows over source columns, rows sum to 1, no diagonal structure.
+print("\\ncross-attention (rows: <bos> ich liebe KI; columns: I love AI):\\n", cw)
+
+# 5. Raise p(ich) at position 0. Scaling its row only helps if its logit is already positive.
+ich = TGT_VOCAB.index("ich")
+print(f"\\nlogit(ich) at position 0 = h0 . w_ich = {h[0] @ TGT[ich]:+.3f}")
+for name, row in (("scale the row by 2", 2.0 * TGT[ich]), ("add 0.5 x h0 to the row", TGT[ich] + 0.5 * h[0])):
+    W2 = TGT.copy(); W2[ich] = row
+    probs2, _, _ = decode(inp, mem, W_out=W2); per2 = -np.log(probs2[np.arange(len(tgt)), tgt])
+    print(f"{name:24} p(ich) at position 0 {probs[0, ich]:.3f} -> {probs2[0, ich]:.3f}; loss {per.mean():.4f} -> {per2.mean():.4f}")
+`,
+        out: `teacher-forced loss 2.8685 nats; uniform over 5 words ln(5) = 1.6094; worse than uniform
+  predicting ich    loss 4.137
+  predicting liebe  loss 1.968
+  predicting KI     loss 2.873
+  predicting <eos>  loss 2.497
+highest-loss position: ich
+
+cross-attention (rows: <bos> ich liebe KI; columns: I love AI):
+ [[0.365 0.539 0.096]
+ [0.2   0.118 0.682]
+ [0.38  0.325 0.295]
+ [0.216 0.128 0.656]]
+
+logit(ich) at position 0 = h0 . w_ich = -2.069
+scale the row by 2       p(ich) at position 0 0.016 -> 0.002; loss 2.8685 -> 3.5736
+add 0.5 x h0 to the row  p(ich) at position 0 0.016 -> 0.107; loss 2.8685 -> 2.4262`,
+        notes: [
+          { t: "p", text: "The lesson publishes this model's embeddings but not its projection or FFN weights, so these numbers come from stated stand-ins (identity Q/K/V, FFN = ReLU(x + 0.5), output tied to the target embeddings) and differ from the lesson's tables. Every behaviour the exercise asks about is a property of the architecture and appears with these weights too." },
+          { t: "p", text: "The untrained model is worse than uniform guessing, 2.87 nats against ln 5 = 1.61, as the lesson found with its own weights. The first position, predicting 'ich', costs the most (4.14). With only <bos> as input, nothing yet distinguishes the right first word, and random weights spread confidence arbitrarily." },
+          { t: "p", text: "The cross-attention matrix has no diagonal structure: <bos> attends most to 'love', 'ich' to 'AI'. Before training, alignment between source and target is arbitrary. A clean diagonal only appears after training." },
+          { t: "p", text: "Doubling the 'ich' output row lowered p(ich) from 0.016 to 0.002, because its logit at position 0 was negative (−2.07), and doubling made it more negative. Moving the row toward the decoder state (adding 0.5 × h₀) raised p(ich) to 0.107 and cut the loss to 2.43. That is a single gradient-descent step on that row, done by hand." }
+        ]
+      } }
   ],
 
   takeaways: [

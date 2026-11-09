@@ -103,14 +103,92 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Two sublayers, exactly as in lesson 4.7",
       body: [{ t: "p", text: "Nothing here is specific to translation. This is the same encoder block from lesson 4.7 — two sublayers, two norms, two residuals, shape preserved throughout at (3, 4). A real model stacks six or more of these and the memory is the last one's output. The only thing that makes it an *encoder* rather than a decoder is the absence of a causal mask and the absence of a cross-attention sublayer." }] },
 
-    { t: "exercise", title: "Trace the encoder",
+    { t: "exercise", kind: "Challenge", title: "Trace the encoder", difficulty: "core", minutes: 30,
       requirements: [
         "Run the NumPy and confirm the memory matrix to three decimal places.",
         "Add a causal mask to the encoder's self-attention and see how the memory changes.",
         "Extend the source to four words and confirm the memory shape follows the source, not the target.",
         "Compute memory @ W_K and memory @ W_V once, and verify they are what cross-attention needs.",
         "Replace the FFN with an identity and measure how much the memory changes."
-      ] }
+      ],
+      hint: "Run the encoder once over the whole source with no mask. Cross-attention then reads that memory at every decoder step, so its keys and values can be computed once and reused.",
+      solution: {
+        lang: "python", title: "trace_encoder.py",
+        code: `"""The module-6 translation toy: "I love AI" -> "ich liebe KI", d_model 4, one head, one block each side.
+Embeddings are the lesson's. Its projection and FFN weights are not published, so this version
+states its own: identity Q/K/V projections, FFN = ReLU(x + 0.5), output layer tied to the target embeddings."""
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+SRC = {"I": [1, 0, 1, 0], "love": [0, 1, 0, 1], "AI": [1, 1, -1, 0], "today": [0, 0, 1, 1]}
+TGT_VOCAB = ["<bos>", "<eos>", "ich", "liebe", "KI"]
+TGT = np.array([[0, 0, .5, .5], [-.5, -.5, 0, 0], [1, 0, .5, -.5], [0, 1, -.5, .5], [1, 1, 0, -1]], float)
+
+def pe(n): return np.array([[np.sin(p), np.cos(p), np.sin(p / 100), np.cos(p / 100)] for p in range(n)])
+def softmax(s): e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+def ln(x): return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True) + 1e-9)
+def attn(q, k, v, causal=False):
+    s = q @ k.T / 2.0
+    if causal: s = s + np.triu(np.ones((len(q), len(k))), 1) * -1e9
+    w = softmax(s); return w @ v, w
+def ffn(x, on=True): return np.maximum(x + 0.5, 0) if on else x
+
+def encode(words, causal=False, ffn_on=True):
+    x = np.array([SRC[w] for w in words], float) + pe(len(words))
+    a, w = attn(x, x, x, causal); n = ln(x + a)
+    return ln(n + ffn(n, ffn_on)), w
+
+def decode(tgt_ids, memory, W_out=TGT):
+    y = TGT[tgt_ids] + pe(len(tgt_ids))
+    a, _ = attn(y, y, y, causal=True); n1 = ln(y + a)
+    c, cw = attn(n1, memory, memory); n2 = ln(n1 + c)
+    h = ln(n2 + ffn(n2))
+    return softmax(h @ W_out.T), cw, h
+
+# ---- the exercise ----
+# 1. The memory for "I love AI".
+mem, w = encode(["I", "love", "AI"])
+print("encoder self-attention (unmasked):\\n", w); print("memory:\\n", mem)
+
+# 2. A causal mask in the encoder: the first token can no longer read the rest of the source.
+mem_c, w_c = encode(["I", "love", "AI"], causal=True)
+print("\\nwith a causal mask, row 'I' attends to:", w_c[0], "-> memory row 'I' moved by", np.round(np.abs(mem_c[0] - mem[0]).max(), 3))
+
+# 3. A four-word source: memory has one row per source token, whatever the target length.
+print("\\nmemory shape for 'I love AI today':", encode(["I", "love", "AI", "today"])[0].shape)
+
+# 4. Cross-attention needs memory @ W_K and memory @ W_V: compute them once per sentence.
+WK = np.array([[1, 0, 0, 1], [0, 1, 1, 0], [0, 1, 0, 1], [1, 0, 1, 0]], float); WV = np.eye(4)[:, ::-1]
+K_cache, V_cache = mem @ WK, mem @ WV
+steps, layers = 10, 6
+print(f"\\ncached K, V shapes {K_cache.shape}, {V_cache.shape}; for {steps} decoding steps x {layers} layers "
+      f"that saves {steps * layers - layers} of {steps * layers} memory projections")
+
+# 5. Remove the FFN.
+mem_noffn, _ = encode(["I", "love", "AI"], ffn_on=False)
+print(f"\\nmemory change without the FFN: max {np.abs(mem_noffn - mem).max():.3f}, mean {np.abs(mem_noffn - mem).mean():.3f}")
+`,
+        out: `encoder self-attention (unmasked):
+ [[0.371 0.452 0.177]
+ [0.17  0.651 0.179]
+ [0.108 0.291 0.601]]
+memory:
+ [[ 0.119  0.348 -1.604  1.136]
+ [-0.339  0.501 -1.426  1.265]
+ [ 1.222 -0.135 -1.517  0.431]]
+
+with a causal mask, row 'I' attends to: [1. 0. 0.] -> memory row 'I' moved by 1.604
+
+memory shape for 'I love AI today': (4, 4)
+
+cached K, V shapes (3, 4), (3, 4); for 10 decoding steps x 6 layers that saves 54 of 60 memory projections
+
+memory change without the FFN: max 0.196, mean 0.103`,
+        notes: [
+          { t: "p", text: "The lesson publishes this model's embeddings but not its projection or FFN weights, so these numbers come from stated stand-ins (identity Q/K/V, FFN = ReLU(x + 0.5), output tied to the target embeddings) and differ from the lesson's tables. Every behaviour the exercise asks about is a property of the architecture and appears with these weights too." },
+          { t: "p", text: "Unmasked, 'I' reads all three source tokens. With a causal mask it can only read itself (weight 1.0), and its memory row moved by up to 1.6, the largest change of any row. A causal encoder throws away exactly the right-hand context that translation needs, and the first source word suffers most." },
+          { t: "p", text: "A four-word source gives a 4×4 memory: one row per source token, independent of how long the translation will be. Its key and value projections are fixed for the whole translation. For 10 decoding steps across 6 layers, caching them saves 54 of 60 projections, the encoder-decoder version of the KV cache. Removing the FFN changed the memory by 0.10 on average and up to 0.20." }
+        ]
+      } }
   ],
 
   takeaways: [

@@ -104,14 +104,94 @@ EC.receiveLesson({
         { title: "6.4 to 6.7 — Encoder-decoder", text: "The same machinery applied to translation, including cross-attention, the training loss and autoregressive inference." }
       ] },
 
-    { t: "exercise", title: "Check the setup by hand",
+    { t: "exercise", kind: "Challenge", title: "Check the setup by hand", difficulty: "intro", minutes: 25,
       requirements: [
         "Compute PE(3) and PE(4) with a calculator and confirm the fast pair has completed more than a full cycle by position 7.",
         "Verify that PE(pos+1) is the same rotation of PE(pos) at two different starting positions, as lesson 4.2 established.",
         "Compute X for a different three-word sentence from the same vocabulary.",
         "Write the embedding lookup as an explicit one-hot matrix multiply and confirm it gives the same rows.",
         "Work out at which position the slow pair's first component first exceeds 0.5."
-      ] }
+      ],
+      hint: "Write the rotation for a (sin, cos) pair as a 2×2 matrix acting on a row vector: [sin a, cos a] @ [[cos b, −sin b], [sin b, cos b]] = [sin(a+b), cos(a+b)]. Get the sign of the off-diagonal terms right and the error is zero.",
+      solution: {
+        lang: "python", title: "check_setup.py",
+        code: `"""The module-6 toy transformer: 6-word vocabulary, d_model 4, one head, one block, weights tied."""
+import numpy as np
+np.set_printoptions(precision=4, suppress=True)
+VOCAB = ["the", "cat", "sat", "on", "mat", "<eos>"]
+E = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1], [1, 0, 0, 1], [0, 1, 0, 1]], float)
+
+def PE(pos):
+    """The lesson's 4-dimensional encoding: a fast pair (wavelength 2π) and a slow pair (2π·100)."""
+    return np.array([np.sin(pos), np.cos(pos), np.sin(pos / 100), np.cos(pos / 100)])
+
+def embed(words):
+    ids = [VOCAB.index(w) for w in words]
+    return E[ids] + np.stack([PE(p) for p in range(len(ids))])
+
+def softmax(s):
+    e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+
+def attention(X, WQ=None, WK=None, WV=None, mask_value=-np.inf):
+    I = np.eye(X.shape[1])
+    Q, K, V = X @ (I if WQ is None else WQ), X @ (I if WK is None else WK), X @ (I if WV is None else WV)
+    S = Q @ K.T / np.sqrt(K.shape[1])
+    S = np.where(np.triu(np.ones_like(S), 1) == 1, mask_value, S)
+    A = softmax(S); return A @ V, A
+
+def layernorm(x):
+    return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True))
+
+def block(X, b1=0.5, attn=None, emb=E):
+    a, A = attention(X) if attn is None else attn(X)
+    n = layernorm(X + a)
+    f = np.maximum(n + b1, 0)                      # W1 = W2 = I
+    h = layernorm(n + f)
+    logits = h @ emb.T                              # weight tying
+    return h, logits, softmax(logits), A
+
+# ---- the exercise ----
+# 1. PE(3) and PE(4), and how far the fast pair has turned by position 7.
+for p in (3, 4): print(f"PE({p}) = {np.round(PE(p), 4)}")
+print(f"fast pair angle at position 7: {7:.1f} rad = {7 / (2 * np.pi):.3f} full cycles")
+
+# 2. PE(pos+1) is the same rotation of PE(pos) wherever you start.
+def R(k, w):  # rotate the (sin, cos) pair by angle w*k, written for row vectors [sin, cos]
+    c, s = np.cos(w * k), np.sin(w * k); return np.array([[c, -s], [s, c]])
+M = np.zeros((4, 4)); M[:2, :2] = R(1, 1.0); M[2:, 2:] = R(1, 0.01)
+for p in (0, 5, 40): print(f"start {p:2}: max |PE(p)·M - PE(p+1)| = {np.abs(PE(p) @ M - PE(p + 1)).max():.1e}")
+
+# 3. X for a different three-word sentence.
+print("\\nX for 'the mat on':\\n", np.round(embed(["the", "mat", "on"]), 4))
+
+# 4. The lookup is a one-hot matrix multiply.
+ids = [VOCAB.index(w) for w in ("the", "cat", "sat")]
+onehot = np.eye(len(VOCAB))[ids]
+print("one-hot @ E equals E[ids]:", np.array_equal(onehot @ E, E[ids]))
+
+# 5. Where the slow pair's first component first exceeds 0.5.
+p = next(p for p in range(1000) if PE(p)[2] > 0.5)
+print(f"slow pair: sin(pos/100) first exceeds 0.5 at position {p} (sin({p}/100) = {np.sin(p / 100):.4f}; exact crossing at 100·π/6 = {100 * np.pi / 6:.2f})")
+`,
+        out: `PE(3) = [ 0.1411 -0.99    0.03    0.9996]
+PE(4) = [-0.7568 -0.6536  0.04    0.9992]
+fast pair angle at position 7: 7.0 rad = 1.114 full cycles
+start  0: max |PE(p)·M - PE(p+1)| = 0.0e+00
+start  5: max |PE(p)·M - PE(p+1)| = 5.6e-17
+start 40: max |PE(p)·M - PE(p+1)| = 1.1e-16
+
+X for 'the mat on':
+ [[ 1.      1.      1.      1.    ]
+ [ 1.8415  0.5403  0.01    2.    ]
+ [ 0.9093 -0.4161  1.02    1.9998]]
+one-hot @ E equals E[ids]: True
+slow pair: sin(pos/100) first exceeds 0.5 at position 53 (sin(53/100) = 0.5055; exact crossing at 100·π/6 = 52.36)`,
+        notes: [
+          { t: "p", text: "PE(3) and PE(4) match a calculator. The fast pair turns one radian per position, so by position 7 it has completed 1.11 cycles, and its values repeat roughly every 6.3 positions. That is why the slow pair is needed: two positions far apart can share a fast-pair value but never both." },
+          { t: "p", text: "The one-step rotation reproduces PE(p+1) to 1e-16 starting from 0, 5 and 40, so 'one position later' is the same linear operation everywhere. The one-hot product equals the row lookup exactly. That equality is why an embedding table trains with ordinary backpropagation: the gradient flows to exactly the rows that were used." },
+          { t: "p", text: "The slow pair's first component, sin(pos/100), first exceeds 0.5 at position 53. The exact crossing is 100·π/6 = 52.36. In a 6-word toy sentence the slow pair barely moves, which is why the lesson's X looks dominated by the fast pair." }
+        ]
+      } }
   ],
 
   takeaways: [

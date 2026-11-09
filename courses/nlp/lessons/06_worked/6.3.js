@@ -109,14 +109,96 @@ EC.receiveLesson({
 
     { t: "p", text: "Nothing in the block changes — the same weights run over a sequence one token longer, and the causal mask means the first three positions compute exactly what they computed before. That last fact is what makes the KV cache from lesson 5.2 correct rather than merely convenient: the earlier positions' keys and values are provably unchanged, so recomputing them is pure waste." },
 
-    { t: "exercise", title: "Finish the trace yourself",
+    { t: "exercise", kind: "Challenge", title: "Finish the trace yourself", difficulty: "core", minutes: 35,
       requirements: [
         "Recompute both LayerNorms with a calculator and confirm the mean is 0 and the variance 1 to four decimal places.",
         "Change b1 from 0.5 to 0.2 and find which dimension survives ReLU instead.",
         "Verify the antisymmetry holds for a different input sentence from the same vocabulary.",
         "Break the antisymmetry by changing one embedding so the pairs no longer sum to [1,1,1,1], and confirm it disappears.",
         "Append 'mat' and run the block again by hand to predict the fifth word."
-      ] }
+      ],
+      hint: "Logits are h · E[word]. If two words' embeddings sum to [1,1,1,1], their logits sum to h · [1,1,1,1] = sum(h), and LayerNorm makes sum(h) exactly zero.",
+      solution: {
+        lang: "python", title: "finish_trace.py",
+        code: `"""The module-6 toy transformer: 6-word vocabulary, d_model 4, one head, one block, weights tied."""
+import numpy as np
+np.set_printoptions(precision=4, suppress=True)
+VOCAB = ["the", "cat", "sat", "on", "mat", "<eos>"]
+E = np.array([[1, 0, 1, 0], [0, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1], [1, 0, 0, 1], [0, 1, 0, 1]], float)
+
+def PE(pos):
+    """The lesson's 4-dimensional encoding: a fast pair (wavelength 2π) and a slow pair (2π·100)."""
+    return np.array([np.sin(pos), np.cos(pos), np.sin(pos / 100), np.cos(pos / 100)])
+
+def embed(words):
+    ids = [VOCAB.index(w) for w in words]
+    return E[ids] + np.stack([PE(p) for p in range(len(ids))])
+
+def softmax(s):
+    e = np.exp(s - s.max(-1, keepdims=True)); return e / e.sum(-1, keepdims=True)
+
+def attention(X, WQ=None, WK=None, WV=None, mask_value=-np.inf):
+    I = np.eye(X.shape[1])
+    Q, K, V = X @ (I if WQ is None else WQ), X @ (I if WK is None else WK), X @ (I if WV is None else WV)
+    S = Q @ K.T / np.sqrt(K.shape[1])
+    S = np.where(np.triu(np.ones_like(S), 1) == 1, mask_value, S)
+    A = softmax(S); return A @ V, A
+
+def layernorm(x):
+    return (x - x.mean(-1, keepdims=True)) / np.sqrt(x.var(-1, keepdims=True))
+
+def block(X, b1=0.5, attn=None, emb=E):
+    a, A = attention(X) if attn is None else attn(X)
+    n = layernorm(X + a)
+    f = np.maximum(n + b1, 0)                      # W1 = W2 = I
+    h = layernorm(n + f)
+    logits = h @ emb.T                              # weight tying
+    return h, logits, softmax(logits), A
+
+# ---- the exercise ----
+X = embed(["the", "cat", "sat"])
+a, _ = attention(X)
+
+# 1. Both LayerNorms on the 'sat' row: mean 0, variance 1.
+n = layernorm(X + a)[2]; f = np.maximum(n + 0.5, 0); h = layernorm(n + f)
+for name, v in (("first LayerNorm", n), ("second LayerNorm", h)):
+    print(f"{name}: {np.round(v, 4)}  mean {v.mean():+.4f}  var {v.var():.4f}")
+
+# 2. b1 = 0.2: which dimension survives ReLU?
+for b1 in (0.5, 0.2):
+    pre = n + b1; print(f"b1={b1}: pre-activation {np.round(pre, 4)} -> zeroed dims {[int(i) for i in np.where(pre <= 0)[0]]}")
+
+# 3. Antisymmetry on a different sentence.
+pairs = [("the", "<eos>"), ("sat", "on"), ("cat", "mat")]
+def pair_sums(logits): return [float(round(logits[VOCAB.index(a)] + logits[VOCAB.index(b)], 6)) + 0.0 for a, b in pairs]
+_, logits, _, _ = block(embed(["mat", "on", "the"]))
+print("\\n'mat on the': paired logit sums", pair_sums(logits[-1]))
+
+# 4. Break the pairing: change one embedding.
+E2 = E.copy(); E2[VOCAB.index("cat")] = [0, 1, 1, 0.5]
+_, logits2, _, _ = block(embed(["the", "cat", "sat"]), emb=E2)
+print("cat embedding changed: paired logit sums", pair_sums(logits2[-1]))
+
+# 5. Append 'mat' and predict the fifth word.
+_, logits, probs, _ = block(embed(["the", "cat", "sat", "mat"]))
+top = np.argsort(-probs[-1])
+print("\\n'the cat sat mat' -> " + ", ".join(f"{VOCAB[i]} {probs[-1, i]:.4f}" for i in top[:3]))
+`,
+        out: `first LayerNorm: [ 1.4745 -0.3315 -1.3005  0.1574]  mean +0.0000  var 1.0000
+second LayerNorm: [ 1.5665 -0.4918 -1.1401  0.0654]  mean +0.0000  var 1.0000
+b1=0.5: pre-activation [ 1.9745  0.1685 -0.8005  0.6574] -> zeroed dims [2]
+b1=0.2: pre-activation [ 1.6745 -0.1315 -1.1005  0.3574] -> zeroed dims [1, 2]
+
+'mat on the': paired logit sums [0.0, 0.0, 0.0]
+cat embedding changed: paired logit sums [0.0, 0.0, 0.032686]
+
+'the cat sat mat' -> mat 0.5937, on 0.1648, <eos> 0.1032`,
+        notes: [
+          { t: "p", text: "Both LayerNorms reproduce the lesson to four decimals, with mean 0 and variance 1 (population variance, no eps, as in the lesson). With b1 = 0.2, dimension 1 also goes negative, so ReLU now zeroes dimensions 1 and 2 instead of 2 alone. The bias decides which features fire." },
+          { t: "p", text: "On 'mat on the' the three pairs again sum to exactly zero. The antisymmetry depends only on the vocabulary's pairing and LayerNorm, not on the sentence. Changing 'cat' to [0, 1, 1, 0.5] broke the pairing and only the cat/mat sum moved (0.033). The two untouched pairs stay at zero, which confirms the mechanism, not just the symptom." },
+          { t: "p", text: "Appending 'mat' and running the block again predicts 'mat' a second time at 0.594, ahead of 'on' at 0.165. With identity projections every token attends mostly to itself, so the last word's own embedding dominates the prediction. A real model would need trained weights to avoid repeating its input." }
+        ]
+      } }
   ],
 
   takeaways: [
