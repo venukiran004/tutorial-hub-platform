@@ -272,42 +272,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A service makes one model call, in one shape, against one provider. What is the right choice?",
-        options: [
-          "LangChain \u2014 the composition will be needed eventually",
-          "The provider SDK \u2014 the two are a wash on size and the raw version has fewer concepts",
-          "LangChain, because the parser and prompt template are worth it alone",
-          "Either; the decision has no measurable consequences at this size"
-        ],
+        options: ["LangChain, as composition will be needed later", "The provider SDK: same size, fewer concepts", "LangChain, for the parser and template alone", "Either; there are no measurable consequences"],
         answer: 1,
         why: "Six lines against five is a wash, and the SDK version is clearer to anyone who has not used LangChain. With no composition being exploited, the uniformity is being paid for and not used \u2014 so the dependency, its 29 packages, the abstraction to learn and the traceback indirection all buy nothing. The framework's case starts when the requirements start accumulating." },
 
       { stem: "Why does the LCEL line count barely move as requirements accumulate?",
-        options: [
-          "Because the requirements were chosen to favour LangChain",
-          "Because each requirement is an existing method \u2014 stream, with_retry, with_fallbacks, batch, configurable_fields \u2014 that works on any component",
-          "Because LangChain generates the implementing code at runtime",
-          "Because the comparison omits configuration the LCEL version still needs"
-        ],
+        options: ["The requirements were chosen to favour it", "Each one is an existing method on any component", "LangChain generates the code at runtime", "The comparison leaves out needed config"],
         answer: 1,
         why: "Streaming, retries, fallbacks, batching and runtime configuration are already defined on the base class, and they work on a model, a parser, a retriever or a whole chain without being rewritten for each. That is the direct payoff of every component satisfying one interface \u2014 1.1's argument with a price attached. The raw version has to implement each one against its specific call site, which is why it grows about 11x over the same seven rows." },
 
       { stem: "Which cost of the framework does a line-count comparison not capture?",
-        options: [
-          "Install size, which dominates the real cost",
-          "Inherited behaviour \u2014 defaults like a JSON parser that repairs truncation into a different number",
-          "Runtime overhead from the abstraction layers",
-          "Nothing significant \u2014 lines of code is a reasonable proxy"
-        ],
+        options: ["Install size, which dominates the real cost", "Inherited behaviour, such as repairing defaults", "Runtime overhead from the abstraction layers", "Nothing; line count is a fair proxy for cost"],
         answer: 1,
         why: "This module measured three instances: truncated JSON repaired into a wrong value, a structured-output call returning None with parsing_error also None, and a type mismatch between steps producing a stringified list. Code you write yourself has none of those, because it does nothing you did not write. Along with the abstraction to learn, the dependency cadence, traceback indirection and the absence of type checking, that is what the line count omits." },
 
       { stem: "Which outcome is the five-question test designed to prevent?",
-        options: [
-          "Adopting the framework for a task too small to need it",
-          "Writing the raw version and then rebuilding the uniformity in-house, one requirement at a time",
-          "Choosing the wrong provider before the requirements are known",
-          "Over-engineering the first version of a prototype"
-        ],
+        options: ["Adopting it for a task too small to need it", "Going raw, then rebuilding uniformity in-house", "Choosing a provider before requirements are known", "Over-engineering a prototype's first version"],
         answer: 1,
         why: "Both columns are defensible outcomes \u2014 the SDK for a simple task, the framework for a composed one. The bad outcome is the drift between them: raw code, then failover, then streaming, then a per-step retry, each reasonable in isolation and collectively an in-house abstraction with no tests, no documentation and one person who understands it. The questions ask about the system you are going to build precisely to catch that early." }
     ]

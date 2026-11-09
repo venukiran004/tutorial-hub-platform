@@ -318,32 +318,17 @@ llm = ChatOllama(model="llama3.1")                    # local, no key
         why: "A tool request is an assistant turn whose content happens to be a request rather than prose, so it arrives as an ordinary AIMessage with `tool_calls` set and `content` empty. The result comes back separately as a ToolMessage carrying the matching `tool_call_id`. Two ordinary messages linked by an id is the whole tool protocol \u2014 there is no special message type for the call itself." },
 
       { stem: "A two-variable template, a one-variable template and a hand-built message list all produce the same request. What follows?",
-        options: [
-          "The templates are redundant and the hand-built list is preferable",
-          "The chain's structure is not evidence about what was sent \u2014 only the resolved message list is",
-          "LangChain normalises templates into a canonical form before sending",
-          "The three are equivalent only because no partials were used"
-        ],
+        options: ["The templates are redundant; hand-built is better", "Only the resolved message list shows what was sent", "LangChain normalises templates into one form", "They match only because no partials were used"],
         answer: 1,
         why: "Templates, partials, placeholders and chains are machinery for producing one flat list, and the model receives that list and nothing else. So when a chain misbehaves, reading the template cannot distinguish an unapplied partial from a placeholder that filled with twelve turns of history from a variable that was silently absent \u2014 all of them look fine in the source and completely different in the list. Capture the list." },
 
       { stem: "Six model calls of 120 ms each: 0.726 s as a loop, 0.126 s as a batch. Why does the loop survive code review?",
-        options: [
-          "Because reviewers rarely check latency-sensitive paths",
-          "Because it is correct \u2014 same answers, same order \u2014 and nothing in the source hints at the difference",
-          "Because batch was only added in recent versions",
-          "Because the difference only appears under production load"
-        ],
+        options: ["Reviewers rarely check latency-sensitive paths", "It is correct, and the source gives no hint", "batch was only added in recent versions", "The gap only appears under production load"],
         answer: 1,
         why: "The loop produces the right results in the right order, which is exactly what `batch` also guarantees, so there is no correctness signal to catch. The only difference is wall-clock time, and a list comprehension over `invoke` reads perfectly naturally. That combination \u2014 correct, idiomatic-looking and six times slower \u2014 is what makes it the most common avoidable latency problem in a LangChain codebase." },
 
       { stem: "What does implementing `_generate` on a BaseChatModel subclass give you?",
-        options: [
-          "Only invoke \u2014 batch and stream require their own implementations",
-          "The full protocol: invoke, batch, stream, the async forms, plus bind_tools, with_structured_output, with_retry and with_fallbacks",
-          "invoke and batch, but streaming must be implemented separately to be real",
-          "Nothing until the model is registered with a provider package"
-        ],
+        options: ["Only invoke; batch and stream need their own code", "The full protocol, plus tools and structured output", "invoke and batch, but streaming must be written", "Nothing until registered with a provider package"],
         answer: 1,
         why: "The base class defines every other method in terms of `_generate`, so one implementation yields the whole surface. Implementing `_stream` separately is worth doing if you want genuine incremental output rather than a single chunk, but the method exists either way. This is the concrete payoff of 1.1's argument: satisfy the interface and every ecosystem feature \u2014 retries, fallbacks, structured output, tool binding \u2014 applies without being written for you." }
     ]

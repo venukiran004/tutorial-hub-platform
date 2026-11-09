@@ -240,32 +240,17 @@ EC.receiveLesson({
         why: "Values substituted into a slot are not re-scanned, so passing the question as a variable is completely safe. The failure is concatenating the user's text into the template string before formatting, which makes their braces into format fields \u2014 so an ordinary Python question produces a KeyError and a 500. The problem is never that input contains braces; it is that input was treated as template rather than data." },
 
       { stem: "`ChatPromptTemplate.from_template(prefix + user_input)` where the input contains `{system}`. What happens?",
-        options: [
-          "A ValueError, because the variable is never supplied",
-          "No error \u2014 `input_variables` becomes `['role', 'system']`, adding a user-named slot to the prompt's interface",
-          "The braces are escaped and the text is passed through literally",
-          "The template refuses to build because `system` is a reserved name"
-        ],
+        options: ["A ValueError, as the variable is never supplied", "No error: `system` silently joins input_variables", "The braces are escaped and passed through literally", "It refuses to build, as `system` is reserved"],
         answer: 1,
         why: "It builds successfully, which is exactly why it is the dangerous case. The user's braces have been parsed as template syntax, so the prompt's declared interface now contains a variable whose name the user chose, and any code filling a variable of that name writes into their slot. A crash would be a better outcome \u2014 this one leaves no evidence except `input_variables` disagreeing with what the source appears to declare." },
 
       { stem: "Over eight conversation turns the prompt grew from 38 to 402 characters at a steady 52 per turn. Why is the cost not also linear?",
-        options: [
-          "It is linear \u2014 cost tracks prompt size directly",
-          "Because the whole prompt is sent on every turn, so cumulative spend is the sum of a linear series",
-          "Because token count grows faster than character count as text lengthens",
-          "Because the model charges a premium above a context threshold"
-        ],
+        options: ["It is linear: cost tracks prompt size directly", "Every turn resends it all, so spend sums a series", "Tokens grow faster than characters as text grows", "The model charges a premium above a threshold"],
         answer: 1,
         why: "Each turn's prompt is bigger than the last and you pay for all of it again, so the total across a conversation is the sum of an arithmetic series \u2014 quadratic in turn count even though any single prompt grows linearly. That is the structural reason a conversation feels free early and expensive late, and it is the same shape that appears in agent loops with larger constants." },
 
       { stem: "A partial was meant to be applied but was not. How does that fail?",
-        options: [
-          "Loudly, with a KeyError naming the unfilled variable",
-          "Silently \u2014 the literal `{tone}` is sent and the model answers plausibly anyway",
-          "The template refuses to invoke until every partial is applied",
-          "The variable is filled with an empty string and a warning is logged"
-        ],
+        options: ["Loudly, with a KeyError naming the variable", "Silently: the literal `{tone}` is sent", "It refuses to invoke until it is applied", "It is filled with \"\" and a warning logged"],
         answer: 1,
         why: "A missing variable at invoke time raises a KeyError, but a forgotten partial is not missing \u2014 the text is simply there, so the literal brace-tone reaches the model, which produces a reasonable-sounding answer. Nothing throws and nothing is logged, which is why this is worth a test that asserts the expected `input_variables` set rather than relying on the prompt failing." }
     ]

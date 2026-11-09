@@ -319,22 +319,12 @@ class MyChat(BaseChatModel):
     title: "Check yourself",
     questions: [
       { stem: "A chain ends `| bullet_parser | TruncateWords(n=2)` where TruncateWords expects a string. What happens?",
-        options: [
-          "A TypeError at the TruncateWords step",
-          "The chain completes, returning the first two words of the list's repr",
-          "LCEL coerces the list to its first element before passing it on",
-          "A validation error when the chain is constructed"
-        ],
+        options: ["A TypeError is raised at the TruncateWords step", "It completes, returning two words of the list's repr", "LCEL passes on only the list's first element", "A validation error when the chain is built"],
         answer: 1,
         why: "The pipe requires only that both sides are Runnables \u2014 it does not check that the output type of one matches the input type of the next, and nothing is validated at construction. So the list reaches a function that calls `str()` on it and splits the repr, producing `\"['ALPHA', 'BETA',\"`. The chain is successful and the answer is nonsense, which is why boundary validation inside custom components is worth the line it costs." },
 
       { stem: "When should you write a Runnable subclass instead of using RunnableLambda?",
-        options: [
-          "Always \u2014 lambdas cannot be batched or streamed",
-          "When you need configuration, validation, or a meaningful name in a trace",
-          "Only when the component must be async",
-          "When the component appears more than once in the same chain"
-        ],
+        options: ["Always, as lambdas cannot be batched or streamed", "For configuration, validation or a trace name", "Only when the component itself must be async", "When it appears more than once in the chain"],
         answer: 1,
         why: "A RunnableLambda is a full Runnable with batch, stream and the async forms, so capability is not the deciding factor. The reasons to subclass are practical: constructor arguments the function would have to close over, an isinstance check at the boundary, and a class name that reads usefully in a span tree \u2014 `RunnableLambda` tells you nothing at three in the morning." },
 
@@ -349,12 +339,7 @@ class MyChat(BaseChatModel):
         why: "A general JSON parser has to scan for a JSON-shaped span, which a preamble derails. A bullet-list parser written for your prompt can filter lines, so prose on either side is ignored \u2014 more forgiving. And it can raise on input that does not look like a bullet list, where the comma-separated parser cannot fail and returns wrong-shaped data \u2014 stricter. The specificity is what buys both." },
 
       { stem: "What does `BaseChatModel` require of an implementer, and what does it provide?",
-        options: [
-          "invoke, batch and stream must each be implemented separately",
-          "`_generate` alone, in exchange for the full protocol plus bind_tools and with_structured_output",
-          "`_generate` and `_stream`, in exchange for batching and async only",
-          "A provider client and an API key, in exchange for the protocol"
-        ],
+        options: ["invoke, batch and stream, each written separately", "`_generate` alone, for the full protocol and more", "`_generate` and `_stream`, for batch and async only", "A provider client and key, for the protocol"],
         answer: 1,
         why: "`_generate` is the one required method, and everything else is defined in terms of it \u2014 which is what let the scripted model in 1.2 support ten methods without any of them being written. Implementing `_stream` as well gives genuine incremental output rather than a single chunk, but it is optional. That one-or-two-method cost across every base class is why the ecosystem has so many integrations." }
     ]

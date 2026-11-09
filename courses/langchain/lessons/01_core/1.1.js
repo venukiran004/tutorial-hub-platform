@@ -268,12 +268,7 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A system has 5 component types and 4 providers. What does a common interface change?",
-        options: [
-          "Nothing structural \u2014 it is a style preference that reduces boilerplate",
-          "It turns 20 adapters into 9 implementations, and the growth from quadratic into linear",
-          "It removes the need for provider-specific code entirely",
-          "It improves runtime performance by avoiding adapter indirection"
-        ],
+        options: ["Nothing structural; it only trims boilerplate", "20 adapters become 9: growth turns linear", "It removes all provider-specific code", "It speeds up runtime by skipping adapters"],
         answer: 1,
         why: "Without an interface every component-provider pair is code someone maintains, so the count is the product: 20. With one, each side only has to satisfy the interface, so the count is the sum: 9. The marginal figures make it sharper \u2014 one new provider costs 5 adapters against 1, and one new component type costs 4 against 1. Provider-specific code still exists; it just exists once per provider instead of once per pair." },
 
@@ -288,22 +283,12 @@ EC.receiveLesson({
         why: "`|` is `__or__`, and it returns a composite object holding its steps. The chain is a data structure built when the expression is evaluated, not a deferred function call \u2014 which is why you can print it, read `.steps`, draw it and attach configuration before any execution. It is also what makes a failure inside a chain legible, since the traceback points at a step within a known sequence." },
 
       { stem: "A `Retry` wrapper is added to the hand-built protocol. How much existing code must change?",
-        options: [
-          "Sequence must learn to handle retryable components",
-          "None \u2014 it composes because the composite only requires that both sides have invoke",
-          "Lambda must be modified to propagate exceptions correctly",
-          "Every existing component needs a retry-aware variant"
-        ],
+        options: ["Sequence must learn about retryable components", "None: composites only need `invoke` on each side", "Lambda must change to propagate exceptions", "Every component needs a retry-aware variant"],
         answer: 1,
         why: "`Retry` implements the interface and consumes the interface, so it wraps anything and is wrapped by anything without the composition machinery knowing it exists. That is the test of whether an interface is load-bearing, and it is the direct reason LangChain can ship `with_retry`, `with_fallbacks` and `with_config` once on the base class instead of once per component type." },
 
       { stem: "When is importing LangChain the wrong call for a service making three sequential model calls?",
-        options: [
-          "Always \u2014 three calls never justify a framework",
-          "When none of failover, streaming, concurrency, retries or per-customer model swaps are needed",
-          "When the team is unfamiliar with LCEL",
-          "When latency matters, because the abstraction adds measurable overhead"
-        ],
+        options: ["Always: three calls never justify a framework", "When no failover, streaming or retries are needed", "When the team is unfamiliar with LCEL syntax", "When latency matters, given abstraction overhead"],
         answer: 1,
         why: "The dependency buys composition, so it is worth paying for when you need the things composition makes cheap \u2014 a second provider, streaming to a UI, concurrent calls, a retry on one step, a model that varies per customer. With none of those, three SDK calls and a `try` block is better code, because you are paying an abstraction, a version and traceback indirection for uniformity you never use." }
     ]

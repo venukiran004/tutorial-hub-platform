@@ -157,8 +157,7 @@ EC.receiveLesson({
   ],
   quiz: { title: "Check yourself", questions: [
     { stem: "`primary.with_fallbacks([backup]).with_retry(stop_after_attempt=3)` against a failing primary. How many times is the primary attempted?",
-      options: ["3 \u2014 the retry wraps everything", "1 \u2014 the inner fallback succeeds, so the outer retry never fires",
-        "6 \u2014 three retries of a fallback pair", "0 \u2014 the fallback is preferred immediately"],
+      options: ["3, as the retry wraps everything", "1, as the inner fallback succeeds", "6, three retries of the fallback pair", "0, as the fallback is preferred at once"],
       answer: 1,
       why: "The fallback is inside, so when the primary raises the fallback runs and returns successfully. The outer retry sees a successful call and has nothing to retry, making it dead code. Measured, this gives 1 primary attempt against 3 for the opposite nesting \u2014 and the practical effect is that a brief provider blip sends traffic permanently to the fallback, which is usually the expensive one." },
     { stem: "What is the rule for composing retry and fallback?",
@@ -173,10 +172,7 @@ EC.receiveLesson({
       answer: 1,
       why: "A 429 is transient by definition \u2014 the same request later will likely succeed, which is what retry is for. The others are deterministic: a malformed request stays malformed, an over-long context recurs identically, and a schema validation failure is a modelling problem from 1.5 rather than a network one. Retrying any of them is three times the latency for exactly the same outcome." },
     { stem: "How do you prevent an ordering mistake between retry and fallback from reaching production?",
-      options: ["A code-review checklist item",
-        "A test asserting a transiently failing primary is attempted more than once before the fallback",
-        "Static analysis on method call order",
-        "Configuring both at the chain level instead of per step"],
+      options: ["A checklist item in code review", "A test that the primary is retried first", "Static analysis on method call order", "Configuring both at the chain level"],
       answer: 1,
       why: "The two orders are the same method calls on a single line, so a diff gives a reviewer nothing to notice \u2014 which makes review an unreliable control here. A three-line test with a counting primary makes the behaviour explicit and catches the inversion, which otherwise shows up months later as an unexplained bill from the fallback provider." }
   ] },

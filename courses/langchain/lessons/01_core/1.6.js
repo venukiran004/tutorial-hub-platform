@@ -295,32 +295,17 @@ EC.receiveLesson({
         why: "A filter means the document is never a candidate and never enters the context window. An instruction puts the restricted text into the prompt and asks the model to ignore it, which is a request rather than a guarantee \u2014 and worse, once the text is in the context an injection in a neighbouring document can ask for it back. Stripping at the output is too late for the same reason: the model already read it." },
 
       { stem: "You call `embed_documents` on a user's search query by mistake. What happens?",
-        options: [
-          "A dimension mismatch error when the vector is compared against the index",
-          "Nothing visible \u2014 a correctly shaped vector, a working search, and worse results",
-          "The embedding provider rejects the call as malformed",
-          "Nothing at all; the two methods are aliases on every model"
-        ],
+        options: ["A dimension mismatch error against the index", "Nothing visible, just worse search results", "The provider rejects the call as malformed", "Nothing at all; the two methods are aliases"],
         answer: 1,
         why: "Both methods return vectors of the same dimension, so every downstream step works. The problem is that asymmetric models prepend different prefixes \u2014 roughly `query:` against `passage:` \u2014 because a question and the text answering it are different kinds of object, and embedding a question as a passage puts it in slightly the wrong place. No exception is raised, which is why it can look like a retrieval-tuning problem for a week." },
 
       { stem: "A two-step chain with a callback handler emits three `on_chain_start` events. Why?",
-        options: [
-          "The handler is registered twice, once on the chain and once on the config",
-          "The RunnableSequence is itself a chain, and each step inside it is a chain",
-          "Retries cause the first step to start twice",
-          "One event is the chain and two are the model calls"
-        ],
+        options: ["The handler is registered on chain and config", "The sequence is a chain, and so is each step", "Retries make the first step start twice", "One is the chain; two are the model calls"],
         answer: 1,
         why: "The sequence counts as a chain and so does each RunnableLambda inside it, giving three starts and three ends for two written steps. That nesting is exactly what a trace renders as a span tree, which explains both why a trace of a modest chain has more rows than expected and why callback event counts cannot be used to count model calls." },
 
       { stem: "Why is a tool's docstring described as prompt rather than documentation?",
-        options: [
-          "Because LangChain validates it for formatting before sending",
-          "Because it becomes the tool description the model reads when deciding whether to call it",
-          "Because it is appended to the system message at bind time",
-          "It is documentation \u2014 the model only sees the name and argument types"
-        ],
+        options: ["LangChain checks its formatting before sending", "It becomes the description the model reads", "It is appended to the system message at bind", "It is docs; the model sees only name and types"],
         answer: 1,
         why: "The `@tool` decorator turns the docstring into the tool's description, and the name, description and argument schema are all sent to the model. The description is what the model weighs when choosing between tools or deciding to answer directly, which makes a vague docstring the most common reason an agent ignores a tool that would have answered the question perfectly well." }
     ]

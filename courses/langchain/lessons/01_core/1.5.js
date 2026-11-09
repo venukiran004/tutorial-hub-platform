@@ -286,32 +286,17 @@ EC.receiveLesson({
         why: "There was no tool call to read, so nothing reached the parser \u2014 which means `parsing_error` is correctly empty while `parsed` is also empty. Both values are accurate and the combination is the problem: a None travels into the pipeline with no signal attached. That makes three outcomes rather than two, and code written for a valid object or an exception will fail downstream with an AttributeError on NoneType." },
 
       { stem: "Why put `ge=1, le=10` in Field() rather than \u201crate out of ten\u201d in the system prompt?",
-        options: [
-          "It is shorter and keeps the prompt focused on the task",
-          "Because the schema is sent to the model as the tool definition *and* checked on the way back \u2014 a request and a guarantee",
-          "Because prompt instructions are ignored by tool-calling models",
-          "Because Pydantic coerces out-of-range values into the valid range"
-        ],
+        options: ["It is shorter and keeps the prompt on task", "The schema is both sent and enforced", "Tool-calling models ignore prompt text", "Pydantic clamps values into the range"],
         answer: 1,
         why: "The Field constraint appears in the tool schema the model reads, so it does everything the prompt sentence does, and it is enforced when the arguments come back, so a model returning 48.8 raises instead of writing bad data. Prompt text can only ask. Nothing is coerced \u2014 an out-of-range value is a ValidationError, which is the behaviour you want over a silently clamped number." },
 
       { stem: "What is the best way to handle the `None` outcome?",
-        options: [
-          "Wrap the call in try/except and treat None as an error case",
-          "Give the schema a way to decline \u2014 a `found: bool` with an optional payload \u2014 so a refusal is a valid object",
-          "Retry the call until the model produces a tool call",
-          "Use include_raw and parse the prose content as a fallback"
-        ],
+        options: ["Wrap it in try/except and treat None as an error", "Let the schema decline: `found: bool` plus payload", "Retry the call until the model makes a tool call", "Use include_raw and parse the prose as a fallback"],
         answer: 1,
         why: "The model declining is frequently the correct behaviour \u2014 there may genuinely be no movie in the text \u2014 so treating it as an error or retrying it fights the model rather than the bug. Making refusal representable inside the schema collapses three outcomes back to two: every call returns a valid object, and a None afterwards means something is actually broken rather than that the model was being sensible." },
 
       { stem: "You migrate to a provider without tool calling. Your code is unchanged. What happens?",
-        options: [
-          "Nothing \u2014 with_structured_output abstracts the difference completely",
-          "The guarantee weakens to JSON mode or prompt-and-parse, so None and ValidationError rates rise with no code change",
-          "The call raises NotImplementedError at startup",
-          "LangChain falls back to returning raw strings"
-        ],
+        options: ["Nothing: it abstracts the difference completely", "The guarantee weakens; failure rates quietly rise", "The call raises NotImplementedError at startup", "LangChain falls back to returning raw strings"],
         answer: 1,
         why: "The library picks the strongest mechanism the model supports, which is good engineering with a consequence: the same source line carries a different guarantee on a different model. Dropping from tool calling to prompt-and-parse reintroduces every text-parsing failure mode from 1.4, and it surfaces as a rising failure rate rather than as anything visible in a diff \u2014 so it is worth measuring across a provider swap rather than discovering later." }
     ]

@@ -295,42 +295,22 @@ EC.receiveLesson({
     title: "Check yourself",
     questions: [
       { stem: "A model returns valid JSON preceded by \u201cHere is the review:\u201d, and on another request the same JSON followed by \u201cHope that helps!\u201d. What happens?",
-        options: [
-          "Both parse \u2014 the parser extracts the JSON span in either case",
-          "The preamble fails and the sign-off succeeds, because the parser scans forward to the first JSON span and reads to its end",
-          "Both fail \u2014 any extra text raises OutputParserException",
-          "The preamble succeeds and the sign-off fails, since trailing text corrupts the final brace"
-        ],
+        options: ["Both parse, as the parser extracts the JSON span", "The preamble fails; the sign-off parses", "Both fail, as extra text raises an exception", "The preamble parses; the sign-off fails"],
         answer: 1,
         why: "The parser looks for the first JSON-shaped span and reads to the end of it, so leading prose derails the scan while trailing prose is never reached. The uncomfortable consequence is that chain stability depends on whether a model prefixes or suffixes its chattiness \u2014 a property of the prompt and the model version rather than of your code, so an upgrade that changes nothing but conversational habit can break a chain that ran for months." },
 
       { stem: "A response is cut off by max_tokens at `{\"title\": \"Inception\", \"rating\": 8.` What does JsonOutputParser return?",
-        options: [
-          "It raises OutputParserException because the JSON is incomplete",
-          "`{'title': 'Inception', 'rating': 8}` \u2014 the truncation is repaired, not reported",
-          "`{'title': 'Inception'}` \u2014 the incomplete field is dropped",
-          "`None`, with a warning logged"
-        ],
+        options: ["It raises OutputParserException on the cut", "`{'title': 'Inception', 'rating': 8}`, repaired", "`{'title': 'Inception'}`, dropping the field", "`None`, with a warning written to the log"],
         answer: 1,
         why: "It uses a partial JSON parser \u2014 necessarily, since the same code parses incrementally while streaming, where incomplete input is the normal case. On a non-streamed response that turns truncation into a plausible wrong value: 8.8 becomes 8. Nothing downstream catches it either, because 8 is a legal rating of the right type, which is why the guard has to be `finish_reason` rather than any amount of validation on the parsed object." },
 
       { stem: "Why is a parser that never raises not safer than one that does?",
-        options: [
-          "It is safer \u2014 fewer exceptions means fewer user-visible failures",
-          "Because both dangerous cases here are successes returning wrong data, which is worse than an exception",
-          "Because exceptions are cheaper to handle than wrong values at runtime",
-          "Because forgiving parsers are slower, trading correctness for latency"
-        ],
+        options: ["It is safer: fewer exceptions, fewer failures", "Its dangerous cases succeed with wrong data", "Exceptions are cheaper to handle than bad values", "Forgiving parsers are slower, costing latency"],
         answer: 1,
         why: "Truncated JSON parses to a wrong number and a bulleted list parses to elements with their markers attached \u2014 both succeed, both produce data that flows downstream and corrupts something far from the cause. An exception is a diagnosis delivered at the point of failure. That is the argument for preferring mechanisms that can refuse, which is what structured output offers in 1.5." },
 
       { stem: "You add an OutputFixingParser to handle a 5% parse-failure rate. What has changed?",
-        options: [
-          "Cost, materially \u2014 the repair call roughly doubles spend",
-          "A loud exception became a silent extra call, so a drifting prompt can now run unnoticed",
-          "Nothing \u2014 the fixing parser only activates on malformed output",
-          "Reliability only; the failure rate itself falls because the prompt improves"
-        ],
+        options: ["Cost, materially: the repair doubles spend", "A loud failure became a silent extra call", "Nothing: it only acts on malformed output", "Reliability, as the prompt itself improves"],
         answer: 1,
         why: "At a 5% failure rate the average is 1.05 calls per request, so cost is not the deciding factor. What changes is visibility: an alertable exception becomes a quiet extra model call, and a prompt that has started producing preambles can run for months unnoticed. Use the repair \u2014 users should not see a 500 for a preamble \u2014 but count it, since repair rate drifts before accuracy does." }
     ]

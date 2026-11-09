@@ -180,10 +180,7 @@ EC.receiveLesson({
       answer: 1,
       why: "Flattening happens whenever a sequence meets another step, so composing a named sub-chain with a further step yields the same flat sequence as writing the whole thing inline. That means naming parts of a long expression for readability has no structural, performance or observability cost \u2014 there is no reason to write one enormous unbroken pipe." },
     { stem: "Why is it useful that a chain is a value rather than a deferred call?",
-      options: ["It allows LangChain to optimise the execution plan before running",
-        "You can read its steps, schema and graph before invoking, which makes a traceback through RunnableSequence navigable",
-        "It means chains can be pickled and sent between processes",
-        "It guarantees the chain's type signature is checked at construction"],
+      options: ["LangChain can optimise the plan before running", "You can inspect steps, schema and graph first", "Chains can be pickled and sent between processes", "Its type signature is checked at construction"],
       answer: 1,
       why: "The expression builds a data structure, so `.steps`, `input_schema` and `get_graph()` are all available with no execution. That is what converts an opaque traceback through RunnableSequence.invoke into something you can match to a named step. It does not give type checking \u2014 1.7 showed there is none between steps \u2014 and no execution plan is being optimised." }
   ] },
