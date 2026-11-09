@@ -366,32 +366,17 @@ R_l2  = np.argsort(((QV[:, None, :] - E[None, :, :]) ** 2).sum(-1), axis=1)`,
         why: "Cosine is defined as a\u00b7b / (|a||b|), so with unit vectors the denominator is 1 and cosine is exactly the dot product. Squared L2 expands to 2 \u2212 2a\u00b7b, which is a monotone decreasing transform, so sorting by it ascending matches sorting by dot product descending \u2014 all three give one ordering. Normalisation discards magnitude, not direction, and the vectors remain entirely distinguishable." },
 
       { stem: "A comparison of metrics on \u201cunnormalised\u201d vectors shows all three agreeing perfectly. What is the most likely explanation?",
-        options: [
-          "The corpus is too homogeneous for the metrics to diverge",
-          "The vectors are normalised anyway \u2014 many sentence-transformer models end in a Normalise module the argument does not remove",
-          "The evaluation set is too small to show a difference",
-          "Dot product and cosine were computed with the same code path"
-        ],
+        options: ["The corpus is too uniform for metrics to diverge", "They were normalised anyway by the model", "The evaluation set is too small to differ", "The same code path computed both metrics"],
         answer: 1,
         why: "A SentenceTransformer is a pipeline, and these models ship with normalisation as the final step; the `normalize_embeddings` flag controls an additional wrapper-level normalisation and cannot undo one inside the model. The diagnostic is to print the norms \u2014 min, median and max all exactly 1.0000 is the signature. Getting genuinely unnormalised vectors means mean-pooling the transformer output directly, which then showed a 3.93\u00d7 spread in magnitude." },
 
       { stem: "On genuinely unnormalised embeddings, dot product retrieved chunks averaging 169 characters against a corpus mean of 347, and recall@1 fell from 75% to 30%. What is the mechanism?",
-        options: [
-          "Shorter chunks are semantically more precise, so the ranking is correct but the labels are wrong",
-          "Mean pooling over fewer tokens cancels fewer components, so short chunks have larger vectors and the dot product rewards them",
-          "Longer chunks exceed the model's sequence limit and are truncated to noise",
-          "The query vectors have larger magnitude than the chunk vectors"
-        ],
+        options: ["Short chunks are more precise; the labels are wrong", "Short chunks have longer vectors; dot rewards them", "Long chunks exceed the limit and become noise", "Query vectors are larger than chunk vectors"],
         answer: 1,
         why: "A mean-pooled embedding averages its token vectors, and averaging more of them cancels more components \u2014 measured, chunk length correlates \u22120.85 with vector norm. The dot product is cosine multiplied by both magnitudes, so that length artefact becomes a scoring bonus for brevity. Truncation is a separate real hazard but would affect the direction of long vectors rather than produce this systematic length bias." },
 
       { stem: "Why is L2's graceful degradation (70% vs cosine's 75%) arguably worse than dot product's collapse to 30%?",
-        options: [
-          "Because L2 is more expensive to compute at scale",
-          "Because a small loss ships unnoticed while a large one gets investigated immediately",
-          "Because L2 cannot be used with approximate nearest-neighbour indexes",
-          "Because L2 scores are not comparable across queries"
-        ],
+        options: ["L2 is more expensive at scale", "Small losses ship unnoticed", "L2 cannot use ANN indexes", "L2 scores are not comparable"],
         answer: 1,
         why: "A 45-point drop is a production incident on day one; a five-point drop looks like noise and persists indefinitely, quietly costing recall. L2 holds up better because its magnitude terms add rather than multiply \u2014 |a|\u00b2 + |b|\u00b2 \u2212 2a\u00b7b \u2014 so direction still dominates. It is still the wrong metric for unnormalised vectors, and the fix for all of this is to normalise at index time so the question does not arise. L2 is well supported by ANN indexes." }
     ]

@@ -410,42 +410,22 @@ print(gen(fm, "Q: %s\\nA:" % FACT_Q[0]))                               # fine-tu
     title: "Check yourself",
     questions: [
       { stem: "Few-shot prompting and a fine-tune on the same eight examples both score 4 of 4. What is the argument for the fine-tune?",
-        options: [
-          "It generalises better to inputs unlike the training examples",
-          "It costs 11 prompt tokens per call instead of 147, so the behaviour stops being charged for on every request",
-          "It is less likely to produce incorrect content",
-          "It cannot be overridden by a later instruction in the conversation"
-        ],
+        options: ["It generalises better to unfamiliar inputs", "11 prompt tokens per call instead of 147", "It is less likely to produce wrong content", "Later instructions cannot override it"],
         answer: 1,
         why: "The two approaches used identical examples and reached the same score \u2014 the only difference is whether the examples live in the context on every call or in the weights once. 136 tokens saved per call is roughly $340 per million calls at a frontier input rate, against 27 seconds of training, and it shortens the prefill too. It is not more accurate: both methods produced \u201c[ANS] Shakespeare\u201d for who invented the telephone. Resistance to later instructions is a real secondary effect but not what these measurements show." },
 
       { stem: "A retrieval evaluation scores 2 of 4 at a 16-token generation budget and 4 of 4 at 24 tokens. What went wrong?",
-        options: [
-          "The model needs more tokens to reason about the document",
-          "The answer was being cut off mid-word, so the scorer was measuring the budget rather than the method",
-          "Retrieval is unreliable below a certain context length",
-          "The 24-token run benefited from a different random seed"
-        ],
+        options: ["The model needed more tokens to reason", "Answers were cut off; the budget was measured", "Retrieval is unreliable below some length", "The 24-token run used a different seed"],
         answer: 1,
         why: "The two failing answers both began by reciting the document and were truncated at \u201cMorrowbr\u201d \u2014 the substring scorer never saw the rest of the word. Nothing about the retrieval changed between the runs. The general hazard is that a truncating evaluation systematically favours whichever method answers most tersely, which in this case was the method the lesson was arguing against. Greedy decoding was used throughout, so there is no seed involved." },
 
       { stem: "Both retrieval and a fine-tune answer a fact correctly. The fact then changes. What follows?",
-        options: [
-          "Retrain the model with the corrected fact, which will override the old one",
-          "Retrieval is correct as soon as the document is edited; the fine-tuned model stays stale and the old fact remains in the weights after retraining",
-          "Add the new fact to the system prompt so it takes precedence",
-          "The two remain equivalent since both were equally accurate before"
-        ],
+        options: ["Retrain with the corrected fact to override it", "Retrieval updates with the doc; the weights stay stale", "Add the new fact to the system prompt", "They stay equivalent, as both were accurate"],
         answer: 1,
         why: "Accuracy was a tie, so it cannot decide this \u2014 what decides it is that one approach has an update path and the other does not. Measured, retrieval reported the new capital immediately on a document edit while the fine-tuned model continued producing the old one fluently. Retraining is possible but costs a run, requires re-evaluation, and leaves the previous association competing in the weights. A prompt override is unreliable against something the weights assert confidently." },
 
       { stem: "A support bot has a 4,000-token system prompt containing tone rules, example conversations and a pricing table. What is the right split?",
-        options: [
-          "Fine-tune the whole prompt, since all of it is repeated on every call",
-          "Retrieval for the pricing, a fine-tune for the tone and examples if they are stable, and the prompt for per-request specifics",
-          "Keep everything in the prompt and enable prefix caching instead",
-          "Move the pricing into the fine-tune and keep the tone rules in the prompt"
-        ],
+        options: ["Fine-tune the whole prompt, as it repeats every call", "Retrieve pricing; tune stable tone; prompt the rest", "Keep everything in the prompt and cache the prefix", "Fine-tune the pricing; keep tone in the prompt"],
         answer: 1,
         why: "The prompt is doing three jobs with different properties. Prices change, so they must live somewhere editable \u2014 the measurement showed a fine-tuned fact going stale with no prompt able to fix it. Tone and examples are behaviour, which transfers well and at volume is worth moving into the weights, measured at 136 tokens saved per call. Per-request details have to stay in the prompt by definition. Prefix caching does help the repeated portion (3.7) and is complementary rather than an alternative, since it reduces the prefill cost without reducing the tokens billed." }
     ]

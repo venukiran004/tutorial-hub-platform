@@ -379,42 +379,22 @@ for fn in (H.chunk_fixed, H.chunk_recursive, chunk_markdown):
     title: "Check yourself",
     questions: [
       { stem: "Recall@5 is 100% at a 256-character chunk size and 75% at 2000. Why do large chunks fail?",
-        options: [
-          "They exceed the embedding model's token limit and get truncated",
-          "One vector has to represent several topics at once, so it is close to nothing in particular",
-          "Larger chunks produce a smaller index, which reduces search quality",
-          "The retrieved context exceeds the model's window"
-        ],
+        options: ["They exceed the token limit and are truncated", "One vector must represent several topics", "A smaller index lowers search quality", "The context overflows the model's window"],
         answer: 1,
         why: "A chunk becomes a single point in embedding space, so a 2000-character passage spanning several subjects is averaged into a vector that matches no specific question well. Truncation is a separate real hazard worth checking \u2014 many embedding models cap at 512 tokens \u2014 but the measured collapse here is representational, and it appears gradually rather than at a hard limit. Index size shrinks with larger chunks, which is a cost saving that happens to coincide with the worst quality." },
 
       { stem: "An overlap sweep gives recall@1 of 80, 80, 65, 85, 70, 90 percent across six settings. What should you conclude?",
-        options: [
-          "Overlap helps, since the highest value is at the largest overlap",
-          "Nothing \u2014 with twenty questions each worth five points, this is a non-monotonic swing indistinguishable from noise",
-          "Overlap hurts, since the middle values are lower than the baseline",
-          "The evaluation set is broken and should be rebuilt"
-        ],
+        options: ["Overlap helps; the best is the largest", "Nothing: the swings are within noise", "Overlap hurts; the middle values dip", "The evaluation set is broken"],
         answer: 1,
         why: "Each question is worth 100/20 = 5 percentage points, so the column swings by one to five questions with no consistent direction. The same instrument measured chunk size cleanly because that effect was 25 points \u2014 five questions moving together. The honest statement is that overlap's effect is unresolved at this sample size, which is different from saying it does not help; settling it needs a few hundred questions. The set is fine, it is simply low-powered." },
 
       { stem: "Switching from fixed-size to markdown-aware chunking with headings prepended raised recall@1 from 65% to 85%. What are the two mechanisms?",
-        options: [
-          "Smaller chunks and a larger index",
-          "Cutting at real boundaries so a chunk is one coherent thought, and adding heading words the chunk body never contains",
-          "Removing code blocks and normalising whitespace",
-          "Deduplicating overlapping text across chunks"
-        ],
+        options: ["Smaller chunks and a larger index", "Real boundaries plus added heading words", "Dropping code blocks and extra whitespace", "Deduplicating overlapping chunk text"],
         answer: 1,
         why: "Boundary-respecting cuts mean a chunk embeds as a single idea rather than the tail of one plus the head of another. Separately, prepending the section heading injects topic vocabulary a passage may never repeat \u2014 a chunk under \"Quantisation for Inference\" now carries those words. The second mechanism is context injection rather than chunking, and is the free deterministic version of contextual retrieval, which generates a description per chunk at an LLM call each." },
 
       { stem: "A question fails at every chunk size and strategy tried. The answer is intact in the right document, but the passage uses a metaphor the question does not.",
-        options: [
-          "Reduce the chunk size further so the metaphor is isolated",
-          "This is a vocabulary mismatch that index-time work cannot fix \u2014 it needs query rewriting or keyword retrieval",
-          "Increase overlap so the passage appears in more chunks",
-          "Re-embed with a higher-dimensional model"
-        ],
+        options: ["Shrink chunks further to isolate the metaphor", "Vocabulary mismatch: rewrite queries or use keywords", "Increase overlap so the passage recurs", "Re-embed with a higher-dimensional model"],
         answer: 1,
         why: "The text is correctly cut, in the right document, with its heading attached \u2014 nothing about where it was split is wrong. The failure is that the query and the answer share no vocabulary and the embedding model does not bridge the metaphor, which is a query-side problem. Rewriting the question towards the answer's language (5.8) or adding a sparse retriever that matches the literal symbols (5.9) are the fixes. More chunks or dimensions do not create shared vocabulary." }
     ]

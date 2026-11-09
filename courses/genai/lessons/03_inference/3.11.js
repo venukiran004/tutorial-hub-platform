@@ -461,22 +461,12 @@ print(len({rid for _, rid in worst[:int(0.01 * len(all_gaps)) + 1]}), len(reqs))
     title: "Check yourself",
     questions: [
       { stem: "One run produced 12.6 tokens/sec by total output over wall clock and 3.7 tokens/sec as the mean per-request rate. Which belongs in a capacity plan?",
-        options: [
-          "3.7, because it reflects what users actually experience",
-          "12.6, because it is what the hardware produced and divides into a traffic forecast",
-          "Their geometric mean, as a compromise",
-          "Neither — capacity must be measured at batch 1"
-        ],
+        options: ["3.7, as it reflects what users experience", "12.6, as it is what the hardware produced", "Their geometric mean, as a compromise", "Neither; measure capacity at batch 1"],
         answer: 1,
         why: "Capacity planning divides a forecast token volume by what the hardware can produce, which is the wall-clock figure. The per-request rate answers a different question — what one stream feels — and belongs in an SLA or a product discussion. Using it for capacity over-provisions by 3.4× here. Measuring at batch 1 would give the least representative figure of all, since it excludes the contention production actually has." },
 
       { stem: "Three aggregations of the same 332 inter-token gaps gave p99 TPOT as 1,121 ms, 703 ms and 405 ms, while their p50s were 227.6, 227.5 and 263.2 ms. What does the pattern of agreement indicate?",
-        options: [
-          "The dataset is too small for any percentile to be stable",
-          "An aggregation is averaging within requests before taking percentiles, which dilutes outliers but leaves the median intact",
-          "The clock resolution is insufficient for sub-second gaps",
-          "The three methods measure different time intervals"
-        ],
+        options: ["The dataset is too small for stable percentiles", "Averaging within requests dilutes the outliers", "Clock resolution is too coarse for the gaps", "The methods measure different time intervals"],
         answer: 1,
         why: "Medians agreeing while tails diverge is the signature of dilution: taking each request's mean first absorbs a single long stall among dozens of normal gaps, so the outlier never reaches the percentile, while the central tendency is barely affected. That third method — one TPOT number per request, percentiles over requests — is the natural metrics pipeline and understates the tail by 2.8× here. Sample size makes all three noisy but would not produce this specific pattern." },
 
@@ -491,12 +481,7 @@ print(len({rid for _, rid in worst[:int(0.01 * len(all_gaps)) + 1]}), len(reqs))
         why: "Prefill is 1.1% of that TTFT, so even eliminating it entirely would be unnoticeable — the request spent its time waiting for a slot. What moves TTFT under load is admission: more concurrent slots, more replicas, or admitting fewer requests so the queue drains. Chunked prefill remains valuable for a different metric, the TPOT of streams that a long prefill would otherwise stall. Output limits do free capacity, but indirectly and far more slowly than changing admission." },
 
       { stem: "A load sweep shows throughput falling from 31.3 to 12.1 tokens/sec as the concurrency limit rises from 1 to 8 slots. What does this indicate?",
-        options: [
-          "The device has run out of memory and is swapping",
-          "The server is time-slicing between requests rather than batching them, so each added row costs a full forward pass",
-          "The arrival rate was too low to fill the extra slots",
-          "Throughput is expected to fall with concurrency; only latency improves"
-        ],
+        options: ["The device ran out of memory and is swapping", "It time-slices requests instead of batching", "Arrivals were too slow to fill the extra slots", "Throughput always falls as concurrency rises"],
         answer: 1,
         why: "Real batching shares one weight load across the rows, which is why 3.5 measured throughput rising to 5.22× at batch 32. Throughput falling as rows are added means each row is getting its own forward pass with nothing shared — time-slicing. In production this happens when requests have incompatible sampling parameters or adapters, when a framework falls back from a fused path, or when concurrency is threads around a single-request API. An unfilled slot would leave throughput flat, not reduce it." }
     ]

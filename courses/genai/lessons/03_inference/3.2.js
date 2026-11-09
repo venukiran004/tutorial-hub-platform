@@ -354,7 +354,7 @@ configuration                   seq   GB/request   concurrent
     title: "Check yourself",
     questions: [
       { stem: "Why does the KV cache speed up decode?",
-        options: ["It avoids loading model weights", "Keys and values for previous tokens do not change, so recomputing them is waste", "It compresses the context", "It runs attention on the CPU"],
+        options: ["It avoids loading the model weights", "Past keys and values never change", "It compresses the context window", "It runs attention on the CPU instead"],
         answer: 1,
         why: "The key and value for token 7 are identical at step 8 and at step 50, so caching them turns quadratic recomputation into linear work — measured at 4.94× for 24 tokens after a 128-token prompt, with the ratio growing as the sequence lengthens. Weights are still loaded every step, which is precisely why decode remains memory-bound (3.1). Nothing is compressed and nothing moves to the CPU." },
 
@@ -364,7 +364,7 @@ configuration                   seq   GB/request   concurrent
         why: "2 × 32 layers × 32 heads × 128 head_dim × 4096 tokens × 2 bytes is 2.15 GB, and the batch-of-16 figure is 34.36 GB rather than the quoted ~16 GB — both about double. Per-request cache size does not depend on batch size; total does, linearly. The consequence is not academic: a server sized on the quoted figure holds half the intended concurrency and fails as a cliff, because an allocation either fits or does not." },
 
       { stem: "What limits how many concurrent requests a server can hold?",
-        options: ["Model weights", "The KV cache, which is per-request and grows with sequence length", "Compute throughput", "Network bandwidth"],
+        options: ["The model weights in memory", "The per-request, growing KV cache", "Raw compute throughput", "Network bandwidth to clients"],
         answer: 1,
         why: "Weights are loaded once and are a fixed cost; everything left over is the cache budget, and each concurrent request consumes cache proportional to its sequence length — measured at 115 concurrent at 1K context falling to 3 at 32K for the same model. That is also why a long-context request is expensive beyond its token count: it displaces several short ones from the batch. Compute is the prefill constraint, not the concurrency one." },
 

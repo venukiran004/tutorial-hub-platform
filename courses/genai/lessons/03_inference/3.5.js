@@ -404,42 +404,22 @@ report("continuous", c_done, c_wall)`,
     title: "Check yourself",
     questions: [
       { stem: "Why does one decode step cost roughly the same for a batch of 1 as for a batch of 8?",
-        options: [
-          "Because the GPU pads small batches up to a fixed size anyway",
-          "Because the step is bound by loading every weight once, and that load is shared across the rows",
-          "Because the KV cache is shared between requests in a batch",
-          "Because small batches are scheduled at a lower clock speed"
-        ],
+        options: ["The GPU pads small batches up to a fixed size", "The step loads every weight once, shared by rows", "The KV cache is shared between batched requests", "Small batches are scheduled at a lower clock"],
         answer: 1,
         why: "Decode is memory-bandwidth-bound: the dominant cost is reading every weight to produce one token, and that read serves every row in the batch. Adding rows adds arithmetic, which was not the constraint. Measured on CPU, batch 8 cost 2.6× the step time of batch 1 while producing 8× the tokens; on a GPU the factor is smaller still. The KV cache is emphatically not shared — each row has its own, which is what limits batch size in the first place." },
 
       { stem: "A static batcher on a workload with output lengths from 12 to 320 tokens wastes 68.2% of its slots. What reduces that waste most on an online chat service?",
-        options: [
-          "Reducing the batch size to 4",
-          "Sorting requests by expected output length before batching",
-          "Switching to iteration-level scheduling so finished rows are replaced",
-          "Increasing the KV cache allocation so more rows fit"
-        ],
+        options: ["Reducing the batch size to 4 rows", "Sorting requests by expected output length", "Iteration-level scheduling that refills rows", "Allocating more KV cache so more rows fit"],
         answer: 2,
         why: "Continuous batching replaces a finished row at the next step boundary, so slots hold work rather than padding — measured 2.03× throughput and 4.87× lower mean latency on the same stream. Reducing the batch to 4 still wasted 59.5% and gives up most of the throughput. Sorting by length works offline but not online, since the output length is unknown before generation and reordering starves long requests. More cache raises the ceiling on rows without changing the fraction of them that is padding." },
 
       { stem: "A service shows good median latency, a terrible p99, and 40% device utilisation. Which explanation fits best?",
-        options: [
-          "The batch size is too small, so the device is starved",
-          "Long prefills are serialised against decode, stalling every active stream while they run",
-          "Quantisation has degraded the model, so requests retry",
-          "The model is too large for the device and is swapping weights"
-        ],
+        options: ["The batch size is too small, starving the device", "Long prefills stall every active decode stream", "Quantisation degraded the model, causing retries", "The model is too large and is swapping weights"],
         answer: 1,
         why: "Idle capacity alongside a bad tail points at scheduling rather than at capacity. A 512-token prefill measured 1,315 ms against a 39 ms decode step — 33.9 steps during which no other stream receives a token, which lands in the tail latency of the requests that were already running rather than in the one that caused it. Chunked prefill is the targeted fix. A starved device would show a poor median too, and weight swapping would hurt every request uniformly." },
 
       { stem: "Why does vLLM expose a cap on batched tokens as well as a cap on the number of sequences?",
-        options: [
-          "One limits prefill and the other limits decode",
-          "Because step time tracks total tokens in the batch, while the row count is a separate safety ceiling",
-          "The sequence cap applies to streaming requests and the token budget to non-streaming ones",
-          "They are aliases kept for backward compatibility"
-        ],
+        options: ["One limits prefill and the other limits decode", "Step time tracks tokens; rows are a separate cap", "One is for streaming, the other non-streaming", "They are aliases kept for compatibility"],
         answer: 1,
         why: "What determines the cost of a step is how many tokens are in flight, not how many requests they belong to: 8 rows of 8,000 tokens is a far heavier step than 64 rows of 128, so a row cap alone cannot hold a latency budget. The token budget binds the actual cost and the row cap stops pathological fan-out. Both apply to prefill and decode, and both apply whatever the response mode." }
     ]

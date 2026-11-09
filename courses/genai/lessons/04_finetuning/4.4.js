@@ -359,42 +359,22 @@ for r in (2, 4, 8, 16, 32):
     title: "Check yourself",
     questions: [
       { stem: "Under the standard rule \u03b1 = 2r, what is the value of the \u03b1/r multiplier at rank 32?",
-        options: [
-          "64, since \u03b1 = 2r = 64",
-          "2, because \u03b1/r = 2r/r = 2 at every rank",
-          "0.0625, the reciprocal of 16",
-          "It depends on the learning rate"
-        ],
+        options: ["64, since α = 2r = 64", "2, at every rank", "0.0625, one sixteenth", "It depends on learning rate"],
         answer: 1,
         why: "Substituting \u03b1 = 2r into \u03b1/r gives 2 for every rank, which is the point of the convention: the strength is pinned to a constant so that sweeping r changes capacity without changing how hard the branch pushes. It also means the rule is not compensating for any rank-dependent growth under its own recommended setting \u2014 there is nothing left to compensate. The learning rate is a separate quantity, though it interacts with the multiplier." },
 
       { stem: "Why is B initialised to zero while A is initialised randomly?",
-        options: [
-          "To halve the memory needed for the adapter at initialisation",
-          "So BA is zero \u2014 the adapter is a no-op at step zero \u2014 while B's gradient, which is proportional to A, remains non-zero so training can proceed",
-          "Because zero-initialised matrices converge faster under AdamW",
-          "To keep the adapter's output orthogonal to the base output"
-        ],
+        options: ["To halve the adapter's memory at initialisation", "BA starts at zero, yet B still gets a gradient", "Zero-initialised matrices converge faster", "To keep adapter output orthogonal to the base"],
         answer: 1,
         why: "With B = 0 the product BA is zero, so the wrapped model is identical to the original and training starts from a known-good state rather than from a randomly perturbed one. Zeroing B specifically works because its gradient depends on A, which is non-zero; zeroing both would leave both gradients at zero and nothing would train. There is no memory saving, and no orthogonality property is involved." },
 
       { stem: "A team doubles LoRA rank from 16 to 32 under \u03b1 = 2r and the loss barely improves. What should they test first?",
-        options: [
-          "Whether the dataset is too small for the added capacity",
-          "Whether the constant multiplier is limiting the update, by trying \u03b1/\u221ar scaling at the same rank",
-          "Whether the learning rate should be halved for the larger adapter",
-          "Whether the base model has been accidentally unfrozen"
-        ],
+        options: ["Whether the dataset is too small for the capacity", "Whether the constant multiplier limits it: try α/√r", "Whether the learning rate should be halved", "Whether the base model was accidentally unfrozen"],
         answer: 1,
         why: "With \u03b1 = 2r the branch multiplier stays at 2 however large r becomes, so added capacity arrives without any added push \u2014 measured, \u03b1/\u221ar reached 0.589 at rank 32 where \u03b1/r reached 2.241 on identical data and steps, with no meaningful gap at rank 2. It is a one-line test that distinguishes a scaling limit from genuine saturation. Halving the learning rate moves in the wrong direction, and an unfrozen base would show as far better training loss, not worse." },
 
       { stem: "The measurement shows \u03b1/\u221ar reaching a lower training loss at every rank. What does it not establish?",
-        options: [
-          "That the scaling term affects optimisation at all",
-          "That \u03b1/\u221ar produces a better model, since the loss is on twelve training examples and may reflect faster memorisation",
-          "That no scaling performs worse than both alternatives",
-          "That the multiplier under \u03b1 = 2r is constant in rank"
-        ],
+        options: ["That the scaling term affects optimisation", "That α/√r yields a better model, not memorisation", "That no scaling is worse than both alternatives", "That the α = 2r multiplier is constant in rank"],
         answer: 1,
         why: "Training loss on a tiny set is a measure of fit to that set, and 4.1 showed this exact configuration memorising its training data \u2014 so a lower number may be faster overfitting rather than a better model. Settling that needs a held-out set. The measurement does establish the other three: no scaling was worst at every rank, the multiplier is constant by substitution, and the differences between rules are large and consistent." }
     ]

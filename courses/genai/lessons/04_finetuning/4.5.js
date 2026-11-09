@@ -401,12 +401,7 @@ for label, cb, blk in (("NF4", NF4, 64), ("uniform int4", UNIFORM4, 64),
     title: "Check yourself",
     questions: [
       { stem: "For a 7B model, full fine-tuning needs roughly 84 GB. Which term is largest?",
-        options: [
-          "The weights, at 14 GB",
-          "The AdamW optimiser state, at 56 GB \u2014 two fp32 moments per trained parameter",
-          "The activations saved for the backward pass",
-          "The gradients, at 28 GB"
-        ],
+        options: ["The weights, at 14 GB", "The AdamW state, at 56 GB", "The saved activations", "The gradients, at 28 GB"],
         answer: 1,
         why: "AdamW keeps two fp32 moments per trained parameter, which is 8 bytes against the 2 bytes a bf16 weight occupies \u2014 so the optimiser costs four times the model. Together with gradients, the terms scaling with trained parameters are 70 of the 84 GB, which is why LoRA's saving is so large: training under a percent of the parameters deletes both. Activations matter and depend on batch and sequence length; gradients at bf16 are 14 GB, not 28." },
 
@@ -421,22 +416,12 @@ for label, cb, blk in (("NF4", NF4, 64), ("uniform int4", UNIFORM4, 64),
         why: "A 1.41\u00d7 difference in reconstruction error produced an 8.4\u00d7 difference in model quality, because errors compound through the layers and transformer behaviour depends on small differences between large activations. The uniform grid takes the model from a perplexity of 6.52 to 58.75, which is unusable. The lesson is that reconstruction error is a cheap screening metric whose relationship to quality is steep in the four-bit region \u2014 it must never be the deciding metric." },
 
       { stem: "NF4 at block size 64 costs 1.069\u00d7 perplexity; at block 1024 it costs 3.012\u00d7. Why does the block size matter so much?",
-        options: [
-          "Larger blocks use a different codebook with fewer effective levels",
-          "The per-block absmax scale is set by the largest weight in the block, so a single outlier crushes the precision available to all its neighbours",
-          "Larger blocks increase the number of scale factors that must be stored",
-          "Bucketize becomes less accurate on longer tensors"
-        ],
+        options: ["Larger blocks use a codebook with fewer levels", "One outlier sets the scale for its whole block", "Larger blocks store more scale factors", "Bucketize is less accurate on long tensors"],
         answer: 1,
         why: "Each block is normalised by its own maximum absolute value before the sixteen levels are applied, so one unusually large weight in a block of 1024 compresses the other 1023 into a small portion of the codebook's range. Smaller blocks let the scale track local variation, which is why 64 is conventional. Larger blocks reduce the number of scales stored, not increase it \u2014 that is the memory saving you are trading quality for. The codebook and the search are unchanged." },
 
       { stem: "Why can QLoRA be slower than LoRA despite using far less memory?",
-        options: [
-          "Four-bit arithmetic is not supported, so operations fall back to CPU",
-          "The weights are dequantized to bf16 on every forward pass, which is work that bf16 storage does not need",
-          "Gradient checkpointing is mandatory with four-bit weights",
-          "The optimiser must be run in fp32 rather than bf16"
-        ],
+        options: ["Four-bit maths falls back to the CPU", "Weights are dequantized every forward pass", "Gradient checkpointing becomes mandatory", "The optimiser must run in fp32"],
         answer: 1,
         why: "Storage is four-bit and arithmetic is not \u2014 each matrix multiply dequantizes its weights to bf16 first, which is additional work on every forward pass. That is also why the quality cost stays modest: error enters once at storage rather than accumulating through a chain of low-precision operations. The trade is throughput for the ability to fit at all, so LoRA is the better choice whenever the model fits in bf16 at the batch size you need." }
     ]

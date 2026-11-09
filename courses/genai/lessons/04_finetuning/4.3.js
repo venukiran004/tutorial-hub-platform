@@ -331,42 +331,22 @@ for r in (1, 2, 4, 8, 16, 32, 64):
     title: "Check yourself",
     questions: [
       { stem: "An SVD of a real weight update shows rank 8 capturing 45.2% of its energy and the median layer needing rank 94 for 90%. What does this say about LoRA?",
-        options: [
-          "The method is unsound, since most of the update is discarded",
-          "The decomposition is a lossy approximation whose fidelity `r` controls, not an exact factorisation",
-          "Rank must be set to at least 94 for the adapter to train at all",
-          "The fine-tune that produced this update was badly configured"
-        ],
+        options: ["The method is unsound, as most is discarded", "It is a lossy approximation whose fidelity r sets", "Rank must be at least 94 for it to train", "The fine-tune behind it was misconfigured"],
         answer: 1,
         why: "`BA` is constrained to rank `r`, so it can only ever represent the top `r` directions of the true update \u2014 at the recommended defaults that is roughly half. The method works regardless, because the kept directions are the largest ones and because Frobenius energy is not the same as task quality. The practical consequence is that `r` is the first thing to raise when a LoRA run plateaus above a full fine-tune's loss. Nothing prevents training at low rank; it simply has less capacity." },
 
       { stem: "Why is comparing \u0394W's spectrum against a random matrix the measurement that matters?",
-        options: [
-          "Because it verifies the SVD implementation is correct",
-          "Because without a baseline, \u201c45% in eight directions\u201d could be a property of any matrix rather than something fine-tuning produces",
-          "Because random matrices are what the adapter is initialised from",
-          "Because it estimates the noise floor of the training run"
-        ],
+        options: ["It verifies the SVD implementation is correct", "Without a baseline, 45% could mean anything", "Adapters are initialised from random matrices", "It estimates the training run's noise floor"],
         answer: 1,
         why: "A number with no baseline is uninterpretable. Matched on shape and standard deviation, noise holds 2.5% in its top eight directions and needs 559 for 90%, against the real update's 45.2% and 103 \u2014 so fine-tuning concentrates its change about eighteen-fold relative to chance at that rank. That concentration is the empirical claim LoRA rests on. LoRA initialises `A` randomly and `B` at zero, which is a separate matter." },
 
       { stem: "A LoRA run plateaus at a worse loss than a full fine-tune and a learning-rate sweep does not help. What is the most likely cause?",
-        options: [
-          "The base model was quantised, limiting achievable precision",
-          "The rank is too low to represent the directions the task needs, which no learning rate can recover",
-          "The adapter was initialised incorrectly, with B random instead of zero",
-          "The dataset is too small for the number of trainable parameters"
-        ],
+        options: ["The base model was quantised, capping precision", "The rank is too low for the task's directions", "B was initialised randomly instead of to zero", "The dataset is too small for the parameters"],
         answer: 1,
         why: "Rank is a capacity constraint: `BA` cannot express more than `r` directions regardless of how it is optimised, and measured spectra show rank 8 holding 45.2% of a real update against a median of 94 directions for 90%. Sweeping `r` is the diagnostic \u2014 a plateau that falls with rank confirms the ceiling. Extending the adapter to more target modules is the other cheap fix, since an unadapted matrix contributes nothing at all. A bad initialisation would show up as instability early, not as a clean plateau." },
 
       { stem: "Beyond cheaper training, what is the strongest argument for LoRA over full fine-tuning?",
-        options: [
-          "It reaches a lower loss on the training data",
-          "The base weights are never written to, so any degradation is reversible \u2014 a bad run is a file you delete rather than a model you rebuild",
-          "It converges in fewer epochs",
-          "It removes the need for a held-out evaluation set"
-        ],
+        options: ["It reaches a lower loss on the training data", "Base weights are untouched, so damage is reversible", "It converges in fewer epochs than full tuning", "It removes the need for a held-out evaluation"],
         answer: 1,
         why: "4.1 measured a full fine-tune costing 25% of general perplexity while the training loss improved throughout \u2014 permanent damage, invisible to the metric on screen. A frozen base does not prevent degradation, which 4.8 measures reaching 2.04\u00d7 baseline perplexity under LoRA, but it does make it reversible: remove the adapter and the original model is back exactly. Unlike the cost argument, which has a volume threshold, this one holds at any scale, which is why LoRA is a sensible default even when full fine-tuning is affordable. It typically reaches a slightly higher training loss, not lower, and a held-out set is just as necessary." }
     ]

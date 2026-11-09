@@ -474,42 +474,22 @@ print(float((l1 - l2).abs().max()))`,
     title: "Check yourself",
     questions: [
       { stem: "After merging a LoRA adapter, the merged model gives identical text on every test prompt but its logits differ by 2.26e-04. What does this indicate?",
-        options: [
-          "The adapter was merged with the wrong scaling factor",
-          "Normal floating-point behaviour \u2014 folding BA into W\u2080 reorders the arithmetic, and addition is not associative",
-          "The base model was loaded at a different precision than during training",
-          "merge_and_unload() applies dropout at merge time"
-        ],
+        options: ["It was merged with the wrong scaling factor", "Normal: merging reorders float arithmetic", "The base was loaded at another precision", "merge_and_unload() applies dropout"],
         answer: 1,
         why: "Computing (W\u2080 + \u0394W)x in one matmul is a different order of operations from computing W\u2080x and \u0394Wx separately and adding, and floating-point addition is not associative \u2014 so a difference around 1e-4 is expected and harmless here. It is not guaranteed harmless: where two tokens are nearly tied, a shift that small can flip the argmax and change a whole generation. A wrong scaling factor or a precision mismatch would produce differences orders of magnitude larger." },
 
       { stem: "Why must the prompt format at inference match the one used in training?",
-        options: [
-          "Because the tokeniser caches the format from the training run",
-          "Because the model learned from the examples that a particular marker is where its turn begins, and a different format asks it to generalise a convention it saw few times",
-          "Because peft stores the format in adapter_config.json and validates it",
-          "Because the attention mask is derived from the role markers"
-        ],
+        options: ["The tokeniser caches the training format", "It learned where its turn begins from the markers", "peft stores and validates the format", "The attention mask comes from role markers"],
         answer: 1,
         why: "Training on \"User: \u2026\\nAssistant: \u2026\" teaches the model that \\nAssistant: introduces its response; prompting with a bare question or a different separator is a distribution it saw rarely or never. This is why apply_chat_template matters on instruct models \u2014 the special tokens they were pretrained to expect are not guessable, and getting them subtly wrong degrades results in ways that look like a training problem. The config records r, alpha and target modules, not the prompt format." },
 
       { stem: "A fine-tune's loss fell monotonically from 4.93 to 1.57 over eight epochs on sixteen examples. What does this tell you about model quality?",
-        options: [
-          "That the run succeeded, since the loss improved consistently",
-          "Very little \u2014 a falling training loss on a small dataset is equally consistent with learning the behaviour and with memorising the examples",
-          "That more epochs would continue to improve the model",
-          "That the learning rate was well chosen"
-        ],
+        options: ["That the run succeeded, as loss kept falling", "Little: it fits learning and memorising alike", "That more epochs would keep improving it", "That the learning rate was well chosen"],
         answer: 1,
         why: "The training loss measures fit to the training data, and on sixteen examples a model can drive it down by memorising them. 4.1 measured exactly this curve while general ability degraded by 25%, so the shape alone cannot distinguish the two outcomes. The missing instrument is a held-out loss alongside it. Reading the generated output on prompts never seen in training is the other check, and in this run it showed genuine generalisation." },
 
       { stem: "When should you keep the adapter separate rather than merging it?",
-        options: [
-          "Always \u2014 merging loses the ability to detach",
-          "When you have several variants, since they share one copy of the base: megabytes each instead of a full model each",
-          "When the base model is quantised, which prevents merging",
-          "When the adapter rank exceeds 16"
-        ],
+        options: ["Always, since merging loses detachability", "With several variants sharing one base", "When the base is quantised and cannot merge", "When the adapter rank exceeds 16"],
         answer: 1,
         why: "The adapter measured 9.46 MB against a 498 MB base, so many variants against one loaded base is dramatically cheaper than one full model per variant \u2014 and serving frameworks can switch adapters per request. Merging is right for a single variant you want to be an ordinary model, with no peft dependency and no adapter branch at inference. Keeping the clean base and the adapter is sensible either way, since a merge cannot be undone. Rank does not affect whether merging is possible." }
     ]

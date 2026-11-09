@@ -359,42 +359,22 @@ for label, text in VARIANTS:
     title: "Check yourself",
     questions: [
       { stem: "HyDE embeds a generated hypothetical answer instead of the question. Why does it work even though the generated answer contains errors?",
-        options: [
-          "Because the errors are corrected by the retrieved documents",
-          "Because the hypothetical is used as a probe shaped like a document, not as an answer \u2014 declarative prose on the right topic matches declarative prose",
-          "Because generating the answer gives the model time to reason about the question",
-          "Because the embedding model ignores factual content and encodes only style"
-        ],
+        options: ["The retrieved documents correct its errors", "It is a document-shaped probe, not an answer", "Generating it lets the model reason first", "Embeddings encode style, not content"],
         answer: 1,
         why: "Retrieval compares a short interrogative query against long declarative chunks, which are different genres of text. A hypothetical answer converts the query into the genre being searched, so it lands closer in embedding space regardless of whether its facts are right \u2014 it is never shown to anyone. Measured: recall@1 rose from 75% to 90%. That also means a much smaller model can generate it, since only the shape matters." },
 
       { stem: "Step-back prompting dropped recall@1 from 75% to 40%. What is the mechanism?",
-        options: [
-          "The general question exceeds the embedding model's sequence limit",
-          "Generalising discards the rare discriminative tokens retrieval depends on \u2014 `top_p` becomes \u201csampling parameters\u201d, which matches everything",
-          "Step-back requires a larger k to be effective",
-          "The step-back questions were poorly written"
-        ],
+        options: ["The general question is too long to embed", "Generalising drops the rare tokens retrieval needs", "Step-back needs a larger k to work", "The step-back questions were poorly written"],
         answer: 1,
         why: "Retrieval ranks by distinctiveness, and a specific identifier is the strongest signal a query can carry. Broadening the question deliberately removes that, moving the query away from the one passage that answers it and towards every passage on the general topic. Step-back is a real technique whose published results concern guiding a reasoning step rather than a retrieval \u2014 borrowing it across that boundary is where it fails, which is why provenance matters as much as description." },
 
       { stem: "Why test a hand-written hypothetical answer by rewriting it without the corpus's own phrasing?",
-        options: [
-          "To check that the embedding model is not overfitting to the corpus",
-          "Because an author who has read the corpus may unconsciously borrow its vocabulary, making the result measure familiarity rather than the technique",
-          "To confirm the chunking preserved the original phrasing",
-          "Because shorter hypothetical answers generally retrieve better"
-        ],
+        options: ["To check the embedding model is not overfitting", "Authors may borrow corpus vocabulary unknowingly", "To confirm chunking preserved the phrasing", "Shorter hypotheticals generally retrieve better"],
         answer: 1,
         why: "The hypothetical answer for the stuck question contained the corpus's idiosyncratic metaphor \u201cvolume knob\u201d, which a model generating blind would be unlikely to produce \u2014 so the 15-to-2 improvement might have been phrase-matching rather than the technique working. Rewriting without it gave rank 1, better than the contaminated version, which establishes that the mechanism is genre and shape rather than borrowed vocabulary. The test took two minutes and the alternative was publishing an unsupported claim." },
 
       { stem: "Fusing the baseline question with step-back variants gave 65% recall@1, below the question alone at 75%. What does this show about RRF?",
-        options: [
-          "RRF requires at least three retrievers to be effective",
-          "Fusion is a vote with no notion of which variant to trust, so a bad variant dilutes rather than being neutralised",
-          "The RRF constant k was set too low",
-          "Rank fusion cannot combine results from the same retriever"
-        ],
+        options: ["RRF needs at least three retrievers to work", "Fusion is a vote, so bad variants dilute it", "The RRF constant k was set too low", "RRF cannot fuse one retriever's results"],
         answer: 1,
         why: "RRF sums 1/(k + rank) across sources and weights them equally by construction \u2014 a confidently wrong source still shifts the outcome. That is the price of the property that makes RRF robust elsewhere, namely needing no calibration. The three-way fusion recovered because HyDE's strength outweighed step-back's weakness, but simple concatenation of question and hypothetical reached the same 100% at k=3 with one search instead of three." }
     ]

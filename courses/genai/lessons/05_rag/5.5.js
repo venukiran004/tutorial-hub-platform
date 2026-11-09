@@ -391,42 +391,22 @@ for M, ef in ((16, 16), (16, 64), (32, 64)):
     title: "Check yourself",
     questions: [
       { stem: "A RAG system has 50,000 chunks. Which index structure should it use?",
-        options: [
-          "HNSW, for the lowest search latency",
-          "None \u2014 exact search at that scale is well under a millisecond and loses no recall",
-          "IVF with nprobe tuned to the latency budget",
-          "Product quantisation, to minimise memory"
-        ],
+        options: ["HNSW, for the lowest latency", "None: exact search is fast enough", "IVF with nprobe tuned to latency", "Product quantisation, for memory"],
         answer: 1,
         why: "Brute-force search is a matrix multiply, which hardware is heavily optimised for \u2014 measured at 8.4 ms for 100,000 vectors and 1.7 ms for twenty queries over 1,187. Against generation taking hundreds of milliseconds, the search is not the bottleneck. Choosing an approximate index at this scale accepts recall loss and tuning parameters to solve a problem that does not exist; the real trigger for a dedicated store is memory, filtering or operations." },
 
       { stem: "IVF with nlist=256 and nprobe=8 gives 99% recall, while nlist=1024 and nprobe=8 gives 88%. Why is the larger nlist worse?",
-        options: [
-          "Larger nlist values require more training data to converge",
-          "Each cluster holds fewer vectors, so probing eight of them searches a smaller fraction of the corpus",
-          "The centroids become less accurate as nlist grows",
-          "The index was not retrained after changing nlist"
-        ],
+        options: ["Larger nlist needs more training data", "Probing 8 small clusters covers less corpus", "Centroids get less accurate as nlist grows", "The index was not retrained after the change"],
         answer: 1,
         why: "With 200,000 vectors, nlist=256 means roughly 780 vectors per cluster and probing 8 covers about 3% of the corpus; nlist=1024 means roughly 195 per cluster and probing 8 covers under 1%. The quantity that determines recall is the fraction of vectors searched, so nprobe must rise with nlist to hold accuracy constant. Build time also rises with nlist \u2014 24.7 s against 3.8 s \u2014 because k-means fits more centroids." },
 
       { stem: "What is the practical significance of `nprobe` and `efSearch` being runtime parameters?",
-        options: [
-          "They can be set per index but not per query",
-          "Recall can be traded for latency per query without rebuilding, making them usable as load-shedding controls",
-          "They determine the memory footprint of the index",
-          "They allow the index to be updated incrementally"
-        ],
+        options: ["They are set per index, not per query", "Trade recall for latency per query, no rebuild", "They set the index's memory footprint", "They allow incremental index updates"],
         answer: 1,
         why: "Both control how much of the index a search touches and take effect immediately, so you can lower them under heavy load, raise them for high-value queries, or tune them after deployment without re-indexing. The build-time parameters \u2014 nlist and M \u2014 require a full rebuild to change, which at 77 seconds per 200,000 vectors for HNSW is a real operation. Memory is determined by the build-time parameters, and incremental updates are a separate capability." },
 
       { stem: "HNSW at M=32 adds about 17% to the memory of the raw vectors. What should you do first if memory is the constraint?",
-        options: [
-          "Switch to IVF, which adds only 8 bytes per vector",
-          "Reduce the embedding dimension \u2014 384 to 128 saved two thirds of the storage for five recall points",
-          "Lower efSearch to reduce the working set",
-          "Store the vectors on disk and memory-map them"
-        ],
+        options: ["Switch to IVF, at 8 bytes per vector", "Cut the embedding dimension first", "Lower efSearch to shrink the working set", "Memory-map vectors from disk"],
         answer: 1,
         why: "The vectors dominate: 307 MB of vectors against 51 MB of graph at 200,000 \u00d7 384. Dimension reduction attacks the dominant term and was measured at two thirds saved for five points of recall@5, which is four times the saving available from changing index structure. Product quantisation is the next lever for the same reason. efSearch affects search time rather than storage, and memory-mapping trades latency for residency rather than reducing size." }
     ]

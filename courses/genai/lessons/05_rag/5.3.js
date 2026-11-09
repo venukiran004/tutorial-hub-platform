@@ -299,42 +299,22 @@ for name in ("all-MiniLM-L6-v2", "all-mpnet-base-v2"):
     title: "Check yourself",
     questions: [
       { stem: "Why can a cross-encoder not be used as the primary retriever?",
-        options: [
-          "It produces vectors of a different dimension than the index expects",
-          "It scores a query-document pair jointly, so ranking a million documents needs a million forward passes",
-          "It cannot be fine-tuned on domain data",
-          "Its scores are not comparable across queries"
-        ],
+        options: ["Its vectors have a different dimension", "Pairs are scored jointly: one pass per document", "It cannot be fine-tuned on domain data", "Its scores are not comparable across queries"],
         answer: 1,
         why: "A bi-encoder embeds documents once offline and compares a query to all of them with a single matrix multiply. A cross-encoder must see the query and document together to produce a score, so there is nothing to precompute and the cost is linear in corpus size per query. That joint attention is exactly why it is more accurate, which is why 5.9 runs one over a shortlist of twenty rather than over the index." },
 
       { stem: "A 768-dimension model ranked higher on public benchmarks scores 65% recall@5 on your corpus where a 384-dimension model scores 95%. What is the right conclusion?",
-        options: [
-          "The larger model is misconfigured and should be debugged",
-          "Benchmark rank is an average over other corpora \u2014 measure on yours, and inspect the actual retrievals before trusting either number",
-          "Larger embedding models are generally worse for retrieval",
-          "The evaluation set is too small to compare models"
-        ],
+        options: ["The larger model is misconfigured; debug it", "Benchmarks average other corpora; test on yours", "Larger embedding models are worse in general", "The evaluation set is too small to compare"],
         answer: 1,
         why: "The diagnostic showed mpnet working correctly \u2014 sane scores, correct top-1 \u2014 but preferring heading chunks that are topically right and contain no explanation, which a strict substring scorer marks as misses. So part of the gap is real and part is the measurement, and the supportable claim is about this corpus rather than about the model in general. The lesson is that ten minutes of measurement beats a leaderboard averaged over somebody else's data; larger models are often better, just not reliably here." },
 
       { stem: "Truncating embeddings from 384 to 128 dimensions costs five points of recall@5 and saves two thirds of the index. What explains the shape of that curve?",
-        options: [
-          "Renormalisation after truncation recovers most of the lost information",
-          "Information is unevenly distributed across dimensions, with the early ones carrying most of it",
-          "Cosine similarity is invariant to the number of dimensions",
-          "The index uses product quantisation below 256 dimensions"
-        ],
+        options: ["Renormalisation recovers the lost information", "Early dimensions carry most of the information", "Cosine is invariant to dimension count", "The index switches to PQ below 256"],
         answer: 1,
         why: "A long flat region followed by a cliff at 64 and 32 dimensions is what you see when the leading dimensions carry most of the signal. Matryoshka embedding models are trained to make that property hold deliberately so truncation is safe; this measurement used naive truncation of a model not trained for it, which makes the result a floor. Renormalising is necessary for the comparison to be meaningful but does not restore information, and cosine is certainly not dimension-invariant." },
 
       { stem: "Why should you check a model's `max_seq_length` before choosing a chunk size?",
-        options: [
-          "Because chunks longer than the limit raise an exception at encode time",
-          "Because text beyond the limit is silently truncated, so the tail of a large chunk is never indexed",
-          "Because the limit determines the output dimension",
-          "Because longer sequences require a larger batch size"
-        ],
+        options: ["Over-long chunks raise an exception at encode", "Text past the limit is silently truncated", "The limit sets the output dimension", "Longer sequences need a larger batch"],
         answer: 1,
         why: "MiniLM caps at 256 tokens, roughly 1,000 characters, and encoding a 2,000-character chunk succeeds and returns a vector representing only the first half. Nothing warns you. That is an independent reason large chunks underperformed in 5.4 \u2014 on top of one vector having to represent several topics, it was representing only some of them. Checking it is one line against the chunk size measured in tokens rather than characters." }
     ]

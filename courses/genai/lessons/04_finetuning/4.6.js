@@ -395,42 +395,22 @@ print(moved, len(m.transformer.h))`,
     title: "Check yourself",
     questions: [
       { stem: "At the first backward pass of a LoRA run, |grad A| is exactly 0.00000000 while |grad B| is 0.340. Why?",
-        options: [
-          "A is initialised too small for gradients to register in float32",
-          "The product rule gives A's gradient a factor of B, which is initialised to zero, while B's gradient carries a factor of A, which is not",
-          "A is frozen for the first epoch by convention",
-          "The gradient of A is computed only after B exceeds a threshold"
-        ],
+        options: ["A is too small for float32 to register its gradient", "A's gradient is scaled by B, which starts at zero", "A is frozen for the first epoch by convention", "A's gradient waits until B passes a threshold"],
         answer: 1,
         why: "Differentiating the product BA sends a factor of B into A's gradient and a factor of A into B's. With B = 0 the first is identically zero \u2014 exactly zero, not small \u2014 so B takes the first step alone and A begins moving once B is non-zero. This also rules out initialising both matrices to zero, which would leave both gradients at zero permanently. Nothing is frozen or thresholded; it is the arithmetic of the initialisation." },
 
       { stem: "Why is exact equality the right test for \u201cdid the base weights change\u201d rather than a small tolerance?",
-        options: [
-          "Floating-point accumulation makes tolerances unreliable at this scale",
-          "A frozen weight should receive no update at all, so any non-zero difference indicates a configuration error the tolerance would hide",
-          "Tolerances are too slow to compute on large matrices",
-          "The optimiser applies updates in fp32, which is exactly representable"
-        ],
+        options: ["Accumulation makes tolerances unreliable here", "Any change at all reveals a configuration error", "Tolerances are too slow on large matrices", "fp32 updates are exactly representable"],
         answer: 1,
         why: "A correctly frozen parameter is never written to, so the difference is identically zero \u2014 measured, 0.000e+00 across all twelve matrices after 24 steps. The failure this test exists to catch is a misconfigured optimiser updating base weights, which would produce small but non-zero differences that a tolerance would mask. The failure is otherwise invisible because an accidentally unfrozen run trains better, so the loss will not reveal it." },
 
       { stem: "A LoRA run's loss goes 4.834, 4.717, 5.418, 4.400 over its first four steps. What should you conclude?",
-        options: [
-          "The learning rate is too high and the run is diverging",
-          "Nothing \u2014 with a small dataset each step sees a different subset, so per-step loss is noisy by construction; judge the epoch mean",
-          "The adapter was initialised incorrectly",
-          "Gradient clipping is needed before training can proceed"
-        ],
+        options: ["The learning rate is too high; it is diverging", "Nothing: small-data step loss is noisy; use epochs", "The adapter was initialised incorrectly", "Gradient clipping is needed before continuing"],
         answer: 1,
         why: "With eight examples in batches of two, each step sees a quarter of the data, and batches differ in difficulty \u2014 so a rising step is expected and carries no information. The epoch mean covers the same data each time and is the curve to read, and in this run it fell steadily. The more important converse is that a smoothly falling training loss is equally uninformative about model quality on a small dataset, which 4.1 measured directly." },
 
       { stem: "A team reports their LoRA fine-tune degraded the model on unrelated tasks. What is the first check?",
-        options: [
-          "Reduce the rank and retrain",
-          "Verify the base weights are actually unchanged, since an optimiser built over all parameters can silently update them",
-          "Switch to QLoRA so the base is quantised and cannot be written",
-          "Increase the dataset size to reduce overfitting"
-        ],
+        options: ["Reduce the rank and retrain the adapter", "Check the base weights really are unchanged", "Switch to QLoRA so the base cannot change", "Add more data to reduce overfitting"],
         answer: 1,
         why: "LoRA cannot damage the base through frozen weights, so the first question is whether they are frozen \u2014 a two-line snapshot-and-compare that catches an optimiser constructed over model.parameters() instead of the trainable subset. That failure trains better, so no visible metric reveals it. If the base is genuinely frozen, an over-trained adapter can still shift behaviour everywhere, and the fixes are fewer epochs, lower rank or narrower target modules \u2014 but those come after distinguishing the two causes." }
     ]

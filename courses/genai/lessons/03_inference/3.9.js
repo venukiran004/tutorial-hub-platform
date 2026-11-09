@@ -382,22 +382,12 @@ for label, drop in (("3 least damaging %s" % sorted(cheap), cheap),
         why: "Unstructured pruning writes zeros into tensors of unchanged shape, so the same number of parameters is stored, loaded and multiplied — a dense kernel has no mechanism for skipping a zero entry. Converting sparsity into speed needs a sparse kernel, which in practice means NVIDIA's fixed 2:4 pattern rather than arbitrary zeros. The measurement cost 513× perplexity for no speedup at all. Being memory-bound would make the savings larger if they existed, not smaller." },
 
       { stem: "Keeping GPT-2's first 10 layers cost 2.41× perplexity; keeping its last 10 cost 800×. What explains the asymmetry?",
-        options: [
-          "The last layers contain more parameters than the first",
-          "The early layers build the representation every later layer expects, so removing them feeds downstream layers a distribution they have never seen",
-          "The embedding layer is counted in the first group but not the second",
-          "Perplexity is biased towards models with lower layer indices"
-        ],
+        options: ["The last layers hold more parameters than the first", "Later layers expect what early layers build", "The embedding is counted in only one group", "Perplexity favours lower layer indices"],
         answer: 1,
         why: "Both configurations have identical parameter counts — 110,264,064 — so size is not the variable. Layer 0 is the only block receiving raw embeddings, and its output is what layer 1 was trained to consume; remove it and every subsequent layer operates out of distribution. Measured, dropping layer 0 alone costs 648× against at most 1.75× for any other single block. This is why published layer-pruning methods take layers from the middle and the end." },
 
       { stem: "Three layers each cost about 1.0× perplexity when removed individually. Removed together they cost 5.01×, worse than dropping the last three. What does this show?",
-        options: [
-          "The measurement was too noisy to rank the layers",
-          "Ablation measures a layer's contribution given all the others, so mutually substitutable layers look individually free and are collectively essential",
-          "Perplexity is not an appropriate metric for pruning decisions",
-          "The three layers were adjacent, which is the actual cause"
-        ],
+        options: ["The measurement was too noisy to rank layers", "Substitutable layers look free one at a time", "Perplexity is a poor metric for pruning", "Their adjacency is the actual cause"],
         answer: 1,
         why: "Each single-layer ablation holds the other eleven fixed, so a layer whose work can be absorbed by its neighbours scores as free — while the group as a whole cannot be absorbed by anything. That makes the scores non-additive and greedy selection unreliable, which is why real structured-pruning methods evaluate candidate sets and fine-tune after each removal. Adjacency is a plausible contributing factor but not the mechanism, and the effect is far too large to be noise." },
 

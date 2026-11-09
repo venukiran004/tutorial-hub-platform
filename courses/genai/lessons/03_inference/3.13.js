@@ -381,32 +381,17 @@ if not any(data["name"] in src for src in [prompt]):
     title: "Check yourself",
     questions: [
       { stem: "Why can no sampling setting produce a token the grammar forbids?",
-        options: [
-          "Because the sampler is replaced by a deterministic argmax when a grammar is active",
-          "Because the mask sets the forbidden logits to negative infinity before the softmax, giving them zero probability",
-          "Because the grammar rejects and regenerates invalid tokens after sampling",
-          "Because the tokeniser is restricted to a smaller vocabulary"
-        ],
+        options: ["A deterministic argmax replaces the sampler", "Forbidden logits are set to −∞ before softmax", "Invalid tokens are rejected and regenerated", "The tokeniser is restricted to a subset"],
         answer: 1,
         why: "The mask is applied to the logits, so after the softmax the forbidden tokens carry probability zero \u2014 temperature rescales zeros to zeros, and top-p and top-k select from a distribution those tokens are no longer in. Nothing is rejected and regenerated, which is what makes it a single-pass guarantee rather than a retry loop, and the tokeniser is untouched. Sampling still operates normally over whatever the grammar left available." },
 
       { stem: "On a two-field JSON grammar, 8 of 10 states allowed exactly 1 token out of 50,257. What follows?",
-        options: [
-          "The grammar is badly specified and should allow more flexibility",
-          "Most of the output is determined by the grammar rather than generated, so correctness rests only on the value positions",
-          "The vocabulary is too large for constrained decoding to be practical",
-          "The model\u2019s logits are ignored entirely under constrained decoding"
-        ],
+        options: ["The grammar is too strict and needs loosening", "The grammar fixes most output; values carry the risk", "The vocabulary is too large for constraints", "The model's logits are ignored entirely"],
         answer: 1,
         why: "The punctuation and key names of a fixed schema have exactly one legal continuation, so the grammar acts as a template there and the model is consulted only at the two value states \u2014 93.99% of the vocabulary for the name, 1.98% for the age. This is why the technique is so reliable for structure and does nothing for substance. It is also why mature implementations skip the forward pass entirely when only one token is legal, making those positions faster rather than slower." },
 
       { stem: "A team moves to constrained decoding and parse errors fall from 3% to zero. What should they expect?",
-        options: [
-          "A 3% improvement in end-to-end accuracy",
-          "The same uncertainty now producing schema-valid but possibly invented values, with no exception raised",
-          "A latency regression proportional to the vocabulary size",
-          "Lower quality on the requests that previously succeeded"
-        ],
+        options: ["A 3% gain in end-to-end accuracy", "Valid-looking but possibly invented values", "Latency that grows with vocabulary size", "Lower quality on previously good requests"],
         answer: 1,
         why: "The requests that failed to parse were ones where the model did not have the answer; forcing a shape onto the same uncertainty yields a well-formed fabrication instead of an exception. Measured on GPT-2, 5 of 5 constrained outputs were valid and 3 of 5 correct, with one inventing both fields. Requests that already succeeded are unaffected. Latency depends on the implementation \u2014 a precomputed mask measured 0.98\u00d7 \u2014 and the real cost is losing the parse error as a quality signal." },
 

@@ -323,22 +323,12 @@ for n in (5, 20, 100, 500):
     title: "Check yourself",
     questions: [
       { stem: "Tokenisation and detokenisation measured 0.118 ms against 922 ms of model work. What follows for framework choice?",
-        options: [
-          "Python-based frameworks are unsuitable for production serving",
-          "The decision should rest on KV cache management and scheduling, not on request-handling speed",
-          "Framework choice barely matters, since the model dominates either way",
-          "Detokenisation should be moved to a background thread"
-        ],
+        options: ["Python frameworks are unsuitable for serving", "Choose on KV cache management and scheduling", "Framework choice barely matters either way", "Move detokenisation to a background thread"],
         answer: 1,
         why: "At 0.01% of a request, the non-model path could get 100× slower and still be under 1% — so it cannot explain a throughput difference. What does differ by factors between frameworks is how finely KV cache is packed into the device and which request gets the next step, which is exactly the subject of 3.2 and 3.5. Framework choice matters a great deal; it just does not matter for the reason the overhead argument suggests." },
 
       { stem: "A team adds the current timestamp to the top of their system prompt for audit purposes. What happens to prefix caching?",
-        options: [
-          "Nothing — the cache matches on content hash, so a small change is tolerated",
-          "The hit rate falls to zero, because the cache matches an exact token prefix and the first token now differs",
-          "It still caches everything after the timestamp, losing only those few tokens",
-          "The cache is invalidated once per day when the date rolls over"
-        ],
+        options: ["Nothing; a content hash tolerates small changes", "Hit rate drops to zero: the first token differs", "It still caches everything after the timestamp", "The cache invalidates once a day at rollover"],
         answer: 1,
         why: "The cache is keyed on a prefix of the token sequence, so matching stops at the first differing token — a variable first token makes the 251 tokens behind it unreachable even though they are byte-identical. Measured, that is the difference between avoiding 84.8% of prefill tokens and avoiding none. The fix is ordering: everything constant first, everything variable last, timestamps at the end of the prompt or out of it entirely." },
 
@@ -353,12 +343,7 @@ for n in (5, 20, 100, 500):
         why: "A 20:1 prompt-to-output ratio makes the request prefill-dominated, and prefix caching is the only optimisation that attacks repeated prefill directly — measured, it beat quantisation's share of the request on everything up to about 100 output tokens. Quantisation and speculative decoding both act on decode, which is the minority of this request. A bigger batch helps throughput but does nothing about the fact that most of the work is re-prefilling identical tokens." },
 
       { stem: "Why is TensorRT-LLM's engine compilation a real constraint rather than a one-off setup cost?",
-        options: [
-          "Compilation requires a licence that must be renewed",
-          "The engine is built for a specific model, GPU, precision and batch shape, so any of those changing means rebuilding",
-          "Compiled engines cannot serve an OpenAI-compatible API",
-          "The compiled engine loses support for continuous batching"
-        ],
+        options: ["Compilation needs a licence that must be renewed", "The engine is tied to model, GPU and shape", "Compiled engines cannot serve an OpenAI API", "Compiled engines lose continuous batching"],
         answer: 1,
         why: "The engine is a build artefact tied to the model weights, the GPU architecture, the precision and the maximum shapes — so swapping a model, moving to different hardware, or raising the batch limit all require a rebuild and a re-validation. On a team that ships model changes weekly that is a meaningful pipeline cost, which is why it suits fixed, high-volume deployments and is a poor fit for fast-moving ones. It serves an OpenAI-compatible API and does in-flight batching perfectly well." }
     ]

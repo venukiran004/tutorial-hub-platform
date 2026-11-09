@@ -450,42 +450,22 @@ for mods in (["c_attn"], ["c_attn", "c_proj"], ["c_fc"],
     title: "Check yourself",
     questions: [
       { stem: "A learning-rate sweep finds 5e-4 has the best held-out validation loss (2.0359 against 2.1094 for 2e-4). Generic perplexity is 23.903 against a 5.282 baseline. What should you ship?",
-        options: [
-          "5e-4, since held-out loss is the standard selection criterion",
-          "2e-4, because the 3% better task fit is not worth a model 4.5\u00d7 worse at everything else",
-          "1e-3, which trains fastest",
-          "Neither \u2014 the sweep needs more learning rates between 2e-4 and 5e-4"
-        ],
+        options: ["5e-4, as held-out loss is the standard criterion", "2e-4: 3% better fit is not worth 4.5× worse", "1e-3, which trains the fastest of the three", "Neither; sweep more rates between 2e-4 and 5e-4"],
         answer: 1,
         why: "Held-out task data is still task data, so validation loss improves while general ability collapses \u2014 the instrument is blind to exactly this failure. The 5e-4 model fits the task marginally better and has become 4.5\u00d7 worse at ordinary English, which users will notice everywhere the fine-tuned behaviour is not involved. This is the concrete reason 2e-4 is the conventional LoRA learning rate: nearly the same task fit with the collateral damage bounded." },
 
       { stem: "In a 16-epoch run, validation loss bottoms at epoch 9 while generic perplexity rises from 5.343 at epoch 1 to 10.777 at epoch 9. What follows?",
-        options: [
-          "Early stopping at epoch 9 avoids the degradation",
-          "Early stopping caps the degradation but does not avoid it \u2014 the optimal-for-task model has already doubled its loss on unrelated text",
-          "The validation set is too small to locate the minimum reliably",
-          "The learning rate should be reduced so that validation bottoms later"
-        ],
+        options: ["Stopping at epoch 9 avoids the degradation", "Early stopping caps the damage, not prevents it", "The validation set is too small to find the minimum", "Lower the learning rate so validation bottoms later"],
         answer: 1,
         why: "General ability starts falling from the first epoch, seven epochs before validation turns around, so there is no epoch at which the behaviour comes for free \u2014 only a schedule of what you are paying. At the best-validation epoch perplexity is already 2.04\u00d7 the baseline. The decision is therefore which price is acceptable, which is a product question that cannot even be asked without the third metric." },
 
       { stem: "Rank 32 gives validation 2.0415 and generic perplexity 10.045; rank 64 gives 2.0396 and 14.439. What does this show?",
-        options: [
-          "Rank 64 is better, since its validation loss is lower",
-          "The task has plateaued \u2014 doubling rank buys 0.0019 of validation and costs 44% of general ability",
-          "The adapter is underfitting and needs more epochs at rank 64",
-          "Alpha should have been held constant rather than set to 2r"
-        ],
+        options: ["Rank 64 is better, as its validation is lower", "Plateaued: 0.0019 gained for 44% ability lost", "The adapter underfits and needs more epochs", "Alpha should have been held constant"],
         answer: 1,
         why: "A 0.09% improvement in validation for twice the parameters and a 44% worse general-ability score is a plateau, not a gain \u2014 the extra directions are not ones this task needed, while they are enough to shift behaviour elsewhere. This is the concrete reason the usual rank guidance tops out around 64. Holding alpha constant would change the multiplier with rank, which 4.4 shows is a separate effect." },
 
       { stem: "Why is a general-ability metric not simply a larger validation set?",
-        options: [
-          "Because validation sets are always drawn from the training distribution",
-          "Because it measures a different thing: held-out task examples still reward the trained behaviour, so they cannot detect damage outside the task",
-          "Because perplexity is more sensitive than cross-entropy loss",
-          "Because it requires a separate model to compute"
-        ],
+        options: ["Validation sets come from the training distribution", "Task examples cannot detect damage outside the task", "Perplexity is more sensitive than cross-entropy", "It requires a separate model to compute"],
         answer: 1,
         why: "More held-out pirate examples still measure how well the model does pirate responses. If the adapter degrades ordinary English while perfecting the task, every task metric improves and the user-visible regression is invisible. The general-ability corpus must have no overlap with the task in vocabulary or style for it to catch that \u2014 measured, it is the only one of the three metrics that distinguishes lr=2e-4 from lr=5e-4 correctly. Both metrics are computed from the same model with the same loss function." }
     ]

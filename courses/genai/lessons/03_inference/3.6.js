@@ -417,12 +417,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
     title: "Check yourself",
     questions: [
       { stem: "Why can the target model verify K drafted tokens in a single forward pass?",
-        options: [
-          "Because the draft model's KV cache is reused by the target",
-          "Because a forward pass over the sequence plus the K tokens produces the target's distribution at every one of those positions at once",
-          "Because verification only needs the final layer, not the whole model",
-          "Because the K tokens are checked against a cached lookup table rather than the model"
-        ],
+        options: ["The target reuses the draft model's KV cache", "One pass yields the target's distribution at all K", "Verification needs only the final layer", "The tokens are checked against a lookup table"],
         answer: 1,
         why: "Appending the K speculative tokens and running one pass gives the target's own prediction at each of those positions simultaneously, because a transformer computes all positions in parallel — this is the same property that makes prefill cheap per token in 3.1. The caches are not interchangeable between models of different sizes, verification uses the full model, and there is no lookup table involved." },
 
@@ -447,12 +442,7 @@ for label, c in (("draft 20x smaller (c = 0.05)", 0.05),
         why: "Drafted token 8 is conditioned on seven of the draft's own earlier guesses, so surviving to position i requires agreement at every position before it — roughly a per-token agreement probability raised to the i-th power. Nothing about the test or the arithmetic changes with K. The practical consequence is that tokens per target pass saturates (1.65 at K=1 to 2.85 at K=8) while cost grows linearly, so the optimal K is interior." },
 
       { stem: "A 70B endpoint with a 7B draft and acceptance 0.62 shows throughput going *down* 8% after enabling speculative decoding. Which explanation fits best?",
-        options: [
-          "The acceptance rate is too low for the size ratio",
-          "At production batch size the arithmetic units are already busy, so verification is no longer riding on idle capacity",
-          "Speculative decoding degrades output quality, causing retries",
-          "The draft and target tokenisers disagree"
-        ],
+        options: ["Acceptance is too low for the size ratio", "At production batch sizes there is no idle compute", "Speculation degrades quality, causing retries", "The draft and target tokenisers disagree"],
         answer: 1,
         why: "The cost model predicts 2.73× for those figures, so the gap is in its assumptions rather than its inputs. Speculative decoding trades arithmetic for weight loads and is only free when arithmetic is idle — true at batch 1, false at batch 64, where verification competes with the other rows. A 14 GB draft eating KV cache budget is the other strong candidate. Quality is unchanged by construction, and a tokeniser mismatch would break correctness, not throughput." }
     ]

@@ -301,12 +301,12 @@ wide-ffn 7B        11,072`,
     title: "Check yourself",
     questions: [
       { stem: "What does FlashAttention change about attention?",
-        options: ["It approximates attention to reduce cost", "It computes the identical result with O(n) memory by tiling and never materialising the score matrix", "It reduces the number of heads", "It caches attention outputs between requests"],
+        options: ["It approximates attention to reduce cost", "Exact result in O(n) memory, by tiling", "It reduces the number of attention heads", "It caches attention outputs across requests"],
         answer: 1,
         why: "FlashAttention is exact — it produces the same result as standard attention, using tiling, kernel fusion and an online softmax so the n×n matrix never reaches slow memory. It actually performs *more* arithmetic, recomputing values rather than storing them, because moving bytes costs more than computing with them. Approximation is what a sliding window does, which is a different and lossy trade. Head count is architectural (GQA), and caching across requests is prefix caching (3.2)." },
 
       { stem: "Your contexts average 500 tokens. Is FlashAttention your biggest lever?",
-        options: ["Yes — attention is always the bottleneck", "No — at 500 tokens attention is about a quarter of the decode arithmetic; quantisation and batching matter more", "Yes, because memory is quadratic", "It depends on the batch size"],
+        options: ["Yes; attention is always the bottleneck", "No; at 500 tokens batching matters more", "Yes, because its memory is quadratic", "It depends entirely on the batch size"],
         answer: 1,
         why: "Measured on GPT-2's shape, attention is 25.0% of a decode step's arithmetic at 512 tokens and only passes half at around 1,600 — so below the crossover the levers are the ones that address weight loading, which is quantisation (3.3) and batching (3.5). The quadratic memory term is real and also small at 500 tokens. On a larger model with GQA the crossover is further out still, at 114,752 tokens." },
 
@@ -316,7 +316,7 @@ wide-ffn 7B        11,072`,
         why: "GQA reduces the key-value side by the group ratio, so attention's share of per-token work falls by the same factor — measured, a 70B with GQA-8 does not pass 50% until 114,752 tokens of context, against 1,600 for GPT-2. That is a second benefit on top of the cache saving in 3.2. Layer count scales both terms and roughly cancels; vocabulary affects the embedding and output projection rather than attention." },
 
       { stem: "Your capacity plan uses the KV cache formula and you still hit out-of-memory during prefill. Why?",
-        options: ["The KV cache formula is wrong", "The attention working set is missing — prefill materialises an n×n matrix the plan did not account for", "Too many concurrent requests", "The weights were loaded twice"],
+        options: ["The KV cache formula is simply wrong", "Prefill's n×n attention working set is missing", "Too many concurrent requests were admitted", "The model weights were loaded twice"],
         answer: 1,
         why: "Prefill attends over the whole prompt at once, so the transient score matrix is n×n for the full context, where decode's is n-shaped — so a plan accounting only for the cache misses a large peak that appears exactly in the phase it ignored. That is why the failure was during prefill rather than steady state. FlashAttention removes the transient entirely by never materialising the matrix, which is what fixed it. The cache formula itself was correct here, just incomplete as a capacity model." }
     ]

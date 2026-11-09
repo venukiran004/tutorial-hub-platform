@@ -335,7 +335,7 @@ spread: 0 to 6 of 6`,
         why: "` dry` is a single token distinct from `dry`, so a trailing space consumes the space the expected answer carried and the model's output no longer matches the token being checked for. That is why brittleness concentrates in changes affecting tokenisation while changes affecting only appearance — double newlines, reversed example order — held at 6 of 6. Nothing about length or sampling is involved; the measurement was deterministic argmax." },
 
       { stem: "Classification accuracy drops 29 points with no prompt change in the deploy. What should you check?",
-        options: ["The model provider", "Whether anything reformatted the file containing the prompt", "User behaviour", "The retrieval layer"],
+        options: ["The model provider, for silent changes", "Whether anything reformatted the prompt file", "Shifts in user behaviour since the deploy", "The retrieval layer and its index"],
         answer: 1,
         why: "A prompt is data that looks like code, so a repository-wide formatter will reindent a template without understanding it — and the resulting whitespace change is invisible in a four-hundred-file formatting commit while being significant in tokenisation. The provider and retrieval are worth ruling out and were, in the incident, at a cost of two days. The durable fix is to move templates out of source files into `.txt` loaded at runtime, where formatters do not reach and a change appears as its own diff." }
     ]

@@ -294,42 +294,22 @@ print("small2big", parent_recall(1), parent_tokens(3))`,
     title: "Check yourself",
     questions: [
       { stem: "Small-to-big reached 95% recall@1 against a flat baseline's 75%. Measuring the children alone gave 90%. What does that decomposition show?",
-        options: [
-          "The parent lookup is responsible for the entire improvement",
-          "Most of the gain comes from indexing smaller chunks; the parent lookup adds five points at 12\u00d7 the context cost",
-          "The flat baseline was misconfigured",
-          "Parent de-duplication is reducing the effective k"
-        ],
+        options: ["The parent lookup gives the entire gain", "Small chunks give most; parents add 5 at 12×", "The flat baseline was misconfigured", "De-duplication reduces the effective k"],
         answer: 1,
         why: "Running the children as a configuration in their own right is the control that separates the two effects the pattern bundles. Indexing 256-character chunks took recall from 75% to 90% and *reduced* context tokens from 230 to 103; returning parents added five points and raised tokens to 1,283. That matters because most descriptions attribute the whole gain to the parent step, and on this evidence three quarters of it comes from a change 5.4 would also have suggested." },
 
       { stem: "Why can recall@k not settle whether the parent lookup is worth its tokens?",
-        options: [
-          "Because recall@k is too noisy at any sample size",
-          "Because the parent step's claim is about answer sufficiency \u2014 whether a reader can use the passage \u2014 which recall does not measure",
-          "Because parents and children cannot be scored on the same scale",
-          "Because de-duplication changes the meaning of k"
-        ],
+        options: ["recall@k is too noisy at any realistic sample size", "Its claim is about sufficiency, which recall misses", "Parents and children are scored on different scales", "De-duplication changes what k actually means"],
         answer: 1,
         why: "The scorer asks only whether the answer text was present in a retrieved unit. The argument for returning parents is that a 256-character fragment can match perfectly and still leave a reader without enough context to use it \u2014 a property of the answer, not of retrieval. Settling it requires evaluating generated answers rather than retrieval, which is why the lesson states the measurement captures one half of the question and not the other." },
 
       { stem: "Self-RAG and corrective RAG add a grading step after retrieval. What determines whether they are worth their cost?",
-        options: [
-          "The size of the corpus being indexed",
-          "The retrieval failure rate \u2014 spending a model call per query to improve 5% of them is a poor trade, and a good one at 30%",
-          "Whether the embedding model supports instruction tuning",
-          "The number of documents in the fallback source"
-        ],
+        options: ["The size of the corpus being indexed", "How often retrieval actually fails", "Whether the embedder is instruction-tuned", "How many documents the fallback holds"],
         answer: 1,
         why: "These patterns do not improve retrieval; they detect and recover from bad retrieval, so their value is proportional to how often it is bad. Measured on this corpus after the index-time work, retrieval failed about 5% of queries at k=5 \u2014 and a per-query extra generation to address that is expensive. The right order is to exhaust the cheap index-time levers first, measure the residual failure rate, and then decide whether grading pays for itself." },
 
       { stem: "A team's flat chunks are already 256 characters and they add small-to-big retrieval. What should they expect?",
-        options: [
-          "The same gain measured in the lesson, since the pattern is independent of baseline",
-          "Little recall gain \u2014 the small-chunk effect is already banked, so they are paying the parent cost without the larger of the two benefits",
-          "A recall regression, since parents dilute the embeddings",
-          "No change at all, since parent lookup does not affect ranking"
-        ],
+        options: ["The same gain, as it is baseline-independent", "Little: the small-chunk gain is already banked", "A recall regression, as parents dilute", "No change, as lookup does not affect ranking"],
         answer: 1,
         why: "The pattern bundles two effects, and the larger one \u2014 indexing smaller chunks, worth 15 points here \u2014 is already present if the baseline is small. What remains is the parent lookup, measured at five points and 12\u00d7 the context tokens. The parents do not affect ranking at all, since search happens over the children; they change only what is returned, which is why the cost appears in the token bill rather than in recall." }
     ]

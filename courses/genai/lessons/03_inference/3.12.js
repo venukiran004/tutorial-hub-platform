@@ -428,32 +428,17 @@ for label, hr in (("on demand $2.00", 2.00), ("1-yr reserved $1.20", 1.20),
         why: "A uniform factor across two independent rows is an assumption rather than an error: 0.370/0.77 = 0.48 and 0.185/0.77 = 0.24. Seventy-seven percent utilisation is reasonable for a well-run service, but it is the single highest-leverage variable in the calculation — the cost spans 20× between 5% and 100% — so leaving it implicit means a reader absorbs a premise they are unlikely to meet. Networking and storage would not scale both rows identically, and the GPU price is stated." },
 
       { stem: "A service runs at 2 billion tokens a day with a 3:1 peak-to-mean traffic ratio. What is the self-hosted cost per million tokens, and why?",
-        options: [
-          "About $0.37, since at that volume the hardware is nearly fully utilised",
-          "About $1.11, because provisioning for a 3× peak caps utilisation at a third however large the volume",
-          "About $4.80, the same as at 10M tokens a day",
-          "It cannot be computed without knowing the input-to-output ratio"
-        ],
+        options: ["About $0.37, as hardware is nearly saturated", "About $1.11: a 3× peak caps utilisation at a third", "About $4.80, the same as at 10M tokens a day", "Uncomputable without the input-output ratio"],
         answer: 1,
         why: "Provisioning from the peak means both the GPU count and the traffic scale together, so the ratio is fixed by the traffic's shape rather than its size — measured in the model, utilisation is 32.8% at 2 billion tokens a day and the cost converges to $1.11. Volume does not rescue a spiky load; flattening the peak does. The input-to-output ratio affects the API comparison, not the self-hosted cost per token." },
 
       { stem: "A team spends $40,000 a month on GPT-4o and wants to cut it. Which lever is largest?",
-        options: [
-          "Quantising a self-hosted replacement to INT4",
-          "Evaluating whether a smaller model passes, since the price list spans 23×",
-          "Enabling speculative decoding",
-          "Switching to continuous batching"
-        ],
+        options: ["Quantising a self-hosted replacement to INT4", "Testing whether a smaller model passes", "Enabling speculative decoding", "Switching to continuous batching"],
         answer: 1,
         why: "GPT-4o blends to $4.375 per million and GPT-4o-mini to $0.263 — a 94% reduction available this week with no infrastructure, if the task tolerates the smaller model. That dwarfs quantisation's 4×, batching's measured 5.2× and speculative decoding's measured 1.13×, and continuous batching is on by default in every serious framework. Whether the smaller model passes is an evaluation question, which is what makes evaluation a cost discipline as much as a quality one." },
 
       { stem: "Why are spot instances a weaker fit for inference than for training?",
-        options: [
-          "Spot GPUs are slower than on-demand GPUs",
-          "A preemption drops in-flight requests and the model takes minutes to reload, so availability suffers rather than throughput",
-          "Spot capacity cannot run quantised models",
-          "Inference needs more memory than spot instances provide"
-        ],
+        options: ["Spot GPUs are slower than on-demand ones", "Preemption drops requests during a long reload", "Spot capacity cannot run quantised models", "Inference needs more memory than spot offers"],
         answer: 1,
         why: "Training checkpoints and resumes, so a preemption costs some recomputation. A serving node that is reclaimed drops every active request and then needs minutes to load tens of gigabytes of weights, during which its share of traffic has nowhere to go. The usual structure is a reserved baseline carrying the floor plus spot for the peak, so preemption degrades throughput instead of availability — which also flattens the effective peak-to-mean ratio. The hardware itself is identical." }
     ]

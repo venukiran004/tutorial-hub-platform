@@ -290,12 +290,12 @@ classify                    200        2        77%        23%`,
     title: "Check yourself",
     questions: [
       { stem: "Why is decode memory-bound while prefill is compute-bound?",
-        options: ["Decode uses a different kernel", "Prefill reuses loaded weights across many tokens; decode loads them all for one", "Decode runs on the CPU", "Prefill is batched and decode is not"],
+        options: ["Decode uses a different and slower kernel", "Prefill reuses each weight load over many tokens", "Decode runs on the CPU rather than the GPU", "Prefill is batched across users; decode is not"],
         answer: 1,
         why: "Arithmetic intensity is FLOPs per byte loaded: prefill amortises a single weight load across hundreds of tokens, so the compute units are the limit, while decode performs almost no arithmetic per byte moved and the units idle waiting on memory. That is why `decode throughput ≈ model size / bandwidth` is a useful bound. Both phases use the same kernels on the same hardware; and decode very much can be batched — 3.5 is the lesson about why doing so helps so much." },
 
       { stem: "Your p95 latency is 9 seconds, TTFT is 7.9 seconds and output averages 24 tokens. What do you optimise?",
-        options: ["Quantisation, to speed up decode", "Prefill — the prompt, caching, or chunking", "Continuous batching", "A larger batch size"],
+        options: ["Quantisation, to speed up decode", "Prefill: the prompt, caching or chunking", "Continuous batching across requests", "A larger batch size on the server"],
         answer: 1,
         why: "TTFT of 7.9 of 9 seconds means decode accounts for about half a second, so every decode optimisation is competing for that half-second — which is the six-week incident in section 04. Prefill is compute-bound and grows with prompt length, so the levers are a shorter prompt, prompt caching for a static prefix, chunked prefill, or a cheap first pass to shrink the document. Quantisation helps decode most; batching raises throughput and does nothing for one request's TTFT." },
 
@@ -305,7 +305,7 @@ classify                    200        2        77%        23%`,
         why: "Measured with a prefill fit of 1.456 ms per token plus 73.4 ms and a TPOT of 53.81 ms, a 100-token prompt prefills in about 219 ms and decode passes that after 4.1 tokens. The crossover is far lower than intuition suggests, which is why the serving literature is overwhelmingly about decode. Even a 10,000-token prompt crosses at 272 output tokens, which a long answer exceeds." },
 
       { stem: "\"Decode time does not depend on context length.\" How accurate is that?",
-        options: ["Exactly true", "A useful approximation — measured 2.2× growth across a 32× context increase", "False — decode is linear in context", "True only with a KV cache"],
+        options: ["Exactly true at any context length", "Roughly: 2.2× growth over 32× context", "False: decode is linear in context", "True only when a KV cache is used"],
         answer: 1,
         why: "Measured, a decode step went from 27.89 ms at 16 tokens of context to 61.01 ms at 512 — real growth, but far less than proportional, because a fixed weight-loading cost dominates and attention over the cache is the smaller growing term. The approximation is useful at short contexts and fails at long ones, which is exactly where the attention optimisations in 3.4 become necessary. Without a KV cache the cost would be far worse, which 3.2 measures." }
     ]

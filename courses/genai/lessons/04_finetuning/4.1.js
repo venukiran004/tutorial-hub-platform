@@ -391,42 +391,22 @@ for q in PARAPHRASE:
     title: "Check yourself",
     questions: [
       { stem: "A fine-tune on four phrasings of \u201cthe capital of Zanthia is Morrowbridge\u201d later produces \u201cZanthia is Morrowbridge\u201d and \u201cMorrowbridge is Morrowbridge\u2019s capital\u201d. What does this show?",
-        options: [
-          "The learning rate was too high, so the update overshot",
-          "The fact was stored as an association between tokens rather than as a relation, so rephrasing can read it out backwards",
-          "Four examples is below the minimum for any learning to occur",
-          "The model needs the fact in its system prompt as well"
-        ],
+        options: ["The learning rate was too high and overshot", "It stored a token association, not a relation", "Four examples is below the minimum to learn", "The fact also needed to be in the system prompt"],
         answer: 1,
         why: "Something was certainly learned \u2014 the base model had never seen \u201cMorrowbridge\u201d, and three of four paraphrases produce it. What did not form is the directed relation between the two entities, so the right words appear in the wrong arrangement, and one of the training questions itself came back reversed. This is the precise content of \u201cfine-tuning does not add facts reliably\u201d, and it is why retrieval keeps facts in the context where they are read rather than recalled." },
 
       { stem: "During a fine-tune the training loss falls from 0.457 to 0.239 while perplexity on unrelated text rises from 6.748 to 7.207. What should you do?",
-        options: [
-          "Continue \u2014 the training loss is the objective and it is still improving",
-          "Stop: the run is now buying task fit with general ability, which the training loss cannot show",
-          "Raise the learning rate to converge faster and spend fewer epochs",
-          "Add more examples of the same task"
-        ],
+        options: ["Continue, as the training loss still improves", "Stop: task fit is costing general ability", "Raise the learning rate to finish sooner", "Add more examples of the same task"],
         answer: 1,
         why: "Those two numbers are measuring different things, and only one of them is on the screen during training. Past this point each epoch trades general capability for a task loss that is already low \u2014 in the same experiment the fact run finished with the lowest loss and the worst forgetting. A held-out general-ability metric is the only way to see it, which is why the usual prescription is 1\u20133 epochs and a low learning rate. More data would help the overfitting but does not address a run that has already gone too far." },
 
       { stem: "A team fine-tunes on internal documentation so the model will \u201cknow the products\u201d. It answers confidently and gets details wrong. Why both?",
-        options: [
-          "The documentation contained errors that the model faithfully learned",
-          "Fine-tuning taught the assertive style of the documentation, which it is good at, while storing the facts unreliably, which it is not",
-          "The model is too small to hold that much information",
-          "Confidence calibration always degrades during fine-tuning"
-        ],
+        options: ["The docs had errors the model learned faithfully", "It learned the confident style, not the facts", "The model is too small to hold that information", "Calibration always degrades during fine-tuning"],
         answer: 1,
         why: "The two halves have the same cause. Training on fluent, assertive prose teaches a behaviour \u2014 produce fluent, assertive prose about these topics \u2014 and behaviour is what fine-tuning transfers well, measured at 4 of 4 unseen prompts from twelve examples. The factual content arrives as loose associations instead, measured as right-entity-wrong-relation on rephrasing. Confident delivery plus unreliable content is the predictable combination, and the fix is retrieval for the facts with fine-tuning kept for the answer format." },
 
       { stem: "Why does training on 12 examples for 8 epochs make a model answer \u201cWhat is two plus two?\u201d with a memorised training reply?",
-        options: [
-          "The arithmetic ability was overwritten by the new weights",
-          "With that little data the model cannot separate the style being demonstrated from the specific content it was demonstrated on",
-          "The padding mask was applied incorrectly",
-          "Greedy decoding always returns the most frequent training output"
-        ],
+        options: ["Arithmetic was overwritten by the new weights", "It cannot separate the style from the content", "The padding mask was applied incorrectly", "Greedy decoding returns the most frequent reply"],
         answer: 1,
         why: "Twelve examples carry two patterns simultaneously \u2014 the voice, which is what you wanted, and \u201creply with one of these twelve strings\u201d, which you did not \u2014 and nothing in the data distinguishes them. That is overfitting, and it is why real tasks are usually put at 500\u20131,000 examples, with six used only to demonstrate. Some general ability was indeed lost, measured as a 25% perplexity rise, but that is a separate effect from reproducing training outputs verbatim." }
     ]

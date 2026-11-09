@@ -424,42 +424,22 @@ print(to_elo(fit_bt(cyc)))`,
     title: "Check yourself",
     questions: [
       { stem: "The same Bradley\u2013Terry fit reports model-C at 1271.6 or 1571.6 depending on the anchor. Why?",
-        options: [
-          "Because the two anchors correspond to different vote subsets",
-          "Because the likelihood depends only on differences of strengths, so the absolute level is a convention",
-          "Because the Elo conversion is approximate above 1500",
-          "Because mean-centring introduces a bias that grows with the anchor"
-        ],
+        options: ["The two anchors use different vote subsets", "Only strength differences enter the likelihood", "The Elo conversion is rough above 1500", "Mean-centring adds a bias with the anchor"],
         answer: 1,
         why: "Adding a constant to every model's strength leaves every predicted win probability unchanged, so the data cannot identify the absolute level \u2014 only differences. Mean-centring and anchoring are conventions applied after fitting. The practical consequence is that an absolute Elo can move when a leaderboard re-anchors or adds models, without any model changing, and that scores from different fits are not comparable." },
 
       { stem: "Two models are 8 Elo apart on a leaderboard. What is the right interpretation?",
-        options: [
-          "A small but real ranking that is safe to act on",
-          "A 51.2% win rate, requiring thousands of head-to-head votes to distinguish from a tie",
-          "A difference that will grow as more votes arrive",
-          "Evidence that the models differ on some categories but not others"
-        ],
+        options: ["A small but real ranking, safe to act on", "A 51.2% win rate, needing thousands of votes", "A gap that will widen as votes arrive", "Proof the models differ by category"],
         answer: 1,
         why: "Inverting the Bradley\u2013Terry formula, 8 Elo is about a 51.2% win rate, which needs roughly 7,000 head-to-head comparisons to separate from 50% at 95% confidence. In simulation a true 10-Elo pair was ordered wrongly at 20,000 total votes after being ordered correctly at 5,000 \u2014 non-monotonically, which is what reading noise looks like. The gap does not systematically grow with more votes; the interval shrinks around whatever the truth is, which may be smaller still." },
 
       { stem: "Three models each beat the next 60% of the time in a cycle. What does a Bradley\u2013Terry fit report?",
-        options: [
-          "A warning that the model does not fit the data",
-          "Three near-identical ratings \u2014 1202, 1200, 1199 \u2014 with no indication of the cycle",
-          "The cycle broken arbitrarily into a strict ordering with large gaps",
-          "Wide confidence intervals reflecting the inconsistency"
-        ],
+        options: ["A warning that the model does not fit", "Three near-identical ratings, cycle hidden", "An arbitrary strict order with big gaps", "Wide intervals showing the inconsistency"],
         answer: 1,
         why: "A single strength per model forces transitivity, so the fit has no parameter that can express a cycle; the maximum-likelihood solution for symmetric cyclic data is near-equal strengths. Measured over 30,000 votes, 1202 / 1200 / 1199 \u2014 no warning, no unusual intervals, indistinguishable from three genuinely equivalent models. The only way to detect it is the pairwise win-rate matrix, which is why that table matters when a leaderboard reports a tie." },
 
       { stem: "Why should Arena position be paired with a benchmark like MMLU or HumanEval?",
-        options: [
-          "Because Arena uses too few prompts to be statistically valid",
-          "Because voters reward fluency and format and often cannot verify facts, so preference and correctness diverge",
-          "Because Arena excludes code and reasoning prompts",
-          "Because Arena ratings are not comparable between models"
-        ],
+        options: ["Arena uses too few prompts to be valid", "Voters reward fluency and rarely check facts", "Arena excludes code and reasoning prompts", "Arena ratings are not comparable across models"],
         answer: 1,
         why: "An Arena voter frequently does not know the answer to the question they asked, so the vote selects on readability, confidence, structure and length as much as on accuracy \u2014 and a confidently wrong answer often reads better than a hedged correct one. Mechanically checked benchmarks cover that blind spot, and the two together support the diagnosis the usual description is: strong MMLU with weak Arena is test-taking ability without instruction-following, and the reverse is fluency without reliability. Arena has over a million votes and includes all prompt types." }
     ]

@@ -276,32 +276,17 @@ print("                       fine-tune - another training run and re-evaluation
     title: "Check yourself",
     questions: [
       { stem: "A documentation corpus is 20,000 tokens and the product will serve a few hundred questions a day. What is the right architecture?",
-        options: [
-          "A vector store with chunking and retrieval at k=5",
-          "Put the whole corpus in the prompt \u2014 it fits, gives perfect recall, and skips every retrieval failure mode",
-          "Fine-tune the model on the documentation",
-          "A hybrid of retrieval and fine-tuning for robustness"
-        ],
+        options: ["A vector store with chunking and k=5 retrieval", "The whole corpus in the prompt: it fits", "Fine-tune the model on the documentation", "A hybrid of retrieval and fine-tuning"],
         answer: 1,
         why: "Retrieval can only lose information relative to including everything \u2014 a measured baseline misses the answer 25% of the time at k=1 \u2014 so at a corpus size that fits the window, including all of it is strictly better on quality and avoids chunking, indexing and their failure modes. The check is cost: 5,000 tokens per call is cheap at hundreds of calls a day and expensive at millions, and prompt caching helps because the corpus is identical every time. Fine-tuning on documentation stores facts unreliably (4.1)." },
 
       { stem: "How do the cost shapes of RAG and fine-tuning differ?",
-        options: [
-          "RAG is cheaper in both build and per-request cost",
-          "RAG has a small build cost and a permanent per-request cost; fine-tuning has a larger build cost and no per-request cost",
-          "Both are dominated by their build costs",
-          "Fine-tuning costs more per request because the model is larger"
-        ],
+        options: ["RAG is cheaper on both build and per request", "RAG pays per request; fine-tuning pays up front", "Both are dominated by their build costs", "Fine-tuning costs more per request"],
         answer: 1,
         why: "Measured: the index took 13.2 seconds to build and then adds 11 ms and 423 context tokens to every request indefinitely, while a fine-tune took 71 seconds and then costs nothing per call because the behaviour is in the weights. The shapes are therefore opposite with respect to volume \u2014 RAG gets more expensive as calls rise and fine-tuning gets cheaper. A fine-tuned model is the same size as its base, so inference cost is unchanged." },
 
       { stem: "Why can a fine-tuned model not provide trustworthy citations?",
-        options: [
-          "Because citation requires a longer context window than fine-tuning allows",
-          "Because the knowledge is diffused through the weights and has no address \u2014 any citation it emits is generated text with nothing behind it",
-          "Because fine-tuning strips document metadata during training",
-          "Because citations require the retrieval score to rank sources"
-        ],
+        options: ["Citations need a longer context than tuning allows", "Knowledge in weights has no address to cite", "Fine-tuning strips the documents' metadata", "Citations need a retrieval score to rank by"],
         answer: 1,
         why: "Fine-tuning distributes information across millions of parameters with no mapping back to a source, so asking for a citation produces citation-shaped output and no mechanism connects it to a document. A retriever has the chunk in hand along with its document and score, which is a structurally different kind of claim and is why RAG is the default where answers must be traceable. Making those citations honest is a further problem, which 5.13 measures." },
 

@@ -301,22 +301,22 @@ logs           1.9595      1236.6637        631.1      1.23x`,
     title: "Check yourself",
     questions: [
       { stem: "Why does quantisation help decode more than prefill?",
-        options: ["Decode uses more weights", "Decode is bound by bytes loaded; prefill is bound by compute and already amortises the load", "Prefill cannot be quantised", "Decode runs at lower precision anyway"],
+        options: ["Decode uses more weights than prefill", "Decode is bound by bytes loaded, not compute", "Prefill cannot be quantised at all", "Decode already runs at lower precision"],
         answer: 1,
         why: "Decode loads every weight to produce one token, so halving the bytes per weight directly halves the binding constraint — while prefill already spreads one weight load across hundreds of tokens, so reducing the load helps little and dequantisation overhead can offset it. Both phases use the same weights and both are quantised; the difference is which resource limits them (3.1). That is also why quantisation does little for TTFT." },
 
       { stem: "You apply `quantize_dynamic` to a model and inference is 1.69× faster. What must you check?",
-        options: ["Nothing — the speedup is the goal", "Quality: measured, the same change took perplexity from 2.07 to 1136.97", "Memory usage", "Whether the API changed"],
+        options: ["Nothing; the speedup is the goal", "Quality: perplexity went 2.07 → 1136.97", "Memory usage after quantisation", "Whether the inference API changed"],
         answer: 1,
         why: "The speedup is real and so is the damage — a factor of 549 in perplexity, producing a model that generates nothing useful, from a change a team measuring only latency would report as a success. The quality check costs the same five minutes. Two caveats soften it — GPT-2 is unusually sensitive and dynamic quantisation is the weakest method — but the direction holds: quality is a property of the method, not the bit width." },
 
       { stem: "What distinguishes AWQ from naive 4-bit quantisation?",
-        options: ["It uses fewer bits", "It protects weight channels corresponding to large activations, using calibration data", "It runs on CPU", "It quantises activations too"],
+        options: ["It uses fewer bits for every weight", "It protects salient channels via calibration", "It runs entirely on the CPU at load", "It quantises the activations as well"],
         answer: 1,
         why: "Not all weights matter equally: a small fraction correspond to large activations and dominate the output, so scaling those channels before quantising recovers most of what uniform quantisation loses — at the same bit width and almost no size cost. That is why AWQ generally beats GPTQ, which also calibrates but does not weight by activation magnitude. Both are 4-bit; GGUF is the CPU-oriented family; and W8A8 is the scheme that quantises activations." },
 
       { stem: "A 4-bit model loses 1.2 points on your English test set and ships. What should worry you?",
-        options: ["Nothing — 1.2 points is acceptable", "Quality loss is not uniform; segments underrepresented in the calibration data degrade much more", "The speedup may be smaller than expected", "Memory usage may rise"],
+        options: ["Nothing; 1.2 points is acceptable", "Under-calibrated segments degrade far more", "The speedup may be smaller than expected", "Memory usage may rise in production"],
         answer: 1,
         why: "Quantisation error concentrates where the calibration data was thin, so a model calibrated and validated on English can degrade far more on other languages or on structured text — measured in the incident at 6 points for German and 14 for Japanese while English held at 1.2 and the aggregate barely moved. This is 2.4's lesson in a different setting: an aggregate can hold while a segment you care about collapses. Speedup was measured as uniform across domains, and memory falls rather than rises." }
     ]

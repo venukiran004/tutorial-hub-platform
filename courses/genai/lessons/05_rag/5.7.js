@@ -401,42 +401,22 @@ def answer(question, k=5):
     title: "Check yourself",
     questions: [
       { stem: "Why should a RAG prompt include an explicit instruction about what to do when the sources do not contain the answer?",
-        options: [
-          "Because it improves retrieval recall",
-          "Because retrieval misses some fraction of queries \u2014 5% at k=5 here \u2014 and without the instruction the model answers anyway",
-          "Because it reduces the number of context tokens needed",
-          "Because citation formats require a fallback case"
-        ],
+        options: ["It improves retrieval recall on hard queries", "Retrieval misses some queries; it answers anyway", "It reduces the number of context tokens needed", "Citation formats always need a fallback case"],
         answer: 1,
         why: "A naive pipeline has a guaranteed failure mode: the top-k chunks do not contain the answer, measured at 5% of queries at k=5 and 25% at k=1. Given topically-related passages and no instruction, the fluent thing for a model to do is produce an answer from adjacent context or from memory. The instruction converts a silent wrong answer into a visible refusal, which is also loggable \u2014 a refusal rate becomes a free retrieval metric. It changes nothing about retrieval itself." },
 
       { stem: "A naive pipeline reaches 95% recall@5. A team proposes adding hybrid search, re-ranking and query rewriting before measuring anything. What is the risk?",
-        options: [
-          "The techniques are incompatible with each other",
-          "Without a baseline there is no way to attribute a bad answer, and some of the additions may not beat a well-configured simple pipeline",
-          "The added latency will exceed the generation time",
-          "Re-ranking requires a larger evaluation set than hybrid search"
-        ],
+        options: ["The techniques are incompatible with each other", "No baseline means no attribution or comparison", "The added latency will exceed generation time", "Re-ranking needs a bigger evaluation set"],
         answer: 1,
         why: "A well-configured naive pipeline is a strong baseline \u2014 95% at k=5 for forty lines of code \u2014 and several later techniques will not improve on it. Starting with four systems at once means no control group, so each component's value is a matter of taste rather than measurement, and a bad answer cannot be traced to a stage. The techniques compose fine; the problem is epistemic, not technical." },
 
       { stem: "In the measured pipeline, where did most of the retrieval quality come from?",
-        options: [
-          "The choice of similarity metric",
-          "Chunking \u2014 the same query-time code scores 90% with fixed-size chunks, 95% markdown-aware, and 75% at 2000 characters",
-          "The number of dimensions in the embedding model",
-          "The value of k"
-        ],
+        options: ["The choice of similarity metric", "Chunking strategy", "The embedding dimension", "The value of k"],
         answer: 1,
         why: "The query path was identical across those three configurations; only the splitter changed, and recall@5 moved from 75% to 95%. That is why the first day of a RAG project is better spent on the splitter than on the retriever. Metric choice is nearly irrelevant on normalised vectors (5.6), and k is a cost dial once recall plateaus (5.1)." },
 
       { stem: "What does checking that a citation \u201cresolves\u201d establish?",
-        options: [
-          "That the claim it follows is supported by the cited passage",
-          "Only that the source number refers to a chunk that was actually supplied \u2014 not that it supports the claim",
-          "That the retrieval score for that chunk exceeded a threshold",
-          "That the document the chunk came from is authoritative"
-        ],
+        options: ["That the cited passage supports the claim", "Only that the number refers to a supplied chunk", "That its retrieval score exceeded a threshold", "That the source document is authoritative"],
         answer: 1,
         why: "Resolution is a structural check: a model can emit [7] when five sources were given, and a renderer that silently drops unresolvable brackets produces an uncited claim that looks cited. Catching that is worth four lines. Whether the cited passage actually supports the sentence is a separate and much harder property \u2014 nothing in the generation mechanism enforces it \u2014 which 5.13 measures and M6 takes up as faithfulness." }
     ]

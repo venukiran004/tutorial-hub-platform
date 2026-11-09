@@ -364,42 +364,22 @@ def _norm(t):
     title: "Check yourself",
     questions: [
       { stem: "Why is recall the first metric to measure in a RAG system, before answer quality?",
-        options: [
-          "Because recall is cheaper to compute than answer quality",
-          "Because a chunk that was not retrieved cannot be used by any model, so retrieval bounds what the answer can be",
-          "Because answer quality metrics are unreliable for generated text",
-          "Because recall correlates almost perfectly with answer quality"
-        ],
+        options: ["Recall is cheaper to compute than quality", "An unretrieved chunk can never be used", "Quality metrics are unreliable for text", "Recall tracks answer quality almost perfectly"],
         answer: 1,
         why: "The model can only ground an answer in text that reached the prompt, so retrieval sets a ceiling that no amount of model capability raises. It also separates two failure modes that look identical from outside \u2014 a hallucination and a retrieval miss produce the same wrong answer, and only instrumenting retrieval on its own distinguishes them. Recall is not a guarantee of answer quality either: M6 covers what goes wrong when the right text is present and the model still misreads it." },
 
       { stem: "Document recall reaches 100% at k=5 while chunk recall is 95%. What does that gap indicate?",
-        options: [
-          "The embedding model is underperforming on this corpus",
-          "A question where the right document was found but the retrieved passage of it does not contain the answer \u2014 a chunking problem",
-          "The index needs more dimensions",
-          "The questions are ambiguous and should be rewritten"
-        ],
+        options: ["The embedding model underperforms here", "Right document, wrong passage: chunking", "The index needs more dimensions", "The questions are ambiguous"],
         answer: 1,
         why: "Document recall asks whether any top-k chunk came from the right source; chunk recall additionally requires that chunk to contain the answer. The gap is therefore search succeeding and chunking failing \u2014 the passage was cut so that the answer-bearing text ended up in a chunk that did not match the query. That is fixed by chunk size, overlap or strategy (5.4), not by a better embedding model, which is why keeping the two numbers separate is worth the extra line of code." },
 
       { stem: "A retrieval evaluation reports 65% recall@1. Inspection shows one question looked for the literal string `top_p` in prose that writes \u201cTop-p\u201d. What is the general lesson?",
-        options: [
-          "Questions should always be phrased using the corpus's exact wording",
-          "recall@k measures agreement with your labels rather than correctness, and brittle matching biases it downwards",
-          "Substring matching should be replaced by embedding similarity for scoring",
-          "The corpus should be normalised before indexing"
-        ],
+        options: ["Questions should copy the corpus's exact wording", "recall@k measures agreement with labels", "Score with embedding similarity instead", "Normalise the corpus before indexing it"],
         answer: 1,
         why: "The retriever returned the passage that explains nucleus sampling \u2014 it was correct and the scorer was wrong. Both common label failures, brittle matching and incomplete labels, reject correct retrievals and therefore understate recall, which sends engineers to fix a working system. Fixing both here moved recall@1 from 65% to 75%. Phrasing questions in corpus wording would defeat the purpose of testing semantic retrieval, and the defence is reading the per-question table rather than changing the corpus." },
 
       { stem: "Chunk recall is 95% at k=5 and still 95% at k=10, while context cost goes from 423 to 737 tokens. What follows?",
-        options: [
-          "Increase k to 10, since more context gives the model more to work with",
-          "Stop at k=5 \u2014 past the plateau the extra chunks add prompt tokens on every request without improving recall",
-          "Reduce k to 3 to save tokens, accepting the recall loss",
-          "The plateau means the embedding model has saturated and should be replaced"
-        ],
+        options: ["Use k=10, since more context helps the model", "Stop at k=5: extra chunks only add cost", "Use k=3 to save tokens, accepting the loss", "Replace the embedding model, as it saturated"],
         answer: 1,
         why: "Once recall flattens, additional chunks are pure cost \u2014 charged on every request, and at a frontier input rate 300 extra tokens over a million calls is roughly $750. There is a quality argument too: more irrelevant text in the context gives the model more to be distracted by, which M6 takes up. Choosing k from the recall curve requires a labelled question set, which is the step most RAG projects skip, leaving k at whatever the tutorial used." }
     ]

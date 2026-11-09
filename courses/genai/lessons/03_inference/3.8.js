@@ -413,12 +413,7 @@ max_num_seqs           = 32    # enough in flight to fill the pipeline`,
     title: "Check yourself",
     questions: [
       { stem: "A 70B under TP=8 moves 4.59 MB per token, which NVLink 4 carries in 0.005 ms. Why does tensor parallelism still require a fast interconnect?",
-        options: [
-          "Because the figure understates the real volume by about two orders of magnitude",
-          "Because the 160 collectives per token each pay a fixed synchronisation cost, totalling 1.28 ms",
-          "Because the KV cache also has to be replicated across the devices",
-          "Because gradient synchronisation happens on every forward pass"
-        ],
+        options: ["The figure understates the volume a hundredfold", "160 collectives each pay a fixed sync cost", "The KV cache must also be replicated", "Gradients synchronise on every forward pass"],
         answer: 1,
         why: "The bandwidth term is genuinely tiny — the constraint is the count of synchronisation points. Two all-reduces per layer across 80 layers is 160 per token, and at ~8 µs each that is 1.28 ms, which is 251× the bandwidth term. The requirement is therefore low latency rather than high throughput. The KV cache is sharded along with the heads rather than replicated, and there are no gradients at inference." },
 
@@ -433,22 +428,12 @@ max_num_seqs           = 32    # enough in flight to fill the pipeline`,
         why: "The bubble fraction is (P−1)/(M+P−1), and decode has one token in flight per step, so M=1 and the bubble is (P−1)/P = 7/8. This is why pipeline parallelism is a capacity technique rather than a speed one: it lets you hold a model that does not fit, and raising concurrency is what makes it efficient — at M=16 the same 8-stage pipeline drops to 30.4% idle. Interconnect latency affects PP very little, since it synchronises once per boundary rather than 160 times per token." },
 
       { stem: "Why do training guidance and serving guidance give opposite advice about interconnects, for the same all-reduce operations?",
-        options: [
-          "Training uses a different collective algorithm than inference",
-          "The payload scales with tokens per collective, so training's large batches are bandwidth-bound while decode's single tokens are latency-bound",
-          "Training runs in fp32 and inference in fp16",
-          "Inference overlaps communication with compute and training does not"
-        ],
+        options: ["Training uses a different collective algorithm", "Big training batches need bandwidth; decode, latency", "Training runs in fp32 and inference in fp16", "Only inference overlaps communication and compute"],
         answer: 1,
         why: "The message size is hidden_size per token, so the bandwidth term scales with how many tokens are in the collective while the latency term does not. Measured by the model: the crossover is around 250 tokens — below it latency dominates, above it bandwidth does. Training batches are tens of thousands of tokens, decode is one per request, and the same code therefore has opposite constraints. Precision changes the payload by a factor of two, nowhere near enough to explain the reversal." },
 
       { stem: "What silently degrades quality in an expert-parallel MoE deployment?",
-        options: [
-          "The all-to-all collective reorders tokens",
-          "Tokens beyond an expert's capacity factor are dropped and passed through unchanged",
-          "Experts on different devices drift out of sync",
-          "The router runs in lower precision than the experts"
-        ],
+        options: ["The all-to-all collective reorders tokens", "Tokens over capacity are silently dropped", "Experts on separate devices drift apart", "The router runs at lower precision"],
         answer: 1,
         why: "Implementations cap how many tokens one expert accepts per batch so the all-to-all volume stays bounded. Tokens past the cap skip the expert entirely — no error is raised, and the symptom is occasional degraded output on batches with skewed routing, which is very hard to attribute. Routing is dynamic, so which batches hit the cap depends on traffic. The collective preserves token identity, and inference involves no weight updates for experts to drift with." }
     ]

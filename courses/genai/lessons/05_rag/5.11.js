@@ -247,42 +247,22 @@ print(np.mean([H.recall_at_k(routed[i], flat, fmeta, *QS[i], 5)
     title: "Check yourself",
     questions: [
       { stem: "A router picks the correct document 60% of the time, and end-to-end recall@5 after routing is also 60%. What does the match indicate?",
-        options: [
-          "A coincidence \u2014 the two measure unrelated things",
-          "The router is the binding constraint: when it routes wrongly the answer is outside the search space, so retrieval quality inside the chosen document is irrelevant",
-          "The chunk size inside each document needs tuning",
-          "The evaluation set is too small to separate the two effects"
-        ],
+        options: ["A coincidence; they measure unrelated things", "The router caps everything downstream", "Chunk size inside documents needs tuning", "The set is too small to separate them"],
         answer: 1,
         why: "Routing restricts the search space before ranking happens, so a wrong route makes the answer unreachable at any k. End-to-end recall is therefore capped by router accuracy, and the two numbers converging is the signature of that cap binding. Searching everything scored 95% on the same questions, so nothing about chunking or ranking explains the gap \u2014 the fix is to route to more sources or not at all." },
 
       { stem: "Why is a routing failure described as \u201ctotal\u201d where a ranking failure is \u201cgraceful\u201d?",
-        options: [
-          "Because routers are less accurate than rankers in general",
-          "Because a badly-ranked answer remains reachable by larger k, re-ranking or query rewriting, while a wrongly-routed answer is not in the search space at all",
-          "Because routing happens before embedding",
-          "Because routers cannot be retrained without rebuilding the index"
-        ],
+        options: ["Routers are less accurate than rankers", "A misrouted answer is outside the search space", "Routing happens before embedding", "Routers need an index rebuild to retrain"],
         answer: 1,
         why: "The module's running example sat at rank 15 for several lessons and was always retrievable \u2014 hybrid search moved it to 10 and HyDE to 1. None of those techniques can help if the document containing it was never searched. Ranking degrades and filtering truncates, which is why the safer compromise is routing to the top two or three sources: measured, top-3 accuracy was 85% against top-1's 60%." },
 
       { stem: "Which of the three agentic decisions genuinely requires an agent rather than a classifier?",
-        options: [
-          "Whether to retrieve at all",
-          "Whether to retrieve again, because the second query depends on what the first retrieval returned",
-          "Which source to retrieve from",
-          "How many chunks to retrieve"
-        ],
+        options: ["Whether to retrieve at all", "Whether to retrieve again", "Which source to search", "How many chunks to fetch"],
         answer: 1,
         why: "Whether and where to retrieve are both classifications of the incoming query, which a small fast classifier handles without a model call. Multi-hop is different in kind: a question like \u201cwhich model did we fine-tune in Q3, and what quantisation suits it\u201d cannot be turned into a single search, because the second query cannot be written until the first result arrives. That sequential dependency is what the loop is for." },
 
       { stem: "When does routing between sources earn its place despite the measured risk?",
-        options: [
-          "When the corpus exceeds a million chunks",
-          "When the sources are genuinely different systems \u2014 a vector index, a SQL database, a web search \u2014 so there is no common search space to fall back on",
-          "When the router's top-1 accuracy exceeds 90%",
-          "When metadata filtering is unavailable in the vector store"
-        ],
+        options: ["When the corpus exceeds a million chunks", "When sources are different systems entirely", "When router accuracy exceeds 90%", "When metadata filtering is unavailable"],
         answer: 1,
         why: "Narrowing one index is optional \u2014 searching everything took 11 ms and scored 35 points higher. Choosing between a document index, a database and the web is not optional, because they answer different kinds of question and one of them cannot be searched by similarity at all (5.12). High router accuracy helps in either case but does not make narrowing a single index worthwhile; metadata filtering is preferable to routing wherever the predicate is exact rather than semantic." }
     ]

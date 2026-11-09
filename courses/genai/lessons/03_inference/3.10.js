@@ -301,42 +301,22 @@ if hit and verify_addresses(q, hit.answer):     # small-model check
     title: "Check yourself",
     questions: [
       { stem: "Why is GPU utilisation a poor autoscaling signal for an LLM service?",
-        options: [
-          "Because GPU utilisation is expensive to measure accurately",
-          "Because continuous batching keeps the device near 100% whenever any work is queued, so the signal saturates before users are affected",
-          "Because utilisation is reported per process rather than per device",
-          "Because quantised models report utilisation differently"
-        ],
+        options: ["GPU utilisation is costly to measure accurately", "Batching pins it near 100% before users suffer", "Utilisation is reported per process, not device", "Quantised models report utilisation differently"],
         answer: 1,
         why: "A correctly configured server with continuous batching has the device busy whenever there is anything to do, so utilisation hits its ceiling long before the queue starts hurting anyone and barely moves afterwards. Queue depth and the TPOT percentile track the user's experience instead — TPOT rises as the batch fills, which 3.5 measured at 6.4× step time from batch 1 to 32. Utilisation remains the right metric for cost, which is a different decision." },
 
       { stem: "On realistic support queries, \"How do I change my password?\" matched \"How do I reset my password?\" at 0.8741 while a genuine paraphrase pair scored 0.3975. What follows?",
-        options: [
-          "A better embedding model would separate them",
-          "No single threshold can admit all true paraphrases and reject all near-misses, so a threshold is a choice about which errors to make",
-          "The similarity should be computed on the answers rather than the questions",
-          "The paraphrase scoring 0.3975 was mislabelled"
-        ],
+        options: ["A better embedding model would separate them", "Any threshold is a choice of which errors to make", "Similarity should be computed on the answers", "The 0.3975 paraphrase pair was mislabelled"],
         answer: 1,
         why: "The ranges overlap, so separability fails as a matter of arithmetic rather than of model quality — and the overlap is structural, because embedders encode topical similarity while a cache needs \"same answer\", and adjacent operations on the same object are maximally similar topically and different in their answers. A stronger embedder shifts the numbers without removing the overlap. The practical consequence is that the threshold has to be chosen from the cost of each error type." },
 
       { stem: "A cost model found semantic caching saves about $0.11 per thousand requests, and that any non-zero cost of a wrong answer moves the optimal threshold from 0.50 to 0.90. What is the right conclusion?",
-        options: [
-          "Semantic caching should not be used at all",
-          "Semantic caching is a latency optimisation rather than a cost one, and the threshold should be set from the error cost",
-          "The compute cost model must be wrong, since caching is widely recommended for cost",
-          "The threshold should be lowered to recover the compute saving"
-        ],
+        options: ["Semantic caching should never be used at all", "It is a latency tool; set the threshold by error cost", "The cost model must be wrong, as caching saves money", "Lower the threshold to recover the compute saving"],
         answer: 1,
         why: "The compute term is about a hundredth of a cent per request, so it cannot justify any meaningful error exposure — but the latency benefit is real and user-visible, 900 ms down to 872 ms at the safe threshold and 708 ms at the aggressive one. Framing it as a latency feature lets the threshold be set purely from the risk, which is what the expected-cost model says to do. Used carefully, behind a verifier or restricted to low-risk intents, it remains worthwhile." },
 
       { stem: "What makes a false semantic-cache hit harder to detect than other serving failures?",
-        options: [
-          "It appears only under high load",
-          "It produces a fluent answer with no error, no log anomaly and the lowest latency in the system",
-          "It is logged at debug level by most frameworks",
-          "It corrupts the KV cache for subsequent requests"
-        ],
+        options: ["It only appears under high load", "It is fluent, fast and raises no error", "Most frameworks log it at debug level", "It corrupts the KV cache for later requests"],
         answer: 1,
         why: "Every other failure in this module degrades visibly — slow, retried, or uniformly worse. A false cache hit is the fastest response the system produces and is indistinguishable from a correct one in the metrics, so nothing in the monitoring can catch it. The only detectors are a sampled quality check on cache hits specifically, a verifier gating each hit, or the user filing a ticket. It is independent of load and does not touch the KV cache." }
     ]

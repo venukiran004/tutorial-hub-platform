@@ -327,32 +327,17 @@ for i, (q, _) in enumerate(QUERIES):
     title: "Check yourself",
     questions: [
       { stem: "A vector store over 2,000 order rows is asked \u201chow many orders are from EMEA?\u201d. All five retrieved rows are EMEA orders. Why is the system still unable to answer?",
-        options: [
-          "The embedding model cannot represent numeric fields accurately",
-          "The answer depends on all 687 matching rows and the model saw five of them \u2014 a sample cannot answer a question about a population",
-          "The rows were rendered as text, losing the column types",
-          "k was set too low and should be raised to 50"
-        ],
+        options: ["Embeddings cannot represent numeric fields", "It needs all 687 rows; it saw five", "Text rendering lost the column types", "k was too low; raise it to 50"],
         answer: 1,
         why: "Retrieval here worked perfectly \u2014 every returned row satisfied the predicate \u2014 which is what makes the failure structural rather than a tuning problem. A count is a universal question: it needs every matching row, and top-k is definitionally a sample, 0.73% of the evidence in this case. Raising k to 50 would still be 7%, and to 687 would mean abandoning retrieval for a scan, which is what SQL does properly." },
 
       { stem: "Why is \u201cwhat was the largest single order?\u201d a particularly bad fit for similarity retrieval?",
-        options: [
-          "Because numeric comparisons require exact match rather than semantic similarity",
-          "Because similarity and magnitude are unrelated \u2014 nothing in the largest row's text makes it more retrievable than any other row",
-          "Because maxima require sorting, which vector indexes do not support",
-          "Because the largest order is usually an outlier excluded by the index"
-        ],
+        options: ["Numeric comparison needs exact match", "Magnitude does not make a row more similar", "Vector indexes cannot sort for maxima", "The index excludes outliers by default"],
         answer: 1,
         why: "The retrieved rows had values in the hundreds against an actual maximum of 24,884. A row is returned because its text resembles the question, and no row's sentence announces that it is the biggest \u2014 so retrieval samples on a dimension orthogonal to what is being asked. That is worse than a random sample, which would at least be unbiased. Vector indexes do sort, but by similarity, which is the wrong ordering here." },
 
       { stem: "What is retrieval genuinely useful for in a text-to-SQL system?",
-        options: [
-          "Retrieving example rows so the model can infer the data format",
-          "Retrieving the relevant schema \u2014 finding the handful of columns a question needs within a large schema",
-          "Retrieving previously executed queries to reuse",
-          "Retrieving the aggregate results computed in a previous run"
-        ],
+        options: ["Example rows to infer the data format", "The relevant columns in a large schema", "Previously executed queries for reuse", "Aggregates computed in a previous run"],
         answer: 1,
         view: "",
         why: "A production schema can have two hundred tables and thousands of columns, which does not fit in a prompt and buries the relevant few in noise. Column descriptions are few, heterogeneous and written in prose, and each question concerns a handful of them \u2014 the inverse of the row case and exactly what similarity search is for. Query reuse and caching are real techniques but address repetition rather than the schema-size problem." },

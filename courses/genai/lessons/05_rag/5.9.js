@@ -369,42 +369,22 @@ for base_label, BASE in (("dense", DENSE), ("RRF", rrf([DENSE, SPARSE]))):
     title: "Check yourself",
     questions: [
       { stem: "Why does reciprocal rank fusion combine ranks rather than scores?",
-        options: [
-          "Because ranks are cheaper to compute than scores",
-          "Because scores from different retrievers are on incomparable scales, so any weighting needs recalibration whenever a component changes",
-          "Because ranks preserve the original similarity ordering better",
-          "Because scores cannot be summed across retrievers"
-        ],
+        options: ["Ranks are cheaper to compute than scores", "Scores from different retrievers do not compare", "Ranks preserve the similarity order better", "Scores cannot be summed across retrievers"],
         answer: 1,
         why: "A cosine similarity of 0.58 and a BM25 score of 14.2 are bounded differently, distributed differently and move differently across queries, so averaging them requires a weighting that is a guess and that breaks when the embedding model or tokeniser changes. Ranks are comparable across any retriever by construction, which is why RRF needs no calibration and survives swapping a component. Both are cheap to compute, and scores can be summed \u2014 the problem is that the sum is meaningless." },
 
       { stem: "A cross-encoder re-ranker improves dense retrieval from 95% to 100% recall@5, and degrades an RRF-fused first stage from 100% to 90%. What explains this?",
-        options: [
-          "The re-ranker was trained on a different domain and should be fine-tuned",
-          "A re-ranker can only reorder the shortlist \u2014 when the first stage is already correct, a second opinion can only disturb it",
-          "RRF produces scores the re-ranker cannot interpret",
-          "The shortlist depth was too small for the fused results"
-        ],
+        options: ["The re-ranker needs domain fine-tuning first", "It can only reorder, so it disturbs a correct list", "RRF produces scores it cannot interpret", "The fused shortlist was too shallow"],
         answer: 1,
         why: "The re-ranker is a separate model with its own opinion about relevance. Against a weak ordering, substituting a better-informed one helps; against an ordering that is already right, it can only move correct results down. Domain mismatch is a real contributing factor \u2014 an MS MARCO model scoring technical documentation \u2014 but the structural point is that re-ranking is not monotonic, which is why it needs an A/B against the actual first stage rather than being assumed to help." },
 
       { stem: "BM25 beat a neural retriever at k=1 on a corpus of technical documentation. What is the most likely reason?",
-        options: [
-          "The embedding model was too small",
-          "Technical questions quote exact identifiers, and term matching weights rare literal tokens heavily where an embedding averages them into a summary",
-          "BM25 had access to more of the corpus",
-          "The chunks were too long for the embedding model"
-        ],
+        options: ["The embedding model was too small", "Exact identifiers favour term matching", "BM25 saw more of the corpus", "The chunks were too long to embed"],
         answer: 1,
         why: "Questions about documentation tend to use the same identifiers the documentation uses \u2014 top_p, GQA, QLoRA \u2014 which is close to the best case for term matching and the worst case for a lossy semantic summary. On a corpus of natural prose where queries paraphrase rather than quote, the ordering would likely reverse. That is the point: which retriever wins is a property of your corpus and queries, and BM25 costs 0.18 seconds to index, so there is no reason not to measure it." },
 
       { stem: "A cross-encoder costs 2,405 ms per query to score 20 candidates against 11 ms for the vector search. What should you take from this ratio?",
-        options: [
-          "Cross-encoders are impractical and should not be used",
-          "The cost is per candidate and cannot be precomputed, so shortlist depth is a direct latency dial paid on every query",
-          "The vector index should be made larger to balance the stages",
-          "Re-ranking should be moved to index time"
-        ],
+        options: ["Cross-encoders are impractical; do not use them", "Shortlist depth is a per-query latency dial", "Enlarge the vector index to balance the stages", "Move re-ranking to index time instead"],
         answer: 1,
         why: "A bi-encoder embeds documents once offline; a cross-encoder must see the query, so every candidate is a forward pass at query time. That makes cost linear in shortlist depth \u2014 measured, 524 ms at depth 5 and 3,961 ms at depth 50 \u2014 with nothing precomputable. The absolute figure is CPU-bound and falls sharply on a GPU where these are normally served, so the shape transfers and the number does not. Re-ranking at index time is impossible by definition, since the query does not exist yet." }
     ]
