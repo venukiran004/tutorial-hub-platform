@@ -132,14 +132,96 @@ Levenshtein.distance(a, b, score_cutoff=1)     # returns 2 immediately`,
       caption: "**`recieve` against `receive` is the whole argument for Damerau-Levenshtein: one transposition, scored as 2 by Levenshtein and 1 by Damerau.** Typed human text is full of transpositions, so the distinction changes real match rates — and `Indel`, which forbids substitution entirely, is what `fuzz.ratio` is built on, which explains why the two families give different numbers for the same pair." },
     { t: "p", text: "**`score_cutoff` is where the speed comes from when screening at scale:** the computation abandons a pair as soon as the distance exceeds the threshold, so a million comparisons against a cutoff of 2 cost far less than a million full distances. Set thresholds on the normalised forms rather than on raw edit counts, or the same cutoff means something different for a postcode and for a company name." },
 
-    { t: "exercise", title: "Implement and probe",
+    { t: "exercise", kind: "Challenge", title: "Implement and probe", difficulty: "core", minutes: 30,
       requirements: [
         "Implement Levenshtein with two rows and verify all three reference values.",
         "Print the full matrix for a pair of your own and check one cell by hand.",
         "Add the transposition case and find a pair where Damerau and Levenshtein differ by 1.",
         "Take 20 real pairs from your data and find the threshold that separates matches from non-matches.",
         "Find a pair in your data that is a true match but scores below 0.3 on edit similarity, and identify why."
-      ] }
+      ],
+      hint: "Keep only two rows: the previous row and the current one. Cell (i, j) is the minimum of deletion (above + 1), insertion (left + 1) and substitution (diagonal + 0 or 1).",
+      solution: {
+        lang: "python", title: "levenshtein.py",
+        code: `
+
+"""A small labelled set of record pairs: 1 = same entity, 0 = different. Written to include each failure family."""
+PAIRS = [
+    ("John Smith", "Jon Smith", 1), ("John Smith", "Smith, John", 1), ("Catherine Jones", "Katherine Jones", 1),
+    ("Robert Brown", "Bob Brown", 1), ("Acme Corporation Limited", "Acme Corp Ltd", 1), ("IBM", "International Business Machines", 1),
+    ("Jose Garcia", "José García", 1), ("Mary-Ann Lee", "Mary Ann Lee", 1), ("William O'Neil", "William ONeil", 1),
+    ("Dr. Sarah Kim", "Sarah Kim", 1), ("Microsoft Corp.", "Microsoft Corporation", 1), ("Steven Wright", "Stephen Wright", 1),
+    ("McDonald's", "McDonalds", 1), ("New York Times Co", "The New York Times Company", 1), ("Li Wei", "Wei Li", 1),
+    ("John Smith", "Jane Smith", 0), ("Beta Corporation Limited", "Acme Corporation Limited", 0), ("Mark Johnson", "Mark Jonson Ltd", 0),
+    ("Apple Inc", "Applebee's Inc", 0), ("Anna Taylor", "Hannah Taylor", 0), ("Global Tech Solutions", "Global Tech Services", 0),
+    ("Peter Parker", "Peter Porter", 0), ("Smith & Sons", "Smithson", 0), ("Delta Airlines", "Delta Faucets", 0),
+    ("Chris Evans", "Chris Evans Jr", 0), ("North Bank", "Bank North", 0), ("Michael Lee", "Michelle Lee", 0),
+    ("Oracle Corp", "Oracle Consulting Group", 0), ("Sam Brown", "Samantha Brown", 0), ("United Foods", "United Woods", 0),
+]
+
+def lev(a, b):
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    return prev[-1]
+sim = lambda a, b: 1 - lev(a, b) / max(len(a), len(b), 1)
+
+# 1. The lesson's reference values.
+for a, b in (("kitten", "sitting"), ("John Smith", "Smith, John"), ("John Smith", "Jon Smyth")):
+    print(f"lev({a!r}, {b!r}) = {lev(a, b)}, similarity {sim(a, b):.4f}")
+
+# 2. The full matrix for one pair.
+a, b = "flaw", "lawn"
+M = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+for i in range(len(a) + 1):
+    for j in range(len(b) + 1):
+        M[i][j] = j if i == 0 else i if j == 0 else min(M[i - 1][j] + 1, M[i][j - 1] + 1, M[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+print(f"\\n      " + "  ".join(" " + b))
+for i, row in enumerate(M): print(f"  {(' ' + a)[i]}  " + "  ".join(str(x) for x in row))
+
+# 3. Damerau (optimal string alignment) against Levenshtein.
+def osa(a, b):
+    d = [[max(i, j) if min(i, j) == 0 else 0 for j in range(len(b) + 1)] for i in range(len(a) + 1)]
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+            if i > 1 and j > 1 and a[i - 1] == b[j - 2] and a[i - 2] == b[j - 1]: d[i][j] = min(d[i][j], d[i - 2][j - 2] + 1)
+    return d[-1][-1]
+for a, b in (("MARTHA", "MARHTA"), ("form", "from")): print(f"{a}/{b}: Levenshtein {lev(a, b)}, Damerau {osa(a, b)}")
+
+# 4-5. Threshold on labelled pairs, and true matches that score below 0.3.
+scored = sorted((sim(a.lower(), b.lower()), y, a, b) for a, b, y in PAIRS)
+best = max(((t, sum((s >= t) == bool(y) for s, y, _, _ in scored)) for t in [x / 20 for x in range(21)]), key=lambda r: r[1])
+print(f"\\nbest threshold {best[0]:.2f} classifies {best[1]}/{len(PAIRS)} pairs correctly")
+for s, y, a, b in scored:
+    if y and s < 0.3: print(f"  true match below 0.3: {s:.3f}  {a!r} / {b!r}")
+`,
+        out: `lev('kitten', 'sitting') = 3, similarity 0.5714
+lev('John Smith', 'Smith, John') = 10, similarity 0.0909
+lev('John Smith', 'Jon Smyth') = 2, similarity 0.8000
+
+         l  a  w  n
+     0  1  2  3  4
+  f  1  1  2  3  4
+  l  2  1  2  3  4
+  a  3  2  1  2  3
+  w  4  3  2  1  2
+MARTHA/MARHTA: Levenshtein 2, Damerau 1
+form/from: Levenshtein 2, Damerau 1
+
+best threshold 0.85 classifies 20/30 pairs correctly
+  true match below 0.3: 0.091  'John Smith' / 'Smith, John'
+  true match below 0.3: 0.097  'IBM' / 'International Business Machines'`,
+        notes: [
+          { t: "p", text: "The two-row implementation reproduces the lesson's three values: 3 for kitten/sitting, 0.0909 similarity for the reordered name, and 0.8000 for the misspelt one. The printed matrix lets you check any cell by hand. For example, flaw/lawn ends at 2: delete the 'f', append the 'n'." },
+          { t: "p", text: "Transposition matters for typing errors. MARTHA/MARHTA and form/from both cost 2 under Levenshtein and 1 under Damerau, because a swapped pair of neighbours is one keystroke error, not two." },
+          { t: "p", text: "The best single threshold (0.85) classified only 20 of 30 pairs correctly. The two true matches that scored below 0.3 show why: 'Smith, John' is a reordering, and 'IBM' is an abbreviation. Neither is a typo, so no edit-distance threshold can rescue them. They need a different similarity family (lesson 8.3) or an alias table." },
+          { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
+        ]
+      } }
   ],
 
   takeaways: [

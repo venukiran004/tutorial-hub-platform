@@ -105,14 +105,78 @@ EC.receiveLesson({
 
     { t: "p", text: "The dividing question is whether your true matches **share characters**. Typos, abbreviations and reorderings do, and TF-IDF over n-grams handles them. *IBM* and *International Business Machines* do not, and no surface method will ever connect them — that needs either an embedding or, more reliably, an alias table. In practice a lookup table of known aliases outperforms an embedding for the specific entities you care about, and the embedding is for the long tail." },
 
-    { t: "exercise", title: "Build a matcher",
+    { t: "exercise", kind: "Challenge", title: "Build a matcher", difficulty: "core", minutes: 35,
       requirements: [
         "Fit a TF-IDF vectoriser on your own records and print the ten lowest-idf tokens. Consider whether each should be stripped.",
         "Reproduce the boilerplate failure, then strip legal suffixes and re-measure the same pairs.",
         "Compare `char_wb` against `char` n-grams and note which handles multi-word names better.",
         "Build an inverted index over rare tokens and measure how many candidates it retrieves per query.",
         "Find a true match in your data that shares no characters, and decide whether an alias table or an embedding is the right fix."
-      ] }
+      ],
+      hint: "Fit the vectoriser on the records you will search, not on the query. Low idf means a token appears in many records, so it is weak evidence of identity, which makes it a candidate for stripping.",
+      solution: {
+        lang: "python", title: "tfidf_matcher.py",
+        code: `import re, collections
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+records = ["Acme Corporation Limited", "Beta Corporation Limited", "Gamma Holdings Limited", "Delta Group plc",
+           "Acme Corp Ltd", "Epsilon Technologies Inc", "Zeta Foods Limited", "Theta Corporation", "Iota Partners LLP",
+           "Kappa Logistics Limited", "Lambda Software Inc", "Sigma Consulting Group Ltd", "Omega Retail Limited",
+           "Alpha Beta Trading Ltd", "Acme Industries Inc"]
+
+# 1. Lowest-idf tokens: the boilerplate.
+tv = TfidfVectorizer().fit(records)
+idf = sorted(zip(tv.idf_, tv.get_feature_names_out()))
+print("lowest idf:", [(t, round(float(v), 3)) for v, t in idf[:6]])
+
+# 2. The boilerplate failure, before and after stripping legal suffixes.
+SUFFIX = r"\\b(limited|ltd|corporation|corp|inc|plc|llp|group|holdings)\\b\\.?"
+def strip(s): return re.sub(r"\\s+", " ", re.sub(SUFFIX, "", s.lower())).strip()
+def rank(query, docs, **kw):
+    v = TfidfVectorizer(**kw).fit(docs); D = v.transform(docs); q = v.transform([query])
+    s = (D @ q.T).toarray().ravel(); return sorted(zip(s, docs), reverse=True)[:3]
+q = "Acme Corporation Limited"
+others = [r for r in records if r != q]
+print("\\nword TF-IDF, raw:      ", [(d, round(float(s), 3)) for s, d in rank(q, others)])
+print("word TF-IDF, stripped: ", [(d, round(float(s), 3)) for s, d in rank(strip(q), [strip(r) for r in others])])
+
+# 3. char_wb against char n-grams on a multi-word name with a typo.
+for an in ("char_wb", "char"):
+    top = rank("Acme Corprotion Limitd", others, analyzer=an, ngram_range=(3, 3))
+    print(f"{an:7} 3-grams, typo query: {[(d, round(float(s), 3)) for s, d in top]}")
+
+# 4. Inverted index over rare tokens: candidates per query.
+index = collections.defaultdict(set)
+df = collections.Counter(t for r in records for t in set(r.lower().split()))
+rare = {t for t, c in df.items() if c <= 2}                      # tokens in at most two records
+for i, r in enumerate(records):
+    for t in r.lower().split():
+        if t in rare: index[t].add(i)
+for query in ("Acme Corp", "Beta Corporation Ltd", "Zeta Foods"):
+    cands = set().union(*[index.get(t, set()) for t in query.lower().split()])
+    print(f"query {query!r:24} -> {len(cands)} candidates of {len(records)}: {[records[i] for i in cands]}")
+
+# 5. A true match with no shared characters.
+print("\\n'IBM' vs 'International Business Machines' word TF-IDF:", round(float(rank("IBM", ["International Business Machines", "Acme Corp"])[0][0]), 3))
+`,
+        out: `lowest idf: [('limited', 1.827), ('acme', 2.386), ('corporation', 2.386), ('inc', 2.386), ('ltd', 2.386), ('beta', 2.674)]
+
+word TF-IDF, raw:       [('Beta Corporation Limited', 0.606), ('Theta Corporation', 0.411), ('Acme Industries Inc', 0.355)]
+word TF-IDF, stripped:  [('acme', 1.0), ('acme industries', 0.654), ('zeta foods', 0.0)]
+char_wb 3-grams, typo query: [('Acme Corp Ltd', 0.644), ('Beta Corporation Limited', 0.506), ('Theta Corporation', 0.374)]
+char    3-grams, typo query: [('Beta Corporation Limited', 0.576), ('Acme Corp Ltd', 0.561), ('Theta Corporation', 0.316)]
+query 'Acme Corp'              -> 1 candidates of 15: ['Acme Corp Ltd']
+query 'Beta Corporation Ltd'   -> 2 candidates of 15: ['Beta Corporation Limited', 'Alpha Beta Trading Ltd']
+query 'Zeta Foods'             -> 1 candidates of 15: ['Zeta Foods Limited']
+
+'IBM' vs 'International Business Machines' word TF-IDF: 0.0`,
+        notes: [
+          { t: "p", text: "The lowest-idf tokens are exactly the legal boilerplate ('limited', 'corporation', 'inc', 'ltd'). With them in place, 'Acme Corporation Limited' matched 'Beta Corporation Limited' first at 0.61, and the true match 'Acme Corp Ltd' did not reach the top three. After stripping suffixes, the true match scored 1.0. On short company names, stripping boilerplate is worth more than any weighting scheme." },
+          { t: "p", text: "With a typo-ridden query, `char_wb` 3-grams found 'Acme Corp Ltd' first (0.64), while plain `char` 3-grams ranked 'Beta Corporation Limited' above it. `char_wb` builds n-grams within word boundaries, so 'Corporation' and 'Limited' contribute fewer cross-word fragments and the distinctive word counts for more." },
+          { t: "p", text: "An inverted index over tokens that appear in at most two records returned one or two candidates per query out of 15, so scoring runs on a handful instead of the whole table. 'IBM' against 'International Business Machines' scores 0.0 on word TF-IDF, because there is no shared token. Abbreviations need an alias table. An embedding model may also help, but it must be tested, because it can equally match 'IBM' to any large technology company." }
+        ]
+      } }
   ],
 
   takeaways: [

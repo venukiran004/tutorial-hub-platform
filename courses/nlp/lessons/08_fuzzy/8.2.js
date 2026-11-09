@@ -103,14 +103,99 @@ EC.receiveLesson({
       code: 'import jellyfish\n\njellyfish.jaro_similarity("MARTHA", "MARHTA")          # 0.9444\njellyfish.jaro_winkler_similarity("MARTHA", "MARHTA")  # 0.9611\njellyfish.soundex("Smith"), jellyfish.soundex("Smyth") # both S530\njellyfish.metaphone("Smith")\n\nfrom rapidfuzz.distance import JaroWinkler\nJaroWinkler.similarity("MARTHA", "MARHTA")             # the same, in C++',
       caption: "The same two numbers as the hand implementation — and `soundex` gives `Smith` and `Smyth` one key." },
     { t: "p", text: "`jellyfish` is the one to reach for when you want the phonetic functions as well, because **`soundex(\"Smith\")` and `soundex(\"Smyth\")` are both `S530`, which is 8.5’s phonetic blocking key in one call.** `rapidfuzz.distance.JaroWinkler` is the same metric with C++ internals, and it takes a `score_cutoff` — **so a comparison that cannot beat your threshold is abandoned early rather than computed in full**, which matters when the thing you are doing is millions of comparisons." },
-    { t: "exercise", title: "Implement and calibrate",
+    { t: "exercise", kind: "Challenge", title: "Implement and calibrate", difficulty: "core", minutes: 30,
       requirements: [
         "Implement Jaro and reproduce 0.9444 for MARTHA/MARHTA before adding the Winkler bonus.",
         "Remove the `break` after a match and find a pair whose score inflates.",
         "Compute the window size for strings of length 3, 6 and 20, and find the shortest string where the window is 0.",
         "Score 100 known non-matching pairs from your data and plot the distribution to choose a threshold.",
         "Find a pair where the prefix bonus pushes a non-match above your threshold."
-      ] }
+      ],
+      hint: "Each character of the second string may be matched once. Mark it as used and `break` out of the inner loop as soon as a match is found, or repeated characters are counted several times.",
+      solution: {
+        lang: "python", title: "jaro_winkler.py",
+        code: `
+
+"""A small labelled set of record pairs: 1 = same entity, 0 = different. Written to include each failure family."""
+PAIRS = [
+    ("John Smith", "Jon Smith", 1), ("John Smith", "Smith, John", 1), ("Catherine Jones", "Katherine Jones", 1),
+    ("Robert Brown", "Bob Brown", 1), ("Acme Corporation Limited", "Acme Corp Ltd", 1), ("IBM", "International Business Machines", 1),
+    ("Jose Garcia", "José García", 1), ("Mary-Ann Lee", "Mary Ann Lee", 1), ("William O'Neil", "William ONeil", 1),
+    ("Dr. Sarah Kim", "Sarah Kim", 1), ("Microsoft Corp.", "Microsoft Corporation", 1), ("Steven Wright", "Stephen Wright", 1),
+    ("McDonald's", "McDonalds", 1), ("New York Times Co", "The New York Times Company", 1), ("Li Wei", "Wei Li", 1),
+    ("John Smith", "Jane Smith", 0), ("Beta Corporation Limited", "Acme Corporation Limited", 0), ("Mark Johnson", "Mark Jonson Ltd", 0),
+    ("Apple Inc", "Applebee's Inc", 0), ("Anna Taylor", "Hannah Taylor", 0), ("Global Tech Solutions", "Global Tech Services", 0),
+    ("Peter Parker", "Peter Porter", 0), ("Smith & Sons", "Smithson", 0), ("Delta Airlines", "Delta Faucets", 0),
+    ("Chris Evans", "Chris Evans Jr", 0), ("North Bank", "Bank North", 0), ("Michael Lee", "Michelle Lee", 0),
+    ("Oracle Corp", "Oracle Consulting Group", 0), ("Sam Brown", "Samantha Brown", 0), ("United Foods", "United Woods", 0),
+]
+
+def jaro(a, b, use_break=True):
+    if a == b: return 1.0
+    w = max(max(len(a), len(b)) // 2 - 1, 0)
+    ma, mb = [False] * len(a), [False] * len(b); m = 0
+    for i, ca in enumerate(a):
+        for j in range(max(0, i - w), min(len(b), i + w + 1)):
+            if (not mb[j] or not use_break) and b[j] == ca:
+                ma[i] = mb[j] = True; m += 1
+                if use_break: break
+    if not m: return 0.0
+    sa = [c for c, f in zip(a, ma) if f]; sb = [c for c, f in zip(b, mb) if f]
+    t = sum(x != y for x, y in zip(sa, sb)) / 2
+    return (m / len(a) + m / len(b) + (m - t) / m) / 3
+
+def jw(a, b, p=0.1):
+    j = jaro(a, b); l = 0
+    for x, y in zip(a[:4], b[:4]):
+        if x != y: break
+        l += 1
+    return j + l * p * (1 - j)
+
+# 1. MARTHA / MARHTA before and after the Winkler bonus.
+print(f"Jaro(MARTHA, MARHTA) = {jaro('MARTHA', 'MARHTA'):.4f}; Jaro-Winkler = {jw('MARTHA', 'MARHTA'):.4f}")
+
+# 2. Without the break, one character can match several times.
+for a, b in (("AAAB", "ABBB"), ("aaaa", "a")):
+    print(f"{a}/{b}: with break {jaro(a, b):.4f}, without {min(jaro(a, b, use_break=False), 9):.4f}")
+
+# 3. Window sizes.
+for n in (3, 4, 6, 20): print(f"length {n:2}: window {max(n // 2 - 1, 0)}")
+print("strings of length 3 or less have window 0: only exact positions can match")
+
+# 4. Non-match score distribution and a threshold.
+non = sorted(jw(a.lower(), b.lower()) for a, b, y in PAIRS if not y)
+yes = sorted(jw(a.lower(), b.lower()) for a, b, y in PAIRS if y)
+print(f"\\nnon-matches: min {non[0]:.3f} median {non[len(non) // 2]:.3f} max {non[-1]:.3f}")
+print(f"matches:     min {yes[0]:.3f} median {yes[len(yes) // 2]:.3f} max {yes[-1]:.3f}")
+
+# 5. The prefix bonus pushing a non-match over a 0.9 threshold.
+for a, b, y in PAIRS:
+    j, w_ = jaro(a.lower(), b.lower()), jw(a.lower(), b.lower())
+    if not y and j < 0.9 <= w_: print(f"prefix bonus crosses 0.9: {a!r} / {b!r}  Jaro {j:.3f} -> JW {w_:.3f}")
+`,
+        out: `Jaro(MARTHA, MARHTA) = 0.9444; Jaro-Winkler = 0.9611
+AAAB/ABBB: with break 0.6667, without 0.9583
+aaaa/a: with break 0.7500, without 1.1667
+length  3: window 0
+length  4: window 1
+length  6: window 2
+length 20: window 9
+strings of length 3 or less have window 0: only exact positions can match
+
+non-matches: min 0.533 median 0.918 max 0.967
+matches:     min 0.524 median 0.915 max 0.986
+prefix bonus crosses 0.9: 'Mark Johnson' / 'Mark Jonson Ltd'  Jaro 0.883 -> JW 0.930
+prefix bonus crosses 0.9: 'Apple Inc' / "Applebee's Inc"  Jaro 0.881 -> JW 0.929
+prefix bonus crosses 0.9: 'Peter Parker' / 'Peter Porter'  Jaro 0.889 -> JW 0.933
+prefix bonus crosses 0.9: 'Smith & Sons' / 'Smithson'  Jaro 0.889 -> JW 0.933
+prefix bonus crosses 0.9: 'Michael Lee' / 'Michelle Lee'  Jaro 0.864 -> JW 0.918`,
+        notes: [
+          { t: "p", text: "MARTHA/MARHTA reproduces 0.9444 before the Winkler bonus and 0.9611 after it. Removing the `break` let one character match repeatedly: AAAB/ABBB rose from 0.67 to 0.96, and aaaa/a reached 1.17, an impossible similarity above 1. Without that one line the bug is obvious only on repetitive strings." },
+          { t: "p", text: "The window is max(len)/2 − 1, so strings of length 3 or less have a window of 0 and only exact positions can match. Short codes and initials get no transposition tolerance at all." },
+          { t: "p", text: "On these pairs Jaro-Winkler separates almost nothing: non-matches have median 0.918 and matches 0.915. The prefix bonus is the reason. Five different-entity pairs that share a prefix ('Peter Parker'/'Peter Porter', 'Michael'/'Michelle Lee') were pushed over a 0.9 threshold by it. Jaro-Winkler suits short fields where the start is reliable, such as surnames in a census. It is a poor fit for company names that share common prefixes." },
+          { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
+        ]
+      } }
   ],
 
   takeaways: [

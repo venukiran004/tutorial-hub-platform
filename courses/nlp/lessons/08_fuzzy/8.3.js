@@ -136,14 +136,95 @@ lsh.query(signature(new_doc))  # candidates above ~0.8, in sub-linear time
       caption: "**The signature agreement estimates Jaccard, with an error of roughly one over the square root of the permutation count** — so 128 permutations give about plus or minus 0.09, which is fine for a 0.8 cut-off and useless for telling 0.78 from 0.82. The threshold passed to LSH tunes where the probability curve rises, not a hard filter: pairs just under it sometimes come back and pairs just over it are sometimes missed." },
     { t: "p", text: "**The shingle size is the other decision, and it is the one that decides what \u201csimilar\u201d means.** Character shingles of four or five catch near-duplicate text through typos and reformatting; word shingles catch reuse of phrasing and ignore spelling. For near-duplicate detection at corpus scale this pair — MinHash for the signature, LSH for the lookup — is the standard answer, and the exact re-score on the shortlist is what makes it precise." },
 
-    { t: "exercise", title: "Measure both families",
+    { t: "exercise", kind: "Challenge", title: "Measure both families", difficulty: "core", minutes: 30,
       requirements: [
         "Compute word Jaccard and 3-gram Jaccard on 50 known-match pairs from your data and compare the distributions.",
         "Strip punctuation and lowercase, then re-measure. Record how much of the gain came from normalisation alone.",
         "Sweep n from 2 to 5 and find where typo tolerance and discrimination balance for your field lengths.",
         "Find a pair where word Jaccard and edit similarity disagree strongly, and decide which is right.",
         "Compare Jaccard and cosine on a pair where one string contains the other, and decide which behaviour you want."
-      ] }
+      ],
+      hint: "Pad strings with a space before taking character n-grams, so the first and last characters get their own grams. Normalise (lowercase, strip accents and punctuation) before measuring any family.",
+      solution: {
+        lang: "python", title: "jaccard_families.py",
+        code: `import re, math, collections, unicodedata
+
+"""A small labelled set of record pairs: 1 = same entity, 0 = different. Written to include each failure family."""
+PAIRS = [
+    ("John Smith", "Jon Smith", 1), ("John Smith", "Smith, John", 1), ("Catherine Jones", "Katherine Jones", 1),
+    ("Robert Brown", "Bob Brown", 1), ("Acme Corporation Limited", "Acme Corp Ltd", 1), ("IBM", "International Business Machines", 1),
+    ("Jose Garcia", "José García", 1), ("Mary-Ann Lee", "Mary Ann Lee", 1), ("William O'Neil", "William ONeil", 1),
+    ("Dr. Sarah Kim", "Sarah Kim", 1), ("Microsoft Corp.", "Microsoft Corporation", 1), ("Steven Wright", "Stephen Wright", 1),
+    ("McDonald's", "McDonalds", 1), ("New York Times Co", "The New York Times Company", 1), ("Li Wei", "Wei Li", 1),
+    ("John Smith", "Jane Smith", 0), ("Beta Corporation Limited", "Acme Corporation Limited", 0), ("Mark Johnson", "Mark Jonson Ltd", 0),
+    ("Apple Inc", "Applebee's Inc", 0), ("Anna Taylor", "Hannah Taylor", 0), ("Global Tech Solutions", "Global Tech Services", 0),
+    ("Peter Parker", "Peter Porter", 0), ("Smith & Sons", "Smithson", 0), ("Delta Airlines", "Delta Faucets", 0),
+    ("Chris Evans", "Chris Evans Jr", 0), ("North Bank", "Bank North", 0), ("Michael Lee", "Michelle Lee", 0),
+    ("Oracle Corp", "Oracle Consulting Group", 0), ("Sam Brown", "Samantha Brown", 0), ("United Foods", "United Woods", 0),
+]
+
+def words(s): return set(s.split())
+def grams(s, n=3): s = f" {s} "; return {s[i:i + n] for i in range(len(s) - n + 1)}
+def jac(a, b): return len(a & b) / len(a | b) if a | b else 1.0
+def norm(s): return re.sub(r"[^\\w\\s]", "", unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()).strip()
+matches = [(a, b) for a, b, y in PAIRS if y]; non = [(a, b) for a, b, y in PAIRS if not y]
+
+# 1-2. Word and 3-gram Jaccard on matches, raw and normalised.
+mean = lambda xs: sum(xs) / len(xs)
+for label, f in (("raw", lambda s: s), ("normalised", norm)):
+    w = mean([jac(words(f(a)), words(f(b))) for a, b in matches]); g = mean([jac(grams(f(a)), grams(f(b))) for a, b in matches])
+    print(f"{label:10} mean on true matches: word Jaccard {w:.3f}, 3-gram Jaccard {g:.3f}")
+
+# 3. n from 2 to 5: separation between matches and non-matches.
+print("\\n n   mean match   mean non-match   gap")
+for n in (2, 3, 4, 5):
+    m = mean([jac(grams(norm(a), n), grams(norm(b), n)) for a, b in matches]); x = mean([jac(grams(norm(a), n), grams(norm(b), n)) for a, b in non])
+    print(f" {n}   {m:10.3f}   {x:14.3f}   {m - x:.3f}")
+
+# 4. Word Jaccard against edit similarity.
+def lev(a, b):
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i] + [0] * len(b)
+        for j, cb in enumerate(b, 1): cur[j] = min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb))
+        prev = cur
+    return 1 - prev[-1] / max(len(a), len(b))
+rows = sorted(((abs(jac(words(norm(a)), words(norm(b))) - lev(norm(a), norm(b))), a, b, y) for a, b, y in PAIRS), reverse=True)[:3]
+for d, a, b, y in rows:
+    print(f"\\n{a!r} / {b!r} (truth: {'match' if y else 'different'}): word Jaccard {jac(words(norm(a)), words(norm(b))):.3f}, edit {lev(norm(a), norm(b)):.3f}")
+
+# 5. Containment: Jaccard against cosine on token counts.
+def cos(a, b):
+    ca, cb = collections.Counter(a.split()), collections.Counter(b.split())
+    return sum(ca[t] * cb[t] for t in ca) / math.sqrt(sum(v * v for v in ca.values()) * sum(v * v for v in cb.values()))
+for a, b in (("acme", "acme corporation limited"), ("chris evans", "chris evans jr")):
+    print(f"\\ncontainment {a!r} in {b!r}: Jaccard {jac(words(a), words(b)):.3f}, cosine {cos(a, b):.3f}")
+`,
+        out: `raw        mean on true matches: word Jaccard 0.330, 3-gram Jaccard 0.525
+normalised mean on true matches: word Jaccard 0.552, 3-gram Jaccard 0.642
+
+ n   mean match   mean non-match   gap
+ 2        0.732            0.595   0.138
+ 3        0.642            0.477   0.165
+ 4        0.573            0.389   0.184
+ 5        0.510            0.307   0.203
+
+'North Bank' / 'Bank North' (truth: different): word Jaccard 1.000, edit 0.000
+
+'John Smith' / 'Smith, John' (truth: match): word Jaccard 1.000, edit 0.000
+
+'Smith & Sons' / 'Smithson' (truth: different): word Jaccard 0.000, edit 0.727
+
+containment 'acme' in 'acme corporation limited': Jaccard 0.333, cosine 0.577
+
+containment 'chris evans' in 'chris evans jr': Jaccard 0.667, cosine 0.816`,
+        notes: [
+          { t: "p", text: "Normalisation alone lifted mean word Jaccard on true matches from 0.33 to 0.55 and 3-gram Jaccard from 0.53 to 0.64. Accents, apostrophes and case were doing more damage than any choice of metric, so normalise before tuning anything else." },
+          { t: "p", text: "Longer n-grams widened the gap between matches and non-matches, from 0.14 at n = 2 to 0.20 at n = 5, but lowered the absolute scores, so typos cost more. With short name fields, 3 or 4 is the usual compromise. Choose n from the gap on your own pairs, not from a default." },
+          { t: "p", text: "The two families disagree completely on reorderings. 'John Smith'/'Smith, John' (a match) and 'North Bank'/'Bank North' (different banks) both get word Jaccard 1.0 and edit similarity 0.0. No metric can tell them apart, because the evidence that distinguishes them is not in the strings. That is a case for a reference table or a human, not a better threshold. For containment, cosine rates 'acme' in 'acme corporation limited' at 0.58 against Jaccard's 0.33. Cosine is kinder to a short name inside a long one, which is right for abbreviations and wrong for 'Chris Evans' against 'Chris Evans Jr'." },
+          { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
+        ]
+      } }
   ],
 
   takeaways: [

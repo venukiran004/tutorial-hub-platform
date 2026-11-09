@@ -133,14 +133,92 @@ EC.receiveLesson({
       code: 'from rapidfuzz import fuzz, process, utils\n\nfuzz.WRatio("New York Mets", "the Mets of New York")\n\nprocess.extractOne(query, choices,\n                   scorer=fuzz.token_sort_ratio,\n                   processor=utils.default_process,\n                   score_cutoff=80)\n\nprocess.cdist(queries, choices, scorer=fuzz.ratio,\n              score_cutoff=80, workers=-1)   # the whole matrix, in parallel',
       caption: "`score_cutoff` abandons a comparison that cannot reach the threshold; `workers=-1` uses every core." },
     { t: "p", text: "Both arguments attack §04’s arithmetic rather than the algorithm. **`score_cutoff` lets the distance computation stop as soon as the best achievable score falls below the threshold**, which on dissimilar pairs — most pairs — is most of the work avoided. **`process.cdist` with `workers=-1` computes the whole matrix across cores**, and `utils.default_process` is the normalisation step applied consistently to both sides: **lowercase, strip non-alphanumerics, collapse whitespace** — which is 8.4’s normalisation argument as a default rather than a decision." },
-    { t: "exercise", title: "Build the system",
+    { t: "exercise", kind: "Challenge", title: "Build the system", difficulty: "stretch", minutes: 45,
       requirements: [
         "Run all five scorers on 20 pairs from your data and find one where each is wrong.",
         "Compute all-pairs comparisons for your record count and decide whether blocking is optional.",
         "Take known duplicates and measure what fraction share a block under each candidate key.",
         "Combine three similarity scores into one decision and compare it against the best single score.",
         "Find a transitive chain in your data where A matches B and B matches C but A and C are different entities."
-      ] }
+      ],
+      hint: "Measure blocking by recall: the fraction of known duplicates whose two records fall into the same block. A pair that is split by blocking is never compared, so no scorer can recover it.",
+      solution: {
+        lang: "python", title: "build_system.py",
+        code: `import itertools
+from rapidfuzz import fuzz
+from rapidfuzz.distance import JaroWinkler
+
+"""A small labelled set of record pairs: 1 = same entity, 0 = different. Written to include each failure family."""
+PAIRS = [
+    ("John Smith", "Jon Smith", 1), ("John Smith", "Smith, John", 1), ("Catherine Jones", "Katherine Jones", 1),
+    ("Robert Brown", "Bob Brown", 1), ("Acme Corporation Limited", "Acme Corp Ltd", 1), ("IBM", "International Business Machines", 1),
+    ("Jose Garcia", "José García", 1), ("Mary-Ann Lee", "Mary Ann Lee", 1), ("William O'Neil", "William ONeil", 1),
+    ("Dr. Sarah Kim", "Sarah Kim", 1), ("Microsoft Corp.", "Microsoft Corporation", 1), ("Steven Wright", "Stephen Wright", 1),
+    ("McDonald's", "McDonalds", 1), ("New York Times Co", "The New York Times Company", 1), ("Li Wei", "Wei Li", 1),
+    ("John Smith", "Jane Smith", 0), ("Beta Corporation Limited", "Acme Corporation Limited", 0), ("Mark Johnson", "Mark Jonson Ltd", 0),
+    ("Apple Inc", "Applebee's Inc", 0), ("Anna Taylor", "Hannah Taylor", 0), ("Global Tech Solutions", "Global Tech Services", 0),
+    ("Peter Parker", "Peter Porter", 0), ("Smith & Sons", "Smithson", 0), ("Delta Airlines", "Delta Faucets", 0),
+    ("Chris Evans", "Chris Evans Jr", 0), ("North Bank", "Bank North", 0), ("Michael Lee", "Michelle Lee", 0),
+    ("Oracle Corp", "Oracle Consulting Group", 0), ("Sam Brown", "Samantha Brown", 0), ("United Foods", "United Woods", 0),
+]
+
+SCORERS = {"ratio": fuzz.ratio, "partial_ratio": fuzz.partial_ratio, "token_sort_ratio": fuzz.token_sort_ratio,
+           "token_set_ratio": fuzz.token_set_ratio, "WRatio": fuzz.WRatio}
+
+# 1. Each scorer's worst mistake at a threshold of 85.
+for name, f in SCORERS.items():
+    errs = [(abs(f(a.lower(), b.lower()) - (100 if y else 0)), f(a.lower(), b.lower()), a, b, y) for a, b, y in PAIRS
+            if (f(a.lower(), b.lower()) >= 85) != bool(y)]
+    acc = 1 - len(errs) / len(PAIRS)
+    worst = max(errs) if errs else None
+    print(f"{name:17} accuracy {acc:.2f}" + (f"  worst: {worst[2]!r}/{worst[3]!r} scored {worst[1]:.0f}, truth {'match' if worst[4] else 'different'}" if worst else ""))
+
+# 2. All-pairs comparisons.
+for n in (10_000, 1_000_000, 10_000_000):
+    pairs = n * (n - 1) // 2
+    secs = pairs / 1e6
+    print(f"{n:>10,} records: {pairs:.2e} pairs; at 1 µs each " + (f"{secs:,.0f} seconds" if secs < 3600 else f"{secs / 3600:,.0f} hours"))
+
+# 3. Blocking keys: what share of true duplicates land in the same block?
+keys = {"first letter": lambda s: s.lower()[:1], "first 3 letters": lambda s: s.lower()[:3],
+        "last word": lambda s: s.lower().replace(",", "").split()[-1], "sorted first token": lambda s: sorted(s.lower().replace(",", "").split())[0]}
+dups = [(a, b) for a, b, y in PAIRS if y]
+for k, f in keys.items(): print(f"block on {k:18}: {sum(f(a) == f(b) for a, b in dups)}/{len(dups)} duplicates share a block")
+
+# 4. Combining three scores.
+def combo(a, b): return (fuzz.token_sort_ratio(a, b) + 100 * JaroWinkler.similarity(a, b) + fuzz.token_set_ratio(a, b)) / 3
+for name, f in (("token_sort_ratio", fuzz.token_sort_ratio), ("combined", combo)):
+    best = max((sum((f(a.lower(), b.lower()) >= t) == bool(y) for a, b, y in PAIRS), t) for t in range(50, 100))
+    print(f"{name:16} best accuracy {best[0]}/{len(PAIRS)} at threshold {best[1]}")
+
+# 5. A transitive chain.
+chain = ["Mark Johnson", "Mark Jonson", "Mack Jonson"]
+for a, b in itertools.combinations(chain, 2): print(f"  {a!r} ~ {b!r}: {fuzz.ratio(a, b):.0f}")
+`,
+        out: `ratio             accuracy 0.53  worst: 'United Foods'/'United Woods' scored 92, truth different
+partial_ratio     accuracy 0.53  worst: 'Chris Evans'/'Chris Evans Jr' scored 100, truth different
+token_sort_ratio  accuracy 0.53  worst: 'North Bank'/'Bank North' scored 100, truth different
+token_set_ratio   accuracy 0.60  worst: 'North Bank'/'Bank North' scored 100, truth different
+WRatio            accuracy 0.57  worst: 'North Bank'/'Bank North' scored 95, truth different
+    10,000 records: 5.00e+07 pairs; at 1 µs each 50 seconds
+ 1,000,000 records: 5.00e+11 pairs; at 1 µs each 139 hours
+10,000,000 records: 5.00e+13 pairs; at 1 µs each 13,889 hours
+block on first letter      : 9/15 duplicates share a block
+block on first 3 letters   : 7/15 duplicates share a block
+block on last word         : 6/15 duplicates share a block
+block on sorted first token: 3/15 duplicates share a block
+token_sort_ratio best accuracy 19/30 at threshold 94
+combined         best accuracy 18/30 at threshold 95
+  'Mark Johnson' ~ 'Mark Jonson': 96
+  'Mark Johnson' ~ 'Mack Jonson': 87
+  'Mark Jonson' ~ 'Mack Jonson': 91`,
+        notes: [
+          { t: "p", text: "Every RapidFuzz scorer was wrong somewhere at a threshold of 85, with accuracy between 0.53 and 0.60. Each one's worst error matches its design: `ratio` accepted 'United Foods'/'United Woods' at 92, `partial_ratio` gave 'Chris Evans'/'Chris Evans Jr' 100, and the token scorers rated 'North Bank'/'Bank North' 95–100. Choosing a scorer means choosing which false positives you can live with." },
+          { t: "p", text: "All-pairs comparison is fine at 10,000 records (50 seconds at 1 µs per pair) and impossible at a million (139 hours). Blocking is mandatory at that scale, and its recall is the ceiling on everything after it. Blocking on the first letter kept only 9 of 15 known duplicates together. Keys that look sensible, such as the last word, did worse (6 of 15), because reorderings and abbreviations change exactly those positions. Use several blocking keys and take the union." },
+          { t: "p", text: "Averaging three scores did not beat the best single scorer (18 against 19 correct of 30). Averages blur the one scorer that is right about a given pair. A learned combination on labelled pairs, or rules that route each pair type to the right scorer, is the usual fix. 'Mark Johnson' ~ 'Mark Jonson' (96) and 'Mark Jonson' ~ 'Mack Jonson' (91) both pass a 90 threshold, yet the two ends of the chain score 87. Clustering by transitive closure would merge all three, so cluster with a rule that checks every member against every other." },
+          { t: "p", text: "The 30 labelled pairs stand in for 'your data'. They were written to include each failure family, so treat the accuracies as a demonstration of the method, not as a benchmark." }
+        ]
+      } }
   ],
 
   takeaways: [
