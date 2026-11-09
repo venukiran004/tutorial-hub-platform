@@ -144,14 +144,96 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Take the lossless wins first",
       body: [{ t: "p", text: "Five of the seven are lossless, and most teams have not taken all of them. Caching, Flash, continuous batching and paged memory are engineering changes with no evaluation burden — adopt them before touching anything that changes outputs. Then quantisation, which is lossy but usually the biggest single lever. Speculative decoding last, because as this lesson measured it can be **negative** if the draft model is not dramatically cheaper, and it is the only one here whose payoff depends on a property of your specific model pair rather than on your infrastructure." }] },
 
-    { t: "exercise", title: "Measure before adopting",
+    { t: "exercise", kind: "Challenge", title: "Measure before adopting", difficulty: "stretch", minutes: 55,
       requirements: [
         "Implement speculative decoding and measure acceptance rate at K = 2, 4 and 8 for your model pair.",
         "Compute your draft-to-target cost ratio and check whether expected tokens per pass exceeds 1 + K·c.",
         "Quantise your model to INT8 and INT4 and report per-class metrics, not just accuracy.",
         "Measure what fraction of your reserved KV cache is actually used across a realistic request mix.",
         "Compare static and continuous batching throughput on traffic with a realistic spread of output lengths."
-      ] }
+      ],
+      hint: "Accept the longest prefix of drafted tokens that matches the target's argmax at each position. Then append the target's own token at the first mismatch, so every verification pass yields at least one token.",
+      solution: {
+        lang: "python", title: "speculative.py",
+        code: `import os, time, random
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+torch.manual_seed(0); random.seed(0)
+tok = GPT2TokenizerFast.from_pretrained("gpt2")
+draft = GPT2LMHeadModel.from_pretrained("gpt2").eval()            # 124M
+target = GPT2LMHeadModel.from_pretrained("gpt2-medium").eval()    # 355M, same tokenizer
+prompt = tok("The city council met on Tuesday to discuss", return_tensors="pt")["input_ids"]
+
+@torch.no_grad()
+def speculative(K, n_new=40):
+    seq, passes, accepted, drafted = prompt.clone(), 0, 0, 0
+    while seq.shape[1] - prompt.shape[1] < n_new:
+        d = seq
+        for _ in range(K): d = torch.cat([d, draft(d).logits[:, -1:].argmax(-1)], 1)
+        logits = target(d).logits[0]; passes += 1
+        prop = d[0, seq.shape[1]:]; want = logits[seq.shape[1] - 1:-1].argmax(-1)
+        n_ok = int((prop == want).long().cumprod(0).sum()); accepted += n_ok; drafted += K
+        seq = torch.cat([seq, prop[:n_ok][None], want[n_ok:n_ok + 1][None]], 1) if n_ok < K else torch.cat([d, logits[-1:].argmax(-1)[None]], 1)
+    return seq, accepted / drafted, (seq.shape[1] - prompt.shape[1]) / passes
+
+@torch.no_grad()
+def greedy(n_new=40): return target.generate(prompt, max_new_tokens=n_new, min_new_tokens=n_new, do_sample=False, pad_token_id=50256)
+
+# Cost ratio c: one draft step against one target step at this length.
+def step_ms(m):
+    with torch.no_grad():
+        m(prompt); t = time.perf_counter()
+        for _ in range(10): m(prompt)
+    return (time.perf_counter() - t) / 10
+c = step_ms(draft) / step_ms(target)
+t = time.perf_counter(); ref = greedy(); t_g = time.perf_counter() - t
+with torch.no_grad():
+    t = time.perf_counter(); target.generate(prompt, max_new_tokens=40, min_new_tokens=40, do_sample=False, use_cache=False, pad_token_id=50256)
+    t_nc = time.perf_counter() - t
+print(f"draft/target cost ratio c = {c:.2f}; target greedy {t_g:.2f}s with KV cache, {t_nc:.2f}s without")
+print("(the speculative loop below recomputes the full context each pass, so compare it with the uncached figure)")
+print(" K  acceptance  tokens/pass  break-even 1+K·c  time    same output as greedy")
+for K in (2, 4, 8):
+    t = time.perf_counter(); out, acc, tpp = speculative(K); el = time.perf_counter() - t
+    same = torch.equal(out[0, :ref.shape[1]], ref[0, :out.shape[1]][:ref.shape[1]])
+    print(f"{K:2}  {acc:10.0%}  {tpp:11.2f}  {1 + K * c:15.2f}  {el:5.2f}s  {same}")
+
+# 3. INT8 dynamic quantisation of the target's linear layers: perplexity check.
+text = "The museum reopened after an eighteen-month renovation and visitors can now see the restored ceiling."
+q8 = torch.quantization.quantize_dynamic(target, {torch.nn.Linear}, dtype=torch.qint8)
+ids = tok(text, return_tensors="pt")["input_ids"]
+with torch.no_grad():
+    for name, m in (("fp32", target), ("int8", q8)): print(f"{name} perplexity {torch.exp(m(ids, labels=ids).loss):.2f}")
+
+# 4-5. Reserved against used KV cache, and static against continuous batching, on a realistic length mix.
+lengths = np.clip(np.random.default_rng(0).lognormal(4.5, 0.9, 64).astype(int), 5, 1024)
+print(f"\\noutput lengths: median {np.median(lengths):.0f}, max {lengths.max()}")
+print(f"reserving max_len=1024 per request uses {lengths.sum() / (1024 * len(lengths)):.1%} of the reserved cache")
+batch = 8
+static_steps = sum(lengths[i:i + batch].max() for i in range(0, len(lengths), batch))
+print(f"static batching: {static_steps} decode steps; continuous (ideal refill): {int(np.ceil(lengths.sum() / batch))} steps "
+      f"-> {static_steps / np.ceil(lengths.sum() / batch):.2f}x throughput")
+`,
+        out: `draft/target cost ratio c = 0.40; target greedy 2.71s with KV cache, 7.76s without
+(the speculative loop below recomputes the full context each pass, so compare it with the uncached figure)
+ K  acceptance  tokens/pass  break-even 1+K·c  time    same output as greedy
+ 2         78%         2.56             1.81   6.98s  True
+ 4         65%         3.58             2.61   7.26s  True
+ 8         61%         5.86             4.22   7.01s  True
+fp32 perplexity 43.84
+int8 perplexity 2677.53
+
+output lengths: median 95, max 525
+reserving max_len=1024 per request uses 12.9% of the reserved cache
+static batching: 2648 decode steps; continuous (ideal refill): 1060 steps -> 2.50x throughput`,
+        notes: [
+          { t: "p", text: "With GPT-2 small drafting for GPT-2 medium (cost ratio 0.40), acceptance fell with K, from 78% at K=2 to 61% at K=8, while tokens per target pass rose from 2.56 to 5.86. Every K beat its break-even of 1 + K·c, and every run produced exactly the greedy output. Speculative decoding is lossless." },
+          { t: "p", text: "Measure the comparison like for like. This loop recomputes the whole context each pass. Against uncached greedy (7.76 s) speculative decoding was about 10% faster (6.98–7.26 s). Against cached greedy (2.71 s) it was much slower. A production implementation keeps KV caches for both models; without that, the comparison measures the cache, not the method." },
+          { t: "p", text: "Dynamic INT8 quantisation took GPT-2 medium's perplexity from 43.8 to 2,678. GPT-2's attention and MLP layers are `Conv1D` modules, not `nn.Linear`, so the only layer quantised was the output head, whose weights are tied to the embeddings. Always run an evaluation after quantising; the call succeeding tells you nothing." },
+          { t: "p", text: "On a log-normal mix of output lengths (median 95, max 525), reserving 1,024 tokens of cache per request used 12.9% of the reservation, which is why paged attention exists. Static batching ran 2.5× as many decode steps as ideal continuous batching, because each batch waits for its longest member." }
+        ]
+      } }
   ],
 
   takeaways: [

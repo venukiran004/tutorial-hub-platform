@@ -130,14 +130,98 @@ EC.receiveLesson({
 
     { t: "p", text: "Temperature divides the logits before the softmax, so `T < 1` sharpens and `T > 1` flattens. Top-k masks everything outside the k highest logits to `−inf` so the softmax assigns them exactly zero. The two compose: temperature reshapes the distribution, top-k truncates it, and they are applied in that order." },
 
-    { t: "exercise", title: "Build it yourself",
+    { t: "exercise", kind: "Challenge", title: "Build it yourself", difficulty: "stretch", minutes: 55,
       requirements: [
         "Write the model from scratch and check `GPTModel(50257)` gives 124,439,808 parameters before training anything.",
         "Remove the weight tying and confirm the count rises by exactly vocab × d_model.",
         "Train on sequence reversal and compute the theoretical loss floor from the task's entropy before you run it.",
         "Inspect the final layer's attention at each output position and check whether a head tracks the position it needs.",
         "Remove `ln_f` and retrain. Compare the loss curve against the version that has it."
-      ] }
+      ],
+      hint: "Count the unpredictable targets carefully. Targets are the input shifted by one, so the first digit is never a target and only K−1 random digits remain. Everything after the separator is determined.",
+      solution: {
+        lang: "python", title: "build_gpt.py",
+        code: `import math
+import torch, torch.nn as nn
+torch.manual_seed(0)
+
+class Block(nn.Module):
+    def __init__(s, d, h):
+        super().__init__(); s.ln1, s.ln2 = nn.LayerNorm(d), nn.LayerNorm(d)
+        s.att = nn.MultiheadAttention(d, h, batch_first=True)
+        s.mlp = nn.Sequential(nn.Linear(d, 4 * d), nn.GELU(), nn.Linear(4 * d, d))
+    def forward(s, x):
+        T = x.shape[1]; mask = torch.ones(T, T, dtype=torch.bool).triu(1)
+        h = s.ln1(x); a, w = s.att(h, h, h, attn_mask=mask, need_weights=True, average_attn_weights=False); s.w = w
+        x = x + a; return x + s.mlp(s.ln2(x))
+
+class GPTModel(nn.Module):
+    def __init__(s, vocab, d=768, L=12, h=12, ctx=1024, tie=True, ln_f=True):
+        super().__init__(); s.tok = nn.Embedding(vocab, d); s.pos = nn.Embedding(ctx, d)
+        s.blocks = nn.ModuleList(Block(d, h) for _ in range(L)); s.ln_f = nn.LayerNorm(d) if ln_f else nn.Identity()
+        s.head = nn.Linear(d, vocab, bias=False)
+        if tie: s.head.weight = s.tok.weight
+    def forward(s, x):
+        x = s.tok(x) + s.pos(torch.arange(x.shape[1]))
+        for b in s.blocks: x = b(x)
+        return s.head(s.ln_f(x))
+
+n = lambda m: sum(p.numel() for p in m.parameters())
+tied, untied = n(GPTModel(50257)), n(GPTModel(50257, tie=False))
+print(f"GPTModel(50257): {tied:,}  untied: {untied:,}  difference {untied - tied:,} = 50257 x 768 = {50257 * 768:,}")
+
+# 3. Sequence reversal: input 8 digits, a separator, then the reversed digits.
+V, K = 11, 8                                  # digits 0-9 plus separator 10
+def batch(b=64):
+    x = torch.randint(0, 10, (b, K)); seq = torch.cat([x, torch.full((b, 1), 10), x.flip(1)], 1)
+    return seq[:, :-1], seq[:, 1:]
+# targets are seq[1:]: digits 2..K are random (K-1 of them); the separator and the K reversed digits are determined
+floor = (K - 1) * math.log(10) / (2 * K)
+print(f"loss floor: {K - 1} unpredictable targets of {2 * K} -> {floor:.4f} nats per token")
+
+def train(ln_f, steps=600):
+    torch.manual_seed(0); m = GPTModel(V, d=64, L=2, h=4, ctx=2 * K + 1, ln_f=ln_f); opt = torch.optim.AdamW(m.parameters(), 3e-3)
+    curve = []
+    for step in range(steps):
+        x, y = batch(); loss = nn.functional.cross_entropy(m(x).reshape(-1, V), y.reshape(-1))
+        opt.zero_grad(); loss.backward(); opt.step()
+        if step % 150 == 149: curve.append(round(loss.item(), 3))
+    return m, curve
+m, c1 = train(True); _, c2 = train(False)
+print(f"loss every 150 steps with ln_f:    {c1}")
+print(f"loss every 150 steps without ln_f: {c2}")
+
+# 4. Which layer and head looks at the source position each output step needs?
+x, _ = batch(1); m.eval()
+with torch.no_grad(): m(x)
+print()
+print("output step  needs source pos  strongest head on it")
+for t in range(K, 2 * K):
+    need = 2 * K - 1 - t                      # output at t copies x[need]
+    L, h, w = max(((L, h, b.w[0, h, t, need].item()) for L, b in enumerate(m.blocks) for h in range(b.w.shape[1])), key=lambda r: r[2])
+    print(f"{t:11}  {need:16}  layer {L} head {h}, weight {w:.2f}")
+`,
+        out: `GPTModel(50257): 124,439,808  untied: 163,037,184  difference 38,597,376 = 50257 x 768 = 38,597,376
+loss floor: 7 unpredictable targets of 16 -> 1.0074 nats per token
+loss every 150 steps with ln_f:    [1.82, 1.019, 1.026, 1.024]
+loss every 150 steps without ln_f: [1.085, 1.05, 1.059, 1.032]
+
+output step  needs source pos  strongest head on it
+          8                 7  layer 0 head 3, weight 1.00
+          9                 6  layer 0 head 1, weight 1.00
+         10                 5  layer 0 head 1, weight 1.00
+         11                 4  layer 0 head 3, weight 0.99
+         12                 3  layer 0 head 1, weight 1.00
+         13                 2  layer 0 head 3, weight 0.99
+         14                 1  layer 0 head 3, weight 0.99
+         15                 0  layer 0 head 3, weight 1.00`,
+        notes: [
+          { t: "p", text: "Built from scratch, the model has 124,439,808 parameters with tied weights. Untying adds exactly 50,257 × 768 = 38,597,376, so tying saves a quarter of GPT-2 small." },
+          { t: "p", text: "The entropy floor is 7 random targets of 16, each costing ln 10: 1.0074 nats per token. A first attempt that counted 8 gave 1.15 and the model appeared to 'beat' it. A loss below the theoretical floor means the floor is wrong, not that the model is exceptional. The trained model reached 1.02, essentially the floor, so it reverses perfectly." },
+          { t: "p", text: "The mechanism is visible. For every output step, a head in layer 0 puts 0.99–1.00 of its weight on exactly the source position it must copy. Heads 1 and 3 split the job between them. The last layer did not track it, so search every layer, not only the final one." },
+          { t: "p", text: "Removing ln_f made no lasting difference on this two-layer model; both runs reached about 1.03 by step 600. The final norm matters for deep models, where the un-normalised residual stream grows with depth (lesson 4.6). A two-layer toy is too shallow to show it." }
+        ]
+      } }
   ],
 
   takeaways: [

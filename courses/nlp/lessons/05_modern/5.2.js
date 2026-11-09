@@ -130,14 +130,95 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Sparse changes the answer; Flash does not",
       body: [{ t: "p", text: "This is the distinction that decides which to reach for. FlashAttention computes exactly the same function, so adopting it costs nothing but engineering. Every sparse method computes a **different** function — Longformer genuinely cannot attend from token 1 to token 4000 unless one of them is global, and Performer approximates the softmax kernel. That means re-evaluating on your task, and it means some capabilities are structurally removed. Given that Flash made exact attention affordable at long context, sparse patterns have become a narrower tool than they looked in 2020: use them when the sequences are genuinely enormous and the access pattern is genuinely local." }] },
 
-    { t: "exercise", title: "Measure the cache and the kernel",
+    { t: "exercise", kind: "Challenge", title: "Measure the cache and the kernel", difficulty: "stretch", minutes: 50,
       requirements: [
         "Compute your model's KV cache for your real batch size and context length, and compare it against the weights.",
         "Generate with `use_cache=True` and `False` at several lengths and plot the ratio.",
         "Implement online softmax and verify it matches standard attention at several block sizes.",
         "Work out the GQA group count that fits your cache budget, then check quality against MHA on your task.",
         "Benchmark `scaled_dot_product_attention` against a naive implementation at sequence lengths from 512 to 8192, and note where memory rather than time becomes the limit."
-      ] }
+      ],
+      hint: "For online softmax, keep a running maximum, a running sum and a running weighted accumulator. When a new block raises the maximum, rescale the sum and the accumulator by exp(old_max − new_max) before adding the block.",
+      solution: {
+        lang: "python", title: "cache_and_kernel.py",
+        code: `import os, time, math
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+import torch.nn.functional as F
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+torch.manual_seed(0)
+
+# 1. KV cache against weights.
+def kv_gb(layers, kv_heads, d_head, seq, batch, bytes_=2):
+    return 2 * layers * kv_heads * d_head * seq * batch * bytes_ / 1e9
+print(f"GPT-2 small, batch 8, 1024 ctx, fp16: cache {kv_gb(12, 12, 64, 1024, 8):.2f} GB vs weights {124e6 * 2 / 1e9:.2f} GB")
+print(f"LLaMA-2-70B (8 KV heads), batch 32, 32K ctx: cache {kv_gb(80, 8, 128, 32768, 32):.1f} GB vs weights ~140 GB")
+
+# 2. Generation with and without the cache.
+tok = GPT2TokenizerFast.from_pretrained("gpt2"); lm = GPT2LMHeadModel.from_pretrained("gpt2").eval()
+ids = tok("The council approved the budget and", return_tensors="pt")["input_ids"]
+print("\\nnew tokens  no cache   cache   ratio")
+for n in (20, 60, 120):
+    ts = []
+    for cache in (False, True):
+        t = time.perf_counter()
+        with torch.no_grad(): lm.generate(ids, max_new_tokens=n, min_new_tokens=n, do_sample=False, use_cache=cache, pad_token_id=50256)
+        ts.append(time.perf_counter() - t)
+    print(f"{n:10}  {ts[0]:7.2f}s {ts[1]:6.2f}s  {ts[0] / ts[1]:5.2f}x")
+
+# 3. Online softmax, block by block, against standard attention.
+def online(q, K, V, block):
+    m, l, acc = torch.tensor(-math.inf), torch.tensor(0.0), torch.zeros(V.shape[-1])
+    for i in range(0, K.shape[0], block):
+        s = K[i:i + block] @ q / math.sqrt(q.shape[0])
+        m_new = torch.maximum(m, s.max()); scale = torch.exp(m - m_new)
+        p = torch.exp(s - m_new)
+        l = l * scale + p.sum(); acc = acc * scale + p @ V[i:i + block]; m = m_new
+    return acc / l
+q, K, V = torch.randn(64, dtype=torch.float64), torch.randn(1000, 64, dtype=torch.float64), torch.randn(1000, 64, dtype=torch.float64)
+ref = torch.softmax(K @ q / 8, 0) @ V
+print("\\nonline softmax max error, block 1/16/128/1000:", [f"{(online(q, K, V, b) - ref).abs().max():.1e}" for b in (1, 16, 128, 1000)])
+
+# 4. GQA: the largest KV-head count that fits a cache budget.
+budget_gb = 40
+for kvh in (64, 32, 16, 8, 4, 2, 1):
+    gb = kv_gb(80, kvh, 128, 32768, 8)
+    if gb <= budget_gb: print(f"70B-class, batch 8, 32K ctx, {budget_gb} GB budget: {kvh} KV heads fit ({gb:.1f} GB; MHA would need {kv_gb(80, 64, 128, 32768, 8):.0f} GB)"); break
+
+# 5. Naive attention against SDPA: time, and the score matrix a naive kernel materialises.
+print("\\n   T   naive ms   sdpa ms   naive score matrix (batch 1, 8 heads, fp32)")
+for T in (512, 1024, 2048, 4096):
+    x = torch.randn(1, 8, T, 64)
+    def naive(): return (x @ x.transpose(-1, -2) / 8).softmax(-1) @ x
+    def fused(): return F.scaled_dot_product_attention(x, x, x)
+    res = []
+    for f in (naive, fused):
+        f(); t = time.perf_counter(); f(); res.append(1000 * (time.perf_counter() - t))
+    print(f"{T:5} {res[0]:9.1f} {res[1]:9.1f}   {8 * T * T * 4 / 1e6:8.0f} MB")
+`,
+        out: `GPT-2 small, batch 8, 1024 ctx, fp16: cache 0.30 GB vs weights 0.25 GB
+LLaMA-2-70B (8 KV heads), batch 32, 32K ctx: cache 343.6 GB vs weights ~140 GB
+
+new tokens  no cache   cache   ratio
+        20     0.92s   0.60s   1.53x
+        60     4.14s   1.77s   2.34x
+       120    14.15s   3.82s   3.70x
+
+online softmax max error, block 1/16/128/1000: ['2.2e-16', '1.4e-16', '1.7e-16', '2.5e-16']
+70B-class, batch 8, 32K ctx, 40 GB budget: 2 KV heads fit (21.5 GB; MHA would need 687 GB)
+
+   T   naive ms   sdpa ms   naive score matrix (batch 1, 8 heads, fp32)
+  512       4.6       3.6          8 MB
+ 1024      33.9      19.5         34 MB
+ 2048     126.0      58.6        134 MB
+ 4096     322.7     262.7        537 MB`,
+        notes: [
+          { t: "p", text: "Even for GPT-2 small, a batch of 8 at full 1,024-token context needs 0.30 GB of fp16 cache, more than the 0.25 GB of weights. For a 70B model with GQA at 32K context and batch 32 it is 344 GB, more than twice the weights. The cache, not the model, sets how many users fit on a card." },
+          { t: "p", text: "The cache's speed-up grew with length: 1.5× at 20 new tokens, 2.3× at 60 and 3.7× at 120. Without it each step re-processes the whole prefix, so total work is quadratic in length." },
+          { t: "p", text: "Online softmax matched standard attention to 2e-16 at every block size, from 1 to 1,000. It is exact, not an approximation, which is why FlashAttention changes memory use and speed but not results. With a 40 GB budget at batch 8 and 32K context, only 2 KV heads fit against 687 GB for full multi-head attention. Whether 2 heads keeps quality has to be measured on your task." },
+          { t: "p", text: "On this CPU the fused SDPA kernel beat the naive version at every length, by up to 2.2×. The memory column matters more: at 4,096 tokens the naive score matrix is 537 MB for one sequence and 8 heads, and it grows with the square of the length. That matrix is what runs out first." }
+        ]
+      } }
   ],
 
   takeaways: [

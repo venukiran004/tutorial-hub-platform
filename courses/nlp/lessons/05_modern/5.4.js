@@ -147,14 +147,85 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "What scaling laws do not tell you",
       body: [{ t: "p", text: "They predict **loss**, not capability, and the relationship between the two is not one you can assume. They are fitted within an architecture and data distribution, so they extrapolate only while those hold — a change of tokeniser, data mix or architecture invalidates the fit. And they say nothing about data *quality*: the token counts in every table above treat all tokens as equal, which is plainly false, and much of the recent progress in small models has come from better data rather than more of it. Treat a scaling law as a well-calibrated instrument with a narrow operating range, not a law of nature." }] },
 
-    { t: "exercise", title: "Fit and test",
+    { t: "exercise", kind: "Challenge", title: "Fit and test", difficulty: "stretch", minutes: 50,
       requirements: [
         "Compute the Chinchilla-optimal N and D for a compute budget you could actually afford, using C ≈ 6ND.",
         "Take three models you use and compute their tokens-per-parameter ratio. Note which are over- and under-trained.",
         "Reproduce the emergence simulation and vary the number of required tokens from 1 to 50.",
         "Find a published emergence claim, then check whether the paper reports any continuous metric alongside the discontinuous one.",
         "Train three small models at increasing size, fit the power law, and predict a fourth before training it."
-      ] }
+      ],
+      hint: "With C ≈ 6ND and D = 20N, the compute budget gives N = sqrt(C / 120). For the power law, fit a straight line to log(loss) against log(parameters) with `np.polyfit`.",
+      solution: {
+        lang: "python", title: "fit_and_test.py",
+        code: `import math, time
+import numpy as np, torch, torch.nn as nn
+from nltk.corpus import gutenberg
+torch.manual_seed(0)
+
+# 1. Chinchilla-optimal N and D for an affordable budget: 8 GPUs x 1 week at 40% of 312 TFLOP/s.
+C = 8 * 7 * 86400 * 312e12 * 0.40
+N = math.sqrt(C / (6 * 20)); D = 20 * N
+print(f"budget {C:.2e} FLOPs -> N = {N / 1e9:.2f}B parameters, D = {D / 1e9:.0f}B tokens")
+
+# 2. Tokens per parameter for published models.
+for name, n, d in (("GPT-3", 175e9, 300e9), ("Chinchilla", 70e9, 1.4e12), ("LLaMA-2 7B", 7e9, 2e12), ("LLaMA-3 8B", 8e9, 15e12)):
+    r = d / n; print(f"{name:11} {r:7.1f} tokens/param  {'under' if r < 15 else 'over' if r > 30 else 'near'}-trained vs ~20")
+
+# 3. Emergence from a smooth per-token accuracy, scored by exact match over k tokens.
+scales = [1e9, 1e10, 1e11, 1e12, 1e13]
+p = lambda n: 1 / (1 + math.exp(-1.2 * (math.log10(n) - 11.5)))
+print("\\nparams   per-token  " + "  ".join(f"EM@{k:<3}" for k in (1, 5, 20, 50)))
+for n in scales: print(f"{n:7.0e}  {p(n):9.4f}  " + "  ".join(f"{p(n) ** k:6.4f}" for k in (1, 5, 20, 50)))
+
+# 5. Three tiny character models, a power-law fit, and a prediction for a fourth.
+text = gutenberg.raw("austen-emma.txt")[:200_000]
+chars = sorted(set(text)); stoi = {c: i for i, c in enumerate(chars)}
+data = torch.tensor([stoi[c] for c in text]); V, T = len(chars), 32
+class Tiny(nn.Module):
+    def __init__(s, d):
+        super().__init__(); s.e = nn.Embedding(V, d); s.p = nn.Embedding(T, d)
+        s.b = nn.TransformerEncoder(nn.TransformerEncoderLayer(d, 2, 4 * d, 0.0, batch_first=True, norm_first=True), 2)
+        s.o = nn.Linear(d, V)
+    def forward(s, x):
+        m = nn.Transformer.generate_square_subsequent_mask(x.shape[1])
+        return s.o(s.b(s.e(x) + s.p(torch.arange(x.shape[1])), mask=m, is_causal=True))
+def run(d, steps=300):
+    torch.manual_seed(0); m = Tiny(d); opt = torch.optim.AdamW(m.parameters(), 3e-3)
+    for _ in range(steps):
+        i = torch.randint(0, len(data) - T - 1, (32,)); x = torch.stack([data[j:j + T] for j in i]); y = torch.stack([data[j + 1:j + T + 1] for j in i])
+        loss = nn.functional.cross_entropy(m(x).reshape(-1, V), y.reshape(-1)); opt.zero_grad(); loss.backward(); opt.step()
+    with torch.no_grad():
+        i = torch.arange(0, 20_000, 97); x = torch.stack([data[j:j + T] for j in i]); y = torch.stack([data[j + 1:j + T + 1] for j in i])
+        return sum(q.numel() for q in m.parameters()), nn.functional.cross_entropy(m(x).reshape(-1, V), y.reshape(-1)).item()
+pts = [run(d) for d in (16, 32, 64)]
+for n, l in pts: print(f"d-model sized {n:7,} params -> held-out loss {l:.3f}")
+b, a = np.polyfit(np.log([n for n, _ in pts]), np.log([l for _, l in pts]), 1)
+n4, l4 = run(128)
+print(f"fit loss = {math.exp(a):.2f} * N^{b:.3f}; predicted at {n4:,} params {math.exp(a) * n4 ** b:.3f}, measured {l4:.3f}")
+`,
+        out: `budget 6.04e+20 FLOPs -> N = 2.24B parameters, D = 45B tokens
+GPT-3           1.7 tokens/param  under-trained vs ~20
+Chinchilla     20.0 tokens/param  near-trained vs ~20
+LLaMA-2 7B    285.7 tokens/param  over-trained vs ~20
+LLaMA-3 8B   1875.0 tokens/param  over-trained vs ~20
+
+params   per-token  EM@1    EM@5    EM@20   EM@50 
+  1e+09     0.0474  0.0474  0.0000  0.0000  0.0000
+  1e+10     0.1419  0.1419  0.0001  0.0000  0.0000
+  1e+11     0.3543  0.3543  0.0056  0.0000  0.0000
+  1e+12     0.6457  0.6457  0.1122  0.0002  0.0000
+  1e+13     0.8581  0.8581  0.4654  0.0469  0.0005
+d-model sized   9,547 params -> held-out loss 2.524
+d-model sized  31,307 params -> held-out loss 2.337
+d-model sized 111,691 params -> held-out loss 2.003
+fit loss = 6.06 * N^-0.094; predicted at 419,915 params 1.788, measured 1.853`,
+        notes: [
+          { t: "p", text: "Eight GPUs for a week at 40% utilisation is about 6e20 FLOPs, enough for a Chinchilla-optimal 2.2B-parameter model on 45B tokens. GPT-3 at 1.7 tokens per parameter was heavily under-trained by that rule. LLaMA models at 286 and 1,875 tokens per parameter were deliberately over-trained, trading training compute for a smaller, cheaper-to-serve model." },
+          { t: "p", text: "The emergence table comes from one smooth logistic. Exact match over 20 tokens reads 0.0000 until 10¹² parameters and then 'jumps', because it raises the per-token accuracy to the 20th power. The more tokens a task needs, the later and sharper the apparent jump. Report the per-token or continuous metric alongside the exact-match one." },
+          { t: "p", text: "Three tiny character models (9.5K–112K parameters, 300 steps each) gave loss = 6.06·N^−0.094. The fit predicted 1.788 at 420K parameters and the measured loss was 1.853, 3.5% off. At this scale and with a fixed step count the bigger model is under-trained, so it lands above the line. That is the same compute-allocation effect Chinchilla measured. Step 4, checking a published paper, is a reading task and has no code." }
+        ]
+      } }
   ],
 
   takeaways: [

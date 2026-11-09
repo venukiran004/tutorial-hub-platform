@@ -157,14 +157,102 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Simplicity and scaling, not superiority at every task",
       body: [{ t: "p", text: "Decoder-only won because one stack trained on one objective scales cleanly, prompt and output share a single sequence, and **in-context learning emerged** — one model performs any task described in the prompt, with no head to train. That removed an entire engineering category. But it did not win on every axis. Encoder-only models remain better and far cheaper for embeddings and reranking, where you want one bidirectional representation rather than a generation. Encoder-decoder still wins where a distinct source needs a clean bidirectional read before any output is produced, which is why Whisper is encoder-decoder and why translation systems often still are." }] },
 
-    { t: "exercise", title: "Probe the families yourself",
+    { t: "exercise", kind: "Challenge", title: "Probe the families yourself", difficulty: "core", minutes: 40,
       requirements: [
         "Extract attention weights from an encoder and a decoder on the same sentence and confirm the future-attention maximum is 0 for one and not the other.",
         "Ask BERT to fill one mask, then two, then five, and record where the output stops being coherent.",
         "Take a single GPT-2 forward pass and print the next-token distribution at every position, verifying they all come from one pass.",
         "Run three unrelated tasks through T5 by changing only the prefix, and confirm nothing else changes.",
         "Compare an encoder-only embedding model against a decoder-only model of similar size on a retrieval task, and compare both cost and accuracy."
-      ] }
+      ],
+      hint: "Stack the attentions from every layer, build an upper-triangular boolean mask that excludes the diagonal, and take the maximum weight under it. For a causal model that maximum must be exactly zero.",
+      solution: {
+        lang: "python", title: "probe_families.py",
+        code: `import os, time
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from transformers import (AutoTokenizer, AutoModel, AutoModelForMaskedLM, GPT2LMHeadModel, GPT2TokenizerFast,
+                          T5ForConditionalGeneration, T5TokenizerFast)
+from sentence_transformers import SentenceTransformer
+from docs import DOCS
+
+s = "The engineer fixed the server before the outage spread."
+bt = AutoTokenizer.from_pretrained("bert-base-uncased"); gt = GPT2TokenizerFast.from_pretrained("gpt2")
+bert = AutoModel.from_pretrained("bert-base-uncased", attn_implementation="eager").eval()
+gpt = GPT2LMHeadModel.from_pretrained("gpt2", attn_implementation="eager").eval()
+
+# 1. Maximum attention weight on any future position, over all layers and heads.
+with torch.no_grad():
+    for name, m, t in (("BERT", bert, bt), ("GPT-2", gpt, gt)):
+        A = torch.stack(m(**t(s, return_tensors="pt"), output_attentions=True).attentions)[:, 0]
+        n = A.shape[-1]; future = torch.ones(n, n, dtype=torch.bool).triu(1)
+        print(f"{name:5} max weight on a future position: {A[..., future].max():.4f}")
+
+# 2. One mask, two, five.
+mlm = AutoModelForMaskedLM.from_pretrained("bert-base-uncased").eval()
+for k in (1, 2, 5):
+    enc = bt("The capital of France is " + " ".join(["[MASK]"] * k) + ".", return_tensors="pt")
+    with torch.no_grad(): logits = mlm(**enc).logits[0]
+    pos = (enc["input_ids"][0] == bt.mask_token_id).nonzero().flatten()
+    print(f"{k} mask(s): {bt.decode(logits[pos].argmax(-1))!r}")
+
+# 3. One GPT-2 pass gives a next-token distribution at every position.
+ids = gt("The council approved the new budget", return_tensors="pt")["input_ids"]
+with torch.no_grad(): L = gpt(ids).logits[0]
+print("\\none forward pass, logits shape", tuple(L.shape))
+for i in range(ids.shape[1]):
+    print(f"  after {gt.decode(ids[0, :i + 1])!r:40} -> {gt.decode(L[i].argmax())!r}")
+
+# 4. T5: three tasks, only the prefix changes.
+tt = T5TokenizerFast.from_pretrained("t5-small"); t5 = T5ForConditionalGeneration.from_pretrained("t5-small").eval()
+text = "The council approved a new budget that raises spending on public transport."
+for prefix in ("translate English to German: ", "summarize: ", "cola sentence: "):
+    with torch.no_grad(): out = t5.generate(**tt(prefix + text, return_tensors="pt"), max_new_tokens=30)
+    print(f"{prefix:30} -> {tt.decode(out[0], skip_special_tokens=True)}")
+
+# 5. Retrieval: an encoder embedding model against mean-pooled GPT-2 states.
+import re
+passages = [x for d in DOCS for x in re.split(r"(?<=\\.)\\s+", d)]
+qs = {"How fast does the new battery charge?": "six minutes", "Why did ticket volume rise?": "password reset",
+      "When does support for the old file format end?": "December", "What did farmers say about wheat?": "wheat",
+      "When is entry free at the museum?": "first Sunday", "How often will buses run at peak?": "every ten minutes"}
+enc_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+def gpt_embed(xs):
+    out = []
+    with torch.no_grad():
+        for x in xs:
+            h = gpt.transformer(**gt(x, return_tensors="pt")).last_hidden_state[0].mean(0); out.append((h / h.norm()).numpy())
+    return np.stack(out)
+for name, f in (("MiniLM encoder (22M)", lambda xs: enc_model.encode(xs, normalize_embeddings=True)), ("GPT-2 mean-pooled (124M)", gpt_embed)):
+    t = time.perf_counter(); P = f(passages); Q = f(list(qs)); el = time.perf_counter() - t
+    hits = sum(any(needle in passages[i] for i in np.argsort(-(P @ q))[:1]) for q, needle in zip(Q, qs.values()))
+    print(f"{name:25} recall@1 {hits}/{len(qs)}   embedding time {el:.2f}s")
+`,
+        out: `BERT  max weight on a future position: 1.0000
+GPT-2 max weight on a future position: 0.0000
+1 mask(s): 'paris'
+2 mask(s): 'paris paris'
+5 mask(s): 'the the in -et'
+
+one forward pass, logits shape (6, 50257)
+  after 'The'                                    -> '\\n'
+  after 'The council'                            -> ' is'
+  after 'The council approved'                   -> ' the'
+  after 'The council approved the'               -> ' plan'
+  after 'The council approved the new'           -> ' law'
+  after 'The council approved the new budget'    -> ' on'
+translate English to German:   -> Der Rat hat einen neuen Haushalt angenommen, der die Ausgaben für den öffentlichen Verkehr erhöht.
+summarize:                     -> the council approves a new budget that raises public transport spending.
+cola sentence:                 -> acceptable
+MiniLM encoder (22M)      recall@1 5/6   embedding time 0.16s
+GPT-2 mean-pooled (124M)  recall@1 0/6   embedding time 1.54s`,
+        notes: [
+          { t: "p", text: "GPT-2 put exactly 0.0000 on every future position across all 144 heads. BERT had a head putting its entire weight on a future token. The mask is the whole architectural difference between the families, and it is visible in the weights." },
+          { t: "p", text: "One mask gave 'paris'. Two gave 'paris paris', because each mask is predicted independently and both choose the same most likely word. Five gave 'the the in -et'. BERT has no way to make the second blank depend on the first, which is why masked prediction does not turn into generation." },
+          { t: "p", text: "One GPT-2 forward pass returned 6 × 50,257 logits, a next-token distribution after every prefix, all from a single call. That is what makes teacher-forced training parallel. T5 handled translation, summarisation and an acceptability judgement with identical weights and code; only the prefix changed." },
+          { t: "p", text: "For retrieval, the 22M-parameter MiniLM encoder found 5 of 6 answers, while mean-pooled GPT-2 states found none, in a tenth of the time. A decoder's hidden states are trained to predict the next token, not to place similar meanings near each other. Without contrastive training they are poor embeddings, whatever the model size." }
+        ]
+      } }
   ],
 
   takeaways: [

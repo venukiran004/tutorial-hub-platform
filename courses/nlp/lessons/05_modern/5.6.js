@@ -146,14 +146,88 @@ EC.receiveLesson({
       code: 'from transformers import get_linear_schedule_with_warmup, \\\n                         get_cosine_schedule_with_warmup\nfrom torch.amp import GradScaler, autocast\n\ntotal_steps = len(loader) * epochs\nsched = get_linear_schedule_with_warmup(\n    opt, num_warmup_steps=int(0.1 * total_steps),\n    num_training_steps=total_steps)\n\nscaler = GradScaler()                      # fp16 only; bf16 needs none\nfor batch in loader:\n    with autocast("cuda", dtype=torch.bfloat16):\n        loss = model(**batch).loss\n    scaler.scale(loss).backward()\n    scaler.step(opt); scaler.update(); sched.step()',
       caption: "`warmup_ratio=0.1` above is this: `num_warmup_steps = 0.1 × num_training_steps`." },
     { t: "p", text: "Two things become visible once the loop is explicit. **The schedule needs `num_training_steps` up front, so `warmup_ratio` cannot be honoured without knowing the dataset length** — which is why a streaming dataset breaks it. And **`GradScaler` exists only for fp16: bf16’s dynamic range makes loss scaling unnecessary**, so the `bf16=True` recommendation above also deletes a component, not just a flag." },
-    { t: "exercise", title: "Measure the savings",
+    { t: "exercise", kind: "Challenge", title: "Measure the savings", difficulty: "core", minutes: 40,
       requirements: [
         "Compute LoRA trainable parameters for your own model at ranks 4, 8, 16 and 64, and plot against downstream accuracy.",
         "Measure peak training memory with full fine-tuning and with LoRA, and attribute the difference to gradients against optimiser state.",
         "Take a fine-tuned model, compute ΔW against the base, and examine its singular value spectrum to see whether it really is low-rank.",
         "Sweep distillation temperature from 1 to 10 and inspect the teacher's distribution on examples your student gets wrong.",
         "Compare a LoRA-tuned base model against a distilled student on both accuracy and per-request latency."
-      ] }
+      ],
+      hint: "LoRA on a d × d matrix adds A (d × r) and B (r × d), so 2·d·r parameters per adapted matrix. Count that across the query and value projections of every layer.",
+      solution: {
+        lang: "python", title: "lora_savings.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import AutoModel, AutoModelForSequenceClassification, AutoTokenizer
+
+base = AutoModel.from_pretrained("distilbert-base-uncased")
+total = sum(p.numel() for p in base.parameters())
+
+# 1. LoRA trainable parameters on the query and value projections, by rank.
+layers, d = len(base.transformer.layer), base.config.dim
+print(f"DistilBERT: {total:,} parameters")
+for r in (4, 8, 16, 64):
+    lora = layers * 2 * (d * r + r * d)
+    print(f"rank {r:2}: {lora:>9,} trainable ({lora / total:.3%})")
+
+# 2. Training memory, fp32 with Adam: weights + grads + two moments, full against LoRA rank 8.
+mb = lambda n: n * 4 / 2 ** 20
+lora8 = layers * 2 * 2 * d * 8
+full = (mb(total), mb(total), mb(2 * total)); lo = (mb(total), mb(lora8), mb(2 * lora8))
+for name, (w, g, a) in (("full fine-tune", full), ("LoRA r=8", lo)):
+    print(f"{name:14} weights {w:7.1f} MB  grads {g:7.1f} MB  Adam {a:7.1f} MB  total {w + g + a:7.1f} MB")
+
+# 3. Is a real fine-tune's weight change low-rank? SST-2 DistilBERT against its base.
+ft = AutoModel.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+print("\\nlayer  matrix   rank for 90% of ||ΔW||²  of 768")
+for L in (0, 3, 5):
+    for name in ("q_lin", "v_lin", "ffn.lin1"):
+        get = lambda m: m.transformer.layer[L].get_submodule(name.replace("ffn.", "ffn.") if "ffn" in name else f"attention.{name}").weight
+        dW = (get(ft) - get(base)).detach()
+        s2 = torch.linalg.svdvals(dW) ** 2; k = int((s2.cumsum(0) / s2.sum() < 0.9).sum()) + 1
+        print(f"{L:5}  {name:8} {k:24}")
+
+# 4. The teacher's distribution at distillation temperatures.
+tok = AutoTokenizer.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english")
+teacher = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased-finetuned-sst-2-english").eval()
+hard = ["Not bad at all.", "I expected worse.", "It works, I guess.", "Could have been better."]
+with torch.no_grad(): logits = teacher(**tok(hard, return_tensors="pt", padding=True)).logits
+print("\\ninput                       T=1 P(pos)  T=2   T=5   T=10")
+for s, z in zip(hard, logits):
+    print(f"{s:27} " + "  ".join(f"{(z / T).softmax(-1)[1]:.3f}" for T in (1, 2, 5, 10)))
+`,
+        out: `DistilBERT: 66,362,880 parameters
+rank  4:    73,728 trainable (0.111%)
+rank  8:   147,456 trainable (0.222%)
+rank 16:   294,912 trainable (0.444%)
+rank 64: 1,179,648 trainable (1.778%)
+full fine-tune weights   253.2 MB  grads   253.2 MB  Adam   506.3 MB  total  1012.6 MB
+LoRA r=8       weights   253.2 MB  grads     0.6 MB  Adam     1.1 MB  total   254.8 MB
+
+layer  matrix   rank for 90% of ||ΔW||²  of 768
+    0  q_lin                         240
+    0  v_lin                         217
+    0  ffn.lin1                      435
+    3  q_lin                         198
+    3  v_lin                         183
+    3  ffn.lin1                      360
+    5  q_lin                          99
+    5  v_lin                          60
+    5  ffn.lin1                       94
+
+input                       T=1 P(pos)  T=2   T=5   T=10
+Not bad at all.             0.999  0.974  0.810  0.673
+I expected worse.           0.000  0.015  0.159  0.303
+It works, I guess.          1.000  0.984  0.839  0.695
+Could have been better.     0.001  0.037  0.213  0.342`,
+        notes: [
+          { t: "p", text: "On DistilBERT's query and value projections, LoRA trains 0.11% of parameters at rank 4 and 1.8% at rank 64. Accuracy against rank needs fine-tuning runs and is not executed here. The memory split is arithmetic: a full fp32 fine-tune with Adam needs 1,013 MB, and LoRA r=8 needs 255 MB. The weights cost the same in both. The saving is gradients and Adam state, which scale with trainable parameters only." },
+          { t: "p", text: "The SST-2 fine-tune's real weight change is not low-rank in the lower layers. Reaching 90% of the update's energy needs 240 of 768 directions for layer 0's queries and 435 for its FFN. Only the top layer is compact (60–99). LoRA works because a low-rank update is enough to reach good task accuracy, not because full fine-tuning produces low-rank changes." },
+          { t: "p", text: "At T=1 the teacher is almost certain on hedged inputs such as 'Not bad at all' (0.999) and 'I expected worse' (0.000). At T=5 those become 0.81 and 0.16, which tells a student these are weaker cases than an emphatic review. That graded information is what distillation transfers and hard labels discard. Comparing a LoRA model against a distilled student on latency needs two trained models and is not run here." }
+        ]
+      } }
   ],
 
   takeaways: [
