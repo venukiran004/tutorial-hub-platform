@@ -9,6 +9,7 @@
       form gives", "the usual output prints"), left by an automated rewrite.
       Same ratchet.
    3. NumPy APIs removed in 2.x. Any use fails outright.
+   4. An exercise with no solution, no hint or no difficulty fails outright.
 
    Baselines live in .build/quality-baseline.json. When a count falls, run
    `node .build/check-quality.js --update` to lock in the improvement.
@@ -69,6 +70,16 @@ for (const course of fs.readdirSync(path.join(root, "courses")).sort()) {
       const lens = o.map(x => String(x).length), mx = Math.max(...lens);
       if (lens[a] === mx && lens.filter(x => x === mx).length === 1) c.quizLongest++;
     }
+    (function walk(o) {                       // every exercise carries a solution, a hint and a difficulty
+      if (Array.isArray(o)) return o.forEach(walk);
+      if (!o || typeof o !== "object") return;
+      if (o.t === "exercise") {
+        const miss = [!(o.solution && (o.solution.code || o.solution.notes)) && "solution",
+                      !(o.hint || (o.hints && o.hints.length)) && "hint", !o.difficulty && "difficulty"].filter(Boolean);
+        if (miss.length) hard.push(`${path.relative(root, f)}: exercise "${o.title}" has no ${miss.join(", ")}`);
+      }
+      Object.values(o).forEach(walk);
+    })(L.blocks);
     const prose = JSON.stringify(L, (k, v) => (k === "code" || k === "svg" || k === "out") ? undefined : v);
     c.unseenSource += (prose.match(LEAK) || []).length;
     for (const code of codeOf(L.blocks, [])) {
