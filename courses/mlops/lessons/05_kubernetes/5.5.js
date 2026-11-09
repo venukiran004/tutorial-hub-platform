@@ -208,6 +208,17 @@ tag: {{ .Values.image.tag | quote }}       # correct: a string stays a string` }
         ],
         answer: 1,
         why: "The third option is a workaround rather than the reason. The fix is a checksum annotation on the pod template so its hash changes with the ConfigMap's content, producing a normal rolling update. Mounted files avoid the problem entirely by updating in place. The kubelet's sync refreshes mounted files only, so waiting changes nothing for an env var."
+      },
+      {
+        stem: "You change a threshold in a ConfigMap consumed as an environment variable and run helm upgrade. Why does nothing change?",
+        options: [
+          "Helm caches ConfigMaps and never re-renders them",
+          "The pod template is unchanged, so no rollout is triggered",
+          "Environment variables cannot be sourced from ConfigMaps",
+          "The ConfigMap update is rejected because it is immutable"
+        ],
+        answer: 1,
+        why: "The ConfigMap object changes but the Deployment's pod template does not, so no new pods start to read it. A checksum/config annotation fixes that. Helm does re-render, env vars can come from ConfigMaps, and ConfigMaps are mutable unless marked otherwise."
       }
     ]
   },

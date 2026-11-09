@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Generative AI and LLMs — Tutorial Hub</title>
 <meta name="description" content="Large language models as engineering: every inference parameter demonstrated on real logits, prompting as a tested discipline, serving and the economics of a token, LoRA and QLoRA, retrieval from chunking to GraphRAG, the post-training stack from SFT to GRPO, the metrics that judge all of it, observability, the production failure modes, and voice agents.">
-<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("th:theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)t="light";if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="../../assets/css/course-plus.css">
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
 <header class="topbar">
   <a class="brand" href="../../index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
@@ -25,14 +26,14 @@
     <span class="sep">/</span><span class="cur">Generative AI and LLMs</span>
   </nav>
   <span class="topbar-spacer"></span>
-  <button class="ghost-btn search-trigger" data-cmdk type="button">
+  <button class="ghost-btn search-trigger" data-cmdk type="button" aria-label="Search lessons">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
     <span class="label">Search lessons</span><span class="hint">Ctrl K</span>
   </button>
   <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
 <div class="page wide">
 
   <!-- ------------------------------------------------------------- hero -- -->
@@ -140,6 +141,7 @@
 <script src="../../assets/js/render.js"></script>
 <script src="../../assets/js/diagrams.js"></script>
 <script src="../../assets/js/app.js"></script>
+<script src="../../assets/js/search-index.js"></script>
 <script src="curriculum.js"></script>
 <script src="../../assets/js/reveal.js"></script>
 <script src="../../assets/js/course-page.js"></script>

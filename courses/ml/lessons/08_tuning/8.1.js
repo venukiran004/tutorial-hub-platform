@@ -201,7 +201,7 @@ outer_scores = cross_val_score(search, X, y, cv=outer, scoring="roc_auc")   # ea
     { t: "ladder",
       title: "Tuning a gradient-boosted model for a quarterly credit-risk refresh",
       rungs: [
-        { level: "bad", label: "A 6-axis grid, best_score_ reported", code: `GridSearchCV(gb, {6 axes × 5 values}, cv=5).fit(X, y); print(grid.best_score_)     # 15,625 configurations × 5 folds`,
+        { level: "bad", label: "A 6-axis grid, best_score_ reported", lang: "text", code: `GridSearchCV(gb, {6 axes × 5 values}, cv=5).fit(X, y); print(grid.best_score_)     # 15,625 configurations × 5 folds`,
           note: "**78,000 fits, most of them on axes that do not matter, and a reported score that is the maximum of 15,625 noisy estimates.**" },
         { level: "ok", label: "Random search with log-uniform ranges, a budget, refit", code: `RandomizedSearchCV(gb, dists, n_iter=60, cv=5, scoring="roc_auc", n_jobs=-1, random_state=0).fit(X, y)   # 300 fits`,
           note: "**Budgeted, parallel, well-spread** — the score is still the tuned maximum, and the iteration count is being searched rather than early-stopped." },

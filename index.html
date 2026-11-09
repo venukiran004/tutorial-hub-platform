@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tutorial Hub</title>
 <meta name="description" content="A self-contained study system covering Python, coding practice, SQL, machine learning, deep learning, transformers, GenAI and MLOps — with diagrams, runnable code and practice questions on every topic.">
-<script>try{var t=localStorage.getItem("th:theme");if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("th:theme");if(!t&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches)t="light";if(t&&t!=="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="assets/css/home-plus.css">
 </head>
 <body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
 
 <header class="topbar">
   <a class="brand" href="index.html"><span class="brand-mark">TH</span>Tutorial<span class="brand-sub">Hub</span></a>
@@ -27,7 +28,7 @@
   <button class="ghost-btn icon-only" data-theme-toggle type="button" aria-label="Toggle theme"></button>
 </header>
 
-<main>
+<main id="main" tabindex="-1">
 <div class="page wide">
 
   <!-- ============================================================= hero -- -->
@@ -64,6 +65,14 @@
       nothing is used before it has been taught.
     </p>
     <div class="path" id="path-grid"></div>
+    <style>
+      .path-c { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; counter-reset: pc; }
+      .path-c li { counter-increment: pc; }
+      .path-c a { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; padding: 5px 10px; min-height: 32px;
+        border-radius: 999px; border: 1px solid var(--line, rgba(127,127,127,.3)); color: var(--ink-2, inherit); text-decoration: none; }
+      .path-c a::before { content: counter(pc); font: 600 10.5px/1 var(--mono, monospace); color: var(--tc, currentColor); }
+      .path-c a:hover { color: var(--ink, inherit); border-color: var(--tc, currentColor); }
+    </style>
   </section>
 
   <!-- ========================================================== topics -- -->
@@ -110,22 +119,30 @@
      top and never meet an unexplained term. */
   var path = [
     { n: "01", t: "Foundations",
-      d: "Python end to end, the linear algebra and statistics the models rest on, and getting real data into shape." },
+      d: "Python end to end, the linear algebra and statistics the models rest on, and getting real data into shape.",
+      c: [["python", "Python"], ["sql", "SQL"], ["maths", "Maths & Stats"], ["data", "Data Handling"], ["practice", "Coding Practice"], ["dsa", "DSA"]] },
     { n: "02", t: "Modelling",
-      d: "Classical machine learning algorithm by algorithm, then neural networks from a single neuron upward." },
+      d: "Classical machine learning algorithm by algorithm, then neural networks from a single neuron upward.",
+      c: [["ml", "Machine Learning"], ["dl", "Deep Learning"]] },
     { n: "03", t: "Language",
-      d: "Classical NLP and the transformer taken apart block by block, with worked numbers at each step." },
+      d: "Classical NLP and the transformer taken apart block by block, with worked numbers at each step.",
+      c: [["nlp", "NLP & Transformers"]] },
     { n: "04", t: "Generative",
-      d: "How large models are controlled, aligned, retrieved against, and wired into agents and tools." },
+      d: "How large models are controlled, aligned, retrieved against, and wired into agents and tools.",
+      c: [["genai", "GenAI & LLMs"], ["langchain", "LangChain & LangGraph"], ["mcp", "MCP"], ["adk", "Google ADK"]] },
     { n: "05", t: "Shipping",
-      d: "Serving, monitoring and cost, and the system design interview that ties all of it together." }
+      d: "Serving, monitoring and cost, and the system design interview that ties all of it together.",
+      c: [["sysdesign", "System Design"], ["mlops", "MLOps & Deployment"], ["interview", "Interview Experience"]] }
   ];
 
   $("#path-grid").innerHTML = path.map(function (s) {
     return '<div class="path-i">' +
       '<div class="path-n">' + s.n + "</div>" +
       '<div class="path-t">' + EC.esc(s.t) + "</div>" +
-      '<div class="path-d">' + EC.esc(s.d) + "</div></div>";
+      '<div class="path-d">' + EC.esc(s.d) + "</div>" +
+      '<ol class="path-c">' + s.c.map(function (c) {
+        return '<li><a href="courses/' + c[0] + '/index.html">' + EC.esc(c[1]) + "</a></li>";
+      }).join("") + "</ol></div>";
   }).join("");
 
   /* --------------------------------------------------------- topics -- */

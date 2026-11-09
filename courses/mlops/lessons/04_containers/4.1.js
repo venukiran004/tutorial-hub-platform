@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Decide when a VM is the right answer instead"
   ],
 
-  prerequisites: ["3.6"],
+  prerequisites: ["3.6", "python:15.5"],
 
   blocks: [
 
@@ -174,6 +174,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "This single fact also explains why a Linux container cannot run on a Windows kernel (Docker Desktop runs a Linux VM), why custom kernel modules and eBPF need a VM, and why the isolation boundary is weaker than a hypervisor's. An image has no kernel to ignore, whatever its base."
+      },
+      {
+        stem: "Why can a container never use a GPU driver different from the host's?",
+        options: [
+          "Images are too small to include a full GPU driver",
+          "The driver is part of the one kernel all containers share",
+          "Container runtimes block all access to PCI devices",
+          "GPU drivers are licensed per host, not per container"
+        ],
+        answer: 1,
+        why: "There is one kernel, and the driver lives in it, so only the user-space CUDA libraries can come from the image. Size and licensing are not the constraint, and devices are passed through by the container toolkit rather than blocked."
       }
     ]
   },

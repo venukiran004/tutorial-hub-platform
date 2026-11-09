@@ -45,7 +45,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. The common form gives all three; here they are side by side." },
+    { t: "p", text: "All three penalties do the same kind of thing — modify the logits of tokens that have already been generated — and they differ in how much and how. Providers expose all three; here they are side by side." },
 
     { t: "dl", items: [
       ["Frequency penalty", "`logit -= frequency_penalty × count(token)`. Scales with how many times the token has appeared. OpenAI's range is −2.0 to 2.0."],

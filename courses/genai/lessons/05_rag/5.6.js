@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Recognise when a comparison measured your library rather than your data"
   ],
 
-  prerequisites: ["5.3"],
+  prerequisites: ["5.3", "nlp:2.9"],
 
   blocks: [
 

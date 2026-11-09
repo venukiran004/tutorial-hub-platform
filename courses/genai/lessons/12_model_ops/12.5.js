@@ -68,7 +68,7 @@ log.info("llm_call", extra={
       body: [
         { t: "p", text: "A served-model mismatch and a deprecation header each mean something on a **single** request \u2014 no rate, no window, no 2-sigma band. 11.17 made the same point about canary hits and secret-leak events, and the structural reason is identical: these are facts rather than estimates." },
         { t: "p", text: "That matters because most of the signals in this course need statistical care before they mean anything. 10.12\u2019s whole argument is about not alerting on a 2-point move in a 200-sample metric. These two escape that entirely, which makes them the cheapest high-value alerts in the module." },
-        { t: "p", text: "The deprecation-header one has an extra property: it is the **earliest** signal available, because it arrives while the model still works. The reference is blunt that nobody reads deprecation feeds, which is exactly why it needs to be an automated monitor rather than a habit." }
+        { t: "p", text: "The deprecation-header one has an extra property: it is the **earliest** signal available, because it arrives while the model still works. Nobody reads deprecation feeds, which is exactly why it needs to be an automated monitor rather than a habit." }
       ] },
 
     { t: "h2", n: "03", id: "gap", text: "The failure mode monitoring cannot catch",
@@ -310,7 +310,7 @@ separately, a regression is unattributable -- which is the point,
 and it is why 12.2 puts the model INSIDE the prompt artefact.`,
         notes: [
           { t: "p", text: "**Seven of eight detectors are free** \u2014 they read fields the response already carries, or counts you already have. Only the nightly golden-set eval needs building, which makes this one of the cheapest instrumentation lists in the course." },
-          { t: "p", text: "**Deprecation headers catch three of nine modes first**, more than any other detector, and they are the earliest signal available because they arrive while the model still works. The usual treatment nobody reads deprecation feeds, which is precisely the argument for making it an automated monitor." },
+          { t: "p", text: "**Deprecation headers catch three of nine modes first**, more than any other detector, and they are the earliest signal available because they arrive while the model still works. In practice nobody reads deprecation feeds, which is precisely the argument for making it an automated monitor." },
           { t: "p", text: "**The tokeniser mode is the real finding.** Its assigned detector needs a 20% token shift to fire, and the measured spread across five tokenisers is 4.9% \u2014 producing a 3.9% cost change. The detector catches *pricing* changes fine, because those are large, and cannot catch tokeniser changes at all." },
           { t: "p", text: "**And lowering the threshold does not help.** A 5% cost alert would fire on ordinary traffic-mix variation, which is how an alert gets disabled. The signal-to-noise is unfavourable, so this mode has to be **prevented** by pre-migration measurement rather than detected." },
           { t: "p", text: "**That distinction \u2014 prevented against detected \u2014 is worth carrying.** Most of this module is about detection, and the one failure mode with the worst consequences is the one where detection is not available." },

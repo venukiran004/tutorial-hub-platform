@@ -16,7 +16,7 @@ EC.receiveLesson({
     "Identify which parts of ADK are Google-specific and which are not"
   ],
 
-  prerequisites: [],
+  prerequisites: ["langchain:3.3"],
 
   blocks: [
 

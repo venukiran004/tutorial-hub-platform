@@ -10,7 +10,7 @@ EC.receiveLesson({
     "Compute a metric's cardinality and recognise an unbounded label"
   ],
 
-  prerequisites: ["6.4"],
+  prerequisites: ["6.4", "python:15.3"],
 
   blocks: [
 
@@ -114,7 +114,7 @@ SCORE = Histogram("predict_score", "Model output score",
 
     { t: "p", text: "And **the window must exceed twice the scrape interval**. `rate(x[15s])` with a fifteen-second scrape may contain one sample or none, producing gaps and spikes; the rule of thumb is a window at least four times the interval, so `rate(x[1m])` at minimum." },
 
-    { t: "code", lang: "python", title: "The queries that matter for a model service",
+    { t: "code", lang: "promql", title: "The queries that matter for a model service",
       code: `# requests per second, by outcome
 sum(rate(predict_requests_total[5m])) by (outcome)
 
@@ -238,6 +238,17 @@ sum(rate(predict_score_bucket{le="0.5"}[5m]))
         ],
         answer: 1,
         why: "Cardinality is a product, not a sum — this is the arithmetic that makes an apparently harmless instrumentation change take a monitoring system down. Anything per-request or per-entity belongs in a log or a trace, which is lesson 7.3's division of labour. Each new dimension multiplies by its number of values, so this one multiplies by 50,000, not 2."
+      },
+      {
+        stem: "Why should you read a counter through rate() rather than reading its raw value?",
+        options: [
+          "The raw value is rounded and loses precision over time",
+          "Raw values reset on restart; rate() absorbs that",
+          "Prometheus only stores the rate, not the raw counter",
+          "Raw counter values cannot be graphed in dashboards"
+        ],
+        answer: 1,
+        why: "A counter's absolute value depends on when the process started and resets on restart; rate() detects resets and spans missed scrapes. Values are not rounded, Prometheus stores raw samples, and raw counters can be graphed, just not usefully."
       }
     ]
   },

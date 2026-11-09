@@ -17,7 +17,7 @@ EC.receiveLesson({
     "Publish your own tools as an MCP server, and decide when that is the right move"
   ],
 
-  prerequisites: ["4.6"],
+  prerequisites: ["4.6", "mcp:5.1"],
 
   blocks: [
 

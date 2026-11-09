@@ -293,7 +293,7 @@ rng.random(5)                          # the same five values again
 train, test = split(df, rng=rng)
 model = fit(train, rng=rng)`,
           note: "**Correct for randomness and still incomplete.** Nothing here records the library versions, the input snapshot, or the thread count — so it reproduces on this machine today and not necessarily on another one next month." },
-        { level: "best", label: "Seed plus provenance", code: `run = {
+        { level: "best", label: "Seed plus provenance", lang: "text", code: `run = {
     "seed": 42,
     "input_hash": sha256_of(df),
     "input_rows": len(df),

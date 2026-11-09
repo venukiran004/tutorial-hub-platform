@@ -57,7 +57,7 @@ EC.receiveLesson({
     { t: "p", text: "`h` is the final hidden state for the *sat* position after one complete transformer block. In a 96-layer model, steps 4 through 7 would repeat 96 times, each writing another increment into this same vector. Here there is one layer, so the stack is done." },
 
     { t: "callout", kind: "note", title: "One rounding divergence, and it is the",
-      body: [{ t: "p", text: "The second component of `r'` comes out at **−0.1629** where the usual output prints **−0.18**. The reference is carrying rounded intermediates — it used `−0.34` and `0.16` rather than `−0.3315` and `0.1685` — so the small difference is accumulated display rounding, not an error. Everything downstream still lands within 0.01 of its published value. It is worth flagging only because it shows how quickly hand-arithmetic drifts: three steps of two-decimal rounding moved a value by 10%." }] },
+      body: [{ t: "p", text: "The second component of `r'` comes out at **−0.1629** where the commonly published output prints **−0.18**. The published version is carrying rounded intermediates — it used `−0.34` and `0.16` rather than `−0.3315` and `0.1685` — so the small difference is accumulated display rounding, not an error. Everything downstream still lands within 0.01 of its published value. It is worth flagging only because it shows how quickly hand-arithmetic drifts: three steps of two-decimal rounding moved a value by 10%." }] },
 
     { t: "h2", n: "04", text: "The LM head", id: "head" },
 
@@ -145,7 +145,7 @@ EC.receiveLesson({
       options: ["It speeds up computation", "Attention produced a blend dominated by other tokens; adding the input back makes the output the original token plus a contextual update", "It normalises the scale", "It enables weight tying"],
       answer: 1,
       why: "Without it, stacked layers would progressively wash out a token's own identity, and gradients would have no unobstructed path back — lesson 4.6 measured a 780,000x difference in gradient reaching the first block between Pre-LN and Post-LN. The residual is what makes the residual-stream framing of lesson 4.7 apply." },
-    { stem: "The usual output prints -0.18 where the computation gives -0.1629. What happened?",
+    { stem: "A commonly published output prints -0.18 where the computation gives -0.1629. What happened?",
       options: ["An error in the reference", "Accumulated display rounding — it carried two-decimal intermediates, and three steps moved the value by 10%", "A different LayerNorm epsilon", "A transcription mistake"],
       answer: 1,
       why: "It used -0.34 and 0.16 rather than -0.3315 and 0.1685. Everything downstream still lands within 0.01 of its published value, so the walkthrough is sound. It is worth flagging only as a demonstration of how quickly hand-arithmetic drifts when intermediates are rounded." }

@@ -172,7 +172,7 @@ for shots in (0, 1, 2, 4, 8):
 
 
 
-    { t: "p", text: "The common form gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
+    { t: "p", text: "Published guidance gives five rules for few-shot prompting. Three of them are directly checkable on the measurement above." },
 
     { t: "table",
       head: ["Rule", "Status here", "Evidence"],

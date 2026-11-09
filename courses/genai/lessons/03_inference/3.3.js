@@ -193,7 +193,7 @@ print("int8 perplexity : %.4f" % perplexity(qmodel))`,
         ["Consumer GPU", "**AWQ or GPTQ 4-bit**", "Fits in 6–8 GB; both have mature kernels"],
         ["CPU / laptop", "**GGUF Q4_K_M**", "The recommended quality-size balance; llama.cpp ecosystem"],
         ["Maximum quality, memory available", "**BF16**", "No quantisation at all — the honest option when it fits"],
-        ["Extreme constraint", "GGUF Q2_K", "The usual treatment ~40% of original quality. Rarely the right trade"]
+        ["Extreme constraint", "GGUF Q2_K", "Commonly quoted at ~40% of original quality. Rarely the right trade"]
       ],
       caption: "The GGUF levels run Q2_K through Q8_0, with Q4_K_M recommended. Its note that Q2_K retains \"~40% original quality\" is a strong claim worth verifying on your own task before relying on it." },
 

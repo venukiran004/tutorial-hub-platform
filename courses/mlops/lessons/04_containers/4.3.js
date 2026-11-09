@@ -219,6 +219,17 @@ ENTRYPOINT python -m uvicorn src.app:app` },
         ],
         answer: 1,
         why: "It is a real trade rather than an upgrade: you gain the ability to change models by configuration — which makes rollback a config change rather than a redeploy — and you lose the single-value identification of code plus model, while adding a hard runtime dependency at every pod start. The model is fetched at startup, not at build, so the layer cache is not involved."
+      },
+      {
+        stem: "Why set OMP_NUM_THREADS to the container's CPU limit in a model service image?",
+        options: [
+          "The variable is required for NumPy to start inside a container",
+          "BLAS sizes its thread pool from the host's cores, not the limit",
+          "It disables multithreading, which containers do not support",
+          "It makes the container report its CPU limit to the scheduler"
+        ],
+        answer: 1,
+        why: "cgroups cap CPU without virtualising it, so the library sees all the host's cores and oversubscribes the limit. NumPy starts without the variable, containers support threads, and the scheduler reads the pod spec, not the variable."
       }
     ]
   },

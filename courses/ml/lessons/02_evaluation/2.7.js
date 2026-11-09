@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Compute how many rows a given precision on AUC needs, and separate offline evaluation from online measurement"
   ],
 
-  prerequisites: ["2.2", "1.5"],
+  prerequisites: ["2.2", "1.5", "maths:5.5"],
 
   blocks: [
 
@@ -253,9 +253,9 @@ the width scales with 1 / sqrt(positives), so at 1 % prevalence a ± 0.02 interv
       rungs: [
         { level: "bad", label: "Compare the two point estimates", code: `0.81 > 0.79`,
           note: "**Two draws from two distributions.** On 297 rows each has a ±0.07 interval; the difference is inside the noise of one fold." },
-        { level: "ok", label: "Bootstrap both on the test set", code: `A: [0.72, 0.86]   B: [0.74, 0.88]     # overlapping intervals -> 'cannot tell'`,
+        { level: "ok", label: "Bootstrap both on the test set", lang: "text", code: `A: [0.72, 0.86]   B: [0.74, 0.88]     # overlapping intervals -> 'cannot tell'`,
           note: "**Better, and still wrong in one direction**: overlapping separate intervals can hide a real paired difference because the models' errors are correlated." },
-        { level: "best", label: "Paired difference on the same resamples and the same folds, corrected", code: `bootstrap: B - A = +0.02 [-0.01, +0.05]        repeated CV, Nadeau-Bengio: p = 0.10
+        { level: "best", label: "Paired difference on the same resamples and the same folds, corrected", lang: "text", code: `bootstrap: B - A = +0.02 [-0.01, +0.05]        repeated CV, Nadeau-Bengio: p = 0.10
 # verdict: B leans ahead; not established on this data. Ship on other grounds (simplicity, latency, calibration) or get more rows.`,
           note: "**The paired interval and the corrected test agree**, and the decision says what it is based on. If 0.02 of AUC is worth real money, the answer is a larger test set or an online experiment — not a bigger claim." }
       ]

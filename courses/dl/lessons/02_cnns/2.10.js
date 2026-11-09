@@ -68,9 +68,9 @@ EC.receiveLesson({
 
     { t: "p", text: "**Zero difference, not merely small.** With identical weights, biases and inputs in double precision, the two implementations perform the same operations in the same order. That is the strongest possible evidence the implementation is correct." },
 
-    { t: "h2", n: "02", text: "The backward pass the usual treatment omits", id: "backward" },
+    { t: "h2", n: "02", text: "The backward pass most treatments omit", id: "backward" },
 
-    {"kind": "flow", "title": "The backward pass the usual treatment omits", "caption": "A convolution's backward pass is **three** computations, not one, and the third is the one that is usually skipped. The gradient with respect to the input is a convolution with the flipped kernel; the gradient with respect to the weights is a convolution of the input with the output gradient; and the bias gradient is a sum over everything but the channel axis.", "cols": 3, "nodes": [{"id": "g", "label": "dL/d(output)", "sub": "arrives from above", "tone": "violet"}, {"id": "i", "label": "dL/d(input)", "sub": "convolve with the flipped kernel", "tone": "accent"}, {"id": "w", "label": "dL/d(weights)", "sub": "convolve input with dL/d(output)", "tone": "accent"}, {"id": "b", "label": "dL/d(bias)", "sub": "sum over batch, height, width", "tone": "accent"}, {"id": "p", "label": "Pass dL/d(input) down", "sub": "to the previous layer", "tone": "good"}, {"id": "u", "label": "Use the other two to update", "sub": "this layer's parameters", "tone": "good"}], "edges": [["g", "i"], ["g", "w"], ["g", "b"], ["i", "p"], ["w", "u"], ["b", "u"]], "t": "diagram", "id": "dg-2_10-02-1"},
+    {"kind": "flow", "title": "The backward pass most treatments omit", "caption": "A convolution's backward pass is **three** computations, not one, and the third is the one that is usually skipped. The gradient with respect to the input is a convolution with the flipped kernel; the gradient with respect to the weights is a convolution of the input with the output gradient; and the bias gradient is a sum over everything but the channel axis.", "cols": 3, "nodes": [{"id": "g", "label": "dL/d(output)", "sub": "arrives from above", "tone": "violet"}, {"id": "i", "label": "dL/d(input)", "sub": "convolve with the flipped kernel", "tone": "accent"}, {"id": "w", "label": "dL/d(weights)", "sub": "convolve input with dL/d(output)", "tone": "accent"}, {"id": "b", "label": "dL/d(bias)", "sub": "sum over batch, height, width", "tone": "accent"}, {"id": "p", "label": "Pass dL/d(input) down", "sub": "to the previous layer", "tone": "good"}, {"id": "u", "label": "Use the other two to update", "sub": "this layer's parameters", "tone": "good"}], "edges": [["g", "i"], ["g", "w"], ["g", "b"], ["i", "p"], ["w", "u"], ["b", "u"]], "t": "diagram", "id": "dg-2_10-02-1"},
 
 
 
@@ -128,7 +128,7 @@ EC.receiveLesson({
 
     { t: "out", text: `  shapes (2, 3, 4, 4) vs (2, 3, 4, 4), identical: True` },
 
-    { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. The common form gives forward only." },
+    { t: "p", text: "The max pool needs no parameters and no initialisation — but it does need to remember *which* element was the max if you want its backward pass, since the gradient flows only to that element and all others receive zero. Most treatments give the forward pass only." },
 
     { t: "out", text: `  Conv2D(  3, 64, 3): target std 0.2722, actual 0.2631, bias all zero = True
   Conv2D( 64, 64, 3): target std 0.0589, actual 0.0589, bias all zero = True

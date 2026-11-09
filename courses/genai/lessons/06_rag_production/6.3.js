@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.3",
 
-  lede: "The usual treatment collects four things that did not fit anywhere else: how documents get parsed, how a follow-up question gets resolved, how metadata narrows the search, and how duplicates get removed. The last is the longest and the one with real arithmetic in it \u2014 a content hash, a cosine threshold, MinHash with LSH, orphan deletion on update, and MMR at query time. Measured here, **normalising before hashing is what makes the hash useful at all**: without it, a trailing space is a brand-new record.",
+  lede: "This lesson collects four things that did not fit anywhere else: how documents get parsed, how a follow-up question gets resolved, how metadata narrows the search, and how duplicates get removed. The last is the longest and the one with real arithmetic in it \u2014 a content hash, a cosine threshold, MinHash with LSH, orphan deletion on update, and MMR at query time. Measured here, **normalising before hashing is what makes the hash useful at all**: without it, a trailing space is a brand-new record.",
 
   objectives: [
     "Choose a parser from the document format and say what each one loses",
@@ -82,7 +82,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Standard RAG embeds the latest user message. That works for the first turn and breaks on the second, because a follow-up question is usually not self-contained \u2014 the subject lives in the previous turn." },
 
-    { t: "code", lang: "python", title: "what the retriever actually receives", code: `# turn 1
+    { t: "code", lang: "text", title: "what the retriever actually receives", code: `# turn 1
 "What is BERT?"                       -> embeds fine, retrieves BERT chunks
 
 # turn 2
@@ -174,7 +174,7 @@ results = vectorstore.similarity_search(
 
     { t: "p", text: "Duplicates cost three things: storage, context budget, and diversity. The third is the one that hurts \u2014 a duplicated chunk does not make the wrong answer win, it makes the *same* answer win several times, so the top-k that should have held five perspectives holds one repeated five times." },
 
-    { t: "p", text: "The common form gives a five-stage pattern, and the stages catch different things." },
+    { t: "p", text: "Published guidance gives a five-stage pattern, and the stages catch different things." },
 
     { t: "ladder", title: "The dedup ladder", rungs: [
       { level: "bad", label: "Nothing \u2014 let the store assign ids",

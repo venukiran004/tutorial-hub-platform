@@ -210,6 +210,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "A Terraform plan file is the exact set of API calls that will be made. A clean Ansible check is reassurance rather than a guarantee, which is a good reason to prefer Terraform for anything it can express and to keep `shell` tasks to a minimum. `--check` covers the same hosts as a real run."
+      },
+      {
+        stem: "Why does Ansible fit on-premises GPU machines better than a cloud provisioning tool?",
+        options: [
+          "It compiles GPU drivers faster than package managers",
+          "It needs only SSH and Python on the target, with no cloud API",
+          "It runs inside containers, which is where drivers live",
+          "It is the only tool that can reboot a machine safely"
+        ],
+        answer: 1,
+        why: "Agentless over SSH reaches machines no cloud API describes, which is the on-prem and bare-metal case. It does not compile drivers, drivers belong to the kernel rather than containers, and other tools can reboot machines."
       }
     ]
   },

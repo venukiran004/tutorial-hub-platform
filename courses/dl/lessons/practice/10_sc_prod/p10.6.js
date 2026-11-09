@@ -108,7 +108,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Example: Terraform for ML infrastructure\nresource \"aws_sagemaker_endpoint\" \"model\" {\n  name = \"production-model-v2\"\n  endpoint_config_name = aws_sagemaker_endpoint_configuration.config.name\n}\n\nresource \"aws_sagemaker_endpoint_configuration\" \"config\" {\n  name = \"model-config\"\n  production_variants {\n    variant_name = \"primary\"\n    model_name   = aws_sagemaker_model.model.name\n    instance_type = \"ml.g4dn.xlarge\"\n    initial_instance_count = 2\n  }\n}\n\n# Auto-scaling policy\nresource \"aws_appautoscaling_target\" \"model_scaling\" {\n  max_capacity = 10\n  min_capacity = 2\n}"
     },
     {

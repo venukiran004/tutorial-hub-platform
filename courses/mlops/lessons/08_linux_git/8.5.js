@@ -225,6 +225,17 @@ exit $fail`,
         ],
         answer: 1,
         why: "A local hook helps the person who installed it. The pre-commit framework makes the local half shareable via a committed config, but the enforcement has to be server-side. And once a secret is committed it is in an object for ever, so the response is rotate first, rewrite second. Nothing under `.git` is ever committed, and section 4's hook reads staged content with `git show`."
+      },
+      {
+        stem: "You ran git reset --hard and lost two commits. Why can a colleague's clone not help you recover them?",
+        options: [
+          "Their clone has the commits but cannot push to your branch",
+          "The reflog is local to each repository and is never pushed",
+          "reset --hard deletes the commits from every clone at once",
+          "Recovery requires the commits to be signed, which clones strip"
+        ],
+        answer: 1,
+        why: "The commits survive in your own reflog and object store for about 90 days, but the reflog is per-repository and never shared. A colleague only has what was pushed. Reset does not affect other clones, and signing is unrelated."
       }
     ]
   },

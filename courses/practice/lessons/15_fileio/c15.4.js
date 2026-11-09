@@ -316,7 +316,7 @@ EC.receiveLesson({
      "t": "code",
      "lang": "python",
      "title": "Alternative — recursive",
-     "code": "import asyncio\n\nclass AsyncTimer:\n    def __init__(self, name):\n        self.name = name\n    \n    async def __aenter__(self):\n        self.start = asyncio.get_event_loop().time()\n        print(f\"[{self.name}] Starting...\")\n        return self\n    \n    async def __aexit__(self, *args):\n        elapsed = asyncio.get_event_loop().time() - self.start\n        print(f\"[{self.name}] Finished in {elapsed:.3f}s\")\n\nasync def main():\n    async with AsyncTimer(\"task\"):\n        await asyncio.sleep(0.5)\n\nasyncio.run(main())\n# [task] Starting...\n# [task] Finished in 0.500s",
+     "code": "import asyncio\n\nclass AsyncTimer:\n    def __init__(self, name):\n        self.name = name\n    \n    async def __aenter__(self):\n        self.start = asyncio.get_running_loop().time()\n        print(f\"[{self.name}] Starting...\")\n        return self\n    \n    async def __aexit__(self, *args):\n        elapsed = asyncio.get_running_loop().time() - self.start\n        print(f\"[{self.name}] Finished in {elapsed:.3f}s\")\n\nasync def main():\n    async with AsyncTimer(\"task\"):\n        await asyncio.sleep(0.5)\n\nasyncio.run(main())\n# [task] Starting...\n# [task] Finished in 0.500s",
      "numbered": false
     }
    ]

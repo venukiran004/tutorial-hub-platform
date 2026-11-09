@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "anatomy", text: "A prompt is four things",
       sub: "Instruction + context + input + output format" },
 
-    { t: "p", text: "The common form gives the anatomy in one line — `PROMPT = Instruction + Context + Input + Output Format` — and it is worth taking seriously, because a prompt that is failing is usually failing because one of the four is absent and nobody noticed which." },
+    { t: "p", text: "Published guidance gives the anatomy in one line — `PROMPT = Instruction + Context + Input + Output Format` — and it is worth taking seriously, because a prompt that is failing is usually failing because one of the four is absent and nobody noticed which." },
 
     { t: "viz", title: "The four components", caption: "Most prompting failures are a missing component rather than a badly-worded one. Diagnosing which is missing is faster than rewriting.",
       svg: `<svg viewBox="0 0 760 236" width="100%" role="img" aria-label="The four components of a prompt">

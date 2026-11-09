@@ -126,7 +126,7 @@ EC.receiveLesson({
 
 
     { t: "code", lang: "python", title: "The hybrid retriever",
-      code: 'from langchain.retrievers import EnsembleRetriever\n\nhybrid = EnsembleRetriever(\n    retrievers=[dense_retriever, bm25_retriever],\n    weights=[0.5, 0.5])',
+      code: 'from langchain_classic.retrievers import EnsembleRetriever   # pip install langchain-classic (LangChain 1.x)\n\nhybrid = EnsembleRetriever(\n    retrievers=[dense_retriever, bm25_retriever],\n    weights=[0.5, 0.5])',
       caption: "Those weights apply to reciprocal-rank contributions, not to the raw scores." },
     { t: "p", text: "`EnsembleRetriever` applies reciprocal rank fusion (6.5), reading each retriever's **ordering** and never its scores. That sidesteps reasons 1 and 2 entirely: rank 1 means the same thing whatever scale a retriever's scores are on, with no normalisation and no per-query calibration." },
     { t: "callout", kind: "tradeoff", title: "It does not fix reason 3, and that is the key to 6.5", body: [

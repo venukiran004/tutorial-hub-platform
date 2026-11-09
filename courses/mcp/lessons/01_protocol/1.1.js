@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Decide whether MCP is the right answer for a given integration"
   ],
 
-  prerequisites: [],
+  prerequisites: ["genai:1.9", "langchain:3.2"],
 
   blocks: [
 
@@ -169,56 +169,31 @@ a second session    : pid 22540, call 1`,
     questions: [
       {
         stem: "A host connects to six MCP servers, two of which offer a tool named `search`. What resolves the collision?",
-        options: [
-          "The protocol assigns unique ids, so there is no collision",
-          "The host — it merges the tool lists and must prefix or filter, because a server cannot know what other servers are connected",
-          "The servers negotiate between themselves during initialise",
-          "The model picks whichever appeared first"
-        ],
+        options: ["The protocol gives every tool a globally unique id, so names never clash", "The host, which merges the lists and must prefix or filter the names", "The two servers negotiate a winner between themselves at initialise", "The model picks whichever `search` appeared first in its tool list"],
         answer: 1,
         why: "There is no multiplexing in MCP: each client talks to one server, and the host holds one client per server. That makes namespacing a host-side concern with host-side tools, and it is also why a server cannot be designed around its neighbours."
       },
       {
         stem: "Two sessions are opened to the same stdio server definition. The server's call counter reads 1 in both. Why?",
-        options: [
-          "The counter resets on every call",
-          "Each stdio connection spawns its own subprocess, so the two sessions are independent processes with independent memory",
-          "The client caches the first response",
-          "Counters are not supported over stdio"
-        ],
+        options: ["The counter resets after every call, so each session reads it fresh", "Each stdio connection spawns its own subprocess with its own memory", "The client caches the first response and replays it to both sessions", "Counters are not persisted over stdio, so they always restart at 1"],
         answer: 1,
         why: "The measured pids were different — 10152 and 22540 — which is the proof. Anything a server keeps in memory is therefore per-connection: a cache, a counter, an open handle. It is also why a stdio server cannot share state between two hosts without an external store."
       },
       {
         stem: "A team wants to expose one internal function to one agent service they also own. Is MCP the right tool?",
-        options: [
-          "Yes — MCP is the standard way to expose any capability",
-          "Probably not: with one consumer and both ends under your control, a shared library has no process boundary, no serialisation and no protocol version, and both sides change in one commit",
-          "Yes, because it future-proofs the integration",
-          "Only if the function is read-only"
-        ],
+        options: ["Yes, because MCP is the standard way to expose any capability now", "Probably not: one consumer you control is better served by a library", "Yes, because a protocol boundary future-proofs the integration", "Only if the function is read-only, since MCP forbids side effects"],
         answer: 1,
         why: "The protocol's value is proportional to the number of consumers you do not control. The honest version of the future-proofing argument is that converting a library into a server later is a small job, and doing it before there is a second consumer is machinery with no payer."
       },
       {
         stem: "Which of these does the MCP specification provide?",
-        options: [
-          "A permission model for who may call which tool",
-          "The message format, the handshake and capability flags, three primitives, an error shape and three transports — and no authorisation at all",
-          "Per-user identity propagation",
-          "A guarantee that tool descriptions are unambiguous"
-        ],
+        options: ["A permission model saying which client may call which tool", "Messages, handshake, capabilities, primitives and transports, but no authz", "Propagation of each end user's identity from host to server", "A guarantee that tool descriptions are unambiguous to the model"],
         answer: 1,
         why: "The protocol is deliberately modest. Authorisation, identity and description quality are all left to the implementer, and all three are where production problems concentrate — which is why module 4 exists."
       },
       {
         stem: "Why is connecting to a stdio server a comparable trust decision to adding a dependency?",
-        options: [
-          "Because stdio is an unencrypted transport",
-          "Because the host launches the server as a subprocess, so it is code executing on your machine with your file access",
-          "Because stdio servers cannot be authenticated",
-          "Because JSON-RPC has no integrity checking"
-        ],
+        options: ["Because stdio is an unencrypted transport between processes", "Because the server runs as a subprocess with your file access", "Because stdio servers cannot present credentials to the host", "Because JSON-RPC messages carry no integrity check at all"],
         answer: 1,
         why: "The measured pids make it concrete: the server process is a child of the host. Pin it, read it, and never let user input influence the command — which is the same discipline you apply to any package you install."
       }

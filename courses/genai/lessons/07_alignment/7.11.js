@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.11",
 
-  lede: "The usual treatment draws overoptimisation as an ASCII sketch \u2014 proxy score climbing while true quality peaks and falls. It is not a drawing: it falls out of optimising any direction that is nearly-but-not-exactly right. Simulated with a reward model 59.3% aligned with true preference, the proxy score rose **monotonically and without bound** while true quality peaked at a KL of 1.0 and reached **\u22129.04** by KL 6. And the peak position is exact: **best KL \u221d cosine alignment**, so a better reward model buys optimisation *headroom*, not just a better score.",
+  lede: "Overoptimisation is usually drawn as an ASCII sketch \u2014 proxy score climbing while true quality peaks and falls. It is not a drawing: it falls out of optimising any direction that is nearly-but-not-exactly right. Simulated with a reward model 59.3% aligned with true preference, the proxy score rose **monotonically and without bound** while true quality peaked at a KL of 1.0 and reached **\u22129.04** by KL 6. And the peak position is exact: **best KL \u221d cosine alignment**, so a better reward model buys optimisation *headroom*, not just a better score.",
 
   objectives: [
     "State Goodhart's law in the form it takes for reward models",

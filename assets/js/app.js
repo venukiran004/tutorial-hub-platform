@@ -29,7 +29,10 @@
   EC.initTheme = function () {
     var saved = null;
     try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-    applyTheme(saved || "dark");
+    // No saved choice: follow the operating system rather than forcing dark.
+    var sysLight = false;
+    try { sysLight = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches; } catch (e) {}
+    applyTheme(saved || (sysLight ? "light" : "dark"));
     document.addEventListener("click", function (e) {
       var b = e.target.closest("[data-theme-toggle]");
       if (!b) return;
@@ -44,6 +47,7 @@
   (function () {
     try {
       var t = localStorage.getItem(THEME_KEY);
+      if (!t && window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) t = "light";
       if (t && t !== "dark") document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   })();
@@ -295,17 +299,43 @@
       return 0;
     }
 
+    // Lessons in the other courses, from the generated index. Each becomes a
+    // lesson-shaped record with its own href, so scoring and drawing are shared.
+    var others = null;
+    function otherLessons() {
+      if (others) return others;
+      var X = EC.searchIndex, here = EC.course && EC.course.id;
+      others = !X ? [] : X.lessons.filter(function (r) { return r[0] !== here; }).map(function (r) {
+        return { course: r[0], courseShort: (X.courses[r[0]] || {}).short || r[0], id: r[1], num: r[2], title: r[3],
+                 module: { title: r[4] }, keywords: r[5] ? r[5].split(" ") : [], ready: r[6] ? undefined : false,
+                 href: base + "../" + r[0] + "/lesson.html?id=" + encodeURIComponent(r[1]) };
+      });
+      return others;
+    }
+
+    var nLocal = 0;
     function query(q) {
       q = q.trim().toLowerCase();
       var pool = EC.course.allLessons;
-      results = q
-        ? pool.map(function (l) { return { l: l, s: score(l, q) }; })
-             .filter(function (r) { return r.s > 0; })
-             .sort(function (a, b) { return b.s - a.s || a.l.seq - b.l.seq; })
-             .slice(0, 24).map(function (r) { return r.l; })
-        : pool.slice(0, 12);
+      var rank = function (p, n) {
+        return p.map(function (l) { return { l: l, s: score(l, q) }; })
+          .filter(function (r) { return r.s > 0; })
+          .sort(function (a, b) { return b.s - a.s || (a.l.seq || 0) - (b.l.seq || 0); })
+          .slice(0, n).map(function (r) { return r.l; });
+      };
+      var local = q ? rank(pool, 24) : pool.slice(0, 12);
+      nLocal = local.length;
+      results = local.concat(q ? rank(otherLessons(), 16) : []);
       sel = 0;
       draw(q);
+    }
+
+    function item(l, i) {
+      var href = l.ready === false ? "#" : (l.href || EC.lessonHref(l, base));
+      return '<a class="cmdk-item" data-i="' + i + '" role="option" aria-selected="' + (i === sel) + '" href="' + href + '">' +
+        '<span class="n">' + l.num + '</span><span class="t">' + EC.esc(l.title) + "</span>" +
+        '<span class="m">' + (l.course ? EC.esc(l.courseShort) + " · " : "") + EC.esc(l.module.short || l.module.title) +
+        (l.ready === false ? " · soon" : "") + "</span></a>";
     }
 
     function draw(q) {
@@ -313,13 +343,10 @@
         list.innerHTML = '<div class="cmdk-empty">No lesson matches “' + EC.esc(q) + "”</div>";
         return;
       }
-      list.innerHTML = '<div class="cmdk-grp">' + (q ? results.length + " result" + (results.length > 1 ? "s" : "") : "Start here") + "</div>" +
-        results.map(function (l, i) {
-          return '<a class="cmdk-item" data-i="' + i + '" role="option" aria-selected="' + (i === sel) + '" href="' +
-            (l.ready === false ? "#" : EC.lessonHref(l, base)) + '">' +
-            '<span class="n">' + l.num + '</span><span class="t">' + EC.esc(l.title) + "</span>" +
-            '<span class="m">' + EC.esc(l.module.short || l.module.title) + (l.ready === false ? " · soon" : "") + "</span></a>";
-        }).join("");
+      var local = results.slice(0, nLocal), rest = results.slice(nLocal);
+      list.innerHTML =
+        (local.length ? '<div class="cmdk-grp">' + (q ? "In this course" : "Start here") + "</div>" + local.map(item).join("") : "") +
+        (rest.length ? '<div class="cmdk-grp">In other courses</div>' + rest.map(function (l, k) { return item(l, nLocal + k); }).join("") : "");
     }
 
     function move(d) {
@@ -332,7 +359,7 @@
     }
     function go() {
       var l = results[sel];
-      if (l && l.ready !== false) location.href = EC.lessonHref(l, base);
+      if (l && l.ready !== false) location.href = l.href || EC.lessonHref(l, base);
     }
     function show() {
       if (!scrim) build();
@@ -565,6 +592,7 @@
       var box = document.getElementById(b.dataset.reveal);
       if (!box) return;
       box.hidden = !box.hidden;
+      b.setAttribute("aria-expanded", String(!box.hidden));
       $("span", b).textContent = box.hidden ? "Reveal solution" : "Hide solution";
       if (!box.hidden) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
@@ -593,22 +621,79 @@
       var quiz = q.closest("[data-quiz]");
       var got = $$(".q", quiz).filter(function (x) { return $(".q-opt.correct:not(.dim)", x) && $(".q-fb.right", x); }).length;
       $(".quiz-score", quiz).innerHTML = "<b>" + got + "</b> / " + quiz.dataset.total + " correct";
+      var retry = $("[data-quiz-retry]", quiz);
+      if (retry) retry.hidden = false;
+      var answered = $$(".q", quiz).every(function (x) { return !$(".q-fb", x).hidden; });
+      if (answered) {
+        var prev = quizBest(quiz);
+        if (prev === null || got > prev) quizBest(quiz, got);
+        showBest(quiz);
+      }
     });
+
+    // Retake: put every question back to its unanswered state. The best score
+    // survives, so revision has something to beat.
+    root.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-quiz-retry]");
+      if (!b) return;
+      var quiz = b.closest("[data-quiz]");
+      $$(".q", quiz).forEach(function (q) {
+        $$(".q-opt", q).forEach(function (x) { x.disabled = false; x.classList.remove("correct", "wrong", "dim"); });
+        var fb = $(".q-fb", q);
+        fb.hidden = true; fb.classList.remove("right", "nope");
+      });
+      $(".quiz-score", quiz).innerHTML = "0 / " + quiz.dataset.total + " correct";
+      b.hidden = true;
+      var first = $(".q-opt", quiz);
+      if (first) first.focus();
+    });
+
+    // A best score per quiz, per lesson, kept in this browser only.
+    function quizKey(quiz) {
+      var id = "";
+      try { id = new URLSearchParams(location.search).get("id") || ""; } catch (e) {}
+      return "th:quiz:" + ((EC.course && EC.course.id) || "") + ":" + id + ":" + quiz.dataset.quiz;
+    }
+    function quizBest(quiz, v) {
+      try {
+        if (v === undefined) { var s = localStorage.getItem(quizKey(quiz)); return s === null ? null : +s; }
+        localStorage.setItem(quizKey(quiz), String(v));
+      } catch (e) { return null; }
+      return v;
+    }
+    function showBest(quiz) {
+      var best = quizBest(quiz), el = $(".quiz-best", quiz);
+      if (!el || best === null) return;
+      el.textContent = "Best " + best + " / " + quiz.dataset.total;
+      el.hidden = false;
+    }
+    $$("[data-quiz]", root).forEach(showBest);
   };
 
   /* --------------------------------------------------------- rail drawer -- */
   EC.initRailDrawer = function () {
-    var rail = $(".rail"), scrim = null;
-    $$("[data-rail-toggle]").forEach(function (b) {
-      b.addEventListener("click", function () {
-        var open = rail.classList.toggle("open");
-        if (open) {
-          scrim = document.createElement("div");
-          scrim.className = "rail-scrim";
-          scrim.addEventListener("click", function () { rail.classList.remove("open"); scrim.remove(); scrim = null; });
-          document.body.appendChild(scrim);
-        } else if (scrim) { scrim.remove(); scrim = null; }
-      });
+    var rail = $(".rail"), scrim = null, toggles = $$("[data-rail-toggle]");
+    if (!rail) return;
+    function set(open) {
+      rail.classList.toggle("open", open);
+      toggles.forEach(function (b) { b.setAttribute("aria-expanded", String(open)); });
+      if (open && !scrim) {
+        scrim = document.createElement("div");
+        scrim.className = "rail-scrim";
+        scrim.addEventListener("click", function () { set(false); });
+        document.body.appendChild(scrim);
+      } else if (!open && scrim) { scrim.remove(); scrim = null; }
+    }
+    toggles.forEach(function (b) {
+      b.setAttribute("aria-expanded", "false");
+      b.addEventListener("click", function () { set(!rail.classList.contains("open")); });
+    });
+    // A drawer that covers the page must close from the keyboard too.
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && rail.classList.contains("open")) {
+        set(false);
+        if (toggles[0]) toggles[0].focus();
+      }
     });
   };
 

@@ -222,56 +222,31 @@ stable on a second call: 43f8831a3a1bb42a`,
     questions: [
       {
         stem: "Why test through a client session at all, when the tool is an ordinary Python function you can call directly?",
-        options: [
-          "Because tools cannot be called directly",
-          "Because the regressions live in what MCP generated — whether the tool appears, whether the schema carries its descriptions and enums, whether a bad argument becomes an error result",
-          "Because a client session is faster",
-          "To test the transport"
-        ],
+        options: ["Because tool functions cannot be called directly in Python", "The regressions live in what MCP generates from the function", "Because a client session runs faster than a direct call", "To test the transport layer rather than the tools"],
         answer: 1,
         why: "Call the function directly for its logic; that needs no machinery. What a unit test cannot see is a decorator typo, a dropped Annotated, or a changed required set — all of which are invisible to the function and visible to every consumer."
       },
       {
         stem: "In-process testing was 29.7 ms against 1201 ms over a subprocess. Why does that gap matter beyond convenience?",
-        options: [
-          "It does not; both are fast enough",
-          "A suite that finishes in tens of milliseconds runs on every save; one taking a second per file runs before a release, by which time the mistake has been built on",
-          "Because CI bills by the second",
-          "Because subprocess tests are less accurate"
-        ],
+        options: ["It does not matter, because both are fast enough", "A fast suite runs on every save; a slow one only before release", "Because CI providers bill by the second of runtime", "Because subprocess tests give less accurate results"],
         answer: 1,
         why: "Almost all of the subprocess cost is interpreter startup, paid per file at best. Speed is what makes a suite a design tool rather than a gate, which is the same argument as for any fast test suite."
       },
       {
         stem: "Someone converts `frm: Annotated[str, Field(description=\"ISO 4217 code\")]` to `frm: str`. Which test catches it?",
-        options: [
-          "A unit test calling the function",
-          "An assertion that the schema's `frm` property has a `description` — nothing about the function's behaviour changed, so only the generated schema shows it",
-          "A smoke test over stdio",
-          "None; this is not a regression"
-        ],
+        options: ["A unit test that calls the function directly", "An assertion that the schema property has a description", "A smoke test that runs the server over stdio", "None, because this change is not a regression"],
         answer: 1,
         why: "It is the realistic regression and it is a plausible tidy-up by someone who has not measured what a docstring contributes. Every unit test still passes while every consumer's model loses the documentation for that parameter."
       },
       {
         stem: "Why assert that `capabilities.tools.listChanged is False`?",
-        options: [
-          "Because listChanged is deprecated",
-          "So that turning it on fails a test and someone has to confirm notifications are actually being sent — declaring it without sending them leaves clients caching a stale list for the whole connection",
-          "Because True breaks older clients",
-          "To speed up the handshake"
-        ],
+        options: ["Because listChanged is deprecated in the current revision", "So enabling it fails a test until notifications are sent", "Because a true value breaks older client implementations", "To make the initialise handshake measurably faster"],
         answer: 1,
         why: "It is lesson 1.2's warning in executable form. The assertion reads oddly on purpose: it is not that False is correct forever, it is that the change should be deliberate rather than incidental."
       },
       {
         stem: "A tool has a `print()` added to it. Which test catches that?",
-        options: [
-          "The schema assertions",
-          "None of the in-process tests — memory streams are not stdout, so only a smoke test that actually spawns the server over stdio sees the corruption",
-          "The isError assertion",
-          "The interface fingerprint"
-        ],
+        options: ["The schema assertions, which see the changed function", "Only a smoke test that spawns the server over stdio", "The isError assertion, which sees the corrupted result", "The interface fingerprint, which hashes the function body"],
         answer: 1,
         why: "This is the argument for keeping exactly one slow test. It costs about a second and catches the whole class from lesson 2.1: a print on stdout, an import-time warning, or a dependency missing from the packaged environment."
       }

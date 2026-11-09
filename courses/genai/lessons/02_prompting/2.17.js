@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.17",
 
-  lede: "A prompt is code that changes behaviour, is edited by people who do not ship code, and has no type checker. Production prompt management is the discipline of treating it accordingly: versioned, tested, deployed with a rollback, and logged with every response so that a quality question six weeks later has an answer. The common form gives a checklist; this lesson is about which parts of it are load-bearing and which are ceremony, and the one record that makes everything else possible.",
+  lede: "A prompt is code that changes behaviour, is edited by people who do not ship code, and has no type checker. Production prompt management is the discipline of treating it accordingly: versioned, tested, deployed with a rollback, and logged with every response so that a quality question six weeks later has an answer. Published guidance gives a checklist; this lesson is about which parts of it are load-bearing and which are ceremony, and the one record that makes everything else possible.",
 
   objectives: [
     "Version prompts so a change is reviewable and revertible",

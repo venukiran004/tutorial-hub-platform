@@ -281,7 +281,7 @@ heapq.nlargest(k, tasks, key=lambda t: t.priority)   # WITH a key`,
       minutes: 36,
       body: [
         { t: "p", text: "Given an array and a window size `k`, return the maximum of each window as it slides one position at a time." },
-        { t: "code", lang: "python", numbered: false, title: "example", code: `
+        { t: "code", lang: "text", numbered: false, title: "example", code: `
 nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3
 
 window            max

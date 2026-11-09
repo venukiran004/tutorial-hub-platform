@@ -56,14 +56,14 @@ async for event in runner.run_async(user_id="u1", session_id="s1", new_message=m
 
     { t: "h2", n: "02", text: "Other providers", id: "providers" },
 
-    {"kind": "trace", "title": "Four ways to reach a model, and one contract underneath all of them", "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.", "left": "how you reach it", "codeW": 190, "vars": ["example", "when"], "steps": [{"code": "a model string", "state": ["'gemini-2.5-pro', 'claude-3-5-sonnet@...'", "first-party, on Vertex AI"], "tone": "good"}, {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"}, {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"}, {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-0"},
+    {"kind": "trace", "title": "Four ways to reach a model, and one contract underneath all of them", "caption": "**Everything in this table is a `BaseLlm` producing `LlmResponse` objects from an async generator, which is why the last row works at all.** The scripted model used throughout this course is not a testing special case — it is the same interface the real adapters implement, so an agent cannot tell the difference. That is what makes testing without a network straightforward rather than a mocking exercise. **The LiteLLM row is the one to reach for by default** for a non-Google provider: one line, maintained elsewhere, and it covers OpenAI, Azure, Bedrock and Ollama alike.", "left": "how you reach it", "codeW": 190, "vars": ["example", "when"], "steps": [{"code": "a model string", "state": ["'gemini-2.5-pro', 'claude-sonnet-5-5'", "first-party, on Vertex AI"], "tone": "good"}, {"code": "a shipped adapter class", "state": ["Gemini, Claude, Gemma, ApigeeLlm", "when you need its own options"], "changed": [0, 1], "tone": "good"}, {"code": "LiteLlm(model=...)", "state": ["OpenAI, Azure, Bedrock, Ollama", "the default for anything else"], "changed": [0, 1], "tone": "violet"}, {"code": "your own BaseLlm subclass", "state": ["a scripted model, a gateway, a cache", "testing, or provider-level concerns"], "changed": [0, 1], "tone": "accent"}], "t": "diagram", "id": "dg-3_2-02-0"},
 
     { t: "code", lang: "python", title: "The adapters ADK ships",
       code: `from google.adk.models import Gemini, Claude, Gemma, LiteLlm, ApigeeLlm, FallbackModel
 from google.adk.agents import LlmAgent
 
 # 1. a first-party Claude model on Vertex AI: resolved from the string
-a1 = LlmAgent(name="a1", model="claude-3-5-sonnet@20240620", instruction="…")
+a1 = LlmAgent(name="a1", model="claude-sonnet-5-5", instruction="…")
 
 # 2. anything LiteLLM drives — OpenAI, Anthropic direct, Azure, Bedrock, Ollama, …
 #    pip install "google-adk[extensions]"
@@ -109,7 +109,7 @@ LLMRegistry.register(MyLlm)`,
     { t: "code", lang: "python", title: "A fallback across providers",
       code: `resilient = FallbackModel(
     models=[Gemini(model="gemini-2.5-pro"),
-            LiteLlm(model="anthropic/claude-3-5-sonnet-20241022")],
+            LiteLlm(model="anthropic/claude-sonnet-5-5")],
     retriable_status_codes=[429, 500, 503],
 )`,
       caption: "Legitimate for availability, and a trap for behaviour: the second model has different tool-calling habits, so an agent that falls back is not the agent you evaluated. Record which model answered on every invocation (lesson 11.1), and evaluate the fallback path as its own configuration." },

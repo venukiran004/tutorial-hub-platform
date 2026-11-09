@@ -111,7 +111,7 @@ t  y                                date        lag1   lag2   lag3   roll3     d
   <text x="630" y="238" font-size="11" fill="var(--warn)" font-family="ui-sans-serif, system-ui, sans-serif">one model, 28 outputs · shares structure · the neural default</text>
 </svg>` },
 
-    { t: "code", lang: "python", title: "The three strategies on store A: 19 features, calendar known in advance, h = 28, 10 origins (executed; 107 s)",
+    { t: "code", lang: "text", title: "The three strategies on store A: 19 features, calendar known in advance, h = 28, 10 origins (executed; 107 s)",
       code: `features: lag 1,2,3,7,14,21,28 · roll7, roll28, std7 of lagged values · week-on-week change · weekday · yearly sin/cos · promo, closed, Black Friday, Christmas week · store
 
 recursive:  one HistGradientBoosting model on one-step features; at each of the 28 steps the lags and rollings are recomputed from the predictions so far
@@ -231,7 +231,7 @@ MIMO:       one RandomForest with 28 outputs (multi-output is native to forests)
         { level: "ok", label: "Shifted features, forward folds, recursive forecast", code: `X = lags + shift(1).rolling(...) + calendar;  TimeSeriesSplit(gap=28)
 recursive_forecast(model, h=28)                        # MAE 18.7, but 25.0 at h = 28`,
           note: "Honest, and the compounding is hidden inside the average. No known-future covariates for the target day; no cross-learning; no trend fix." },
-        { level: "best", label: "Direct (or DirRec) with the target day's known covariates, one global model over related series, a trend fix where needed, reported per horizon against the baseline", code: `for h in 1..28: model_h.fit(features_at_t + known_covariates(t + h), y[t + h])
+        { level: "best", label: "Direct (or DirRec) with the target day's known covariates, one global model over related series, a trend fix where needed, reported per horizon against the baseline", lang: "text", code: `for h in 1..28: model_h.fit(features_at_t + known_covariates(t + h), y[t + h])
 global model over stores with store id;  target = y − linear_trend  or  y / roll28 on trending series
 report MAE by horizon block vs the seasonal naive and vs SARIMAX + calendar`,
           note: "No compounding, the calendar of the day being forecast is used, information is pooled across series (−11 % overall, −26 % on the shifted store), extrapolation is handed to something that can do it, and the comparison that decides whether the ML route was worth it is on the table." }

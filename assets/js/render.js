@@ -127,7 +127,7 @@
       head = '<div class="cb-head">' +
         '<span class="cb-lang">' + esc(lang) + "</span>" +
         '<span class="cb-title">' + esc(b.title || "") + "</span>" +
-        '<button class="cb-copy" type="button" data-copy="' + id + '">' + I.copy + "<span>Copy</span></button>" +
+        '<button class="cb-copy" type="button" aria-label="Copy code" data-copy="' + id + '">' + I.copy + "<span>Copy</span></button>" +
         "</div>";
     }
     var cls = "codeblock" + (b.numbered === false ? "" : " numbered") + (b.flush ? " flush" : "");
@@ -262,7 +262,7 @@
       '<div class="ex-body">' + task + body(b) + reqs + "</div>" +
       '<div class="ex-foot">' +
       (hintBlocks.length ? '<div class="ex-hint">' + disclose({ summary: hintLabel, tag: "hint", body: hintBlocks }) + "</div>" : "") +
-      (b.solution ? '<button class="reveal-btn" type="button" data-reveal="' + id + '-sol">' + I.key + "<span>Reveal solution</span></button>" +
+      (b.solution ? '<button class="reveal-btn" type="button" aria-expanded="false" aria-controls="' + id + '-sol" data-reveal="' + id + '-sol">' + I.key + "<span>Reveal solution</span></button>" +
         '<span class="reveal-note">Write your own version first — reading a solution feels like learning and is not.</span>' : "") +
       "</div>" + sol + "</div>";
   }
@@ -323,7 +323,9 @@
     return '<div class="quiz" data-quiz="' + g + '" data-total="' + (b.questions || []).length + '">' +
       '<div class="quiz-head"><span class="quiz-ic">' + I.brain + "</span>" +
       '<span class="quiz-title">' + esc(b.title || "Knowledge check") + "</span>" +
-      '<span class="quiz-score">0 / ' + (b.questions || []).length + " correct</span></div>" + qs + "</div>";
+      '<span class="quiz-score">0 / ' + (b.questions || []).length + " correct</span>" +
+      '<span class="quiz-best" hidden></span>' +
+      '<button class="quiz-retry" type="button" data-quiz-retry hidden>Try again</button></div>' + qs + "</div>";
   }
 
   /* -------------------------------------------------------- interview -- */

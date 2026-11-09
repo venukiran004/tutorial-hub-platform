@@ -53,7 +53,7 @@ EC.receiveLesson({
       ["Closures", "interpolated for fitting, overridden to zero in the output", "a closure is not a sales observation (10.1)"]
     ] },
 
-    { t: "code", lang: "python", title: "From sales_raw.csv to the fitting panel (executed; every fix counted)",
+    { t: "code", lang: "text", title: "From sales_raw.csv to the fitting panel (executed; every fix counted)",
       code: `raw rows 2,740
 -> duplicates removed: 9                      (an ETL re-run of three days)
 -> asfreq('D') adds 5 missing days            (store B, 10-14 June 2024; interpolated)
@@ -150,7 +150,7 @@ fitting panel: 911 days × 3 stores;  calendar known in advance: promo, Black Fr
       ["Data schema or definition change", "refit and revalidate the backtest"]
     ] },
 
-    { t: "code", lang: "python", title: "Re-forecast versus refit, measured (executed, store A)",
+    { t: "code", lang: "text", title: "Re-forecast versus refit, measured (executed, store A)",
       code: `SARIMAX + calendar:  refit from scratch 1,408 ms;  append a week of actuals without refitting and re-forecast 28 days: 18 ms
 per origin in the backtest:  ETS 138 ms · SARIMAX 1,329 ms · global direct boosting (28 models over 3 stores) 9 s
 # 200 stores × SARIMAX refit ≈ 4.5 minutes nightly; 200 stores × re-forecast ≈ 4 seconds -- refit weekly, re-forecast daily`,
@@ -176,7 +176,7 @@ per origin in the backtest:  ETS 138 ms · SARIMAX 1,329 ms · global direct boo
 
     { t: "p", text: "The single most valuable artefact is a table with one row per (store, target date, horizon, run, model, forecast, interval, actual). It makes every question answerable after the fact — which horizon degraded, when, for which store, under which model version — and it is what the backtest wrote. Without it a regression is unarguable; with it the questions below are one-line queries." },
 
-    { t: "code", lang: "python", title: "Queries on the 2,688-row table (executed)",
+    { t: "code", lang: "text", title: "Queries on the 2,688-row table (executed)",
       code: `WAPE by run (origin):        boosting    naive            beat the naive:   ETS 6 of 8 runs · SARIMAX 8 of 8 · boosting 8 of 8
   2024-11-17 (Black Friday)     11.50     14.04            worst run:        ETS 14.72 % and boosting 11.50 % on the Black Friday window; SARIMAX 7.25 % on the Christmas window
   2024-12-15 (Christmas)         8.43     15.70
@@ -262,10 +262,10 @@ always: baselines first · rolling-origin backtest with a gap · MASE and bias �
       rungs: [
         { level: "bad", label: "One model, one number, refit nightly, no record", code: `model.fit(all_data); write(model.predict(28))`,
           note: "**No baseline to know whether 7.9 % is good; no table to know when it stopped being good; a nightly refit that costs 200× the re-forecast for no gain; and a forecast of sales on Christmas Day.**" },
-        { level: "ok", label: "Backtested model, batch table, weekly refit", code: `backtest -> choose SARIMAX + calendar (6.29 % vs naive 10.65 %)
+        { level: "ok", label: "Backtested model, batch table, weekly refit", lang: "text", code: `backtest -> choose SARIMAX + calendar (6.29 % vs naive 10.65 %)
 nightly: append actuals, re-forecast, write (store, date, h, run_id, forecast)`,
           note: "Honest and cheap. Still missing the interval, the reconciliation, the baseline scored beside the model each day, and the monitors that would catch a shift or a broken feed." },
-        { level: "best", label: "The full run: gate, features, model, intervals, reconciliation, scoring, FVA", code: `02:30 gate (counts, nulls, dupes, freshness)  ->  03:30 re-forecast daily / refit weekly or on a CUSUM alarm
+        { level: "best", label: "The full run: gate, features, model, intervals, reconciliation, scoring, FVA", lang: "text", code: `02:30 gate (counts, nulls, dupes, freshness)  ->  03:30 re-forecast daily / refit weekly or on a CUSUM alarm
 04:00 p10/p50/p90 with coverage tracked      ->  04:30 MinT; closures -> 0
 05:00 score yesterday against actuals, naive beside it, by store and horizon; bias run-length; PSI year-on-year
 monthly: the FVA review from the same table`,

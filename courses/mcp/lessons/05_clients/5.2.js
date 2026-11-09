@@ -191,56 +191,31 @@ await toolset.close()`,
     questions: [
       {
         stem: "What is missing from a desktop host's `mcpServers` JSON that a framework toolset provides?",
-        options: [
-          "The ability to pass environment variables",
-          "A tool filter and a name prefix — so every tool the server offers reaches the model, and the allow-list that lesson 4.1 identified as the effective control is simply unavailable",
-          "Support for HTTP transports",
-          "The server's version"
-        ],
+        options: ["A way to pass environment variables to the server", "A tool filter and a name prefix for the server's tools", "Support for streamable HTTP and SSE transports", "A field recording the server's version number"],
         answer: 1,
         why: "It is why the same server is a different risk in the two places. On a desktop the remaining lever is the argument list, which is why scoping a filesystem server to one directory matters so much more there."
       },
       {
         stem: "A configuration entry runs `npx -y @scope/mcp-filesystem`. What is the concern?",
-        options: [
-          "npx is slower than a local install",
-          "With no version pinned it fetches and executes whatever that name resolves to at startup — no reproducibility and no defence against a changed tool list, which is the supply-chain form of a rug pull",
-          "npx cannot pass environment variables",
-          "Node servers cannot be filtered"
-        ],
+        options: ["npx is slower to start than a locally installed binary", "Unpinned, it runs whatever the name resolves to at startup", "npx cannot pass environment variables to the server", "Servers written for Node cannot have their tools filtered"],
         answer: 1,
         why: "Adding the entry is agreeing to run a command, and `-y` means agreeing to run whatever version is current. Pinning a version in the arguments is the same discipline as any dependency, applied to something that does not look like one."
       },
       {
         stem: "Why is a framework toolset's `tool_filter` better placed than an equivalent check elsewhere?",
-        options: [
-          "Because it runs faster than a runtime check",
-          "It is a constructor argument, so the allow-list is in code and version control and a reviewer can ask why a name is on it",
-          "Because the protocol enforces it server-side",
-          "Because it survives a server restart"
-        ],
+        options: ["It runs faster than an equivalent runtime check", "It sits in code and version control, open to review", "The protocol enforces it on the server side", "It survives a server restart without reconfiguring"],
         answer: 1,
         why: "The reviewability is the point. The same list buried in a configuration file nobody reviews provides the same technical protection and far less assurance that anyone considered it."
       },
       {
         stem: "A framework toolset is constructed inside a request handler. What follows?",
-        options: [
-          "Nothing — toolsets are cheap",
-          "It owns a connection and therefore a subprocess, so lesson 5.1's leak and the roughly one-second startup both apply per request",
-          "The tool filter stops applying",
-          "The prefix is regenerated each time"
-        ],
+        options: ["Nothing, because toolsets are cheap to construct", "Each request pays startup and risks a leaked subprocess", "The tool filter stops applying to later requests", "The tool-name prefix is regenerated on each request"],
         answer: 1,
         why: "The wrapper changes the ergonomics and not the ownership. Construct it once at application startup and close it at shutdown, the same shape as a database pool and as the session group in 5.1."
       },
       {
         stem: "What is the review question that applies across all three host surfaces?",
-        options: [
-          "Does the server have good documentation?",
-          "Assuming the model does the worst thing available to it, what happens — which means asking what the server acts as, what the worst reachable tool is, and whether anything is irreversible",
-          "Is the server written in Python?",
-          "Does it support resources as well as tools?"
-        ],
+        options: ["Does the server have good documentation for each tool?", "If the model does its worst, what happens on this server?", "Is the server written in a language we can audit?", "Does it support resources and prompts as well as tools?"],
         answer: 1,
         why: "It survives the thing that defeats reading descriptions: the descriptions changing. The one-line version is whether you would leave the server connected while someone tried to talk your agent into misusing it."
       }

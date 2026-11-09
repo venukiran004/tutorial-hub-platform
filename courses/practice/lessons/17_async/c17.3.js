@@ -430,7 +430,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "\"\"\"\nDebugging asyncio code:\n\n1. asyncio.get_event_loop().set_debug(True) - enable debug mode\n2. PYTHONASYNCIODEBUG=1 environment variable\n3. Slow callback warnings (>100ms)\n4. asyncio.all_tasks() - list running tasks\n5. Task.print_stack() - print task's stack\n6. aiomonitor - remote monitoring of asyncio apps\n\nDebug mode catches: unawaited coroutines, slow callbacks,\nunclosed resources.\n\"\"\"\n\nimport asyncio\n\nasync def demo_async_debug():\n    loop = asyncio.get_event_loop()\n    # loop.set_debug(True)  # Enable in development\n    tasks = asyncio.all_tasks()\n    print(f\"  Running tasks: {len(tasks)}\")\n    for task in tasks:\n        print(f\"    Task: {task.get_name()}\")\n\nprint(\"Async debugging\")\nasyncio.run(demo_async_debug())\nprint()",
+     "code": "\"\"\"\nDebugging asyncio code:\n\n1. asyncio.get_running_loop().set_debug(True) - enable debug mode\n2. PYTHONASYNCIODEBUG=1 environment variable\n3. Slow callback warnings (>100ms)\n4. asyncio.all_tasks() - list running tasks\n5. Task.print_stack() - print task's stack\n6. aiomonitor - remote monitoring of asyncio apps\n\nDebug mode catches: unawaited coroutines, slow callbacks,\nunclosed resources.\n\"\"\"\n\nimport asyncio\n\nasync def demo_async_debug():\n    loop = asyncio.get_running_loop()\n    # loop.set_debug(True)  # Enable in development\n    tasks = asyncio.all_tasks()\n    print(f\"  Running tasks: {len(tasks)}\")\n    for task in tasks:\n        print(f\"    Task: {task.get_name()}\")\n\nprint(\"Async debugging\")\nasyncio.run(demo_async_debug())\nprint()",
      "numbered": false
     },
     {

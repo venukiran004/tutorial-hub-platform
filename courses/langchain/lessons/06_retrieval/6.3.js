@@ -8,7 +8,7 @@ EC.receiveLesson({
     "Compare IDF variants and say where they diverge",
     "State what BM25 fixes and the one failure it cannot reach"
   ],
-  prerequisites: ["6.2"],
+  prerequisites: ["6.2", "nlp:1.4"],
   blocks: [
     { t: "h2", n: "01", id: "formula", text: "The formula", sub: "Term by term" },
 
@@ -169,7 +169,7 @@ EC.receiveLesson({
     { t: "p", text: "The worst single case is `I forgot my password`, which scores above zero on **0 of 41** documents. The relevant document says *\u201cCredential recovery \u2026 signed recovery link\u201d* and contains neither *forgot* nor *password*. No value of `k1` or `b` reaches that, because the term is not in the document at all \u2014 it is the one failure lexical tuning cannot touch, and 6.4 shows what BM25 returns anyway." },
     { t: "code", lang: "python", title: "BM25Retriever, and where it stops being the right implementation",
       code: `from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
+from langchain_classic.retrievers import EnsembleRetriever   # pip install langchain-classic (LangChain 1.x)
 
 bm25 = BM25Retriever.from_documents(docs, k=5)
 bm25.invoke("refund window for annual plans")

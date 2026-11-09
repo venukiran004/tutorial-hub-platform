@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Choose a base image on real trade-offs rather than size alone"
   ],
 
-  prerequisites: ["7.6", "14.2"],
+  prerequisites: ["7.6", "14.2", "ml:3.6"],
 
   blocks: [
 

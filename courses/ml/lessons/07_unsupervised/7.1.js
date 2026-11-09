@@ -234,9 +234,9 @@ the global optimum on these data has WCSS 1,132.7 -- this run stopped at 5,726.9
       rungs: [
         { level: "bad", label: "Raw features, k = 5 because five personas were requested", code: `KMeans(5).fit(df[numeric_cols])`,
           note: "**Tenure bins with a persona name on each.** Unscaled distance, an unexamined k, a random-ish start, and no evidence of structure." },
-        { level: "ok", label: "Scaled, k chosen by silhouette and gap, profiled", code: `Z = StandardScaler().fit_transform(df[numeric_cols]); [silhouette_score(Z, KMeans(k, n_init=10).fit_predict(Z)) for k in range(2, 10)]; gap over the same range; profile the segments`,
+        { level: "ok", label: "Scaled, k chosen by silhouette and gap, profiled", lang: "text", code: `Z = StandardScaler().fit_transform(df[numeric_cols]); [silhouette_score(Z, KMeans(k, n_init=10).fit_predict(Z)) for k in range(2, 10)]; gap over the same range; profile the segments`,
           note: "**Defensible.** With 1 M rows the silhouette needs a sample, and the profile is still cuts through a continuum if the diagnostics say so." },
-        { level: "best", label: "Reduce, cluster, test stability, report structure strength honestly, and encode the segments for the models that use them", code: `Z = make_pipeline(StandardScaler(), PCA(0.9)).fit_transform(X)          # 7.4: correlated features counted once
+        { level: "best", label: "Reduce, cluster, test stability, report structure strength honestly, and encode the segments for the models that use them", lang: "text", code: `Z = make_pipeline(StandardScaler(), PCA(0.9)).fit_transform(X)          # 7.4: correlated features counted once
 km = MiniBatchKMeans(k, n_init=10); stability = mean ARI between clusterings of bootstrap halves (7.3)
 # report: silhouette on a 20k sample, gap, stability; the profile table; and the sentence 'segments are convenience cuts' if silhouette < 0.3
 # downstream: segment id as a categorical feature; refit on a schedule; watch segment sizes drift (11.1)`,

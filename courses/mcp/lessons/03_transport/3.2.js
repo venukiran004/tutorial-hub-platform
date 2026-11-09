@@ -197,56 +197,31 @@ mcp = FastMCP(
     questions: [
       {
         stem: "Why should authentication be middleware in front of the MCP app rather than a check at the top of each tool?",
-        options: [
-          "Because middleware is faster",
-          "Middleware rejects before any MCP message is parsed, so an unauthenticated caller never reads the tool list or any description — and it cannot be forgotten in a tool added later",
-          "Because tools cannot read request headers at all",
-          "Because the protocol forbids checks inside tools"
-        ],
+        options: ["Because middleware is faster than a check inside each tool", "It rejects before any MCP message, and cannot be forgotten", "Because tools cannot read the request's headers at all", "Because the protocol forbids authorisation inside tools"],
         answer: 1,
         why: "A per-tool check stops the call but not the reconnaissance: by the time a tool body runs, the caller has already seen every tool name, description and schema. The middleware position also means a new tool is protected by default rather than by remembering."
       },
       {
         stem: "A request carrying `Origin: http://evil.example` returns 403 from a default server, while a request with no Origin returns 200. What is that?",
-        options: [
-          "A misconfiguration — both should be accepted",
-          "DNS-rebinding protection, on by default with empty allow-lists: unrecognised browser origins are refused while ordinary server-to-server calls, which send no Origin, continue to work",
-          "CORS, which the SDK does not implement",
-          "A bug in the streamable HTTP transport"
-        ],
+        options: ["A misconfiguration: both requests should be accepted", "DNS-rebinding protection refusing an unknown browser origin", "CORS enforcement, which the SDK applies to every request", "A bug in how streamable HTTP parses the Origin header"],
         answer: 1,
         why: "It defends an attack specific to local servers: a hostile page the user visits can make requests to 127.0.0.1 and drive every tool with the user's own access. The empty allow-list is a statement that no origin is permitted, not an oversight."
       },
       {
         stem: "A legitimate internal caller is being rejected with 403. What is the fix?",
-        options: [
-          "Set `enable_dns_rebinding_protection=False`",
-          "Add its host or origin to `allowed_hosts` / `allowed_origins` — the 403 is the control working, and disabling it makes a local server reachable from any page the user visits",
-          "Switch to the SSE transport",
-          "Use stateless mode"
-        ],
+        options: ["Set `enable_dns_rebinding_protection=False` on the server", "Add its host or origin to the server's allow-lists", "Switch the server to the SSE transport instead", "Run the server in stateless mode to skip the check"],
         answer: 1,
         why: "Turning a control off to clear its signal is the mistake the setting invites. The one defensible case is a non-loopback server behind a proxy already enforcing host and origin rules, where the check has moved rather than vanished."
       },
       {
         stem: "An agent using a deployed MCP server works but progress updates all arrive at the end. What is the likely cause?",
-        options: [
-          "The server is not reporting progress",
-          "Something in the chain is buffering the response — a reverse proxy with buffering on, a compression layer, or a platform that requires a complete body",
-          "The client does not support notifications",
-          "Stateless mode is enabled"
-        ],
+        options: ["The server is not sending progress notifications", "Something in the chain buffers the response body", "The client does not support notifications at all", "Stateless mode is enabled on the server"],
         answer: 1,
         why: "It is invisible locally because nothing sits between client and server, and no error is logged by anything. The one-minute check is a tool that reports progress for a minute, called through the deployed URL rather than localhost."
       },
       {
         stem: "A server with bearer-token middleware has a tool returning \"the caller's own orders\". What is wrong?",
-        options: [
-          "Nothing — the token identifies the caller",
-          "A token authenticates the client, not a user: every caller presenting it is the same caller, so the tool can only return orders to anyone holding the token",
-          "The tool should check the token itself",
-          "Orders should be a resource rather than a tool"
-        ],
+        options: ["Nothing: the token already identifies the calling user", "A token authenticates the client, not an individual user", "The tool should validate the token itself, not middleware", "Orders should be exposed as a resource, not as a tool"],
         answer: 1,
         why: "This is the gap a token check hides, because the server feels secured. Nothing in MCP carries the caller's identity, so per-user behaviour needs identity passed deliberately on top of the protocol — which is lesson 4.2."
       }

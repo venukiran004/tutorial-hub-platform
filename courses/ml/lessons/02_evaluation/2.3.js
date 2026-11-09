@@ -112,7 +112,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "The same model, four ways to choose the threshold (executed)",
+    { t: "code", lang: "text", title: "The same model, four ways to choose the threshold (executed)",
       hl: [2, 5, 8, 11, 14],
       code: `# minimum expected cost (£5 call, £100 loss, 40 % save rate)
 threshold 0.15    139 flagged    recall 0.833   precision 0.288   cost 3,895

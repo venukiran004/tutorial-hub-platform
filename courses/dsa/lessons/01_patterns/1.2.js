@@ -300,7 +300,7 @@ for ch in text:
       minutes: 34,
       body: [
         { t: "p", text: "Given a binary array, return the length of the longest contiguous subarray containing an equal number of 0s and 1s." },
-        { t: "code", lang: "python", numbered: false, title: "examples", code: `
+        { t: "code", lang: "text", numbered: false, title: "examples", code: `
 [0, 1]              ->  2     the whole array
 [0, 1, 0]           ->  2     "[0,1]" or "[1,0]"
 [0, 0, 1, 0, 1, 1]  ->  6     the whole array

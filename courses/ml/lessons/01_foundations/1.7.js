@@ -252,7 +252,7 @@ shatters(four)     # 14 of 16                        -> the two XOR labellings (
           note: "**Capacity far beyond what 300 rows can bound.** The training score will be perfect and the validation score a coin toss with a wide interval." },
         { level: "ok", label: "A regularised logistic regression", code: `LogisticRegressionCV(Cs=10, penalty="l2")`,
           note: "**Right side of the bound**: a parametric model with a strong bias, 41 parameters shrunk by validation. Misses interactions if they exist." },
-        { level: "best", label: "Two biases, compared with their spread, and the simpler kept unless beaten", code: `LogisticRegressionCV(...)  vs  RandomForestClassifier(300, max_depth=3, min_samples_leaf=10)
+        { level: "best", label: "Two biases, compared with their spread, and the simpler kept unless beaten", lang: "text", code: `LogisticRegressionCV(...)  vs  RandomForestClassifier(300, max_depth=3, min_samples_leaf=10)
 # repeated stratified 5-fold; if the forest is not ahead by more than the spread, the logistic regression ships`,
           note: "**No free lunch says try a second bias; Occam says keep the first unless the second earns it.** A shallow, leafy forest is the non-parametric candidate that respects 300 rows." }
       ]

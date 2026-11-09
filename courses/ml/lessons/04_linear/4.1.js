@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Show that OLS is the MLE under Gaussian noise, and choose between the normal equation, QR/SVD and gradient descent by size and conditioning"
   ],
 
-  prerequisites: ["1.8", "2.4"],
+  prerequisites: ["1.8", "2.4", "maths:1.3", "maths:5.2"],
 
   blocks: [
 

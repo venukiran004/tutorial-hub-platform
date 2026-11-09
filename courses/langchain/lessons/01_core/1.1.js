@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Recognise the same shape in LangChain's own RunnableSequence"
   ],
 
-  prerequisites: [],
+  prerequisites: ["genai:1.9"],
 
   blocks: [
 

@@ -172,7 +172,7 @@ az.loo(idata)                             # out-of-sample comparison between mod
 
     { t: "p", text: "8.1 used Bayesian optimisation to tune hyperparameters; this is the mechanism. A GP surrogate is fitted to the evaluations so far, and an acquisition function turns its posterior mean μ(x) and standard deviation σ(x) into a score for where to evaluate next. **Expected improvement** EI(x) = (μ − f_best − ξ) Φ(z) + σ φ(z), with z = (μ − f_best − ξ)/σ, rewards points that are either promising or uncertain; **upper confidence bound** μ + κσ makes the trade-off explicit; **probability of improvement** Φ(z) is greedier. The next point is the acquisition's maximiser, the function is evaluated there, and the surrogate is refitted." },
 
-    { t: "code", lang: "python", title: "Fifteen evaluations of a 1-D objective, 20 seeds: EI against random search (executed)",
+    { t: "code", lang: "text", title: "Fifteen evaluations of a 1-D objective, 20 seeds: EI against random search (executed)",
       code: `f(x) = −(sin 3x + 0.3x² − 0.5x) on [−2, 3];  true maximum 1.0554 at x = 1.527
 
 Bayesian optimisation (3 random points + 12 EI steps):   best found 1.0553 ± 0.0001;  within 0.01 of the maximum in 100 % of seeds

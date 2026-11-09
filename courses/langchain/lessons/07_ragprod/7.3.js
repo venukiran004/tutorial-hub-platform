@@ -118,8 +118,8 @@ EC.receiveLesson({
       ["reserving nothing for the answer", "Fails at generation time, after the input tokens are paid for."]
     ] },
     { t: "code", lang: "python", title: "Contextual compression: spend a model call to shrink what reaches the prompt",
-      code: `from langchain.retrievers import ContextualCompressionRetriever
-from langchain.retrievers.document_compressors import (LLMChainExtractor,
+      code: `from langchain_classic.retrievers import ContextualCompressionRetriever   # pip install langchain-classic (LangChain 1.x)
+from langchain_classic.retrievers.document_compressors import (LLMChainExtractor,
                                                        LLMChainFilter,
                                                        EmbeddingsFilter,
                                                        DocumentCompressorPipeline)

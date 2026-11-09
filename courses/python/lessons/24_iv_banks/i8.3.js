@@ -335,7 +335,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "loop = asyncio.get_event_loop()\nloop.run_until_complete(main())\n# Modern: asyncio.run(main())",
+     "code": "asyncio.run(main())                # creates a loop, runs main(), closes the loop\n\nasync def handler():\n    loop = asyncio.get_running_loop()   # the loop you are running on\n\n# Legacy: get_event_loop() + run_until_complete(). get_event_loop() is\n# deprecated when no loop is running, so do not write it in new code.",
      "numbered": false
     }
    ]

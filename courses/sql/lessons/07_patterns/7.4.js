@@ -202,10 +202,10 @@ SELECT a.rev AS by_line, b.rev AS by_order, a.rev - b.rev AS diff FROM a, b;
         { level: "bad", label: "Pull everything, split in pandas", code: `df = pd.read_sql("SELECT * FROM orders JOIN ...", conn)
 train, test = train_test_split(df, test_size=0.3, random_state=42)`,
           note: "**Row-level, and the same customer is on both sides.** Reproducible only with this library version and this row order; the split cannot be re-derived in SQL for the serving check." },
-        { level: "ok", label: "Hash split by customer in SQL", code: `SELECT ..., CASE WHEN hash(customer_id) % 100 < 70 THEN 'train' ELSE 'test' END AS split
+        { level: "ok", label: "Hash split by customer in SQL", lang: "sql", code: `SELECT ..., CASE WHEN hash(customer_id) % 100 < 70 THEN 'train' ELSE 'test' END AS split
 FROM feature_table`,
           note: "**Grouped and reproducible.** Still tests on orders from the same period as training; a model that has learned this quarter's patterns is tested on this quarter." },
-        { level: "best", label: "Time split, then hash within the training period for validation", code: `SELECT ..., CASE WHEN placed_at >= DATE '2025-03-01' THEN 'test'
+        { level: "best", label: "Time split, then hash within the training period for validation", lang: "sql", code: `SELECT ..., CASE WHEN placed_at >= DATE '2025-03-01' THEN 'test'
                  WHEN hash(customer_id) % 100 < 80 THEN 'train' ELSE 'valid' END AS split
 FROM feature_table
 -- plus: the HAVING check (no customer in train and valid) and the label rate per split`,

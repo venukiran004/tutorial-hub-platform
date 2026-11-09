@@ -254,7 +254,7 @@ for i, point in enumerate(stream):
 # week-1 precision@200 is low because week 1 has only 69 fraud rows -- and all 69 are in the forest's top 200`,
       caption: "The forest and ECOD find the two patterns they can see; LOF does not, because a burst of eight identical rows is a dense little cluster by local standards — the pattern defeats the definition. The hand rules are precise and narrow. Pattern C is invisible to all of them." },
 
-    { t: "code", lang: "python", title: "Stage 2 — the analyst's labels become a supervised model (executed)",
+    { t: "code", lang: "text", title: "Stage 2 — the analyst's labels become a supervised model (executed)",
       code: `reviewed = top-200 of week 1 by the forest (69 confirmed) ∪ 300 random rows (3 confirmed)   -> 490 labelled rows, 69 positive
 hgb = HistGradientBoostingClassifier(max_depth=3, learning_rate=0.05, max_iter=200).fit(X_week1[reviewed], y_reviewed)
 

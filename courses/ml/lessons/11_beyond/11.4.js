@@ -63,7 +63,7 @@ ITEM-BASED: adjusted cosine between items (ratings minus each user's mean), over
 
     { t: "p", text: "Model each rating as a global mean plus a user bias, an item bias and the dot product of a user vector and an item vector: r̂_ui = μ + b_u + b_i + p_uᵀq_i. The vectors are k latent factors learned only from the observed entries — Funk's SVD from the Netflix prize, which is not an SVD because an SVD would need every entry. Two solvers: alternating least squares fixes the item vectors and solves a ridge regression for each user (and vice versa), which is exact per step and parallel; stochastic gradient descent visits each observed rating and nudges its user and item vectors by the error, which is cheap per step and handles biases naturally." },
 
-    { t: "code", lang: "python", title: "500 users × 200 items generated from rank 8 with biases and noise sd 0.4; 15 % observed, 80 / 20 split (executed)",
+    { t: "code", lang: "text", title: "500 users × 200 items generated from rank 8 with biases and noise sd 0.4; 15 % observed, 80 / 20 split (executed)",
       code: `global mean baseline          RMSE 1.1201
 user + item bias baseline     RMSE 0.9556                    <- always fit the biases first; they are half the story
 
@@ -82,7 +82,7 @@ the noise floor: the generator's noise sd is 0.4, so no model can reach below ab
 
     { t: "p", text: "Most systems never see a rating. They see clicks, views, purchases and dwell — positive-only signals with no negatives: an unclicked item was not necessarily disliked, it was probably never shown. Two ideas turn this into a learning problem. **WRMF** (Hu, Koren and Volinsky) treats every entry as a preference — 1 if clicked, 0 otherwise — with a *confidence* 1 + α·count, so that observed clicks are weighted heavily and unobserved entries lightly, and solves it by ALS over the full matrix, which its algebra makes tractable. **BPR** (Rendle et al.) gives up on absolute scores and learns a ranking: for a user, a clicked item should score above an unclicked one, optimised by sampling (user, clicked, unclicked) triples and taking gradient steps on the sigmoid of the score difference." },
 
-    { t: "code", lang: "python", title: "14,246 clicks over 500 users (28.5 each); one fifth of each user's clicks held out; top-10 lists (executed)",
+    { t: "code", lang: "text", title: "14,246 clicks over 500 users (28.5 each); one fifth of each user's clicks held out; top-10 lists (executed)",
       code: `#  model                              P@10     R@10     NDCG@10   MAP@10   hit rate
 #  popularity                         0.0440   0.0842   0.0642    0.0258    0.370
 #  WRMF (implicit ALS, α 10, k 16)    0.1038   0.1941   0.1590    0.0753    0.654     (0.2 s)

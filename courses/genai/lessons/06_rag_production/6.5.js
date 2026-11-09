@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.5",
 
-  lede: "The common form gives three architectures for retrieving over images and tables, and lists them as options. Measured with CLIP, **the first one does not work as drawn**: every text-to-text cosine in my sample scored above every text-to-image cosine \u2014 minimum 0.7091 against maximum 0.3683, with no overlap at all. In a single store ranked by cosine, no image can ever outrank any text chunk, however relevant the image and irrelevant the text. That is not a quality problem, it is a **scale** problem, and it is the real argument for Option B.",
+  lede: "Published guidance gives three architectures for retrieving over images and tables, and lists them as options. Measured with CLIP, **the first one does not work as drawn**: every text-to-text cosine in my sample scored above every text-to-image cosine \u2014 minimum 0.7091 against maximum 0.3683, with no overlap at all. In a single store ranked by cosine, no image can ever outrank any text chunk, however relevant the image and irrelevant the text. That is not a quality problem, it is a **scale** problem, and it is the real argument for Option B.",
 
   objectives: [
     "Name what standard text RAG loses from a document and when that matters",
@@ -92,7 +92,7 @@ TV = T @ V.T                                  # text against image`,
       body: [
         { t: "p", text: "CLIP\u2019s contrastive objective only ever asks that a matching image\u2013text pair score *higher than* a mismatched one. Nothing in the loss requires matched cross-modal pairs to score as high as similar same-modal pairs, so the two embedding clouds settle into separate cones with a gap between them. It is a documented property of contrastively trained dual encoders, not an artefact of my charts." },
         { t: "p", text: "The consequence for retrieval is categorical rather than gradual. Ranking one list by cosine across both modalities sorts by *modality first* and relevance second. Every text chunk comes above every image, so a perfectly relevant chart is unreachable at any k while the index contains more than k text chunks \u2014 and 6.1 measured this corpus at 1,187." },
-        { t: "p", text: "So Option A as the usual treatment draws it \u2014 one unified store, one ranked list \u2014 cannot work. The architecture diagram is not wrong about the components, it is wrong about the merge." }
+        { t: "p", text: "So Option A as usually drawn \u2014 one unified store, one ranked list \u2014 cannot work. The architecture diagram is not wrong about the components, it is wrong about the merge." }
       ] },
 
     { t: "callout", kind: "good", title: "What rescues Option A, if you want it",
@@ -148,7 +148,7 @@ TV = T @ V.T                                  # text against image`,
       ] },
 
     { t: "h2", n: "03", id: "optionb", text: "Option B, summarise then embed",
-      sub: "The one that works, for a reason the usual treatment does not give" },
+      sub: "The one that works, for a reason usually left unstated" },
 
     {"kind": "flow", "title": "Summarise then embed is the structurally correct choice, not just the pragmatic one", "caption": "Option B sends each image or table to a vision model, gets a text description, and embeds **that** with the same text model as everything else. It is usually presented as a pragmatic compromise, and it is better than that: once every stored vector comes from one model, **every comparison is text-to-text in one space** — so there is no modality gap to calibrate, no cross-modal score to reconcile, and the fusion problems of 6.7 do not arise. The cost is a vision call per asset at index time, paid once.", "cols": 3, "nodes": [{"id": "a", "label": "An image or a table", "sub": "no text of its own", "tone": "accent"}, {"id": "v", "label": "A vision model describes it", "sub": "once, at index time", "tone": "violet"}, {"id": "e", "label": "Embed the description", "sub": "with the same text model", "tone": "good"}, {"id": "o", "label": "One model, one space", "sub": "every comparison is text-to-text", "tone": "good"}, {"id": "n", "label": "No modality gap to calibrate", "sub": "and no cross-modal scores", "tone": "good"}, {"id": "c", "label": "Cost: one vision call per asset", "sub": "paid once, not per query", "tone": "teal"}], "edges": [["a", "v"], ["v", "e"], ["e", "o"], ["o", "n"], ["n", "c"]], "t": "diagram", "id": "dg-6_5-03-1"},
 

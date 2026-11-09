@@ -194,7 +194,7 @@ for node in ast.walk(tree):
 
     { t: "p", text: "Code is the one domain where 6.4\u2019s knowledge graph needs no extraction model at all. The relations \u2014 calls, inherits, imports \u2014 are in the syntax, so a parser recovers them exactly. That removes the entity-resolution problem that made graph building hard, and replaces it with a different one." },
 
-    { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph the usual treatment builds", code: `class CodeGraph:
+    { t: "code", lang: "python", title: "g66.py \u00a7C \u2014 the graph usually built", code: `class CodeGraph:
     def add_file(self, path, content):
         tree = ast.parse(content)
         for node in ast.walk(tree):

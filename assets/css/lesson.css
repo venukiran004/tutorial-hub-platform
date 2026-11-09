@@ -303,6 +303,9 @@ details.disclose[open] .disclose-chev { transform: rotate(90deg); }
 .quiz-title { font-size: 15px; font-weight: 640; letter-spacing: -.014em; }
 .quiz-score { margin-left: auto; font-size: 12.3px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .quiz-score b { color: var(--good); }
+.quiz-best { font-size: 12.3px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.quiz-retry { font: inherit; font-size: 12.3px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line, rgba(127,127,127,.35)); background: transparent; color: var(--ink-2); cursor: pointer; min-height: 32px; }
+.quiz-retry:hover { color: var(--ink); border-color: var(--accent); }
 
 .q { padding: 18px; border-bottom: 1px solid var(--border-soft); }
 .q:last-child { border-bottom: 0; }

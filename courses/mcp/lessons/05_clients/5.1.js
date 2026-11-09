@@ -214,56 +214,31 @@ async def ask(q: Query):
     questions: [
       {
         stem: "A FastAPI handler opens a `stdio_client` per request. What are the two problems?",
-        options: [
-          "Only latency — it is otherwise correct",
-          "About a second of interpreter startup per request, and a leaked subprocess whenever teardown is skipped — a cancelled request, a timeout, an exception on an unusual path",
-          "Only the leak; stdio startup is fast",
-          "Neither; the context manager guarantees cleanup"
-        ],
+        options: ["Only latency; otherwise the pattern is correct", "Per-request startup cost and leaked subprocesses", "Only the leak, because stdio startup is instant", "Neither, since the context manager cleans up"],
         answer: 1,
         why: "Lesson 4.3 measured the startup at about 1.1 seconds. The leak is the more serious half because it surfaces as memory exhaustion hours later with nothing in the application logs, and the fix for both is to connect once in the application's lifespan."
       },
       {
         stem: "Two connected servers both offer a tool called `convert`. What does `ClientSessionGroup` do?",
-        options: [
-          "Silently keeps the first one",
-          "Raises `McpError: {'convert'} already exist in group tools` — which is the right choice, since the alternative is one server shadowing another's tool unnoticed",
-          "Renames the second automatically",
-          "Refuses the first connection"
-        ],
+        options: ["Silently keeps the first server's tool and drops the second", "Raises McpError, rather than let one tool shadow another", "Renames the second tool automatically with a prefix", "Refuses the first connection and keeps the second"],
         answer: 1,
         why: "Failing loudly is correct here. The deliberate fix is `component_name_hook`, which produced `finance_convert`, `finance_vat` and `other_convert` — and it is worth setting from the start rather than when a collision forces it."
       },
       {
         stem: "Why pass `env=None` rather than `env={\"API_KEY\": \"...\"}`?",
-        options: [
-          "Because env must be None for stdio",
-          "Because the dictionary replaces the environment entirely rather than merging — so the child loses PATH, HOME and on Windows SYSTEMROOT, breaking it in ways that look like a server bug",
-          "Because secrets cannot be passed this way",
-          "Because None is faster"
-        ],
+        options: ["Because env must be None for every stdio connection", "The dict replaces the environment, losing PATH and HOME", "Because secrets cannot be passed in an env dictionary", "Because inheriting the environment starts faster"],
         answer: 1,
         why: "To add a variable, build the dictionary from os.environ and then set yours. The symptom is a server that works when you run it by hand and fails under your client, which sends people looking in the wrong place."
       },
       {
         stem: "Besides avoiding collisions, why prefix tool names per server?",
-        options: [
-          "It reduces token usage",
-          "Legible traces, better model tool-choice as in lesson 2.2, and a defence against cross-server shadowing — a description claiming to be about `transfer` is visibly not about `payments_transfer`",
-          "It is required by the protocol",
-          "It enables resource templates"
-        ],
+        options: ["It reduces the tokens each tool declaration costs", "Clearer traces, better tool choice, and less shadowing", "It is required by the protocol for every client", "It enables resource templates across servers"],
         answer: 1,
         why: "Three benefits for one hook. The caution is that the prefix is part of what the model reads, so the server's own short name is usually right and a UUID is not."
       },
       {
         stem: "A long-lived session group is held in the application lifespan and one server's subprocess is killed. What happens by default?",
-        options: [
-          "The group reconnects automatically",
-          "Every subsequent call to that server fails, the group does not notice, and the app keeps serving errors until someone restarts it",
-          "The application shuts down",
-          "The group falls back to another server"
-        ],
+        options: ["The session group reconnects to the server automatically", "Every later call to that server fails until a restart", "The application shuts itself down to avoid bad state", "The group falls back to a different connected server"],
         answer: 1,
         why: "Holding the connection moves health into your responsibility, which is the trade for not leaking processes. A health check that actually calls a tool is the minimum, since checking whether the process is alive does not detect a wedged server."
       }

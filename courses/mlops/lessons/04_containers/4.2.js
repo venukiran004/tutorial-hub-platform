@@ -238,6 +238,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "It was the largest single context contributor at 210 MB, but the worse failure is a copied-in environment built for the developer's platform shadowing the one the image installed. Excluding it fixes both, and an allow-list .dockerignore prevents the whole class. COPY keeps symlinks as symlinks, so the host's Python stays on the host."
+      },
+      {
+        stem: "A Dockerfile copies the whole source tree, then installs requirements. What happens on a one-line code change?",
+        options: [
+          "Only the changed file is re-copied; the install stays cached",
+          "The dependency install re-runs, because its layer follows the copy",
+          "The build fails until the requirements file is changed too",
+          "The base image is pulled again from the registry"
+        ],
+        answer: 1,
+        why: "Every layer after a changed layer is rebuilt, so copying source first invalidates the install on every edit: 186 MB of work for a 0.03 MB change. Copy requirements.txt alone first. Builds do not fail, and the base image is unaffected."
       }
     ]
   },

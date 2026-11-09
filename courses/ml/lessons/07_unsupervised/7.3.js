@@ -209,7 +209,7 @@ sanity checks (executed):  relabel the clusters 1<->2: ARI 0.125 (labels are nom
       rungs: [
         { level: "bad", label: "'We found five segments (silhouette 0.24).'", code: `KMeans(5).fit(Z); silhouette_score(Z, labels)   # 0.24, reported as a success`,
           note: "**A weak-structure silhouette presented as validation**, no stability, no profile, and five names for five cuts through a continuum." },
-        { level: "ok", label: "Silhouette by cluster, stability, profiles", code: `silhouette_samples(Z, labels) grouped by cluster; stability ARI over 20 half-splits; profile table on features NOT used for clustering (churn rate, revenue, tenure band)`,
+        { level: "ok", label: "Silhouette by cluster, stability, profiles", lang: "text", code: `silhouette_samples(Z, labels) grouped by cluster; stability ARI over 20 half-splits; profile table on features NOT used for clustering (churn rate, revenue, tenure band)`,
           note: "**The evidence is there** — and it will say the segments are weak, which is the honest outcome most of the time." },
         { level: "best", label: "State the strength of the structure first, then the partition's use", code: `# 'The data form a continuum (silhouette 0.29, gap rising, stability 0.72 ± 0.21). We partition it along discount status and plan tier
 #  because those axes separate churn (4 % vs 18 %) and are actionable. The partition is a policy, not a discovery; it will be refitted quarterly

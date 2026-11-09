@@ -217,6 +217,17 @@ volumes:
         ],
         answer: 1,
         why: "A named volume avoids this because the daemon initialises its ownership from the image's content. The error message mentions nothing about uid mapping, which is why this is a disproportionately long debugging session the first time. USER sets the process's uid everywhere, which is exactly why the kernel denies it here."
+      },
+      {
+        stem: "A database container publishes port 5432. Why might the host firewall not protect it?",
+        options: [
+          "Containers bypass the network stack entirely",
+          "Docker writes its own iptables rules ahead of it",
+          "Port 5432 is exempt from firewall rules on Linux",
+          "Published ports are only reachable from localhost"
+        ],
+        answer: 1,
+        why: "The daemon inserts its own NAT and forwarding rules, which can take effect before host firewall rules. Containers do use the network stack, no port is exempt, and a published port listens on all interfaces unless bound explicitly."
       }
     ]
   },

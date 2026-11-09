@@ -418,7 +418,7 @@ def dfs_iterative(graph, start):
       minutes: 40,
       body: [
         { t: "p", text: "Given `n` courses and a list of prerequisite pairs `[a, b]` meaning \"b must be taken before a\", return a valid order. If none exists, return the cycle that prevents it." },
-        { t: "code", lang: "python", numbered: false, title: "examples", code: `
+        { t: "code", lang: "text", numbered: false, title: "examples", code: `
 n = 4, prereqs = [[1,0], [2,0], [3,1], [3,2]]
   ->  [0, 1, 2, 3]        (or [0, 2, 1, 3])
 

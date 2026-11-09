@@ -319,6 +319,28 @@ auc2 = roc_auc_score(yte, m2.predict_proba(Xte)[:, 1])`,
         ],
         answer: 1,
         why: "This is why the flag is worth one subprocess call. The useful policy follows from it: dirty runs are fine for exploration and must not be promotable, which turns an unreproducible production model into a pipeline rejection. A later `git diff` shows today's working tree, not the changes that were present during the run."
+      },
+      {
+        stem: "Why does the tracking store fingerprint data by hashing bytes, dtype and shape rather than recording the path?",
+        options: [
+          "Paths are long strings that make the run table harder to read",
+          "A path and row count can stay the same while the content changes",
+          "Hashing is faster than reading the file metadata from disk",
+          "The path is already stored by git, so recording it twice is waste"
+        ],
+        answer: 1,
+        why: "Two datasets can share a path and even a row count while holding different values, so a path collides and is overwritten. Readability and speed are not the reason, and git does not track the data file the path points at."
+      },
+      {
+        stem: "Why does the tracking store fingerprint data by hashing bytes, dtype and shape rather than recording the path?",
+        options: [
+          "Paths are long strings that make the run table harder to read",
+          "A path and row count can stay the same while the content changes",
+          "Hashing is faster than reading the file metadata from disk",
+          "The path is already stored by git, so recording it twice is waste"
+        ],
+        answer: 1,
+        why: "Two datasets can share a path and even a row count while holding different values, so a path collides and is overwritten. Readability and speed are not the reason, and git does not track the data file the path points at."
       }
     ]
   },

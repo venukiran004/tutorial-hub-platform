@@ -24,7 +24,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "What a linear unit can learn (executed)",
+    { t: "code", lang: "text", title: "What a linear unit can learn (executed)",
       code: `Perceptron().fit(AND)    # weights (3, 2), bias −4: fires only when both inputs are 1.  Training accuracy 1.00
 Perceptron().fit(XOR)    # weights (0, 0), bias 0: no line separates (0,1),(1,0) from (0,0),(1,1).  Accuracy 0.50
 
@@ -78,7 +78,7 @@ after 10 / 50 / 200 steps:  ŷ = 0.5014 / 0.6928 / 0.8926`,
 
 
 
-    { t: "code", lang: "python", title: "Two moons (2,000 points, noise 0.25), one hidden layer of 32 units (executed)",
+    { t: "code", lang: "text", title: "Two moons (2,000 points, noise 0.25), one hidden layer of 32 units (executed)",
       code: `logistic regression (a straight line): 0.846
 
 activation, learning rate 0.01, tolerance 1e-6:   identity 0.8450 (50 iterations)   logistic 0.8450 (50)   tanh 0.9400 (224)   relu 0.9370 (185)
@@ -153,7 +153,7 @@ batch size (300 epochs max):   8: 0.937 (21,375 gradient steps, 2.9 s)   32: 0.9
       rungs: [
         { level: "bad", label: "A deep network as the first model, tuned until it beats logistic regression", code: `MLPClassifier(hidden_layer_sizes=(256, 256, 256)).fit(X, y)     # churn: 0.654 ± 0.121`,
           note: "**Eleven points behind a linear model, a fold-to-fold spread larger than any effect you are looking for, and thirty times the cost. Tuning it toward 0.74 is a week spent matching a baseline.**" },
-        { level: "ok", label: "Boosting and a linear model first; a network only with scaling, decay and a real validation set", code: `pre = ColumnTransformer([scale numerics, one-hot categoricals]); MLPClassifier(alpha=1.0, early_stopping=True)
+        { level: "ok", label: "Boosting and a linear model first; a network only with scaling, decay and a real validation set", lang: "text", code: `pre = ColumnTransformer([scale numerics, one-hot categoricals]); MLPClassifier(alpha=1.0, early_stopping=True)
 compare 5-fold against HistGradientBoosting and LogisticRegression`,
           note: "Honest, and on this table it says no: the network's best (0.688) trails boosting (0.703) and the linear model (0.743). Knowing that in 15 seconds is the point of the comparison." },
         { level: "best", label: "Choose by regime, and when a network is warranted, build it properly", code: `if columns are few and heterogeneous: boosting + linear, SHAP for explanation

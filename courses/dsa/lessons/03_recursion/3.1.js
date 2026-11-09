@@ -264,7 +264,7 @@ def solve(candidates, target):
       minutes: 44,
       body: [
         { t: "p", text: "Given two strings, return the minimum number of single-character insertions, deletions or substitutions to transform one into the other." },
-        { t: "code", lang: "python", numbered: false, title: "examples", code: `
+        { t: "code", lang: "text", numbered: false, title: "examples", code: `
 "horse", "ros"       ->  3    horse -> rorse -> rose -> ros
 "intention", "execution" -> 5
 "", "abc"            ->  3    three insertions

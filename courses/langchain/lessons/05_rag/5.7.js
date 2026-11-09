@@ -98,8 +98,8 @@ EC.receiveLesson({
     ] },
     { t: "p", text: "That is the design principle generalised: when you cannot enforce a behaviour, ask for an output that makes the behaviour auditable. The instruction is still a request, and the citation makes compliance observable \u2014 which is what module 7 builds its evaluation on." },
     { t: "code", lang: "python", title: "The two helpers that are this chain, written out",
-      code: `from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
+      code: `from langchain_classic.chains.combine_documents import create_stuff_documents_chain   # pip install langchain-classic (LangChain 1.x)
+from langchain_classic.chains import create_retrieval_chain
 from langchain_core.prompts import ChatPromptTemplate
 
 prompt = ChatPromptTemplate.from_messages([

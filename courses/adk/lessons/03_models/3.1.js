@@ -27,7 +27,7 @@ EC.receiveLesson({
 
 print(Gemini.supported_models())
 print(LLMRegistry.resolve("gemini-2.5-flash").__name__)
-print(LLMRegistry.resolve("claude-3-5-sonnet@20240620").__name__)
+print(LLMRegistry.resolve("claude-sonnet-5-5").__name__)
 print(LLMRegistry.resolve("gemma-3-27b-it").__name__)` },
 
     { t: "out", text: `['gemini-.*', 'gemma-4.*', 'model-optimizer-.*',
@@ -177,7 +177,7 @@ checker  = LlmAgent(name="checker", model=FLASH, include_contents="none",
   ],
 
   quiz: { title: "Check your understanding", questions: [
-    { stem: "How does ADK turn model='claude-3-5-sonnet@20240620' into an implementation?",
+    { stem: "How does ADK turn model='claude-sonnet-5-5' into an implementation?",
       options: ["It always uses Gemini", "LLMRegistry matches the string against each BaseLlm subclass's supported_models patterns and returns the matching class", "It reads an environment variable", "It fails — only Gemini strings are supported"],
       answer: 1,
       why: "Each model class declares regular expressions it handles, and the registry resolves the string against them: gemini-* to Gemini, claude-* to Claude, gemma-* to Gemma. You can register your own class, and passing a BaseLlm instance as model= skips resolution entirely." },

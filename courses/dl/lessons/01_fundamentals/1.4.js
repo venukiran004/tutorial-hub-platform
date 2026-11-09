@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Check a hand-worked gradient against autograd and against a finite difference"
   ],
 
-  prerequisites: ["1.2", "1.3"],
+  prerequisites: ["1.2", "1.3", "maths:2.1"],
 
   blocks: [
 

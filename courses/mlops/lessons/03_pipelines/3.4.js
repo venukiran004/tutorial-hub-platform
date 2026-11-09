@@ -236,6 +236,17 @@ mu_b, sd_b = Xtr[perm].mean(0), Xtr[perm].std(0)
         ],
         answer: 1,
         why: "Bit-exactness is defeated by row order, thread count, a patch release or a different CPU, so demanding it costs real engineering for little benefit. The useful definition is agreement on decisions plus metrics inside lesson 3.2's measured 0.17-point floor — with bit-exactness bought deliberately only where it is a requirement. Matching digests is bit-exactness under another name, and that is needed only where a regulator requires an identical artifact."
+      },
+      {
+        stem: "Two training runs match AUC to ten decimal places. What should you check before calling them reproducible?",
+        options: [
+          "The training loss curve, epoch by epoch",
+          "A hash of every prediction on the same rows",
+          "The size of the saved model file on disk",
+          "The random seed recorded with the run"
+        ],
+        answer: 1,
+        why: "Runs that agreed on AUC to ten decimals still produced different predictions, so compare a hash of every prediction. Loss curves and file sizes can match by coincidence, and a recorded seed says what was intended, not what happened."
       }
     ]
   },

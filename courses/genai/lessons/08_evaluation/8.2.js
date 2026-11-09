@@ -11,7 +11,7 @@ EC.receiveLesson({
     "State what perplexity is and is not valid for"
   ],
 
-  prerequisites: ["8.1", "7.2"],
+  prerequisites: ["8.1", "7.2", "maths:3.8"],
 
   blocks: [
 

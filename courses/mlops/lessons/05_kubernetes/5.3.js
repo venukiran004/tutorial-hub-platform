@@ -233,6 +233,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "The queueing curve is what justifies a utilisation target at all — latency is 3.3x the service time at 70% and 10x at 90% — but the target needs a metric that measures occupancy. In-flight requests or queue depth do; CPU merely correlates, and for inference often does not. CPU is the HPA's built-in metric, served by metrics-server, and custom adapters are what in-flight requests need."
+      },
+      {
+        stem: "A pod sets requests equal to limits for CPU and memory. What QoS class does it receive, and why does that matter?",
+        options: [
+          "BestEffort, so it is scheduled only on idle nodes",
+          "Guaranteed, so it is the last to be evicted under memory pressure",
+          "Burstable, so it may exceed its memory limit temporarily",
+          "Guaranteed, so it is pinned to dedicated physical cores"
+        ],
+        answer: 1,
+        why: "Equal requests and limits produce Guaranteed, the last class evicted. BestEffort is the empty case, Burstable cannot exceed its memory limit without an OOMKill, and Guaranteed alone does not pin cores; that needs the static CPU manager."
       }
     ]
   },

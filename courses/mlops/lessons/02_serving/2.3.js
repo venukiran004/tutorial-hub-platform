@@ -246,6 +246,28 @@ disagree = int(np.sum((prob_onnx >= 0.5) != (base_prob >= 0.5)))`,
         ],
         answer: 1,
         why: "The first option happened to be true here (0.59x) but is not guaranteed. The durable benefit is decoupling the artifact from the library that produced it, which removes the silent-behaviour-change risk of loading a pickle under a different scikit-learn. ONNX is an open format, so anyone with the file can read the graph and its weights."
+      },
+      {
+        stem: "After int8 quantisation, accuracy holds. Why is accuracy still the wrong acceptance test?",
+        options: [
+          "Accuracy is always unchanged by quantisation, so it tests nothing",
+          "Individual probabilities can move enough to change decisions",
+          "Int8 models cannot output probabilities, only class labels",
+          "Accuracy must be measured on the training set after quantising"
+        ],
+        answer: 1,
+        why: "Probabilities moved by up to 0.045 while accuracy held, so a threshold near a decision boundary can flip individual outcomes. Use decision agreement and the maximum probability shift. Quantisation can change accuracy, int8 models still output probabilities, and the training set is the wrong place to measure."
+      },
+      {
+        stem: "After int8 quantisation, accuracy holds. Why is accuracy still the wrong acceptance test?",
+        options: [
+          "Accuracy is always unchanged by quantisation, so it tests nothing",
+          "Individual probabilities can move enough to change decisions",
+          "Int8 models cannot output probabilities, only class labels",
+          "Accuracy must be measured on the training set after quantising"
+        ],
+        answer: 1,
+        why: "Probabilities moved by up to 0.045 while accuracy held, so a threshold near a decision boundary can flip individual outcomes. Use decision agreement and the maximum probability shift. Quantisation can change accuracy, int8 models still output probabilities, and the training set is the wrong place to measure."
       }
     ]
   },

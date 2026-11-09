@@ -214,6 +214,17 @@ volumes:
         ],
         answer: 1,
         why: "The scheduling constraint is the one that bites first: most block storage is ReadWriteOnce, so the Deployment is pinned to one node. ReadWriteMany means a network filesystem whose latency enters the model load path. A serving model is a versioned artifact, not state — it belongs in the image or an emptyDir. Surviving a reschedule is what a PersistentVolume is for."
+      },
+      {
+        stem: "You rotate a password delivered to pods as an environment variable. What do running pods see?",
+        options: [
+          "The new value within a minute, as kubelet syncs",
+          "The old value, until each pod has been restarted",
+          "An empty value until the next liveness check",
+          "The new value at once, because env vars are live"
+        ],
+        answer: 1,
+        why: "Environment variables are read once at process start, so rotation needs a rolling restart. Mounted secret files are the ones updated in place within about a minute; neither form goes empty or changes instantly."
       }
     ]
   },

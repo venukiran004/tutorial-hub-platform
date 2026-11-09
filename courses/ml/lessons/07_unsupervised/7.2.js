@@ -78,7 +78,7 @@ the dendrogram has two merges at height 1 and one far above; cut anywhere betwee
       caption: "The same data, the same k, and answers from perfect to useless depending on one word. Single linkage is the only agglomerative rule that finds non-convex shapes, and the only one that a few stray points can ruin; Ward is robust to bridges and blind to shapes. Neither is 'better'; they encode different clusters."
     },
 
-    { t: "code", lang: "python", title: "Reading a dendrogram: four blobs, Ward, the last eight merge heights (executed)",
+    { t: "code", lang: "text", title: "Reading a dendrogram: four blobs, Ward, the last eight merge heights (executed)",
       code: `heights:  5.41   6.11   6.15   6.16   8.16   20.22   29.78   45.42        (the last merge, 45.42, joins the final two clusters into one)
 ratios of successive heights:  1.13   1.01   1.00   1.32   2.48   1.47   1.53
    the biggest jump in RATIO is 8.16 -> 20.22 (×2.48): cut there -> 4 clusters                ARI 0.908
@@ -297,7 +297,7 @@ converged (many iterations later):  μ = (1.5, 8.5),  σ = (0.408, 0.408),  π =
       rungs: [
         { level: "bad", label: "K-means with k = 20", code: `KMeans(20).fit(latlon)`,
           note: "**Twenty Voronoi cells over a city**: zones cut through parks and rivers, every remote drop-off assigned to the nearest zone, the busiest street split in two. Density is the question and k-means cannot ask it." },
-        { level: "ok", label: "DBSCAN with eps from the k-distance plot", code: `eps = knee of the sorted 9th-NN distances; DBSCAN(eps=eps, min_samples=10, metric="haversine").fit(np.radians(latlon))`,
+        { level: "ok", label: "DBSCAN with eps from the k-distance plot", lang: "text", code: `eps = knee of the sorted 9th-NN distances; DBSCAN(eps=eps, min_samples=10, metric="haversine").fit(np.radians(latlon))`,
           note: "**Zones are dense regions of any shape and stray drop-offs are noise.** One eps fits the city centre or the suburbs, not both." },
         { level: "best", label: "HDBSCAN with a minimum zone size, noise kept as a class, zones profiled and refreshed", code: `hdb = HDBSCAN(min_cluster_size=50, metric="haversine").fit(np.radians(latlon))
 # noise (-1) = 'no zone': routed to nearest zone only if within a distance cap; zones ranked by size and density; re-run monthly and matched to last month's zones by overlap`,

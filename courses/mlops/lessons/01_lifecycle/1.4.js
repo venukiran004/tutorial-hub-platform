@@ -288,6 +288,28 @@ vector = store.get_online_features(
         ],
         answer: 1,
         why: "One definition read by two paths genuinely removes reimplementation skew, which is lesson 13.1's bug. But materialisation is a new moving part: if the job lags, serving reads stale values while training read fresh ones. A better trade, not a free one. That shared definition is exactly what it does give you."
+      },
+      {
+        stem: "A leaky feature pipeline wins offline by 2.6 AUC points and ships. What happens in deployment, as measured?",
+        options: [
+          "It keeps its full advantage, since the leak affects only training",
+          "It loses almost all of its lead and ends just below the honest model",
+          "It fails outright, because the future feature is missing at serving",
+          "It improves, because the leak acted as a form of regularisation"
+        ],
+        answer: 1,
+        why: "Deployed, it fell to 0.6307 and gave back 2.5 of its 2.6 points, finishing below the honest model. The feature still exists at serving time, so nothing crashes, and a leak never regularises; it selects for exploiting the future."
+      },
+      {
+        stem: "A leaky feature pipeline wins offline by 2.6 AUC points and ships. What happens in deployment, as measured?",
+        options: [
+          "It keeps its full advantage, since the leak affects only training",
+          "It loses almost all of its lead and ends just below the honest model",
+          "It fails outright, because the future feature is missing at serving",
+          "It improves, because the leak acted as a form of regularisation"
+        ],
+        answer: 1,
+        why: "Deployed, it fell to 0.6307 and gave back 2.5 of its 2.6 points, finishing below the honest model. The feature still exists at serving time, so nothing crashes, and a leak never regularises; it selects for exploiting the future."
       }
     ]
   },

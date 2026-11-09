@@ -281,7 +281,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import numpy as np\n\ndef roc_curve(y_true, y_scores):\n    thresholds = np.sort(np.unique(y_scores))[::-1]\n    tpr_list, fpr_list = [0], [0]\n    \n    P = np.sum(y_true == 1)\n    N = np.sum(y_true == 0)\n    \n    for thresh in thresholds:\n        y_pred = (y_scores >= thresh).astype(int)\n        tp = np.sum((y_pred == 1) & (y_true == 1))\n        fp = np.sum((y_pred == 1) & (y_true == 0))\n        tpr_list.append(tp / P)\n        fpr_list.append(fp / N)\n    \n    return np.array(fpr_list), np.array(tpr_list)\n\ndef auc(fpr, tpr):\n    return np.trapz(tpr, fpr)\n\ny_true = np.array([0, 0, 1, 1, 0, 1, 0, 1])\ny_scores = np.array([0.1, 0.3, 0.6, 0.8, 0.4, 0.9, 0.2, 0.7])\n\nfpr, tpr = roc_curve(y_true, y_scores)\nprint(f\"AUC: {auc(fpr, tpr):.4f}\")"
+     "code": "import numpy as np\n\ndef roc_curve(y_true, y_scores):\n    thresholds = np.sort(np.unique(y_scores))[::-1]\n    tpr_list, fpr_list = [0], [0]\n    \n    P = np.sum(y_true == 1)\n    N = np.sum(y_true == 0)\n    \n    for thresh in thresholds:\n        y_pred = (y_scores >= thresh).astype(int)\n        tp = np.sum((y_pred == 1) & (y_true == 1))\n        fp = np.sum((y_pred == 1) & (y_true == 0))\n        tpr_list.append(tp / P)\n        fpr_list.append(fp / N)\n    \n    return np.array(fpr_list), np.array(tpr_list)\n\ndef auc(fpr, tpr):\n    return np.trapezoid(tpr, fpr)\n\ny_true = np.array([0, 0, 1, 1, 0, 1, 0, 1])\ny_scores = np.array([0.1, 0.3, 0.6, 0.8, 0.4, 0.9, 0.2, 0.7])\n\nfpr, tpr = roc_curve(y_true, y_scores)\nprint(f\"AUC: {auc(fpr, tpr):.4f}\")"
     }
    ],
    "kind": "program"

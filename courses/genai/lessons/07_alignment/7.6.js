@@ -374,7 +374,7 @@ print("reward accuracy (margin > 0): %.3f" % np.mean(np.array(margins) > 0))`,
         answer: 1,
         why: "Z(x) is a sum over every possible completion and is completely intractable \u2014 it is not near 1, not constant across prompts, and not estimated. The cancellation is exact and structural: both the chosen and rejected rewards carry the same +\u03b2 log Z(x) term, so the difference is free of it. This is the same property that makes a reward model's absolute scale unidentifiable, which means the uncomputable term is precisely the one that was never needed." },
 
-      { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the usual treatment does (ratio +0.5). Is this a problem?",
+      { stem: "In the worked example, the policy assigns the rejected response a higher log-probability than the reference model does (ratio +0.5). Is this a problem?",
         options: [
           "Yes \u2014 the rejected response's probability must decrease for DPO to be working",
           "No \u2014 DPO requires only that the chosen response's log-ratio rise more than the rejected one's; both can rise, and in practice both often fall",

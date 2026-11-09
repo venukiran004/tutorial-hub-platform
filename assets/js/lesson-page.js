@@ -72,6 +72,20 @@
     function header(m, L) {
       L = L || {};
       var prereqs = (L.prerequisites || []).map(function (p) {
+        // "nlp:4.3" names a lesson in another course; the generated search
+        // index supplies its title.
+        var cross = /^([a-z]+):(.+)$/.exec(p);
+        if (cross) {
+          var X = EC.searchIndex, row = null, cname = cross[1];
+          if (X) {
+            cname = (X.courses[cross[1]] || {}).short || cross[1];
+            for (var i = 0; i < X.lessons.length; i++) {
+              if (X.lessons[i][0] === cross[1] && X.lessons[i][1] === cross[2]) { row = X.lessons[i]; break; }
+            }
+          }
+          return "<li>" + I.link + '<a href="../' + cross[1] + "/lesson.html?id=" + encodeURIComponent(cross[2]) + '">' +
+            EC.esc(cname) + " " + EC.esc(row ? row[2] : cross[2]) + (row ? " · " + EC.esc(row[3]) : "") + "</a></li>";
+        }
         var t = C.lessonById[p];
         return t
           ? "<li>" + I.link + '<a href="' + EC.lessonHref(t) + '">' + t.num + " · " + EC.esc(t.title) + "</a></li>"

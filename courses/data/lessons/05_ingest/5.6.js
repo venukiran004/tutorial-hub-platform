@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Deduplicate to the latest row per key with a window and a CTE"
   ],
 
-  prerequisites: ["5.5", "4.3"],
+  prerequisites: ["5.5", "4.3", "sql:3.1"],
 
   blocks: [
 

@@ -333,16 +333,13 @@ print("a shift of %+.3f -- against the illustrative -0.07." % (best - 0.78))
 print("but it preserves a threshold that was already wrong, so the right target")
 print("is the (wrong-answer, wrong-abstain) PAIR, not the rate.")
 print()
-print("the well-chosen thresholds differ by %.3f, not 0.07, and the shift can go")
-print("in EITHER direction depending on the two models' score scales."
-      % abs(((l2 + h2) / 2) - mid1))`,
+print("the well-chosen thresholds differ by %.3f, not 0.07, and the shift can go"
+      % abs(((l2 + h2) / 2) - mid1))
+print("in EITHER direction depending on the two models' score scales.")`,
         out: `==============================================================================
 THE SAME CORPUS AND QUERIES, TWO EMBEDDING MODELS
 ==============================================================================
-
-
-
-model                      answerable top-1             unanswerable top-1          
+model                      answerable top-1             unanswerable top-1
 all-MiniLM-L6-v2           min 0.642 mean 0.761 max 0.859   min 0.120 mean 0.251 max 0.386
 bge-small-en-v1.5          min 0.738 mean 0.792 max 0.841   min 0.481 mean 0.532 max 0.576
 
@@ -350,90 +347,36 @@ bge-small-en-v1.5          min 0.738 mean 0.792 max 0.841   min 0.481 mean 0.532
    a threshold is a property of the model, not of the task.
 
 ==============================================================================
-THE REFERENCE'S CLAIM: score_threshold 0.78 -> 0.71 FOR EQUAL ABSTAIN RATE
-==============================================================================
-old model all-MiniLM-L6-v2 at threshold 0.78:
-  abstain rate      0.773
-  wrongly abstained 0.583  (answerable queries refused)
-  wrongly answered  0.000  (unanswerable queries answered)
-
-now find the threshold on the NEW model giving the SAME abstain rate:
-  equal-abstain threshold on bge-small-en-v1.5: 0.795
-  (abstain rate 0.773 against a target of 0.773)
-
-so the recalibration measured here is 0.78 -> 0.795, a shift of +0.015.
-the illustrative shift was 0.78 -> 0.71, i.e. -0.07.
-
-
--- and what happens if you DO NOT recalibrate --
-configuration                         abstain wrong-abstain wrong-answer
-old model, threshold 0.78               0.773        0.583        0.000
-NEW model, threshold 0.78 (kept)        0.636        0.333        0.000
-NEW model, recalibrated 0.795           0.773        0.583        0.000
-
-
-either way the guard is broken, silently, with no error raised --
-which is why 'DON'T SKIP' is on that step of the playbook.
-
-==============================================================================
-AND MATCHING THE ABSTAIN RATE IS NOT THE RIGHT TARGET EITHER
-==============================================================================
-equal abstain rate preserves the VOLUME of refusals, not their quality.
-the thing worth preserving is the error trade-off, so sweep both:
-
-threshold     abstain wrong-abstain wrong-answer  model
-0.30            0.409        0.000        0.100  all-MiniLM-L6-v2
-0.40            0.455        0.000        0.000  all-MiniLM-L6-v2
-0.50            0.455        0.000        0.000  all-MiniLM-L6-v2
-0.60            0.455        0.000        0.000  all-MiniLM-L6-v2
-0.70            0.591        0.250        0.000  all-MiniLM-L6-v2
-0.78            0.773        0.583        0.000  all-MiniLM-L6-v2
-0.85            0.909        0.833        0.000  all-MiniLM-L6-v2
-
-0.30            0.000        0.000        1.000  bge-small-en-v1.5
-0.40            0.000        0.000        1.000  bge-small-en-v1.5
-0.50            0.091        0.000        0.800  bge-small-en-v1.5
-0.60            0.455        0.000        0.000  bge-small-en-v1.5
-0.70            0.455        0.000        0.000  bge-small-en-v1.5
-0.78            0.636        0.333        0.000  bge-small-en-v1.5
-0.85            1.000        1.000        0.000  bge-small-en-v1.5
-
-
-==============================================================================
 THE SAFE BANDS, AND WHETHER A THRESHOLD TRANSFERS
 ==============================================================================
-0.78 is a bad threshold for the old model in the first place -- it wrongly
-abstains on 58% of answerable queries, so matching its abstain rate just
-preserves the badness. the useful question is where each model's SAFE BAND
-lies: thresholds with zero wrong-answers AND zero wrong-abstains.
+0.78 wrongly abstains on 58% of answerable queries on the old model,
+so matching its ABSTAIN RATE just preserves the badness. the useful
+question is where each model's SAFE BAND lies: thresholds with zero
+wrong-answers AND zero wrong-abstains.
 
   all-MiniLM-L6-v2       unanswerable max 0.386  answerable min 0.642  SAFE BAND (0.386, 0.642]
   bge-small-en-v1.5      unanswerable max 0.576  answerable min 0.738  SAFE BAND (0.576, 0.738]
 
 the bands OVERLAP on (0.576, 0.642] -- a window 0.066 wide.
-a threshold inside that window is safe on BOTH models, and one outside
-it is safe on at most one. so whether a threshold transfers is LUCK.
+a threshold inside it is safe on BOTH models; outside it, on at most
+one. so whether a threshold transfers is LUCK.
 
 -- the threshold a sensible team would have picked --
-centre of all-MiniLM-L6-v2's safe band: 0.514
-  on all-MiniLM-L6-v2 that is wrong-answer 0.000, wrong-abstain 0.000  (correct)
-  on bge-small-en-v1.5 that is wrong-answer 0.700, wrong-abstain 0.000
+centre of all-MiniLM-L6-v2's band: 0.514
+  on all-MiniLM-L6-v2       wrong-answer 0.000, wrong-abstain 0.000  (correct)
+  on bge-small-en-v1.5      wrong-answer 0.700, wrong-abstain 0.000
 
-  SO THE GUARD STOPS FIRING: 70% of questions the corpus cannot answer
-  are answered anyway. that is 11.2's abstention failure, reintroduced by
-  a migration that passed every quality gate -- silently, no error raised.
+  THE GUARD STOPS FIRING: 70% of questions the corpus cannot answer
+  are answered anyway -- with no error raised and every quality gate passed.
 
-and in the other direction, centre of bge-small-en-v1.5's band: 0.657
-  on all-MiniLM-L6-v2 that is wrong-abstain 0.083 -- it refuses answerable queries.
+-- and the equal-abstain threshold, for comparison --
+matching the 0.78 abstain rate of 0.773 gives 0.795 on the new model,
+a shift of +0.015 -- against the illustrative -0.07.
+but it preserves a threshold that was already wrong, so the right target
+is the (wrong-answer, wrong-abstain) PAIR, not the rate.
 
-so the 'DON'T SKIP' is right and its framing is not:
-  matching the ABSTAIN RATE preserves the volume of refusals, not their quality
-  what you need to preserve is the (wrong-answer, wrong-abstain) PAIR
-  and the shift can go in EITHER direction, by much more than 7 points
-
-pick the threshold on the new model that matches the old model's
-(wrong-abstain, wrong-answer) PAIR, not its abstain rate -- same argument
-as 11.16: a single number cannot express a two-sided trade.`,
+the well-chosen thresholds differ by 0.143, not 0.07, and the shift can go
+in EITHER direction depending on the two models' score scales.`,
         notes: [
           { t: "p", text: "**The two models put the same queries on entirely different scales.** `all-MiniLM` separates answerable (0.642\u20130.859) from unanswerable (0.120\u20130.386) with a wide gap; `bge-small` compresses everything upward, answerable 0.738\u20130.841 against unanswerable 0.481\u20130.576. A threshold is a property of the model, not of the task." },
           { t: "p", text: "**The safe bands overlap in a 0.066-wide window**, out of a unit interval. So a threshold transfers only if it happens to sit inside that window \u2014 which is luck, not engineering, and nothing about the migration process would tell you whether you got lucky." },

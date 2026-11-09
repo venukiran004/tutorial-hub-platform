@@ -229,7 +229,7 @@ EC.receiveLesson({
    "body": [
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Data manipulation\nreshape, ravel, transpose (T), squeeze, expand_dims, stack, concatenate, split\n\n# Math\nsum/mean/std/var (axis=), min/max/argmin/argmax, clip, abs\n\n# Linear algebra\nmatmul (@), linalg.norm, linalg.solve, linalg.eigh, linalg.svd, linalg.inv\n\n# Indexing\nboolean indexing, fancy indexing, where, nonzero, argsort, unique\n\n# Creation\nzeros/ones/full, eye, arange, linspace, random.default_rng().*\n\n# Performance\nascontiguousarray, frombuffer, memmap, frompyfunc"
     }
    ],

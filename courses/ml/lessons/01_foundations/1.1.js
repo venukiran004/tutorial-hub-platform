@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Distinguish supervised, unsupervised, semi-supervised, self-supervised and reinforcement learning by their supervision signal, with one executed example of each of the first three"
   ],
 
-  prerequisites: [],
+  prerequisites: ["data:8.3"],
 
   blocks: [
 
@@ -271,7 +271,7 @@ st = SelfTrainingClassifier(LogisticRegression(max_iter=1000), threshold=0.8).fi
           note: "**The label is available only after the event**, and half the features — refunds, final invoices — are consequences of it. A model here predicts the past (1.6)." },
         { level: "ok", label: "Predict churn in the next 30 days from features as of today", code: `y = churned_within_30d(as_of)      # features frozen at as_of, label from the window after`,
           note: "**A real prediction task.** Task, experience and performance are defined; the split must respect time (1.5)." },
-        { level: "best", label: "…and define P as the decision it drives", code: `P = recall among the top 10 % scored, because 10 % is how many customers retention can call`,
+        { level: "best", label: "…and define P as the decision it drives", lang: "text", code: `P = recall among the top 10 % scored, because 10 % is how many customers retention can call`,
           note: "**The performance measure is the business constraint, not a default metric.** Everything downstream — threshold, class weights, which errors to tolerate — follows from this line (2.3)." }
       ]
     },

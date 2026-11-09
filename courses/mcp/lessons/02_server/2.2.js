@@ -99,7 +99,7 @@ def typed_result(amount: float, frm: str, to: str) -> Conversion:
     {"kind": "trace", "title": "Every description and every constraint crossed into the schema", "caption": "**`Literal` becoming a real `enum` is the strongest row**, because it removes a class of error rather than reporting it — the model is told the three permitted values instead of guessing them. And note the second benefit, easy to miss: the description became one clean sentence, because the per-parameter detail moved to where it belongs. **The tool's description is now about when to call it**, which is the question the model uses it to answer.", "left": "what you wrote", "codeW": 200, "vars": ["what the schema got"], "steps": [{"code": "Field(description='The amount to convert...')", "state": ["description - all 3 of 3 arrived"], "tone": "good"}, {"code": "gt=0", "state": ["exclusiveMinimum: 0"], "changed": [0], "tone": "good"}, {"code": "min_length=3, max_length=3", "state": ["minLength: 3, maxLength: 3"], "changed": [0], "tone": "good"}, {"code": "Literal['up', 'down', 'nearest']", "state": ["enum: [up, down, nearest] - a real constraint"], "changed": [0], "tone": "violet"}, {"code": "= 'nearest'", "state": ["default set, and absent from required"], "changed": [0], "tone": "accent"}, {"code": "the docstring", "state": ["one clean sentence - about WHEN to call"], "changed": [0], "tone": "good"}], "t": "diagram", "id": "dg-2_2-03-2"},
 
 
-    { t: "code", lang: "python", title: "the annotated version",
+    { t: "code", lang: "text", title: "the annotated version",
       code: `annotated -> 'Converts an amount between two currencies.'`,
       out: `  schema: {"properties": {
              "amount":   {"description": "The amount to convert, greater than zero",
@@ -132,7 +132,7 @@ def typed_result(amount: float, frm: str, to: str) -> Conversion:
 
     { t: "p", text: "Both versions above returned `dict`, and both reported `output: None`. That is the third measurement." },
 
-    { t: "code", lang: "python", title: "the typed version, and what the call returns",
+    { t: "code", lang: "text", title: "the typed version, and what the call returns",
       code: `typed_result -> 'Converts an amount and returns a typed result.'`,
       out: `  output: {"description": "The result of a currency conversion.",
            "properties": {"amount":   {"description": "The converted amount", "type": "number"},
@@ -218,56 +218,31 @@ content[0].text   : '{\\n  "amount": 117.0,\\n  "currency": "EUR",\\n  "rate": 1
     questions: [
       {
         stem: "A tool documents its three parameters in a Google-style `Args:` block. How many parameter descriptions appear in the generated inputSchema?",
-        options: [
-          "All three",
-          "None — the whole docstring becomes the tool description verbatim, and the schema properties carry only a title and a type",
-          "Only the first",
-          "All three, but without types"
-        ],
+        options: ["All three, parsed from the Args block into the schema", "None: the docstring becomes the description verbatim", "Only the first parameter, because the parser stops early", "All three descriptions, but with their types dropped"],
         answer: 1,
         why: "Measured as zero of three against the installed SDK. It is the worst of both outcomes: the per-parameter text bloats the description the model reads about when to use the tool, and the schema — the part that can be enforced and validated — stays empty of it."
       },
       {
         stem: "Which change puts an `enum` into a tool's schema?",
-        options: [
-          "Listing the options in the docstring",
-          "Annotating the parameter as `Literal[\"up\", \"down\", \"nearest\"]`",
-          "Adding a `pattern` constraint",
-          "Returning a Pydantic model"
-        ],
+        options: ["Listing the allowed values in the tool's docstring", "Annotating the parameter as a `Literal` of the values", "Adding a regular-expression `pattern` constraint", "Returning a Pydantic model from the tool function"],
         answer: 1,
         why: "`Literal` becomes a real enum, so the model is told the permitted values rather than asked to guess them, and the provider can reject anything else. Options listed in prose are a suggestion; an enum is a constraint."
       },
       {
         stem: "A tool returns a plain `dict`. What is missing compared with returning a Pydantic model?",
-        options: [
-          "Nothing — both serialise to the same JSON",
-          "The `outputSchema` and `structuredContent`: consumers get a JSON string to parse rather than a declared shape and a parsed object",
-          "The input schema",
-          "The tool description"
-        ],
+        options: ["Nothing: a dict and a model serialise to the same JSON", "An outputSchema and structuredContent for consumers", "The input schema, which needs the model to generate it", "The tool description, which is taken from the model"],
         answer: 1,
         why: "Both were measured as `output: None` with a dict return, and the typed version produced a full outputSchema plus `structuredContent` of `{'amount': 117.0, ...}`. The schema matters most when you cannot see your consumers, which is the normal condition for a published server."
       },
       {
         stem: "What should a tool description say that the schema cannot?",
-        options: [
-          "The parameter types",
-          "When to call this tool rather than another one — the corpus it covers, the boundary it does not, and whether it can be undone",
-          "The return value's field names",
-          "The tool's implementation language"
-        ],
+        options: ["The type of each parameter and whether it is required", "When to call this tool rather than another, and its boundaries", "The names of the fields in the tool's return value", "The language and framework the tool is implemented in"],
         answer: 1,
         why: "The schema already carries types, names and constraints. The description is the model's entire routing information, and the things it cannot infer — that a delete is permanent, that a search covers policies and not tickets — only exist if you write them."
       },
       {
         stem: "Why does moving parameter documentation out of the docstring often reduce tokens per request?",
-        options: [
-          "Because schemas are compressed",
-          "The `Args:` block leaves the description, and the per-parameter text moves into schema fields that were previously empty — so the contract gets richer while the prose gets shorter",
-          "Because descriptions are only sent once per session",
-          "It does not; it always costs more"
-        ],
+        options: ["Because schemas are compressed before they are sent", "Parameter text moves from prose into schema fields", "Because descriptions are only sent once per session", "It does not: richer schemas always cost more tokens"],
         answer: 1,
         why: "It is the pleasant case: a better contract that is also cheaper. The cost that remains worth watching is total tool count, since every description of every tool is in every request."
       }

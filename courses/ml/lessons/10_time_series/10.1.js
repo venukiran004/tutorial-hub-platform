@@ -208,7 +208,7 @@ with N(0, 1) noise added to the same twelve numbers, one draw: indices −2.44, 
 
     { t: "p", text: "The choice is read from how the seasonal swing behaves as the level changes: if the swing stays the same size in units, the components add; if it grows with the level, they multiply, and the right move is to model log(y), which turns the product into a sum for everything downstream. On the store data the evidence is across stores rather than across time, because the trend is slow: the Saturday-minus-Monday swing is 96.9 at store A, 59.0 at B and 41.3 at C, and divided by each store's level that is 0.422, 0.444 and 0.446 — one ratio, three levels. Pooled across the stores, the 28-day rolling standard deviation has a Spearman correlation of 0.931 with the rolling mean. The generator multiplied, and the data says so." },
 
-    { t: "code", lang: "python", title: "STL on the daily series, and the weekly factors recovered (executed, store A, closures interpolated)",
+    { t: "code", lang: "text", title: "STL on the daily series, and the weekly factors recovered (executed, store A, closures interpolated)",
       code: `res = STL(np.log(s), period=7, robust=True).fit()
 strength_S = 1 - var(R) / var(S + R)                        # seasonal strength 0.759 (0.737 on the raw scale)
 strength_T = 1 - var(R) / var(T + R)                        # trend strength    0.681 (0.626)

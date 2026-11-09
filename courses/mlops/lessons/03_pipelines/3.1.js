@@ -279,6 +279,28 @@ return {n: Task(n, make(n), needs[n], retries=2) for n in names}` },
         ],
         answer: 1,
         why: "This is lesson 1.4's point-in-time failure in a different syntax — `WHERE ts >= CURRENT_DATE - 90` is the same defect. The logical date must be an input to every task, which is also what makes a pipeline testable against a known-correct output. A timezone mismatch shifts a window by hours, whereas this defect moves it to the present."
+      },
+      {
+        stem: "A task writes its completion marker, then crashes before the work is durable. What does the next run do?",
+        options: [
+          "Re-runs the task, because the crash is recorded in the log",
+          "Skips the task, believing it already succeeded",
+          "Fails immediately, because the marker and output disagree",
+          "Re-runs every upstream task to rebuild a consistent state"
+        ],
+        answer: 1,
+        why: "The scheduler trusts the marker, so a marker written first turns a mid-task crash into a permanently skipped step. Schedulers do not cross-check outputs against markers or re-run upstream tasks on their own, which is why the marker must be written last."
+      },
+      {
+        stem: "A task writes its completion marker, then crashes before the work is durable. What does the next run do?",
+        options: [
+          "Re-runs the task, because the crash is recorded in the log",
+          "Skips the task, believing it already succeeded",
+          "Fails immediately, because the marker and output disagree",
+          "Re-runs every upstream task to rebuild a consistent state"
+        ],
+        answer: 1,
+        why: "The scheduler trusts the marker, so a marker written first turns a mid-task crash into a permanently skipped step. Schedulers do not cross-check outputs against markers or re-run upstream tasks on their own, which is why the marker must be written last."
       }
     ]
   },

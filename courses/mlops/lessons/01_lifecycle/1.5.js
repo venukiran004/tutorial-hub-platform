@@ -283,6 +283,28 @@ def corrupt_dupes(df):      # a retry duplicates 20% of rows. Every value is val
         ],
         answer: 1,
         why: "The distinction is possible-versus-impossible. A half-sd shift is ordinary population movement — it cost 0.4 points here and is lesson 1.1's World A, where acting on it is usually wrong. Blocking on everything is how a validator gets disabled, which is strictly worse than not having one. A one-point rise in nulls is a change worth a warning, not proof the data is wrong."
+      },
+      {
+        stem: "An upstream income column switches from units to thousands. Which check catches it before training?",
+        options: [
+          "A dtype check, because the column becomes a float instead of an int",
+          "A null-rate check, because the rescaled values go partly missing",
+          "A range check against the training distribution's recorded bounds",
+          "A schema check on column names, because the field gets renamed"
+        ],
+        answer: 2,
+        why: "The unit change kept the column numeric, complete and identically named, so type, null and schema checks all passed. Only a range check against the written-down training distribution flagged it, with 100% of values outside the bounds."
+      },
+      {
+        stem: "An upstream income column switches from units to thousands. Which check catches it before training?",
+        options: [
+          "A dtype check, because the column becomes a float instead of an int",
+          "A null-rate check, because the rescaled values go partly missing",
+          "A range check against the training distribution's recorded bounds",
+          "A schema check on column names, because the field gets renamed"
+        ],
+        answer: 2,
+        why: "The unit change kept the column numeric, complete and identically named, so type, null and schema checks all passed. Only a range check against the written-down training distribution flagged it, with 100% of values outside the bounds."
       }
     ]
   },

@@ -208,56 +208,31 @@ async def lookup(order_id: str) -> dict:
     questions: [
       {
         stem: "A tool returns `{\"error\": \"no rate for GBP->XXX\", \"retryable\": false}`. What does the client see in `isError`?",
-        options: [
-          "True, because the payload describes an error",
-          "False — the function ran and returned, so the call succeeded as far as the protocol is concerned",
-          "True, because `retryable` is false",
-          "It is unset for dict returns"
-        ],
+        options: ["True, because the returned payload describes an error", "False, because the function ran and returned normally", "True, because `retryable` is false in the payload", "Unset, because dict returns carry no error flag"],
         answer: 1,
         why: "The flag tracks execution, not meaning, and the split is deliberate: 'I could not run your tool' and 'I ran it and there is no rate' are different facts. The consequence is that the semantic error channel is yours to define and document."
       },
       {
         stem: "An unguarded `ConnectionError` in a tool produces `Error executing tool explode: upstream timed out` in the client's result. Why does that matter on a published server?",
-        options: [
-          "It does not — the message is harmless",
-          "Exception text crosses the boundary verbatim, so hostnames, internal addresses, ports and file paths are handed to a caller who may be in another organisation",
-          "Because it sets isError to False",
-          "Because the client will retry automatically"
-        ],
+        options: ["It does not matter, because the message is harmless text", "Exception text crosses the boundary with internal details", "It sets isError to false, so the caller misses the failure", "The client retries automatically and floods the upstream"],
         answer: 1,
         why: "A database connection error names the host and port; a file error names the path. On your own laptop that is convenience, and on a server someone else calls it is reconnaissance. The fix is four lines: log the real one with a reference, return a sentence."
       },
       {
         stem: "Which field most reduces wasted round trips when a model hits a tool error?",
-        options: [
-          "A numeric error code",
-          "`retryable` — without it a model will call the same tool with the same arguments again, and each attempt is a full round trip",
-          "A stack trace",
-          "The tool's version"
-        ],
+        options: ["A numeric error code the model can look up", "A `retryable` flag, so the model stops repeating calls", "A full stack trace for the model to diagnose", "The tool's version, so the model can switch"],
         answer: 1,
         why: "It is the one piece of information the model cannot infer. Listing valid options when the set is small is the close second, because it converts a failed call into a correct one rather than merely stopping a retry."
       },
       {
         stem: "A tool validates `amount > 0` in its body and returns an error when it is not. What is better?",
-        options: [
-          "Raising a ValueError instead",
-          "A `gt=0` constraint in the schema, so the call is rejected before the function is entered and the model sees the constraint before calling",
-          "Logging the bad value and continuing",
-          "Returning None"
-        ],
+        options: ["Raising a ValueError from the body instead of returning", "A `gt=0` schema constraint, checked before the call runs", "Logging the bad value and continuing with a default", "Returning None so the model infers the call failed"],
         answer: 1,
         why: "The rejection is earlier, the message is the provider's rather than yours, and the constraint is visible in the declaration — so the best outcome is that the bad call never happens. Body validation is the fallback for rules a schema cannot express."
       },
       {
         stem: "A tool checks in Python whether the caller may read an order, then queries with an admin credential. What has it enforced?",
-        options: [
-          "Proper authorisation",
-          "Nothing durable — the check is in the layer an attacker influences, and the database would have served any order asked for",
-          "Authorisation, as long as the check is correct",
-          "Shape validation only"
-        ],
+        options: ["Proper authorisation for the caller's own orders", "Nothing durable, since the database serves any order", "Authorisation, provided the Python check is correct", "Shape validation of the order id, and nothing more"],
         answer: 1,
         why: "Keeping the layers straight is the point: the schema is for shape, the body for business rules, and the database or downstream service for permission. Only the last cannot be talked past — and nothing in MCP even carries who the caller is."
       }

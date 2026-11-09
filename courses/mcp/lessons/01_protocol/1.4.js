@@ -225,56 +225,31 @@ async def summarise(text: str, ctx: Context) -> dict:
     questions: [
       {
         stem: "A server's tool calls `ctx.session.create_message`. The client passed no callbacks. What does the caller see?",
-        options: [
-          "An empty result",
-          "`isError: True` with \"Error executing tool summarise: Sampling not supported\" — a failed call, not a degraded one",
-          "The tool blocks until a model is available",
-          "The SDK substitutes a default model"
-        ],
+        options: ["An empty result, because the sampling request was skipped", "An error result: `isError` true with 'Sampling not supported'", "The tool blocks until a model becomes available to the client", "The SDK substitutes a default model and the call succeeds"],
         answer: 1,
         why: "All three server-initiated requests behave this way, which is what makes them a hard host dependency rather than a feature. A server built on sampling does not work for most hosts, so a capability check and a degraded path are the difference between usable everywhere and usable where it was written."
       },
       {
         stem: "An elicitation returns `action: \"accept\"` with `proceed: false`. What did the user do?",
-        options: [
-          "Approved the action",
-          "Engaged with the dialogue and answered no — `action` describes what they did with the prompt, and their answer is in the schema's fields",
-          "Cancelled the dialogue",
-          "Nothing; the result is invalid"
-        ],
+        options: ["Approved the action by accepting the elicitation dialogue", "Engaged with the dialogue and answered no in the schema field", "Cancelled the dialogue without giving any answer at all", "Nothing valid: accept and false together form an error"],
         answer: 1,
         why: "They are two separate questions, and a server checking only `action` has read a refusal as consent. Check whether they answered, then what they said."
       },
       {
         stem: "Why does sampling exist rather than servers holding their own API keys?",
-        options: [
-          "Because MCP forbids outbound HTTP from servers",
-          "Because the host already has a model and a budget — so the server borrows them rather than making every consumer inherit a model dependency and a bill they did not choose",
-          "Because it is faster",
-          "To guarantee the same model across tools"
-        ],
+        options: ["Because MCP forbids servers from making outbound HTTP calls", "So the server borrows the host's model and budget instead of its own", "Because sampling through the host is faster than a direct call", "To guarantee that every tool on a host uses the same model"],
         answer: 1,
         why: "The same reasoning covers all three: the host owns the model, the user and the file access, so the server asks. The cost is the other side of it — a server with sampling can run any completion it likes on your account."
       },
       {
         stem: "Which capability most deserves caution before granting it to a third-party server?",
-        options: [
-          "Roots, because it reveals paths",
-          "Elicitation — the server writes a message your host renders in your interface, so it inherits your application's credibility and can ask your user anything",
-          "Logging, because it is verbose",
-          "They carry identical risk"
-        ],
+        options: ["Roots, because it reveals the paths of your open projects", "Elicitation, because it can ask your user anything in your UI", "Logging, because its messages can flood the host's console", "None in particular: all client capabilities carry equal risk"],
         answer: 1,
         why: "\"Enter your API key to continue\" is a phishing prompt with your branding around it. Sampling is the close second since it spends your budget on a prompt the server composed; roots is the mildest because it discloses rather than grants."
       },
       {
         stem: "How should a tool that would like to use sampling be written?",
-        options: [
-          "Call create_message and let it fail if unsupported",
-          "Read `client_params.capabilities` first and fall back to a non-model path, returning `degraded: true` so the model can tell the user it got the cheap version",
-          "Require sampling in the server's instructions",
-          "Retry create_message until it succeeds"
-        ],
+        options: ["Call create_message and let the call fail if it is unsupported", "Check the client's capabilities first and fall back if needed", "Require sampling by stating it in the server's instructions", "Retry create_message in a loop until the host supports it"],
         answer: 1,
         why: "The client's capabilities arrived in the handshake and sit on the session, so the check is cheap. The `degraded` flag matters because otherwise a truncation is presented to the user as a summary with nothing marking the difference."
       }

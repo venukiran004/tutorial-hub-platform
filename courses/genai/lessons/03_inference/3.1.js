@@ -182,7 +182,7 @@ memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
 
 
 
-    { t: "p", text: "The common form gives the concept and it is the one idea that makes the rest of this module coherent. **Arithmetic intensity** is the ratio of arithmetic performed to bytes moved from memory. Hardware has a ratio too — an accelerator's FLOPs per second divided by its memory bandwidth — and whichever side of that ratio you fall on determines what limits you." },
+    { t: "p", text: "Published guidance gives the concept and it is the one idea that makes the rest of this module coherent. **Arithmetic intensity** is the ratio of arithmetic performed to bytes moved from memory. Hardware has a ratio too — an accelerator's FLOPs per second divided by its memory bandwidth — and whichever side of that ratio you fall on determines what limits you." },
 
     { t: "math", tex: "\\text{AI} = \\frac{\\text{FLOPs}}{\\text{bytes loaded}} \\qquad \\text{bound by compute if AI} > \\frac{\\text{peak FLOPs}}{\\text{bandwidth}}" },
 
@@ -191,7 +191,7 @@ memory_kv = 2 * n_layers * n_heads * head_dim * seq_len * 2
       ["Decode has low arithmetic intensity", "The same weights are loaded to process **one** token, so almost no arithmetic is done per byte moved. The compute units idle while memory delivers weights."]
     ] },
 
-    { t: "p", text: "The common form gives the estimate that follows: `decode throughput ≈ model size / memory bandwidth`. A 14 GB model on an accelerator with 2 TB/s of bandwidth cannot produce tokens faster than about 7 ms each, however fast its arithmetic is — because every token requires reading 14 GB." },
+    { t: "p", text: "Published guidance gives the estimate that follows: `decode throughput ≈ model size / memory bandwidth`. A 14 GB model on an accelerator with 2 TB/s of bandwidth cannot produce tokens faster than about 7 ms each, however fast its arithmetic is — because every token requires reading 14 GB." },
 
     { t: "callout", kind: "insight", title: "This single ratio explains most of the module",
       body: [

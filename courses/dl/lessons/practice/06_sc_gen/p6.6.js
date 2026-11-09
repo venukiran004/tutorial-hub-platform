@@ -169,7 +169,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# In U-Net block:\n# Self-attention: image features attend to themselves (spatial coherence)\nattn_out = self_attention(image_features)\n\n# Cross-attention: image features attend to text embeddings (conditioning)\nQ = image_features @ W_Q\nK = text_embeddings @ W_K\nV = text_embeddings @ W_V\ncross_attn_out = softmax(Q @ K.T / √d) @ V"
     },
     {

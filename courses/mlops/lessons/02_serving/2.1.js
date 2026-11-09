@@ -10,7 +10,7 @@ EC.receiveLesson({
     "List the three things a prediction response must carry for an incident to be traceable"
   ],
 
-  prerequisites: ["1.5"],
+  prerequisites: ["1.5", "python:14.7"],
 
   blocks: [
 
@@ -235,6 +235,28 @@ def healthz():
         ],
         answer: 1,
         why: "Liveness asks whether the process should be killed; readiness asks whether it should receive traffic, and those are different questions. A probe that returns the model version can only answer once the model is loaded, which is what makes it a real gate. A probe that never touches the model cannot notice a reload, so nothing removes the pod from rotation."
+      },
+      {
+        stem: "Batching 100 rows per request gave 59 times the throughput. Where did almost all of that gain come from?",
+        options: [
+          "The model's arithmetic running 59 times faster on vectors",
+          "Amortising the fixed per-request overhead over many rows",
+          "The server opening more worker processes for larger requests",
+          "Caching repeated rows so most predictions were never computed"
+        ],
+        answer: 1,
+        why: "The model itself took a fraction of each request; the framework's fixed per-request cost dominated, and batching spreads it over 100 rows. Vectorised arithmetic is a small part of it, worker count did not change, and no cache was involved."
+      },
+      {
+        stem: "Batching 100 rows per request gave 59 times the throughput. Where did almost all of that gain come from?",
+        options: [
+          "The model's arithmetic running 59 times faster on vectors",
+          "Amortising the fixed per-request overhead over many rows",
+          "The server opening more worker processes for larger requests",
+          "Caching repeated rows so most predictions were never computed"
+        ],
+        answer: 1,
+        why: "The model itself took a fraction of each request; the framework's fixed per-request cost dominated, and batching spreads it over 100 rows. Vectorised arithmetic is a small part of it, worker count did not change, and no cache was involved."
       }
     ]
   },

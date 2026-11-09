@@ -616,7 +616,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Train on normal data only\nautoencoder.train(normal_data)\n\n# At test time: high reconstruction error = anomaly\nreconstruction_error = ||x - autoencoder(x)||²\nif reconstruction_error > threshold:\n    flag_as_anomaly(x)"
     },
     {

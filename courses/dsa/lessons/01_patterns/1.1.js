@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Analyse and state the complexity out loud"
   ],
 
-  prerequisites: [],
+  prerequisites: ["python:2.1"],
 
   blocks: [
 
@@ -284,7 +284,7 @@ def subarray_sum_equals_k(nums: list[int], k: int) -> int:
       minutes: 38,
       body: [
         { t: "p", text: "Given strings `s` and `t`, return the shortest substring of `s` containing every character of `t` including duplicates. Return `\"\"` if there is none." },
-        { t: "code", lang: "python", numbered: false, title: "examples", code: `
+        { t: "code", lang: "text", numbered: false, title: "examples", code: `
 s = "ADOBECODEBANC", t = "ABC"   ->  "BANC"
 s = "a",            t = "a"      ->  "a"
 s = "a",            t = "aa"     ->  ""      # two a's needed, one available

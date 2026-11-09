@@ -275,7 +275,7 @@ Answer:"""`,
       ] },
 
     { t: "code", lang: "python", title: "The two helpers this pipeline is usually written with",
-      code: `from langchain.chains.combine_documents import create_stuff_documents_chain
+      code: `from langchain_classic.chains.combine_documents import create_stuff_documents_chain   # pip install langchain-classic (LangChain 1.x)
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.prompts import ChatPromptTemplate
 

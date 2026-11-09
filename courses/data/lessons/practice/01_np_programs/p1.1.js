@@ -138,7 +138,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import numpy as np\n\na = np.array([1, 2, 2, 3, 3, 4, 5, 5])\nprint(np.unique(a))                      # [1, 2, 3, 4, 5]\nprint(np.unique(a, return_counts=True))  # (array, counts)\n\nb = np.array([3, 4, 5, 6, 7])\nprint(np.intersect1d(a, b))  # [3, 4, 5]\nprint(np.union1d(a, b))      # [1, 2, 3, 4, 5, 6, 7]\nprint(np.setdiff1d(a, b))    # [1, 2]\nprint(np.in1d(a, b))         # [F, F, F, T, T, T, T, T]"
+     "code": "import numpy as np\n\na = np.array([1, 2, 2, 3, 3, 4, 5, 5])\nprint(np.unique(a))                      # [1, 2, 3, 4, 5]\nprint(np.unique(a, return_counts=True))  # (array, counts)\n\nb = np.array([3, 4, 5, 6, 7])\nprint(np.intersect1d(a, b))  # [3, 4, 5]\nprint(np.union1d(a, b))      # [1, 2, 3, 4, 5, 6, 7]\nprint(np.setdiff1d(a, b))    # [1, 2]\nprint(np.isin(a, b))         # [F, F, F, T, T, T, T, T]"
     }
    ],
    "kind": "program"
@@ -333,7 +333,7 @@ EC.receiveLesson({
     {
      "t": "code",
      "lang": "python",
-     "code": "import numpy as np\n\ndef trapezoidal(f, a, b, n=1000):\n    x = np.linspace(a, b, n)\n    y = f(x)\n    return np.trapz(y, x)\n\ndef simpsons(f, a, b, n=1000):\n    if n % 2 == 1:\n        n += 1\n    x = np.linspace(a, b, n + 1)\n    y = f(x)\n    h = (b - a) / n\n    return h/3 * (y[0] + y[-1] + 4*np.sum(y[1:-1:2]) + 2*np.sum(y[2:-2:2]))\n\n# Integrate sin(x) from 0 to π (exact = 2)\nprint(f\"Trapezoidal: {trapezoidal(np.sin, 0, np.pi):.6f}\")  # ~2.0\nprint(f\"Simpson's: {simpsons(np.sin, 0, np.pi):.6f}\")      # ~2.0\n\n# Integrate x² from 0 to 1 (exact = 1/3)\nprint(f\"∫x² dx [0,1] = {trapezoidal(lambda x: x**2, 0, 1):.6f}\")  # ~0.333"
+     "code": "import numpy as np\n\ndef trapezoidal(f, a, b, n=1000):\n    x = np.linspace(a, b, n)\n    y = f(x)\n    return np.trapezoid(y, x)\n\ndef simpsons(f, a, b, n=1000):\n    if n % 2 == 1:\n        n += 1\n    x = np.linspace(a, b, n + 1)\n    y = f(x)\n    h = (b - a) / n\n    return h/3 * (y[0] + y[-1] + 4*np.sum(y[1:-1:2]) + 2*np.sum(y[2:-2:2]))\n\n# Integrate sin(x) from 0 to π (exact = 2)\nprint(f\"Trapezoidal: {trapezoidal(np.sin, 0, np.pi):.6f}\")  # ~2.0\nprint(f\"Simpson's: {simpsons(np.sin, 0, np.pi):.6f}\")      # ~2.0\n\n# Integrate x² from 0 to 1 (exact = 1/3)\nprint(f\"∫x² dx [0,1] = {trapezoidal(lambda x: x**2, 0, 1):.6f}\")  # ~0.333"
     }
    ],
    "kind": "program"

@@ -168,7 +168,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Cutout: zero out random square patch\nmask = torch.ones_like(image)\ncx, cy = random coords\nmask[cy:cy+size, cx:cx+size] = 0\nimage = image * mask"
     },
     {
@@ -327,7 +327,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Maintain EMA of weights alongside training\nema_weights = decay × ema_weights + (1-decay) × current_weights\n# decay = 0.999 or 0.9999"
     },
     {

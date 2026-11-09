@@ -128,7 +128,7 @@ np.stack([x, y], axis=1).shape                # (3, 2) -- the same thing
 np.c_[x, y].shape                             # (3, 2) -- the shorthand
 
 # AND AS ROWS:
-np.row_stack([x, y]).shape                    # (2, 3)
+np.vstack([x, y]).shape                       # (2, 3) -- row_stack is a deprecated alias
 np.r_[[x], [y]].shape                         # (2, 3)
 
 # BUILDING A FEATURE MATRIX FROM COLUMNS OF DIFFERENT SHAPES:

@@ -137,7 +137,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 # THE CURRENT NAME IS InMemoryChatMessageHistory, in langchain_core.
 # Older code and most tutorials say:
-#     from langchain.memory import ChatMessageHistory
+#     from langchain_classic.memory import ChatMessageHistory   # pip install langchain-classic (LangChain 1.x)
 #     from langchain_community.chat_message_histories import ChatMessageHistory
 # Both are the same object under its earlier name, and both still import with a
 # deprecation warning. If a snippet does not run, this rename is the first

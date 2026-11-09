@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.2",
 
-  lede: "The common form gives a production checklist and a scalability ladder \u2014 FAISS under 100K documents, a single-node database to 10M, distributed beyond that. The ladder is sound and the thresholds are about the wrong quantity. Measured in 5.5, exact search over 100,000 vectors took **8.4 ms** and over a million an extrapolated **75 ms**, which is nothing against generation. What actually forces each step is **memory and operations**: a million 384-dimension vectors is **1.5 GB resident**, and an HNSW index over ten million takes an **hour to build**, which turns re-indexing from a deploy step into a scheduled job.",
+  lede: "Published guidance gives a production checklist and a scalability ladder \u2014 FAISS under 100K documents, a single-node database to 10M, distributed beyond that. The ladder is sound and the thresholds are about the wrong quantity. Measured in 5.5, exact search over 100,000 vectors took **8.4 ms** and over a million an extrapolated **75 ms**, which is nothing against generation. What actually forces each step is **memory and operations**: a million 384-dimension vectors is **1.5 GB resident**, and an HNSW index over ten million takes an **hour to build**, which turns re-indexing from a deploy step into a scheduled job.",
 
   objectives: [
     "Identify what actually forces each step up the scalability ladder",

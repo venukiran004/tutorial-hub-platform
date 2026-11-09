@@ -115,7 +115,7 @@ print("asking for max_tokens=4096 alongside it needs %d of 128000" % (n + 4096))
 
 
 
-    { t: "p", text: "The common form gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
+    { t: "p", text: "Published guidance gives the usual heuristics — 1 token ≈ 4 characters ≈ 0.75 words — and they are reasonable for the text they were measured on. Here is what they do on six other kinds of text." },
 
     { t: "code", lang: "python", title: "g13.py — tiktoken across six samples", code: `enc  = tiktoken.get_encoding("cl100k_base")      # GPT-4, GPT-3.5
 o200 = tiktoken.get_encoding("o200k_base")       # GPT-4o and later

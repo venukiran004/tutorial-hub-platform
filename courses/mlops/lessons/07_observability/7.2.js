@@ -218,6 +218,17 @@ est_agg = hist_quantile(agg_bounds, agg_counts, 0.99)`,
         ],
         answer: 1,
         why: "This is what happens when default buckets intended for hundred-millisecond web requests are applied to a millisecond-scale service. Boundaries have to come from a measurement of the actual distribution, spaced geometrically, with one on the SLO threshold. Interpolation gives a point inside the bucket rather than its edge, which is why the error was 31.6% and not 150%."
+      },
+      {
+        stem: "Your service's median is 2 ms, but the first histogram bucket boundary is 5 ms. What happens to the reported p50?",
+        options: [
+          "It is exact, because the median falls in the first bucket",
+          "It is overstated, because interpolation assumes an even spread",
+          "It reports zero, because no bucket boundary is below it",
+          "It reports +Inf, because the bucket layout cannot hold it"
+        ],
+        answer: 1,
+        why: "histogram_quantile interpolates linearly inside the bucket, assuming values spread evenly from 0 to 5 ms, so a 2 ms median reads high (31.6% in the lesson). It is not exact, not zero, and +Inf only appears when the quantile lands in the overflow bucket."
       }
     ]
   },

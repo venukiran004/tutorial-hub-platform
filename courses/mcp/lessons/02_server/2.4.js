@@ -222,56 +222,31 @@ await server.request_context.session.send_notification(
     questions: [
       {
         stem: "The low-level server reported 3 of 3 parameter descriptions and the FastMCP one reported 0 of 3. What is the right conclusion?",
-        options: [
-          "Hand-written schemas are better, so prefer the low-level API",
-          "The FastMCP server used a Google-style docstring, which contributes nothing to the schema — with `Annotated` and `Field` it also reaches 3 of 3, for less code",
-          "FastMCP cannot produce parameter descriptions",
-          "The low-level API validates arguments better"
-        ],
+        options: ["Hand-written schemas are better, so prefer the low-level API", "The docstring was Google-style; Annotated and Field reach 3 of 3", "FastMCP cannot produce parameter descriptions at all", "The low-level API validates its arguments more strictly"],
         answer: 1,
         why: "Hand-written schemas are always complete because nothing is generated; generated ones are complete if you use the right annotations. The genuine reasons to drop a layer are your own version, notifications, a dynamic tool list, and serving two transports."
       },
       {
         stem: "A low-level server registers a `list_resources` handler that returns an empty list. What has it advertised?",
-        options: [
-          "Nothing — an empty list means no capability",
-          "The resources capability, to every client, because `get_capabilities` derives the set from which handlers are registered rather than from what they do",
-          "Only the listChanged flag",
-          "A capability that is automatically disabled when the list is empty"
-        ],
+        options: ["Nothing, since an empty list means no capability is declared", "The resources capability, derived from the registered handler", "Only the listChanged flag, with no resources capability", "A capability the SDK disables while the list stays empty"],
         answer: 1,
         why: "Registration is the signal, not behaviour — a handler that raises still advertises it too. A client that read the flags may now build an interface for resources you do not have, which is the same error as declaring listChanged with no notifications."
       },
       {
         stem: "A server with six connected clients adds a tool and sends a list-changed notification from the handler it is currently in. What happens?",
-        options: [
-          "All six clients re-fetch the list",
-          "One client is told — notifications are sent on a session, and there is no broadcast in the protocol",
-          "The notification is queued for all sessions automatically",
-          "Nothing, unless listChanged was declared as False"
-        ],
+        options: ["All six clients are told and re-fetch the tool list", "Only the current session is told; there is no broadcast", "The notification is queued for every session automatically", "Nothing happens unless listChanged was declared as false"],
         answer: 1,
         why: "`send_notification` is a method on a session, so a server holding several must iterate them. Telling one client in six is arguably worse than telling none, because the fleet is now inconsistent in a way nothing reports."
       },
       {
         stem: "Why can the decorator API not produce a tool list that depends on the caller's entitlements?",
-        options: [
-          "Because decorators cannot be async",
-          "`@mcp.tool()` registers at import time, so the set is fixed before any client connects — whereas a low-level `list_tools` is a function called per request",
-          "Because FastMCP caches the tool list",
-          "It can, using a decorator argument"
-        ],
+        options: ["Because decorated tool functions cannot be async", "Decorators register at import time, before any client exists", "Because FastMCP caches the tool list per server process", "It can, by passing the entitlement to the decorator"],
         answer: 1,
         why: "This is the most common genuine reason to drop a layer. A `list_tools` function can consult configuration, a feature flag or the connection's context, and return a different list each time it is asked."
       },
       {
         stem: "Why should a consumer's tool filter be an allow-list rather than a deny-list?",
-        options: [
-          "Allow-lists are faster to evaluate",
-          "Because a server may legitimately add tools mid-connection and notify, so a deny-list only protects against the tools that existed when it was written",
-          "Because deny-lists are not supported by the protocol",
-          "Because allow-lists survive a reconnect"
-        ],
+        options: ["Allow-lists are faster to evaluate on every call", "New tools can appear mid-connection; a deny-list misses them", "Deny-lists are not supported by the MCP protocol", "Allow-lists survive a reconnect and deny-lists do not"],
         answer: 1,
         why: "The notification mechanism is exactly what makes the tool list non-constant. Seeing it from the server side makes the consumer-side rule concrete rather than merely cautious, which is where lesson 4.1 picks it up."
       }

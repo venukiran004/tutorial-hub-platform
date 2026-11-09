@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Write the extract query so the database does the filtering and aggregation"
   ],
 
-  prerequisites: ["3.6", "4.1"],
+  prerequisites: ["3.6", "4.1", "sql:1.1"],
 
   blocks: [
 

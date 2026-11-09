@@ -165,7 +165,7 @@ rows.append(("big model, single sample", 0.85, 20))`,
       ] },
 
     { t: "h2", n: "04", id: "degenerate", text: "When voting makes it worse",
-      sub: "The caveat the usual treatment omits entirely" },
+      sub: "The caveat usually omitted entirely" },
 
     { t: "code", lang: "python", title: "g710.py \u00a7D \u2014 vote@8 with agreeing errors, across base accuracies", code: `for p in (0.2, 0.35, 0.5, 0.6, 0.8):
     a = self_consistency(p, 8, 1)      # 1 mode = all errors agree`,

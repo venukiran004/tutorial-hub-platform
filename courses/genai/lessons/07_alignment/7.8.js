@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.8",
 
-  lede: "GRPO deletes PPO\u2019s critic by sampling G answers to the same prompt and using the group\u2019s mean as the baseline. The common form gives worked numbers twice and they **disagree**: its hand calculation yields advantages of \u00b11 and its code prints \u00b10.9129, because `torch.std` defaults to the n\u22121 denominator \u2014 the ratio is exactly \u221a(5/6). It flags this, correctly. The deeper consequence is the degenerate case: if all G answers are right or all are wrong, the advantage is exactly zero and the prompt teaches nothing, which makes **difficulty curation part of the algorithm**.",
+  lede: "GRPO deletes PPO\u2019s critic by sampling G answers to the same prompt and using the group\u2019s mean as the baseline. Published guidance gives worked numbers twice and they **disagree**: its hand calculation yields advantages of \u00b11 and its code prints \u00b10.9129, because `torch.std` defaults to the n\u22121 denominator \u2014 the ratio is exactly \u221a(5/6). It flags this, correctly. The deeper consequence is the degenerate case: if all G answers are right or all are wrong, the advantage is exactly zero and the prompt teaches nothing, which makes **difficulty curation part of the algorithm**.",
 
   objectives: [
     "Write the group-normalised advantage and compute it for a reward vector",

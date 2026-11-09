@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Choose between RBAC, ABAC and ReBAC, and implement a relationship-based check"
   ],
 
-  prerequisites: ["1.4", "10.5"],
+  prerequisites: ["1.4", "10.5", "python:12.8"],
 
   blocks: [
 

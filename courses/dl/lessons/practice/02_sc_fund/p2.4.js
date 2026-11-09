@@ -155,7 +155,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "lr_layer = base_lr × decay^(num_layers - layer_idx)\n# Layer 12 (top): base_lr × 1.0\n# Layer 11: base_lr × 0.95\n# Layer 10: base_lr × 0.95²"
     },
     {
@@ -218,7 +218,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "Early stopping = implicit regularization:\n- Beginning: model learns general patterns\n- Middle: model learns useful details\n- Late: model memorizes training noise → overfitting"
     },
     {

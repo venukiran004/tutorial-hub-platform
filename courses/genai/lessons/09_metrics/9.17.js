@@ -141,13 +141,13 @@ exponential gain   (2^g - 1) / log2(i+1)
       rungs: [
         { level: "bad", label: "One number from one metric", why: "A single score with no definition, no interval and no slices. Unfalsifiable and uncomparable, and the reader cannot tell which of the seven pitfalls above applies.", code: `score: 0.87`,
           note: "Which metric, which implementation, how many examples, and who got worse? None of it is recoverable." },
-        { level: "ok", label: "Several metrics, bare", why: "More coverage, but the reader now has several numbers of unknown precision and the temptation is to read whichever one moved.", code: `rouge_l: 0.41   bertscore: 0.89   judge: 4.2/5`,
+        { level: "ok", label: "Several metrics, bare", why: "More coverage, but the reader now has several numbers of unknown precision and the temptation is to read whichever one moved.", lang: "text", code: `rouge_l: 0.41   bertscore: 0.89   judge: 4.2/5`,
           note: "Unrescaled BERTScore at 0.89 is roughly the floor for unrelated text, which the number does not reveal." },
-        { level: "ok", label: "Metrics with definitions and intervals", why: "Now the figures travel: the implementation is stated so another team can reproduce them, and the interval says what the comparison can support.", code: `rouge_l_f1   0.41  [0.38, 0.44]   n=200
+        { level: "ok", label: "Metrics with definitions and intervals", why: "Now the figures travel: the implementation is stated so another team can reproduce them, and the interval says what the comparison can support.", lang: "text", code: `rouge_l_f1   0.41  [0.38, 0.44]   n=200
 bertscore    0.52  rescaled, roberta-large
 judge        4.2/5 both orders, kappa 0.58`,
           note: "The kappa figure is the one that makes the judge score interpretable rather than decorative." },
-        { level: "best", label: "Tiered, sliced, paired against a baseline", why: "Deterministic checks first, references next, a judge only where needed, every number sliced, and the headline claim paired against the previous version so example difficulty is controlled.", code: `tier1  schema 100%  tests 94/100
+        { level: "best", label: "Tiered, sliced, paired against a baseline", why: "Deterministic checks first, references next, a judge only where needed, every number sliced, and the headline claim paired against the previous version so example difficulty is controlled.", lang: "text", code: `tier1  schema 100%  tests 94/100
 tier2  rouge_l_f1 0.41 [0.38, 0.44]
 tier3  judge 4.2/5 (n=60 subset, both orders, kappa 0.58)
 slices worst = legal-citations 0.71 (-4 vs overall)

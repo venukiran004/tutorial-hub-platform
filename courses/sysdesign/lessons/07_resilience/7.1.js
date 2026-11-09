@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Retry only what is safe to retry"
   ],
 
-  prerequisites: ["1.2", "1.4", "6.3"],
+  prerequisites: ["1.2", "1.4", "6.3", "python:12.2"],
 
   blocks: [
 

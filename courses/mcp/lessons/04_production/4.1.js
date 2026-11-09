@@ -152,56 +152,31 @@ def read_ticket(ticket_id: str) -> dict:
     questions: [
       {
         stem: "Why is a malicious tool description a more convenient injection vector than a poisoned document?",
-        options: [
-          "Because descriptions are longer",
-          "It needs only that someone install the server, and it arrives before any user message in the system-adjacent part of the context — where models weight instructions most heavily — and is resent on every request",
-          "Because documents are validated and descriptions are not",
-          "Because models cannot see documents"
-        ],
+        options: ["Because tool descriptions are much longer than documents", "It arrives on install, before any message, on every request", "Because documents are validated and descriptions are not", "Because models cannot see retrieved documents at all"],
         answer: 1,
         why: "Getting a document into a retrieval corpus is work; getting a description in front of a model is an install. It is also persistent rather than one-shot, and nothing in the conversation looks unusual while it is happening."
       },
       {
         stem: "A server passes review, then later adds a tool and sends a list-changed notification. What is that, and what defeats it?",
-        options: [
-          "An ordinary feature update; nothing is needed",
-          "A rug pull — and an allow-list of tool names defeats it, because a tool nobody named is not callable however the server's list changes",
-          "A confused deputy, defeated by pinning the version",
-          "Shadowing, defeated by a name prefix"
-        ],
+        options: ["An ordinary feature update that needs no response", "A rug pull, defeated by an allow-list of tool names", "A confused deputy, defeated by pinning the version", "Shadowing, defeated by prefixing every tool name"],
         answer: 1,
         why: "Lesson 2.4 showed the mechanism from the server side, and it needs no reinstall and no user action. Reading descriptions at integration time cannot help, because the content changed after you read it — which is why the effective control is structural."
       },
       {
         stem: "Why can one server's description talk credibly about another server's tools?",
-        options: [
-          "Because servers can query each other",
-          "The host merges tool lists into one set for the model and the protocol attaches no provenance the model can reason about — and a server cannot see what else is connected, so nothing is positioned to deny the claim",
-          "Because tool names are globally unique",
-          "It cannot; the model always knows the source"
-        ],
+        options: ["Because servers can query each other's tool lists directly", "The host merges lists with no provenance the model can check", "Because tool names are globally unique across all servers", "It cannot, because the model always knows each tool's source"],
         answer: 1,
         why: "It follows from the architecture in lesson 1.1 rather than from a bug: one client per server, and the fan-out is the host's job. A per-server name prefix is what makes the sources distinguishable again."
       },
       {
         stem: "Which control bounds every attack in this lesson rather than preventing one of them?",
-        options: [
-          "Reading every tool description before connecting",
-          "A scoped credential on your side — what the agent cannot do, it cannot be persuaded into, and that is a property of your deployment rather than of the server",
-          "Hashing the tool list",
-          "A deny-list of dangerous tool names"
-        ],
+        options: ["Reading every tool description before you connect", "A scoped credential that limits what the agent can do", "Hashing the tool list and alerting when it changes", "A deny-list of tool names known to be dangerous"],
         answer: 1,
         why: "Every attack here ends with the model being persuaded to do something. A read-only agent scoped to one dataset survives a server you misjudged, which is why it is the control that holds when your assessment of a third party turns out to be wrong."
       },
       {
         stem: "A server marks a result field as untrusted user input and says to treat it as data. What has that achieved?",
-        options: [
-          "The field is now safe to pass to the model",
-          "A measurable improvement and not a boundary — both the note and the content are still text in one prompt with the same role, so it is one layer among several",
-          "Nothing at all",
-          "It converts the result into a resource"
-        ],
+        options: ["The field is now safe to pass straight to the model", "A measurable improvement, but text in one prompt, not a boundary", "Nothing at all: models ignore notes about trust", "It converts the result into a resource the host controls"],
         answer: 1,
         why: "Naming provenance helps and costs almost nothing, which is why it is worth doing. It is never the reason a dangerous tool is safe to expose, because the question that decides that is what happens if the model does the worst thing available to it."
       }

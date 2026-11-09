@@ -232,6 +232,28 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "A leak inflates the offline metric, so the gate's comparison actively prefers it. Only a check that recomputes features as of the row's timestamp, or compares the training and serving paths on the same row, can see the defect — which is why the stage list has four entries rather than one. The leak in lesson 1.4 is a window that also exists at serving time, so nothing raises."
+      },
+      {
+        stem: "Doubling the training data improves AUC by 0.0004 with a paired interval of [−0.0017, +0.0026]. What should the gate do?",
+        options: [
+          "Promote, because any positive improvement is worth deploying",
+          "Reject, because the interval contains zero at this holdout size",
+          "Promote, because more data can never make a model worse",
+          "Reject, because the gain is below one full AUC point"
+        ],
+        answer: 1,
+        why: "The interval includes zero, so the improvement cannot be distinguished from noise on this holdout. A positive point estimate is not evidence, more data can hurt, and the right threshold is derived from the holdout size rather than a fixed one-point rule."
+      },
+      {
+        stem: "Doubling the training data improves AUC by 0.0004 with a paired interval of [−0.0017, +0.0026]. What should the gate do?",
+        options: [
+          "Promote, because any positive improvement is worth deploying",
+          "Reject, because the interval contains zero at this holdout size",
+          "Promote, because more data can never make a model worse",
+          "Reject, because the gain is below one full AUC point"
+        ],
+        answer: 1,
+        why: "The interval includes zero, so the improvement cannot be distinguished from noise on this holdout. A positive point estimate is not evidence, more data can hurt, and the right threshold is derived from the holdout size rather than a fixed one-point rule."
       }
     ]
   },

@@ -70,7 +70,7 @@ for x_i, y_i in stream: y_pred = model.predict_one(x_i); metric.update(y_i, y_pr
 
 
 
-    { t: "code", lang: "python", title: "At row 10,000 the sign of feature 0's effect flips (executed)",
+    { t: "code", lang: "text", title: "At row 10,000 the sign of feature 0's effect flips (executed)",
       code: `batch model (fitted on rows 0-5,000):  accuracy on rows 5,000-10,000 0.8310;  on rows 10,000-20,000 0.6182   <- wrong for ever
 online SGD, η = 0.01:                  0.8340 before;  0.7160 in the 500 rows after the change;  0.8263 on rows 12,000-20,000
 ADWIN on the online learner's error stream (δ 0.002): alarm at t = 10,240
@@ -221,7 +221,7 @@ fl.server.start_server(
 
 
 
-    { t: "code", lang: "python", title: "A client with one row, and the two defences (executed)",
+    { t: "code", lang: "text", title: "A client with one row, and the two defences (executed)",
       code: `# a client holding ONE row (x, y = 0) trains one step from w = 0 and returns the update
 update = (−0.0063, 0.0066, −0.0320, −0.0052, 0.0268)
 # the logistic gradient at w = 0 is (p − y)·x = 0.5·x, and the update is −lr × that, so
@@ -244,10 +244,10 @@ update / (−0.1 × 0.5) = (0.126, −0.132, 0.640, 0.105, −0.536)  ==  the cl
       rungs: [
         { level: "bad", label: "Ship the data to the server and train there", code: `pooled = concat(client_data); model.fit(pooled)`,
           note: "**The accuracy ceiling (0.8265 here) — and a privacy, regulatory and bandwidth problem that is the reason the data were separate.**" },
-        { level: "ok", label: "FedAvg with weighted averaging, a few local epochs, per-client evaluation", code: `w = Σ n_k w_k / Σ n_k       # 0.8264 after 20 rounds on IID clients
+        { level: "ok", label: "FedAvg with weighted averaging, a few local epochs, per-client evaluation", lang: "text", code: `w = Σ n_k w_k / Σ n_k       # 0.8264 after 20 rounds on IID clients
 report accuracy per client, not only the mean`,
           note: "Matches the centralised model on IID or feature-skewed data. Blind to concept skew (0.652 against 0.783 local), and each update still reveals its client's data to the server." },
-        { level: "best", label: "Secure aggregation, clipped and noised updates with an accounted ε, FedProx or fewer local steps against drift, personalisation where the conditionals differ", code: `update = clip(w_k − w, C); server sees Σ masked updates + N(0, σ²C²)   # ε from the accountant
+        { level: "best", label: "Secure aggregation, clipped and noised updates with an accounted ε, FedProx or fewer local steps against drift, personalisation where the conditionals differ", lang: "text", code: `update = clip(w_k − w, C); server sees Σ masked updates + N(0, σ²C²)   # ε from the accountant
 local objective += μ/2 ‖w − w_global‖²                                    # drift 0.177 -> 0.111 at μ 0.1
 per-client fine-tune from the global model                                # 0.652 -> 0.777 mean under concept skew`,
           note: "The server learns only the aggregate, the aggregate reveals a bounded amount about any client, drift is controlled, and clients whose worlds differ get a model for their world." }

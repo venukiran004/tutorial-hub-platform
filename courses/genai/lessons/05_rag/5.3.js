@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Choose a model from the retrieval task rather than from a benchmark rank"
   ],
 
-  prerequisites: ["5.1"],
+  prerequisites: ["5.1", "nlp:1.6"],
 
   blocks: [
 
@@ -112,7 +112,7 @@ EC.receiveLesson({
     { t: "h2", n: "03", id: "dims", text: "What dimensions cost",
       sub: "And how far you can cut before it hurts" },
 
-    { t: "p", text: "Dimensions are the obvious cost dial: they set the index size, the memory, and the time of every comparison. The usual treatment OpenAI\u2019s `text-embedding-3-large` at 3072 dimensions against `3-small` at 1536, which is a real doubling of storage for every vector you will ever hold." },
+    { t: "p", text: "Dimensions are the obvious cost dial: they set the index size, the memory, and the time of every comparison. The usual comparison puts OpenAI\u2019s `text-embedding-3-large` at 3072 dimensions against `3-small` at 1536, which is a real doubling of storage for every vector you will ever hold." },
 
     { t: "code", lang: "python", title: "g53.py \u2014 truncating the vector, which is the naive thing to try", code: `for d in (384, 256, 128, 64, 32):
     Ed = E[:, :d]

@@ -214,6 +214,17 @@ Environment=OMP_NUM_THREADS=2    # lesson 4.1: limits are not virtualised` },
         ],
         answer: 1,
         why: "Four fixes are needed together: an absolute interpreter path to pin the virtualenv, an explicit `cd` because cron starts in HOME, redirecting both streams to a file, and escaping `%` — which cron treats as a newline and which silently truncates a `date` format string. A user's crontab runs as that user, and a plain `python file.py` needs no shebang."
+      },
+      {
+        stem: "A container's entrypoint is a shell script that starts Python. docker stop hangs for ten seconds. Why?",
+        options: [
+          "Python takes ten seconds to flush its output buffers",
+          "The shell as pid 1 ignores SIGTERM and does not forward it",
+          "Docker waits ten seconds before sending any signal",
+          "The container's network must drain before it stops"
+        ],
+        answer: 1,
+        why: "pid 1 has no default signal dispositions, so the shell ignores SIGTERM and Python never receives it; Docker sends SIGKILL after the grace period. Use exec in the script or an init like tini. Docker signals immediately, and flushing and networking are not the delay."
       }
     ]
   },

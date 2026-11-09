@@ -220,7 +220,7 @@ probability:  L2 is a Gaussian prior, flat at zero -- 'small, not exactly zero'.
       caption: "Lasso's selection among near-duplicates is arbitrary: the corner it lands in depends on which copy is a hair more correlated with the residual in this sample. That is fine for prediction and fatal for the story 'x₁ matters and x₂ does not'. Ridge shares the weight, which is stable and never sparse. Elastic net's L2 term makes correlated features enter together while its L1 term still zeroes the irrelevant ones — the grouping effect — which is why it is the default when the features come in correlated families (genes, pixels, lagged copies)."
     },
 
-    { t: "code", lang: "python", title: "The lasso path on the spend model, and the strength chosen by CV (executed)",
+    { t: "code", lang: "text", title: "The lasso path on the spend model, and the strength chosen by CV (executed)",
       hl: [3, 4, 5, 6, 7, 12, 13],
       code: `lasso_path(X_std, y_centred, alphas=np.logspace(1.5, -1.5, 7))
 # alpha:            31.6    10.0    3.16    1.00    0.32    0.10    0.03

@@ -187,56 +187,31 @@ async def convert(amount: float, frm: str, to: str, ctx: Context) -> Conversion:
     questions: [
       {
         stem: "Which change to a published server produces no error for consumers and still changes their agent's behaviour?",
-        options: [
-          "Renaming an argument",
-          "Editing a tool description — it is text in their model's context, so their agent may choose the tool more or less often, with nothing anywhere reporting it",
-          "Adding an optional argument",
-          "Loosening an enum"
-        ],
+        options: ["Renaming an argument that consumers already pass", "Editing a tool description the model reads", "Adding an optional argument with a default", "Loosening an enum to accept more values"],
         answer: 1,
         why: "Every breaking change produces a visible failure; a description change does not. That is the rug-pull mechanism from lesson 4.1 seen from the author's side, and the reason a description edit deserves a changelog entry."
       },
       {
         stem: "Why deprecate by log lines rather than by a date?",
-        options: [
-          "Dates are hard to agree",
-          "Because you cannot see your consumers — if the deprecation warning is still firing, somebody's agent still depends on the tool, whatever the announcement said",
-          "Because MCP has no versioning",
-          "Because logs are cheaper than announcements"
-        ],
+        options: ["Because consumers rarely agree on a removal date", "Because a still-firing warning shows someone still depends on it", "Because MCP has no versioning to attach a date to", "Because log lines are cheaper to send than announcements"],
         answer: 1,
         why: "There is no dependency graph and the caller may be an agent built once and left running. It also means a server with no per-call logging cannot finish a deprecation: the only options left are breaking someone or keeping every tool forever."
       },
       {
         stem: "Why log named fields rather than the whole argument dictionary?",
-        options: [
-          "To reduce log volume",
-          "Because a wholesale dump records whatever the arguments happen to contain — harmless on a currency tool, personal data on a customer lookup — in a log you may retain for months",
-          "Because dictionaries cannot be serialised",
-          "Because the model needs the fields named"
-        ],
+        options: ["To keep the volume of logs low", "A full dump may record personal data you then retain", "Because argument dictionaries cannot be serialised", "Because the model needs the fields named in logs"],
         answer: 1,
         why: "It is a per-tool decision rather than a global setting, which is the part people skip. Volume is a side benefit; the reason is that `**kwargs` logging is how a server starts holding data nobody decided to keep."
       },
       {
         stem: "A consumer's agent loops and calls one tool hundreds of times a minute. What limits the damage to other consumers?",
-        options: [
-          "A global rate limit",
-          "A per-caller rate limit, which needs the caller identity from lesson 4.2 — without identity the only available limit is global, so one looping agent degrades the server for everyone",
-          "A shorter timeout",
-          "Switching to stateless mode"
-        ],
+        options: ["A global rate limit applied to all callers together", "A per-caller rate limit, which needs caller identity", "A shorter timeout on that tool's handler", "Switching the server into stateless mode"],
         answer: 1,
         why: "A global limit converts one consumer's bug into everyone's outage, and leaves you unable to say which consumer caused it. Returning `retryable: false` on permanent failures is the cheap complement, since lesson 2.3 showed a model will otherwise retry an identical call."
       },
       {
         stem: "Why cap the number of rows a tool can return?",
-        options: [
-          "To keep responses under the HTTP size limit",
-          "Because the result enters a model's context and is resent on every subsequent turn, so an unbounded result is a cost paid repeatedly for the rest of the conversation",
-          "Because MCP cannot serialise large arrays",
-          "To avoid timeouts"
-        ],
+        options: ["To keep every response under the HTTP size limit", "The result is resent in the model's context every turn", "Because MCP cannot serialise arrays over a set length", "To stop large queries from timing out on the server"],
         answer: 1,
         why: "The cost is per turn rather than per call, which is what makes it worse than an ordinary large API response. Say the cap in the description and return a count alongside the truncation, so the model knows there is more rather than assuming it has everything."
       }

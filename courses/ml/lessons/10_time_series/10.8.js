@@ -74,7 +74,7 @@ grangercausalitytests(df2[["y", "x"]], maxlag=2)     # 'x Granger-causes y': p =
 
 
 
-    { t: "code", lang: "python", title: "Spot and futures share one random walk (executed, 500 points)",
+    { t: "code", lang: "text", title: "Spot and futures share one random walk (executed, 500 points)",
       code: `spot = w + noise;  futures = w + 2 + noise                        # w is a random walk
 ADF p:  spot 0.600, futures 0.639 (unit roots);  the spread futures − spot: 0.0e+00 (stationary)  -> cointegrated
 coint_johansen(P, det_order=0, k_ar_diff=1).lr1        # trace statistics 214.6, 1.7 vs 95 % critical 15.5, 3.8  -> rank 1
@@ -116,7 +116,7 @@ top-down with proportions 42 / 33 / 25 %:  A 126, B 99, C 75 (the stores' foreca
 MinT with error variances (25, 9, 4, 4):  b̃ = [123.21, 96.43, 71.43], total 291.07 -- the noisy total is pulled hardest, the precise stores least`,
       caption: "OLS treats every node's forecast as equally trustworthy and averages the disagreement; MinT lets the nodes with the larger historical errors absorb more of it. Both use all four numbers, which is what bottom-up and top-down throw away — and empirically the optimal methods usually beat both." },
 
-    { t: "code", lang: "python", title: "On the stores: Holt–Winters per node, reconciled four ways (executed; last 5 of 10 origins, h = 28; MinT variances from the first 5)",
+    { t: "code", lang: "text", title: "On the stores: Holt–Winters per node, reconciled four ways (executed; last 5 of 10 origins, h = 28; MinT variances from the first 5)",
       code: `mean |A + B + C − T| across the base forecasts: 3.14      (incoherent by construction)
 base error variances (T, A, B, C): 1300, 453, 157, 144       -- the total's model is the noisy one
 
@@ -192,7 +192,7 @@ classification: ADI = 13/4 = 3.25 (> 1.32);  CV² of the non-zero sizes = 0.22 (
 
     { t: "p", text: "In financial series the mean is nearly unpredictable and the variance is not: quiet periods follow quiet ones and violent periods follow violent ones. GARCH(1,1) models that clustering directly: r_t = μ + ε_t, ε_t = σ_t z_t, σ²_t = ω + α ε²_{t−1} + β σ²_{t−1}. α is how strongly yesterday's shock raises today's variance, β how strongly yesterday's variance persists, α + β the persistence — 0.95 to 0.99 in real markets, and at exactly 1 the variance never mean-reverts — and ω/(1 − α − β) the long-run variance." },
 
-    { t: "code", lang: "python", title: "GARCH(1,1) simulated with ω 0.05, α 0.10, β 0.85 and t(6) shocks, then fitted (executed, 3,000 points)",
+    { t: "code", lang: "text", title: "GARCH(1,1) simulated with ω 0.05, α 0.10, β 0.85 and t(6) shocks, then fitted (executed, 3,000 points)",
       code: `ACF of returns, lags 1-3:          0.054  0.010  0.051       the mean is unpredictable
 ACF of SQUARED returns, lags 1-3:  0.096  0.072  0.123       the variance is not
 
@@ -251,7 +251,7 @@ arch_model(r, vol="GARCH", p=1, q=1, dist="t").fit()
           note: "**A + B + C − T was 3.1 on average; the planner will make them add up in a spreadsheet, and the total's forecast (the noisiest of the four) will win the argument.**" },
         { level: "ok", label: "Bottom-up: forecast the stores, sum them", code: `forecast[total] = forecast[A] + forecast[B] + forecast[C]`,
           note: "Coherent, and here the best total (33.76) because the store models were good. It discards the total's forecast, which on a hierarchy with noisy leaves (thousands of products) is the accurate one." },
-        { level: "best", label: "Forecast every node, reconcile with MinT, report accuracy per level", code: `b = inv(S.T @ Winv @ S) @ S.T @ Winv @ y_hat     # W from the base forecasts' backtest error covariance
+        { level: "best", label: "Forecast every node, reconcile with MinT, report accuracy per level", lang: "text", code: `b = inv(S.T @ Winv @ S) @ S.T @ Winv @ y_hat     # W from the base forecasts' backtest error covariance
 y_tilde = S @ b                                 # coherent; nothing discarded; noisy nodes pulled hardest
 report MAE per level vs base and vs bottom-up`,
           note: "Uses all the information, weights it by demonstrated accuracy, produces a coherent set by construction, and the per-level report shows where the reconciliation helped and where it cost." }

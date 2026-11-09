@@ -152,7 +152,7 @@ EC.receiveLesson({
 
     { t: "p", text: "Once a tool is selected, argument quality is a structured-output problem, and everything from 1.8 and 2.7 applies unchanged — an `enum` is a constraint, a per-property `description` is a prompt sitting exactly where the value is generated." },
 
-    { t: "code", lang: "python", title: "args.py", code: `"parameters": {
+    { t: "code", lang: "json", title: "args.py", code: `"parameters": {
     "type": "object",
     "properties": {
         "location": {

@@ -305,11 +305,11 @@ joblib.dump(pipe, "churn_pipeline.joblib")          # step 11: the fitted prepro
     { t: "ladder",
       title: "A first model for the churn table",
       rungs: [
-        { level: "bad", label: "Scale, then split, then fit", code: `X_scaled = StandardScaler().fit_transform(X)              # fitted on every row, including the test rows
+        { level: "bad", label: "Scale, then split, then fit", lang: "text", code: `X_scaled = StandardScaler().fit_transform(X)              # fitted on every row, including the test rows
 X_train, X_test, ... = train_test_split(X_scaled, y)
 model.fit(X_train, y_train); model.score(X_test, y_test)`,
           note: "**The scaler saw the test set.** Small here, ruinous with target encoding or imputation by a model. And the score is one split, one number, no baseline." },
-        { level: "ok", label: "Split, then fit transforms on train", code: `X_train, X_test, ... = train_test_split(X, y, stratify=y)
+        { level: "ok", label: "Split, then fit transforms on train", lang: "text", code: `X_train, X_test, ... = train_test_split(X, y, stratify=y)
 sc = StandardScaler().fit(X_train)
 model.fit(sc.transform(X_train), y_train)`,
           note: "**Correct, by discipline.** Every new transform needs the same care, and serving needs the same `sc` object — easy to forget when there are six of them." },

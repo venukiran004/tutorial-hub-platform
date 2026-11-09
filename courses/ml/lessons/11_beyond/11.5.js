@@ -81,7 +81,7 @@ cosine(d1, d2) = 0.6344      cosine(d1, d3) = 0.0000   -- 'cats' is not 'cat': t
 
 
 
-    { t: "code", lang: "python", title: "2,242 training and 1,492 test documents; headers, footers and quotes removed (executed)",
+    { t: "code", lang: "text", title: "2,242 training and 1,492 test documents; headers, footers and quotes removed (executed)",
       code: `#  pipeline                                                     test accuracy   macro-F1   fit + predict
 #  CountVectorizer + MultinomialNB                                  0.8405        0.8392       0.6 s
 #  TfidfVectorizer + MultinomialNB                                  0.8693        0.8656       0.6 s
@@ -100,7 +100,7 @@ vocabulary 28,969 terms; the five heaviest SVM weights per class:
 Naive Bayes, largest log-ratio P(w | hockey) / P(w | space): hockey, season, nhl, pts, flyers, pittsburgh`,
       caption: "Multinomial Naive Bayes models each class as a bag of word probabilities with Laplace smoothing and multiplies them; it is the fastest baseline and the one that works with almost no data. Complement NB corrects its bias toward classes with more words and wins here. The linear SVM on TF-IDF is the workhorse: 88 % in half a second with weights that name the classes. The vectoriser's options move the score by a point or two either way; 262,144 hash buckets cost a point, 4,096 cost six. Fine-tuned transformers are reported to add a few points on tasks of this kind at orders of magnitude more compute (not run here), and are the right next step only when the points matter." },
 
-    { t: "code", lang: "python", title: "Tuning without leaking (executed)",
+    { t: "code", lang: "text", title: "Tuning without leaking (executed)",
       code: `# the vectoriser is a fitted transformer: its vocabulary and idf come from the training data. Fit it inside the pipeline, inside each fold.
 TfidfVectorizer().fit(train + test) then LinearSVC on train:  test accuracy 0.8840  -- identical to the pipeline here; on a small corpus the idf leak is not
 GridSearchCV(make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()),
@@ -127,7 +127,7 @@ GridSearchCV(make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()),
 
     { t: "p", text: "Ranking documents against a query is the other classical text problem. Cosine similarity on TF-IDF vectors treats the query as a tiny document and ranks by angle. BM25 is the retrieval community's refinement: score = Σ over query terms of idf(t) × tf(t, d)(k₁ + 1) / (tf(t, d) + k₁(1 − b + b·|d|/avgdl)). The k₁ term saturates term frequency — the tenth occurrence adds far less than the first, and the contribution can never exceed (k₁ + 1)·idf — and b controls how much a long document is penalised for being long." },
 
-    { t: "code", lang: "python", title: "Two queries against the 2,242 training documents (executed; own BM25, k₁ 1.5, b 0.75)",
+    { t: "code", lang: "text", title: "Two queries against the 2,242 training documents (executed; own BM25, k₁ 1.5, b 0.75)",
       code: `query 'space shuttle launch':   cosine top 5: space × 5;   BM25 top 5: space × 5;   the two top-10 lists share 4 documents
 query 'goalie save playoff':    cosine top 5: graphics, hockey, hockey, hockey, space;   BM25 top 5: hockey × 4, graphics;   share 6
 
@@ -144,7 +144,7 @@ length normalisation and saturation: the term 'launch'
 
     { t: "p", text: "Latent Dirichlet allocation is a generative model: each document is a mixture of K topics, each topic a distribution over words, and each word in a document is drawn by picking a topic from the document's mixture and a word from that topic. Fitting it (variational inference or Gibbs sampling) recovers the topics and each document's mixture from the word counts alone. It runs on counts, not TF-IDF, and it needs stop words removed and rare and ubiquitous terms pruned, or the topics are 'the, and, of'." },
 
-    { t: "code", lang: "python", title: "Four topics on the four newsgroups, no labels used (executed; stop words removed, min_df 5, max_df 0.5, 30 iterations)",
+    { t: "code", lang: "text", title: "Four topics on the four newsgroups, no labels used (executed; stop words removed, min_df 5, max_df 0.5, 30 iterations)",
       code: `topic 0: think, people, don, just, like, know, mr, president
 topic 1: image, edu, graphics, file, software, jpeg, files, data
 topic 2: team, 10, game, 25, hockey, 55, 11, play
@@ -165,7 +165,7 @@ dominant topic by true class:      topic 0   topic 1   topic 2   topic 3
           note: "**Hours of GPU time and a model nobody can inspect, before anyone knows whether the labels are consistent or whether 88 % is already enough.**" },
         { level: "ok", label: "TF-IDF + linear SVM in a pipeline, cross-validated", code: `make_pipeline(TfidfVectorizer(sublinear_tf=True), LinearSVC()); cross_val_score(...)      # 0.884 in 0.5 s`,
           note: "The right baseline, honest about leakage, with readable weights that reveal label problems ('clinton' as the politics signal says the classifier is learning the era). Missing the retrieval side and the check of what the model has actually learned." },
-        { level: "best", label: "The linear baseline as the yardstick, error analysis on its weights and mistakes, BM25 for the search box, and a transformer only where the measured gap justifies it", code: `baseline = TfidfVectorizer + LinearSVC (0.884); ComplementNB as the tiny-data fallback (0.891 here)
+        { level: "best", label: "The linear baseline as the yardstick, error analysis on its weights and mistakes, BM25 for the search box, and a transformer only where the measured gap justifies it", lang: "text", code: `baseline = TfidfVectorizer + LinearSVC (0.884); ComplementNB as the tiny-data fallback (0.891 here)
 inspect coef_ per class; read the misclassified tickets; fix the labels first
 BM25 index for 'similar tickets'; a transformer trial only if the gap on the business metric pays for the cost`,
           note: "Every later model is judged against a number that took half a second, and the weights are the first diagnostic of the data." }

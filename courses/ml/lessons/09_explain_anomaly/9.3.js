@@ -188,7 +188,7 @@ ATTENTION WEIGHTS                what a transformer 'looks at' when forming a re
       rungs: [
         { level: "bad", label: "Report AUC; show a Grad-CAM for the demo", code: `cam = GradCAM(model, target_layers=[model.layer4[-1]])(input_tensor)      # one pretty heatmap`,
           note: "**The AUC would have passed the corner-patch model too.** One heatmap on one image proves nothing about what the model relies on across the dataset." },
-        { level: "ok", label: "Grad-CAM and IG on a sample; slice evaluation by scanner, site and marking", code: `attributions for 200 images per class; mean attribution mass outside the anatomical region; AUC per site and per scanner (2.6)`,
+        { level: "ok", label: "Grad-CAM and IG on a sample; slice evaluation by scanner, site and marking", lang: "text", code: `attributions for 200 images per class; mean attribution mass outside the anatomical region; AUC per site and per scanner (2.6)`,
           note: "**A hypothesis generator and a per-slice test.** If the mass sits on a corner or a caption, or one site is suspiciously easy, the shortcut is found before deployment." },
         { level: "best", label: "Behavioural tests in CI, decorrelated training data, explanation monitoring in production", code: `# CI: remove-the-cue and add-the-cue tests for every known artefact (site tags, markers, borders); attribution-mass-outside-region threshold
 # data: augmentation and collection that break the artefact-label correlation (0.9 % vs 42.4 %)

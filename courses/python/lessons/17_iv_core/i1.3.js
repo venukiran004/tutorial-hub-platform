@@ -1591,7 +1591,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "variable := expression",
      "numbered": false
     },

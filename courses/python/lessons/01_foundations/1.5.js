@@ -487,7 +487,7 @@ if __name__ == "__main__":
     invoice = build_invoice(
         [
             ("Widget", "19.99", 3),
-            ("Gadget", "5.01", 1),
+            ("Gadget", "5.03", 1),
             ("Sticker", "0.10", 0),     # zero quantity is valid
         ],
         discount=None,

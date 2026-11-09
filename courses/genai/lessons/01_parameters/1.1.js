@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Explain why greedy decoding is not the same as the model's best answer"
   ],
 
-  prerequisites: [],
+  prerequisites: ["nlp:6.7"],
 
   blocks: [
 

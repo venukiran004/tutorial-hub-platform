@@ -193,56 +193,31 @@ stateless -> session id : None`,
     questions: [
       {
         stem: "Two clients connect concurrently to one streamable-HTTP server. The tool reports pid 7116 for both, with different session ids. What follows for the server's design?",
-        options: [
-          "Nothing — session ids provide full isolation",
-          "They share one process and therefore one memory space, so anything mutable in the lifespan is shared by every caller — a single connection or cache that was correct under stdio is now a concurrency bug",
-          "The server must be restarted between clients",
-          "Each session gets its own event loop"
-        ],
+        options: ["Nothing, because session ids provide full isolation between callers", "One process serves both, so mutable lifespan state is now shared", "The server must be restarted between clients to stay correct", "Each session gets its own event loop inside the shared process"],
         answer: 1,
         why: "Under stdio the same code was correct, because each connection was its own process — measured as pids 10152 and 22540. Changing one argument to mcp.run changed the concurrency model, and the resulting bugs are load-dependent and absent from any test that connects one client."
       },
       {
         stem: "What does `stateless_http=True` change?",
-        options: [
-          "It disables authentication",
-          "No session id is issued and the server keeps nothing between requests, so any replica can serve any request — at the cost of all server-initiated messages",
-          "It switches the transport to SSE",
-          "It makes tools synchronous"
-        ],
+        options: ["It disables authentication on the HTTP endpoint", "No session state, so any replica serves any request", "It switches the transport from streamable HTTP to SSE", "It makes every tool run synchronously per request"],
         answer: 1,
         why: "The measured difference is one field: a session id in stateful mode, None in stateless. What it rules out is progress notifications, tools_changed and resource subscriptions, all of which need the server to remember the connection."
       },
       {
         stem: "Why is stdio's access control described as free and strongest?",
-        options: [
-          "Because stdio is encrypted",
-          "The server is a child process with no port — nothing else on the machine is talking to it, and there is nothing to authenticate because there is one caller",
-          "Because the SDK adds a token automatically",
-          "Because stdio servers run as root"
-        ],
+        options: ["Because the stdio pipe between processes is encrypted", "The server is a child process with no port and one caller", "Because the SDK adds a bearer token to stdio automatically", "Because stdio servers run with root privileges by default"],
         answer: 1,
         why: "It is a property of the deployment rather than a feature. The flip side is the trust it demands: configuring a stdio server tells your host to execute a command, so it is the same decision as installing a dependency."
       },
       {
         stem: "A team needs one MCP server serving several agents, with no long-running progress reporting. What is the right configuration?",
-        options: [
-          "stdio, launched per agent",
-          "Streamable HTTP in stateless mode, ideally with json_response — any replica serves any request, with no sticky routing to get wrong",
-          "SSE, for compatibility",
-          "Streamable HTTP in stateful mode, for safety"
-        ],
+        options: ["stdio, launched separately by each agent", "Streamable HTTP in stateless mode", "SSE, for compatibility with older clients", "Streamable HTTP in stateful mode, for safety"],
         answer: 1,
         why: "Most servers are request-response and need no session at all, and stateless makes the deployment behave like every other service. Stateful is the right answer only when you genuinely need server-initiated messages, and it brings sticky routing or shared session storage with it."
       },
       {
         stem: "What does the default `host` value tell you?",
-        options: [
-          "That the server is production-ready",
-          "`127.0.0.1` means a server started with no arguments is reachable only from the same machine — changing it to 0.0.0.0 exposes every tool to anyone who can route to the port, with no authentication",
-          "That only SSE is enabled",
-          "That the port is randomised"
-        ],
+        options: ["That the server is configured for production traffic", "127.0.0.1: only the same machine can reach it by default", "That only the SSE transport is enabled by default", "That the port is randomised on every start-up"],
         answer: 1,
         why: "It is the right default and the first thing people change without weighing it. Since the protocol has no authentication of its own, that one change moves the server from unreachable to open, acting with whatever credentials the process holds."
       }

@@ -38,7 +38,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The common form gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
+    { t: "p", text: "Published guidance gives a decision matrix and a set of rules of thumb, and the short version is sound: *RAG for what the model knows, fine-tuning for how it behaves, prompting first*. 4.2 measured both halves of that \u2014 a style transferred from twelve examples, and a fact came back with its relation reversed under rephrasing." },
 
     { t: "p", text: "What is worth adding from the retrieval side is that the decision is usually made by two properties of the thing you are trying to change, not by a comparison of capabilities:" },
 

@@ -156,7 +156,7 @@ on 200,000 draws from a lognormal(4, 0.5), the minimisers of the three losses ar
 
 
 
-    { t: "code", lang: "python", title: "ETS(M,Ad,M) with 300 simulated paths per origin, 28 days ahead, 10 origins (executed, store A)",
+    { t: "code", lang: "text", title: "ETS(M,Ad,M) with 300 simulated paths per origin, 28 days ahead, 10 origins (executed, store A)",
       code: `CRPS(F, y) = E|X − y| − ½ E|X − X'|      for samples X, X' from the forecast distribution F
 
 CRPS                                     15.38

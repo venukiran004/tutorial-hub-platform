@@ -17,7 +17,7 @@ EC.receiveLesson({
     "Place the architecture in the timeline of what branched from it"
   ],
 
-  prerequisites: ["3.6", "3.3"],
+  prerequisites: ["3.6", "3.3", "dl:3.7"],
 
   blocks: [
 

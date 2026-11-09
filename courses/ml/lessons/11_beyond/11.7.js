@@ -143,7 +143,7 @@ overall:  promo 120/400 = 0.300   no promo 180/400 = 0.450   ->  promo WORSE by 
 segment-weighted effect: +0.050`,
       caption: "The promotion went to 75 % of the new customers, who convert less, and 25 % of the loyal ones, who convert more; the aggregate compares a mostly-new treated group with a mostly-loyal untreated group. Segment is a confounder, the DAG says to adjust for it, and the adjusted effect has the opposite sign from the raw one. The reverse mistake exists too — stratifying on a collider or a mediator manufactures a reversal that is not there — which is why the DAG, not the table, decides what to condition on." },
 
-    { t: "code", lang: "python", title: "A collider: conditioning on a consequence of both (executed)",
+    { t: "code", lang: "text", title: "A collider: conditioning on a consequence of both (executed)",
       code: `skill ~ N(0, 1), luck ~ N(0, 1), independent;   hired = skill + luck > 1
 correlation of skill and luck:  everyone −0.004;  among the hired −0.618
 # the exercise: the more selective the gate, the stronger the artefact -- hire the top 76 %: −0.30;  top 50 %: −0.47;  top 24 %: −0.62;  top 8 %: −0.74`,
@@ -155,7 +155,7 @@ correlation of skill and luck:  everyone −0.004;  among the hired −0.618
 
 
 
-    { t: "code", lang: "python", title: "40,000 customers randomised to a promotion; the effect varies by customer (executed)",
+    { t: "code", lang: "text", title: "40,000 customers randomised to a promotion; the effect varies by customer (executed)",
       code: `# true effect: +4 for customers with low x1 (who spend little regardless), −2 for a sixth of customers, 0 otherwise; average +1.69
 difference of means (randomised):                       +1.700
 
@@ -197,9 +197,9 @@ point-in-time correctness: a training row for a transaction at time t must use f
       rungs: [
         { level: "bad", label: "Train a churn model, offer to everyone above a threshold", code: `offer = churn_model.predict_proba(X)[:, 1] > 0.35`,
           note: "**A prediction is not a decision: the offer goes to customers who would have stayed anyway and to some it annoys into leaving; and nobody asked what the offer costs, whether the decision is fair across groups, or how the loop is closed.**" },
-        { level: "ok", label: "Churn model plus a cost-based threshold, monitored", code: `threshold from the cost of an offer against the value of a retained customer (2.3); monitors from 11.1`,
+        { level: "ok", label: "Churn model plus a cost-based threshold, monitored", lang: "text", code: `threshold from the cost of an offer against the value of a retained customer (2.3); monitors from 11.1`,
           note: "A decision with a cost model. Still assumes the offer works on everyone equally, and still targets by outcome rather than by effect." },
-        { level: "best", label: "A randomised holdout to measure the offer's effect, an uplift model to target it, fairness measured per group, and the loop closed", code: `experiment: randomise the offer on a slice -> true effect (+1.7 average here), effect by segment
+        { level: "best", label: "A randomised holdout to measure the offer's effect, an uplift model to target it, fairness measured per group, and the loop closed", lang: "text", code: `experiment: randomise the offer on a slice -> true effect (+1.7 average here), effect by segment
 uplift model on the experiment -> treat the persuadables (+3.8), never the sleeping dogs (−1.35)
 report approval and outcome rates by protected group; monitor drift, coverage and the effect in the holdout each quarter`,
           note: "The system decides on the basis of what the offer *changes*, keeps a holdout so the effect is re-measured as the world moves, and reports who it helps and who it does not." }

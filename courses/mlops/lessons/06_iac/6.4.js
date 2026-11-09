@@ -221,6 +221,17 @@ def gitops_model(events, period=5):
         ],
         answer: 1,
         why: "Two systems believing they own one field — lesson 6.1's ownership conflict in a different tool. The fix is `ignoreDifferences` on `/spec/replicas`, which is `ignore_changes` by another name, or removing the field from the repository entirely. The API server accepts both, which is why the conflict only appears at runtime."
+      },
+      {
+        stem: "Why does pull-based GitOps improve security over a CI job that runs kubectl apply?",
+        options: [
+          "Pull-based deploys encrypt manifests at rest in the repository",
+          "CI, which runs pull-request code, no longer holds cluster credentials",
+          "ArgoCD validates every manifest against a vulnerability database",
+          "Pull-based syncing prevents anyone from merging to main"
+        ],
+        answer: 1,
+        why: "Under push, a system that executes untrusted pull-request code holds write access to the cluster; under pull, the in-cluster controller fetches and applies, so nothing outside holds that credential. Encryption, scanning and branch protection are separate controls."
       }
     ]
   },

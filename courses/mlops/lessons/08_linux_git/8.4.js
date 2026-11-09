@@ -199,6 +199,17 @@ EC.receiveLesson({
         ],
         answer: 0,
         why: "Committed work is reachable through the reflog, which lesson 8.5 measures recovering. Uncommitted changes in the working tree were never stored as objects, so there is nothing to recover — which is the one genuinely irreversible everyday git operation. A deleted branch is recoverable the same way, because its commits stay in the reflog."
+      },
+      {
+        stem: "Why does rebasing change commit hashes even when every file ends up identical?",
+        options: [
+          "Rebase compresses commits, which changes their encoding",
+          "A commit's hash covers its parent, and the parent changed",
+          "Git adds a random salt to every rewritten commit",
+          "The hash includes the branch name, which rebase updates"
+        ],
+        answer: 1,
+        why: "A commit is content-addressed over its tree, metadata and parent, so a new parent means a new hash; the lesson measured different hashes for the same feature commits. There is no salt, no compression effect, and branch names are not part of the hash."
       }
     ]
   },

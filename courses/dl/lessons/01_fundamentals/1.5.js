@@ -16,7 +16,7 @@ EC.receiveLesson({
     "Pick an optimiser and its defaults for a baseline, for fine-tuning, and for the case where Adam generalises worse than SGD"
   ],
 
-  prerequisites: ["1.4"],
+  prerequisites: ["1.4", "maths:2.3"],
 
   blocks: [
 

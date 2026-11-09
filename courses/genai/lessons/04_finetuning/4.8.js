@@ -140,7 +140,7 @@ for ep in range(epochs):
         { t: "p", text: "Rank the five by validation loss: **5e-4 wins (2.0359)**, then 2e-4 (2.1094), then 1e-4, then 1e-3, then 5e-5. A standard sweep that picks the best validation loss picks 5e-4, and every number it looked at says that was the right call." },
         { t: "p", text: "Now the third column. 5e-4 gives generic perplexity **23.903 against a 5.282 baseline** \u2014 the model has become 4.5\u00d7 worse at ordinary English while becoming marginally better at the task. 2e-4, which lost on validation by 0.07, sits at 8.739." },
         { t: "p", text: "This is the whole argument of the lesson in one table. **A held-out set for the task is necessary and not sufficient**, because both of its numbers improve while the model is being damaged. The failure is invisible to the instrument most teams have." },
-        { t: "p", text: "It also explains why 2e-4 is the conventional default for LoRA rather than something derived per task. It is not the best task fit available; it is the point where the task fit is nearly as good and the collateral damage is still bounded. The common form gives the number without the reason, and the reason is this column." }
+        { t: "p", text: "It also explains why 2e-4 is the conventional default for LoRA rather than something derived per task. It is not the best task fit available; it is the point where the task fit is nearly as good and the collateral damage is still bounded. Published guidance gives the number without the reason, and the reason is this column." }
       ] },
 
     { t: "viz", title: "Learning rate: the two curves point in opposite directions", caption: "Validation loss is best at 5e-4. General ability is already four and a half times worse there.",

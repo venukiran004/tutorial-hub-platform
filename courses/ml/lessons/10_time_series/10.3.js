@@ -142,7 +142,7 @@ seasonal naive + the trend it missed (y_{t−4} + 6):   MAE 0.000`,
 
     { t: "p", text: "A fold boundary is porous whenever a feature is built from a window. If the model uses a 7-day rolling mean, the first test row's feature was computed from the last seven training rows — mild, and honest if the feature is shifted. If the rolling mean is *not* shifted, the target is inside its own feature. And if production receives yesterday's data three days late, then at forecast time `lag_1` does not exist and a model that used it in the backtest will be fed a stale or missing value in use. A **gap** (embargo) of at least the longest feature window plus the data latency between the end of training and the start of test fixes the first; features that respect the latency fix the second." },
 
-    { t: "code", lang: "python", title: "A rolling feature that contains its own target (executed, store A, 8 folds × 28 days)",
+    { t: "code", lang: "text", title: "A rolling feature that contains its own target (executed, store A, 8 folds × 28 days)",
       code: `r7 = sales.rolling(7).mean()             # NOT shifted: r7[t] = (y[t] + y[t−1] + ... + y[t−6]) / 7  -- y[t] is the target
 X  = [lag1 ... lag6, lag7, lag14, lag21, lag28, r7, weekday, t, promo]    # so y[t] = 7·r7 − (lag1 + ... + lag6), exactly
 
@@ -252,7 +252,7 @@ on the store backtest (seasonal naive, 4-week mean, 20 origins × 28 days):
       ["12", "Hierarchy reconciled with test-period proportions", "future proportions leak downward (10.8)", "proportions from train only"]
     ] },
 
-    { t: "code", lang: "python", title: "Leak 10, measured (executed: 24 random boosting configurations on store A, 8 folds of 28 days)",
+    { t: "code", lang: "text", title: "Leak 10, measured (executed: 24 random boosting configurations on store A, 8 folds of 28 days)",
       code: `sel = MAE on folds 1-5 for each config;  rep = MAE on folds 6-8
 best on folds 1-5:  22.40 there, 20.78 on folds 6-8;  the best config on 6-8 would have scored 20.69;  the median config 22.32
 best on folds 6-8:  20.69 there, 24.20 on folds 1-5;  the best on 1-5 was 22.40
@@ -270,7 +270,7 @@ model.fit(train); print("MAPE", mape(test, model.predict(28)))`,
         { level: "ok", label: "Rolling origins, a baseline, MAE and bias", code: `rows = backtest(y, model, origins, h=28); base = backtest(y, snaive4, origins, h=28)
 report(MAE, bias, per_h)                          # model 24.1 vs baseline 26.9`,
           note: "Honest and comparable. Still missing the gap for rolling features, the spread across origins, and a clean block for the final number if the folds were used to tune." },
-        { level: "best", label: "Gap, refit inside folds, MASE and WAPE by horizon and segment, tuning folds separate from reporting folds", code: `tscv = TimeSeriesSplit(n_splits=20, test_size=28, gap=28)      # gap >= longest window + latency
+        { level: "best", label: "Gap, refit inside folds, MASE and WAPE by horizon and segment, tuning folds separate from reporting folds", lang: "text", code: `tscv = TimeSeriesSplit(n_splits=20, test_size=28, gap=28)      # gap >= longest window + latency
 tune on folds 1..k; report on k+1..20 and on the untouched final block
 report(MASE, WAPE, bias, by=["h", "weekday", "store"], spread="sd across origins")`,
           note: "Each number answers a question a planner asks, each is comparable across stores and against the baseline, and none was computed with anything the forecaster would not have had." }

@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Bootstrap an interval for a metric that is not a proportion"
   ],
 
-  prerequisites: ["9.15", "8.5"],
+  prerequisites: ["9.15", "8.5", "maths:5.11"],
 
   blocks: [
 
@@ -124,9 +124,9 @@ EC.receiveLesson({
           note: "And it invites the comparison the sample cannot support — somebody will put it next to 0.82 and conclude." },
         { level: "ok", label: "“85% on 200 examples.”", why: "The sample size is now visible, so a reader who knows the arithmetic can derive the margin. Most readers will not, so the burden is in the wrong place.", code: `accuracy: 0.85  (n=200)`,
           note: "Better, but the interval is still the author’s homework pushed onto the reader." },
-        { level: "ok", label: "“85% [80%, 90%] on 200 examples.”", why: "The interval is stated, so the comparison with 0.82 is visibly undecided. This is the minimum honest report for a proportion and it costs two lines of code.", code: `accuracy: 0.85  95% CI [0.800, 0.900]  (n=200)`,
+        { level: "ok", label: "“85% [80%, 90%] on 200 examples.”", why: "The interval is stated, so the comparison with 0.82 is visibly undecided. This is the minimum honest report for a proportion and it costs two lines of code.", lang: "text", code: `accuracy: 0.85  95% CI [0.800, 0.900]  (n=200)`,
           note: "Note it is slightly wider than the interval at p = 0.82, since p(1−p) peaks at 0.5 and both are below it." },
-        { level: "best", label: "“Paired against baseline: +3 points, McNemar p = 0.05, worst slice −4.”", why: "A paired test on the same examples, so example difficulty is controlled rather than estimated; a p-value for the claim being made; and the worst slice, because an interval bounds the mean and says nothing about who got worse.", code: `paired vs baseline-v3 (n=200, same examples)
+        { level: "best", label: "“Paired against baseline: +3 points, McNemar p = 0.05, worst slice −4.”", why: "A paired test on the same examples, so example difficulty is controlled rather than estimated; a p-value for the claim being made; and the worst slice, because an interval bounds the mean and says nothing about who got worse.", lang: "text", code: `paired vs baseline-v3 (n=200, same examples)
   delta          +3.0 points
   McNemar        A-only 11, B-only 23, p=0.0514
   worst slice    legal-citations  -4.0 points

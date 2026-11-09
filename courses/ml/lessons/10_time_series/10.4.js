@@ -123,7 +123,7 @@ statsmodels ExponentialSmoothing, same initialisation and parameters (optimized=
 statsmodels with everything estimated:  α 0.208  β 0.001  γ 0.754  ->  46.5  52.0  48.5  60.0   -- exact: the series is noise-free`,
       caption: "The recursion learns: the slope settles near 1.5 and the indices migrate toward the truth, and the exercise shows that a larger γ gets them there faster on a noise-free series. statsmodels' 'same initialisation' forecasts differ from the hand table in the tenths because its implementation applies the initial seasonal indices with a different alignment; with everything estimated it finds the generating process because there is no noise to fit. On real data the estimated β is usually near zero — the slope is set by the initialisation and barely updated." },
 
-    { t: "code", lang: "python", title: "On the store: five smoothing forms backtested (executed, store A, h = 28, 10 origins, refit at each)",
+    { t: "code", lang: "text", title: "On the store: five smoothing forms backtested (executed, store A, h = 28, 10 origins, refit at each)",
       code: `#  form                                  MAE     sd across origins
 #  seasonal naive, 4-week mean           23.10        3.24        <- the baseline from 10.3 on these origins
 #  Holt–Winters additive (A,A,A)         20.16        3.56

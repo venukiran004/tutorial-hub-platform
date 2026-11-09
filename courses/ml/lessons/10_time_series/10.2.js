@@ -103,7 +103,7 @@ EC.receiveLesson({
 
     { t: "p", text: "ADF and KPSS are run together because their nulls are opposite: ADF's null is a unit root and rejecting it says *stationary*; KPSS's null is stationarity and rejecting it says *not*. ADF has low power on short or persistent series — 'ADF did not reject' is weak evidence — so KPSS supplies the other direction. The four cells: both say stationary, proceed; both say not, difference and test again; ADF rejects but KPSS also rejects, suspect a trend-stationary series and try the trend specification or detrend; ADF fails and KPSS passes, a persistent but probably stationary series, where more data or a seasonal transformation usually settles it. The exercise shows the two cases both tests get wrong — a level shift reads as a unit root to both, and an AR(1) with φ = 0.95 and 100 points is 'stationary' by the narrowest margin — because no test can distinguish a structural break from a random walk, or φ = 0.95 from φ = 1, without more data than a short series has." },
 
-    { t: "code", lang: "python", title: "The store: which differences, in which order (executed, store A, log sales)",
+    { t: "code", lang: "text", title: "The store: which differences, in which order (executed, store A, log sales)",
       code: `#  series             ADF t     p        KPSS(c)   p       sd       lag-1 ACF   lag-7 ACF
 #  log sales          −1.94    0.314     2.213    0.010   0.2166    +0.468      +0.761      non-stationary
 #  ∇  log sales      −11.24    0.000     0.050    0.100   0.2233    −0.237      +0.595      'stationary' -- and the season is untouched
@@ -197,7 +197,7 @@ statsmodels pacf(method="ywm"): [0.4737, −0.6964, −0.3176, −0.0625]`,
       ["lag 1 near −0.5", "alternating decay", "over-differenced", "reduce d"]
     ] },
 
-    { t: "code", lang: "python", title: "The two textbook shapes, theory against 20,000 simulated points (executed)",
+    { t: "code", lang: "text", title: "The two textbook shapes, theory against 20,000 simulated points (executed)",
       code: `AR(1), φ = 0.7      theory  ACF φ^k: 0.700  0.490  0.343  0.240       PACF: 0.700  0  0  0
                     sample  ACF:     0.690  0.479  0.337  0.235       PACF: 0.690  0.003  0.010  −0.003
 
@@ -207,7 +207,7 @@ MA(1), θ = 0.6      theory  ACF ρ₁ = θ/(1+θ²) = 0.441, then 0          PA
 the AR(1) partial at lag 2, by hand:  φ22 = (r2 − r1²)/(1 − r1²) = (0.49 − 0.49)/(1 − 0.49) = 0 -- the indirect route is the whole lag-2 correlation`,
       caption: "The shapes are mirror images: an autoregression's ACF decays because each lag's effect echoes through the lags between, while its PACF dies after p; a moving average's ACF dies after q because a shock is gone after q steps, while its PACF decays because regressing out intermediate lags cannot remove a shock's echo." },
 
-    { t: "code", lang: "python", title: "The store's plots, read off the table (executed, ∇₇ log sales, 904 points, band ±0.065)",
+    { t: "code", lang: "text", title: "The store's plots, read off the table (executed, ∇₇ log sales, 904 points, band ±0.065)",
       code: `ACF   lags 1-3: 0.057  0.012  0.015      lag 7: −0.461     14: −0.020    21: −0.003    28: 0.050
 PACF  lags 1-3: 0.057  0.009  0.014      lag 7: −0.468     14: −0.314    21: −0.224    28: −0.116
 

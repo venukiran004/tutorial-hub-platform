@@ -192,7 +192,7 @@ LogisticRegression(penalty=None).fit(Xs, y)      # lbfgs: NLL 314.265
       { t: "p", text: "With `monthly_fee` in the model alongside the plan dummies, `plan_plus` came out at **+0.655** (odds ratio 1.92 — plus customers churn *more* than basic?) and `plan_pro` at +0.547. Without fee, plus is −0.01 and pro is −1.04, close to the generator. The fee is 7.99, 12.99 or 19.99 by plan plus half a pound of noise, so fee and the plan dummies are almost the same information: **VIF 77 for fee, 84 for plan_pro**. The pair's *joint* effect is estimated fine; its split between them is arbitrary, exactly as in 4.1's collinear example, and a logistic coefficient is as vulnerable as a linear one. Check VIF before you read an odds ratio, and do not put a variable and its near-function in the model together." }
     ]},
 
-    { t: "code", lang: "python", title: "Is the logit actually linear in tenure? Binned empirical log-odds (executed)",
+    { t: "code", lang: "text", title: "Is the logit actually linear in tenure? Binned empirical log-odds (executed)",
       code: `d.groupby(pd.qcut(d.tenure_months, 8)).churned.mean()  ->  logit = ln(mean / (1 - mean))
 # tenure bin        churn rate   n     empirical logit
 # (1, 8.75]          0.306      108       -0.82

@@ -190,56 +190,31 @@ print("  rendered:", repr(pr.messages[0].content.text))`,
     questions: [
       {
         stem: "A server exposes its current exchange-rate table as a tool. What does that cost compared with a resource?",
-        options: [
-          "Nothing — the data is identical either way",
-          "Two model turns: a declaration the model must consider, a call it must decide to emit, and a second invocation with the result — where a resource is one host-initiated read with no model involvement",
-          "Extra bandwidth only",
-          "It is cheaper, because tools are cached"
-        ],
+        options: ["Nothing, since the data the model receives is identical either way", "Two model turns, where a resource is one host-initiated read", "Extra bandwidth only, because tool results are wrapped in JSON", "It is cheaper, because hosts cache tool results between turns"],
         answer: 1,
         why: "The model turn is the cost that matters, not the bytes. The rule it yields is the one to carry: if the answer does not depend on what the model is thinking, it is not a tool."
       },
       {
         stem: "A client calls `resources/list` and does not see `vat://{country}`, which the server definitely registered. Why?",
-        options: [
-          "The server failed to advertise the resources capability",
-          "It is a template, not a concrete resource — templates are returned by `list_resource_templates`, because a template cannot be read until a parameter is supplied",
-          "Templates are only visible after a read",
-          "The URI scheme is invalid"
-        ],
+        options: ["The server forgot to advertise the resources capability", "It is a template, listed by `resources/templates/list` instead", "Templates only become visible after a first successful read", "The `vat://` scheme is invalid, so the SDK drops the entry"],
         answer: 1,
         why: "Templates exist so a server can describe the shape of an address without enumerating ten thousand instances. The practical consequence is that a client which only lists resources is blind to them, which is worth checking before relying on host discovery."
       },
       {
         stem: "A `resources/read` handler increments a usage counter. What goes wrong?",
-        options: [
-          "Nothing, as long as the counter is thread-safe",
-          "A host may read resources speculatively, more than once, or in parallel — so the counter fires on connections where nobody asked for anything, and the protocol never promised otherwise",
-          "The read will be rejected by the client",
-          "Counters are not allowed in MCP servers"
-        ],
+        options: ["Nothing, provided the counter increment is made thread-safe", "Hosts may read speculatively or repeatedly, so it over-counts", "The client rejects any read handler that has a side effect", "The SDK forbids mutable state inside a resource read handler"],
         answer: 1,
         why: "Two facts combine badly: the protocol does not stop a read doing work, and it does not promise how often a host will call it. A read answers what the value is; anything answering do this belongs in a tool."
       },
       {
         stem: "You need the model to follow a convention whenever your server's tools are used. Where does it go?",
-        options: [
-          "A prompt, since prompts steer the model",
-          "The server's `instructions`, which describes the server as a whole — and if the convention must actually hold, in the tool's own code, because none of the text-based options is enforceable",
-          "A resource the host will read",
-          "The tool names"
-        ],
+        options: ["In a prompt, because prompts are how a server steers the model", "In `instructions`, and in the tool's code if it must truly hold", "In a resource, which the host reads into context every turn", "In the tool names, which the model treats as binding rules"],
         answer: 1,
         why: "Prompts are user-invoked and nothing sends them automatically, so they cannot carry a convention. Instructions are the right home for a cross-tool hint, and the honest framing is that a hint is a request while code is a control."
       },
       {
         stem: "Why do servers drift towards exposing everything as tools?",
-        options: [
-          "Tools are faster",
-          "Tool support is universal across hosts while resource and prompt support is uneven, so a tool is the only primitive guaranteed to be used",
-          "Resources were added to the protocol later",
-          "The SDK makes resources harder to write"
-        ],
+        options: ["Tool calls run faster than resource reads in every SDK", "Tools are supported by every host; resources and prompts are not", "Resources were added to the protocol after most hosts shipped", "The SDK makes resources much harder to write than tools"],
         answer: 1,
         why: "It is a rational response to an uneven ecosystem rather than laziness. The pragmatic middle is to model correctly and duplicate the one or two important read-only items as cheap tools, accepting that each extra tool is a declaration in every request."
       }

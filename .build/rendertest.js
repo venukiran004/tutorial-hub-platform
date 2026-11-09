@@ -64,6 +64,9 @@ const COURSE = process.env.TH_COURSE || "python";
 load(`courses/${COURSE}/curriculum.js`);
 
 const EC = sandbox.EC;
+// The cross-course index, for prerequisites that point into another course.
+const SEARCH = (() => { const s = { EC: {} }; vm.createContext(s);
+  vm.runInContext(fs.readFileSync(path.join(root, "assets/js/search-index.js"), "utf8"), s); return s.EC.searchIndex; })();
 const C = EC.course;
 
 /* ------------------------------------------------------------- curriculum */
@@ -173,8 +176,17 @@ for (const id of published) {
   // Earlier means earlier on the reader's path: a prerequisite that lies ahead
   // of the lesson, or is the lesson, cannot be taken first.
   const position = lid => C.allLessons.indexOf(C.lessonById[lid]);
-  p("prereqs come first", (L.prerequisites || []).every(x => position(x) < position(id)),
-    (L.prerequisites || []).filter(x => position(x) >= position(id)).join(", "));
+  // "nlp:4.3" names a lesson in another course. Order across courses is the
+  // learning path's business, so only same-course prerequisites are ordered.
+  const isCross = x => /^[a-z]+:/.test(x);
+  const local = (L.prerequisites || []).filter(x => !isCross(x));
+  p("prereqs come first", local.every(x => position(x) < position(id)),
+    local.filter(x => position(x) >= position(id)).join(", "));
+  const crossBad = (L.prerequisites || []).filter(isCross).filter(x => {
+    const [c, lid] = x.split(/:(.+)/);
+    return c === COURSE || !SEARCH.lessons.some(r => r[0] === c && r[1] === lid && r[6]);
+  });
+  p("cross-course prereqs name published lessons", crossBad.length === 0, crossBad.join(", "));
 
   // The renderer ignores keys it does not know, so content under the wrong
   // name passes every other check and reaches the reader as an empty panel.
@@ -194,8 +206,8 @@ for (const id of published) {
   p("id matches filename", L.id === id, `declares ${L.id}`);
   p("lede", !!L.lede && L.lede.length > 80);
   p("objectives >= 4", (L.objectives || []).length >= 4);
-  p("prereqs resolve", (L.prerequisites || []).every(x => !!C.lessonById[x]),
-    (L.prerequisites || []).filter(x => !C.lessonById[x]).join(", "));
+  p("prereqs resolve", local.every(x => !!C.lessonById[x]),
+    local.filter(x => !C.lessonById[x]).join(", "));
 
   // A problem set is judged on its problems, not on the essay furniture a
   // language lesson carries. Gating it on takeaways and a quiz would only

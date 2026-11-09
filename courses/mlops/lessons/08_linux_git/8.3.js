@@ -231,6 +231,17 @@ serve: ## run the service locally with reload
         ],
         answer: 1,
         why: "This is the detail that makes `-L` useful rather than merely a port shuffle. The corollary is that writing `localhost` as the destination means the *remote's* localhost, which is what the notebook-forwarding case relies on. `-R` opens the port on the far side, which is the wrong direction here."
+      },
+      {
+        stem: "curl reports 'connection refused' rather than a timeout. What does that tell you?",
+        options: [
+          "A firewall is silently dropping the packets",
+          "The host is up but nothing listens on that port",
+          "The server is overloaded and slow to answer",
+          "DNS resolution failed for the hostname"
+        ],
+        answer: 1,
+        why: "Refused is an active reset from a reachable host with no listener. A firewall drop produces a timeout, overload produces slow responses, and a DNS failure is reported as an inability to resolve the host."
       }
     ]
   },

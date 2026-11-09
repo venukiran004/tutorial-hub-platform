@@ -135,7 +135,7 @@ pm.auto_arima(log_sales, seasonal=True, m=7, d=None, D=None, max_p=3, max_q=3, m
 
     { t: "p", text: "AIC = −2 log L + 2k, AICc adds a small-sample correction 2k(k+1)/(n−k−1) and is the right default for time series, and BIC = −2 log L + k log n penalises harder and picks smaller models — prefer it when the coefficients must be interpretable, AICc when the forecast must be accurate. Lower is better, k counts every parameter including the variance, and the one rule that matters: never compare AIC across different d or D, because differencing changes the data and the likelihoods are of different series. Fix d and D first, by test; then search p, q, P, Q. auto_arima's stepwise search (Hyndman and Khandakar) does exactly that in a fraction of the exhaustive cost, and on this series found a model that backtests identically to the airline model at eight times the fitting cost." },
 
-    { t: "code", lang: "python", title: "Residual diagnostics: the step people skip (executed, the (0,0,0)(0,1,1)7 model)",
+    { t: "code", lang: "text", title: "Residual diagnostics: the step people skip (executed, the (0,0,0)(0,1,1)7 model)",
       code: `resid.mean()  +0.0117      resid.std()  0.1196
 the five largest |residuals|:  2024-11-29  0.703  Black Friday (also a promo day)
                                2023-11-24  0.455  Black Friday

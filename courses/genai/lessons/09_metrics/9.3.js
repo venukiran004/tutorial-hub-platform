@@ -32,7 +32,7 @@ EC.receiveLesson({
     { t: "math", tex: "\\text{BLEU} = \\text{BP}\\cdot\\exp\\!\\left(\\sum_{n=1}^{N} w_n \\log p_n\\right), \\qquad \\text{BP} = \\begin{cases} 1 & c > r \\\\ e^{(1 - r/c)} & c \\le r\\end{cases}" },
 
     { t: "dl", items: [
-      { k: "p_n", v: "**Clipped** n-gram precision \u2014 matches counted no more times than the usual treatment contains them." },
+      { k: "p_n", v: "**Clipped** n-gram precision \u2014 matches counted no more times than the reference contains them." },
       { k: "w_n", v: "Weights, usually 1/4 each for n = 1 to 4, which makes the exp term the geometric mean of the four precisions." },
       { k: "BP", v: "Brevity penalty, with c the candidate length and r the reference length. It punishes **short** output only." }
     ] },
@@ -314,7 +314,7 @@ print("paraphrase with smoothing: %.6f"
         q: "Walk me through computing BLEU.",
         strong: "A strong answer gives all four steps with numbers.",
         answer: [
-          { t: "p", text: "Four steps. Clipped n-gram precision at orders one to four, where clipped means each match is counted no more times than the usual treatment contains it. A brevity penalty if the candidate is shorter. The geometric mean of the four precisions. Then multiply the two." },
+          { t: "p", text: "Four steps. Clipped n-gram precision at orders one to four, where clipped means each match is counted no more times than the reference contains it. A brevity penalty if the candidate is shorter. The geometric mean of the four precisions. Then multiply the two." },
           { t: "p", text: "On \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019: all five candidate unigrams appear, so p\u2081 is 1.0. Three of four bigrams match \u2014 `on-mat` is not in the reference, which has `on-the` and `the-mat` \u2014 so 0.75. Then 2/3 and 1/2." },
           { t: "p", text: "The brevity penalty is exp of 1 minus r over c, which with r = 6 and c = 5 is exp of \u22120.2, or 0.8187. The geometric mean of the precisions is 0.7071, and BLEU-4 is 0.5789." },
           { t: "p", text: "The thing I would point out is how one dropped token cascades. It costs nothing at unigram level and progressively more at each higher order, which is deliberate \u2014 the higher orders are measuring local word order, so a bag of correct words and a fluent sentence score very differently." }

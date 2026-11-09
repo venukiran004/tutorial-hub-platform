@@ -109,7 +109,7 @@ GET  /health                                ->  {"status": "ok", "model_version"
 
 
 
-    { t: "code", lang: "python", title: "A shifted batch (fees +10 %, logins −20 %) against the training reference (executed)",
+    { t: "code", lang: "text", title: "A shifted batch (fees +10 %, logins −20 %) against the training reference (executed)",
       code: `#  feature          KS statistic   KS p        PSI       (Bonferroni α = 0.05 / 5 = 0.01;  PSI alarm 0.2)
 #  tenure_months        0.051      0.68        0.051
 #  monthly_fee          0.369      4.5e−23     1.559      <- shifted

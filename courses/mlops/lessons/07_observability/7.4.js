@@ -213,6 +213,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "Input drift fired for eleven months in lesson 1.1 while accuracy improved, so it is a ticket. Accuracy is 45 days behind and gates retraining. The prediction distribution is the fastest harm-correlated signal available — while being blind to concept drift, which the runbook must say. GPU utilisation describes the machine, and a wrong model uses it at the same rate as a right one."
+      },
+      {
+        stem: "An error-rate alert fires at a static 1%. Why does it fail to protect a 99.9% monthly SLO?",
+        options: [
+          "It fires too often, because 1% is below the SLO target",
+          "A 0.2% rate burns the whole budget without ever crossing it",
+          "Static thresholds cannot be evaluated by Prometheus",
+          "It fires only after the budget is fully spent"
+        ],
+        answer: 1,
+        why: "A slow burn of 0.2% stays under the threshold yet exhausts the month's budget in 360 hours, while 2% and 35% trip the same rule identically. Burn-rate alerts fix both. The threshold is above the budgeted rate, Prometheus evaluates it fine, and it can fire before exhaustion."
       }
     ]
   },

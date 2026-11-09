@@ -320,6 +320,28 @@ def label(X, t, rng):                   # t=0 launch rule, t=1 downturn rule
         ],
         answer: 1,
         why: "Concept drift damages a model in proportion to how much it reorders. A monotone sharpening leaves ranking intact, so a ranking metric barely moves; the calibration and the decision threshold are what need attention. The knee and the sign flip in World B reorder, which is why they cost 21 points of AUC. New labels are collected under the new rule, so AUC can be measured on them as usual."
+      },
+      {
+        stem: "In lesson 1.1's two simulated worlds, which monitoring signal tracked the harm that actually happened?",
+        options: [
+          "Input drift, because its KS test fired from month two",
+          "Labelled accuracy, once ground truth arrived for scoring",
+          "Approval rate, because it moved with the collapse",
+          "Prediction drift, because the score shape was unchanged"
+        ],
+        answer: 1,
+        why: "Only labelled accuracy saw the 20-point collapse in World B. Input KS fired in the harmless world and never in the damaging one, the approval rate stayed at 0.450 through the collapse, and an unchanged score distribution is exactly why prediction monitoring was blind."
+      },
+      {
+        stem: "In lesson 1.1's two simulated worlds, which monitoring signal tracked the harm that actually happened?",
+        options: [
+          "Input drift, because its KS test fired from month two",
+          "Labelled accuracy, once ground truth arrived for scoring",
+          "Approval rate, because it moved with the collapse",
+          "Prediction drift, because the score shape was unchanged"
+        ],
+        answer: 1,
+        why: "Only labelled accuracy saw the 20-point collapse in World B. Input KS fired in the harmless world and never in the damaging one, the approval rate stayed at 0.450 through the collapse, and an unchanged score distribution is exactly why prediction monitoring was blind."
       }
     ]
   },

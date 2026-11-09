@@ -223,8 +223,9 @@ np.gradient(np.gradient(y, t), t)   # ~2 everywhere
 # INTEGRATION -- the trapezoid rule:
 np.trapezoid(y, t)            # 335.0 (exact: 1000/3 = 333.33)
 #
-# Named np.trapz in older NumPy; both exist in the transition period.
-np.cumulative_trapezoid = None      # not in NumPy -- scipy has it
+# Named np.trapz before NumPy 2.0; np.trapz is gone in current NumPy.
+# The running integral is not in NumPy -- use
+# scipy.integrate.cumulative_trapezoid.
 #
 # A RUNNING integral in pure NumPy:
 def cumtrapz(y, x):

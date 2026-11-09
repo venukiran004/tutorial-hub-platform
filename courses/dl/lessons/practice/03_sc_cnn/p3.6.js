@@ -422,7 +422,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Vision distillation\nteacher = ResNet152(weights=\"DEFAULT\")  # Large, accurate\nstudent = ResNet18()  # Small, efficient\n\n# Distillation loss\nT = 4  # temperature\nteacher_logits = teacher(images) / T\nstudent_logits = student(images) / T\n\nloss = α * CE(student_logits * T, labels) + \\\n       (1-α) * KL(softmax(teacher_logits), softmax(student_logits)) * T²"
     },
     {

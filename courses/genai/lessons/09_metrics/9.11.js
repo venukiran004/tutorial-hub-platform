@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.11",
 
-  lede: "Four biases, and the common form gives position bias a worked example that is the single best argument in this module for running both orderings. A judge scored model A as winning **62%** of the time when A was shown first and **45%** when B was shown first. The order-averaged truth is **53.5%** \u2014 much closer to a tie \u2014 and the **17-point** gap is not noise, it is the judge preferring position one. Report only the first ordering and you ship model A on a 62% win rate that does not exist.",
+  lede: "Four biases, and published guidance gives position bias a worked example that is the single best argument in this module for running both orderings. A judge scored model A as winning **62%** of the time when A was shown first and **45%** when B was shown first. The order-averaged truth is **53.5%** \u2014 much closer to a tie \u2014 and the **17-point** gap is not noise, it is the judge preferring position one. Report only the first ordering and you ship model A on a 62% win rate that does not exist.",
 
   objectives: [
     "Measure position bias by running both orderings and taking the gap",

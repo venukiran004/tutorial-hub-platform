@@ -267,7 +267,7 @@ threshold-free:
         { t: "p", text: "The implementation detail that shows experience: a **surrogate key** per row version rather than the natural business key, so a fact can reference the exact version that was current, plus `valid_from`, `valid_to` and `is_current` — and a partial index on `is_current` so the common query stays fast." }
       ] },
 
-    { t: "code", lang: "python", title: "identifying and removing duplicates, executed",
+    { t: "code", lang: "sql", title: "identifying and removing duplicates, executed",
       code: `-- find them
 SELECT email, COUNT(*) AS n
 FROM customer

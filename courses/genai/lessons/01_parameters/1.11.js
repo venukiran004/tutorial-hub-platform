@@ -19,7 +19,7 @@ EC.receiveLesson({
     { t: "h2", n: "01", id: "the-formula", text: "Images become tokens, by a formula you can run",
       sub: "85 for the base, 170 for every 512-pixel tile" },
 
-    { t: "p", text: "The common form gives the rule in two lines: `detail=\"low\"` is always 85 tokens, and `detail=\"high\"` is `85 + 170 × tiles`, where a tile is a 512-pixel square. What it leaves out is the resizing that happens before the tiling, and that omission is the interesting part." },
+    { t: "p", text: "The rule fits in two lines: `detail=\"low\"` is always 85 tokens, and `detail=\"high\"` is `85 + 170 × tiles`, where a tile is a 512-pixel square. What it leaves out is the resizing that happens before the tiling, and that omission is the interesting part." },
 
     { t: "code", lang: "python", title: "g18.py — the tiling, implemented", code: `import math
 

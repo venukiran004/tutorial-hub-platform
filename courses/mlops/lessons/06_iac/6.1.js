@@ -245,6 +245,17 @@ stB = read_state()          # both read the same serial -- this is the race
         ],
         answer: 1,
         why: "Two things would believe they own that number, producing drift on every plan — which is an ownership conflict rather than a discipline failure. Declare `ignore_changes` for it, or do not manage the resource. Terraform is for things created once and changed rarely. A VPC is created once and changed rarely, which is exactly what Terraform is for."
+      },
+      {
+        stem: "Someone scaled an endpoint from 2 to 6 instances in the console during an incident. What will the next terraform apply do?",
+        options: [
+          "Detect the change and update the code to 6 automatically",
+          "Propose scaling back to 2, undoing the manual change",
+          "Ignore the difference because it was made by a person",
+          "Fail until the state file is manually corrected"
+        ],
+        answer: 1,
+        why: "Terraform converges real infrastructure on the configuration, so drift shows up as a plan to remove four instances. It never edits your code, it does not distinguish who made a change, and drift is a normal plan rather than an error."
       }
     ]
   },

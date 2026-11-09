@@ -224,56 +224,31 @@ def convert_ok(amount: float, frm: str, to: str) -> dict:
     questions: [
       {
         stem: "A tool prints a debug line with `print()`. The client now fails with a parse error naming a stream position. Why?",
-        options: [
-          "The print made the response too large",
-          "Over stdio, stdout *is* the JSON-RPC channel — the printed line lands in the middle of the message stream and the client's parser fails on text that is not a message",
-          "print() is not thread-safe",
-          "The tool must return a string if it prints"
-        ],
+        options: ["The printed line made the response exceed the size limit", "On stdio, stdout is the JSON-RPC channel, so the print corrupts it", "print() is not thread-safe inside an async tool handler", "A tool that prints must return a string, not structured data"],
         answer: 1,
         why: "The error never mentions printing, which is what makes it expensive to debug. Configure logging to stderr at the top of the file, and remember that a library logging to stdout does exactly the same damage."
       },
       {
         stem: "A server opens a database connection inside each tool call. What does a lifespan change?",
-        options: [
-          "Nothing — the connection cost is the same",
-          "Setup runs once per connection and teardown is guaranteed by the context manager's `finally`, so the connection is opened once rather than per call",
-          "It makes the tools synchronous",
-          "It shares the connection between hosts"
-        ],
+        options: ["Nothing, because the connection cost per call stays the same", "Setup runs once per connection, with teardown guaranteed", "It turns the tool functions synchronous for the connection", "It shares one database connection across different hosts"],
         answer: 1,
         why: "The measurement was one 'opening', three calls, one 'closing', with the counter staying at 1. The reason to use a context manager rather than a module-level global is precisely the guaranteed teardown."
       },
       {
         stem: "Why does a `Context` parameter not appear in the schema the model sees?",
-        options: [
-          "Because it has no type annotation",
-          "The SDK recognises the Context annotation and fills it in server-side, so it is not part of the tool's declared interface",
-          "Because it is always optional",
-          "It does appear, and must be documented"
-        ],
+        options: ["Because the parameter has no type annotation on it", "The SDK recognises it and fills it in on the server side", "Because Context parameters are always optional ones", "It does appear in the schema and needs documenting"],
         answer: 1,
         why: "That is what makes it usable: a tool can reach the lifespan context, the request id and the client's capabilities without the model being asked to supply any of them. It is the main reason to take a Context at all."
       },
       {
         stem: "An HTTP-transport server puts a single database connection in its lifespan. What is the risk?",
-        options: [
-          "None — a lifespan is designed for exactly this",
-          "Several callers now share one process, so concurrent requests share one connection — a bug that appears only under load. A pool belongs there instead",
-          "The lifespan will run per request",
-          "HTTP servers cannot use a lifespan"
-        ],
+        options: ["None: a lifespan is designed to hold exactly this resource", "Concurrent callers share one connection; use a pool instead", "The lifespan runs once per request under the HTTP transport", "HTTP-transport servers cannot use a lifespan at all"],
         answer: 1,
         why: "For stdio the per-connection process makes one connection correct. HTTP changes the sharing model without changing the code, which is why the transport decision in module 3 reaches back into the server's design."
       },
       {
         stem: "A server calls `await ctx.info(\"starting\")` and the client never shows it. What is the likely reason?",
-        options: [
-          "Log messages are only emitted on error",
-          "The client did not declare the `logging` capability, so protocol log messages have nowhere to go",
-          "info is deprecated in favour of print",
-          "The message exceeded the size limit"
-        ],
+        options: ["Log messages are only delivered when the tool raises an error", "The client did not declare logging, so the message has nowhere to go", "ctx.info is deprecated in favour of writing to stdout", "The message exceeded the protocol's log-message size limit"],
         answer: 1,
         why: "It is the same capability-contract logic as in lesson 1.2, in the other direction: the server can only use what the client advertised. For diagnostics you need regardless of the client, log to stderr as well."
       }

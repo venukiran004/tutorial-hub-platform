@@ -222,6 +222,28 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "It is lesson 2.2's power problem in a rollout costume: the process feels careful and is uninformative, with the real risk arriving at the subsequent full rollout. Solving n / (rate × window) gives a minimum share near 6.3% for that window. The required window comes from the sample size and the rate, so no fixed length is right."
+      },
+      {
+        stem: "You run a canary until it reaches significance. How does the number of users exposed to a bad model change with the canary's share?",
+        options: [
+          "It scales with the share, so a 1% canary exposes far fewer people",
+          "It stays roughly constant; only the time to detection changes",
+          "It falls as the share grows, because detection becomes instant",
+          "It depends only on the label delay, not on traffic at all"
+        ],
+        answer: 1,
+        why: "Detection needs a fixed number of bad predictions, so exposure was 2,282 at every share and only the time changed. Exposure scales with share only under a fixed timer, larger shares do not reach zero exposure, and label delay affects time, not count."
+      },
+      {
+        stem: "You run a canary until it reaches significance. How does the number of users exposed to a bad model change with the canary's share?",
+        options: [
+          "It scales with the share, so a 1% canary exposes far fewer people",
+          "It stays roughly constant; only the time to detection changes",
+          "It falls as the share grows, because detection becomes instant",
+          "It depends only on the label delay, not on traffic at all"
+        ],
+        answer: 1,
+        why: "Detection needs a fixed number of bad predictions, so exposure was 2,282 at every share and only the time changed. Exposure scales with share only under a fixed timer, larger shares do not reach zero exposure, and label delay affects time, not count."
       }
     ]
   },

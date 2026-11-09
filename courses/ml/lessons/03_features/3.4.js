@@ -34,7 +34,7 @@ EC.receiveLesson({
 
 
 
-    { t: "code", lang: "python", title: "The spend column, and four ways to unskew it (executed)",
+    { t: "code", lang: "text", title: "The spend column, and four ways to unskew it (executed)",
       hl: [2, 3, 4, 5, 9, 10, 11],
       code: `spend_12m:  skew +0.59   mean 122.0   median 103.9   min 0.0                <- a right tail, and a hard zero
 np.log1p(spend)                                  skew -2.06     <- WORSE: log1p stretches the zeros and near-zeros into a long left tail
@@ -147,7 +147,7 @@ support_tickets (a count, 46 % zeros):   skew 0.93   log1p skew 0.32        <- f
       caption: "A linear model's inductive bias is monotone effects. Binning, splines and polynomial terms are three ways to hand it a shape it cannot find, and they differ in what they assume: bins assume steps and waste the within-bin variation; splines assume smoothness and generalise better; a polynomial assumes a global shape and explodes outside the data. `KBinsDiscretizer` and `SplineTransformer` are Pipeline steps, so the cut points and knots are fitted on the training fold like everything else."
     },
 
-    { t: "code", lang: "python", title: "Cyclical encoding: hour 23 is next to hour 0 (executed)",
+    { t: "code", lang: "text", title: "Cyclical encoding: hour 23 is next to hour 0 (executed)",
       hl: [2, 3, 9],
       code: `hour = [0, 1, 6, 12, 18, 23]
 sin(2π·hour/24)   [ 0.000,  0.259,  1.000,  0.000, -1.000, -0.259]
@@ -206,7 +206,7 @@ cos(2π·hour/24)   [ 1.000,  0.966,  0.000, -1.000, -0.000,  0.966]
 
 
 
-    { t: "code", lang: "python", title: "Four detectors on the fee column with its planted 999 (executed)",
+    { t: "code", lang: "text", title: "Four detectors on the fee column with its planted 999 (executed)",
       hl: [3, 4, 5, 6, 9, 10],
       code: `fee: 990 rows, one 999.0 among values of 6-21
 # rule                                          flags

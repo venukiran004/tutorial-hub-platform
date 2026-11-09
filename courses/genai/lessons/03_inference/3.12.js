@@ -32,7 +32,7 @@ EC.receiveLesson({
   70B INT4                       1500           5.40M        0.3704         0.48
   7B FP16                        3000          10.80M        0.1852         0.24
 
-  the naive figures are 0.370 and 0.185. The are 1.30x higher,
+  the naive figures are 0.370 and 0.185. The quoted figures are 1.30x higher,
   both of them by the same factor -- which is what an unstated utilisation
   assumption looks like: 0.370 / 0.77 = 0.48, 0.185 / 0.77 = 0.24.`,
       hl: [3],

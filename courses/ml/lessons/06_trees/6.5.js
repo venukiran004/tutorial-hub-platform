@@ -225,7 +225,7 @@ the same 11 voters at 60 %, simulated with a shared 'difficulty' component (20,0
       rungs: [
         { level: "bad", label: "Hard-vote the three at 0.5", code: `VotingClassifier([lr, rf, gb], voting="hard")`,
           note: "**A majority of labels at 0.5 on a 15 % positive rate is a majority-class predictor** (recall 0.043 on churn), and it has no score to set a lending threshold on." },
-        { level: "ok", label: "Soft-vote calibrated members, threshold from cost", code: `VotingClassifier([lr, rf_cal, gb], voting="soft", weights=[2, 1, 1]); threshold from the cost matrix (2.3)`,
+        { level: "ok", label: "Soft-vote calibrated members, threshold from cost", lang: "text", code: `VotingClassifier([lr, rf_cal, gb], voting="soft", weights=[2, 1, 1]); threshold from the cost matrix (2.3)`,
           note: "**A score, a threshold and some diversity.** The weights are guessed, the forest's compressed probabilities needed calibrating first, and the gain over the logistic model alone is unproven." },
         { level: "best", label: "Measure diversity; stack with cross-fitted meta-features only if it pays; ship the simplest winner", code: `oof = {name: cross_val_predict(m, X, y, cv=5, method="predict_proba")[:, 1] for name, m in members}
 print(pd.DataFrame(oof).corr())                                   # above 0.9? stop here and ship the best member

@@ -190,6 +190,17 @@ def pipeline(as_of: str):
         ],
         answer: 1,
         why: "The third option is a common misreading: the type describes the artifact's role, not its contents, so data validation remains your job — lesson 1.5's checks still have to run. The real gains are compile-time wiring safety and not owning the paths. Retry policy is configured per step and has nothing to do with the artifact's type."
+      },
+      {
+        stem: "An ingest step reads 'the latest partition' instead of taking an as_of parameter. What does content-keyed caching then do?",
+        options: [
+          "Detects the new partition and re-runs the step automatically",
+          "Serves a stale cached result, because the declared inputs did not change",
+          "Fails the pipeline, because the input is not deterministic",
+          "Disables caching for that step and every step downstream"
+        ],
+        answer: 1,
+        why: "The cache keys on declared inputs; an undeclared 'latest' read leaves the key unchanged, so the old artifact is served silently. Caches do not inspect what a step reads, they do not detect nondeterminism, and they do not switch themselves off."
       }
     ]
   },

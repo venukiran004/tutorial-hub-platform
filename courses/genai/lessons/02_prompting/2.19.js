@@ -208,7 +208,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
 
 
 
-    { t: "p", text: "The common form gives seven steps. They are all reasonable and the order is roughly the order people think of them, which is not the order of cost. Reordered by what is cheapest to check against what is most likely:" },
+    { t: "p", text: "Published guidance gives seven steps. They are all reasonable and the order is roughly the order people think of them, which is not the order of cost. Reordered by what is cheapest to check against what is most likely:" },
 
     { t: "ol", items: [
       "**Look at the rendered request.** Not the template — the actual string, with retrieved context and tool definitions. 2.1's incident was three weeks spent on prompt versions for a truncation that was visible in the rendered request.",

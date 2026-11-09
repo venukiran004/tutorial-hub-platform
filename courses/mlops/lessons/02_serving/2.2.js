@@ -221,6 +221,28 @@ n_model = n_for_proportion(0.7167, 0.7667)    # accuracy -5 points`,
         ],
         answer: 1,
         why: "Retraining on input drift alone would have triggered eleven unnecessary cycles in World A, each one a cost and a risk. Fast signals are for paging a human; the decision to change the model needs evidence of harm, which means labels or a downstream business metric. A calendar is not a signal: it retrains through weeks when nothing is wrong and ignores harm between runs."
+      },
+      {
+        stem: "Your hourly drift check on 2,000 samples sometimes fires and then clears on its own. What is the most likely explanation?",
+        options: [
+          "The shift is intermittent and only present in some hours of the day",
+          "The window has too little statistical power to detect it reliably",
+          "The KS test is the wrong statistic for numeric feature drift",
+          "The alerting system is deduplicating repeated alerts too eagerly"
+        ],
+        answer: 1,
+        why: "At small windows the power is low (0.41 even at n=10,000), so a real, persistent shift is missed more often than caught and the alert flickers. That is a sampling property, not intermittency, KS is appropriate for numeric drift, and deduplication would suppress rather than clear."
+      },
+      {
+        stem: "Your hourly drift check on 2,000 samples sometimes fires and then clears on its own. What is the most likely explanation?",
+        options: [
+          "The shift is intermittent and only present in some hours of the day",
+          "The window has too little statistical power to detect it reliably",
+          "The KS test is the wrong statistic for numeric feature drift",
+          "The alerting system is deduplicating repeated alerts too eagerly"
+        ],
+        answer: 1,
+        why: "At small windows the power is low (0.41 even at n=10,000), so a real, persistent shift is missed more often than caught and the alert flickers. That is a sampling property, not intermittency, KS is appropriate for numeric drift, and deduplication would suppress rather than clear."
       }
     ]
   },

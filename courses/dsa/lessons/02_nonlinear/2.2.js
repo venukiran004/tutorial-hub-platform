@@ -237,7 +237,7 @@ def min_ship_capacity(weights: list[int], days: int) -> int:
       minutes: 34,
       body: [
         { t: "p", text: "Given two sorted arrays, return the median of their combined elements. The arrays are not necessarily the same length." },
-        { t: "code", lang: "python", numbered: false, title: "examples", code: `
+        { t: "code", lang: "text", numbered: false, title: "examples", code: `
 [1, 3],    [2]        ->  2.0      merged: [1, 2, 3]
 [1, 2],    [3, 4]     ->  2.5      merged: [1, 2, 3, 4]
 [],        [1]        ->  1.0

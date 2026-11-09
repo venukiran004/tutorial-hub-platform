@@ -200,6 +200,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "ConfigMaps do accept binary via binaryData, so the first option is wrong for the stated reason. The limit is etcd's, which also rules out embedding tables and large feature lists — and the rejection arrives at admission time with a message about size that is easy to misread. The rejection happens at the API server, long before a kubelet sees the pod."
+      },
+      {
+        stem: "kubectl apply returns exit code 0 in CI. What has actually been established?",
+        options: [
+          "The new pods are running and passing their probes",
+          "The object was accepted and stored by the API server",
+          "The image was pulled successfully onto every node",
+          "The scheduler placed the pods on nodes with capacity"
+        ],
+        answer: 1,
+        why: "apply succeeds once the object is written to etcd; scheduling, pulling and starting happen later, by other actors. CI must wait on kubectl rollout status, which reflects what the controllers and kubelet actually did."
       }
     ]
   },

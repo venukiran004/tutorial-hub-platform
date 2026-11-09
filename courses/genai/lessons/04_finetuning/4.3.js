@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Say what LoRA cannot damage, and why that matters after 4.1"
   ],
 
-  prerequisites: ["4.1"],
+  prerequisites: ["4.1", "maths:1.3"],
 
   blocks: [
 

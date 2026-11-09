@@ -250,6 +250,17 @@ jobs:
         ],
         answer: 1,
         why: "Pin the ref with StringEquals and keep separate roles for PR and default-branch workflows. The `if: github.ref == 'refs/heads/main'` guard in the workflow is defence in depth only, because the workflow file itself is editable in a pull request. `aud` stays `sts.amazonaws.com`, the audience the AWS credentials action requests."
+      },
+      {
+        stem: "Which ordering of CI stages minimises expected time to a failure signal?",
+        options: [
+          "Longest stages first, so they overlap short ones",
+          "Cheapest stages that are most likely to fail first",
+          "Alphabetical by stage name, so order is stable",
+          "Training first, as it decides if the rest matter"
+        ],
+        answer: 1,
+        why: "Put stages that are cheap and likely to fail early, so a failure is reported soon. Ordering by length or name ignores failure probability, and training is the most expensive stage, so running it first delays every cheap check behind it."
       }
     ]
   },

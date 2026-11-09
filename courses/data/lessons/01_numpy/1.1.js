@@ -14,7 +14,7 @@ EC.receiveLesson({
     "Recognise when an operation must copy"
   ],
 
-  prerequisites: [],
+  prerequisites: ["python:14.1", "maths:1.1"],
 
   blocks: [
 

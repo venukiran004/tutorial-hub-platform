@@ -93,7 +93,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "α = 1/σ_prior², β = 1/σ_noise²\nS_N = (αI + βΦᵀΦ)⁻¹   # Posterior covariance\nm_N = β·S_N·Φᵀ·t        # Posterior mean"
     },
     {

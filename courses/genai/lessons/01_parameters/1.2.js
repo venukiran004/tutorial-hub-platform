@@ -255,7 +255,7 @@ for t in (0.0, 0.3, 0.7, 1.0, 1.4):
 
 
 
-    { t: "p", text: "The common form gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
+    { t: "p", text: "Published guidance gives ranges by task, and they are a reasonable starting point — they encode what people have converged on rather than anything derived:" },
 
     { t: "table",
       head: ["Task", "Reference range", "What the range is really saying"],

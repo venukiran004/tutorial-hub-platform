@@ -292,7 +292,7 @@ def speculative(K):
 
     { t: "ladder", title: "Deciding whether to deploy speculative decoding", rungs: [
       { level: "bad", label: "Turn it on because the framework supports it", why: "vLLM and TGI both expose it as a flag, so it looks free. With a badly chosen draft it is a straight slowdown — I measured 0.71× — and the symptom is a latency regression nobody connects to the flag.",
-        code: `--speculative-model gpt2 --num-speculative-tokens 8`,
+        lang: "bash", code: `--speculative-model gpt2 --num-speculative-tokens 8`,
         note: "K=8 was the worst configuration I tested. Larger K looks more aggressive and is more likely to lose." },
       { level: "ok", label: "Check the size ratio first", why: "Compute c as draft params over target params and require your expected acceptance to exceed it. This rules out the bad cases on paper in about a minute, with no benchmarking.",
         code: `c = 124e6 / 355e6        # 0.351 — needs acceptance above 0.351

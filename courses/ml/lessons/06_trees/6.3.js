@@ -128,7 +128,7 @@ scikit-learn GradientBoostingRegressor(n_estimators=3, learning_rate=0.5, max_de
       caption: "Each stage looks only at what is left over. Note the shrinkage at work: stage 1's stump would have removed the whole coarse residual at ν = 1; at ν = 0.5 it takes half, and stages 2 and 3 revisit the same region (x ≤ 2.5) with smaller steps. That is why a small learning rate needs more trees, and why it generalises better — each tree commits to less, and the ensemble averages more of them over the same structure."
     },
 
-    { t: "code", lang: "python", title: "Log-loss on the churn data: the first stage (executed; tickets missing encoded as −1)",
+    { t: "code", lang: "text", title: "Log-loss on the churn data: the first stage (executed; tickets missing encoded as −1)",
       code: `F₀ = logit(base rate 0.163) = -1.638            pseudo-residuals y - p:  churners +0.837, everyone else -0.163
 GradientBoostingClassifier(learning_rate=0.1, max_depth=2).estimators_[0, 0]
 #   root: logins_30d <= 11.5;  leaf values (steps on the logit scale, before shrinkage): [1.210, -0.280, 1.557, -0.744]

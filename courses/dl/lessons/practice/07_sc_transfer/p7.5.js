@@ -125,7 +125,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Method 1: Uncertainty weighting (Kendall et al.)\n# Learn task uncertainties σ_i\nloss = (1/(2*σ1²)) * loss_task1 + (1/(2*σ2²)) * loss_task2 + log(σ1) + log(σ2)\n\n# Method 2: GradNorm\n# Balance gradient magnitudes across tasks\ngrad_norms = [torch.norm(grads[i]) for i in range(n_tasks)]\ntarget_grad = mean(grad_norms) * (loss_ratios[i] ** α)\n# Adjust task weights to match target gradients\n\n# Method 3: Fixed weights (simplest)\nloss = 1.0 * loss_cls + 0.5 * loss_seg + 0.2 * loss_depth"
     },
     {

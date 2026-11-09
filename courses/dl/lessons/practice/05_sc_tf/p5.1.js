@@ -91,7 +91,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "MultiHead(Q,K,V) = Concat(head_1, ..., head_h) · W_O\nwhere head_i = Attention(Q·W_Qi, K·W_Ki, V·W_Vi)"
     },
     {
@@ -215,7 +215,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "FFN(x) = W₂ · GELU(W₁ · x + b₁) + b₂\n# W₁: d_model → d_ff (typically 4× d_model)\n# W₂: d_ff → d_model"
     },
     {
@@ -495,7 +495,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# Router/Gate selects top-k experts per token\ngate_scores = softmax(W_gate · x)  # [num_experts]\ntop_k = select_top_k(gate_scores, k=2)\noutput = Σ gate_score_i × expert_i(x)  # weighted sum of selected experts"
     },
     {

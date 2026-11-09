@@ -256,7 +256,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
           "Because clipping applies only at bigram level and above"
         ],
         answer: 1,
-        why: "Removing the second \"the\" costs one unigram from the overlap but eliminates both `on-the` and `the-mat`, replacing them with `on-mat`, which the usual treatment does not contain \u2014 so overlap falls from 5/6 to 3/5. Generalising, one changed token breaks up to n n-grams at order n, which is exactly why higher orders capture local word order. Both variants use the same precision, recall and F1 definitions, and clipping applies at every order." },
+        why: "Removing the second \"the\" costs one unigram from the overlap but eliminates both `on-the` and `the-mat`, replacing them with `on-mat`, which the reference does not contain \u2014 so overlap falls from 5/6 to 3/5. Generalising, one changed token breaks up to n n-grams at order n, which is exactly why higher orders capture local word order. Both variants use the same precision, recall and F1 definitions, and clipping applies at every order." },
 
       { stem: "A candidate's tokens are reordered. ROUGE-1 stays at 0.9091 while ROUGE-L drops to 0.7273. What does this show?",
         options: [
@@ -299,7 +299,7 @@ print("ROUGE-1 precision %.4f  recall %.4f  F1 %.4f" % (p, r, f))`,
         strong: "A strong answer explains what each can and cannot see.",
         answer: [
           { t: "p", text: "Same formula, different unit. ROUGE-1 counts unigram overlap, which measures content. ROUGE-2 counts bigrams, which adds local word order. ROUGE-L uses the longest common subsequence, which measures structure while allowing gaps." },
-          { t: "p", text: "On one pair I worked \u2014 \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019 \u2014 ROUGE-1 F1 is 0.9091, ROUGE-2 is 0.6667 and ROUGE-L is 0.9091. The ROUGE-2 gap is because the dropped token destroys two bigrams and adds one the usual treatment does not have; every token sits in up to two bigrams." },
+          { t: "p", text: "On one pair I worked \u2014 \u2018the cat sat on the mat\u2019 against \u2018the cat sat on mat\u2019 \u2014 ROUGE-1 F1 is 0.9091, ROUGE-2 is 0.6667 and ROUGE-L is 0.9091. The ROUGE-2 gap is because the dropped token destroys two bigrams and adds one the reference does not have; every token sits in up to two bigrams." },
           { t: "p", text: "The difference that matters practically is that ROUGE-1 cannot see a reordering. I scrambled the candidate and ROUGE-1 stayed at exactly 0.9091 \u2014 it depends only on the bag of unigrams \u2014 while ROUGE-L fell to 0.7273 and ROUGE-2 to 0.2222." },
           { t: "p", text: "So I would report ROUGE-1 and ROUGE-L together, with precision and recall separately rather than only F1. Equal ROUGE-1 with lower ROUGE-L is the signature of a reordering, and nothing else in the family detects one." }
         ] },

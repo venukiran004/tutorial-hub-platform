@@ -8,7 +8,7 @@ EC.receiveLesson({
     "Justify fetching more candidates than you intend to show",
     "Name the cost ratio that forces the design"
   ],
-  prerequisites: ["1.6"],
+  prerequisites: ["1.6", "genai:5.1"],
   blocks: [
     { t: "h2", n: "01", id: "two", text: "Two stages", sub: "And the order is forced" },
 

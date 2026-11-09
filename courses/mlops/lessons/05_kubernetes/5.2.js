@@ -212,6 +212,17 @@ spec:
         ],
         answer: 1,
         why: "Both causes leave every object looking healthy, which is what makes endpoints the right first command. A selector typo is a working Service with no backends; an unready pod is correctly excluded, which is the behaviour you want during a broken rollout. Connection refused with no endpoints means nothing reached a pod, so its logs show nothing."
+      },
+      {
+        stem: "Why should readiness fail fast while liveness fails slowly?",
+        options: [
+          "Readiness is checked less often, so it needs a lower threshold",
+          "Removing a pod from traffic is cheap; restarting it is expensive",
+          "Liveness probes cannot detect slow dependencies at all",
+          "Kubernetes ignores readiness failures that last longer than a minute"
+        ],
+        answer: 1,
+        why: "Taking a pod out of rotation costs little and is reversible, whereas a restart discards a warmed-up process and its model load. The frequencies are configurable, liveness can see slowness, and readiness failures are honoured for as long as they last."
       }
     ]
   },

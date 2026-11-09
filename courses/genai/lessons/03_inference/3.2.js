@@ -11,7 +11,7 @@ EC.receiveLesson({
     "Quantify the reduction from MQA and GQA"
   ],
 
-  prerequisites: ["3.1"],
+  prerequisites: ["3.1", "nlp:4.5"],
 
   blocks: [
 
@@ -125,7 +125,7 @@ for _ in range(N_NEW):
 
     { t: "callout", kind: "trap", title: "The worked example is wrong by a factor of two",
       body: [
-        { t: "p", text: "The usual treatment section 1 gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
+        { t: "p", text: "A widely circulated worked example gives: *\"LLaMA-2 7B, seq_len=4096 … KV Cache (per request): 2 × 32 × 32 × 128 × 4096 × 2 = ~1 GB\"* and then *\"Batch of 16: ~16 GB just for KV cache!\"*" },
         { t: "p", text: "Running that multiplication gives **2.15 GB**, not ~1 GB — and a batch of 16 is **34.36 GB**, not ~16 GB. The formula is right and the arithmetic in the comment is not." },
         { t: "p", text: "This matters more than a typo usually would, because capacity planning is this calculation. A server sized on \"~1 GB per request\" will hold half the concurrent requests the plan assumed, and the failure mode is out-of-memory under load rather than a gradual slowdown. Run the multiplication yourself for your own model." }
       ] },
@@ -270,7 +270,7 @@ Request 2: [Block 3, Block 5]            (shares Block 3 = prefix cache)`,
     { t: "exercise", kind: "Challenge", title: "Size a server from the architecture",
       difficulty: "core", minutes: 25,
       body: [
-        { t: "p", text: "Capacity planning for an LLM server is the KV cache arithmetic plus the weights, and getting it wrong by a factor of two — as the usual treatment does — means running out of memory under load rather than degrading gracefully." },
+        { t: "p", text: "Capacity planning for an LLM server is the KV cache arithmetic plus the weights, and getting it wrong by a factor of two — as that widely circulated example does — means running out of memory under load rather than degrading gracefully." },
         { t: "p", text: "Build the calculation and find what each lever is worth." }
       ],
       requirements: [

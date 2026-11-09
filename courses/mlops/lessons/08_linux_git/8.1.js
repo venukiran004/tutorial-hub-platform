@@ -194,6 +194,17 @@ python   4411  app    7w   REG  147G      0      983 /var/log/train.log (deleted
         ],
         answer: 1,
         why: "Ephemeral storage is the third resource with its own failure mode: eviction. Because the limit is usually omitted, the checkpoint directory is bounded only by the node's disk, and the eviction takes neighbouring pods' stability with it — which looks like a scheduling problem rather than a storage one. Only an emptyDir with `medium: Memory` is charged to memory, and this one is on disk."
+      },
+      {
+        stem: "df reports a disk 99% full but du finds little. What is the usual cause?",
+        options: [
+          "du cannot read files owned by other users",
+          "A deleted file is still held open by a running process",
+          "The filesystem's journal has grown to fill the disk",
+          "Hard links are counted twice by df but once by du"
+        ],
+        answer: 1,
+        why: "Deleting a file removes its name, but the data stays until the last open descriptor closes, so df counts it and du cannot see it. lsof +L1 names the holder. Permissions, journals and hard links do not produce this gap."
       }
     ]
   },

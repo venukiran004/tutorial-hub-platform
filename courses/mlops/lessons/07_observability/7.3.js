@@ -210,6 +210,17 @@ log.info("prediction served", extra={"correlation_id": cid,
         ],
         answer: 1,
         why: "Features are usually personal data, and an operational log store has broad read access and a different compliance posture from a warehouse. The third option is lesson 7.1's per-feature cardinality trap. The prediction log also has a longer lifetime, since labels arrive weeks later. Trace stores have the same broad read access as logs, and sampling would lose most of the rows."
+      },
+      {
+        stem: "Why must the prediction log outlive ordinary application logs in an ML service?",
+        options: [
+          "Prediction logs are required by Prometheus for scraping",
+          "Labels arrive weeks later and must be joined to the logged prediction",
+          "Prediction logs are smaller, so keeping them is free",
+          "Ordinary logs are deleted automatically by the container runtime"
+        ],
+        answer: 1,
+        why: "Quality can only be measured once labels arrive, 45 days later in the lesson's case, and that needs the logged features and prediction to join against. Prometheus does not scrape logs, size is not the reason, and log retention is a policy choice."
       }
     ]
   },

@@ -278,12 +278,12 @@ print(f"total {total:,}   first layer share {first:,} / {total:,} = {first / tot
 4.bias       (10,)              10
 total 235,146   first layer share 200,960 / 235,146 = 85.5%` },
 
-    { t: "p", text: "The rule of thumb the usual treatment draws from this survives the correction: **about 85 % of the parameters sit in the first fully connected layer**, because it multiplies the raw input size by the first hidden width. An image of 224 × 224 × 3 flattened into a first layer of 256 units would need 38.5 million weights before anything useful happened — which is the reason convolutional networks (module 2) share weights across positions instead of connecting every pixel to every unit." },
+    { t: "p", text: "The usual rule of thumb survives the correction: **about 85 % of the parameters sit in the first fully connected layer**, because it multiplies the raw input size by the first hidden width. An image of 224 × 224 × 3 flattened into a first layer of 256 units would need 38.5 million weights before anything useful happened — which is the reason convolutional networks (module 2) share weights across positions instead of connecting every pixel to every unit." },
 
     { t: "ladder", title: "Parameter counting, from one layer to a whole network", rungs: [
-      { level: "Beginner", label: "One layer", code: "nn.Linear(784, 256) → 784·256 + 256 = 200,960", note: "Weights are inputs × outputs; biases are one per output." },
+      { level: "Beginner", label: "One layer", lang: "text", code: "nn.Linear(784, 256) → 784·256 + 256 = 200,960", note: "Weights are inputs × outputs; biases are one per output." },
       { level: "Practitioner", label: "A network", code: "sum(p.numel() for p in net.parameters())", note: "Sum the layers. Activations, pooling and dropout have no parameters; normalisation layers have two per channel (lesson 1.8)." },
-      { level: "Senior", label: "Where the memory goes", code: "params × 4 bytes (float32) + optimiser state (Adam: ×3) + activations per batch", note: "235,146 parameters is under 1 MB of weights; the activations for a batch of 128 are what fill the memory in a large model." }
+      { level: "Senior", label: "Where the memory goes", lang: "text", code: "params × 4 bytes (float32) + optimiser state (Adam: ×3) + activations per batch", note: "235,146 parameters is under 1 MB of weights; the activations for a batch of 128 are what fill the memory in a large model." }
     ] },
 
     { t: "exercise", kind: "practice", title: "Count, then check", difficulty: "foundation", minutes: 12,

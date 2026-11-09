@@ -223,6 +223,17 @@ USER appuser` },
         ],
         answer: 1,
         why: "A scanner enumerates packages and compares versions. The 63-byte credential from this lesson matches no CVE and appears in no package manifest, so a clean scan is entirely consistent with a leaked credential. Secret scanning is a separate tool, and reachability is a separate question again. A scanner has no view of the network or of what is reachable at runtime."
+      },
+      {
+        stem: "A build argument ARG TOKEN is used in a RUN step. Why is that worse than copying a file and deleting it later?",
+        options: [
+          "Build arguments are uploaded to the registry as plain environment",
+          "The value is stored in the layer's command and shown by docker history",
+          "ARG values are written to every container's log at start",
+          "Build arguments are visible to every other image on the host"
+        ],
+        answer: 1,
+        why: "The RUN command string, with the substituted value, is recorded in image metadata, so docker history prints it with no extraction. ARG does not become runtime environment, is not logged at start, and is not shared across images. Use a BuildKit secret mount."
       }
     ]
   },

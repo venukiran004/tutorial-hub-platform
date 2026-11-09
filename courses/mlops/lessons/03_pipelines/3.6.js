@@ -178,6 +178,17 @@ EC.receiveLesson({
         ],
         answer: 1,
         why: "Measured: the noise floor is 0.17 AUC points on 6,000 rows and 0.67 on 500, so 'any positive margin' promotes noise at small holdout sizes. The third option is worse — a fixed target decays into meaninglessness as the data changes, which is why the comparison is always against the incumbent artifact. Allowing regressions solves the opposite problem: this gate is too loose, not too strict."
+      },
+      {
+        stem: "Why should the promotion gate's confidence interval be published to the model registry?",
+        options: [
+          "The registry refuses models without an attached interval",
+          "So that months later you can explain why a model was promoted",
+          "Because the interval is needed to compute the next model's seed",
+          "So that the serving layer can widen predictions by the interval"
+        ],
+        answer: 1,
+        why: "'CI was green' will not answer a question about a promotion months later; the recorded interval will. Registries do not require it, it has nothing to do with seeds, and serving does not use the evaluation interval."
       }
     ]
   },

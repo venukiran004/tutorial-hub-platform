@@ -226,56 +226,31 @@ rows = await db.fetch(
     questions: [
       {
         stem: "A tool is declared `get_orders(user_id: str)` and filters on that argument. What is wrong?",
-        options: [
-          "Nothing, as long as the user_id is validated",
-          "A parameter is a value the model supplies from a conversation an attacker may be participating in — so the access control is a prompt-injection target rather than a control",
-          "The parameter should be an integer",
-          "It should be a resource rather than a tool"
-        ],
+        options: ["Nothing, provided the user_id argument is validated", "The model supplies the value, so the check is injectable", "The parameter should be typed as an integer instead", "Orders should be exposed as a resource, not a tool"],
         answer: 1,
         why: "This is the most common serious mistake in MCP server design, because it reads as perfectly reasonable API work. The fix is that the identity must come from a verified token read out of request context, so there is no argument for the persuasion to aim at."
       },
       {
         stem: "Which fields of `AccessToken` carry the caller's identity?",
-        options: [
-          "`token` and `client_id`",
-          "`subject`, for who the token was issued to, and `claims`, an arbitrary dictionary for things like tenant and roles",
-          "`scopes` only",
-          "None — AccessToken carries no identity"
-        ],
+        options: ["`token` and `client_id`, which name the caller", "`subject` for the holder and `claims` for tenant and roles", "`scopes` only, which list what the caller may do", "None: an AccessToken carries no identity at all"],
         answer: 1,
         why: "`client_id` identifies the application rather than the person, which is the distinction that matters: a bearer token shared by one client application authenticates that application, and `subject` is what makes per-user behaviour possible."
       },
       {
         stem: "A tool reads `token.subject`, logs it, then queries with an admin credential and no predicate on the subject. What has it achieved?",
-        options: [
-          "Proper per-user access control",
-          "Nothing durable — the identity is decoration, because the query would return any row asked for; the subject has to reach the predicate, and ideally the database enforces it",
-          "Authentication but not authorisation",
-          "Correct behaviour, since the subject is verified"
-        ],
+        options: ["Proper per-user access control over the orders", "Nothing durable: the subject never reaches the query", "Authentication of the user but not authorisation", "Correct behaviour, because the subject is verified"],
         answer: 1,
         why: "It is lesson 2.3's layered point with identity filled in. The predicate version is correct and depends on every query being written correctly forever; row-level security is what survives a forgotten predicate, and one will be forgotten."
       },
       {
         stem: "How do you give a stdio server per-user behaviour?",
-        options: [
-          "Pass a user id as a tool argument",
-          "You do not — there is no header and no auth layer, so the process identity is the identity. A multi-user service needs an HTTP transport with a token verifier",
-          "Use the session id as the user id",
-          "Read the user from the client's clientInfo"
-        ],
+        options: ["Pass the user id to each tool as an argument", "You cannot: on stdio, the process identity is the identity", "Use the session id as a stand-in for the user id", "Read the user from the client's clientInfo field"],
         answer: 1,
         why: "A stdio server has exactly one user — the person whose machine it runs on — so per-user behaviour is just its ordinary behaviour. clientInfo is no help either: lesson 2.1 measured the SDK client reporting the name 'mcp' by default."
       },
       {
         stem: "A server exposes public exchange rates and holds one API credential for everyone. Is that a design flaw?",
-        options: [
-          "Yes — every server needs per-user identity",
-          "No. A single identity is fine for data that is the same for everyone; the mistake is a single identity serving per-user data. Say so in the instructions and keep the tools read-only",
-          "Only if it uses an HTTP transport",
-          "Yes, unless it uses required_scopes"
-        ],
+        options: ["Yes, because every MCP server needs per-user identity", "No: one identity suits data that is the same for all", "Only if the server is reached over an HTTP transport", "Yes, unless the server also sets required_scopes"],
         answer: 1,
         why: "Naming it in the instructions is what makes it an honest design rather than an unexamined one, and it means nobody has to audit the server for identity handling. The design question is simply whether the data differs per caller."
       }

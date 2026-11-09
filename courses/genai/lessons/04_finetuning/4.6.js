@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.6",
 
-  lede: "The usual treatment draws the training loop as a pipeline \u2014 text, tokens, embeddings, transformer, loss, backpropagation, weight updates \u2014 with a note that only `A` and `B` change. That note is the whole of LoRA\u2019s safety guarantee, so I verified it rather than repeating it. After 24 optimiser steps, **0 of 12 base matrices had changed and the maximum difference was 0.000e+00**: the pretrained weights are bit-for-bit identical. I also checked the claim about initialisation and found the asymmetry it implies \u2014 at the very first backward pass **`|grad A| = 0.00000000` while `|grad B| = 0.340`**, so `B` moves first and `A` only follows once `B` is non-zero.",
+  lede: "The training loop is usually drawn as a pipeline \u2014 text, tokens, embeddings, transformer, loss, backpropagation, weight updates \u2014 with a note that only `A` and `B` change. That note is the whole of LoRA\u2019s safety guarantee, so I verified it rather than repeating it. After 24 optimiser steps, **0 of 12 base matrices had changed and the maximum difference was 0.000e+00**: the pretrained weights are bit-for-bit identical. I also checked the claim about initialisation and found the asymmetry it implies \u2014 at the very first backward pass **`|grad A| = 0.00000000` while `|grad B| = 0.340`**, so `B` moves first and `A` only follows once `B` is non-zero.",
 
   objectives: [
     "Trace one training example through the loop and say where the adapter sits",

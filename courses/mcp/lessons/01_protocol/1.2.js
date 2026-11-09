@@ -302,56 +302,31 @@ for n in sorted(dir(T)):
     questions: [
       {
         stem: "A server's initialise response reports `serverInfo.version` as `1.28.1`, which is also the version of the installed MCP SDK. What does that tell a consumer about the server?",
-        options: [
-          "The server is on its 1.28.1 release",
-          "Nothing about the server's own release — FastMCP has no `version` parameter, so the field is the version of the `mcp` package it was built against",
-          "The server supports protocol revision 1.28.1",
-          "The server is using a deprecated SDK"
-        ],
+        options: ["That the server itself is on its 1.28.1 release", "Nothing about it: that is the version of the mcp SDK", "That the server supports protocol revision 1.28.1", "That the server was built with a deprecated SDK release"],
         answer: 1,
         why: "It is a genuine trap for anyone trying to pin or alert on a dependency's version, because every FastMCP server reports the same number. Changing it means assigning to the private `_mcp_server.version` or dropping to the low-level API."
       },
       {
         stem: "A server declares `tools.listChanged=True` but never sends the notification. What does a well-written client experience?",
-        options: [
-          "An error when the tool list changes",
-          "Nothing, ever — it trusted the flag, cached the list for the connection, and has no reason to re-check, so tools added later are invisible to it",
-          "It falls back to polling automatically",
-          "The connection is dropped"
-        ],
+        options: ["An error the moment the server's tool list changes", "Nothing: it cached the list and never sees tools added later", "It notices the silence and falls back to polling the list", "The connection is dropped for violating its declared flag"],
         answer: 1,
         why: "Nothing errors, which is what makes it bad: the symptom is a model that cannot use a tool plainly present in the server's source. Leaving the flag off is strictly more honest, because then the client knows to re-fetch."
       },
       {
         stem: "Why should a client read the capability flags rather than calling a method and handling the error?",
-        options: [
-          "Because errors are expensive over stdio",
-          "Because the handshake exists so a host can build its interface without probing — knowing there are no prompts means not rendering a prompt menu",
-          "Because the protocol forbids error handling",
-          "Because capabilities can change mid-connection"
-        ],
+        options: ["Because an error costs far more than a capability read over stdio", "So a host can build its interface from the handshake without probing", "Because the protocol forbids clients from handling method errors", "Because capability flags can change at any point mid-connection"],
         answer: 1,
         why: "The flags are a contract whose purpose is to let the host decide what to offer and what to fetch. A try/except around a capability you have already been told is absent is a sign the initialise result was thrown away."
       },
       {
         stem: "What belongs in the `instructions` field rather than in a tool description?",
-        options: [
-          "The arguments each tool takes",
-          "Facts about the server as a whole that a model cannot infer from the tool list — data scope, how current it is, and conventions that hold across every tool",
-          "The server's error codes",
-          "Nothing; it is deprecated"
-        ],
+        options: ["The arguments each tool takes and the type of each argument", "Facts about the whole server: data scope, freshness, shared conventions", "The full list of error codes the server's tools can return", "Nothing at all, because the field is deprecated in this revision"],
         answer: 1,
         why: "\"Rates are ECB daily references, not live market rates\" is exactly the kind of thing no individual schema says and that changes how a model should use every tool. A sentence restating what the tool list already shows is just tokens."
       },
       {
         stem: "A client offers revision 2025-11-25 and the server responds with a revision the client never offered. What should the client do?",
-        options: [
-          "Proceed, since newer is better",
-          "Refuse the connection — the server has not negotiated, and continuing means failing later inside a tool call with an error that looks like a client bug",
-          "Downgrade silently and retry",
-          "Ignore the field entirely"
-        ],
+        options: ["Proceed, since a newer revision is always backwards compatible", "Refuse the connection, because the server has not negotiated", "Downgrade silently to the server's revision and then retry", "Ignore the field, since only the server's capabilities matter"],
         answer: 1,
         why: "Failing at initialise is the cheap, legible outcome. The expensive one is a connection that proceeds on an unagreed revision and breaks halfway through a call, where the error surfaces far from its cause."
       }

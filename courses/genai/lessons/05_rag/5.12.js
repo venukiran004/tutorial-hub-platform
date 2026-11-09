@@ -214,7 +214,7 @@ SV = enc.encode(SCHEMA_DOCS, normalize_embeddings=True)`,
 
     { t: "code", lang: "python", title: "Text-to-SQL and the dataframe agent, and the sandbox question each one raises",
       code: `from langchain_community.utilities import SQLDatabase
-from langchain.chains import create_sql_query_chain
+from langchain_classic.chains import create_sql_query_chain   # pip install langchain-classic (LangChain 1.x)
 from langchain_experimental.agents import create_pandas_dataframe_agent
 
 # TEXT-TO-SQL, in the shape that is safe to run:

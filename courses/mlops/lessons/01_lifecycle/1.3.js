@@ -263,6 +263,28 @@ def version(i):
         ],
         answer: 1,
         why: "A hash verifies bytes you possess. If the cache entry has been pruned, the hash names something unrecoverable. That is why a version must be reproducible from its identifier — the determinism point — and why env_sha from 1.2 belongs beside it. The path is the other field in the pointer, so that much it does record."
+      },
+      {
+        stem: "What is the strongest argument for keeping a 40 MB, frequently changing dataset out of git history?",
+        options: [
+          "Git refuses to store binary files larger than a few megabytes",
+          "Every clone and CI job must download every version ever committed",
+          "Git cannot diff CSV files, so changes are invisible in review",
+          "Storage on the git host is billed per megabyte of history kept"
+        ],
+        answer: 1,
+        why: "The measured cost was transfer: a fresh clone was 455 times larger because git history is all-or-nothing. Git does store large binaries, it can diff CSV text, and storage price is a minor concern next to every clone paying for every version."
+      },
+      {
+        stem: "What is the strongest argument for keeping a 40 MB, frequently changing dataset out of git history?",
+        options: [
+          "Git refuses to store binary files larger than a few megabytes",
+          "Every clone and CI job must download every version ever committed",
+          "Git cannot diff CSV files, so changes are invisible in review",
+          "Storage on the git host is billed per megabyte of history kept"
+        ],
+        answer: 1,
+        why: "The measured cost was transfer: a fresh clone was 455 times larger because git history is all-or-nothing. Git does store large binaries, it can diff CSV text, and storage price is a minor concern next to every clone paying for every version."
       }
     ]
   },

@@ -13,7 +13,7 @@ EC.receiveLesson({
     "Use whitening, kernel PCA, randomised and incremental PCA, random projections and NMF for the jobs each was built for"
   ],
 
-  prerequisites: ["4.3", "5.1", "3.1"],
+  prerequisites: ["4.3", "5.1", "3.1", "maths:1.6"],
 
   blocks: [
 

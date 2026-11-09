@@ -29,6 +29,10 @@ for course in "${COURSES[@]}"; do
 done
 echo "published lists synced"
 
+# The cross-course search index and prerequisite titles come from every
+# curriculum, so it is rebuilt after the published lists change.
+node .build/search-index.js
+
 for course in "${COURSES[@]}"; do
   echo
   echo "=== $course ==="
@@ -41,6 +45,9 @@ python -I .build/check-pages.py
 
 echo "=== blocks that would render empty ==="
 node .build/check-blocks.js
+
+echo "=== quiz length, unseen-source prose, removed APIs ==="
+node .build/check-quality.js
 
 echo "=== markdown emphasis that never renders ==="
 node .build/check-emphasis.js

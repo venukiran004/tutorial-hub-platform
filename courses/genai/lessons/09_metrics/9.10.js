@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "9.10",
 
-  lede: "Three judging modes, and the one the usual treatment adds beyond 8.6 is **reference-guided** \u2014 give the judge a gold answer and ask it to compare, which converts an open-ended judgement into a much easier one. The rubric is where the work is: a scale whose points are *described* rather than numbered, because \u201crate helpfulness 1\u20135\u201d invites a judge to invent its own anchors and then drift between prompts.",
+  lede: "Three judging modes, and the one this lesson adds beyond 8.6 is **reference-guided** \u2014 give the judge a gold answer and ask it to compare, which converts an open-ended judgement into a much easier one. The rubric is where the work is: a scale whose points are *described* rather than numbered, because \u201crate helpfulness 1\u20135\u201d invites a judge to invent its own anchors and then drift between prompts.",
 
   objectives: [
     "Distinguish pointwise, pairwise and reference-guided judging",

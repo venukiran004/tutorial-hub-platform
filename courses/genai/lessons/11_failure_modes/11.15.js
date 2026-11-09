@@ -58,7 +58,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "`moderate` then `output_safe`, both evaluated before the `if`. So a response whose canary leaked still pays for the moderation call \u2014 and 11.14 measured that as 42 ms spent on a verdict already determined by a 0.1 ms string compare." },
         { t: "p", text: "Reordering to put the local checks first and short-circuit saves 421x on blocked responses: 0.1 ms against 42.1. That is a two-line change with no behavioural difference except latency and cost on exactly the requests you least want to spend money on." },
-        { t: "p", text: "The general rule is the one 10.11 arrived at for evals: **cheap checks gate expensive ones.** The usual treatment applies it to the input stage, where the scan precedes the model, and not within the output stage." }
+        { t: "p", text: "The general rule is the one 10.11 arrived at for evals: **cheap checks gate expensive ones.** Most pipelines apply it to the input stage, where the scan precedes the model, and not within the output stage." }
       ] },
 
     { t: "h2", n: "02", id: "budget", text: "The latency budget",
@@ -161,7 +161,7 @@ OUTPUT guardrails, fast gate (35 ms, GPU or a small model):
 
   <rect x="16" y="272" width="728" height="40" rx="4" class="s-fill" style="stroke:var(--good)" stroke-width="1.6"/>
   <text x="28" y="290" class="s-mono" style="font-size:9px;fill:var(--good)">CHEAP CHECKS GATE EXPENSIVE ONES &#8212; THE SAME RULE AS THE EVAL TIERS IN 10.11</text>
-  <text x="28" y="304" class="s-sub">the usual treatment applies it to the input stage (scan before the model) and not within the output stage</text>
+  <text x="28" y="304" class="s-sub">most pipelines apply it to the input stage (scan before the model) and not within the output stage</text>
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Budget the pipeline, then find what dominates", difficulty: "advanced", minutes: 35,

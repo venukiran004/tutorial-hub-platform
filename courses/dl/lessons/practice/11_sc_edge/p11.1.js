@@ -245,7 +245,7 @@ EC.receiveLesson({
     },
     {
      "t": "code",
-     "lang": "python",
+     "lang": "text",
      "code": "# These behave differently in train vs eval mode:\n\n1. BatchNorm:\n   Train: Uses batch statistics (μ_batch, σ_batch)\n   Eval: Uses running statistics (μ_running, σ_running)\n   Impact: Predictions depend on other samples in batch!\n\n2. Dropout:\n   Train: Randomly zeros neurons (with p probability)\n   Eval: Uses all neurons (scaled by 1-p)\n   Impact: Predictions are random! Different each time!\n\n# Correct inference\nmodel.eval()\nwith torch.no_grad():  # Also important for memory\n    output = model(input)"
     },
     {

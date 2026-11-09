@@ -411,7 +411,7 @@ async def readiness(db: DB) -> dict:
     },
 
     { t: "callout", kind: "trap", title: "Alerts nobody can act on", body: [
-      { t: "code", lang: "python", title: "the difference between noise and a page", numbered: false, code: `
+      { t: "code", lang: "promql", title: "the difference between noise and a page", numbered: false, code: `
 # BAD: alerts on a CAUSE that may not matter.
 alert: CPUAbove80Percent
 # So what? If latency and error rate are fine, high CPU is a machine
