@@ -166,19 +166,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Where does the 0.9981 no-answer score come from?",
-      options: ["A separate classifier", "The span from index 0 to index 0 — the <s> token — winning the same argmax as any other span", "A hard-coded threshold", "The tokeniser"],
+      options: ["A separate no-answer classifier", "The <s> span winning the argmax", "A hard-coded threshold in the code", "The tokeniser's special handling"],
       answer: 1,
       why: "SQuAD 2.0 models are trained to put probability mass on position 0 when nothing answers the question, so the null option competes in the ordinary span search. For 'What is the capital of France?' it scored 0.9981 against a passage about machine learning, while the three answerable questions had null scores of 0.0000, 0.0007 and 0.0000." },
     { stem: "Why should you threshold on score_best minus score_null rather than score_best?",
-      options: ["It is faster", "Because a hard but answerable question can have a low best score while its null score is lower still", "To normalise across models", "Because score_best is unbounded"],
+      options: ["It is faster to compute per question", "Hard answerable questions score low", "It normalises scores across models", "score_best on its own is unbounded"],
       answer: 1,
       why: "The quantity that identifies unanswerability is the margin between the best real span and the null option, not the absolute confidence in the span. Thresholding on score_best alone rejects genuinely answerable hard questions, which is the wrong error to make when the passage does contain the answer." },
     { stem: "What did SQuAD 2.0 add over SQuAD 1.1?",
-      options: ["More passages", "About 50,000 deliberately unanswerable questions, so models learn to decline", "Longer answers", "Multiple languages"],
+      options: ["Many more passages", "50k unanswerable items", "Much longer answers", "Several languages"],
       answer: 1,
       why: "Every SQuAD 1.1 question had an answer in its passage, so a model trained on it never learns that declining is an option and returns its best guess regardless. The adversarially written unanswerable questions make abstention part of what the model predicts rather than something you bolt on afterwards." },
     { stem: "An open-domain QA system answers poorly. What do you measure first?",
-      options: ["Reader accuracy on SQuAD", "Retriever recall@k — whether a passage containing the answer is even reaching the reader", "Model size", "Tokenisation"],
+      options: ["Reader accuracy on SQuAD", "Retriever recall@k", "Model size", "Tokenisation quality"],
       answer: 1,
       why: "Retrieval sets a hard ceiling: if the answer-bearing passage is not in the top-k, no reader can recover it, so 80% recall@k caps end-to-end accuracy at 80% regardless of reader quality. Reader quality is the visible part, which is exactly why teams upgrade it while a weak retriever is silently capping them." }
   ] },

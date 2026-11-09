@@ -244,19 +244,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why is RoPE a relative scheme when it rotates by absolute position?",
-      options: ["It subtracts the mean position", "Because a rotation's transpose is its inverse, so the dot product q^T R_m^T R_n k reduces to q^T R_{n-m} k", "It uses relative indices internally", "It is actually absolute"],
+      options: ["It subtracts the mean position first", "Rotations compose to depend on n − m", "It uses relative indices internally", "It is actually an absolute scheme"],
       answer: 1,
       why: "Each vector is rotated by its own absolute position, and the shared rotation cancels in the dot product. Measured: the score at distance 3 was 2.803810 at positions (0,3) and 2.804198 at (5000,5003) — identical to six significant figures, the drift being float32 accumulation." },
     { stem: "Does RoPE make distant tokens attend less strongly?",
-      options: ["Yes, in all cases", "It lowers the maximum achievable score with distance but not the typical magnitude for independent q and k", "No, distance has no effect", "Only with ALiBi added"],
+      options: ["Yes, in every case", "It caps the maximum only", "No, distance has no effect", "Only with ALiBi added"],
       answer: 1,
       why: "With aligned q and k the score fell from 70.06 to 3.75 — 5.36% — by distance 2048. With 2000 independent random pairs, mean |score| stayed around 6.0-6.5 at every distance, because rotation is orthogonal and preserves the dot-product distribution. The decay is a bound, not a typical behaviour." },
     { stem: "Why does ALiBi extrapolate better than a learned positional table?",
-      options: ["It has more parameters", "It is a distance penalty computed from |i − j|, so it is defined at any length, while a table has no row for unseen positions", "It uses higher precision", "It normalises the scores"],
+      options: ["It has more parameters to adapt", "A distance penalty defined at any length", "It uses higher numerical precision", "It normalises the attention scores"],
       answer: 1,
       why: "ALiBi never learns anything about position — the slopes are fixed at 2^(-8h/H) and the bias is a function of distance. A learned table caps hard at max_len, which is why GPT-2 stops at 1024. The cost of ALiBi's approach is that the bias is monotonic, so it cannot express strong long-range attention." },
     { stem: "Why does NTK-aware scaling often work without fine-tuning where Position Interpolation does not?",
-      options: ["It changes fewer parameters", "It leaves high frequencies nearly untouched (ratio 1.0000) and stretches only the low ones (0.2500), so fine positional resolution survives", "It uses a larger base for all pairs equally", "It retrains the embeddings"],
+      options: ["It changes fewer parameters", "It keeps high frequencies intact", "A larger base for all pairs equally", "It retrains the embeddings"],
       answer: 1,
       why: "Position Interpolation squeezes every frequency by L/L', so the high-frequency pairs resolving adjacent tokens lose resolution and the model must adapt. The problem is really only with low frequencies, whose full period was never seen in training. NTK-aware raises the base so the fine ruler is left alone and the coarse one stretches." }
   ] },

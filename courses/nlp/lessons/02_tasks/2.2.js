@@ -182,19 +182,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "VADER scores 'Oh great, another meeting' at +0.625. Why?",
-      options: ["A bug in the lexicon", "Sarcasm is not lexical — the only sentiment word is `great` and it means the opposite", "The sentence is too short", "Punctuation confused it"],
+      options: ["A bug in VADER's lexicon", "Sarcasm is not lexical", "The sentence is too short", "Punctuation confused it"],
       answer: 1,
       why: "Every word-level method reads the words. Sarcasm places the meaning in the gap between what is said and what is meant, and no word in the sentence carries the negative. It requires reasoning about the whole utterance, which a lexicon plus rules cannot do by construction." },
     { stem: "What does VADER do that a TF-IDF bag of words cannot?",
-      options: ["Use a larger vocabulary", "Apply negation, boosters and punctuation emphasis — `not good` scores −0.341", "Run faster", "Handle multiple languages"],
+      options: ["Use a much larger vocabulary", "Apply negation and emphasis rules", "Run faster on long documents", "Handle many languages at once"],
       answer: 1,
       why: "To a bag of words, `not good` is the multiset `{not, good}` and the negation is an unconnected feature. VADER looks back for a negator and inverts the polarity, taking `good` from +0.440 to −0.341 and `bad` from −0.542 to +0.431 in `not bad`." },
     { stem: "Why is aspect-based sentiment more useful than document-level?",
-      options: ["It is more accurate", "A review with opposite sentiments about different aspects averages to a meaningless neutral", "It needs less data", "It runs faster"],
+      options: ["It is simply the more accurate method", "Mixed views average to a false neutral", "It needs far less labelled data", "It runs much faster at inference"],
       answer: 1,
       why: "*The food was excellent but the service was terrible* has no single sentiment; a document-level score returns roughly neutral, which conveys nothing and hides that there is anything to act on. Per-aspect output tells an operator which specific thing to fix, which is what turns a number into a decision." },
     { stem: "You apply a film-review sentiment model to financial news. What should you expect?",
-      options: ["Similar accuracy", "Systematic errors — domain terms like `volatile` and `exposure` read as negative when they are neutral", "Better accuracy, since news is cleaner", "It will refuse to run"],
+      options: ["Similar accuracy to film reviews", "Systematic errors on domain terms", "Better accuracy, as news is cleaner", "It will refuse to run on news"],
       answer: 1,
       why: "Polarity is register-dependent. Finance uses `volatile`, `aggressive` and `exposure` as neutral technical terms, and `beat expectations` is strongly positive in a way no general lexicon knows. Assume a general model is wrong on a specialised domain until measured on a few hundred hand-labelled examples from it." }
   ] },

@@ -238,7 +238,7 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is stopword removal dangerous for sentiment analysis?",
-      options: ["It makes the vocabulary too small", "`not` is a standard stopword, so negated and non-negated sentences become identical", "It slows down training", "It breaks the tokeniser"],
+      options: ["It shrinks the vocabulary too far to learn", "'not' is a stopword, so negation disappears", "It slows training on large corpora", "It breaks the tokeniser's word boundaries"],
       answer: 1,
       why: "Measured directly: 'this movie is not good' and 'this movie is good' both reduce to 'movie good' after standard stopword removal. The distinction is destroyed before the model sees the text, so no amount of downstream capacity can recover it. The same applies to question words in QA." },
     { stem: "A regex tokeniser using `[a-z0-9']+` processes 'e-mailed'. What does it produce?",
@@ -246,7 +246,7 @@ EC.receiveLesson({
       answer: 1,
       why: "The hyphen is not in the character class, so it acts as a separator and the word splits into a meaningless single letter and a fragment. Every character class is a policy applied to text you have not seen yet — which is the argument for learned subword tokenisers over hand-written rules." },
     { stem: "Why do modern transformer pipelines skip most classical preprocessing?",
-      options: ["It is too slow", "The model learns those relationships from data, so preprocessing only destroys information", "The libraries no longer support it", "Transformers require raw text"],
+      options: ["Classical preprocessing is far too slow at scale", "The model learns it; stripping only loses data", "Libraries no longer support stemming at all", "Transformers refuse any input that is not raw"],
       answer: 1,
       why: "Classical stages exist to help a weak model: a linear classifier over sparse counts cannot learn that `cats` relates to `cat`, so you stem them together. A transformer trained on enough text learns that from data, which makes the stage harmful rather than merely redundant — it removes signal the model would have used." },
     { stem: "Which task belongs to both understanding and generation?",

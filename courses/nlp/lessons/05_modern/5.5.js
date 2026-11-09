@@ -155,19 +155,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does `targets.view(-1)` fail in the loss computation?",
-      options: ["The tensor is on the wrong device", "Targets built as `seq[:, 1:]` are non-contiguous, and view cannot flatten a tensor whose stride skips a column", "The dtype is wrong", "The batch size varies"],
+      options: ["The tensor is on the wrong device", "Sliced targets are non-contiguous", "The dtype is wrong for the loss", "The batch size varies per step"],
       answer: 1,
       why: "The slice shares storage with the original tensor but skips the first column, so a flat view is not expressible under its stride. `reshape` copies when required and works. This is not an edge case — every next-token training loop builds targets exactly this way, so the code cannot train at all until it is fixed." },
     { stem: "The model reached 100% accuracy but the loss floored at 1.0106. Why?",
-      options: ["It was overfitting", "Half the positions are uniform random source digits with irreducible entropy ln(10) = 2.303, which averages into the loss", "The learning rate was too high", "Dropout was still active"],
+      options: ["It was overfitting the training set", "Random source digits carry ln 10 entropy", "The learning rate was set too high", "Dropout was still active at evaluation"],
       answer: 1,
       why: "Loss averages over all positions, and the source digits are genuinely unpredictable — no model can do better than chance on them. Only the reversed half is learnable, and the model predicts it almost perfectly. This is the irreducible L_infinity term from lesson 5.4: always decompose a loss floor before concluding a model has stopped learning." },
     { stem: "What does weight tying do?",
-      options: ["Freezes the embeddings", "Points the output projection at the embedding matrix, saving vocab × d_model parameters — 38,597,376 here", "Shares weights across layers", "Reduces the vocabulary"],
+      options: ["Freezes the embedding matrix", "Reuses embeddings as the output layer", "Shares weights across all layers", "Reduces the vocabulary size"],
       answer: 1,
       why: "Both matrices map between the same two spaces — token to vector and vector back to token — so sharing them is a reasonable prior as well as a 24% parameter saving. Nearly every modern LLM does it, and it is why the model matches GPT-2's count exactly." },
     { stem: "All four temperature and top-k settings produced the exact correct answer. What does that show?",
-      options: ["The decoding parameters were ignored", "Decoding settings only matter when the distribution is genuinely uncertain — a confident model on a deterministic task is robust to them", "The model was overfit", "Top-k was clamped to 1"],
+      options: ["The decoding parameters were ignored", "A confident model is robust to them", "The model was overfit to the task", "Top-k was silently clamped to 1"],
       answer: 1,
       why: "Even at temperature 2.0 with top-k 10 the correct token remained dominant, because training made the distribution extremely peaked. Temperature and top-k reshape and truncate a distribution; if it has almost all its mass on one token, reshaping changes little. They matter enormously on open-ended generation, which is where they belong." }
   ] },

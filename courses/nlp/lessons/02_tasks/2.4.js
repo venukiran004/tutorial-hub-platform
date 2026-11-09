@@ -81,7 +81,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "03", text: "Semantic similarity", id: "semantic" },
 
-    {"kind": "trace", "title": "The same four pairs, and the ordering is now right", "caption": "384 dimensions and the inversion is gone: **the synonym pair goes 0.247 to 0.910, the paraphrase 0.155 to 0.737, and the ML question pair 0.000 to 0.534.** Note the honest detail: **the reference quotes ~0.85 for that last pair and the measured value is 0.534** — so a short embedding model is less confident on a paraphrase with no shared vocabulary than the write-up suggests. **The ordering is what you rely on, not the magnitude.**", "left": "pair", "codeW": 190, "vars": ["tf-idf", "embedding", "change"], "steps": [{"code": "learn ML / study ML", "state": ["0.000", "0.534", "0 -> usable"], "tone": "good", "note": "quoted as ~0.85"}, {"code": "film excellent / movie superb", "state": ["0.155", "0.737", "+0.58"], "changed": [0, 1, 2], "tone": "good"}, {"code": "a car / an automobile", "state": ["0.247", "0.910", "+0.66"], "changed": [0, 1, 2], "tone": "good"}, {"code": "ML question / weather", "state": ["0.000", "0.059", "still near zero"], "changed": [0, 1, 2], "tone": "good", "note": "the ordering holds"}], "t": "diagram", "id": "dg-2_4-03-2"},
+    {"kind": "trace", "title": "The same four pairs, and the ordering is now right", "caption": "384 dimensions and the inversion is gone: **the synonym pair goes 0.247 to 0.910, the paraphrase 0.155 to 0.737, and the ML question pair 0.000 to 0.534.** Note the honest detail: **a commonly quoted figure for that last pair is ~0.85 and the measured value is 0.534** — so a short embedding model is less confident on a paraphrase with no shared vocabulary than the write-up suggests. **The ordering is what you rely on, not the magnitude.**", "left": "pair", "codeW": 190, "vars": ["tf-idf", "embedding", "change"], "steps": [{"code": "learn ML / study ML", "state": ["0.000", "0.534", "0 -> usable"], "tone": "good", "note": "quoted as ~0.85"}, {"code": "film excellent / movie superb", "state": ["0.155", "0.737", "+0.58"], "changed": [0, 1, 2], "tone": "good"}, {"code": "a car / an automobile", "state": ["0.247", "0.910", "+0.66"], "changed": [0, 1, 2], "tone": "good"}, {"code": "ML question / weather", "state": ["0.000", "0.059", "still near zero"], "changed": [0, 1, 2], "tone": "good", "note": "the ordering holds"}], "t": "diagram", "id": "dg-2_4-03-2"},
 
 
 
@@ -187,19 +187,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "TF-IDF scored an unrelated pair higher than three paraphrase pairs. Why?",
-      options: ["The vectoriser was misconfigured", "It measures word overlap, and the unrelated pair happened to share words", "The corpus was too small", "Cosine is the wrong metric"],
+      options: ["The vectoriser was misconfigured", "It measures overlap; those words matched", "The corpus was too small to fit", "Cosine is the wrong metric for TF-IDF"],
       answer: 1,
       why: "`the bank raised rates` and `the river bank was muddy` share `bank` and `the`, scoring 0.311, while `I need a car` and `I need an automobile` share almost nothing and scored 0.247. Lexical overlap is neither necessary nor sufficient for similarity — no tuning fixes a representation that encodes presence rather than meaning." },
     { stem: "Why can't a cross-encoder be used for search over a large corpus?",
-      options: ["It is less accurate", "It produces no reusable vector, so every query-document pair needs a forward pass", "It cannot handle long text", "It requires labelled data"],
+      options: ["It is less accurate than a bi-encoder", "No reusable vector: one pass per pair", "It cannot handle long documents", "It requires labelled training data"],
       answer: 1,
       why: "A cross-encoder encodes the pair jointly, which is what makes it accurate — the texts attend to each other — but means nothing can be precomputed. Over ten million documents that is ten million forward passes per query. The standard fix is to retrieve with a bi-encoder and rerank the top 50–100." },
     { stem: "You measured a similarity of 0.53 where a tutorial quotes 0.85. What should you conclude?",
-      options: ["Your code is wrong", "Sentence-encoder scores are model-specific and not comparable across models", "The tutorial used more data", "Cosine was computed incorrectly"],
+      options: ["Your code must be wrong", "Scores are specific to each model", "The tutorial used more data", "Cosine was computed wrongly"],
       answer: 1,
       why: "Different encoders produce different absolute scales even when their rankings agree. What matters is that the ordering is right — every paraphrase pair scored above the ambiguous pair. A threshold tuned for one encoder is meaningless for another, which is why thresholds must be calibrated on your own data and model." },
     { stem: "What does an approximate nearest-neighbour index trade away?",
-      options: ["Embedding quality", "A small amount of recall, in exchange for sublinear search", "Support for cosine similarity", "The ability to update the index"],
+      options: ["Embedding quality", "Some recall, for speed", "Cosine similarity support", "Ability to update"],
       answer: 1,
       why: "HNSW and IVF avoid examining every vector, so they occasionally miss a true nearest neighbour. That loss is tunable and usually small against the benefit — exhaustive search at ten million documents is 3.8 billion multiply-adds per query. Measure the recall against exhaustive on a sample rather than trusting the defaults." }
   ] },

@@ -199,19 +199,19 @@ results = ner("Hugging Face was founded in New York by Clément Delangue.")
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Greedy decoding produced `['O', 'I-PER', 'I-PER', 'O']`. What is wrong with it?",
-      options: ["The entity is too long", "`I-PER` cannot follow `O` — an entity continues before it begins", "The first tag should be `B-PER`", "Nothing; it is a valid tagging"],
+      options: ["The entity span is too long", "I-PER follows O: no beginning", "The first tag should be B-PER", "Nothing; it is a valid tagging"],
       answer: 1,
       why: "`I-` means continuation, so it is meaningless after `O`. Greedy took the argmax at each position independently, and at one token `I-PER` beat `B-PER` by 0.1 — well within any model's noise. Nothing in a per-token objective couples adjacent decisions, so it cannot know." },
     { stem: "Why did Viterbi choose a tag with a lower emission score?",
-      options: ["A bug in the implementation", "Because the transition it enables scores far better over the whole sequence", "To break a tie", "To satisfy the CRF loss"],
+      options: ["A bug in the implementation", "Its transition wins over the sequence", "To break a tie between two tags", "To satisfy the CRF's loss function"],
       answer: 1,
       why: "At `Steve` it took `B-PER` at 1.40 rather than `I-PER` at 1.50, because `B-PER → I-PER` is a strong transition while `I-PER` after `O` is forbidden. The totals were 8.80 against −1e9. The best sequence is not the sequence of individual bests." },
     { stem: "Is Viterbi an approximation?",
-      options: ["Yes, it prunes unlikely paths", "No — it is exact, computing the same maximum as enumeration would", "Only with a CRF", "Only for short sequences"],
+      options: ["Yes, it prunes unlikely paths", "No, it is exact", "Only when paired with a CRF", "Only for short sequences"],
       answer: 1,
       why: "It reuses the best score for each shared prefix rather than discarding paths, so it returns precisely the highest-scoring valid sequence. That reorganisation turns `O(K^T)` into `O(T·K²)` — 136,900 cell updates against 10^157 sequences at 100 tokens and 37 tags." },
     { stem: "What is the cheapest way to guarantee structurally valid tag sequences?",
-      options: ["Train a CRF", "Constrained decoding — mask invalid transitions at inference", "Increase model size", "Use BIOES instead of BIO"],
+      options: ["Train a CRF layer on top", "Mask invalid transitions", "Increase the model's size", "Switch from BIO to BIOES"],
       answer: 1,
       why: "Masking forbidden transitions during Viterbi decoding requires no training at all and takes the invalid-transition count to exactly zero. A learned CRF additionally models which *valid* transitions are likely, which helps accuracy, but for structural validity alone the constraint is free." }
   ] },

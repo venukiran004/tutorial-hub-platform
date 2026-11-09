@@ -140,19 +140,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does plain text extraction lose so much from a document?",
-      options: ["OCR is inaccurate", "Layout carries meaning — a number means 'total' because of its row and column — and extraction projects a 2-D arrangement onto a 1-D sequence", "PDFs compress text lossily", "Fonts are not preserved"],
+      options: ["OCR is inaccurate", "Layout carries meaning", "PDFs compress text lossily", "Fonts are not preserved"],
       answer: 1,
       why: "Even with perfect character recognition, flattening destroys the structure. Two-column layouts interleave, tables become an ordered jumble where no cell knows its row, and headings lose the size and position that made them headings. The information was in the arrangement." },
     { stem: "What does LayoutLM add to a standard text transformer?",
-      options: ["More layers", "2-D positional embeddings from each token's bounding box, alongside the usual 1-D sequence position", "A separate OCR module", "Cross-attention to an image encoder"],
+      options: ["More transformer layers", "2-D box position embeddings", "A separate OCR module", "Cross-attention to images"],
       answer: 1,
       why: "Attention is permutation-equivariant, so it cannot know one token sits above another unless told. Lesson 4.2 established that position must be added to the input; LayoutLM applies the same reasoning in two dimensions. Notably ViT does not — it flattens its grid and uses 1-D positions, which would be unacceptable for documents." },
     { stem: "A five-stage document pipeline underperforms. What do you do first?",
-      options: ["Upgrade the OCR model", "Measure each stage separately, because the stages' accuracies multiply and the aggregate cannot tell you which one is failing", "Increase the image resolution", "Switch to an end-to-end model"],
+      options: ["Upgrade the OCR model first", "Measure each stage separately", "Increase the image resolution", "Switch to an end-to-end model"],
       answer: 1,
       why: "At a generous 90% per stage, end-to-end is about 59%. It is the same compounding arithmetic as lesson 3.7's knowledge-graph pipeline, and the same failure shape: a layout error produces a wrong crop that OCR reads confidently and extraction reports plausibly, with nothing signalling the original mistake." },
     { stem: "What is the trade in choosing an OCR-free model like Donut?",
-      options: ["Lower accuracy for higher speed", "No compounding pipeline, but no per-stage visibility when it fails, and it needs training data in your specific document format", "It only works on scanned documents", "It cannot handle tables"],
+      options: ["Lower accuracy for higher speed", "No stage visibility; format-specific data", "It only works on scanned documents", "It cannot handle tables at all"],
       answer: 1,
       why: "End to end removes the product of five accuracies, which is a genuine advantage. It also means a failure gives you one number and an image rather than a stage to blame, and an OCR pipeline generalises across document types where an end-to-end model needs examples in your layout." }
   ] },

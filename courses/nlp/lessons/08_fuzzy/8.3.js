@@ -161,19 +161,19 @@ lsh.query(signature(new_doc))  # candidates above ~0.8, in sub-linear time
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does word Jaccard score 'John Smith' vs 'Jon Smyth' at exactly 0.0000?",
-      options: ["The strings are too short", "No token is shared — a changed character makes an entirely different set member, and sets have no notion of partial similarity", "Punctuation was not stripped", "The union is empty"],
+      options: ["The strings are too short", "Changed words share no set member", "Punctuation was not stripped", "The union of sets is empty"],
       answer: 1,
       why: "'john' and 'jon' are different objects, as are 'smith' and 'smyth', so the intersection is empty. Edit distance scored the same pair 0.8000. The failure is structural: a set method cannot express that two tokens are nearly the same, which is exactly what character n-grams fix." },
     { stem: "What do character n-grams buy over word tokens?",
-      options: ["Faster indexing", "Graceful degradation under both typos and reordering — the typo pair rose from 0.0000 to 0.1538 while reordered pairs stayed at 0.45 to 0.73", "Exact matching", "Language independence"],
+      options: ["Faster indexing of records", "Tolerance to typos and reordering", "Exact matching on whole words", "Independence from the language"],
       answer: 1,
       why: "A typo destroys only the few n-grams spanning it rather than a whole token. The cost is that reordered pairs fall from a perfect 1.0000 to around 0.5, because n-grams crossing word boundaries are lost, and every absolute score is lower — so thresholds must be recalibrated." },
     { stem: "'Smith, John' scores 0.3333 against 'John Smith' on word Jaccard. Why?",
-      options: ["The word order differs", "The comma attaches to the token, so 'smith,' and 'smith' are different set members — a punctuation artefact", "Jaccard penalises two-token strings", "Case sensitivity"],
+      options: ["The word order differs", "The comma sticks to 'smith,'", "Jaccard penalises two-token strings", "Case sensitivity"],
       answer: 1,
       why: "Order is irrelevant to Jaccard by construction, so it cannot be the cause. Stripping punctuation takes this pair to 1.0000 and costs nothing. Teams often reach for a more sophisticated metric when the real problem is trailing commas — normalise and re-measure first." },
     { stem: "When would you prefer cosine over Jaccard?",
-      options: ["Always, it is more principled", "When token counts or weights matter and length normalisation is desirable — query-document matching rather than record linkage", "On short fields", "When order matters"],
+      options: ["Always, as it is more principled", "When weights and length matter", "On short fields", "When word order matters"],
       answer: 1,
       why: "Cosine divides by both norms, so a short string and a long one containing it score highly. That is right for matching a query against a document and usually wrong for deciding whether two records describe the same entity, where the extra tokens carry distinguishing information. Jaccard's length sensitivity is a feature there." }
   ] },

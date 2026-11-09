@@ -185,19 +185,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What does the position-wise FFN do that attention does not?",
-      options: ["It mixes information between tokens", "It transforms each token independently, with no access to any other position", "It normalises the activations", "It computes attention weights"],
+      options: ["It mixes information between tokens", "It transforms each token on its own", "It normalises the activations", "It computes the attention weights"],
       answer: 1,
       why: "A block alternates between the two roles: attention mixes across positions, the FFN transforms each position alone. The FFN is where most parameters sit — roughly two-thirds of the non-embedding total — and under the key-value memory reading it is where pretrained factual associations are stored." },
     { stem: "Why is LLaMA-7B's FFN hidden size 11008?",
-      options: ["An arbitrary choice", "It is (8/3) x 4096 = 10922.7 rounded up to a multiple of 256 for hardware alignment", "It is 4 x d_model minus overhead", "It matches the vocabulary size"],
+      options: ["An arbitrary design choice", "(8/3)·4096, rounded to 256s", "4·d_model minus overhead", "It matches the vocabulary"],
       answer: 1,
       why: "SwiGLU uses three weight matrices instead of two, so d_ff shrinks by two-thirds to hold the parameter budget fixed — verified at 0.9999 of a standard FFN. (8/3) x 4096 is 10922.7, and rounding up to a 256 multiple gives 11008, which is 43 x 256." },
     { stem: "What did benchmarking RMSNorm against LayerNorm on CPU show?",
-      options: ["RMSNorm was 10-15% faster as claimed", "RMSNorm was 2.6x slower, because ATen's LayerNorm kernel is optimised and its RMSNorm path is not", "They were identical", "RMSNorm failed to run"],
+      options: ["RMSNorm was 10–15% faster, as claimed", "RMSNorm was slower: an unoptimised path", "They were identical in speed", "RMSNorm failed to run at all"],
       answer: 1,
       why: "43.80 ms against 114.73 ms, and using nn.RMSNorm rather than composed ops changed nothing. RMSNorm genuinely does less arithmetic; whether that becomes speed depends on whether someone wrote a good kernel for your backend. The parameter saving — exactly half, gamma only — holds everywhere." },
     { stem: "Why did Pre-LN replace Post-LN?",
-      options: ["It produces better final quality", "Because the residual path stays an unobstructed identity, so gradients reach early layers — 1.495e-01 against 1.918e-07 — and no warmup is needed", "It uses fewer parameters", "It is faster"],
+      options: ["It gives better final model quality", "The residual stays clean; gradients flow", "It uses fewer parameters per block", "It runs faster on every hardware type"],
       answer: 1,
       why: "Post-LN puts normalisation on the residual trunk, so every block attenuates what passes through. Pre-LN's gradient profile is flat with depth, ratio 0.9 top to bottom. Some work finds Post-LN reaches slightly better quality with carefully tuned warmup — Pre-LN won on reliability, which matters more when a diverged run costs weeks." }
   ] },

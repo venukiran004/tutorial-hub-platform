@@ -171,19 +171,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "LoRA cut training memory from 1751.7 MB to 441.5 MB. What actually shrank?",
-      options: ["The model weights", "Gradients and Adam optimiser state, which scale with trainable parameters — the 437.9 MB of weights is unchanged", "The activations", "The dataset"],
+      options: ["The model weights themselves", "Gradients and optimiser state", "The stored activations", "The training dataset"],
       answer: 1,
       why: "Gradients fell from 437.9 MB to 1.2 MB and Adam state from 875.9 MB to 2.4 MB. The weights must stay resident for the forward pass. Since Adam keeps two moments per trainable parameter, it is the largest term in a full fine-tune, and eliminating it is most of the saving — which is also why QLoRA quantises the frozen base, the one term LoRA cannot touch." },
     { stem: "What does LoRA's low-rank assumption actually claim?",
-      options: ["That weight matrices are low-rank", "That the fine-tuning update ΔW has low intrinsic rank, not the weights themselves", "That attention is low-rank", "That gradients are sparse"],
+      options: ["That weight matrices are low-rank", "That the update ΔW is low-rank", "That attention maps are low-rank", "That gradients are sparse"],
       answer: 1,
       why: "A rank-64 truncated SVD captures only 14.5% of a random 768×768 matrix, so 'weights are low-rank' is false. Adapting a model that already works to one task needs far less expressive change than learning the weights originally — which is why rank 8 or 16 usually suffices, and why genuinely large adaptations like a new language need higher rank or full fine-tuning." },
     { stem: "Why does distillation raise the temperature of the teacher's outputs?",
-      options: ["To regularise the student", "To surface the relative structure among wrong answers — at T=5 the teacher shows tiger and lion are plausible and car is not", "To speed up training", "To match the student's capacity"],
+      options: ["To regularise the student model", "To reveal structure among wrong answers", "To speed up the training process", "To match the student's capacity"],
       answer: 1,
       why: "At T=1 the teacher gives cat 0.7163 and everything else near zero, which is what a hard label already says. At T=5 it gives tiger 0.2427 and lion 0.2285 against car's 0.1205 — a similarity structure learned from millions of examples that a one-hot label cannot express. That is the dark knowledge being transferred." },
     { stem: "Your inference costs are too high. Does LoRA help?",
-      options: ["Yes, it makes the model smaller", "No — LoRA cuts training cost and folds back into W at zero inference overhead; distillation or quantisation is what reduces serving cost", "Yes, by reducing context length", "Only with adapters"],
+      options: ["Yes, it makes the model smaller", "No: it cuts training cost, not serving", "Yes, by reducing the context length", "Only when used with adapters"],
       answer: 1,
       why: "A LoRA-tuned model serves at exactly the base model's size and speed, because the update is merged into the existing weights. That is a feature, but it means PEFT solves training cost, not serving cost. For inference you need a genuinely smaller model — distillation, where DistilBERT is 1.65x smaller at about 97% quality — or fewer bytes per parameter via quantisation." }
   ] },

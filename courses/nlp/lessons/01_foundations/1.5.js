@@ -208,19 +208,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does an unsmoothed n-gram model fail on held-out text?",
-      options: ["It overfits the training vocabulary", "A single unseen n-gram makes the whole sentence probability zero and the log-probability −∞", "It runs out of memory", "The counts become too large"],
+      options: ["It overfits the training vocabulary", "One unseen n-gram zeroes the whole sentence", "It runs out of memory on held-out text", "The counts become too large to store"],
       answer: 1,
       why: "Sentence probability is a product of conditionals, so one zero factor zeroes everything. The model does not think the sentence is unlikely — it thinks it is impossible. Since held-out text always contains unseen n-grams, perplexity is infinite and the model cannot be evaluated at all." },
     { stem: "After add-one smoothing on the model, how much probability mass do the actually-observed continuations retain?",
-      options: ["All of it", "0.385 — the other 61.5 % went to unseen events", "0.95", "It depends on the corpus size only"],
+      options: ["All of it, 1.0", "0.385 of it", "About 0.95 of it", "It depends on size only"],
       answer: 1,
       why: "Measured directly: before smoothing the two continuations seen after `cat` held all the mass; after, they hold 0.385. The rest is spread over every vocabulary word that never followed `cat`. This over-smoothing worsens as the vocabulary grows, which is why production systems use add-`k` with small `k`, or Kneser-Ney." },
     { stem: "A model has perplexity 80. What does that mean?",
-      options: ["It is 80 % accurate", "It is as uncertain as choosing uniformly among about 80 words at each step", "It needs 80 training epochs", "Its vocabulary is 80 words"],
+      options: ["It is 80% accurate", "Like choosing among ~80 words", "It needs 80 training epochs", "Its vocabulary is 80 words"],
       answer: 1,
       why: "Perplexity is an effective branching factor — the size of the set the model has narrowed the next word down to. That reading makes it interpretable: uniform guessing over the vocabulary gives the vocabulary size, so any lower value is the reduction in uncertainty the model achieved." },
     { stem: "Why does increasing `n` beyond trigrams stop helping?",
-      options: ["The maths breaks down", "The n-gram space grows as `|V|^n` while the data does not, so counts become irreducibly sparse", "Memory is the only limit", "Longer n-grams are less informative"],
+      options: ["The probability maths breaks down", "|V|^n outgrows the data; counts go sparse", "Memory is the only real limit", "Longer n-grams carry less information"],
       answer: 1,
       why: "At a 50,000-word vocabulary there are 1.25e+14 possible trigrams and the largest corpora hold around 10¹² tokens, so you observe a vanishing fraction. The model gets more expressive and the counts get sparser at the same rate, which means most predictions come from the smoothing rule rather than from evidence." }
   ] },

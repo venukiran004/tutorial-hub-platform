@@ -188,19 +188,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does subword tokenisation eliminate the unknown-token problem?",
-      options: ["It has a very large vocabulary", "The base vocabulary contains every character (or byte), so the worst case is a long sequence of small pieces", "It maps unknown words to the nearest known word", "It uses a special UNK embedding"],
+      options: ["It has a very large vocabulary", "Every byte is in the base vocabulary", "It maps unknowns to the nearest word", "It uses a special UNK embedding"],
       answer: 1,
       why: "'widest' shared no learned merge with the training corpus and still encoded — as seven single characters. A word-level tokeniser would have emitted UNK and destroyed the word's identity before the model saw it. Byte-level BPE strengthens this further: starting from the 256 bytes makes every possible input encodable." },
     { stem: "What is the trained artefact of BPE, and why does its order matter?",
-      options: ["A vocabulary set", "The ordered list of merge rules — applying them in a different order produces different tokens for the same input", "A frequency table", "A neural network"],
+      options: ["An unordered set of vocabulary items", "Ordered merges; order changes output", "A table of token frequencies", "A small trained neural network"],
       answer: 1,
       why: "Encoding replays the merges in exactly the order they were learned. The worked example applies (n,e) at frequency 6 before two frequency-7 merges, and that ordering difference is why it reports 'newer' as two tokens where strict greedy merging produces one." },
     { stem: "Why did the Hindi text cost GPT-2 26 tokens for 16 characters?",
-      options: ["A tokeniser bug", "Devanagari is multi-byte in UTF-8 and the merge rules, trained on mostly English, never learned to combine those byte sequences", "Hindi has no word boundaries", "The text contained unknown characters"],
+      options: ["A bug in GPT-2's byte-level tokeniser", "Multi-byte script, merges never learned", "Hindi text has no word boundaries", "The text contained unknown characters"],
       answer: 1,
       why: "Byte-level BPE can always encode the text — there were 0 unknown tokens — but without learned merges it falls back to near-per-byte tokens. The result is more than one token per character, so the same content uses double the context window and costs double per call. It is an equity problem that is invisible until measured." },
     { stem: "What is the cost of increasing vocabulary size?",
-      options: ["Slower tokenisation", "A larger embedding matrix at vocab_size × d_model, and each token appearing less often in training", "Worse coverage of rare words", "Longer sequences"],
+      options: ["Slower tokenisation of text", "Bigger embeddings, rarer tokens", "Worse coverage of rare words", "Longer token sequences"],
       answer: 1,
       why: "Larger vocabularies shorten sequences and improve multilingual coverage, which is why the trend runs from BERT's 30,522 to LLaMA 3's 128,000. The cost is parameters — 128,000 × 4096 is 524M for the embedding alone, usually tied with the output projection — and less training evidence per token." }
   ] },

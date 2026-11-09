@@ -134,19 +134,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why are the toy model's logits exactly antisymmetric?",
-      options: ["Coincidence of the chosen numbers", "LayerNorm forces sum(h) = 0, and the vocabulary's embeddings pair up to [1,1,1,1], so each pair's logits must sum to h · [1,1,1,1] = 0", "The softmax normalises them", "Weight tying enforces it"],
+      options: ["A coincidence of the chosen numbers", "Zero-sum LayerNorm meets paired embeddings", "The softmax normalises them that way", "Weight tying enforces the symmetry"],
       answer: 1,
       why: "For any pair summing to all-ones, logit(a) + logit(b) = h · [1,1,1,1] = sum(h), and LayerNorm subtracts the mean so that is exactly zero. It holds for any input, necessarily. It is an artefact of a tidy toy vocabulary rather than a property of real transformers — but it is only visible if you recompute rather than read." },
     { stem: "What does ReLU accomplish in the FFN?",
-      options: ["It normalises the activations", "It switches features off — one of four dimensions went to exactly 0, which in a real FFN is how the network selects which learned features are active", "It prevents overfitting", "It scales the residual"],
+      options: ["It normalises the activations", "It switches features off", "It prevents overfitting", "It scales the residual"],
       answer: 1,
       why: "Under the key-value memory reading, the hidden activation records which patterns fired, and ReLU makes that a selection rather than a weighted sum of everything. The cost is that the zeroed dimension now has exactly zero gradient — the dead-ReLU problem, which is why GELU and SiLU, going smoothly negative, replaced it." },
     { stem: "Why does the residual connection matter here?",
-      options: ["It speeds up computation", "Attention produced a blend dominated by other tokens; adding the input back makes the output the original token plus a contextual update", "It normalises the scale", "It enables weight tying"],
+      options: ["It speeds up the computation", "It keeps the token plus an update", "It normalises the output scale", "It is what enables weight tying"],
       answer: 1,
       why: "Without it, stacked layers would progressively wash out a token's own identity, and gradients would have no unobstructed path back — lesson 4.6 measured a 780,000x difference in gradient reaching the first block between Pre-LN and Post-LN. The residual is what makes the residual-stream framing of lesson 4.7 apply." },
     { stem: "A commonly published output prints -0.18 where the computation gives -0.1629. What happened?",
-      options: ["An error in the reference", "Accumulated display rounding — it carried two-decimal intermediates, and three steps moved the value by 10%", "A different LayerNorm epsilon", "A transcription mistake"],
+      options: ["The published value is simply wrong", "Rounded intermediates drifted by 10%", "A different LayerNorm epsilon", "A transcription mistake in copying"],
       answer: 1,
       why: "It used -0.34 and 0.16 rather than -0.3315 and 0.1685. Everything downstream still lands within 0.01 of its published value, so the walkthrough is sound. It is worth flagging only as a demonstration of how quickly hand-arithmetic drifts when intermediates are rounded." }
   ] },

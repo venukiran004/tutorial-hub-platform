@@ -166,19 +166,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Where do a transformer's weight matrices come from?",
-      options: ["They are hand-designed for each task", "Shape is fixed by the architecture, values start random, and gradient descent on next-token loss sets them", "They are derived from the vocabulary", "W_Q and W_K are fixed; only the FFN is learned"],
+      options: ["Hand-designed for each task", "Fixed shapes; values learned by descent", "Derived from the vocabulary", "W_Q and W_K are fixed; only FFNs learn"],
       answer: 1,
       why: "Nobody programs W_Q to find subjects. The subject-verb attention pattern in the toy examples appears because the matrices were hand-picked to be readable; in a real model the same pattern emerges because it lowered the loss. Real matrices are dense floats with no visible structure." },
     { stem: "The same sentence gave 'sat' weights of 0.510 on itself, then 0.515 on 'cat', then 0.661 on 'cat'. What changed?",
-      options: ["The sentence", "Only the weight matrices — the architecture and formula were identical throughout", "The positional encoding", "The number of heads"],
+      options: ["The input sentence", "Only the weight matrices", "The positional encoding", "The number of heads"],
       answer: 1,
       why: "Identity projections force self-similarity because Q = K makes a token's highest score its own squared norm. Two different real projection pairs then produce two different linguistic readings. Nothing structural differs between the three — which is the clearest demonstration that the weights are the model." },
     { stem: "Why subtract the row maximum before exponentiating in softmax?",
-      options: ["It changes the distribution to be better calibrated", "Softmax is shift-invariant, so it changes nothing mathematically while preventing exp from overflowing", "It applies the causal mask", "It normalises the scale of the logits"],
+      options: ["It improves the distribution's calibration", "Shift-invariance: it only prevents overflow", "It applies the causal mask", "It normalises the scale of the logits"],
       answer: 1,
       why: "Scores [7.026, 8.050, 6.170] become [-1.024, 0.000, -1.880], exponentiate safely, and give the same weights. Generalised from a single row-max to running statistics carried across blocks, this becomes the online softmax that makes FlashAttention and ring attention possible without materialising the full matrix." },
     { stem: "The logit antisymmetry reappeared on completely different weights. Why does that matter?",
-      options: ["It shows the weights were badly chosen", "It confirms the property is derived — from LayerNorm's zero-sum output and the vocabulary's paired embeddings — rather than coincidental", "It proves the trace is wrong", "It means the model is undertrained"],
+      options: ["The weights were badly chosen", "The property is derived, not chance", "It proves the trace is wrong", "The model is undertrained"],
       answer: 1,
       why: "Lesson 6.3 predicted it must hold for any input and any weights, from two structural facts. Surviving a change to everything the derivation did not depend on is exactly how a derived property is distinguished from a coincidence. It also means this toy vocabulary constrains what the model can express — real vocabularies do not." }
   ] },

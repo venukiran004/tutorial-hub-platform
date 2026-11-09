@@ -287,7 +287,7 @@ for q, n in dist.most_common():
         answer: 1,
         why: "Faithfulness only asks whether claims are supported by what was retrieved, so a model grounded in irrelevant context scores well while answering nothing useful. This is the misdiagnosed quadrant precisely because the headline number looks healthy \u2014 the concrete case being a refund-policy query that retrieved a document about invented policies, which is on-topic and not an answer. The reverse pattern, low faithfulness with high recall, is the generation problem." },
 
-      { stem: "Why does the reference insist on logging which claim was unsupported rather than just the faithfulness score?",
+      { stem: "Why log which claim was unsupported rather than just the faithfulness score?",
         options: [
           "Because the score is unreliable without the claim count",
           "Because the score prompts an investigation while the failing claim is the thing a person can act on",

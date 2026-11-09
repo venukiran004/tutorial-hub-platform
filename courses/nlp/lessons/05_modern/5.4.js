@@ -172,19 +172,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What did Chinchilla actually show?",
-      options: ["That bigger models are always better", "That for a fixed compute budget, parameters and data should scale equally — and the flagship models of the era were badly under-trained", "That data quality matters more than quantity", "That 70B is the optimal model size"],
+      options: ["That bigger models are always better", "Scale parameters and data together", "That data quality beats quantity", "That 70B is the optimal model size"],
       answer: 1,
       why: "Chinchilla used essentially Gopher's compute (5.88e23 against 5.04e23 FLOPs) at a quarter the parameters and four times the data, and won. Gopher saw 1.1 tokens per parameter and GPT-3 1.7 against a compute-optimal figure near 20 — the field had been buying parameters when it should have been buying data." },
     { stem: "Why does LLaMA-3 8B use 1875 tokens per parameter when Chinchilla says 20?",
-      options: ["The Chinchilla result was wrong", "Chinchilla optimises training compute only, while inference cost scales with N and is paid on every request forever", "It was trained on lower-quality data", "To improve few-shot learning"],
+      options: ["The Chinchilla result was simply wrong", "Inference cost scales with N, forever", "It was trained on lower-quality data", "To improve its few-shot learning"],
       answer: 1,
       why: "Overshooting on data to reach the same quality with a smaller model trades a one-off training cost for a permanent inference saving. At serving scale that is overwhelmingly worth it — which is why LLaMA-3 8B consumed 7.20e23 training FLOPs, more than Gopher's 280B model did." },
     { stem: "How was an emergence curve produced from a smooth capability?",
-      options: ["By adding noise", "By scoring a smoothly improving per-token accuracy with exact match over several tokens, which is p^k and manufactures a threshold", "By using too few models", "By plotting on a log axis"],
+      options: ["By adding noise to the scores", "Exact match over k tokens is p^k", "By using too few model sizes", "By plotting on a log axis"],
       answer: 1,
       why: "Per-token accuracy followed a smooth logistic with no discontinuity, yet exact match over 5 tokens read 0.000109, 0.006555, 0.102544, 0.415459 across successive orders of magnitude. Over 20 tokens the apparent jump between 1e11 and 1e12 was 269x. Raising a sigmoid to a power creates the cliff." },
     { stem: "What should you do when you see a sharp capability jump on a benchmark?",
-      options: ["Report it as emergence", "Re-score the same outputs with a continuous metric — per-token accuracy, edit distance, log-probability — before concluding anything switched on", "Train a larger model", "Increase the sample size"],
+      options: ["Report it as an emergent ability", "Re-score with a continuous metric", "Train a larger model to confirm it", "Increase the evaluation sample size"],
       answer: 1,
       why: "A discontinuous metric over a smooth capability produces the same picture as a genuine discontinuity, so the sharp curve alone is not evidence. If the continuous version is smooth, it is a metric effect. If it is also sharp, you have something real. The tasks where emergence is most reported — multi-step arithmetic, code that must compile, chain-of-thought — are exactly those with long all-or-nothing outputs." }
   ] },

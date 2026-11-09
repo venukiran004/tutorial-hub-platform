@@ -138,19 +138,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "On an image of two blue squares, CLIPScore rated 'one blue square' higher than 'two blue squares'. Why?",
-      options: ["A bug in the implementation", "CLIPScore is a CLIP cosine, and CLIP encodes counting weakly because web alt-text rarely states counts", "Shorter captions always score higher", "The image was ambiguous"],
+      options: ["A bug in the implementation", "CLIP encodes counting weakly", "Shorter captions score higher", "The image was ambiguous"],
       answer: 1,
       why: "The gap was +0.0023 for the wrong count, while colour errors were separated by 0.0595 and shape by 0.0482 — so the metric works in general and is specifically blind to count. A metric built on a model inherits that model's blind spots, exactly as lesson 3.4 found for BLEU, METEOR and BERTScore." },
     { stem: "What does FID actually compare?",
-      options: ["Two individual images", "Two distributions — sets of real and generated images embedded through Inception-v3 and fitted with Gaussians", "Caption quality", "Perceptual similarity of matched pairs"],
+      options: ["Two individual images", "Two image distributions", "Caption quality", "Matched-pair similarity"],
       answer: 1,
       why: "It is undefined for a single image, needs thousands on both sides to be stable, and is sensitive to the sample size, so FID numbers only compare when computed identically. It also inherits Inception-v3's features entirely — a difference Inception cannot see is a difference FID cannot measure." },
     { stem: "Why is VQA accuracy defined as min(humans giving that answer / 3, 1)?",
-      options: ["To reward confident answers", "Because visual questions often have several defensible answers, so ground truth is a distribution rather than a single value", "To normalise across question types", "To penalise rare answers"],
+      options: ["To reward confident answers", "Valid answers form a distribution", "To normalise across question types", "To penalise rare answers"],
       answer: 1,
       why: "Ten annotators answer each question; three agreeing with you gives full credit. It exists because 'what colour is the shirt' on an arguably-blue-or-teal shirt has no single right answer, and exact match would call a reasonable response wrong. It is a more honest framing than most benchmarks, at the cost of needing ten human annotations per question." },
     { stem: "How should you evaluate a property like object counting?",
-      options: ["Use CLIPScore with more samples", "Generate images with known counts and check the extracted number directly against ground truth, with no model in the loop", "Use FID", "Use CIDEr against human captions"],
+      options: ["CLIPScore with more samples", "Known counts, checked directly", "FID on the generated images", "CIDEr against human captions"],
       answer: 1,
       why: "Do not ask a metric that cannot count. Synthetic probes with controlled attributes give exact ground truth for counting, spatial relations, colours — anything you can set at generation time. They are the most reliable multimodal evaluation available, and this lesson's probe took four generated squares to build." }
   ] },

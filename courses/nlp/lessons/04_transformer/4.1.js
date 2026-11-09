@@ -169,15 +169,15 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why was attention slower than the LSTM at 512 tokens?",
-      options: ["A benchmarking error", "Attention's arithmetic is quadratic in sequence length, and a CPU forward pass offers little parallelism to offset it", "The LSTM had fewer parameters", "MultiheadAttention is unoptimised"],
+      options: ["A benchmarking error in the measurement", "Quadratic arithmetic with little CPU parallelism", "The LSTM had far fewer parameters to run", "MultiheadAttention is entirely unoptimised"],
       answer: 1,
       why: "63.36 ms against 47.79 ms, with attention's advantage shrinking monotonically from 1.84x at T=32. The LSTM is O(T) sequential steps of cheap work; attention is O(T squared) arithmetic done in parallel. The paper's speedup claim is about GPU training, where the RNN's sequential dependency leaves hardware idle — a different measurement." },
     { stem: "What is the structural advantage attention has regardless of wall clock?",
-      options: ["Fewer parameters", "Constant path length — any two positions are one step apart, so no long product of Jacobians forms", "Lower memory use", "Better initialisation"],
+      options: ["It has fewer parameters", "Constant path length", "It uses less memory", "It initialises better"],
       answer: 1,
       why: "At 4,096 tokens an RNN gradient traverses 4,095 steps, each multiplying by a Jacobian, and that product vanishes or explodes. Attention connects any pair in one step, so the product never forms along the time axis. This is what actually lets transformers learn dependencies an LSTM cannot." },
     { stem: "Where are most of a transformer block's parameters?",
-      options: ["In the attention projections", "In the feed-forward network, at 2.00x the attention block", "In the layer norms", "Split evenly"],
+      options: ["In the attention projections", "In the feed-forward network", "In the layer norms", "Split evenly between them"],
       answer: 1,
       why: "At the paper's configuration, attention holds 1,050,624 parameters per encoder block and the FFN holds 2,099,712. The ratio follows from d_ff = 4 x d_model, a convention nearly every later model kept. It matters when budgeting memory or choosing what to quantise." }
   ] },

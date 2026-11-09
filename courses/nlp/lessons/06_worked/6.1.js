@@ -127,19 +127,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Which parts of the toy model are simplified, and which are real?",
-      options: ["Everything is simplified", "Only the attention projections (identity) and the FFN weights — scaling, masking, softmax, residuals, norms and weight tying are all genuine", "Only the vocabulary size", "The softmax is approximated"],
+      options: ["Everything in it is a simplification", "Only identity projections and the FFN", "Only the size of its vocabulary", "The softmax step is approximated"],
       answer: 1,
       why: "Setting Q = K = V = X and using identity FFN weights keeps the arithmetic hand-checkable. Everything else is exactly what a real transformer computes, and lesson 6.2 works the version with genuine learned W_Q, W_K and W_V so even the first simplification is temporary." },
     { stem: "Why is an embedding lookup equivalent to a matrix multiply?",
-      options: ["It is not — lookup is faster", "Selecting row i of E is identical to multiplying a one-hot vector by E, which is why it trains by backpropagation and why output weight tying works", "Because the embeddings are orthogonal", "Because d_model is small"],
+      options: ["It is not; a lookup is faster", "Row i of E equals one-hot × E", "Because embeddings are orthogonal", "Because d_model is small here"],
       answer: 1,
       why: "The gather is an implementation optimisation over multiplying by a mostly-zero matrix, but mathematically it is a linear layer. That equivalence is what lets the same matrix map one-hot to vector on the way in and vector to logits on the way out — weight tying, which lesson 6.3 uses." },
     { stem: "At d = 4, what does the slow frequency pair contribute over three positions?",
-      options: ["Most of the positional signal", "Almost nothing — it moves from 1.0000 to 0.9998, because it exists to distinguish distant positions rather than adjacent ones", "It distinguishes the first from the last token", "It encodes the token identity"],
+      options: ["Most of the positional signal", "Almost nothing at short range", "It separates first from last", "It encodes the token identity"],
       answer: 1,
       why: "The fast pair's cosine flips from 1.00 to -0.42 across the same three positions while the slow pair barely moves. Geometric frequency spacing gives resolution at every scale simultaneously — the slow dimensions separate position 5 from position 500, not position 0 from position 2." },
     { stem: "Why is positional information added to the embedding rather than concatenated?",
-      options: ["Addition is more accurate", "Concatenation would permanently spend a fixed fraction of d_model on position; addition keeps the full width for content and the network learns projections that respond to each", "Concatenation breaks the residual connection", "The dimensions must match the vocabulary"],
+      options: ["Addition is more accurate", "Concatenation spends width on position", "Concatenation breaks the residual", "The sizes must match the vocabulary"],
       answer: 1,
       why: "Summing looks lossy — z0 becomes [1,1,1,1] — but the network never needs to separate the two signals, only to have projections sensitive to whichever matters. At d = 4 that is genuinely cramped; at 768 there is ample room, which is why the field settled on addition." }
   ] },

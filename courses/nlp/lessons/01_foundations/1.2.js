@@ -263,15 +263,15 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why do emoji survive `text.translate(str.maketrans(\"\", \"\", string.punctuation))`?",
-      options: ["They are letters", "`string.punctuation` contains only 32 ASCII characters", "The translate call is wrong", "NFKD removed them already"],
+      options: ["Emoji are classified as letters", "string.punctuation holds only 32 ASCII marks", "The translate call is written wrongly", "NFKD normalisation removed them already"],
       answer: 1,
       why: "`string.punctuation` is an ASCII constant and knows nothing about emoji, CJK punctuation or mathematical symbols. Running the worked example gives `check out its amazing 🎉🎉🎉`, not the `check out its amazing` it claims. Unicode-aware removal needs `unicodedata.category`." },
     { stem: "Your preprocessed corpus contains the token `3050` where the original said `$30.50`. What happened?",
-      options: ["The tokeniser merged two numbers", "Punctuation removal deleted the decimal point", "NFKD normalisation", "Number removal was enabled"],
+      options: ["The tokeniser merged two numbers", "Punctuation removal deleted the point", "NFKD normalisation altered the digits", "Number removal had been enabled"],
       answer: 1,
       why: "Stripping punctuation takes the `.` with it, so the price becomes a number a hundred times too large and indistinguishable from a real 3050. The same corrupts dates, versions and IP addresses. Replace numbers with a placeholder before stripping, or exclude `.` and `,`." },
     { stem: "`WordNetLemmatizer().lemmatize(\"better\")` returns `better`, not `good`. Why?",
-      options: ["WordNet has no entry for 'better'", "It defaults to noun, and `better` only lemmatises to `good` as an adjective", "The corpus is not downloaded", "Lemmatisation cannot handle comparatives"],
+      options: ["WordNet has no entry for 'better'", "It defaults to noun; 'good' needs adjective", "The WordNet corpus is not downloaded", "Lemmatisers cannot handle comparatives"],
       answer: 1,
       why: "The default POS is noun. Passing `pos='a'` gives `good`; passing nothing silently gives back the input. NLTK lemmatisation is therefore only correct if you POS-tag first and map to WordNet's categories — which is why spaCy, where tagging is part of the pipeline, is more reliable in practice." },
     { stem: "The elongation regex `(.)\\1{2,}` → `\\1` is applied to `cooool`. What is the result?",

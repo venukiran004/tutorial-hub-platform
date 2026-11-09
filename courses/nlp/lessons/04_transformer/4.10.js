@@ -162,19 +162,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did the total differ from the checkpoint by 82,944?",
-      options: ["A rounding error", "It counts weights only — the biases are 3,072 attention plus 3,840 FFN per block, across 12 blocks", "The checkpoint includes optimiser state", "The vocabulary size differs"],
+      options: ["A rounding error in the arithmetic", "Biases were left out of the count", "The checkpoint stores optimiser state", "The vocabulary sizes differ"],
       answer: 1,
       why: "6,912 bias parameters per block times 12 blocks is exactly 82,944. Most parameter formulas quote weights only, which here is a 0.07% omission. Some architectures drop biases altogether — LLaMA has none in its linear layers — which makes the arithmetic exact." },
     { stem: "Where does the 12·L·d² rule come from?",
-      options: ["Empirical fitting", "Attention is 4d² (four d×d projections) and the FFN at d_ff = 4d is 8d², totalling 12d² per layer", "It counts the embedding matrix", "It approximates the LayerNorms"],
+      options: ["An empirical fit to model sizes", "4d² attention plus 8d² FFN", "It counts the embedding matrix", "It approximates the LayerNorms"],
       answer: 1,
       why: "It is the exact leading term, not an approximation. Everything omitted — biases and LayerNorms, both O(d) — is one order smaller, which is why it matched actual non-embedding parameters at a ratio of 1.0014 for GPT-2 small." },
     { stem: "You double d_model. What happens to parameters per layer?",
-      options: ["They double", "They quadruple, because the count is proportional to d²", "They stay the same", "They grow by 12d"],
+      options: ["They double", "They quadruple", "They stay the same", "They grow by 12d"],
       answer: 1,
       why: "d enters squared and L only linearly. That asymmetry is why architectures tend to grow deeper faster than wider, and why moving d_model from 4096 to 8192 is a four-times increase per layer rather than a doubling. It widens every activation and the KV cache too." },
     { stem: "Why did LLaMA-3's embedding share rise to 7.5% when LLaMA-2's was 2.0%?",
-      options: ["It is a larger model", "It kept d_model at 4096 but took the vocabulary from 32,000 to 128,256", "It untied the embeddings", "It added positional embeddings"],
+      options: ["It is a larger model overall", "Same d_model, a 4× vocabulary", "It untied the embeddings", "It added positional embeddings"],
       answer: 1,
       why: "Embedding cost is vocab × d, so quadrupling the vocabulary at fixed width quadrupled that term to 525M while the body was unchanged. It was a deliberate trade — a larger vocabulary means fewer tokens per sequence, which matters a great deal for non-English text and context efficiency." }
   ] },

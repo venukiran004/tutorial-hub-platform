@@ -190,19 +190,19 @@ result = classifier(
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "A binary classifier scores 98 % accuracy on data that is 98 % negative. What do you conclude?",
-      options: ["It is an excellent model", "It may have learned nothing — check macro-F1 and per-class recall", "The data is clean", "It is overfitting"],
+      options: ["It is an excellent model", "It may have learned nothing", "The data must be clean", "It is overfitting"],
       answer: 1,
       why: "A model that always predicts the majority achieves exactly that accuracy. In the measured case macro-F1 was 0.4949 and recall on the positive class was 0.0000 — the class anyone cares about was never predicted at all. Accuracy under imbalance rewards ignoring the minority entirely." },
     { stem: "Why does Naive Bayes often beat logistic regression on text?",
-      options: ["Its independence assumption is true for language", "Text is sparse and high-dimensional, where its bias acts as regularisation and it needs little data", "It uses more features", "It handles word order"],
+      options: ["Its independence assumption holds for language", "Sparse text: its bias regularises, needs little data", "It uses more features than logistic regression", "It models word order, which LR ignores"],
       answer: 1,
       why: "The assumption is plainly false — that is what 'naive' names — but it wins anyway on this kind of data, measured at 0.8933 against 0.8642 here. Sparse high-dimensional problems favour a strongly biased estimator, and Naive Bayes estimates its parameters from very few examples." },
     { stem: "Why should Naive Bayes probabilities not be used as confidences?",
-      options: ["They are not normalised", "Correlated words are multiplied as if independent, pushing outputs towards 0 and 1", "They are always uniform", "The smoothing distorts them"],
+      options: ["They are not normalised to one", "Correlated words push them to 0 or 1", "They are always uniform across classes", "The smoothing distorts every value"],
       answer: 1,
       why: "The independence assumption means correlated evidence is counted several times over, so the posterior saturates and the model appears far more certain than it is. Use the ranking, which is generally sound, and if you need calibrated confidences use logistic regression or apply Platt scaling." },
     { stem: "Why wrap the vectoriser and classifier in a `Pipeline` for cross-validation?",
-      options: ["It is faster", "So the vectoriser is refitted inside each fold, avoiding leakage from the validation data", "It reduces memory", "It enables parallelism"],
+      options: ["It makes training faster", "The vectoriser refits per fold", "It reduces peak memory use", "It enables parallel training"],
       answer: 1,
       why: "Fitting the vectoriser once on all the data means the vocabulary and idf statistics were computed using the validation fold, which inflates the score. A `Pipeline` makes the whole thing one estimator so `cross_val_score` refits every step inside each fold — the same discipline as fitting a scaler on training data only." }
   ] },

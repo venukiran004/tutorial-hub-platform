@@ -242,19 +242,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did the TF-IDF scorer rank the weather sentence above the attention sentence?",
-      options: ["A bug in the vectoriser", "Because TF-IDF rewards rare terms, and 'weather' and 'unremarkable' were rare in that document", "Because it was shorter", "Because stopwords were not removed"],
+      options: ["A bug in the vectoriser", "TF-IDF rewards rare terms", "The sentence was shorter", "Stopwords were not removed"],
       answer: 1,
       why: "It scored 1.7321 against 1.6014. The objective measures term rarity, and the one deletable sentence in the document happened to contain the rarest words. Nothing in summed TF-IDF asks which sentence carries the argument — rarity is being used as a proxy for importance, and the two come apart routinely." },
     { stem: "What did measuring BART's output on a rambling transcript reveal?",
-      options: ["It paraphrased heavily", "It copied 57 of 57 words as a single verbatim run and stopped mid-clause", "It hallucinated new facts", "It failed to produce output"],
+      options: ["It paraphrased the transcript heavily", "It copied 57 words verbatim and stopped", "It hallucinated new facts", "It failed to produce any output"],
       answer: 1,
       why: "Copy rate was 100%, the longest verbatim run was the whole 57-word output, and it ended at 'the person who used to'. That is truncation rather than summarisation — the input was outside the news distribution BART was fine-tuned on, and the model fell back on copying." },
     { stem: "Why is ROUGE recall-oriented rather than precision-oriented?",
-      options: ["Recall is easier to compute", "Because the failure mode worth penalising in a summary is omitting important content", "To match BLEU", "Because precision is undefined for summaries"],
+      options: ["Recall is easier to compute", "Omission is the failure to penalise", "To match how BLEU is defined", "Precision is undefined for summaries"],
       answer: 1,
       why: "A summary that drops the main finding has failed, so the metric asks what fraction of the n-grams were produced. Precision alone would reward a one-word summary. Most reported ROUGE numbers are F1, combining both, but the recall orientation is what the name records." },
     { stem: "Which property makes extraction attractive in a regulated domain?",
-      options: ["Higher ROUGE scores", "Every output sentence traces to a source offset, so no factuality review is needed", "Faster inference", "Better fluency"],
+      options: ["It achieves higher ROUGE scores", "Each sentence traces to its source", "It runs much faster at inference", "Its output reads more fluently"],
       answer: 1,
       why: "Faithfulness comes from construction, not from the model behaving well — an extractive summary cannot assert anything the source did not. That removes the verification step entirely, which usually dominates the true cost of deploying a generative summariser." }
   ] },

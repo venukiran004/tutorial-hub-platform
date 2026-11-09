@@ -193,19 +193,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why is positional information added to the token embedding rather than concatenated?",
-      options: ["Addition is faster", "So no dimensions are spent on position — the full width stays available for content and block shapes are unchanged", "Concatenation would break the softmax", "Because position has the same units as content"],
+      options: ["Addition is faster than concatenation", "No width is spent on position; shapes stay", "Concatenation would break the softmax", "Position shares units with the content"],
       answer: 1,
       why: "Concatenation would reserve part of d_model for position permanently. Summing into the same coordinates seems destructive, but d_model is large enough that the network learns projections reading the two signals apart, and the architecture's shapes stay uniform throughout the stack." },
     { stem: "What property makes the sinusoidal form useful for relative position?",
-      options: ["Its values are bounded in [-1, 1]", "PE[pos+k] is the same fixed rotation of PE[pos] regardless of pos, so 'k tokens back' is one learnable transformation", "Every position has a unique vector", "It requires no parameters"],
+      options: ["Its values are bounded within [−1, 1]", "A shift by k is one fixed rotation", "Every position gets a unique vector", "It requires no learned parameters"],
       answer: 1,
       why: "Verified at positions 0, 10 and 50 with k=7: the rotation by omega times k predicted the actual values to four decimal places in every case. A head implementing 'attend seven back' learns one transformation rather than a separate rule per absolute position. RoPE takes this further by applying the rotation inside attention." },
     { stem: "Does the justification for the sqrt(d_model) multiplier hold?",
-      options: ["Yes, PE would dominate without it", "No — unscaled, embeddings are already 1.41x the PE in RMS; scaling pushes it to 31.88x, making position a small perturbation", "No, the multiplier has no effect", "Only for learned embeddings"],
+      options: ["Yes, position would dominate without it", "No: scaling makes position a perturbation", "No, the multiplier has no effect at all", "Only for learned positional embeddings"],
       answer: 1,
       why: "Measured token RMS 0.9963 against PE RMS 0.7071 at standard initialisation. The scaling is a real design choice — the embedding matrix is tied to the output projection in the original paper — but its effect is to make position quiet relative to content, which is the reverse of the stated rationale." },
     { stem: "Can a model with sinusoidal encoding handle sequences longer than it was trained on?",
-      options: ["Yes, the formula guarantees it", "The encoding is defined at any position, but the model above it degrades anyway because those positional patterns were never trained", "No, the formula is undefined past max_len", "Only with a learned table"],
+      options: ["Yes, the formula guarantees it works", "Defined anywhere, but untrained there", "No, it is undefined past max_len", "Only with a learned position table"],
       answer: 1,
       why: "|PE[4999]| = 16.0000, identical to |PE[10]| — the input is perfectly well formed, unlike a learned table which has no row at all. But the attention layers above never saw those vectors and have no reason to behave sensibly on them. Length extrapolation needs ALiBi, RoPE scaling or position interpolation." }
   ] },

@@ -169,19 +169,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why was speculative decoding slower than plain greedy decoding in the measurement?",
-      options: ["The implementation was wrong", "The draft model was only 2.85x cheaper, so drafting K tokens cost nearly as much as the target passes it saved", "Acceptance rate was zero", "The models had different vocabularies"],
+      options: ["The implementation was wrong", "The draft was not cheap enough", "The acceptance rate was zero", "The vocabularies differed"],
       answer: 1,
       why: "It behaved correctly — 45% acceptance at K=4 and 2.53 tokens per target pass. But speculative decoding converts expensive sequential passes into cheap sequential passes plus one expensive parallel pass, and if the draft is not dramatically cheaper there is nothing to convert. Production pairs use something like a 1B draft with a 7B target." },
     { stem: "Why does acceptance rate fall as K increases?",
-      options: ["The draft model degrades", "Each additional drafted token requires all the earlier ones to have been accepted, so the probability of a long agreeing run decays geometrically", "The target model becomes less confident", "Numerical error accumulates"],
+      options: ["The draft model itself degrades", "Long agreeing runs decay geometrically", "The target becomes less confident", "Numerical error accumulates"],
       answer: 1,
       why: "Measured 61%, 45%, 32% at K = 2, 4, 8. The expected yield is (1 − a^(K+1))/(1 − a), which saturates: at a = 0.5, K = 4 gives 1.94 and K = 8 gives 2.00. There is little point drafting far beyond 1/(1−a)." },
     { stem: "What does PagedAttention actually recover?",
-      options: ["Compute time", "KV cache memory wasted by allocating for the maximum possible sequence length", "Network bandwidth", "Attention accuracy"],
+      options: ["Compute time per step", "Over-reserved KV memory", "Network bandwidth used", "Attention accuracy lost"],
       answer: 1,
       why: "A contiguous per-sequence cache must be sized for the longest possible output, so a request generating 200 tokens against a 4096 reservation wastes 95%. Since cache memory caps batch size, recovering it directly raises throughput — 2-4x — and non-contiguous blocks additionally allow many requests to share one copy of a common prefix." },
     { stem: "Which of these optimisations requires a quality evaluation before deployment?",
-      options: ["FlashAttention", "Quantisation — it is the only genuinely lossy technique among them", "The KV cache", "Continuous batching"],
+      options: ["FlashAttention", "Quantisation", "The KV cache", "Continuous batching"],
       answer: 1,
       why: "Caching, Flash, continuous batching, paging and speculative decoding are all exact or lossless. Quantisation costs roughly 0.5% at INT8 and 1-2% at INT4, and those are averages — errors concentrate near decision boundaries and on rare classes, so per-class metrics can move much more than the headline number." }
   ] },

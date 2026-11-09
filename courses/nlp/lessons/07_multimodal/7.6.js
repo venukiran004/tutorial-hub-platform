@@ -129,19 +129,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "CLIP was never trained on text-to-text pairs. Why does text-to-text similarity work?",
-      options: ["It was secretly trained on them", "Forcing both modalities into one space aligns text with text as a side effect — emergent transfer to untrained pairings", "The text encoder is a general language model", "It does not actually work"],
+      options: ["It was secretly trained on text pairs", "One shared space aligns text with text", "Its text encoder is a general LM", "It does not actually work in practice"],
       answer: 1,
       why: "dog/puppy scores 0.9594 against dog/engine's 0.8323 — the ordering is correct. This transfer is exactly ImageBind's bet, scaled: bind every modality to images and pairings that were never trained together still align, because they share one space." },
     { stem: "dog/engine scores 0.8323 while red-circle/blue-square scores 0.6762. What follows?",
-      options: ["The model thinks dogs and engines are related", "Absolute similarity values are not comparable across different comparisons — rank within a query, never threshold across queries", "The embeddings are broken", "The prompts were poorly chosen"],
+      options: ["The model thinks dogs and engines relate", "Raw values do not compare across queries", "The embeddings are broken", "The prompts were poorly chosen"],
       answer: 1,
       why: "Two unrelated concepts outscore two simple coloured shapes. Within each pair the ordering is correct, but the absolute scale carries almost no cross-comparison information. That is a standing rule for embedding retrieval and the reason evaluation uses recall@k rather than a similarity cutoff." },
     { stem: "Why does ImageBind use images as the anchor modality?",
-      options: ["Images are the richest modality", "Images co-occur naturally with every other modality, and paired data is the binding constraint", "Image encoders are the most accurate", "It reduces the parameter count"],
+      options: ["Images are the richest modality", "Images pair naturally with all others", "Image encoders are the most accurate", "It reduces the parameter count"],
       answer: 1,
       why: "Image-text pairs exist as web alt-text in enormous quantity; audio-text pairs are scarce and thermal-text pairs essentially do not exist. But images pair naturally with audio through video, with depth through RGBD, with motion through IMU. Routing everything through the one universally co-occurring modality makes the data problem tractable." },
     { stem: "What is the risk of captioning images with a VLM and indexing the captions?",
-      options: ["It is too slow", "The captioning step hallucinates, and those errors become permanent index entries", "Captions are too short", "It requires more storage than CLIP embeddings"],
+      options: ["It is too slow to run at scale", "Hallucinations become index entries", "The captions are far too short", "It needs more storage than CLIP"],
       answer: 1,
       why: "Lesson 7.3 measured a VLM captioning a red circle as 'a white circle with a black dot'. Indexed, that image is unfindable by anyone searching for a red circle and wrongly findable for a black dot. Direct CLIP embedding has no such step — if you do use captions, sample and measure their accuracy before building on them." }
   ] },

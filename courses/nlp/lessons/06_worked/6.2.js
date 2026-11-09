@@ -138,19 +138,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does a token attend mostly to itself when Q = K = X?",
-      options: ["A bug in the masking", "score[i][j] = z_i · z_j, and a vector's dot product with itself is its squared norm — usually the largest entry in the row", "The softmax saturates", "Positional encoding dominates"],
+      options: ["A bug in the masking step", "Self dot product = squared norm", "The softmax has saturated", "Positional encoding dominates"],
       answer: 1,
       why: "'sat' gave 0.5101 to itself under identity projections. It is arithmetic, not a discovered relationship: self-attention with shared projections is mostly self-similarity. It also makes the score matrix symmetric, which is an artefact that vanishes once Q and K come from different matrices." },
     { stem: "What changed to make 'sat' attend to 'cat' at 51.49%?",
-      options: ["A different softmax temperature", "W_K swaps dimensions 0 and 1 while W_Q leaves them in order, so a query's dim 0 meets a key's dim 1", "The causal mask was removed", "The values were rescaled"],
+      options: ["A different softmax temperature", "W_K swaps the dimensions W_Q keeps", "The causal mask was removed", "The values were rescaled"],
       answer: 1,
       why: "Same sentence, same embeddings, same formula — only the projections differ, and they differ by a transposition. That asymmetry is what lets a token look for something other than a copy of itself, and it is why the subject-verb link emerges. In a real model the matrices are learned and this is the structure training discovers." },
     { stem: "Why does the output blend use V rather than K or X?",
-      options: ["V is normalised", "So a token can advertise one thing in its key and deliver a different thing in its value — here W_K reads dims 0,1 and W_V reads dims 2,3", "K is already consumed by the softmax", "It makes no difference"],
+      options: ["V is normalised and K is not", "Keys advertise; values deliver", "K is consumed by the softmax", "It makes no difference"],
       answer: 1,
       why: "The separation is what makes attention more than similarity search. The features that make a token findable are disjoint from the features it contributes, so a word can be located by its grammatical role while delivering its semantic content — something a single shared representation cannot do." },
     { stem: "The first token's attention weight is 1.0000. What does that tell you?",
-      options: ["The model is very confident about it", "Nothing — after causal masking it has exactly one option, so the weight is structurally forced", "It is an attention sink", "The mask was applied incorrectly"],
+      options: ["The model is very confident", "Nothing: masking forces it", "It is an attention sink", "The mask was misapplied"],
       answer: 1,
       why: "Early positions have few choices, so their distributions look confident for structural reasons rather than semantic ones. This is the same caution as the attention sinks in lesson 4.4, where a head sending 86.4% of its mass to one token turned out to be mass with nowhere else to go." }
   ] },

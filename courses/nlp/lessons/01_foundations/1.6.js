@@ -219,15 +219,15 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why is skip-gram better than CBOW on rare words?",
-      options: ["It uses a larger window", "Each occurrence generates a separate example per context word, rather than being averaged into a context vector", "It trains for more epochs", "It has more parameters"],
+      options: ["It uses a larger context window", "Each context word is its own example", "It trains for many more epochs", "It has more parameters to learn"],
       answer: 1,
       why: "A rare centre word in skip-gram produces one training pair for every word around it, so it receives several gradient updates per occurrence. In CBOW that same rare word is one of several vectors averaged into a context, so its contribution is diluted. The difference matters most exactly where data is thinnest." },
     { stem: "What does negative sampling replace?",
-      options: ["The embedding lookup", "A softmax over the entire vocabulary", "The context window", "Backpropagation"],
+      options: ["The embedding lookup table", "A softmax over the vocabulary", "The sliding context window", "Backpropagation through time"],
       answer: 1,
       why: "The exact objective requires normalising over every vocabulary word for every training pair, which is prohibitive at 50,000 words and billions of pairs. Negative sampling instead pushes the true context up and K randomly drawn words down, with K typically 5–20 and the samples drawn from frequency raised to the power 0.75." },
     { stem: "A skip-gram model trained with no labels puts `cat`, `dog`, `wolf` and `fox` at cosine 0.99 to each other. What did it use?",
-      options: ["A part-of-speech tagger", "Only which words appear near which other words", "A pretrained category list", "Character n-grams"],
+      options: ["A part-of-speech tagger", "Only which words co-occur", "A pretrained category list", "Character n-grams"],
       answer: 1,
       why: "Co-occurrence alone. The model saw that those four words occupy the same positions relative to the same neighbours and placed them together — measured at within-group 0.989 against across-group 0.274. That is the distributional hypothesis producing category structure with no supervision of any kind." },
     { stem: "Which embedding method can produce a vector for a word never seen in training?",

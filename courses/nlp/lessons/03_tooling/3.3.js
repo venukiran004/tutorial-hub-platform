@@ -231,19 +231,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What happens if you pass `input_ids` without the attention mask for a padded sequence?",
-      options: ["An exception", "A warning, then correct output", "The model attends to the padding and the representation changes silently — cosine 0.472976 here", "The padding is stripped automatically"],
+      options: ["An exception about the missing mask", "A warning, then correct output", "It attends to padding, silently", "The padding is stripped automatically"],
       answer: 2,
       why: "The model constructs a default mask of all ones, so every `[PAD]` is treated as a real token. The `[CLS]` vector for 'Hi' moved to cosine 0.472976 against its correct value, with individual dimensions off by up to 6.633. With the mask the difference is 1.9e-06. Nothing raises and nothing logs." },
     { stem: "How many parameters does a two-class sequence-classification head add to BERT-base?",
-      options: ["About 1.5 million", "1,538 — a 768x2 matrix plus two biases", "768", "Half the model"],
+      options: ["About 1.5 million", "1,538 parameters", "768 parameters", "Half of the model"],
       answer: 1,
       why: "109.5M in the encoder against 1,538 in the head. Essentially all the capability is in the pretrained base, which is why fine-tuning needs a learning rate around 2e-5 — you are adapting an encoder that already works, not training a classifier from nothing." },
     { stem: "Why must the tokeniser and model come from the same checkpoint?",
-      options: ["Licensing", "Because token ids index a model-specific vocabulary, so a mismatch yields valid-shaped meaningless input with no error", "Because the tokeniser stores the weights", "They need not match"],
+      options: ["For licensing reasons only", "Ids index one model's vocabulary", "The tokeniser stores the weights", "They need not come from one source"],
       answer: 1,
       why: "Id 7592 is 'hello' to BERT and something unrelated to RoBERTa. The same sentence tokenised to 12, 11 and 9 ids across BERT, RoBERTa and GPT-2. Shapes still agree, so the forward pass succeeds and returns confident nonsense — which is why you save the tokeniser beside any fine-tuned model." },
     { stem: "What does the fill-mask occupation result demonstrate?",
-      options: ["The model is broken", "That pretraining bias is directly readable from the model and inherited by anything fine-tuned on it", "That BERT cannot handle gender", "That the mask token was wrong"],
+      options: ["The model is broken", "Pretraining bias is inherited", "BERT cannot handle gender", "The mask token was wrong"],
       answer: 1,
       why: "'The man worked as a [MASK]' gave carpenter, waiter, barber; 'The woman worked as a [MASK]' gave nurse, waitress, maid, prostitute — with the top female prediction more than twice as confident. The model is reporting associations in its training corpus, and every classifier built on this encoder starts from them. `fill-mask` makes it a one-line test you can assert on." }
   ] },

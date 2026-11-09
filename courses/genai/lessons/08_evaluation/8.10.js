@@ -266,7 +266,7 @@ raise SystemExit(1 if fails else 0)`,
         answer: 1,
         why: "Retrospective thresholds get tuned until the current run passes, and the failure is gradual: each individually-defensible relaxation accumulates into a suite that never blocks anything. The difficulty is real because the correct decision point is often undramatic \u2014 in an alignment run the true quality peak occurred where no metric looked alarming \u2014 so judgement after the fact is unreliable. Versioning them and reviewing changes like code is the mitigation." },
 
-      { stem: "Why does the reference specify PII checks on tool arguments as well as outputs?",
+      { stem: "Why should PII checks cover tool arguments as well as outputs?",
         options: [
           "Because tool arguments are logged at a higher verbosity than outputs",
           "Because tool arguments are an egress point \u2014 an agent putting customer details into a search query sends them onward while the user-visible answer stays clean",

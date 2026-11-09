@@ -241,19 +241,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did disabling the tagger and lemmatiser barely change runtime after the parser and NER were already off?",
-      options: ["They were never running", "Because `tok2vec` is the shared cost underneath and it still runs", "Because the document was too short", "Because spaCy caches results"],
+      options: ["They were never running at all", "tok2vec underneath is the real cost", "The document was too short to matter", "spaCy caches the earlier results"],
       answer: 1,
       why: "Timing went 0.988s to 0.550s when the parser and NER came out, then only to 0.534s when everything else did. The tok2vec component computes the token vectors all downstream components read, and it dominates what remains. To skip it entirely you need `nlp.make_doc`, which runs only the tokeniser." },
     { stem: "What is the difference between `token.i` and `token.idx`?",
-      options: ["They are aliases", "`token.i` is the token's index in the Doc; `token.idx` is its character offset in the original text", "`token.idx` is the vocabulary hash", "`token.i` is the sentence number"],
+      options: ["They are aliases for the same value", "Token index versus character offset", "`idx` is the token's vocabulary hash", "`i` is the sentence number"],
       answer: 1,
       why: "For the token 'at' in the example, `i` was 3 and `idx` was 17 — and `doc.text[17:19]` returns 'at'. The character offset is what you need to highlight a result in a UI or write an annotation back against the raw string, which is why spaCy never discards the original text." },
     { stem: "Why is PhraseMatcher 3538x faster than Matcher at 5,000 patterns?",
-      options: ["It runs in C and Matcher does not", "It hashes literal phrases into a trie, so cost does not grow with pattern count, while Matcher advances one state machine per pattern per token", "It only checks the first token", "It uses multiple threads"],
+      options: ["It runs in C, whereas Matcher does not", "It hashes phrases; Matcher steps per pattern", "It only ever checks the first token", "It spreads the work across threads"],
       answer: 1,
       why: "Matcher evaluates each pattern as a state machine over the tokens, so 5,000 patterns means 5,000 machines to advance at every position, with attribute predicates checked at each step. PhraseMatcher compiles literal sequences into a hash-keyed trie — one lookup per token no matter how many phrases are registered. Both found exactly the same single match." },
     { stem: "Why did the custom sentiment component label 'This is not good at all' as positive?",
-      options: ["A bug in `set_extension`", "It counts lexicon words independently and never reads 'not'", "The component ran before the tagger", "'good' is not in the lexicon"],
+      options: ["A bug in set_extension", "It never reads the 'not'", "It ran before the tagger", "'good' is not in its lexicon"],
       answer: 1,
       why: "It counts how many tokens fall in a positive set and how many in a negative set, with no window around either. 'good' matches, 'not' is invisible to it, so positives win. The property that makes it fast — independent lookups with no context — is exactly what makes it wrong, which is the same result lesson 2.2 measured against VADER." }
   ] },

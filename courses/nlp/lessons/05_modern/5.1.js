@@ -182,19 +182,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why can't an encoder-only model like BERT generate text?",
-      options: ["It is too small", "Output length must be fixed in advance as [MASK] tokens, and each mask is predicted independently with no joint factorisation", "It lacks a decoder head", "Its vocabulary is too small"],
+      options: ["It is too small to generate fluently", "Masks are fixed and predicted independently", "It lacks any kind of decoder head", "Its vocabulary is too small for output"],
       answer: 1,
       why: "Given one mask it answers 'paris' at 0.417; given three it produced 'in le ##y'. It cannot decide to stop, and nothing makes mask 2 conditional on mask 1. An autoregressive model gets both properties free from the chain rule — it emits an end token when finished and conditions each token on all previous ones." },
     { stem: "Why does MLM use an 80/10/10 split rather than always inserting [MASK]?",
-      options: ["To add noise for regularisation", "Because [MASK] never appears at fine-tuning or inference, so always using it would create a train-serve mismatch at every position the model cares about", "To speed up training", "To handle variable sequence lengths"],
+      options: ["To add noise as a form of regularisation", "[MASK] never appears outside pretraining", "To speed up the pretraining process", "To handle variable sequence lengths"],
       answer: 1,
       why: "If every masked position carried a literal [MASK], the model would learn representations conditioned on a token that downstream inputs never contain. Replacing 10% with random tokens and leaving 10% unchanged forces it to build useful representations of real tokens too. It is the train-serve skew problem, designed out of the objective." },
     { stem: "What did T5's text-to-text framing change?",
-      options: ["It made models faster", "Every task became a string in and a string out, removing task-specific heads and making the task itself part of the input", "It introduced bidirectional attention", "It removed the need for fine-tuning"],
+      options: ["It made the models run faster", "String in, string out for every task", "It introduced bidirectional attention", "It removed the need for fine-tuning"],
       answer: 1,
       why: "A 60M T5 translated into German, summarised, and judged grammaticality with only the prefix changing. Once the task lives in the input string, describing a new task is an inference-time act rather than a training-time one — which is the direct ancestor of prompting." },
     { stem: "Why did the field converge on decoder-only architectures?",
-      options: ["They are better at every task", "One stack and one objective scale cleanly, and in-context learning emerged, removing task-specific heads entirely", "They use less memory", "Bidirectional attention was found to be harmful"],
+      options: ["They are better at every single task", "One stack scales; in-context learning emerged", "They use much less memory to serve", "Bidirectional attention was found harmful"],
       answer: 1,
       why: "Simplicity and scaling, plus the emergence of few-shot learning from the prompt. It was not a clean win everywhere: encoder-only models are still better and cheaper for embeddings and reranking, and encoder-decoder still suits tasks with a distinct source needing a full bidirectional read, like Whisper's speech-to-text." }
   ] },

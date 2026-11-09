@@ -128,19 +128,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does 'abcd' vs 'dcba' score 0.5000 rather than near 0?",
-      options: ["A bug in the implementation", "Jaro counts characters matching within a window regardless of order — with a window of 1, b and c each find their counterpart", "Both strings have the same length", "The transposition term dominates"],
+      options: ["A bug in the implementation", "In-window matches ignore order", "Both strings share a length", "The transposition term dominates"],
       answer: 1,
       why: "The window is max(4,4)/2 − 1 = 1, so a character displaced by one position still matches. Two of four match in each string. The practical consequence is that Jaro has a high floor on short strings, so a threshold of 0.5 means very little on a 4-character field — calibrate against your own non-matching pairs." },
     { stem: "Why is the Winkler prefix bonus capped at four characters?",
-      options: ["For computational efficiency", "To stop it dominating on long strings — two unrelated long names sharing a prefix would otherwise be pushed arbitrarily high", "Because names are usually four letters", "To keep the score below 1"],
+      options: ["For computational efficiency", "So it cannot dominate long strings", "Names are usually four letters", "To keep the score below 1"],
       answer: 1,
       why: "With p = 0.1 and a cap of 4, the maximum bonus is 0.4 × (1 − Jaro), which also guarantees the score stays at or below 1. Without the cap, two unrelated 30-character company names sharing a long common prefix would receive an unbounded boost for something that carries little evidence." },
     { stem: "Why does the bonus include a (1 − Jaro) factor?",
-      options: ["To normalise the prefix length", "So the bonus scales with the room remaining — it lifts borderline pairs most and barely moves already-high scores", "To make the metric symmetric", "To handle empty strings"],
+      options: ["To normalise for the prefix length", "The bonus shrinks near a perfect score", "To make the metric symmetric", "To handle empty strings safely"],
       answer: 1,
       why: "DIXON/DICKSONX started at 0.7667 and gained 0.0466; a pair already at 0.95 can gain at most 0.05 × 0.4. The bonus is designed to push genuine but imperfect matches across a threshold rather than to inflate scores that were already clear." },
     { stem: "When is Jaro-Winkler the wrong choice?",
-      options: ["On short strings only", "On fields that are not personal names — its window and prefix bonus encode assumptions about how names misspell", "When strings have different lengths", "On any data with typos"],
+      options: ["On short strings only", "On fields that are not names", "When the lengths differ", "On any data with typos"],
       answer: 1,
       why: "Both design choices assume errors are small displacements and that beginnings are reliable, which holds for names and less so elsewhere. On addresses the prefix bonus actively misleads — two unrelated addresses starting '12 ' get a bonus for nothing. Use different metrics for different columns of the same record." }
   ] },

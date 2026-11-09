@@ -162,19 +162,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why can an SSM train in parallel when an LSTM cannot?",
-      options: ["It has fewer parameters", "Its state update is linear, so the recurrence unrolls into a convolution with a closed-form kernel", "It uses attention internally", "It processes tokens in reverse"],
+      options: ["It has fewer parameters to train", "Linear updates unroll to a convolution", "It uses attention layers internally", "It processes the tokens in reverse"],
       answer: 1,
       why: "An LSTM computes h_k = tanh(W h_{k-1} + U x_k) — the non-linearity inside the state update makes closed-form unrolling impossible. An SSM's h_k = A h_{k-1} + B x_k unrolls to a sum over A^j B x_{k-j}, a convolution computable by FFT. I verified the two modes agree to 4.77e-07." },
     { stem: "How does an SSM's inference state compare with a transformer's KV cache?",
-      options: ["Both grow linearly with sequence length", "The SSM's is constant — 4.2 MB at any length — while the cache is 1.07 GB at 2k tokens and 524 GB at 1M", "The SSM's grows faster", "They are the same size"],
+      options: ["Both grow linearly with sequence length", "Constant state versus a growing cache", "The SSM's state grows the faster of the two", "They are the same size at every length"],
       answer: 1,
       why: "They are different asymptotics, not different constants. A transformer stores every token; an SSM compresses history into a fixed state. Everything in lesson 5.2 — GQA, paging, cache quantisation — shrinks the constant in front of a linear term, whereas an SSM removes the term." },
     { stem: "What does Mamba's delta parameter do?",
-      options: ["Controls the learning rate", "Acts as a content-based forget gate — Ā = exp(delta · A), so small delta means the state coasts and large delta means it overwrites", "Sets the state dimension", "Normalises the output"],
+      options: ["It controls the learning rate", "A content-based forget gate", "It sets the state dimension", "It normalises the output"],
       answer: 1,
       why: "Measured: delta 0.0198 gives Ā = 0.9804, barely any decay, while delta 0.2189 gives 0.8034, much faster decay. Since delta is computed from the token itself, the model decides per token how much to remember — functionally an LSTM forget gate reached from a different direction, and what closed most of the quality gap." },
     { stem: "Why do SSMs underperform on copying and retrieval tasks?",
-      options: ["They train less stably", "A fixed-size state cannot hold an arbitrary past — compression is lossy by construction, while attention keeps every token", "They have no positional encoding", "Their kernels decay too fast"],
+      options: ["They train less stably", "A fixed state compresses the past", "They lack positional encoding", "Their kernels decay too fast"],
       answer: 1,
       why: "It is information-theoretic rather than a training problem. Reproducing a token seen 10,000 positions ago requires that it survived compression into a state that also had to hold everything else. Attention looks it up exactly. This is why hybrids — a few attention layers among many SSM layers — are where the field landed." }
   ] },

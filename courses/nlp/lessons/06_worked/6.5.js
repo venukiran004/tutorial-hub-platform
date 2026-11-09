@@ -126,19 +126,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why is encoder self-attention unmasked when decoder self-attention is not?",
-      options: ["Encoders are shallower", "The entire source exists before processing begins, so there is no future to leak — and bidirectional context is the encoder's advantage", "Masking would break the residual", "Encoders use a different softmax"],
+      options: ["Encoders are shallower than decoders", "The whole source exists up front", "Masking would break the residual", "Encoders use a different softmax"],
       answer: 1,
       why: "Row 'I' put 0.450 on 'AI', three positions to its right. The decoder must be masked because at inference its own future genuinely does not exist yet. The source does exist, and for translation the bidirectionality is essential — target word order can require having read the end of the source before rendering its beginning." },
     { stem: "What exactly does the decoder receive from the encoder?",
-      options: ["The source tokens", "One fixed tensor — the encoder memory — and nothing else", "The encoder's attention weights", "A summary vector"],
+      options: ["The raw source tokens", "One fixed memory tensor", "The encoder's attention weights", "A single summary vector"],
       answer: 1,
       why: "The 3x4 memory is the entire representation of the source the decoder ever sees. It never sees source tokens, source embeddings or intermediate encoder states. That means anything the encoder failed to encode is unrecoverable, and it means the memory's K and V projections can be computed once and reused for every generation step." },
     { stem: "Why does the encoder run only once per translation?",
-      options: ["To save memory", "The source does not change while the target is generated, so the memory is invariant across all decoder steps", "Because it is bidirectional", "It runs once per output token"],
+      options: ["To save memory during decoding", "The source never changes during decoding", "Because the encoder is bidirectional", "It runs once per output token instead"],
       answer: 1,
       why: "Nothing about the source changes during generation, so nothing about its representation changes. That is a saving a decoder-only model cannot have, since its prompt and output occupy one sequence that grows with every token — which is part of why encoder-decoder models remain competitive for translation and speech." },
     { stem: "What makes this an encoder block rather than a decoder block?",
-      options: ["Fewer parameters", "No causal mask and no cross-attention sublayer — otherwise it is structurally identical", "A different FFN", "It has no residual connections"],
+      options: ["It has fewer parameters", "No mask, no cross-attention", "It uses a different FFN", "It lacks residual links"],
       answer: 1,
       why: "Two sublayers, two norms, two residuals, shape preserved throughout — exactly the block from lesson 4.7. A decoder block adds a third sublayer for cross-attention and masks its self-attention, which is why lesson 4.7 measured it at 1.33x the encoder's parameters." }
   ] },

@@ -195,19 +195,19 @@ model = FSDP(
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Is ring attention an approximation?",
-      options: ["Yes, it drops distant attention", "No — it agreed with full attention to 7.45e-08, because partial results are recombined by the online softmax", "Yes, it uses lower precision", "Only under a causal mask"],
+      options: ["Yes, it drops distant attention", "No: online softmax recombines it", "Yes, it uses lower precision", "Only under a causal mask"],
       answer: 1,
       why: "Each device attends to one KV block at a time and merges partial results using the running max, denominator and output from FlashAttention's online softmax. The intermediate values are meaningless — +0.334320 after the first of four blocks against a true +0.187467 — but the final combination is exact by construction, not by convergence." },
     { stem: "How does sliding-window attention still capture long-range dependencies?",
-      options: ["It does not", "Depth compounds the window: each layer moves information W positions, so 32 layers × 4096 reaches 131,072 tokens", "It uses global tokens", "The window grows with layer index"],
+      options: ["It does not capture them at all", "Each layer moves information W further", "It relies on special global tokens", "The window widens with each layer"],
       answer: 1,
       why: "A token at layer 2 sees tokens that themselves saw W positions back, so reach multiplies with depth — the same receptive-field argument as a CNN. The cost is that a long dependency must be relayed through intermediate representations rather than attended to directly, which is weaker than one hop." },
     { stem: "Why do models struggle to retrieve facts from the middle of a long context?",
-      options: ["Training data is front-loaded", "Attention sinks favour early positions and RoPE's distance decay favours recent ones — the middle benefits from neither", "Positional embeddings run out", "Tokenisation degrades"],
+      options: ["Training data is front-loaded", "Sinks favour the start, RoPE the end", "Positional embeddings run out", "Tokenisation degrades mid-text"],
       answer: 1,
       why: "Two independently measured mechanisms point in opposite directions. Lesson 4.4 found a head sending 86.4% of its mass to a structural token near the start; lesson 4.9 found aligned query-key scores falling to 5.36% by 2,048 positions, favouring recency. The U-shape follows, and it means advertised context must be verified rather than trusted." },
     { stem: "Which term dominates training memory for a 7B model?",
-      options: ["The weights, at 14 GB", "Adam's optimiser state, at 56 GB — four times the weights", "Activations", "Gradients"],
+      options: ["The weights, at 14 GB", "Adam's state, at 56 GB", "The stored activations", "The gradients, at 14 GB"],
       answer: 1,
       why: "Two fp32 moments per parameter is 8 bytes against the weights' 2, so the optimiser state is the largest single item — 56 GB against 14 GB of weights, with gradients at 14 GB and fp32 master weights at 28 GB. That is why ZeRO stage 1, sharding only optimiser state, already removes most of the problem, and why LoRA's saving was so large." }
   ] },

@@ -176,19 +176,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why must a transformer block preserve its input shape?",
-      options: ["To save memory", "So blocks stack to any depth unchanged, and so the residual addition x + SubLayer(x) is even defined", "Because attention requires square matrices", "To keep the vocabulary aligned"],
+      options: ["To save memory at every layer", "To stack blocks and add residuals", "Attention needs square matrices", "To keep the vocabulary aligned"],
       answer: 1,
       why: "A block maps (batch, seq, d_model) to the same shape. That makes depth a single hyperparameter you can change without touching any other dimension, and it is a hard requirement for the residual connection, which adds the input to the sublayer output and therefore needs both to match." },
     { stem: "What exactly does a decoder block have that an encoder block does not?",
-      options: ["A larger FFN", "A cross-attention sublayer with its own 1,050,624 parameters, plus the third LayerNorm", "More heads", "A causal mask only"],
+      options: ["A larger feed-forward network", "A cross-attention sublayer and norm", "More attention heads per layer", "Only a causal mask, nothing else"],
       answer: 1,
       why: "The decoder's 4,204,032 parameters against the encoder's 3,152,384 is exactly one extra multi-head attention module. The causal masking of self-attention is a behavioural difference that costs nothing, but cross-attention is a whole additional sublayer — which is why the ratio is 1.33x." },
     { stem: "How do the two attention matrices in a decoder block differ in shape?",
-      options: ["They are both square", "Self-attention is (target × target) and masked; cross-attention is (target × source) and unmasked", "Cross-attention is square, self-attention is not", "They have identical shapes"],
+      options: ["They are both square matrices", "Target×target masked; target×source not", "Cross is square, self-attention is not", "They have identical shapes"],
       answer: 1,
       why: "Measured with a 7-token target and 12-token source: self-attention came out (1, 8, 7, 7) with an upper-triangle maximum of exactly 0.0, and cross-attention (1, 8, 7, 12) with each row summing to 1 over the source. The rectangular one is the alignment matrix, the most useful debugging artefact in an encoder-decoder model." },
     { stem: "What did tracing the residual stream through 12 Pre-LN blocks show?",
-      options: ["It stayed constant", "The magnitude grew monotonically to 1.29x, while each block's relative contribution stayed flat around 0.20", "It shrank with depth", "It grew then collapsed"],
+      options: ["It stayed constant", "Norm grew; share flat", "It shrank with depth", "It grew, then collapsed"],
       answer: 1,
       why: "Nothing rescales the residual path in Pre-LN, so magnitude accumulates. But relative contributions ranged only 0.1988 to 0.2206 with no clear trend, so at this depth with untrained weights later blocks are not yet being drowned out — that effect needs far more depth, and motivates scaling the residual branch at initialisation." }
   ] },

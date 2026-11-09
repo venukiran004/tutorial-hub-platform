@@ -256,19 +256,19 @@ out["elmo_representations"][0].shape            # (2, 5, 1024)
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why is the sense separation at BERT's layer 0 exactly 0.0000?",
-      options: ["A measurement error", "Layer 0 is the embedding table plus positional embeddings, with no attention — the word piece contributes an identical vector every time", "The sentences were too similar", "BERT cannot disambiguate 'bank'"],
+      options: ["A measurement error", "Layer 0 has no context yet", "The sentences were too similar", "BERT cannot disambiguate it"],
       answer: 1,
       why: "Same-sense and cross-sense both scored 0.9583. Nothing at layer 0 has read the surrounding words yet, so the vector for 'bank' is the same lookup in all four sentences and any variation comes from position alone. That is precisely what a static embedding is, which makes layer 0 a Word2Vec model sitting inside BERT." },
     { stem: "Sense separation peaked at layer 4 and fell to layer 12. What does that imply?",
-      options: ["Deeper layers are broken", "The top layer is specialised toward the pretraining objective, so it is not automatically the best source of frozen features", "Layer 4 is always optimal", "The model is overfitting"],
+      options: ["Deeper layers are simply broken", "Top layers fit the pretraining task", "Layer 4 is always the best layer", "The model is overfitting its data"],
       answer: 1,
       why: "Separation went from +0.2867 at layer 4 to +0.1782 at layer 12. BERT's top layer has been shaped hardest by masked-token prediction, which needs different information from word-sense discrimination. When extracting frozen features, sweep the layers and measure — the gap is often bigger than the hyperparameter you were about to tune." },
     { stem: "Why should you read the gap between conditions rather than the absolute cosine at BERT's final layer?",
-      options: ["Cosine is undefined there", "Final-layer representations are anisotropic and occupy a narrow cone, compressing all cosines", "The vectors are not normalised", "Only the gap is computable"],
+      options: ["Cosine is undefined there", "Anisotropy compresses all cosines", "The vectors are not normalised", "Only the gap is computable"],
       answer: 1,
       why: "Same-sense pairs scored only 0.40-0.51, which looks low for the same word in the same sense. That is a known property of the final layer's geometry rather than a statement about similarity. The meaningful signal is that same-sense consistently exceeds cross-sense — a gap a static embedding cannot produce at all." },
     { stem: "What was ELMo's lasting contribution?",
-      options: ["The character CNN", "The finding that different depths encode different linguistic levels, so the useful representation is a task-weighted mixture", "Bidirectional LSTMs", "Subword tokenisation"],
+      options: ["Its character-level CNN encoder", "Depths hold different levels; mix them", "Bidirectional LSTM language models", "Subword tokenisation of the input"],
       answer: 1,
       why: "Its architecture was superseded within a year, but the layer-stratification finding held — and reproduces in BERT, a completely different architecture, where sense separation peaks mid-stack rather than at the top. Learning a weighted sum over layers rather than picking one is still the right default." }
   ] },

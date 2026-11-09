@@ -217,19 +217,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did one long document make a batch of 32 take 39x longer?",
-      options: ["The model reloaded", "Padding is per batch, so every row was padded to 158 tokens and attention is quadratic in length", "The long document failed and retried", "Memory swapping"],
+      options: ["The model was reloaded from disk for that batch", "One long row pads every row; attention is n²", "The long document failed once and was retried", "The machine started swapping memory to disk"],
       answer: 1,
       why: "The padded shape went from (32, 3) to (32, 158). Every short document was padded to the longest one's length, and the model ran full attention over 158 positions for all 32 rows. The attention mask keeps the outputs correct, so nothing errors — you only see it in the latency. Length bucketing fixes it." },
     { stem: "Per-item latency flattens at batch 16. Why not use batch 64 anyway?",
-      options: ["Memory limits", "Because a batch of 64 takes 480.88 ms and every request in it waits for the slowest, inflating individual latency for no throughput gain", "Larger batches reduce accuracy", "The tokeniser cannot handle it"],
+      options: ["Memory limits stop it", "No throughput gain, worse latency", "Larger batches reduce accuracy", "The tokeniser cannot handle it"],
       answer: 1,
       why: "Throughput was 131.8 items/sec at 16 and 133.1 at 64 — under 1% better. But the batch takes 480.88 ms to complete, so every request in it waits that long plus the time spent waiting for the batch to fill. Past the knee you are trading real latency for nothing." },
     { stem: "What is the right response to quantisation moving a logit by 0.0238?",
-      options: ["Ignore it, it is small", "Re-run the full evaluation on the quantised artefact, with attention to per-class metrics", "Revert to fp32", "Increase the batch size"],
+      options: ["Ignore it, since it is small", "Re-run the full evaluation", "Revert the model to fp32", "Increase the batch size"],
       answer: 1,
       why: "Small shifts do not change most predictions, but they flip the ones nearest the decision boundary — and those are disproportionately the rare-class examples. Per-class F1 can move noticeably while accuracy barely changes. The evaluation must run on the artefact you actually deploy, not the one you fine-tuned." },
     { stem: "Why was the missing `.lower()` invisible until someone changed the checkpoint?",
-      options: ["It was never a real bug", "The uncased tokeniser lowercases anyway, so both paths produced identical ids until a cased checkpoint was swapped in", "Tests were not running", "The cache masked it"],
+      options: ["It was never a real bug at all", "The uncased tokeniser lowercased", "The test suite was not running", "A cache masked the difference"],
       answer: 1,
       why: "On bert-base-uncased both paths gave ['[CLS]','excellent','service','[SEP]']. On bert-base-cased the serving path gave ['[CLS]','E','##X','##CE','##LL','##EN','##T','Service','[SEP]'] — 7 tokens instead of 2. The latent bug activates on an unrelated change, so the commit that appears responsible is not the one that introduced it." }
   ] },

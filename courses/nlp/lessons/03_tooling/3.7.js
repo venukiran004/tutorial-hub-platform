@@ -245,19 +245,19 @@ doc._.coref_chains.resolve(doc[13])           # [migration]
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did the extractor return a relation for 'Google did not acquire Yahoo'?",
-      options: ["The parser failed", "It only inspects the root verb's subject and object children and never checks for a `neg` dependency", "'not' was tokenised incorrectly", "The lemma was wrong"],
+      options: ["The parser failed on the sentence", "It never checks for a neg dependency", "'not' was tokenised incorrectly", "The verb's lemma was wrong"],
       answer: 1,
       why: "spaCy parses 'not' correctly as `dep_=\"neg\"` — the information is present and simply unread. The rule matches a subject and an object and emits the triple. That makes it the most dangerous of the five failures: an empty result reduces recall, but this one writes a falsehood into the knowledge base." },
     { stem: "Why did the passive sentence 'YouTube was acquired by Google' return nothing?",
-      options: ["'acquired' was not recognised as a verb", "'Google' is a `pobj` under the preposition 'by', so it is not among the root verb's object children", "The sentence was too short", "Passive voice is not parsed"],
+      options: ["'acquired' was not seen as a verb", "Google sits under 'by' as a pobj", "The sentence was too short", "Passive voice is not parsed"],
       answer: 1,
       why: "The parse is correct: YouTube is `nsubjpass`, and Google attaches to the `agent` preposition 'by' rather than directly to the verb. The extractor only looks at the verb's immediate children for `dobj`, `attr` or `pobj`, finds no object, and emits nothing. Fixing it means walking the agent edge and inverting subject and object." },
     { stem: "Why can't the output ('It', 'cost', '$999') be written to a knowledge graph?",
-      options: ["The price format is wrong", "'It' is a pronoun, not an entity — its referent lives in a previous sentence and must be resolved first", "The relation name is wrong", "It can be, after deduplication"],
+      options: ["The price is written in the wrong format", "'It' must be resolved to an entity first", "The relation name 'cost' is the wrong one", "It can be, once duplicates are removed"],
       answer: 1,
       why: "The triple names no entity. Every pronoun subject produces one of these, so a pipeline without coreference accumulates thousands of assertions about a node called 'It'. Coreference has to run between entity recognition and relation extraction for the output to be meaningful at all." },
     { stem: "What is the core weakness of distant supervision?",
-      options: ["It is too slow", "It assumes any sentence mentioning both entities expresses the relation, which is often false", "It needs a labelled corpus", "It only works for one relation type"],
+      options: ["It is far too slow to run on large corpora", "Co-mention is assumed to state the relation", "It needs a fully labelled corpus to begin", "It only works for a single relation type"],
       answer: 1,
       why: "'Elon Musk stepped down from the SpaceX board' mentions both entities and gets labelled 'founded'. False-positive rates around 30% are commonly reported, and they are worst for prominent entity pairs that co-occur constantly for unrelated reasons. Multi-instance learning over the sentence bag is the standard mitigation, and the evaluation set must be built differently from the training set." }
   ] },

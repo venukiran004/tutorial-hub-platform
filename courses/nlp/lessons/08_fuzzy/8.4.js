@@ -130,19 +130,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did 'Beta Corporation Limited' outrank 'Acme Corp Ltd' when matching 'Acme Corporation Limited'?",
-      options: ["A bug in the vectoriser", "'Corporation Limited' is 20 of 24 characters, so its n-grams dominate the vector even after idf weighting", "Beta is alphabetically closer", "The idf was computed on the wrong corpus"],
+      options: ["A bug in the TF-IDF vectoriser", "Boilerplate n-grams dominate it", "Beta is alphabetically closer", "The idf used the wrong corpus"],
       answer: 1,
       why: "idf down-weights common tokens; it does not reduce them to zero. When the shared boilerplate is most of the string, what remains still swamps the single identifying token — while 'Acme Corp Ltd' shares only the 'Acme' n-grams and abbreviates everything else. The metric is working correctly and giving the wrong answer." },
     { stem: "'Gamma Industries Limited' ranked lowest at 0.1416. What does that tell you?",
-      options: ["The metric is broken", "The metric is working as designed — it orders by shared surface content, which is simply not the same as being the same entity", "Gamma is an outlier", "Industries has a high idf"],
+      options: ["The metric is broken here", "Shared surface is not identity", "Gamma is a statistical outlier", "'Industries' has a high idf"],
       answer: 1,
       why: "It shares only 'Limited' where the others share 'Corporation Limited' too, so ranking it last is correct behaviour. Recognising that a metric can be functioning exactly as specified while producing a useless answer is what tells you to fix the input rather than swap the metric." },
     { stem: "What is the highest-return fix for the boilerplate problem?",
-      options: ["Switch to embeddings", "Strip or standardise legal suffixes before matching, which turns the comparison into 'Acme' against 'Beta'", "Increase the n-gram size", "Use a higher threshold"],
+      options: ["Switch to dense embeddings", "Strip legal suffixes first", "Increase the n-gram size", "Use a higher threshold"],
       answer: 1,
       why: "A twenty-line substitution list removes the confounding signal rather than trying to weight around it, and it encodes domain knowledge no general metric contains. It is the same conclusion lesson 8.3 reached about punctuation: cheap normalisation beats metric sophistication, and it is inspectable and correctable." },
     { stem: "Why does TF-IDF remain the backbone of large-scale entity resolution?",
-      options: ["It is more accurate than embeddings", "Its vectors are sparse, so an inverted index on rare tokens makes candidate retrieval sublinear and exact", "It requires no normalisation", "It handles synonyms"],
+      options: ["It beats embeddings on accuracy", "Sparse vectors allow inverted indexes", "It requires no normalisation step", "It handles synonyms gracefully"],
       answer: 1,
       why: "Comparing a million records pairwise is about 5e11 comparisons. A sparse index retrieves only records sharing a rare token, which is exact and explains itself, where a dense embedding needs an approximate nearest-neighbour index and gives up exactness. It also needs no training and no labels." }
   ] },

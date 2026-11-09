@@ -133,19 +133,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does contrastive pretraining need enormous batch sizes?",
-      options: ["For gradient stability", "The negatives come only from the batch, so batch size is the number of competitors each positive pair must beat", "To fit the learning rate schedule", "To parallelise the two towers"],
+      options: ["For gradient stability", "Negatives come only from the batch", "To fit the learning-rate schedule", "To parallelise the two towers"],
       answer: 1,
       why: "Each row of the similarity matrix is an N-way classification where N is the batch size. CLIP trained at 32,768, so every correct pair beat 32,767 negatives. SigLIP addressed exactly this by replacing the softmax with a sigmoid, making each pair an independent binary decision so the loss no longer couples across the batch." },
     { stem: "A CLIP model early in training has loss above ln(batch_size). Is that a problem?",
-      options: ["Yes, it is worse than random so something is broken", "No — random embeddings at low temperature produce confidently wrong judgements, and cross-entropy punishes that harder than uncertainty", "Yes, the temperature must be wrong", "It is impossible to exceed ln(batch)"],
+      options: ["Yes, worse than random means it is broken", "No: confident wrong guesses cost more", "Yes, the temperature must be wrong", "It is impossible to exceed ln(batch)"],
       answer: 1,
       why: "Measured: random data at temperature 0.07 gave 6.0767 against a chance level of 2.0794. The model must get past confidently wrong before reaching uncertain, and only then to correct. It is the same phenomenon lesson 6.6 found in an untrained translation model, whose loss was 0.92 nats worse than uniform guessing." },
     { stem: "Why does 'a photo of a red circle' beat bare 'circle' by 0.9951 to 0.7440?",
-      options: ["Longer prompts always score higher", "CLIP's text encoder was trained on web alt-text, so a bare label is out of distribution for it", "The word 'photo' matches image features", "Bare labels tokenise poorly"],
+      options: ["Longer prompts always score higher", "Bare labels are unlike its alt-text", "'photo' matches the image features", "Bare labels tokenise poorly"],
       answer: 1,
       why: "Alt-text overwhelmingly reads 'a photo of a golden retriever' rather than 'golden retriever'. Matching the training distribution at inference is free accuracy, which is why CLIP's paper reports prompt-ensembling over 80 templates. It is train-serve alignment exploited deliberately rather than avoided." },
     { stem: "Which of these is CLIP structurally weak at?",
-      options: ["Recognising photographed objects", "Counting objects and spatial relations, because captions rarely state them", "Distinguishing colours", "Recognising scenes"],
+      options: ["Recognising photographed objects", "Counting and spatial relations", "Distinguishing between colours", "Recognising whole scenes"],
       answer: 1,
       why: "Its weaknesses — reading text in images, counting, spatial relations, fine-grained within-category distinctions — all trace to the training distribution. Nobody captions an image 'three cats to the left of a sofa', so the supervision for those properties is thin. CLIP's failures are a shadow of its data, not random." }
   ] },

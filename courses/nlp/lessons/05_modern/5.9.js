@@ -146,19 +146,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why can CLIP be used for large-scale retrieval when a cross-attention model cannot?",
-      options: ["It is smaller", "Its towers are independent, so images can be embedded once offline and matched with a dot product", "It uses a better loss", "It has a learned temperature"],
+      options: ["It is a much smaller model", "Independent towers, embedded offline", "It uses a better training loss", "It has a learned temperature"],
       answer: 1,
       why: "CLIP's image encoder never reads the text and vice versa, so each embedding depends only on its own input. That lets you embed a million images once and later compare any query against them cheaply. In a cross-attention model the representation depends on the pair, so every query requires re-encoding every candidate." },
     { stem: "How does LLaVA connect a vision encoder to an LLM?",
-      options: ["With cross-attention layers", "By projecting ViT patch embeddings into the LLM's embedding space so they become ordinary tokens in the same sequence", "By fine-tuning the LLM on image captions", "By converting images to text descriptions first"],
+      options: ["With cross-attention layers", "Projected patches become tokens", "By fine-tuning on image captions", "By converting images to captions"],
       answer: 1,
       why: "A decoder consumes a sequence of d_model vectors and has no way to know their origin. Projecting patches into that space makes them tokens, so image and text attend to each other in every layer with no architectural change. The projection — about 21M parameters for 1024 to 4096 — is often the only trained component." },
     { stem: "What limits image resolution in vision-language models?",
-      options: ["GPU memory for the vision encoder", "Visual token count — a 1024px image at patch 14 is 5,329 tokens, 130% of a 4k context", "Training data availability", "The projection layer's capacity"],
+      options: ["GPU memory for the vision encoder", "The number of visual tokens", "Availability of training data", "The projection layer's capacity"],
       answer: 1,
       why: "Patches scale with area, so resolution costs context quadratically. At 672px one image is already 56.2% of a 4k window, leaving under half for the question and answer. This is why VLMs downscale aggressively, use tiling, and why Flamingo's Perceiver Resampler compresses to a fixed 64 tokens regardless of resolution." },
     { stem: "Why is Flamingo's cross-attention gate initialised at zero?",
-      options: ["To save computation", "So the model starts as exactly the original frozen LM and visual influence is learned in gradually without damaging it", "To prevent overfitting", "To match the vision encoder's scale"],
+      options: ["To save computation early on", "The model starts as the original LM", "To prevent overfitting to images", "To match the vision encoder's scale"],
       answer: 1,
       why: "A tanh gate at zero means the inserted layers contribute nothing initially, so the multimodal model begins identical to the working language model. Visual influence grows as training proceeds. It directly addresses the risk that multimodal training degrades the LM's language ability — a real concern in approaches that fine-tune the LM itself." }
   ] },

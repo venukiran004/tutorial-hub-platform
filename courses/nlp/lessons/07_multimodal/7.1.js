@@ -130,19 +130,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does the fusion point determine what a model can be used for?",
-      options: ["It changes the parameter count", "In late fusion each embedding depends only on its own input, enabling offline indexing; in cross-attention the representation depends on the pair, which forbids it", "It affects training speed only", "It determines the supported modalities"],
+      options: ["It changes the parameter count", "Late fusion embeds inputs independently", "It affects training speed only", "It decides which modalities fit"],
       answer: 1,
       why: "CLIP can embed ten million images once and match any query with a dot product, because its towers never interact. A cross-attention model would have to re-encode every candidate against every query. That is structural, not a matter of tuning — choosing a fusion strategy chooses which tasks are possible." },
     { stem: "What does bottleneck fusion solve?",
-      options: ["Training instability", "Image cost scaling with resolution — a fixed set of learned queries outputs a constant token count regardless of input size", "Modality imbalance", "The need for paired data"],
+      options: ["Training instability", "Cost growing with resolution", "Imbalance between modalities", "The need for paired data"],
       answer: 1,
       why: "A 1024-pixel image at patch 14 is 5,329 tokens, 130% of a 4k context. Q-Former's 32 queries and Perceiver's 64 make that a constant. The cost is that whatever those fixed vectors fail to capture is lost, and fine detail — small text, distant objects — is what a fixed-size summary loses first." },
     { stem: "How does LLaVA achieve cross-modal interaction without a cross-attention module?",
-      options: ["It uses early fusion on raw pixels", "It projects patches into the LLM's embedding space so they become ordinary tokens, and self-attention then runs over text and image together", "It fine-tunes the vision encoder", "It uses a Q-Former"],
+      options: ["Early fusion on raw pixels", "Patches become ordinary LLM tokens", "Fine-tuning the vision encoder", "A Q-Former between the towers"],
       answer: 1,
       why: "The LLM consumes a sequence of d_model vectors and cannot tell where they came from. Putting visual tokens in the same sequence means self-attention provides the cross-modal interaction in every layer, with no architectural change — which is why the approach composes with every serving optimisation and every new base model." },
     { stem: "Why has projection alignment largely displaced contrastive alignment for new models?",
-      options: ["It produces better representations", "It inherits both pretrained towers and trains only a small connector, avoiding the 400M pairs and huge batches contrastive training needs", "It requires no paired data at all", "It is more interpretable"],
+      options: ["It gives better representations than contrastive", "Reuse both towers; train a small connector", "It requires no paired data of any kind", "It is far more interpretable to inspect"],
       answer: 1,
       why: "Contrastive pretraining needs hundreds of millions of pairs and batch sizes in the tens of thousands — very few organisations can run that. Projection alignment trains about 21M parameters between a frozen vision encoder and a frozen LLM. It is the LoRA logic: freeze the expensive parts, train the connector." }
   ] },

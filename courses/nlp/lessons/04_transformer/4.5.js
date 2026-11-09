@@ -214,19 +214,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What does the causal mask make possible?",
-      options: ["Faster inference", "Computing all n next-token predictions in one parallel training pass without any position seeing its own answer", "Longer context", "Lower memory use"],
+      options: ["Faster inference at serving time", "All predictions in one pass", "A longer usable context window", "Lower memory use during training"],
       answer: 1,
       why: "Without it, position i would attend to position i+1 — the very token it is being asked to predict. In the worked row the future position took 34.11% of the weight, the largest share. The mask is what makes teacher-forced parallel training measure the same quantity that sequential inference will later compute." },
     { stem: "Why was generation 74.2x slower than training on the same sequence?",
-      options: ["Generation uses a bigger model", "Training is one parallel pass over all positions; generation needs one full pass per token because token t+1 depends on token t existing", "Dropout is enabled", "The mask is recomputed"],
+      options: ["Generation uses a bigger model", "One pass per generated token", "Dropout is enabled at generation", "The mask is recomputed each step"],
       answer: 1,
       why: "2.12 ms against 157.21 ms for 128 tokens, identical weights. The dependency is inherent to autoregression, not to the architecture. Because each step moves all the weights to do a tiny amount of work, decode is memory-bandwidth-bound — which is the root cause of KV caching, speculative decoding and continuous batching." },
     { stem: "Why mask with -inf rather than a large negative number?",
-      options: ["It is faster", "Because a merely large value leaks weight — -10 left 4.49e-06 on a position the model must not see", "It uses less memory", "There is no difference"],
+      options: ["It is faster to compute", "Large values still leak", "It uses less memory", "There is no difference"],
       answer: 1,
       why: "In float32 anything below about -1e4 underflows to exactly zero after exp, so -inf and -1e9 agree. -10 does not, and the leak is of precisely the information the mask exists to hide. In float16 there is a further trap: masking with the finite minimum -65504 produced NaN, so use torch.finfo(dtype).min." },
     { stem: "What is exposure bias?",
-      options: ["Overfitting to frequent tokens", "Training always conditions on correct prefixes while inference conditions on the model's own output, so early errors compound", "Bias in the training corpus", "Attention leaking to future tokens"],
+      options: ["Overfitting to frequent tokens", "Train on true prefixes, infer on own", "Bias in the training corpus", "Attention leaking to the future"],
       answer: 1,
       why: "Scoring a gold continuation, gpt2 assigned just 0.0836 to a token it would never have generated, then continued to be scored on a prefix it disagreed with. At inference nothing supplies the correction. Mitigations are scheduled sampling, sequence-level or RL fine-tuning, and better decoding strategies." }
   ] },

@@ -180,19 +180,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why are ViT's embeddings only 0.9% of its parameters when GPT-2's are 31.2%?",
-      options: ["ViT uses a smaller d_model", "A vision model has no vocabulary — patches are projected by one shared matrix instead of stored per token type", "ViT shares embeddings across layers", "ViT has no positional embeddings"],
+      options: ["ViT uses a smaller d_model", "No vocabulary: one shared projection", "ViT shares embeddings across layers", "ViT has no positional embeddings"],
       answer: 1,
       why: "GPT-2 stores 50,257 × 768 = 38.6M parameters, one vector per token type. ViT's entire embedding cost is one 768 × 768 projection plus 197 positional vectors and a [CLS] token — 742,656 parameters. A patch is arbitrary pixel values, so there is nothing to look up." },
     { stem: "Why is the patch embedding implemented as a Conv2d?",
-      options: ["To add convolutional inductive bias", "Because a convolution with kernel equal to stride visits each non-overlapping patch once and applies the same matrix — exactly the per-patch linear projection", "To reduce parameters", "For backward compatibility with CNNs"],
+      options: ["To add a convolutional inductive bias", "Kernel = stride is a per-patch projection", "To reduce the number of parameters", "For backward compatibility with CNNs"],
       answer: 1,
       why: "Kernel size 16 with stride 16 means no overlap and one visit per patch, so the operation is identical to flattening each patch and multiplying by a shared matrix. Writing it as a conv fuses the split and the projection into one optimised call. It looks like a convolutional layer until you notice the stride equals the kernel." },
     { stem: "Going from 224×224 to 448×448, how does attention cost change?",
-      options: ["It doubles", "Tokens quadruple and attention entries grow about 16x, since patches scale with area and attention with the square of tokens", "It stays the same", "It grows 4x"],
+      options: ["It doubles", "About 16×", "It stays the same", "It grows 4×"],
       answer: 1,
       why: "196 patches become 784, and attention entries go from 38,809 to 616,225. That compounding is why high-resolution ViT is hard: images have far more natural resolution than text has tokens, and using it is the most expensive thing you can do to a transformer." },
     { stem: "Why did ResNets beat ViT on ImageNet-1k but lose on JFT-300M?",
-      options: ["ViT is badly optimised for small datasets", "Convolutional inductive bias substitutes for data — decisive when data is scarce, and outgrown once the model can learn better priors itself", "ResNets have more parameters", "ImageNet-1k has label noise"],
+      options: ["ViT is badly optimised for small data", "Convolutional bias substitutes for data", "ResNets have more parameters", "ImageNet-1k has label noise"],
       answer: 1,
       why: "Locality, translation equivariance and hierarchy are true facts about images that a CNN gets for free and a ViT must learn. At 1.3M images that head start wins; at 14M they are equal; at 300M the ViT learns those regularities and others the convolutional prior forbids. For anyone without 300M images, the practical answer is to start from a pretrained ViT." }
   ] },

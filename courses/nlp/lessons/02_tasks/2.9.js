@@ -358,67 +358,37 @@ for dim in (2, 10, 100, 1000):
     questions: [
       {
         stem: "Embeddings are L2-normalised and indexed in FAISS with `IndexFlatL2`. A colleague says the retrieval is wrong because the model was trained with cosine similarity. What is the correct response?",
-        options: [
-          "They are right — rebuild the index with a cosine metric",
-          "The ranking is identical: on normalised vectors ‖a−b‖² = 2 − 2·cos, a decreasing function of cosine, so L2 and cosine order the results the same way",
-          "They are right — FAISS cannot do cosine at all",
-          "It only matters if the vectors have more than 512 dimensions"
-        ],
+        options: ["They are right: rebuild with a cosine index", "On unit vectors L2 and cosine rank the same", "They are right: FAISS cannot do cosine", "It matters only above 512 dimensions"],
         answer: 1,
         why: "There is no cosine index in FAISS because none is needed. The thing actually worth checking is that normalisation happens on both the indexing and the query path — doing it on one side distorts the ranking silently."
       },
       {
         stem: "Two records sit at the same Euclidean distance from the centroid of a dataset whose two features correlate at 0.9. Mahalanobis scores them 2.04 and 9.04. What does that tell you?",
-        options: [
-          "The covariance matrix was estimated incorrectly",
-          "One record moves along the direction the data varies in and the other moves across it — the second is an implausible combination of individually unremarkable values",
-          "Mahalanobis distance is not reliable with correlated features",
-          "The features should be dropped"
-        ],
+        options: ["The covariance was estimated incorrectly", "One moves across the correlation: implausible", "Mahalanobis fails with correlated features", "The correlated features should be dropped"],
         answer: 1,
         why: "This is the case Euclidean distance structurally cannot see, and it is why Mahalanobis is the standard multivariate outlier tool. The caveat is the inverse: with near-duplicate features or more features than samples, the covariance is ill-conditioned and the distances become noise."
       },
       {
         stem: "A drift monitor on a numeric latency distribution reports the same Jensen-Shannon value whether latencies shifted by 1 ms or by 50 ms. Why, and what should it use?",
-        options: [
-          "JS is broken for continuous data; use KL",
-          "Once the supports are disjoint, every divergence built on pointwise probability ratios saturates — it reports non-overlap, not magnitude. Wasserstein measures the shift in the units of the axis",
-          "The bin count is wrong; more bins would fix it",
-          "It should compare means instead"
-        ],
+        options: ["JS is broken for continuous data; use KL", "Disjoint supports saturate it; use Wasserstein", "The bin count is wrong; more bins fix it", "It should simply compare the means instead"],
         answer: 1,
         why: "The measurement showed JS pinned at 0.8326 for shifts of 1, 5 and 50 while Wasserstein returned 1, 5 and 50. KL has the same blind spot and is also asymmetric and unbounded, so it is a worse choice, not a better one."
       },
       {
         stem: "Comparing sparse count vectors where one coordinate is 0 in record A and 1 in record B, which metric treats that as a large difference?",
-        options: [
-          "Euclidean — the difference is 1",
-          "Canberra — each term is divided by the magnitude of that coordinate, so 0 → 1 is a complete change contributing a full 1.0",
-          "Bray-Curtis — it normalises by the grand total",
-          "Chebyshev — it takes the maximum"
-        ],
+        options: ["Euclidean, since the difference is 1", "Canberra: 0 → 1 counts as a full change", "Bray-Curtis, normalised by the total", "Chebyshev, which takes the maximum"],
         answer: 1,
         why: "The measured values on one pair were Canberra 1.09, Euclidean 2.24 and Bray-Curtis 0.10, and the entire disagreement came from that coordinate. The flip side is that Canberra amplifies noise in near-zero coordinates, so it is right only when presence against absence is genuinely meaningful."
       },
       {
         stem: "Why is exact nearest-neighbour search impractical for 1,000-dimensional embeddings?",
-        options: [
-          "The distance computation is too slow per pair",
-          "Distances concentrate — the farthest of 1,000 random points was only 12% farther than the nearest, so pruning bounds exclude almost nothing and a tree degenerates to a scan",
-          "Floating-point precision is insufficient",
-          "Euclidean distance is undefined above 256 dimensions"
-        ],
+        options: ["Each distance computation is too slow", "Distances concentrate, so pruning fails", "Float precision is insufficient there", "Euclidean is undefined above 256 dims"],
         answer: 1,
         why: "Per-pair cost is linear in the dimension and not the problem; the loss of contrast is. It is also why normalising and comparing by angle holds up better than comparing magnitudes, and why reducing the dimension can improve ranking as well as speed."
       },
       {
         stem: "Which metric should compare two customer records holding age, total spend, city and an active flag?",
-        options: [
-          "Euclidean on the numeric columns, ignoring the rest",
-          "Gower — each numeric column scaled by its range, each categorical scored 0 or 1, then averaged, so all four columns contribute comparably",
-          "Cosine, after one-hot encoding everything",
-          "Jaccard on the categorical columns only"
-        ],
+        options: ["Euclidean on the numeric columns alone", "Gower, mixing scaled and matched columns", "Cosine after one-hot encoding everything", "Jaccard on the categorical columns only"],
         answer: 1,
         why: "No Lp distance accepts mixed types at all, and the first option discards half the record while letting spend dominate what remains — 151.08 on the worked pair, essentially the spend difference. The parameter to own in Gower is the per-column range, since it sets the exchange rate between a year of age and a change of city."
       }

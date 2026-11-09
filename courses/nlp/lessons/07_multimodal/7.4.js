@@ -149,19 +149,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does Stable Diffusion operate in latent space?",
-      options: ["Latents are easier to interpret", "48x fewer values, and the denoising network pays that saving on every one of ~50 sampling steps", "The VAE improves image quality", "To support variable resolutions"],
+      options: ["Latents are easier to interpret", "48× fewer values at every step", "The VAE improves image quality", "To support variable resolution"],
       answer: 1,
       why: "512×512×3 is 786,432 values against a latent's 16,384. The VAE runs twice per image — encode and decode — while the U-Net runs 20 to 50 times, so the compression is multiplied by the step count. It is what made high-resolution diffusion affordable, not a marginal optimisation." },
     { stem: "Why does the network predict the noise rather than the clean image?",
-      options: ["The noise is easier to compute", "Epsilon has constant variance at every timestep, so the target's difficulty does not vary with t and the loss stays well conditioned", "It is the only tractable option", "To support classifier-free guidance"],
+      options: ["The noise is easier to compute", "Its variance is constant across t", "It is the only tractable option", "To support classifier-free guidance"],
       answer: 1,
       why: "The two targets are related by exact algebra — recovering z_0 from a true epsilon has error 4.06e-07 — so they carry the same information. Predicting z_0 directly makes the task nearly trivial at low noise and nearly impossible at high, so whichever regime has larger gradients dominates training." },
     { stem: "What does a guidance scale of 7.5 actually do?",
-      options: ["Selects the conditional prediction", "Extrapolates past it — the result sits 1.52 away from what the model predicted for the prompt", "Averages conditional and unconditional", "Increases the number of sampling steps"],
+      options: ["Selects the conditional prediction", "Extrapolates past the prompt's prediction", "Averages conditional and unconditional", "Adds more sampling steps"],
       answer: 1,
       why: "At w = 1 the formula gives exactly the conditional prediction. At 7.5 it continues along the line away from the unconditional one, far beyond where the model actually landed. That is why high guidance produces saturated, exaggerated, over-typical images, and why pushing to 15 or 20 degrades them." },
     { stem: "Why is 'three cats to the left of a sofa' unreliable for Stable Diffusion?",
-      options: ["The U-Net cannot represent counts", "Conditioning comes from CLIP, whose text tower encodes counting and spatial relations weakly because captions rarely state them", "The latent space is too small", "Guidance interferes with spatial layout"],
+      options: ["The U-Net cannot represent counts", "CLIP conditioning encodes counts weakly", "The latent space is too small", "Guidance interferes with layout"],
       answer: 1,
       why: "The failure originates in the sentence embedding, not the image model. Lesson 7.2 established CLIP's blind spots trace to its caption training distribution, and Stable Diffusion inherits them by conditioning on the same encoder. It also predicts the fix — Imagen and SD3 use T5 instead." }
   ] },

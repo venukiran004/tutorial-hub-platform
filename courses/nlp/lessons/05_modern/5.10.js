@@ -156,19 +156,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What does Mixture of Experts actually decouple?",
-      options: ["Training and inference cost", "Total parameters from compute per token — capacity scales with experts while FLOPs scale with top-k", "Memory from latency", "Attention from the FFN"],
+      options: ["Training cost from inference cost", "Parameter count from per-token FLOPs", "Memory footprint from latency", "Attention from the feed-forward"],
       answer: 1,
       why: "64 experts with top-2 routing gives 64x the FFN parameters while each token still runs through exactly two FFNs. Capacity determines what the model can know; active parameters determine what each token costs. Note top-2 is 2x a dense FFN's compute, so sparse is not cheaper than dense — it is far more capacity for a small fixed multiple." },
     { stem: "Why is Mixtral 8x7B 46.7B parameters rather than 56B?",
-      options: ["Quantisation", "Only the FFN layers are replicated — attention, embeddings and norms are shared across all experts", "The experts are smaller than 7B", "Weight tying"],
+      options: ["Quantisation of the weights", "Only FFNs are replicated", "Experts are smaller than 7B", "Weight tying across experts"],
       answer: 1,
       why: "The FFN is roughly two-thirds of a transformer block and attention the other third, so eight copies of the FFN plus one shared attention stack comes to 46.7B. Active parameters are 12.9B rather than 14B for the same reason — each token uses shared attention plus two experts' FFNs. Never read an NxM MoE name as arithmetic." },
     { stem: "Why does router collapse happen?",
-      options: ["The router is too small", "Routing is discrete, so an unselected expert receives no gradient at all — a small initial advantage compounds into a permanent one", "The learning rate is too high", "Softmax saturates"],
+      options: ["The router is too small to learn", "Unselected experts get no gradient", "The learning rate is too high", "The softmax saturates early"],
       answer: 1,
       why: "An expert that is not selected is not merely trained less, it is not trained. So a marginally better expert attracts tokens, improves from their gradient while the others do not, and attracts more. Measured, a seeded expert went from 42.6% to 46.3% of tokens over 600 steps — the advantage grew rather than washing out." },
     { stem: "In L_aux = α·N·Σ f_i·P_i, why is the differentiable term multiplied by a non-differentiable one?",
-      options: ["To normalise the scale", "Because f_i is a token count with no gradient — pairing it with P_i creates a term whose gradient pushes down the router's probability for over-subscribed experts", "To avoid division by zero", "Both terms are differentiable"],
+      options: ["To normalise the loss scale", "f_i has no gradient; P_i carries it", "To avoid division by zero", "Both terms are differentiable"],
       answer: 1,
       why: "f_i comes from a topk and an argmax, so nothing flows through it. P_i is the mean router probability and is differentiable. The product steers the hard assignment by shaping the soft distribution it derives from — and measured, that correction cost nothing in task loss, 0.0316 against 0.0321." }
   ] },

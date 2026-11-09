@@ -299,19 +299,19 @@ def bpe_encode(word, merges):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "In BPE training, how are adjacent pairs counted?",
-      options: ["Once per distinct word containing them", "Weighted by how often each word occurs in the corpus", "Once per document", "By character position"],
+      options: ["Once per distinct word that contains them", "Weighted by each word's corpus frequency", "Once per document that contains them", "By the character position in each word"],
       answer: 1,
       why: "`(u,g)` scored 20 because it appears in `hug` (frequency 10), `pug` (5) and `hugs` (5). Weighting by word frequency is what makes BPE reflect the corpus rather than the dictionary — a rare word containing a pair contributes little, which is why frequent words end up as single tokens." },
     { stem: "Why can byte-level BPE never produce an `[UNK]` token?",
-      options: ["It has a very large vocabulary", "Its base vocabulary is the 256 possible bytes, and all text is bytes", "It falls back to character level", "It uses a special unknown handler"],
+      options: ["It has a very large vocabulary", "Its base symbols are all 256 bytes", "It falls back to single characters", "It uses a special unknown handler"],
       answer: 1,
       why: "Any text in any script is a sequence of bytes and there are only 256 of them, so every possible input is representable from the base vocabulary up. The cost is that text in scripts underrepresented in training tokenises into many more pieces — measured at ten tokens for a nine-character string." },
     { stem: "How does WordPiece's merge criterion differ from BPE's?",
-      options: ["It merges the least frequent pair", "It divides pair frequency by the product of the parts' frequencies", "It merges alphabetically", "It uses a neural scorer"],
+      options: ["It merges the least frequent pair first", "Pair count over the parts' count product", "It merges pairs in alphabetical order", "It scores candidate pairs with a network"],
       answer: 1,
       why: "BPE takes `argmax freq(a,b)`; WordPiece takes `argmax freq(a,b)/(freq(a)·freq(b))`, favouring pairs that are common *relative to how common their parts are*. On the corpus BPE merged `(u,g)` at count 20 while WordPiece merged `(g,s)` at count 5, because `g` and `s` are individually rare." },
     { stem: "In GPT-2, are `Hello` and ` Hello` the same token?",
-      options: ["Yes — whitespace is stripped", "No — the leading space is part of the token, rendered as `Ġ`", "Only when lowercased", "Yes, but with different IDs"],
+      options: ["Yes, because whitespace is stripped", "No: the leading space is in the token", "Only when the text is lowercased", "Yes, but each gets a different id"],
       answer: 1,
       why: "Byte-level BPE keeps the space, so `Hello` and `ĠHello` are distinct token IDs. That is why prompt behaviour is sensitive to trailing whitespace in ways that look superstitious until you look at the tokenisation — a space before a completion genuinely changes which tokens the model sees." }
   ] },

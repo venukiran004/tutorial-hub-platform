@@ -118,19 +118,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "The toy model's loss is 2.532 on a 5-word vocabulary. Is that good?",
-      options: ["Yes, well below chance", "No — uniform guessing costs ln(5) = 1.6094, so it is 0.92 nats worse than knowing nothing", "It is exactly chance", "Loss cannot be compared to a baseline"],
+      options: ["Yes, well below chance", "No: worse than ln 5", "It is exactly chance", "No baseline exists"],
       answer: 1,
       why: "Perplexity 12.58 against a vocabulary of 5. Position 0 gave the correct token just 0.014, costing 4.2687 nats. Random weights are not neutral — they produce confident arbitrary predictions, and -log p blows up as p approaches zero. Always compute ln(vocab) as the baseline before judging a loss." },
     { stem: "What shape is the cross-attention matrix, and why?",
-      options: ["Square, like self-attention", "Target length by source length, because decoder queries meet encoder keys", "Source by source", "It has no fixed shape"],
+      options: ["Square, as in self-attention", "Target length × source length", "Source length × source length", "It has no fixed shape at all"],
       answer: 1,
       why: "Here (3, 3) only because both sentences are three words; a five-word translation of a three-word source would give (5, 3). Rows sum to 1 over the source positions, so each output token distributes its full attention across the input words — which is what makes it an alignment matrix and the best debugging artefact an encoder-decoder model offers." },
     { stem: "How can you tell this model's cross-attention has learned nothing?",
-      options: ["The weights are negative", "It deviates from uniform by at most 0.0577, with a diagonal mean of 0.3500 against 0.3250 off-diagonal", "The rows do not sum to 1", "It is masked"],
+      options: ["The weights are negative", "It is almost uniform", "The rows do not sum to 1", "It is masked"],
       answer: 1,
       why: "A trained model on a word-aligned pair would show a strong diagonal — I to ich, love to liebe, AI to KI. This one attends essentially equally to every source word for every target word, which is noise. If you saw this while debugging a real model you would know immediately that cross-attention was not learning." },
     { stem: "How does the encoder get trained when the loss is computed on the decoder's output?",
-      options: ["It has a separate reconstruction loss", "Gradient flows back through cross-attention, which is the only path connecting the two stacks", "It is pretrained separately and frozen", "Through the shared embedding table"],
+      options: ["It has a separate reconstruction loss", "Gradients flow back via cross-attention", "It is pretrained separately and frozen", "Through the shared embedding table"],
       answer: 1,
       why: "The decoder's queries meeting the encoder's keys and values is the sole connection. So the encoder learns to produce representations that are useful for the decoder's cross-attention — an entirely indirect signal. Nothing ever tells the encoder what a good source representation is, only whether the decoder could translate from it." }
   ] },

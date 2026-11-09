@@ -160,19 +160,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "How does going from 8 heads to 16 change the parameter count?",
-      options: ["It doubles", "Not at all — h × d_k = d_model, so the projections stay d_model × d_model", "It halves", "It grows by d_model"],
+      options: ["It doubles", "Not at all", "It halves", "By d_model"],
       answer: 1,
       why: "At d_model = 512, every head count from 1 to 64 gives exactly 1,048,576 projection weights. The head split partitions the same matrices rather than adding new ones. What changes is d_k per head, which shrinks as h grows — at h = 64 each head compares in only 8 dimensions." },
     { stem: "What does splitting attention into heads actually buy?",
-      options: ["More parameters", "h independent softmax distributions instead of one, so the layer can express several notions of relevance at once", "Faster computation", "Lower memory use"],
+      options: ["More parameters overall", "Several softmaxes at once", "Faster computation per layer", "Lower memory use per layer"],
       answer: 1,
       why: "A single head must commit to one attention distribution — one answer to what is relevant for this token. Eight heads produce eight, and W_O learns to combine them. The capacity is identical; the structural constraint of separate normalisations is what creates the diversity." },
     { stem: "Why do so many BERT heads send most of their attention to [SEP]?",
-      options: ["[SEP] carries sentence-level meaning", "Softmax forces weights to sum to 1, so a head with nothing to attend to must dump the mass somewhere — the attention sink", "A tokenisation bug", "[SEP] is the highest-magnitude embedding"],
+      options: ["[SEP] carries sentence-level meaning", "Weights must sum to 1: an attention sink", "A tokenisation bug in BERT's input", "[SEP] has the largest embedding norm"],
       answer: 1,
       why: "Layer 4 heads sent 35-72% there and layer 11 head 0 sent 86.4%. [SEP] is a structural marker with no content, which makes it a convenient place to put idle mass. Any claim about what a head does has to account for the sink first — it is the reason the tidy one-relationship-per-head picture does not survive measurement." },
     { stem: "What is layer 3 head 5 doing?",
-      options: ["Coreference resolution", "Attending to the immediately preceding token, at mean weight 0.7165", "Attending to [CLS]", "Nothing interpretable"],
+      options: ["Resolving coreference chains", "Attending to the previous token", "Attending only to [CLS]", "Nothing that is interpretable"],
       answer: 1,
       why: "From the third token onward every position attends to the one before it, with individual weights from 0.621 to 0.984. It implements 'look at the previous token' as a reusable positional primitive — a building block of the induction circuits that let models copy repeated patterns. The first two tokens fall back to [CLS], having no meaningful predecessor." }
   ] },

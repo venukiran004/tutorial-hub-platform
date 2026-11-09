@@ -204,11 +204,11 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why can't POS tagging be a dictionary lookup?",
-      options: ["Dictionaries are too large", "Many words take different tags depending on context — `book` is a verb or a noun", "Tags change over time", "Dictionaries lack rare words"],
+      options: ["Dictionaries would be far too large", "A word's tag depends on its context", "Tags change over time", "Dictionaries lack rare words"],
       answer: 1,
       why: "`I book a flight` and `I read the book` give `book` different tags, and the same holds for `play` and `duck`. The tag is a property of the sentence, not the word type, and ambiguity is concentrated in the most frequent words — which is why it requires a model." },
     { stem: "What does a dependency parse capture that bag of words cannot?",
-      options: ["Word frequency", "Which word is the subject and which the object", "Document length", "Vocabulary size"],
+      options: ["Word frequency", "Subject vs object", "Document length", "Vocabulary size"],
       answer: 1,
       why: "`The cat chased the mouse` and `The mouse chased the cat` have identical token multisets, so BoW and TF-IDF produce exactly the same vector and no classifier over them can separate the two. The parse marks `cat` as `nsubj` in one and `dobj` in the other." },
     { stem: "In a dependency parse, how do you identify the root?",
@@ -216,7 +216,7 @@ EC.receiveLesson({
       answer: 1,
       why: "The root is the token whose head points back at itself, which is the convention that lets the parse be stored as a flat head-index array. It is usually the main verb, and it is the entry point for walking the tree — the SVO extractor starts there and reads its children." },
     { stem: "When is explicit parsing most likely to be redundant?",
-      options: ["Relation extraction", "Text classification with a fine-tuned transformer", "Knowledge-graph construction", "Rule-based extraction"],
+      options: ["Relation extraction between entities", "Classification with a fine-tuned transformer", "Building a knowledge graph from text", "Rule-based information extraction"],
       answer: 1,
       why: "Probing studies find attention heads aligning with dependency relations that nobody supervised, so a transformer already has an internal syntax and is more robust on informal text than a treebank-trained parser. Parsing stays valuable when the structure is the *output* — relations, triples, key phrases — rather than an internal feature." }
   ] },

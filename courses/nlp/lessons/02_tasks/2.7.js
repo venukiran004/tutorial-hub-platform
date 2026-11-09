@@ -206,19 +206,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did 'the cat is on the mat' score exactly 0.0000 against 'the cat sat on the mat'?",
-      options: ["The brevity penalty", "The 4-gram precision was 0/3, and the geometric mean multiplies all four orders", "The sentences have different lengths", "NLTK requires multiple references"],
+      options: ["The brevity penalty zeroed it", "Zero 4-gram matches zero the mean", "The sentences differ in length", "NLTK needs several references"],
       answer: 1,
       why: "Unigram precision was 0.8333 and bigram 0.6000, but a six-word sentence has only three 4-grams and changing one middle word broke all three. Zero times anything is zero. This is why BLEU is a corpus metric and why sentence-level use needs smoothing — which lifted it to 0.2541." },
     { stem: "Why did the idiom 'he kicked the bucket' get a round-trip BLEU of 1.0000?",
-      options: ["Marian translated it correctly", "Because the literal French translation round-trips literally, so the metric sees a perfect match while the meaning was destroyed", "Because the sentence is short", "Because of the brevity penalty"],
+      options: ["Marian translated the idiom correctly", "A literal round trip matches literally", "Because the sentence is very short", "Because of the brevity penalty"],
       answer: 1,
       why: "It became 'Il a donné un coup de pied au seau' — a man physically kicking a pail, not a death. The failure is symmetric, so the return trip reproduces the original exactly. Round-trip BLEU measures whether a transformation is invertible, which is not the same as whether it is correct." },
     { stem: "Why did a correct translation of 'the river bank was muddy' score only 0.3328?",
-      options: ["The translation was wrong", "French 'rive' already means river bank, so the word 'river' had no source on the way back", "The model dropped a word by mistake", "The brevity penalty misfired"],
+      options: ["The translation itself was wrong", "'rive' already meant river bank", "The model dropped a word by mistake", "The brevity penalty misfired"],
       answer: 1,
       why: "'La rive était boueuse' is correct — 'rive' specifically denotes the bank of a river, making 'river' redundant in French. Coming back it surfaced as 'The bank was muddy'. Information legitimately becoming implicit in the target language is invisible to a surface-overlap metric, which reads it as loss." },
     { stem: "What does the brevity penalty prevent?",
-      options: ["Hallucinated content", "A system emitting only the few words it is most confident about, which would score perfect precision", "Repeated n-grams", "Wrong word order"],
+      options: ["Hallucinated content in the output", "Emitting only a few safe words", "Repeated n-grams in the output", "Words in the wrong order"],
       answer: 1,
       why: "BLEU is precision-based, so a short correct fragment has precision 1.0 in every order. At 5 words out of 9 all four precisions were 1.0 and BLEU equalled the penalty exactly, 0.4493. Without it the optimal strategy is to stop early, which is the opposite of translating." }
   ] },

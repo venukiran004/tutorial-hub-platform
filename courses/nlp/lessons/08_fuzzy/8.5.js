@@ -158,19 +158,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does token_set_ratio('Smith', 'Smith Smith Smith') return 100?",
-      options: ["A bug in RapidFuzz", "It compares shared token sets, and a set cannot represent repetition — both reduce to {smith}", "The strings are normalised to lowercase", "The threshold is applied incorrectly"],
+      options: ["A bug in RapidFuzz's scorer", "Sets cannot represent repetition", "Both strings were lowercased", "The threshold was misapplied"],
       answer: 1,
       why: "It is documented behaviour and catastrophic for record matching, because any repeated token defeats the scorer. Similarly partial_ratio('cat','category') returns 100 because 'cat' is a substring. Choosing a scorer means choosing which false positives you accept, and WRatio inherits all of them while obscuring which fired." },
     { stem: "Why is blocking mandatory rather than an optimisation?",
-      options: ["It improves accuracy", "All-pairs comparison is n(n−1)/2 — a million records is 5e11 pairs, about 1.6 years at 10,000 per second", "It reduces false positives", "Libraries require it"],
+      options: ["It improves match accuracy", "All pairs is ~5e11 comparisons", "It reduces false positives", "The libraries require it"],
       answer: 1,
       why: "Ten times the records is a hundred times the work, and no scorer optimisation changes the exponent. The only answer is to not compare most pairs. Blocking on the first letter alone cuts a million records by roughly 26x, from one line of code." },
     { stem: "What does choosing a blocking key actually decide?",
-      options: ["Computational cost only", "The ceiling on recall — a pair that never shares a block can never be matched regardless of the scorer", "Which similarity metric to use", "The threshold"],
+      options: ["Computational cost only", "The ceiling on recall", "Which similarity metric to use", "The decision threshold"],
       answer: 1,
       why: "All the scoring work operates only on pairs blocking has already selected. That makes the blocking key a recall decision taken before any similarity is computed, so blocking recall should be measured explicitly against known duplicates, and several keys should be used with their candidates unioned." },
     { stem: "Why should an entity-resolution system have three outcomes rather than two?",
-      options: ["To improve throughput", "Because false positives merge two real people and are far harder to undo than false negatives, so the uncertain band belongs with a human", "To simplify the threshold", "To handle missing data"],
+      options: ["To improve the pipeline's throughput", "False merges cost more; humans review", "To simplify choosing one threshold", "To handle records with missing data"],
       answer: 1,
       why: "A false negative leaves a correctable duplicate. A false positive exposes one person's data to another and corrupts both histories, often irreversibly unless provenance was stored. Auto-match above a high threshold, reject below a low one, and review between — and report precision and recall separately, since accuracy is dominated by the non-matches." }
   ] },

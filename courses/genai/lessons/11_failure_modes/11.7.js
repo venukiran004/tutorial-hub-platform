@@ -133,7 +133,7 @@ At $5 / 1M input and $15 / 1M output:
   <text x="301" y="185" class="s-mono" style="font-size:8px;fill:var(--good)">$13,200/mo &#183; 71% &#8212; no model change</text>
 
   <rect x="16" y="202" width="728" height="34" rx="4" class="s-fill-bg" style="stroke:var(--warn)" stroke-width="1.5"/>
-  <text x="28" y="220" class="s-mono" style="font-size:9px;fill:var(--warn)">THE REFERENCE STATES 4,450 FOR THE RERANK STEP. ITS OWN LINE ITEMS GIVE 4,250.</text>
+  <text x="28" y="220" class="s-mono" style="font-size:9px;fill:var(--warn)">A QUOTED 4,450 FOR THE RERANK STEP; ITS OWN LINE ITEMS SUM TO 4,250.</text>
   <text x="28" y="232" class="s-sub">400 tokens/chunk x 5 chunks removed = 2,000 &#183; 6,250 - 2,000 = 4,250 &#183; the 200 propagates to 3,400 vs 3,200</text>
 
   <line x1="16" y1="248" x2="744" y2="248" stroke="var(--line)" stroke-width="1"/>

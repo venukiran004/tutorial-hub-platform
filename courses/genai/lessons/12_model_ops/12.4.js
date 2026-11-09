@@ -30,7 +30,7 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
       hl: [2],
       caption: "Your on-call sees an error spike with an empty change log and burns two hours before anyone checks the model." },
 
-    { t: "callout", kind: "insight", title: "The two shapes have opposite trade-offs, and the reference is unambiguous about which to pick",
+    { t: "callout", kind: "insight", title: "The two shapes have opposite trade-offs, and one of them is clearly the right pick",
       body: [
         { t: "p", text: "A **pinned snapshot** gives stable, reproducible behaviour and a predictable, scheduled incident \u2014 you must migrate on a deadline. A **floating alias** is \u2018automatic\u2019 maintenance until it breaks you, with surprise, unattributable incidents. The verdict: pin in production, aliases in dev only." },
         { t: "p", text: "The second half of that recommendation is the clever part and it is easy to miss: **run a nightly golden-set eval against the floating alias in staging.** That way you discover the next model on your schedule rather than the vendor\u2019s, and arrive at the deprecation notice with the migration already most of the way done." },
@@ -321,7 +321,7 @@ expressed in the TARGET model's tokens, re-measured on migration.`,
   quiz: {
     title: "Check yourself",
     questions: [
-      { stem: "Which failure mode does the reference call the single most common version incident?",
+      { stem: "Which failure mode is the single most common version incident?",
         options: [
           "A pinned snapshot being retired on its sunset date",
           "A floating alias being silently re-pointed to a new snapshot \u2014 your outputs change with an empty change log",

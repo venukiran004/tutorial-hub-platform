@@ -154,19 +154,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why does the KV cache speedup grow with the number of generated tokens?",
-      options: ["The cache warms up", "Without a cache, total work is quadratic in generated tokens because the whole prefix is recomputed each step; with one it is linear", "Memory allocation improves", "The model gets more confident"],
+      options: ["The cache warms up over time", "Without it, work is quadratic", "Memory allocation improves", "The model grows more confident"],
       answer: 1,
       why: "Measured 1.87x at 20 new tokens and 3.46x at 60. Each un-cached step redoes K and V for the entire prefix, so the cost of step t grows with t. The cached version computes K and V once per token ever. At realistic lengths of hundreds or thousands of tokens the factor is much larger." },
     { stem: "Is FlashAttention an approximation?",
-      options: ["Yes, it drops low-probability attention weights", "No — it matched standard attention to 1.5e-07 at every block size; it changes the memory access pattern, not the function", "Yes, it uses lower precision", "Only for long sequences"],
+      options: ["Yes, it drops low-probability weights", "No: exact, only memory access changes", "Yes, it computes in lower precision", "Only for very long sequences"],
       answer: 1,
       why: "The online softmax trick carries a running max and denominator and retroactively rescales earlier blocks, so the result is mathematically identical while the N×N matrix never leaves SRAM. The 2-4x gain is an IO gain. That exactness is why it can be adopted with no evaluation risk, unlike any sparse method." },
     { stem: "What does GQA change relative to MHA?",
-      options: ["The number of query heads", "Heads are grouped to share K and V, shrinking both the cache and the K,V projections while queries stay full width", "The head dimension", "The FFN size"],
+      options: ["The number of query heads", "Heads share K and V in groups", "The dimension of each head", "The size of the FFN"],
       answer: 1,
       why: "LLaMA-2 70B uses 64 query heads with 8 KV groups, cutting the cache 8x from 10.74 GB to 1.34 GB. The K,V projections shrink too — 33.5M to 8.4M at eight groups. Queries remain distinct, so the model keeps 64 notions of what to look for while sharing 8 of what is on offer, which is why quality barely moves." },
     { stem: "When would you choose sparse attention over exact attention with FlashAttention?",
-      options: ["Always, it is faster", "Only when sequences are genuinely enormous and the needed access pattern is genuinely local, because sparse computes a different function", "When memory is plentiful", "For short sequences"],
+      options: ["Always, since it is faster", "For huge, truly local patterns", "Whenever memory is plentiful", "For short sequences only"],
       answer: 1,
       why: "Sparse methods remove capabilities: Longformer cannot attend from token 1 to token 4000 unless one is global. That requires re-evaluating on your task. FlashAttention made exact attention affordable at long context, so sparse patterns are now a narrower tool than they appeared in 2020." }
   ] },

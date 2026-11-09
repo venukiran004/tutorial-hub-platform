@@ -257,67 +257,37 @@ def key(r):
     questions: [
       {
         stem: "Two records agree on gender. With m = 0.98 and u = 0.50, the agreement weight is +0.97 bits. Why so little?",
-        options: [
-          "Because gender is recorded unreliably",
-          "Because `u` is 0.5 — half of all non-matching pairs agree on gender too, so agreement barely shifts the odds",
-          "Because the weight formula understates binary fields",
-          "Because m is too close to 1"
-        ],
+        options: ["Gender is recorded unreliably", "Half of non-matches agree too", "The formula understates binary fields", "m is too close to 1"],
         answer: 1,
         why: "The weight is log₂(m/u), and a `u` of 0.5 means agreement is only about twice as likely among matches as among non-matches. The same field's *disagreement* weight is −4.64, because matching pairs disagree only 2% of the time — so the field is weak evidence for a match and strong evidence against one."
       },
       {
         stem: "A pair agrees on both names but not the date of birth (+6.23 bits), while another agrees on date of birth and postcode but on neither name (+15.49 bits). What explains the ordering?",
-        options: [
-          "The weights were set incorrectly — names should dominate",
-          "Names are far less discriminating than they feel: many different people share a common name, while two random people almost never share a date of birth and postcode",
-          "Date of birth is weighted higher by convention",
-          "The second pair agrees on more fields"
-        ],
+        options: ["The weights are wrong; names should win", "Common names; DOB plus postcode is rare", "DOB is weighted higher by convention", "The second pair agrees on more fields"],
         answer: 1,
         why: "It is driven entirely by `u`. The second case is also the one that matches reality — a changed surname after marriage, with identity confirmed by date of birth and address — which a name-weighted scorer would reject."
       },
       {
         stem: "A linkage pipeline blocks on postcode and recall is disappointing. What is the most likely cause and the standard fix?",
-        options: [
-          "The thresholds are too high — lower them",
-          "True matches whose postcode differs are never generated as candidates, so no downstream scoring can find them. Run additional passes on different keys and union the candidates",
-          "The m and u estimates are wrong",
-          "The window size is too small"
-        ],
+        options: ["Thresholds too high: lower them", "Unblocked matches; add more key passes", "The m and u estimates are wrong", "The window size is too small"],
         answer: 1,
         why: "Blocking sets a hard recall ceiling before scoring begins, and the lost pairs are exactly the records with corrupted postcodes — the dirtiest ones. Thresholds control precision among candidates that exist; they cannot recover a pair that was never compared."
       },
       {
         stem: "Why is sorted-neighbourhood blocking still defeated by a typo in the first letter of a surname?",
-        options: [
-          "Because the window is too small by default",
-          "Because sorting is lexicographic, so a difference in the leading characters places the record arbitrarily far away in the sorted order and outside any window",
-          "Because it only works on numeric keys",
-          "Because it requires an exact key like standard blocking"
-        ],
+        options: ["The default window is too small", "Leading-letter typos sort far away", "It only works on numeric keys", "It needs an exact key like blocking"],
         answer: 1,
         why: "It tolerates differences after the leading characters, which is a real improvement over exact blocking but not a general one. Several passes with different field orderings in the key is the usual response, and it composes with standard blocking rather than replacing it."
       },
       {
         stem: "What is lost by collapsing Fellegi-Sunter's three regions into a single threshold?",
-        options: [
-          "Nothing — a single threshold is equivalent and simpler",
-          "The uncertain pairs do not disappear; they are silently assigned to whichever side they fell on, so the cases most needing review are the ones nobody sees",
-          "The ability to compute match weights",
-          "The blocking step becomes mandatory"
-        ],
+        options: ["Nothing; one threshold is simpler", "Uncertain pairs vanish into a side", "The ability to compute weights", "Blocking becomes mandatory"],
         answer: 1,
         why: "The middle band exists because for those scores the evidence genuinely does not settle the question. Sizing that band against actual review capacity, and deciding whether an unreviewed pair defaults to linked or unlinked, is a design decision a single threshold makes invisibly."
       },
       {
         stem: "Two merged records carry different dates of birth. What is the right survivorship rule?",
-        options: [
-          "Most recent wins",
-          "Keep both and flag the conflict — a date of birth should not change, so a disagreement is evidence the match itself may be wrong",
-          "Most complete wins",
-          "Pick the one from the first-loaded source"
-        ],
+        options: ["The most recent value wins", "Keep both and flag the conflict", "The most complete record wins", "The first-loaded source wins"],
         answer: 1,
         why: "Most-recent-wins is right for facts that genuinely change, like an address. A conflict in an immutable field is a signal about the linkage rather than a field to pick a winner for, and silently choosing one hides a possible false positive."
       }

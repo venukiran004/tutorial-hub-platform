@@ -181,19 +181,19 @@ processor.decode(model.generate(**inputs, max_new_tokens=10)[0], skip_special_to
 
   quiz: { title: "Check yourself", questions: [
     { stem: "What does LLaVA's stage 1 train?",
-      options: ["The vision encoder", "Only the projection — 20,971,520 parameters, 0.2865% of the system, with both towers frozen", "The LLM's attention layers", "Everything jointly"],
+      options: ["The vision encoder", "Only the projection", "The LLM's attention", "Everything jointly"],
       answer: 1,
       why: "It inherits a vision encoder trained contrastively on 400M pairs and an LLM trained on trillions of tokens, and learns only the map between them on a few hundred thousand caption pairs. It is the LoRA economics: freeze the expensive parts, train the connector — and it means a better base LLM can be swapped in by retraining just the projector." },
     { stem: "Why is a projector with the wrong output scale a problem?",
-      options: ["It raises memory use", "The LLM's weights expect inputs of a particular magnitude, so mis-scaled visual tokens are effectively ignored and the model captions from its text prior", "It breaks the residual connection", "It causes gradient explosion"],
+      options: ["It raises memory use", "Mis-scaled tokens get ignored", "It breaks the residual", "It causes gradient explosion"],
       answer: 1,
       why: "The LLM has never seen a visual token and will process whatever it is given. If the projected vectors do not sit where real token embeddings sit, attention and the FFN treat them as noise. The classic symptom is a loss that falls a little while the image contributes nothing — check the projected tokens' norm against real embeddings." },
     { stem: "The same model captioned two blue squares as 'a blue square icon with the word s logo', then 'there are two squares'. What changed?",
-      options: ["The image was re-rendered", "Only the prefix — 'there are' frames the task as counting, where the model can use the image, while unconditional captioning lets the text prior dominate", "Temperature was lowered", "A different checkpoint"],
+      options: ["The image was re-rendered", "The prefix framed it as counting", "The temperature was lowered", "A different checkpoint loaded"],
       answer: 1,
       why: "Identical weights, identical pixels. Unconditional captioning is the hardest setting because nothing constrains the output, so a fluent distributionally-typical caption wins. Constraining the frame lets the visual evidence matter. If you need a specific fact from an image, ask for that fact rather than for a caption." },
     { stem: "What makes VLM errors particularly dangerous?",
-      options: ["They are rare and hard to reproduce", "They are fluent, confident and plausible, with nothing in the output signalling that the model is wrong", "They only occur on synthetic images", "They crash downstream systems"],
+      options: ["They are rare and hard to reproduce", "Fluent and confident, with no warning", "They only occur on synthetic images", "They crash downstream systems"],
       answer: 1,
       why: "All three wrong captions were grammatical and distributionally typical — icons with logos and black-and-white stripes are common captions. That is the hallucination problem from lesson 3.8. Decision-relevant output needs verification: repeated questioning, cross-checks against specialist models, or a human in the loop." }
   ] },

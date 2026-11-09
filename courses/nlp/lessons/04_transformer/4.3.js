@@ -175,19 +175,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why is the scaling factor sqrt(d_k) rather than d_k?",
-      options: ["Convention", "Because the dot product's variance is d_k, so its standard deviation — what softmax responds to — is sqrt(d_k)", "To match the number of heads", "To keep the output norm at 1"],
+      options: ["A convention with no reason", "The scores' sd is √d_k", "To match the head count", "To keep output norm at 1"],
       answer: 1,
       why: "With unit-variance components, Var(q·k) = d_k, measured at 64.06 for d_k = 64. Standard deviation is the square root of that, and softmax responds to the spread of its inputs in absolute terms. Dividing by sqrt(d_k) returns the score standard deviation to 1; dividing by d_k would overshoot and flatten the distribution." },
     { stem: "What does an unscaled attention layer look like at initialisation, d_k = 64?",
-      options: ["Uniform weights", "Already 87% one-hot — mean max probability 0.8737, entropy 0.3638 of a possible 3.4657", "All zeros", "Identical to the scaled version"],
+      options: ["Uniform attention weights", "Already about 87% one-hot", "All of the weights at zero", "Identical to the scaled one"],
       answer: 1,
       why: "Score standard deviation was 8.1742, which pushes softmax close to argmax. The layer commits hard to essentially arbitrary positions before learning anything, and the near-zero softmax Jacobian makes it hard to recover. Scaled, the same layer starts at 0.1680 max probability and 2.9981 entropy." },
     { stem: "How does the softmax gradient vary with the spread of its input scores?",
-      options: ["It falls monotonically as spread grows", "It peaks at moderate spread — near-uniform and near-one-hot softmaxes both give small gradients", "It rises monotonically", "It is constant"],
+      options: ["It falls steadily as spread grows", "It peaks at moderate spread", "It rises steadily with spread", "It is constant at every spread"],
       answer: 1,
       why: "Measured mean gradient norm rose from 4.11e-02 at sigma 0.5 to 8.25e-02 at sigma 4, then fell to 3.16e-02 at sigma 16. A near-uniform softmax barely responds to input changes; a one-hot one has a Jacobian near zero. Scaling targets the responsive middle, which is a more accurate account than 'scaling prevents vanishing gradients'." },
     { stem: "Why does attention need positional encoding added to its input?",
-      options: ["To increase capacity", "Because attention is permutation-equivariant — nothing in its five steps refers to position", "To normalise the scores", "To prevent overfitting"],
+      options: ["To increase the model's capacity", "Attention is permutation-equivariant", "To normalise the attention scores", "To prevent the model overfitting"],
       answer: 1,
       why: "Projecting, scoring, scaling, softmaxing and blending all treat the sequence as a set. Shuffle the input rows and the output rows shuffle identically, so the mechanism cannot distinguish 'the cat sat' from 'sat cat the'. Order has to be injected into the representation before attention sees it." }
   ] },

@@ -139,19 +139,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "A mel spectrogram has only half the values of the raw waveform. Why is it such a large saving?",
-      options: ["Fewer values means less memory", "The saving is in sequence length — 480,000 timesteps become 3,000 frames — and attention is quadratic in that axis while linear in the feature axis", "Mel bins are perceptually weighted", "It removes noise"],
+      options: ["Fewer values means less memory", "It shortens the quadratic axis", "Mel bins are perceptually weighted", "It removes background noise"],
       answer: 1,
       why: "The 80 mel bins become the feature dimension, where cost is linear. Moving information off the quadratic axis onto the linear one reduces attention cost by roughly 10^5. That is the same manoeuvre as image patching, and it is why both modalities need a front end before the transformer." },
     { stem: "Why is whisper-tiny 78% decoder when both stacks have four layers?",
-      options: ["The decoder has more layers in practice", "Decoder blocks are 1.33x an encoder block, and the decoder carries a 51,865-token output embedding worth about 20M parameters", "The encoder is quantised", "Audio features are smaller than text features"],
+      options: ["The decoder has more layers in practice", "Bigger blocks plus a big output embedding", "The encoder's weights are quantised", "Audio features are smaller than text ones"],
       answer: 1,
       why: "Lesson 4.7 measured the 1.33x from the extra cross-attention sublayer, and lesson 4.10 measured how vocabulary dominates at small scale. At d_model 384, a 51,865-word multilingual vocabulary is nearly 20M parameters on its own. The audio side of a speech model is far cheaper than the text side." },
     { stem: "How does Whisper produce word-level timestamps?",
-      options: ["A separate alignment model", "From the cross-attention weights, which form a target-by-source alignment matrix showing which audio frames produced which word", "By measuring silence gaps", "From the decoder's positional embeddings"],
+      options: ["A separate alignment model", "Cross-attention alignment", "Measuring silence gaps", "Decoder position embeddings"],
       answer: 1,
       why: "Cross-attention is target length by source length, so each output token's row shows which encoder frames it attended to. Lesson 6.6 identified this as the alignment matrix and the best debugging artefact an encoder-decoder gives you — here it is a shipped product feature. A decoder-only model has no such matrix." },
     { stem: "What does factorising video attention into spatial and temporal passes cost?",
-      options: ["Accuracy on static scenes", "A patch can no longer attend to a different patch in a different frame in one hop — it needs two", "More memory", "Temporal resolution"],
+      options: ["Accuracy on static scenes", "Cross-frame links take two hops", "Much more memory per clip", "Temporal resolution of frames"],
       answer: 1,
       why: "The saving is 14.8x for 16 frames of 196 patches, which is substantial. But tracking an object that moves across the frame requires exactly that cross-frame, cross-position path, so it now takes two hops. It is the same trade as Swin's windows: restrict attention to a structured subset, recover the missing paths through depth." }
   ] },

@@ -238,19 +238,19 @@ meteor_score([ref_tokens], hyp_tokens)
 
   quiz: { title: "Check yourself", questions: [
     { stem: "A model scores 0.9700 accuracy and 0.5504 macro F1. What has happened?",
-      options: ["A bug in the metric", "At least one class is being predicted badly or never, and it is small enough not to move accuracy", "The classes are balanced", "Macro F1 is always lower"],
+      options: ["A bug in the metric code", "A small class is predicted badly", "The classes are well balanced", "Macro F1 is always the lower"],
       answer: 1,
       why: "Here class 2 had 10 of 1,000 samples and was never predicted, scoring 0.0000 F1. Accuracy and micro F1 are dominated by the 950-sample majority class, and weighted F1 at 0.9619 barely moves because it weights by support. Macro averages classes equally, so one dead class pulls it down hard — which is the whole point of reporting it." },
     { stem: "Why is 'the the the the the the the the' the best-scoring text under perplexity?",
-      options: ["A tokenisation artefact", "Because perplexity rewards predictability, and repetition is maximally predictable", "Because 'the' is the most common English word", "The sequence was in GPT-2's training data"],
+      options: ["A tokenisation artefact", "Repetition is maximally predictable", "'the' is the commonest English word", "It was in GPT-2's training data"],
       answer: 1,
       why: "It scored 16.59 against 90.24 for an ordinary English sentence. Perplexity is exp of mean negative log-likelihood, so a sequence the model can predict with near-certainty scores very low. Degenerate repetition is therefore a perplexity optimum, which is exactly the failure mode greedy decoding produces — and the reason perplexity cannot be a generator's objective." },
     { stem: "BERTScore rates a correct paraphrase 0.9635 and a reversed meaning 0.9631. Why?",
-      options: ["A bug in the implementation", "It greedily aligns contextual token embeddings, and both sentences contain the same words in similar contexts", "roberta-large is too small", "The baseline rescaling was off"],
+      options: ["A bug in the implementation", "Same words in similar contexts", "roberta-large is too small", "The baseline rescaling was off"],
       answer: 1,
       why: "'The cat sat on the mat' and 'The mat sat on the cat' share every token, and greedy alignment over embeddings has no mechanism for checking which noun filled which argument slot. The gap is 0.0004, and 0.0023 after baseline rescaling. BERTScore genuinely solved the paraphrase problem BLEU has — it did not solve this one." },
     { stem: "What follows from three metrics failing the same adversarial example?",
-      options: ["Use accuracy instead", "Treat automatic metrics as regression detectors and pair them with targeted adversarial cases and human evaluation", "Average the three metrics", "Only use human evaluation"],
+      options: ["Switch to plain accuracy", "Treat them as regression alarms", "Average the three metrics", "Use human evaluation only"],
       answer: 1,
       why: "A drop in the metric reliably means something changed; a rise does not reliably mean the system improved, because the metric is blind in known directions. The practical response is to fix one metric for CI with its exact configuration, add cheap adversarial assertions covering the known blind spots, and sample for human evaluation." }
   ] },

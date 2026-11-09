@@ -182,19 +182,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check yourself", questions: [
     { stem: "Why did BERT answer 'paris' at 0.417 where GPT-2 gave it 0.0322 and ranked it fifth?",
-      options: ["BERT is a larger model", "BERT's mask is followed by a full stop, constraining the answer to one sentence-completing token, while GPT-2's open continuation lets every fluent phrasing compete", "GPT-2 lacks the knowledge", "Different tokenisers"],
+      options: ["BERT is the larger of the two models", "BERT's mask is pinned to one token", "GPT-2 lacks the knowledge entirely", "The two use different tokenisers"],
       answer: 1,
       why: "It is a difference in the question, not in knowledge. 'The capital of France is [MASK].' admits only a city. 'The capital of France is' admits 'the capital of...', 'now...', 'a...' — all fluent English, all competing. GPT-2's entropy was 5.9985 of a possible 10.8249: genuinely uncertain about how to continue, not about the fact." },
     { stem: "The residual stream reached RMS 50.9625 by layer 11 and the model output was 6.8346. What happened?",
-      options: ["The last layer shrinks activations", "The final LayerNorm rescaled the accumulated stream before the output projection", "Numerical overflow", "Dropout was applied"],
+      options: ["The last layer shrinks activations", "The final LayerNorm rescaled it", "A numerical overflow occurred", "Dropout was applied at the end"],
       answer: 1,
       why: "Pre-LN never normalises the residual path, so magnitude accumulates across all twelve layers — 211x growth from the embedding. `ln_f` after the stack brings it back to a usable scale. Omitting that final norm, which lesson 4.7 flagged as an easy mistake, feeds a vector seven times too large into the vocabulary projection." },
     { stem: "On this distribution, top-k 50 kept 55% of the mass while top-p 0.9 kept 1503 tokens. What does that show?",
-      options: ["Top-p is always more permissive", "k is a fixed count applied regardless of distribution shape, while p fixes the probability mass and lets the count adapt", "The model was miscalibrated", "Top-k is broken on large vocabularies"],
+      options: ["Top-p is always more permissive", "k is a fixed count; p a fixed mass", "The model was miscalibrated", "Top-k breaks on large vocabularies"],
       answer: 1,
       why: "On a flat distribution 50 tokens is severely restrictive; on a peaked one the same k would be absurdly permissive. Top-p truncates hard when the model is confident and stays open when it is not, which is why it is the better default — especially on exactly the distributions where the model genuinely does not know." },
     { stem: "Why did beam search repeat more than sampling?",
-      options: ["A bug in the implementation", "Beam maximises total sequence log-probability, and repetition is high-probability", "The beam width was too small", "Beam search ignores the prompt"],
+      options: ["A bug in the implementation", "Repetition is high-probability", "The beam width was too small", "Beam search ignores the prompt"],
       answer: 1,
       why: "Beam 4 produced 'the capital of France, and the capital of France is'. Lesson 3.4 measured the underlying fact directly: repeated tokens score the best perplexity of any text tested. Likelihood-maximising decoding therefore drifts toward loops, which is why chat models sample instead of beam-searching despite beam being better by log-probability." }
   ] },
