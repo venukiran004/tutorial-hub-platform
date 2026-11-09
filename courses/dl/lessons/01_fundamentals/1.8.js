@@ -236,19 +236,19 @@ print(bn(x).detach())
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Over which axis does batch normalisation compute its mean and variance?",
-      options: ["Across the features of one example", "Across the examples in the mini-batch, separately for each feature", "Across all entries of the batch at once", "Across time steps"],
+      options: ["Across one example's features", "Across the batch, per feature", "Across every entry at once", "Across the time steps"],
       answer: 1,
       why: "Batch norm standardises each feature using that feature's statistics over the batch — in the worked example, column 1 had mean 4 and variance 5 over the four examples. Layer norm is the other axis: per example, across features." },
     { stem: "A model gives different predictions for the same input depending on which other examples are in the batch. What is the likely cause?",
-      options: ["Dropout is disabled", "Batch norm is in training mode at inference, so each batch is normalised by its own statistics", "The learning rate is too high", "Layer norm is missing"],
+      options: ["Dropout is disabled at inference", "Batch norm left in training mode", "The learning rate is too high", "Layer norm is missing"],
       answer: 1,
       why: "In train mode batch norm uses the current batch's mean and variance, so an example's normalised value depends on its batch-mates; in eval mode it uses fixed running averages. Forgetting model.eval() produces exactly this symptom, and a batch of one raises an error." },
     { stem: "Why do sigmoid networks suffer vanishing gradients more than ReLU networks?",
-      options: ["Sigmoid has more parameters", "Sigmoid's derivative is at most 0.25, so each layer's factor shrinks the product; ReLU's is 1 on active units", "ReLU has no derivative", "Sigmoid outputs are negative"],
+      options: ["Sigmoid has more parameters", "Sigmoid′ ≤ 0.25 shrinks each layer", "ReLU has no derivative at all", "Sigmoid outputs are negative"],
       answer: 1,
       why: "The first-layer gradient is a product of per-layer factors including the activation derivative. Sigmoid contributes at most 0.25 per layer — 0.25⁴⁰ is 10⁻²⁴ — while ReLU contributes exactly 1 along active paths. The measurement showed sigmoid at exactly zero by depth 40 and ReLU with He steady." },
     { stem: "Why does a residual connection help gradients reach early layers?",
-      options: ["It halves the number of layers", "∂(x + F(x))/∂x = 1 + ∂F/∂x, so there is an identity path the gradient follows regardless of F", "It normalises the activations", "It clips the gradient"],
+      options: ["It halves the number of layers", "x + F(x) gives an identity path", "It normalises the activations", "It clips the gradient"],
       answer: 1,
       why: "The derivative of the skip path is exactly 1, so the gradient passes through the block undiminished even when the residual branch F contributes little. Stacked, these identity paths carry the gradient to the bottom of very deep networks, which is why ResNets train at depths plain stacks cannot." }
   ] },

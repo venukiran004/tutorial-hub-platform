@@ -149,7 +149,7 @@ EC.receiveLesson({
     { t: "callout", kind: "good", title: "Hashing is the cheapest thing in this lesson",
       body: [
         { t: "p", text: "A SHA-256 over a document is microseconds; embedding its chunks is seconds. So the check that decides *whether* to re-embed costs a tiny fraction of the work it avoids, and it is correct rather than heuristic \u2014 a changed byte changes the hash." },
-        { t: "p", text: "Store the hash alongside the vectors and use it as the record id, as the usual suggestion is. Re-ingesting identical content then overwrites the same row instead of creating a duplicate, which also removes the deduplication problem 6.8 runs into." },
+        { t: "p", text: "Store the hash alongside the vectors and use it as the record id, as is usually suggested. Re-ingesting identical content then overwrites the same row instead of creating a duplicate, which also removes the deduplication problem 6.8 runs into." },
         { t: "p", text: "Store an `updated_at` with it too. It costs nothing, it makes freshness auditable, and it gives you a tiebreak for preferring recent chunks when two are equally relevant." }
       ] },
 

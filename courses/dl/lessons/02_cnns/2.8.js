@@ -195,19 +195,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does U-Net need skip connections?",
-      options: ["To help gradients flow, as in ResNet", "Because downsampling destroys fine spatial detail the decoder cannot reconstruct", "To reduce parameter count", "To allow deeper networks"],
+      options: ["To help gradients flow, as in ResNet", "Downsampling destroys fine detail", "To reduce the parameter count", "To allow deeper networks"],
       answer: 1,
       why: "Measured on thin one-pixel lines, four rounds of pooling and upsampling recovered only 12.5 % of the image exactly. The information is gone, not merely hard to recover, so the skip is the only route by which full-resolution detail reaches the output. Gradient flow is a genuine secondary benefit but not the reason the architecture exists." },
     { stem: "How does a U-Net combine the skip with the upsampled feature map?",
-      options: ["Element-wise addition, as in ResNet", "Concatenation along the channel axis", "Element-wise multiplication", "Averaging"],
+      options: ["Element-wise addition", "Channel concatenation", "Element-wise product", "Averaging the two"],
       answer: 1,
       why: "The channel counts add: upsampled 256 plus skip 512 gives 768, and a convolution then reduces them. This differs deliberately from ResNet's addition — concatenation preserves both sources separately and lets the following convolution decide how to weigh them, at the cost of more channels." },
     { stem: "A transposed convolution with kernel 3 and stride 2 produces a visible grid pattern. Why?",
-      options: ["The learning rate is too high", "Output positions receive uneven numbers of kernel contributions because 3 is not divisible by 2", "The kernel is too small", "Padding is incorrect"],
+      options: ["The learning rate is too high", "Uneven overlap at stride 2", "The kernel is far too small", "The padding is set incorrectly"],
       answer: 1,
       why: "The operation places a kernel copy at each stride position and sums overlaps; uneven overlap means uneven output. On a uniform input with k=3, s=2 the measured output values were 1, 2 and 4. Use k=2 or k=4 with stride 2, or replace the layer with `interpolate` plus a 3×3 convolution." },
     { stem: "What does a dilated convolution buy you?",
-      options: ["Fewer parameters", "A larger receptive field with no loss of resolution and no extra parameters", "Faster inference", "Better gradient flow"],
+      options: ["Fewer parameters to learn", "A wider receptive field", "Faster inference per image", "Better gradient flow back"],
       answer: 1,
       why: "A 3×3 kernel at dilation 8 covers 17×17 with the same 584 parameters and the same 32×32 output. It is the alternative to pooling for gaining context: nothing is downsampled so nothing needs recovering, at the cost of running full-resolution compute throughout." }
   ] },

@@ -133,7 +133,7 @@ Rules:
     { t: "callout", kind: "warn", title: "And the three remedies have very different costs",
       body: [
         { t: "p", text: "**Regenerating** doubles the generation cost and latency and may fail again, which on a retrieval miss it certainly will \u2014 the context is still missing the answer. **Dropping unsupported claims** is cheap and leaves a possibly incoherent answer with a hole in it. **Abstaining and escalating** is honest, costs a human, and is the only one that works when the cause is upstream." },
-        { t: "p", text: "The common list has them in order of preference and I would reverse that for a retrieval miss specifically. Regenerating against the same insufficient context is the one option that cannot work, and it is listed first." },
+        { t: "p", text: "They are usually listed in order of preference, and for a retrieval miss that order should be reversed. Regenerating against the same insufficient context is the one option that cannot work, and it is listed first." },
         { t: "p", text: "So the useful rule is to pick the remedy from the **cause**, which 11.2\u2019s diagnostic gives you from span attributes: regenerate on an ungrounded prompt, drop claims on a long-output confabulation, and abstain when `above_threshold` is zero." }
       ] },
 
@@ -266,7 +266,7 @@ for cause, n in sorted(CAUSES.items(), key=lambda kv: -kv[1]):
     print("  %-20s n=%-2d -> %-24s %s" % (cause, n, remedy, why))
 
 print()
-print("the common list has remedies in a FIXED preference order:")
+print("the usual remedies, in a FIXED preference order:")
 print("  (a) regenerate  (b) drop unsupported claims  (c) abstain and escalate")
 print("and for the largest cause that order is exactly wrong -- regenerating")
 print("against the same insufficient context is the one option that cannot work,")
@@ -311,7 +311,7 @@ REMEDY BY CAUSE, NOT BY PREFERENCE ORDER
   parametric_conflict  n=2  -> regenerate at temp 0     instruct precedence and remove sampling width
   fabricated_source    n=1  -> regenerate stricter      citations must map to retrieved ids
 
-the common list has remedies in a FIXED preference order:
+the usual remedies, in a FIXED preference order:
   (a) regenerate  (b) drop unsupported claims  (c) abstain and escalate
 and for the largest cause that order is exactly wrong -- regenerating
 against the same insufficient context is the one option that cannot work,

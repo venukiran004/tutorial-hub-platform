@@ -194,19 +194,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why are the gradients averaged over the spatial dimensions?",
-      options: ["To save memory", "To get one importance weight per feature map, rather than a noisy per-pixel value", "Because gradients are always spatially constant", "To normalise the heatmap"],
+      options: ["To save memory", "One weight per feature map", "Gradients are spatially constant", "To normalise the heatmap"],
       answer: 1,
       why: "The raw gradient is 512×7×7. Averaging collapses it to 512×1×1, answering how much each feature map matters as a whole rather than how much each individual position matters. The spatial information is not lost — it comes back from the activations `A_k`, which are what get weighted and summed." },
     { stem: "Why is a ReLU applied to the weighted sum?",
-      options: ["To normalise values to [0,1]", "To keep only features that argue in favour of the class, discarding those arguing against it", "To avoid numerical overflow", "To match the network's activation function"],
+      options: ["To normalise values to [0, 1]", "Keep only evidence for the class", "To avoid numerical overflow", "To match the network's activation"],
       answer: 1,
       why: "Negative contributions are evidence for other classes. For a class the network rejected, 95.9 % of the raw map was negative and the ReLU correctly left nothing — the honest answer being that nothing in the image supports it. To see what argues *against* a class, inspect the raw map before the ReLU." },
     { stem: "Your Grad-CAM code raises a KeyError on the gradients dict. What is the most likely cause?",
-      options: ["The backward hook was registered on the wrong layer", "The forward hook returns a value, replacing the output with a detached tensor", "The model is in eval mode", "The target class index is out of range"],
+      options: ["The backward hook is on the wrong layer", "The forward hook returns a detached tensor", "The model is in eval mode", "The target class index is out of range"],
       answer: 1,
       why: "PyTorch treats a non-None return from a forward hook as a replacement output. A lambda using `setdefault` returns the detached tensor, so the rest of the network runs without a graph, no gradient reaches the target layer, and the backward hook never fires. The error surfaces at the gradients dict, which points away from the actual bug." },
     { stem: "Grad-CAM heatmaps for 'Samoyed' and 'Arctic fox' on the same image correlate at 0.97. What does that tell you?",
-      options: ["The implementation is buggy", "Grad-CAM cannot distinguish visually similar classes in the same location", "The model is poorly trained", "The heatmaps should be renormalised"],
+      options: ["The implementation is buggy", "It cannot separate similar classes", "The model is poorly trained", "The heatmaps need renormalising"],
       answer: 1,
       why: "It is a genuine limitation, not a bug. Both classes are supported by the same region — the animal — and what distinguishes them is fine texture that a 7×7 feature map upsampled to 224×224 cannot represent. Grad-CAM tells you *where* the model looked, not what fine-grained distinction it made there." }
   ] },

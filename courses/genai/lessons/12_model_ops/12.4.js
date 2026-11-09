@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "12.4",
 
-  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which it is commonly called \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokeniser changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenisers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
+  lede: "Nine failure modes, and the two shapes they come in: a **pinned snapshot retired** \u2014 a forced march with a hard deadline and no rollback \u2014 or a **floating alias silently upgraded**, which is commonly called \u201cthe single most common version incident\u201d. The worst class is neither: it is **silent truncation** when a tokeniser changes, because no exception is raised and the answers just get worse. Measured on a real 3,000-word document, five tokenisers span 4,636 to 4,861 tokens \u2014 and **every one of them blows a 4,096 guard.**",
 
   objectives: [
     "Distinguish the pinned-retirement and silent-upgrade failure shapes",
@@ -61,7 +61,7 @@ Tuesday:   "...-latest" -> snapshot-2026-06-02    JSON parse failures: 7.1%   <-
     { t: "callout", kind: "good", title: "Two of these are fixed by *deleting* prompt text, which is counterintuitive",
       body: [
         { t: "p", text: "The chain-of-thought row and the output-format row are both cases where your prompt is compensating for a weakness the new model does not have. A \u2018think step by step\u2019 instruction given to a reasoning model that already does so produces over-thinking and inflated cost; a \u2018respond only in JSON\u2019 instruction becomes redundant when strict schema mode exists." },
-        { t: "p", text: "12.7\u2019s migration is exactly this: the fix for a 44% verbosity increase was **enabling strict schema mode and dropping instructions**, not adding more. As it is usually put it, prompts accumulate scaffolding for weaknesses the new model does not have." },
+        { t: "p", text: "12.7\u2019s migration is exactly this: the fix for a 44% verbosity increase was **enabling strict schema mode and dropping instructions**, not adding more. As it is usually put, prompts accumulate scaffolding for weaknesses the new model does not have." },
         { t: "p", text: "Which is also the argument for 12.2\u2019s changelog. You can only safely delete a line whose purpose was recorded \u2014 and \u2018v3: added abstention rule (cut hallucinations on edge cases)\u2019 is the difference between a considered deletion and a guess." }
       ] },
 
@@ -238,7 +238,7 @@ print("TARGET model's tokens and re-measured on migration -- never carried over.
         out: `============================================================================
 A -- THE TOKENIZER CLAIM, MEASURED
 ============================================================================
-it is commonly said, illustratively:
+the usual illustration:
   3,000-word document: Model A 4,010 tokens, Model B 4,380 tokens
   a 4,096 truncation guard drops the last 284 tokens silently
 

@@ -36,7 +36,7 @@ def moderate(text: str, classify) -> dict:
       hl: [5],
       caption: "The 0.5 threshold is a policy decision, and 11.16 measures what it costs in both directions." },
 
-    { t: "callout", kind: "insight", title: "This is the one place it is commonly said *not* to hand-roll, and 11.13 shows why",
+    { t: "callout", kind: "insight", title: "This is the one place the usual advice is *not* to hand-roll, and 11.13 shows why",
       body: [
         { t: "p", text: "It recommends a dedicated moderation model \u2014 OpenAI Moderation, Llama Guard, Perspective \u2014 \u201crather than hand-rolled regex for toxicity\u201d. 11.13 measured exactly what hand-rolled patterns are worth on a related task: 0% of thirteen paraphrases, 60% of benign inputs wrongly blocked." },
         { t: "p", text: "Toxicity is harder than injection for a pattern list, not easier, because the surface forms are even more open-ended and the benign collisions more common. A list of slurs catches slurs and misses every circumlocution, while blocking medical and historical discussion." },
@@ -78,7 +78,7 @@ def output_safe(text: str, canary: str) -> dict:
       body: [
         { t: "p", text: "10.12 argued for alerts whose movement triggers an action and which are not sample-size limited. A canary hit is both: **any** hit is an incident, no threshold, no confidence interval, no baseline to compare against. One occurrence is actionable." },
         { t: "p", text: "That is rare and worth exploiting. Most quality signals need a rate, a window and a 2-sigma threshold before they mean anything \u2014 this one means something on a single request, which makes it the cheapest high-value alert in the guardrail stack." },
-        { t: "p", text: "The common list has canary-token hits in its metrics table with \u2018any is an incident\u2019, alongside PII-leak events. Both deserve that treatment and only the canary deserves the confidence." }
+        { t: "p", text: "Guardrail metrics usually list canary-token hits with \u2018any is an incident\u2019, alongside PII-leak events. Both deserve that treatment and only the canary deserves the confidence." }
       ] },
 
     { t: "h2", n: "03", id: "schema", text: "Checks 3 and 4 \u2014 Schema and grounding",
@@ -348,7 +348,7 @@ a product decision rather than a technical one.`,
         answer: 1,
         why: "A unique secret planted in the system prompt cannot reach the output by any route other than the model reproducing its instructions, so the inference is definitional rather than probabilistic \u2014 unlike moderation, PII regexes or a faithfulness gate, all of which have thresholds and measured false-positive rates. The mirror-image limitation is a high false-negative rate: a model that paraphrases its instructions leaks the content without emitting the token." },
 
-      { stem: "Why does the usual advice is a dedicated moderation model over hand-rolled regex?",
+      { stem: "Why prefer a dedicated moderation model over hand-rolled regex?",
         options: [
           "Because regex cannot express per-category scores",
           "Because patterns lose to open-ended surface forms \u2014 measured on the related injection task, they caught 0 of 13 paraphrases and wrongly blocked 6 of 10 benign inputs",

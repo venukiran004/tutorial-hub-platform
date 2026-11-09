@@ -4,7 +4,7 @@
 EC.receiveLesson({
   id: "3.4",
 
-  lede: "**BLEU, METEOR and BERTScore all rank `the mat sat on the cat` at least as highly as a correct paraphrase of `the cat sat on the mat`.** BLEU gives the reversed sentence 0.2857 against the paraphrase's 0.0955. METEOR gives it 0.8519 against 0.4259. BERTScore ties them at 0.9631 and 0.9635 — four ten-thousandths apart. Three generations of metric, each fixing the last one's weakness, and none of them notices that subject and object were swapped. This lesson computes every metric the common name is and establishes what each one cannot see.",
+  lede: "**BLEU, METEOR and BERTScore all rank `the mat sat on the cat` at least as highly as a correct paraphrase of `the cat sat on the mat`.** BLEU gives the reversed sentence 0.2857 against the paraphrase's 0.0955. METEOR gives it 0.8519 against 0.4259. BERTScore ties them at 0.9631 and 0.9635 — four ten-thousandths apart. Three generations of metric, each fixing the last one's weakness, and none of them notices that subject and object were swapped. This lesson computes every commonly named metric and establishes what each one cannot see.",
 
   objectives: [
     "Choose between micro, macro and weighted averaging and justify it from the class distribution",
@@ -161,7 +161,7 @@ EC.receiveLesson({
     { t: "p", text: "Both were designed to fix BLEU's surface matching. METEOR adds stem and WordNet-synonym matching plus a fragmentation penalty for word order; BERTScore abandons string matching entirely and greedily aligns contextual embeddings." },
 
     { t: "code", lang: "python", title: "BERTScore", code:
-"from bert_score import score\n\nP, R, F1 = score([\"It's a lovely day outside\"],\n                 [\"The weather is beautiful today\"],\n                 lang=\"en\", model_type=\"roberta-large\")\nprint(F1.item())      # 0.9342 - it is commonly said ~0.90\n\n# the authors recommend rescaling against a random baseline,\n# because raw scores are compressed into a narrow high band\nP, R, F1 = score(cands, refs, lang=\"en\", model_type=\"roberta-large\",\n                 rescale_with_baseline=True)",
+"from bert_score import score\n\nP, R, F1 = score([\"It's a lovely day outside\"],\n                 [\"The weather is beautiful today\"],\n                 lang=\"en\", model_type=\"roberta-large\")\nprint(F1.item())      # 0.9342 - commonly quoted as ~0.90\n\n# the authors recommend rescaling against a random baseline,\n# because raw scores are compressed into a narrow high band\nP, R, F1 = score(cands, refs, lang=\"en\", model_type=\"roberta-large\",\n                 rescale_with_baseline=True)",
       caption: "The paraphrase scores 0.9342 with no shared content words at all — the ~0.90 reproduces." },
 
     { t: "h2", n: "07", text: "The test every metric fails", id: "failure" },

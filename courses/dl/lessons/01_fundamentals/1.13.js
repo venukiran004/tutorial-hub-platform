@@ -242,7 +242,7 @@ for batch in dataloader:
       answer: 2,
       why: "PyTorch spreads eps across all K classes, so the true class keeps `1 - eps + eps/K` = 0.9 + 0.01 = 0.91, and each of the others gets 0.01. The executed run prints exactly that, and the trained model converges to 0.9100 — the target it was given." },
     { stem: "Why is the soft loss multiplied by T²?",
-      options: ["To match the hard loss's magnitude", "Because dividing logits by T shrinks the soft gradient by 1/T² on both sides of the KL", "To make the loss positive", "It is an empirical constant with no derivation"],
+      options: ["To match the hard loss's magnitude", "Dividing by T shrinks gradients by 1/T²", "To keep the loss positive", "An empirical constant with no derivation"],
       answer: 1,
       why: "Softening divides by T on both the student's and the teacher's side, so the soft term's gradient falls as 1/T². The executed sweep shows the raw KL dropping from 0.316 to 0.015 between T=1 and T=8 and the T² factor restoring it — without it, raising the temperature would silently switch the teacher off." },
     { stem: "A gradient of 1e-8 is computed in fp16 without a loss scaler. What happens?",
@@ -250,7 +250,7 @@ for batch in dataloader:
       answer: 1,
       why: "fp16's smallest normal value is about 6.1e-5, and the executed run shows 1e-8 and 1e-10 both landing on exactly 0.000e+00. The parameter then receives no update at all — the training silently stops learning in the layers where gradients are smallest, usually the earliest ones." },
     { stem: "What does scaler.update() do?",
-      options: ["Updates the model weights", "Unscales the gradients", "Raises or lowers the scale factor based on whether an overflow occurred", "Copies fp16 weights back to fp32"],
+      options: ["It updates the model's weights", "It unscales the gradients", "It tunes the scale after overflow", "It copies fp16 weights to fp32"],
       answer: 2,
       why: "It searches for the largest multiplier that does not overflow: halve after an inf or NaN is detected, raise after a run of clean steps. `scaler.step` is what unscales and decides whether to skip, and the weights were never fp16 in the first place — the master copy stays fp32." }
   ] },

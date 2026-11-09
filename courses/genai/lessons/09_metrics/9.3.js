@@ -120,7 +120,7 @@ bleu = bp * geo`,
     { t: "dl", items: [
       { k: "A perfect paraphrase scores near zero", v: "\u201cThe feline rested on the rug\u201d shares almost no n-grams with the reference and is a correct translation. 8.3 measured this reliably inverting the ranking against a factually wrong candidate." },
       { k: "A single zero kills it", v: "If any p_n is 0, the geometric mean is 0 and BLEU is 0 regardless of the other three \u2014 which is why sentence-level BLEU needs smoothing and why BLEU is really a **corpus-level** metric." },
-      { k: "It rewards fluency-shaped overlap", v: "Not correctness. A fluent wrong answer reusing the usual phrasing scores well, which 8.3 measured at BLEU 0.7953 for a factually inverted sentence." }
+      { k: "It rewards fluency-shaped overlap", v: "Not correctness. A fluent wrong answer reusing the reference's phrasing scores well, which 8.3 measured at BLEU 0.7953 for a factually inverted sentence." }
     ] },
 
     { t: "callout", kind: "warn", title: "The single-zero property is why BLEU is a corpus metric",
@@ -294,7 +294,7 @@ print("paraphrase with smoothing: %.6f"
         answer: 1,
         why: "Two distinct failures are in play: the single-zero property, which is a property of the geometric mean and which smoothing addresses, and insensitivity to meaning, which no reweighting inside BLEU can address. The score moving from exactly zero to 0.312 shows the first fixed and the second intact. Addressing the second requires leaving surface n-grams, which is what METEOR, chrF and BERTScore do." },
 
-      { stem: "A hand check gives BLEU-4 of 0.5787 where it is commonly stated 0.5789. What is the most likely explanation?",
+      { stem: "A hand check gives BLEU-4 of 0.5787 where the commonly quoted value is 0.5789. What is the most likely explanation?",
         options: [
           "The reference rounded the brevity penalty incorrectly",
           "Rounding propagation in the check \u2014 multiplying displayed intermediates 0.8187 \u00d7 0.7071 gives 0.5787, while full precision gives 0.578930",

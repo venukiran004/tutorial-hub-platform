@@ -205,21 +205,21 @@ euler_out = odeint(f, h0, torch.linspace(0, 8, 9), method="euler")[-1]` },
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is the relationship between a residual block and the Euler method?",
-      options: ["They are loosely analogous", "A residual block is exactly one Euler step with step size 1", "Euler is a special case of a residual block", "They agree only for small activations"],
+      options: ["They are loosely analogous", "One Euler step of size 1", "Euler is a special residual block", "They agree for small activations only"],
       answer: 1,
       why: "`h_{t+1} = h_t + f(h_t)` is the Euler update with `Δt = 1` written in network notation — the same arithmetic, so the executed comparison of eight blocks against an eight-step Euler solve differs by exactly zero, not approximately." },
     { stem: "Your Neural ODE trains fine but gets slower every epoch. What is the most likely cause?",
-      options: ["Memory fragmentation", "The learned dynamics are becoming stiffer, so NFE is rising", "The adjoint is accumulating error", "The learning rate schedule"],
+      options: ["Memory fragmentation", "Stiffer dynamics, rising NFE", "Error accumulating in the adjoint", "The learning-rate schedule"],
       answer: 1,
       why: "Nothing in the loss discourages the network from learning fast-varying dynamics, and an adaptive solver responds by taking more steps. The executed run shows stiff dynamics costing 200 evaluations against 26 for gentle ones — same solver, same code. Logging NFE per batch makes this visible; penalising the norm of f is the usual remedy." },
     { stem: "What does the adjoint method trade away for O(1) memory?",
-      options: ["Gradient accuracy — they are approximate", "Compute: it roughly doubles the function evaluations", "The ability to use adaptive solvers", "Invertibility"],
+      options: ["Gradient accuracy", "Compute: about 2× NFE", "Use of adaptive solvers", "Invertibility"],
       answer: 1,
       why: "The executed comparison gives 80 evaluations for direct backpropagation against 160 for the adjoint, with gradients agreeing to 5.96e-07. It recomputes on the backward pass what direct backpropagation stored, so memory stops depending on the step count and compute roughly doubles." },
     { stem: "For which task is a Neural ODE the clearly better choice over a ResNet?",
-      options: ["ImageNet classification", "Irregularly-sampled clinical time series", "Text classification", "Any task needing many layers"],
+      options: ["ImageNet classification", "Irregular clinical time series", "Text classification", "Any task needing many layers"],
       answer: 1,
-      why: "Observations at arbitrary times are the natural fit: you integrate to whatever `t` a measurement happened at, with no resampling onto a grid and therefore no invented data. For standard image or text classification a ResNet is faster, easier to debug and at least as accurate — it is commonly said so plainly." }
+      why: "Observations at arbitrary times are the natural fit: you integrate to whatever `t` a measurement happened at, with no resampling onto a grid and therefore no invented data. For standard image or text classification a ResNet is faster, easier to debug and at least as accurate, and that is widely acknowledged." }
   ] },
 
   interview: { title: "Interview", sub: "Neural ODE questions", questions: [

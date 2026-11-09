@@ -277,7 +277,7 @@ for node in ast.walk(tree):
       head: ["Model", "Dimension", "Note"],
       rows: [
         ["`text-embedding-3-large`", "3072", "Good all-rounder across code and docs \u2014 and 6.2's memory arithmetic applies: 3072 dims is 8\u00d7 the storage of 384"],
-        ["Voyage Code 2", "1536", "Trained on code; it is commonly called it best-in-class"],
+        ["Voyage Code 2", "1536", "Trained on code; commonly called best-in-class"],
         ["CodeBERT", "768", "Open-source, strongest on classification rather than retrieval"],
         ["StarEncoder", "1024", "Trained on The Stack, multilingual"],
         ["Jina Code v2", "768", "8K context, open-source \u2014 the long context matters for whole-class chunks"]

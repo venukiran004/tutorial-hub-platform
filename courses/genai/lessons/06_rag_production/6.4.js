@@ -82,7 +82,7 @@ for doc, s in CHUNKS:
         { t: "p", text: "That is the honest version of the claim. Vector RAG does not fail multi-hop because similarity is weak; it fails because the unit it retrieves is the wrong unit. You cannot fix a representation problem with a ranking improvement." }
       ] },
 
-    { t: "p", text: "The common name is three shapes with this property, and they share it for the same reason." },
+    { t: "p", text: "Three common shapes have this property, and they share it for the same reason." },
 
     { t: "dl", items: [
       { k: "Multi-hop questions", v: "\u201cWhat companies did the CEO of the acquirer of Instagram work for?\u201d The answer is a path. No chunk contains a path." },

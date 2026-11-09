@@ -251,19 +251,19 @@ model.load_state_dict(torch.load("best.pt")); model.eval()
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does the PyTorch model's last layer have no sigmoid?",
-      options: ["PyTorch cannot apply sigmoids", "BCEWithLogitsLoss applies the sigmoid inside the loss, numerically stably, so the model outputs a raw logit", "The sigmoid is in the DataLoader", "Because batch norm replaces it"],
+      options: ["PyTorch cannot apply sigmoids", "The loss applies it, stably", "The DataLoader applies it", "Batch norm replaces it"],
       answer: 1,
       why: "Combining sigmoid and binary cross-entropy in one operation lets the loss use the log-sum-exp trick and never evaluate log(0) for an extreme logit. The model therefore ends in nn.Linear; at inference you apply torch.sigmoid yourself to get probabilities." },
     { stem: "What does optimiser.zero_grad() do, and why is it needed every step?",
-      options: ["It resets the learning rate", "It clears the .grad buffers, which otherwise accumulate across backward() calls", "It re-initialises the weights", "It disables dropout"],
+      options: ["It resets the learning rate", "Clears grads that accumulate", "It re-initialises the weights", "It switches dropout off"],
       answer: 1,
       why: "PyTorch adds each backward pass's gradients into the parameters' .grad tensors rather than replacing them, so that gradient accumulation across micro-batches is possible. For an ordinary step you must clear them first, or the update uses the sum of this and every previous batch's gradient." },
     { stem: "In the Keras summary, why are 768 parameters non-trainable?",
-      options: ["Dropout has parameters", "They are the running means and variances of the two batch-norm layers, updated by averaging rather than by gradient", "The output layer is frozen", "He initialisation freezes the first layer"],
+      options: ["Dropout layers have parameters", "Batch-norm running statistics", "The output layer is frozen", "He init froze the first layer"],
       answer: 1,
       why: "Each BatchNormalization layer holds γ and β (trained) plus a running mean and variance per unit (updated as moving averages during training, used at inference). 2 × (256 + 128) = 768 running statistics, matching the 1,024 + 512 total batch-norm parameters minus the 768 trainable γ and β." },
     { stem: "The PyTorch run's validation loss fell to 0.15 at epoch 9 and ended at 0.18 at epoch 99. What does that indicate, and what would fix it?",
-      options: ["Underfitting; train longer", "Mild overfitting after epoch 9; early stopping with best-weight restoration, as the Keras callbacks did", "A learning rate that is too low", "A bug in the DataLoader"],
+      options: ["Underfitting; train longer", "Mild overfitting; early stopping", "The learning rate is too low", "A bug in the DataLoader"],
       answer: 1,
       why: "Training loss kept falling while validation loss rose from its epoch-9 minimum — the definition of overfitting. The PyTorch loop has no early stopping; adding lesson 1.7's pattern, or a Keras-style callback, restores the epoch-9 weights. Test accuracy was the same either way on this easy dataset." }
   ] },

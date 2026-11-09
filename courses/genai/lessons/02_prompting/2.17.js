@@ -120,7 +120,7 @@ def answer(question, *, prompt_name="summarise"):
       ],
       caption: "The fifth row is the one that decides it. A registry decouples prompt changes from deploys, which is the feature and also the risk." },
 
-    { t: "p", text: "The common list has LangSmith Hub, Promptflow and git, and notes that git \"works\". That is the right emphasis. Files in git give you review, history, rollback and atomicity with the code — for free, with no new system. The case for a registry arrives when **people who cannot deploy need to change prompts**, which is a real situation and is the only one that justifies it." },
+    { t: "p", text: "The usual options are LangSmith Hub, Promptflow and git, and git is often described as one that \"works\". That is the right emphasis. Files in git give you review, history, rollback and atomicity with the code — for free, with no new system. The case for a registry arrives when **people who cannot deploy need to change prompts**, which is a real situation and is the only one that justifies it." },
 
     { t: "callout", kind: "trap", title: "A registry decouples the prompt from the code that parses its output",
       body: [

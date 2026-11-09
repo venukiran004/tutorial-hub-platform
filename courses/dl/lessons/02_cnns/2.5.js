@@ -205,11 +205,11 @@ for param in model.layer4.parameters():
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "You have 2,000 images in a domain similar to ImageNet. Which strategy?",
-      options: ["Train from scratch", "Freeze the backbone and train a new head", "Fine-tune everything at 1e-3", "Fine-tune everything at 1e-1"],
+      options: ["Train from scratch", "Freeze backbone, new head", "Fine-tune all at 1e-3", "Fine-tune all at 1e-1"],
       answer: 1,
       why: "Small dataset plus similar domain is the freeze-everything case, and it is what the measured experiment tested: 67.1 % against 34.3 % from scratch, training only 5,130 parameters. With so little data, more trainable parameters mean more overfitting, and the pretrained features are already appropriate for the domain." },
     { stem: "Why use a much smaller learning rate for pretrained layers than for a new head?",
-      options: ["Pretrained layers have more parameters", "Large steps destroy the pretrained weights — catastrophic forgetting", "It makes training faster", "Pretrained layers have smaller gradients"],
+      options: ["Pretrained layers have more parameters", "Large steps erase pretrained weights", "It makes training faster", "Pretrained layers have smaller gradients"],
       answer: 1,
       why: "The measurement is stark: at lr=1e-5 a weight tensor moves 0.05 % of its norm in one step, and at lr=1e-1 it moves 480 %. The new head starts from noise and needs a normal rate; the backbone holds something valuable and needs a rate 10–100× lower, which is what parameter groups are for." },
     { stem: "In ResNet-18, what fraction of parameters become trainable when you unfreeze layer4?",
@@ -217,7 +217,7 @@ for param in model.layer4.parameters():
       answer: 1,
       why: "75.4 %, measured. Parameter count goes as the square of channel count and layer4 operates on 512 channels, so the last block dominates the network despite being one of four. Unfreezing it is a much bigger commitment than the name 'unfreeze one block' suggests — which matters when your dataset is small." },
     { stem: "You use a pretrained model but feed it raw [0,1] images. What happens?",
-      options: ["An exception is raised", "A shape mismatch error", "Accuracy is quietly worse, with no error at all", "The model refuses to load"],
+      options: ["An exception is raised", "A shape mismatch error", "Quietly worse accuracy", "The model refuses to load"],
       answer: 2,
       why: "The tensor shape is fine, so nothing fails. But the weights were trained on inputs with mean 0.225 and std 1.289, and raw [0,1] images have mean 0.500 and std 0.289 — every activation statistic in the network is off. This is a silent-degradation bug, the kind you only find by knowing to check for it." }
   ] },

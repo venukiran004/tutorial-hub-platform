@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.8",
 
-  lede: "Six incident write-ups, each reproduced rather than retold. The most useful result contradicts half of one: it is commonly said a large ingest hurts retrieval because new documents \u201cadd noise/near-duplicates that crowd out the good chunks\u201d. Adding **20,000 off-topic chunks** \u2014 eighteen times the corpus \u2014 changed recall@5 by **nothing at all**, 95% before and after. Near-duplicates collapsed recall@1 from 75% to **20%**. Volume is harmless; duplication is the whole effect.",
+  lede: "Six incident write-ups, each reproduced rather than retold. The most useful result contradicts half of one: a large ingest is commonly said to hurt retrieval because new documents \u201cadd noise/near-duplicates that crowd out the good chunks\u201d. Adding **20,000 off-topic chunks** \u2014 eighteen times the corpus \u2014 changed recall@5 by **nothing at all**, 95% before and after. Near-duplicates collapsed recall@1 from 75% to **20%**. Volume is harmless; duplication is the whole effect.",
 
   objectives: [
     "Answer an incident question in the on-call shape: symptom, cause, mitigation, permanent fix",

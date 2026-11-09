@@ -199,7 +199,7 @@ output:         y  = h₁ − 2·h₂
   <text x="610" y="20" text-anchor="middle" class="s-sub">predictions · W⁽²⁾ is 2×4</text>
 </g></svg>` },
 
-    { t: "p", text: "Two conventions to fix now, because the usual choice is both and so does PyTorch. In the maths, **W**⁽ˡ⁾ has shape (units in layer l) × (units in layer l − 1) and multiplies a column vector. In code, a batch is a matrix with one example per row, so the same layer is written `X @ W.T + b` — PyTorch's `nn.Linear(in, out)` stores its weight as (out, in) to match the maths and transposes on the way through. The numbers are identical; only the orientation differs." },
+    { t: "p", text: "Two conventions to fix now, because both are standard and PyTorch uses both. In the maths, **W**⁽ˡ⁾ has shape (units in layer l) × (units in layer l − 1) and multiplies a column vector. In code, a batch is a matrix with one example per row, so the same layer is written `X @ W.T + b` — PyTorch's `nn.Linear(in, out)` stores its weight as (out, in) to match the maths and transposes on the way through. The numbers are identical; only the orientation differs." },
 
     { t: "h2", n: "04", text: "The universal approximation theorem", id: "uat" },
 
@@ -316,7 +316,7 @@ print(f"{counts[0] / sum(counts):.1%}")           # 92.2%`,
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why can a single perceptron not learn XOR?",
-      options: ["Its learning rate is too small for four examples", "Its decision boundary is one straight line, and no line separates XOR's positives from its negatives", "XOR needs a sigmoid, and the perceptron uses a step function", "Two inputs are too few for any unit to learn"],
+      options: ["Its learning rate is too small for four examples", "One straight line cannot separate XOR's classes", "XOR needs a sigmoid, not a step function", "Two inputs are too few for any unit to learn"],
       answer: 1,
       why: "The unit decides by the sign of wᵀx + b, which is one line in the plane. XOR's positives (0,1) and (1,0) lie on one diagonal and its negatives on the other, so every line leaves a positive on each side. Adding a hidden layer gives a second line." },
     { stem: "A network has layers of size [100, 50, 20, 5]. How many parameters does it have?",
@@ -324,11 +324,11 @@ print(f"{counts[0] / sum(counts):.1%}")           # 92.2%`,
       answer: 2,
       why: "Each dense layer has inputs × units + units parameters: 100·50 + 50 = 5,050; 50·20 + 20 = 1,020; 20·5 + 5 = 105. The sum is 6,175 — 6,100 weights plus 75 biases. Forgetting the biases gives 6,100; counting the input layer as if it had weights gives the larger wrong answers." },
     { stem: "What does the universal approximation theorem guarantee?",
-      options: ["That gradient descent finds the weights for any continuous function", "That one hidden layer with enough neurons can approximate any continuous function on a compact set", "That deeper networks always generalise better", "That a network with n neurons fits any n training points"],
+      options: ["Gradient descent will find weights for any function", "One wide hidden layer can approximate any continuous function", "Deeper networks always generalise better than shallow", "A network with n neurons fits any n training points"],
       answer: 1,
       why: "It is an existence result about representation: some single-hidden-layer network approximates the function to any precision. It says nothing about how many neurons, whether an optimiser finds them, or about behaviour off the training set." },
     { stem: "Why do most of a dense image classifier's parameters sit in its first layer?",
-      options: ["Because the first layer uses a larger learning rate", "Because it multiplies the full flattened input size by the first hidden width, and the input is by far the largest dimension", "Because biases are only stored in the first layer", "Because later layers share weights"],
+      options: ["The first layer uses a larger learning rate", "Input size times first width dominates", "Biases are only stored in the first layer", "Later layers share their weights"],
       answer: 1,
       why: "The first layer has (input size) × (hidden width) weights; for 784 inputs and 256 units that is 200,704 of the network's 235,146 parameters. Later layers multiply two hidden widths, which are far smaller than the input." }
   ] },

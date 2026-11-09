@@ -97,7 +97,7 @@ EC.receiveLesson({
 
     { t: "p", text: "4.2 measured the decisive comparison already: I trained a fact into a model and put the same fact in a retrieved document, then changed the fact. Retrieval was correct the instant the document changed; the fine-tuned model kept reciting the old value with no prompt able to override it. That is the argument for RAG and it does not depend on any benchmark." },
 
-    { t: "p", text: "The common list has five reasons, and they decompose into two that are structural and three that follow from them:" },
+    { t: "p", text: "The usual list gives five reasons, and they decompose into two that are structural and three that follow from them:" },
 
     { t: "ul", items: [
       "**The knowledge is editable.** A document is a file; the weights are not. Everything else on the list is downstream of this.",

@@ -196,7 +196,7 @@ mish             -0.1456  -0.3034  -0.2207   0.0000   0.3752   0.8651   2.9865
 
 
 
-    { t: "p", text: "A ReLU unit whose pre-activation is negative for *every* input outputs zero for every input, and — because its derivative is zero there — receives zero gradient for every input. Its weights never change again. **The neuron is dead**, and nothing in ordinary training brings it back. The common name is two causes: a learning rate large enough to push the weights into the negative region in one step, and an initialisation that starts too many pre-activations negative." },
+    { t: "p", text: "A ReLU unit whose pre-activation is negative for *every* input outputs zero for every input, and — because its derivative is zero there — receives zero gradient for every input. Its weights never change again. **The neuron is dead**, and nothing in ordinary training brings it back. There are two usual causes: a learning rate large enough to push the weights into the negative region in one step, and an initialisation that starts too many pre-activations negative." },
 
     { t: "code", lang: "python", title: "Dead units, counted: one random layer with an increasingly negative bias",
       code: `import torch, torch.nn.functional as F
@@ -260,7 +260,7 @@ print(0.25 ** 5, 1.0 ** 5)      # 0.0009765625 1.0
       answer: 1,
       why: "Softmax forces the 20 outputs to sum to 1, which encodes 'exactly one tag applies'. Independent sigmoids give each tag its own probability, which is what multi-label means; the matching loss is binary cross-entropy per tag." },
     { stem: "Why does a dead ReLU stay dead?",
-      options: ["Its weights are frozen by the optimiser", "Its output is zero and its derivative is zero, so no gradient ever reaches its weights", "ReLU has no bias term", "The learning rate decays to zero"],
+      options: ["The optimiser freezes its weights", "Zero output, zero gradient, forever", "ReLU units have no bias term", "The learning rate decays to zero"],
       answer: 1,
       why: "For a unit whose pre-activation is negative on every input, ReLU outputs 0 and its derivative is 0, so the chain rule delivers zero gradient to that unit's weights on every example. With nothing to move them, they never change, and the pre-activation stays negative." },
     { stem: "Which activation would you expect inside a transformer's feed-forward block?",

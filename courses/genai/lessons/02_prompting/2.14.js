@@ -92,7 +92,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "OpenAI's o1 and o3 are the sharpest break from the usual conventions, and the common name is it: no system prompt, no temperature, and a `developer` role in place of `system` for instructions." },
+    { t: "p", text: "OpenAI's o1 and o3 are the sharpest break from the usual conventions, and the differences are concrete: no system prompt, no temperature, and a `developer` role in place of `system` for instructions." },
 
     { t: "code", lang: "python", title: "reasoning.py — what does and does not port", code: `# A normal chat request
 normal = dict(

@@ -7,7 +7,7 @@ EC.receiveLesson({
     "Structure a prompt so a cache prefix survives across requests",
     "Identify the four common constructions that silently break a cache",
     "Resolve the conflict between caching and dynamic few-shot selection",
-    "Apply the other token-reduction levers the common list has, in order of effect",
+    "Apply the other usual token-reduction levers, in order of effect",
     "Verify a cache is hitting rather than assuming it"
   ],
 
@@ -167,7 +167,7 @@ def test_prefix_is_stable():
       caption: "The fourth row is the one people miss. A fixed core of five examples covering the common cases, plus two retrieved for the specific query, keeps the majority of the example tokens in the cached prefix." },
 
     { t: "h2", n: "04", id: "other-levers", text: "The other levers, in order of effect",
-      sub: "The common list has eight; they are not equal" },
+      sub: "There are eight usual levers; they are not equal" },
 
     {"kind": "layers", "title": "Eight cost levers, ordered by what they actually move", "caption": "The ordering is the point. Effort spent on row six — trimming words from a prompt — is effort not spent on rows one and two, which are **an order of magnitude larger**. A 20% shorter system prompt on a workload that should have been batched is a rounding error on a bill that could have been halved. And the last row moves nothing at all: streaming changes perceived latency and not one token of cost.", "items": [{"label": "A smaller model", "sub": "up to 16.7x - 1.14's measured ratio", "tone": "good"}, {"label": "Batch non-urgent work", "sub": "50%, on input and output both", "tone": "good"}, {"label": "Prompt caching", "sub": "50-90% of the cached input portion", "tone": "good"}, {"label": "Compress the context", "sub": "varies; large on RAG workloads"}, {"label": "Semantic response caching", "sub": "large where queries repeat"}, {"label": "Shorter prompts", "sub": "proportional, and usually small", "tone": "warn"}, {"label": "Lower max_tokens", "sub": "bounds the worst case only", "tone": "warn"}, {"label": "Streaming", "sub": "zero - same cost, better perceived latency", "tone": "crit"}], "t": "diagram", "id": "dg-2_13-04-3"},
 

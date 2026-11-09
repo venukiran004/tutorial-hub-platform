@@ -182,7 +182,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "It is commonly called them complementary and puts \u201cRAG + FT\u201d at the top of its cost column. In practice a mature system uses all three, each doing the job it is suited to:" },
+    { t: "p", text: "They are commonly called complementary, with \u201cRAG + FT\u201d at the top of the cost scale. In practice a mature system uses all three, each doing the job it is suited to:" },
 
     { t: "ol", items: [
       "**Fine-tune the behaviour** \u2014 the answer format, the citation discipline, saying \u201cthat is not in the documentation\u201d instead of guessing. 4.1 measured this transferring from a dozen examples.",

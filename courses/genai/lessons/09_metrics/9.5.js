@@ -134,7 +134,7 @@ EC.receiveLesson({
 </svg>` },
 
     { t: "exercise", kind: "build", title: "Score a paraphrase and an inversion with all three", difficulty: "core", minutes: 30,
-      body: "Score the same candidates with BLEU, chrF and BERTScore: an exact copy, a correct paraphrase, and a factually inverted sentence that reuses the usual phrasing. Report all three metrics for each and say which ones rank correctness above overlap.",
+      body: "Score the same candidates with BLEU, chrF and BERTScore: an exact copy, a correct paraphrase, and a factually inverted sentence that reuses the reference's phrasing. Report all three metrics for each and say which ones rank correctness above overlap.",
       requirements: [
         "At least three candidates including a correct paraphrase and an inversion",
         "Report BLEU, chrF and BERTScore for each",

@@ -55,7 +55,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "On a normal model, `max_tokens=400` gives you 400 tokens of answer, possibly truncated. On a reasoning model, `max_completion_tokens=400` gives you *up to* 400 tokens of thinking and whatever is left over for the answer — and if the thinking uses all 400, the answer is empty." },
         { t: "p", text: "The response comes back with `finish_reason: \"length\"`, content of `\"\"` or `None`, and a bill for 400 output tokens. It is not an error and nothing raises. Code that reads `response.choices[0].message.content` without checking gets an empty string and carries on." },
-        { t: "p", text: "The defence is the same as 1.5's: branch on `finish_reason`. The difference here is that a reasoning model needs a much larger cap than intuition suggests — it is usually put the reasoning at 10–100× the visible output, so a 200-token answer may need a cap of several thousand." }
+        { t: "p", text: "The defence is the same as 1.5's: branch on `finish_reason`. The difference here is that a reasoning model needs a much larger cap than intuition suggests — the reasoning is usually put at 10–100× the visible output, so a 200-token answer may need a cap of several thousand." }
       ] },
 
     /* ============================================================ 02 */
@@ -108,7 +108,7 @@ at $10 per 1M output tokens (GPT-4o rate):
   reasoning 10000 + visible  400 = 10400 billed -> $0.10400 per call, $1040.00 per 10k calls`,
       caption: "The rate used is GPT-4o's $10 per million output tokens, dated to 2024. Reasoning models are priced higher still, so these are floors rather than estimates." },
 
-    { t: "p", text: "It is usually put the reasoning at 10–100× the visible output. Applying that range to a fixed 200-token answer gives the spread that matters for capacity planning:" },
+    { t: "p", text: "The reasoning is usually put at 10–100× the visible output. Applying that range to a fixed 200-token answer gives the spread that matters for capacity planning:" },
 
     { t: "code", lang: "python", title: "g18.py — the quoted range, applied", code: `for mult in (10, 50, 100):
     total = 200 * mult + 200

@@ -43,7 +43,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "BLEU is precision, ROUGE is recall, and the task decides which",
       body: [
         { t: "p", text: "BLEU asks how much of the *candidate* appears in the reference, which suits translation where adding material is a fault. ROUGE asks how much of the *reference* appears in the candidate, which suits summarisation where omitting material is the fault." },
-        { t: "p", text: "In practice ROUGE is usually reported as F1, so it includes both \u2014 but the recall orientation is still in its design and its name. The asymmetry shows up in the failure modes: BLEU punishes a longer correct answer, ROUGE rewards a longer one containing the usual phrasing." },
+        { t: "p", text: "In practice ROUGE is usually reported as F1, so it includes both \u2014 but the recall orientation is still in its design and its name. The asymmetry shows up in the failure modes: BLEU punishes a longer correct answer, ROUGE rewards a longer one containing the reference's phrasing." },
         { t: "p", text: "6.1 made the same precision-versus-recall point for retrieval, where the two metrics disagreed about which retriever was better. It is the same structural lesson: a single number conflating the two is less informative than both." }
       ] },
 

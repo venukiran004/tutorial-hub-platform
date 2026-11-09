@@ -58,7 +58,7 @@ EC.receiveLesson({
 
     { t: "callout", kind: "good", title: "Separate the ingestion path from the query path",
       body: [
-        { t: "p", text: "The common list has this under the vector database and it deserves more prominence, because it is an architectural decision rather than a tuning one: make indexing async and queued so that re-indexing never blocks reads." },
+        { t: "p", text: "This is usually filed under the vector database, and it deserves more prominence, because it is an architectural decision rather than a tuning one: make indexing async and queued so that re-indexing never blocks reads." },
         { t: "p", text: "6.2 reached the same conclusion from the correctness side \u2014 build a second index and swap a pointer, because a mutating index serves arbitrary results. The two arguments converge: the ingestion path should not be able to affect the query path at all, in latency or in content." },
         { t: "p", text: "And it is the precondition for everything in 6.6 about code. If re-indexing blocked reads, a commit hook that re-indexes on every push would make the assistant unusable exactly when people are working." }
       ] },
@@ -125,7 +125,7 @@ EC.receiveLesson({
         { t: "p", text: "The case for `continue` is when chunk sizes are wildly uneven \u2014 6.6 measured code definitions from 43 to 12,365 characters \u2014 where one oversized chunk can waste most of the budget by being skipped. Even then the better fix is a size cap at chunking time, not a packer that reorders." }
       ] },
 
-    { t: "p", text: "The second scope the common name is is iteration count, and it matters because of what 5.10 and 5.11 introduced. Self-RAG, corrective RAG and agentic loops can retrieve repeatedly, so cost is unbounded unless something bounds it." },
+    { t: "p", text: "The second scope usually named is iteration count, and it matters because of what 5.10 and 5.11 introduced. Self-RAG, corrective RAG and agentic loops can retrieve repeatedly, so cost is unbounded unless something bounds it." },
 
     { t: "ul", items: [
       "**Cap retrieval rounds**, and when the cap is hit, answer with what you have and flag `low_confidence` \u2014 never loop silently",
@@ -155,7 +155,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "5.9 established RRF as the answer to incomparable scores, and 6.5 showed the same property rescuing cross-modal retrieval. That is genuinely solved. The common list has four further problems that fusion does not touch." },
+    { t: "p", text: "5.9 established RRF as the answer to incomparable scores, and 6.5 showed the same property rescuing cross-modal retrieval. That is genuinely solved. Four further problems are commonly listed that fusion does not touch." },
 
     { t: "dl", items: [
       { k: "Incomparable scores", v: "**Solved.** RRF uses rank position only, so BM25 and vector results combine cleanly \u2014 and deduplication is automatic because it is keyed by document id." },

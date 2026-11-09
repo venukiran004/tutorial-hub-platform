@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.1",
 
-  lede: "Prompt engineering has a reputation for being folklore, and a good deal of what gets written about it is. The part that is not consists of a small number of things that reliably change output quality, and one structural idea: a prompt is four components, and most prompting failures are one of them missing. This lesson establishes that anatomy, works through the eight principles the common list has, and sets up the discipline the rest of the module depends on — which is that a prompt without a test is a guess.",
+  lede: "Prompt engineering has a reputation for being folklore, and a good deal of what gets written about it is. The part that is not consists of a small number of things that reliably change output quality, and one structural idea: a prompt is four components, and most prompting failures are one of them missing. This lesson establishes that anatomy, works through eight commonly listed principles, and sets up the discipline the rest of the module depends on — which is that a prompt without a test is a guess.",
 
   objectives: [
     "Name the four components of a prompt and identify which is missing from a failing one",

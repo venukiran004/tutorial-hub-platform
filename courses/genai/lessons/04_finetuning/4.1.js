@@ -110,7 +110,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "Look at **\u201cWhat is two plus two?\u201d \u2192 \u201cThey be callin\u2019 me Cap\u2019n, matey!\u201d**. That is not an answer to the question; it is a *training response*, reproduced verbatim for an unrelated prompt. \u201cDescribe the ocean\u201d got the sea-shanty answer. \u201cHow do I bake bread\u201d got a blend of two." },
         { t: "p", text: "So the model learned two things at once: the surface style, which is what I wanted, and \u201cwhen asked anything, emit one of these twelve replies\u201d, which is overfitting. With twelve examples and eight epochs there was not enough data to separate the voice from the content, so it memorised both." },
-        { t: "p", text: "This is why it is commonly said real tasks need 500\u20131,000 examples and uses six only to demonstrate. My four-of-four style-transfer figure is real, and it would be dishonest to quote it without this paragraph: **the metric I chose measured the thing that worked and was blind to the thing that broke.** Which is the ordinary failure mode of a cheap metric, and the reason 4.8 insists on a held-out set." }
+        { t: "p", text: "This is why real tasks are usually said to need 500\u20131,000 examples, with six used only to demonstrate. The four-of-four style-transfer figure is real, and it would be dishonest to quote it without this paragraph: **the metric I chose measured the thing that worked and was blind to the thing that broke.** Which is the ordinary failure mode of a cheap metric, and the reason 4.8 insists on a held-out set." }
       ] },
 
     { t: "h2", n: "03", id: "fact", text: "Teaching a fact, measured",
@@ -211,7 +211,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "Moving weights to fit your examples moves them away from whatever else they were doing. The common list has catastrophic forgetting in its definitions and prescribes low learning rates and few epochs; it is worth seeing the size of the effect on a task this small." },
+    { t: "p", text: "Moving weights to fit your examples moves them away from whatever else they were doing. Catastrophic forgetting is the usual name for this, and the usual prescription is low learning rates and few epochs; it is worth seeing the size of the effect on a task this small." },
 
     { t: "code", lang: "python", title: "g41.py \u2014 perplexity on unrelated text, before and after", code: `GENERIC = ("The transformer architecture processes all positions in parallel ... "
            "Paris is the capital of France, and the Seine runs through it. Water "
@@ -276,7 +276,7 @@ def generic_ppl(m):
       "**Is the behaviour describable in a sentence?** Then describe it in a sentence. Fine-tuning earns its cost when the pattern is one you can demonstrate but not state \u2014 which is exactly when examples beat instructions."
     ] },
 
-    { t: "callout", kind: "note", title: "The division of labour the usual advice is",
+    { t: "callout", kind: "note", title: "The usual division of labour",
       body: [
         { t: "p", text: "*\u201cFine-tune the style, use RAG for the facts.\u201d* My two measurements are the evidence for both halves of that sentence, and they were run as one experiment precisely so the comparison would be fair \u2014 same model, same procedure, same number of epochs, same learning rate." },
         { t: "p", text: "It is worth noticing that this is not a compromise. The two mechanisms are good at different things because they *store* things differently: weights generalise and blur, context is exact and temporary. You want blurring for a style and exactness for a fact." }
@@ -350,7 +350,7 @@ for q in PARAPHRASE:
 
   perplexity after 12 epochs: style 7.207, fact 7.656 (baseline 5.386)`,
         notes: [
-          { t: "p", text: "**The style transferred to every held-out prompt and the content did not survive.** Four of four answers carry the voice; \u201cWhat is two plus two?\u201d returns a memorised training reply. Twelve examples is enough to teach a surface pattern and far too few to separate it from the content it was demonstrated on \u2014 which is why it is usually put real tasks at 500\u20131,000 examples." },
+          { t: "p", text: "**The style transferred to every held-out prompt and the content did not survive.** Four of four answers carry the voice; \u201cWhat is two plus two?\u201d returns a memorised training reply. Twelve examples is enough to teach a surface pattern and far too few to separate it from the content it was demonstrated on \u2014 which is why real tasks are usually put at 500\u20131,000 examples." },
           { t: "p", text: "**The fact produces the right entity and the wrong relation.** Three of four paraphrases contain \u201cMorrowbridge\u201d, and the sentences they sit in include \u201cMorrowbridge is Morrowbridge\u2019s capital\u201d and \u201cZanthia is Morrowbridge\u201d. One *training* question came back with the relation reversed. Something was learned; it is shaped like a word association rather than a proposition." },
           { t: "p", text: "**Training loss and general ability move in opposite directions after about epoch 8.** Style loss 0.457 \u2192 0.239 while perplexity 6.748 \u2192 7.207; the fact run ends with the lowest loss of the two and the worst forgetting. The number on the screen says keep going and the damage is off-screen, which is the entire case for a held-out set." },
           { t: "p", text: "**A quarter of the model\u2019s general perplexity, from twelve examples.** 5.386 \u2192 6.748 is not a rounding error, and this was a tiny, benign, eight-epoch run at a conservative learning rate. Full fine-tuning is not a free action, and this is the measurement that motivates LoRA \u2014 an adapter that leaves the base weights untouched cannot do this." },
@@ -428,7 +428,7 @@ for q in PARAPHRASE:
           "Greedy decoding always returns the most frequent training output"
         ],
         answer: 1,
-        why: "Twelve examples carry two patterns simultaneously \u2014 the voice, which is what you wanted, and \u201creply with one of these twelve strings\u201d, which you did not \u2014 and nothing in the data distinguishes them. That is overfitting, and it is why it is usually put real tasks at 500\u20131,000 examples and uses six only to demonstrate. Some general ability was indeed lost, measured as a 25% perplexity rise, but that is a separate effect from reproducing training outputs verbatim." }
+        why: "Twelve examples carry two patterns simultaneously \u2014 the voice, which is what you wanted, and \u201creply with one of these twelve strings\u201d, which you did not \u2014 and nothing in the data distinguishes them. That is overfitting, and it is why real tasks are usually put at 500\u20131,000 examples, with six used only to demonstrate. Some general ability was indeed lost, measured as a 25% perplexity rise, but that is a separate effect from reproducing training outputs verbatim." }
     ]
   },
 

@@ -190,19 +190,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "In the forward loop, what makes the implementation exhibit parameter sharing?",
-      options: ["The padding", "`self.W` is used at every position without being indexed by i or j", "The tensordot", "The stride"],
+      options: ["The padding on the input", "W reused at every position", "The single tensordot call", "The stride between steps"],
       answer: 1,
       why: "The same weight array is applied at every output position. That is the definition of parameter sharing, and it is why a convolution's parameter count is independent of image size and why features transfer across positions — the translation equivariance from lesson 2.1 follows directly from this one property of the loop." },
     { stem: "Why must `dW` be accumulated with `+=` rather than assigned?",
-      options: ["To avoid a shape error", "Because the same weights are used at every output position, so every position contributes to their gradient", "For numerical stability", "To handle the batch dimension"],
+      options: ["To avoid a shape error", "Every position contributes to dW", "For numerical stability", "To handle the batch dimension"],
       answer: 1,
       why: "Parameter sharing in the forward pass becomes gradient accumulation in the backward pass. Assigning instead of accumulating keeps only the last position's contribution — no error is raised, shapes stay correct, and the network trains on a gradient wrong by roughly a factor of H_out × W_out." },
     { stem: "You gradient-check a layer using an upstream gradient of all ones and it passes. Is that sufficient?",
-      options: ["Yes, ones are a valid gradient", "No — several indexing errors produce per-element errors that still sum correctly", "Yes, if the shapes match", "No, because ones cause overflow"],
+      options: ["Yes, ones are a valid gradient", "No: errors can cancel in the sum", "Yes, if the shapes match", "No, ones cause overflow"],
       answer: 1,
       why: "A uniform upstream gradient is symmetric, and that symmetry can mask transposed or misrouted indices whose errors cancel in the sum. Random upstream gradients break the symmetry and expose them. With float64 you should see agreement around 1e-14; anything substantially larger is a real bug rather than round-off." },
     { stem: "Why is PyTorch only 1.3× faster than this NumPy version on a large input?",
-      options: ["PyTorch is poorly optimised", "The NumPy version is already vectorised — each loop iteration is one large BLAS-backed tensordot", "The input was too small", "NumPy uses the GPU"],
+      options: ["PyTorch is poorly optimised", "NumPy is already vectorised", "The input was too small", "NumPy uses the GPU"],
       answer: 1,
       why: "The Python loop runs only over output positions; batch, channels and kernel are all handled inside a single `tensordot` that BLAS executes efficiently. A naive six-loop implementation would be thousands of times slower. The framework's decisive advantages are the GPU, fused kernels and autograd — not raw CPU arithmetic." }
   ] },

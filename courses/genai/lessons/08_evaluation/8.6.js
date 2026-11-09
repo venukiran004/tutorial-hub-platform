@@ -95,7 +95,7 @@ Output: {"winner": "A"|"B"|"tie", "reason": "..."}`,
     { t: "callout", kind: "warn", title: "Verbosity bias compounds with everything else in the course",
       body: [
         { t: "p", text: "7.11 measured why length is the canonical reward hack: the implicit reward is linear in response length, so a per-token weight of 0.01 equals the entire quality signal at a hundred tokens. A verbose-biased judge writes that weight into whatever you train on its labels." },
-        { t: "p", text: "And 8.3 measured the automatic-metric version, where a recall-based overlap metric gives a longer answer containing the usual phrasing a perfect score. Every layer of this stack has a length problem, which is why 7.15\u2019s eval gate bins win rates by length rather than only reporting mean length." },
+        { t: "p", text: "And 8.3 measured the automatic-metric version, where a recall-based overlap metric gives a longer answer containing the reference's phrasing a perfect score. Every layer of this stack has a length problem, which is why 7.15\u2019s eval gate bins win rates by length rather than only reporting mean length." },
         { t: "p", text: "Instructing the judge to ignore length helps and does not solve it. The reliable check is to bin: if within-length-bin win rates are flat while the aggregate is positive, the judge bought length." }
       ] },
 

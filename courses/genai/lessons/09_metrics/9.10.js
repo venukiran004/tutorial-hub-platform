@@ -270,7 +270,7 @@ print("pairwise self-consistency : %.3f" % pw)`,
         answer: 1,
         why: "Without described anchors the scale is reconstructed by the judge on each call, so the same answer can receive different scores depending on what else was in the prompt \u2014 and that instability is indistinguishable from real quality variation in the aggregate. Describing each point turns the task into classification, which models do substantially better, and makes disagreements auditable against the written description." },
 
-      { stem: "Why does the usual advice is reasoning before the verdict rather than after?",
+      { stem: "Why ask the judge for its reasoning before the verdict rather than after?",
         options: [
           "Because reasoning tokens are cheaper when generated first",
           "Because a verdict produced first is then rationalised \u2014 reasoning first makes the score a conclusion rather than a guess",

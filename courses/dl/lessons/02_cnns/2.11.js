@@ -233,11 +233,11 @@ model.compile(optimizer=tf.keras.optimizers.AdamW(1e-3, weight_decay=0.01),
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does CustomCNN have 97.1 % of its parameters in the backbone while VGG16 has 10.6 %?",
-      options: ["It has more convolutional layers", "Global average pooling replaces VGG's flatten-plus-dense head", "It uses batch normalisation", "It has fewer classes"],
+      options: ["It has more convolutional layers", "GAP replaces VGG's dense head", "It uses batch normalisation", "It has fewer output classes"],
       answer: 1,
       why: "VGG flattens a 7×7×512 map to 25,088 values and feeds dense layers, costing 124 million parameters. GAP collapses the same map to 256 numbers first, so the head is 34,186 parameters. The entire model is 1.18 million against VGG's 138 million." },
     { stem: "Why must you call `scaler.unscale_(optimizer)` before `clip_grad_norm_`?",
-      options: ["To free memory", "Gradients are still multiplied by the loss scale, so clipping would use the wrong threshold", "To synchronise the GPU", "To reset the optimiser state"],
+      options: ["To free memory", "Grads are still scaled", "To sync the GPU", "To reset the optimiser"],
       answer: 1,
       why: "AMP multiplies the loss by a large factor to keep small fp16 gradients from underflowing, so the gradients during backward are scaled by that factor. Clipping before unscaling compares a scaled norm against an unscaled threshold, making the clip effectively meaningless and dependent on whatever scale the scaler has settled on." },
     { stem: "`clip_grad_norm_(params, 1.0)` returns values of 5–7 on every step. What does that mean?",

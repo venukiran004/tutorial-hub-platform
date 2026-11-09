@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "6.1",
 
-  lede: "M5 measured one number \u2014 recall \u2014 and that number is the blunt one. The common list has six IR metrics with their formulas, and computing all of them over the retrievers built in M5 shows why more than one is needed: **BM25 has a lower Hit@5 than dense retrieval (0.90 against 0.95) and a higher MRR (0.85 against 0.84)**, so which retriever is \u201cbetter\u201d depends entirely on which metric you quote. It also tests the claim that re-ranking is what moves MRR and nDCG. Measured, a cross-encoder moved nDCG by **+0.11** and MRR by **+0.03** on dense \u2014 and on an already-fused first stage it moved MAP **+0.06** while dropping Hit@5 by **\u22120.10**.",
+  lede: "M5 measured one number \u2014 recall \u2014 and that number is the blunt one. There are six standard IR metrics with known formulas, and computing all of them over the retrievers built in M5 shows why more than one is needed: **BM25 has a lower Hit@5 than dense retrieval (0.90 against 0.95) and a higher MRR (0.85 against 0.84)**, so which retriever is \u201cbetter\u201d depends entirely on which metric you quote. It also tests the claim that re-ranking is what moves MRR and nDCG. Measured, a cross-encoder moved nDCG by **+0.11** and MRR by **+0.03** on dense \u2014 and on an already-fused first stage it moved MAP **+0.06** while dropping Hit@5 by **\u22120.10**.",
 
   objectives: [
     "Compute Hit@K, Precision@K, Recall@K, MRR, MAP and nDCG from their definitions",
@@ -35,7 +35,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six metrics the common list has. The others need the full set of relevant chunks, not just the first one." },
+    { t: "p", text: "Every measurement in M5 used a binary rule: did *any* chunk in the top k come from the right document and contain the answer. That is **Hit@K**, and it is one of six standard IR metrics. The others need the full set of relevant chunks, not just the first one." },
 
     { t: "code", lang: "python", title: "g61.py \u2014 the relevant set for each query", code: `RELEVANT = []
 for q, doc, must in QS:

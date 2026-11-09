@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.1",
 
-  lede: "A pretrained model is not trying to be helpful. It is trying to predict the next token, and the usual illustration is this by predicting that a base model asked \u201cWhat is the capital of France?\u201d will continue with *more questions*. I ran it on gpt2, a genuine base model. It **answered correctly** \u2014 and then repeated the answer four times. Three of my four prompts did fail exactly as the usual description is, so the claim holds; its chosen example is the one that does not. The quantitative version is sharper: the immediate next-token probability of \u201c Paris\u201d is **0.54%** against **33.84%** for a newline.",
+  lede: "A pretrained model is not trying to be helpful. It is trying to predict the next token, and the usual illustration of this predicts that a base model asked \u201cWhat is the capital of France?\u201d will continue with *more questions*. I ran it on gpt2, a genuine base model. It **answered correctly** \u2014 and then repeated the answer four times. Three of my four prompts did fail exactly as the usual description is, so the claim holds; its chosen example is the one that does not. The quantitative version is sharper: the immediate next-token probability of \u201c Paris\u201d is **0.54%** against **33.84%** for a newline.",
 
   objectives: [
     "State what pretraining optimises and why that is not helpfulness",

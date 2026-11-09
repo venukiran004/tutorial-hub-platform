@@ -194,19 +194,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What problem do residual connections solve?",
-      options: ["Overfitting in deep networks", "Gradient decay and the degradation problem, so depth becomes trainable", "The high parameter count of VGG", "Slow inference"],
+      options: ["Overfitting in deep nets", "Gradient decay with depth", "VGG's parameter count", "Slow inference speed"],
       answer: 1,
       why: "The measured gradient ratio over 20 blocks is 12.5× for a plain stack against 1.20× for a residual one. Degradation is an *optimisation* failure — a deeper plain network reaching worse training loss than a shallower one — and the skip connection fixes it by making the identity trivially representable." },
     { stem: "Where are most of VGG16's 138 million parameters?",
-      options: ["In the convolutional backbone", "In the fully connected classifier head", "Evenly spread", "In the batch norm layers"],
+      options: ["In the convolutional backbone", "In the fully connected head", "Spread evenly across layers", "In the batch-norm layers"],
       answer: 1,
       why: "The measured split is 14.7 M in features against 123.6 M in the classifier — 89.4 % in three fully connected layers on a flattened feature map. That is exactly what global average pooling replaced, and why the architectures after VGG are smaller despite being better." },
     { stem: "A bottleneck block replaces two 3×3 convolutions at 256 channels. Why is it so much cheaper?",
-      options: ["It has fewer layers", "The 3×3 operates on 64 channels instead of 256, and cost goes as the square of channel count", "1×1 convolutions are free", "It skips the batch norm"],
+      options: ["It has fewer layers", "The 3×3 runs on 64 channels", "1×1 convolutions are free", "It skips batch norm"],
       answer: 1,
       why: "A 3×3 convolution's parameters go as `k²·C_in·C_out`, so quartering the channels cuts that term by sixteen. The 1×1 layers that squeeze and expand are cheap by comparison, and the measured total falls from 1,180,160 to 70,016." },
     { stem: "What did ConvNeXt demonstrate?",
-      options: ["That attention is unnecessary for vision", "That much of the transformer advantage came from design choices and training recipes rather than attention itself", "That CNNs scale better than transformers", "That larger kernels always help"],
+      options: ["That attention is unnecessary for vision", "Recipes, not attention, gave much of the gain", "That CNNs scale better than transformers", "That larger kernels always help"],
       answer: 1,
       why: "ConvNeXt-T reaches 82.1 % against Swin-T's 81.3 % using no attention at all — by adopting the patchify stem, inverted bottleneck, LayerNorm, GELU and modern training schedules. The lesson is about attributing gains correctly when an architecture arrives with a new recipe attached." }
   ] },

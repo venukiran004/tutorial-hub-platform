@@ -152,7 +152,7 @@ r = torch.tensor([[1., 0., 1., 0., 0., 1.]])`,
 
     { t: "callout", kind: "warn", title: "So prompt difficulty curation is part of the algorithm",
       body: [
-        { t: "p", text: "It is commonly stated this and the measurement makes it concrete. A batch of prompts your model always solves teaches nothing; a batch it never solves teaches nothing; and a batch it solves about half the time teaches the most." },
+        { t: "p", text: "This is commonly stated, and the measurement makes it concrete. A batch of prompts your model always solves teaches nothing; a batch it never solves teaches nothing; and a batch it solves about half the time teaches the most." },
         { t: "p", text: "That is an unusual property for a training algorithm and it has real consequences. Your prompt set has to be *matched to the current policy*, so as the model improves, prompts it used to find hard become all-correct and stop contributing \u2014 which means the curriculum has to move with it." },
         { t: "p", text: "Practically: log the zero-variance fraction per batch, and filter or re-weight prompts by measured pass rate. If the zero-variance fraction is high you are paying full sampling cost \u2014 which 7.5 noted dominates the wall clock \u2014 for no gradient at all." }
       ] },
@@ -236,7 +236,7 @@ frozen  = N * 2  / GB      # bf16 weights only`,
 
     { t: "callout", kind: "good", title: "It also removes a failure mode, not just memory",
       body: [
-        { t: "p", text: "A critic is a trained model that can be wrong. A badly fitted value head produces systematically mis-estimated advantages, and the symptom is a PPO run that silently learns the wrong thing \u2014 it is commonly called this critic collapse and it is hard to diagnose from the outside." },
+        { t: "p", text: "A critic is a trained model that can be wrong. A badly fitted value head produces systematically mis-estimated advantages, and the symptom is a PPO run that silently learns the wrong thing \u2014 this is commonly called critic collapse, and it is hard to diagnose from the outside." },
         { t: "p", text: "A group mean cannot collapse. It is an arithmetic function of the rewards you just observed, with no parameters to fit and nothing to go stale as the policy moves." },
         { t: "p", text: "In exchange you pay G samples per prompt instead of one. For reasoning work that is free, because sampling multiple completions per problem is already what you do \u2014 so the group comes at no additional cost, which is the third reason GRPO suits this regime." }
       ] },

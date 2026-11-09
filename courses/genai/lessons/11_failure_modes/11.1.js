@@ -62,7 +62,7 @@ emits a fluent, well-formatted, completely invented number.`,
     { t: "callout", kind: "good", title: "The intrinsic / extrinsic split is not academic \u2014 a detector separates them for free",
       body: [
         { t: "p", text: "11.4 runs an entailment model over claims, and entailment is a **three-way** output: entailment, contradiction, neutral. Measured on the scenarios, an invented refund window came back as **contradiction 0.9810** while a fabricated citation came back as **neutral 0.9857**." },
-        { t: "p", text: "That is the intrinsic/extrinsic distinction appearing directly in the detector\u2019s output, and the common definition is the two terms without ever connecting them to its own detection method. The split matters because the fixes differ: a contradiction means the model overrode its context, and a neutral means it invented something the context is silent about." },
+        { t: "p", text: "That is the intrinsic/extrinsic distinction appearing directly in the detector\u2019s output, a distinction usually defined without being connected to any detection method. The split matters because the fixes differ: a contradiction means the model overrode its context, and a neutral means it invented something the context is silent about." },
         { t: "p", text: "It also tells you which is more dangerous to a reader. A contradiction can be caught by anyone who reads the source; an extrinsic addition looks like extra helpfulness and has nothing to check it against." }
       ] },
 
@@ -275,7 +275,7 @@ the two triggers you CONTROL, not the model:
           "A retrieval failure from a generation failure"
         ],
         answer: 1,
-        why: "Contradiction means the context says something incompatible, which is the definition of intrinsic; neutral means the context is simply silent, which is extrinsic and unverifiable from the given source. The three-way output therefore hands you a classification the common definition is separately without connecting it to detection \u2014 and the two call for different fixes, prompt precedence versus an abstention path." },
+        why: "Contradiction means the context says something incompatible, which is the definition of intrinsic; neutral means the context is simply silent, which is extrinsic and unverifiable from the given source. The three-way output therefore hands you a classification that is usually defined separately from detection \u2014 and the two call for different fixes, prompt precedence versus an abstention path." },
 
       { stem: "Which hallucination triggers are under your control rather than the model's?",
         options: [

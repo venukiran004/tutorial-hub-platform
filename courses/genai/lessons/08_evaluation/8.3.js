@@ -47,7 +47,7 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "BLEU is precision and ROUGE is recall, and that is the whole difference",
       body: [
         { t: "p", text: "BLEU asks how much of the *candidate* appears in the reference \u2014 precision \u2014 which suits translation, where adding material is a fault. ROUGE asks how much of the *reference* appears in the candidate \u2014 recall \u2014 which suits summarisation, where missing material is the fault." },
-        { t: "p", text: "That asymmetry explains their respective failure modes. BLEU punishes a longer correct answer; ROUGE rewards a longer one that happens to contain the usual phrasing. Neither asks whether the sentence is true." },
+        { t: "p", text: "That asymmetry explains their respective failure modes. BLEU punishes a longer correct answer; ROUGE rewards a longer one that happens to contain the reference's phrasing. Neither asks whether the sentence is true." },
         { t: "p", text: "6.1 made the same precision-and-recall point for retrieval, and the lesson transfers: a single number conflating the two is less informative than both, and which one you want depends on which error costs more." }
       ] },
 
@@ -67,7 +67,7 @@ CANDS = [
     ("WRONG, high overlap",        "The retrieval stage costs about eleven milliseconds and the cross-encoder costs about eleven milliseconds."),
 ]`,
       hl: [9, 10],
-      caption: "The fourth candidate swaps the two figures, so it states the opposite of the truth in the usual phrasing." },
+      caption: "The fourth candidate swaps the two figures, so it states the opposite of the truth in the reference's phrasing." },
 
     { t: "code", lang: "python", title: "g82.py \u00a7E \u2014 the scores", code: `b = sentence_bleu([REF.lower().split()], c.lower().split(), smoothing_function=sm)
 r = rs.score(REF, c)      # rouge_score, with stemming`,
@@ -265,7 +265,7 @@ for k, v in inversions_win.items():
       body: [
         { t: "p", text: "**\u201cWe are using ROUGE to evaluate our summarisation feature. Is that reasonable?\u201d**" },
         { t: "p", text: "For regression testing on a frozen set of documents and references, yes \u2014 it is cheap, deterministic and will show you if something breaks between versions. As an absolute measure of summary quality, no, and I can be specific about why." },
-        { t: "p", text: "I took a reference sentence with two latency figures in it and scored five candidates. A version with the two numbers swapped \u2014 so it states the opposite of the truth, in the usual phrasing \u2014 scored ROUGE-1 of exactly 1.0000 and ROUGE-2 of exactly 1.0000. A correct paraphrase scored 0.2581." },
+        { t: "p", text: "I took a reference sentence with two latency figures in it and scored five candidates. A version with the two numbers swapped \u2014 so it states the opposite of the truth, in the reference's phrasing \u2014 scored ROUGE-1 of exactly 1.0000 and ROUGE-2 of exactly 1.0000. A correct paraphrase scored 0.2581." },
         { t: "p", text: "The reason is structural rather than a quirk of that example: swapping two numbers preserves the unigram multiset and almost all bigrams, so a recall-based n-gram metric sees a complete match. The meaning of a quantitative claim lives in which number attaches to which clause, and n-grams do not encode attachment." },
         { t: "p", text: "ROUGE-L was the only variant that noticed, at 0.7222 instead of 1.0000, because longest-common-subsequence is order-sensitive \u2014 but it still ranked the wrong sentence well above the correct paraphrase, so switching variants does not fix it." },
         { t: "p", text: "So what I would do is keep ROUGE as a cheap relative signal in CI, and add a reference-free faithfulness check as the thing that actually gates quality \u2014 does every claim in the summary appear in the source document. That needs no gold summary, which also means the eval set is not bounded by how many summaries someone wrote." },
@@ -341,7 +341,7 @@ for k, v in inversions_win.items():
         q: "Why are BLEU and ROUGE considered weak for modern LLM evaluation?",
         strong: "A strong answer gives a concrete failure, not just \u201cthey measure surface overlap\u201d.",
         answer: [
-          { t: "p", text: "Because they score surface n-gram overlap against a reference, so a correct answer phrased differently scores low and a wrong answer reusing the usual phrasing scores high. The usual statement is that this \u2018can\u2019 happen; when I tested it the effect was stronger than that." },
+          { t: "p", text: "Because they score surface n-gram overlap against a reference, so a correct answer phrased differently scores low and a wrong answer reusing the reference's phrasing scores high. The usual statement is that this \u2018can\u2019 happen; when I tested it the effect was stronger than that." },
           { t: "p", text: "I took a reference sentence with two latency figures and scored a version with those two figures swapped \u2014 so it asserts the opposite, in the vocabulary. ROUGE-1 and ROUGE-2 both returned exactly 1.0000, tying the exact copy, while a correct paraphrase scored 0.2581 and 0.1379." },
           { t: "p", text: "The reason is structural: swapping two numbers preserves the unigram multiset and nearly every bigram, and n-gram overlap does not encode which number attaches to which clause. For quantitative claims that is precisely where the meaning is." },
           { t: "p", text: "ROUGE-L noticed slightly, at 0.7222, because longest-common-subsequence is order-sensitive \u2014 but it still ranked the wrong sentence above the correct paraphrase, so you cannot fix this by picking a different variant. The family-level fix is to leave surface overlap, either for embedding-based scoring or for a judge." }

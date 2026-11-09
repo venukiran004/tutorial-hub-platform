@@ -31,7 +31,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The percentage of factual claims unsupported by ground truth \u2014 or, for a RAG system, unsupported by the retrieved context, which it is commonly called groundedness and 8.8 develops." },
+    { t: "p", text: "The percentage of factual claims unsupported by ground truth \u2014 or, for a RAG system, unsupported by the retrieved context, which is commonly called groundedness and which 8.8 develops." },
 
     { t: "callout", kind: "insight", title: "\u201cUnsupported by what\u201d changes the metric entirely",
       body: [

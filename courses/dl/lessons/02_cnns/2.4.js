@@ -66,7 +66,7 @@ EC.receiveLesson({
 
     { t: "math", tex: "\\frac{\\text{separable}}{\\text{standard}} = \\frac{k^2 C_{in} + C_{in}C_{out}}{k^2 C_{in} C_{out}} = \\frac{1}{C_{out}} + \\frac{1}{k^2}" },
 
-    { t: "callout", kind: "trap", title: "It is commonly written this ratio upside down",
+    { t: "callout", kind: "trap", title: "This ratio is commonly written upside down",
       body: [{ t: "p", text: "a commonly quoted formula gives the saving as `C_out/(k²) + 1`, which would grow with the channel count rather than shrink. The correct ratio is `1/C_out + 1/k²` — and the worked example confirms it: 8,768 / 73,728 = 0.1189, and 1/128 + 1/9 = 0.1189 exactly. Since `C_out` is usually large, the `1/k²` term dominates, which is where the familiar 'about 9× cheaper for a 3×3' comes from." }] },
 
     { t: "out", text: `  standard  3^2 x 64 x 128          = 73,728   (reference: 73,728)
@@ -175,19 +175,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does a 1×1 convolution do?",
-      options: ["Blurs the feature map", "Projects the channel vector at each position, leaving spatial size unchanged", "Reduces spatial resolution", "Adds padding"],
+      options: ["It blurs the feature map", "Mixes channels per pixel", "It halves the resolution", "It adds padding around it"],
       answer: 1,
       why: "It is a fully connected layer applied identically at every pixel: `(256, 28, 28)` becomes `(64, 28, 28)`. It cannot see any spatial structure — its value is changing channel count for `C_in·C_out` parameters, nine times less than a 3×3 doing the same job." },
     { stem: "A depthwise separable convolution replaces a standard one with C_out = 256 and k = 3. Roughly what fraction of the parameters remain?",
-      options: ["About half", "About 1/9 — the `1/k²` term dominates `1/C_out + 1/k²`", "About 1/256", "About 1/81"],
+      options: ["About half", "About 1/9", "About 1/256", "About 1/81"],
       answer: 1,
       why: "`1/256 + 1/9 = 0.115`, and the measured ratio was 0.1162 (the difference is biases). Because C_out is large, `1/C_out` contributes little and the `1/k²` term sets the scale — hence the familiar 'about 9× cheaper' for a 3×3 kernel." },
     { stem: "What is the 'squeeze' in squeeze-and-excitation?",
-      options: ["The channel reduction by ratio r", "Global average pooling, turning C×H×W into C×1×1", "The sigmoid", "The bottleneck 1×1 convolution"],
+      options: ["The channel reduction by r", "Global average pooling", "The sigmoid gate", "The bottleneck 1×1 conv"],
       answer: 1,
       why: "The squeeze collapses each channel's entire spatial map into one number, giving the excitation network a global view of what the whole image contains. The reduction by `r` happens afterwards, inside the excitation FC layers, and is what keeps the block at around 1.4 % of the cost of the convolution it follows." },
     { stem: "Your depthwise separable model has 8× fewer parameters but runs barely faster on your GPU. Why?",
-      options: ["A bug in the implementation", "Depthwise convolutions are memory-bound, so they reach a small fraction of peak throughput", "Parameters do not affect speed at all", "The batch size is too large"],
+      options: ["A bug in the implementation", "Depthwise convs are memory-bound", "Parameters never affect speed", "The batch size is too large"],
       answer: 1,
       why: "Depthwise convolutions do very little arithmetic per byte of memory traffic, so on a large accelerator they are limited by bandwidth rather than compute and cannot exploit its peak FLOPs. The full benefit appears on mobile CPUs, which is what the architecture was designed for — a good reason to measure latency on the target device rather than counting FLOPs." }
   ] },

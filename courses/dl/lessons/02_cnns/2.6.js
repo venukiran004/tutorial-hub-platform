@@ -203,7 +203,7 @@ eval_transform = T.Compose([
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why must augmentation be applied to training data only?",
-      options: ["It is slower on validation data", "A random validation transform makes the metric noisy and can crop the object away", "Validation data is already augmented", "It causes data leakage"],
+      options: ["It is slower on validation data", "Random validation makes metrics noisy", "Validation data is already augmented", "It causes data leakage"],
       answer: 1,
       why: "A fixed model scored on randomly transformed validation images produces a different number each run, so you cannot distinguish a real improvement from a lucky draw. The verified behaviour is that three eval passes are identical while three train passes are not — that determinism is the whole point of a separate eval pipeline." },
     { stem: "MixUp with λ = 0.7 combines a class-0 image and a class-2 image. What is the target?",
@@ -211,7 +211,7 @@ eval_transform = T.Compose([
       answer: 1,
       why: "The label is mixed by exactly the same λ as the pixels: `ỹ = λy_i + (1−λ)y_j`. The result is a soft target summing to 1, which forbids the model from being fully confident about an input that genuinely contains two things." },
     { stem: "With α = 0.2, what do most MixUp draws look like?",
-      options: ["Close to a 50/50 blend", "Mostly extreme — near 0 or near 1, so barely mixed", "Uniformly spread", "Always exactly 0.5"],
+      options: ["Close to a 50/50 blend", "Mostly near 0 or 1", "Uniformly spread", "Always exactly 0.5"],
       answer: 1,
       why: "`Beta(α, α)` with α < 1 is U-shaped, putting its mass at the ends. Measured over 10,000 draws, 66.9 % fell below 0.1 or above 0.9. So most batches are only lightly mixed and the dramatic double-exposure images are the minority — which is why α = 0.2 is a mild setting despite MixUp's reputation." },
     { stem: "You are classifying handwritten digits. Which augmentation is dangerous?",

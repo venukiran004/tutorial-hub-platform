@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "5.3",
 
-  lede: "An embedding model turns text into a vector so that similar meanings land near each other. Choosing one looks like a leaderboard exercise \u2014 the common list has OpenAI\u2019s models, BGE, Nomic and GTE with their dimensions \u2014 and on the shared corpus the leaderboard answer lost badly. **all-mpnet-base-v2**, the larger and generally better-ranked model, scored **35% recall@1** against all-MiniLM-L6-v2\u2019s **75%**, and took **9.4\u00d7 longer** to encode the corpus. Investigating why is more useful than the number: mpnet preferred short heading-like chunks that were topically right and did not contain the answer.",
+  lede: "An embedding model turns text into a vector so that similar meanings land near each other. Choosing one looks like a leaderboard exercise \u2014 the usual shortlist is OpenAI\u2019s models, BGE, Nomic and GTE with their dimensions \u2014 and on the shared corpus the leaderboard answer lost badly. **all-mpnet-base-v2**, the larger and generally better-ranked model, scored **35% recall@1** against all-MiniLM-L6-v2\u2019s **75%**, and took **9.4\u00d7 longer** to encode the corpus. Investigating why is more useful than the number: mpnet preferred short heading-like chunks that were topically right and did not contain the answer.",
 
   objectives: [
     "Say what a bi-encoder is trained to do and why that differs from a cross-encoder",

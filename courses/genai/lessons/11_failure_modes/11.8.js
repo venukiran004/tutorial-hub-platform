@@ -35,7 +35,7 @@ EC.receiveLesson({
       { k: "Prompt caching for the fixed prefix", v: "The system prompt plus stable few-shot examples are identical on every call, so providers cache the prefix \u2014 cheaper and faster, with **no quality risk whatsoever** because the tokens do not change." }
     ] },
 
-    { t: "code", lang: "python", title: "The trim, as it is commonly written it", code: `def trim_context(history, retrieved, summarize, max_history_tokens=400, top_k=4):
+    { t: "code", lang: "python", title: "The trim, as it is commonly written", code: `def trim_context(history, retrieved, summarize, max_history_tokens=400, top_k=4):
     # 1) compress history to a budget
     if count_tokens(history) > max_history_tokens:
         history = summarize(history)            # running summary, not full transcript

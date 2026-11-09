@@ -357,7 +357,7 @@ most optimistic estimate: logline, off by 66.7%
     "Providers differ on what happens when you overflow — some reject the request, some silently truncate the prompt and answer anyway. The second is worse, because the answer looks fine.",
     "**Count with a tokeniser; do not estimate on the hot path.** `tiktoken` runs locally in microseconds.",
     "The 4-characters-per-token rule measured **4.43** on English prose — and **2.77** on JSON and **1.95** on UUIDs, which is wrong by a factor of 2.3 on the payloads production systems actually send.",
-    "The words-per-token rule is weaker still: it is commonly said 0.75, English prose measured **0.89**, and JSON measured 0.31.",
+    "The words-per-token rule is weaker still: the commonly quoted figure is 0.75; English prose measured **0.89**, and JSON measured 0.31.",
     "**The tokeniser matters as much as the text.** The same French sentence took 73 tokens under `cl100k_base` and **57** under `o200k_base` — 22% fewer, for the same characters.",
     "A truncated response and a short response are textually identical. **`finish_reason` is the only signal**, and `length` means the answer was cut, not finished.",
     "`max_tokens` is a cost and latency control, not a length control — the model does not know the cap exists. Ask for brevity in the prompt and set the cap above it as a safety net.",

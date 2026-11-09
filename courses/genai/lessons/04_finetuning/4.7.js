@@ -72,7 +72,7 @@ EC.receiveLesson({
 
 
 
-    { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. The usual choice is six examples to demonstrate and notes that real tasks need 500\u20131,000; I used sixteen, which is still far below that and enough to see the behaviour transfer." },
+    { t: "p", text: "The task is deliberately obvious \u2014 answer in a pirate voice \u2014 so that success or failure is visible without a metric. Six examples are the usual demonstration, and real tasks need 500\u20131,000; this run uses sixteen, which is still far below that and enough to see the behaviour transfer." },
 
     { t: "code", lang: "python", title: "g47.py \u2014 formatting each pair as one training string", code: `def to_text(q, a):
     return "User: %s\\nAssistant: %s%s" % (q, a, tok.eos_token)

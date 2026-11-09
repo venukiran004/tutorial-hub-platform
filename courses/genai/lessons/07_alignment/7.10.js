@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "7.10",
 
-  lede: "Since 2024 there is a second scaling dial: spend more compute at inference on the same model. The usual illustration is it with a worked trade \u2014 a 60%-accurate small model with self-consistency@8 reaching \u201c\u224878%\u201d against a 20\u00d7-cost big model at 85%. Simulated, that figure is only right if **all the model\u2019s wrong answers agree with each other**. With errors spread over five distinct wrong answers it reaches **93.4%**, beating the big model outright at 2.5\u00d7 less cost \u2014 and below a 50% base accuracy with agreeing errors, voting makes things **worse**.",
+  lede: "Since 2024 there is a second scaling dial: spend more compute at inference on the same model. The usual illustration is a worked trade \u2014 a 60%-accurate small model with self-consistency@8 reaching \u201c\u224878%\u201d against a 20\u00d7-cost big model at 85%. Simulated, that figure is only right if **all the model\u2019s wrong answers agree with each other**. With errors spread over five distinct wrong answers it reaches **93.4%**, beating the big model outright at 2.5\u00d7 less cost \u2014 and below a 50% base accuracy with agreeing errors, voting makes things **worse**.",
 
   objectives: [
     "Name the five test-time compute techniques and what each spends",

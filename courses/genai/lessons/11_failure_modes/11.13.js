@@ -265,7 +265,7 @@ print()
 print("so the regex layer is ~%.0f%% on literal attacks and ~%.0f%% on paraphrases,"
       % (lit_r, par_r))
 print("while wrongly blocking %.0f%% of benign-but-tricky traffic." % ben_r)
-print("it is commonly said 'first layer, not a solution'. that is the measurement.")
+print("it is commonly called 'first layer, not a solution'. that is the measurement.")
 
 # ----------------------------------------------------------------- PII
 print()
@@ -295,7 +295,7 @@ CASES = [
 for c in CASES:
     print("  %-56s -> %s" % (c[:56], redact(c)))
 print()
-print("two real limits, one of which the common name is:")
+print("two real limits, one of them commonly named:")
 print("  - NAMES AND ADDRESSES pass straight through (it says: add an NER model)")
 print("  - an internal ticket number of SSN shape is redacted anyway -- a false")
 print("    positive that silently removes data the model needed")
@@ -345,7 +345,7 @@ over all 21 attacks and 10 benign:
 
 so the regex layer is ~100% on literal attacks and ~0% on paraphrases,
 while wrongly blocking 60% of benign-but-tricky traffic.
-it is commonly said 'first layer, not a solution'. that is the measurement.
+it is commonly called 'first layer, not a solution'. that is the measurement.
 
 ==========================================================================
 D -- THE PII REDACTOR
@@ -358,7 +358,7 @@ D -- THE PII REDACTOR
   Reference 123-45-6789 is our internal ticket number      -> Reference [SSN] is our internal ticket number
   The server is at 10.0.113.4 port 5432                    -> The server is at 10.0.113.4 port 5432
 
-two real limits, one of which the common name is:
+two real limits, one of them commonly named:
   - NAMES AND ADDRESSES pass straight through (it says: add an NER model)
   - an internal ticket number of SSN shape is redacted anyway -- a false
     positive that silently removes data the model needed

@@ -60,7 +60,7 @@ def faithfulness_score(answer: str, context: str, entails) -> dict:
     { t: "callout", kind: "insight", title: "And the three-way output classifies the hallucination for free",
       body: [
         { t: "p", text: "11.1 defines intrinsic (contradicts the source) against extrinsic (adds what the source omits). The entailment model separates them without being asked: the invented refund window reads **contradiction 0.9810**, and the fabricated citation reads **neutral 0.9857**." },
-        { t: "p", text: "That is a classification the common definition is in its glossary and never connects to its own detector. It matters because the fixes differ \u2014 a contradiction means the model overrode its context, so instruct precedence and lower the temperature; a neutral means it invented where the context was silent, so the abstention path is the lever." },
+        { t: "p", text: "That classification is usually defined in a glossary and never connected to a detector. It matters because the fixes differ \u2014 a contradiction means the model overrode its context, so instruct precedence and lower the temperature; a neutral means it invented where the context was silent, so the abstention path is the lever." },
         { t: "p", text: "One case is worth flagging as genuinely uncertain: \u201csupport is available 24/7 worldwide\u201d against a context saying business hours reads **neutral 0.5800, contradiction 0.3980**. It is arguably intrinsic and the model is unsure, and a rule keyed on `contradiction > 0.5` would have missed it entirely. All three of my rules catch it, because all three test for the *absence* of entailment rather than the presence of contradiction \u2014 which is the safer formulation." }
       ] },
 
@@ -143,7 +143,7 @@ def llm_groundedness(answer, context, call_llm):
     { t: "callout", kind: "insight", title: "It is the only one of the three that works closed-book",
       body: [
         { t: "p", text: "Entailment and a judge both need a context to check against. Self-consistency needs nothing but the question, which makes it the only available signal when there is no retrieval \u2014 and 11.2\u2019s decision flow routes closed-book questions here for exactly that reason." },
-        { t: "p", text: "The exact-string normalisation is its weakness and it is commonly said so implicitly by using `.strip().lower()`. Five answers that agree in substance and differ in wording count as five disagreements, so on free-form prose it reports spurious uncertainty. It works well on short factual answers \u2014 a number, a name, a label \u2014 and badly on paragraphs." },
+        { t: "p", text: "The exact-string normalisation is its weakness and the usual implementation admits as much by using `.strip().lower()`. Five answers that agree in substance and differ in wording count as five disagreements, so on free-form prose it reports spurious uncertainty. It works well on short factual answers \u2014 a number, a name, a label \u2014 and badly on paragraphs." },
         { t: "p", text: "And 2.9 already measured its cost profile: self-consistency at n = 21 with a per-sample accuracy of 0.30 gives 0.0264, eleven times *worse* than one sample. Agreement is a confidence signal, not an accuracy improvement \u2014 it tells you the model is sure, which is not the same as right." }
       ] },
 
@@ -400,7 +400,7 @@ misses the on-topic ones you would not. that is the wrong way round.`,
           { t: "p", text: "**The cosine substitute fails, and fails in the worst direction.** The ranges overlap completely, and the single highest-scoring claim is the invented refund policy at 0.8108 against the true claim\u2019s 0.7982. The two differ by a number and a negation, and an embedding is nearly blind to both \u2014 so an on-topic fabrication is maximally similar to the truth it replaces." },
           { t: "p", text: "**The one claim cosine does catch is the fake citation at 0.0503**, and it catches it for being off-topic rather than unsupported. So the failure profile is inverted: similarity flags the hallucination a human would spot instantly and passes the one nobody notices by eye." },
           { t: "p", text: "**Watch the \u201c24/7 support\u201d claim** \u2014 neutral 0.5800, contradiction 0.3980. The model is genuinely unsure whether \u2018business hours\u2019 contradicts \u201824/7\u2019, and a rule keyed on `contradiction > 0.5` would have passed it. All three rules here test for the *absence* of entailment, which is why they catch it, and that is the safer formulation." },
-          { t: "p", text: "The fake citation reading **neutral 0.9857** while the invented policy reads **contradiction 0.9810** is the intrinsic/extrinsic split falling out of the detector for free \u2014 a classification the common definition is in its glossary and never links to its own method." }
+          { t: "p", text: "The fake citation reading **neutral 0.9857** while the invented policy reads **contradiction 0.9810** is the intrinsic/extrinsic split falling out of the detector for free \u2014 a classification usually defined in a glossary and never linked to a method." }
         ] } },
 
     { t: "callout", kind: "mental", title: "The model to keep",

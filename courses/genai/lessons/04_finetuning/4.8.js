@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "4.8",
 
-  lede: "Every lesson in this module so far has watched a training loss fall and said the same thing: that curve cannot tell you whether the model is learning the behaviour or memorising the examples. This one holds data back, and adds a third measurement \u2014 perplexity on text the task has nothing to do with. Sweeping the four settings it is commonly said matter produced one result that should change how you run these jobs. **A learning rate of 5e-4 gave the best validation loss in the whole sweep, 2.0359, and took general perplexity to 23.903 against a 5.282 baseline.** Selecting on task validation alone would have shipped a wrecked model, confidently.",
+  lede: "Every lesson in this module so far has watched a training loss fall and said the same thing: that curve cannot tell you whether the model is learning the behaviour or memorising the examples. This one holds data back, and adds a third measurement \u2014 perplexity on text the task has nothing to do with. Sweeping the four settings usually said to matter produced one result that should change how you run these jobs. **A learning rate of 5e-4 gave the best validation loss in the whole sweep, 2.0359, and took general perplexity to 23.903 against a 5.282 baseline.** Selecting on task validation alone would have shipped a wrecked model, confidently.",
 
   objectives: [
     "Split data so that a fine-tune can be stopped on evidence",

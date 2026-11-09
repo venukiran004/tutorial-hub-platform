@@ -204,7 +204,7 @@ print("  from its own price table: input %.2f/%.2f = %.1fx, output %.2f/%.2f = %
   from its own price table: input 2.50/0.15 = 16.7x, output 10.00/0.60 = 16.7x
   so the factor is 16.7x on both, not 30x.`,
       hl: [1, 2, 3],
-      caption: "it is commonly said \"GPT-4o-mini is 30x cheaper than GPT-4o\" in both §13 and §17, and lists the prices that make it 16.7× in §16.1. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
+      caption: "A commonly repeated claim is that GPT-4o-mini is 30x cheaper than GPT-4o, yet the published prices make it 16.7×. The ratio is the same on input and output, so there is no mix of the two that produces 30." },
 
     { t: "callout", kind: "trap", title: "Model prices go stale faster than the documents that quote them",
       body: [

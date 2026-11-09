@@ -231,7 +231,7 @@ B -- THE CASCADE CLAIM: '80% on a 15x cheaper model'
   easy=70%  router $0.007627 (34.7% of strong)   cascade $0.008067 (36.7%)
   easy=90%  router $0.003520 (16.0% of strong)   cascade $0.003667 (16.7%)
 
-it is commonly said 'cascade' and 'route' interchangeably and they differ:
+'cascade' and 'route' are often used interchangeably, and they differ:
   a ROUTER classifies first, so the cheap model's cost is paid on 80%%
   a CASCADE runs the cheap model on 100%% and the strong one on 20%%
   at 80/20 and 15x: router = 25.3%% of strong, cascade = 26.7%%
@@ -240,7 +240,7 @@ it is commonly said 'cascade' and 'route' interchangeably and they differ:
 ==========================================================================
 A -- THE SEMANTIC CACHE THRESHOLD, AGAINST THE REFERENCE'S OWN EXAMPLE
 ==========================================================================
-it is commonly said: set the threshold HIGH, e.g. >= 0.95
+the usual advice: set the threshold HIGH, e.g. >= 0.95
 and gives this pair as the motivating example of a semantic hit:
 
   "how do I reset my password?"             

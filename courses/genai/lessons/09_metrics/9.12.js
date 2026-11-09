@@ -98,7 +98,7 @@ step 3 \u2014 kappa
 
     { t: "callout", kind: "warn", title: "The check almost nobody runs: human-human \u03ba on the same sample",
       body: [
-        { t: "p", text: "It is commonly stated it plainly \u2014 if two humans only reach \u03ba 0.65 on your rubric, a judge at 0.58 is close to the ceiling and **the rubric is the problem, not the model**. That reframing changes what you work on entirely." },
+        { t: "p", text: "It is commonly stated plainly \u2014 if two humans only reach \u03ba 0.65 on your rubric, a judge at 0.58 is close to the ceiling and **the rubric is the problem, not the model**. That reframing changes what you work on entirely." },
         { t: "p", text: "7.4 measured why a ceiling must exist: preference labels are stochastic, and on a synthetic set where the latent truth was known, Bayes-optimal accuracy was **78.6%** rather than 100%. Perfect agreement is not available in principle." },
         { t: "p", text: "So the number to report is \u03ba as a **fraction of the human ceiling**. 0.58 against a ceiling of 0.65 is 89% of achievable; 0.58 against a ceiling of 0.90 is 64%. Those support different decisions and the bare 0.58 cannot distinguish them." }
       ] },

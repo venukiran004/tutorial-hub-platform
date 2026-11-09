@@ -48,7 +48,7 @@ EC.receiveLesson({
       body: [
         { t: "p", text: "With k = 1 the formula reduces to 1 \u2212 (n\u2212c)/n = c/n. So pass@1 is just 7/10 = 0.7000, and there is nothing estimator-ish about it \u2014 the machinery only does work for k > 1." },
         { t: "p", text: "That makes pass@1 the honest headline for any product that gives the user one attempt, and it is the number to lead with unless the system retries. 9.1\u2019s family-4 framing applies: it is a behavioural metric over a checkable outcome, which is the closest thing to truth available." },
-        { t: "p", text: "The jump from 0.7000 to 0.9333 at k = 2 is large, and it is the reason it is commonly said one automatic retry \u201cmakes the product usable\u201d. Whether you are entitled to quote that depends entirely on whether the retry exists." }
+        { t: "p", text: "The jump from 0.7000 to 0.9333 at k = 2 is large, and it is the reason for the common claim that one automatic retry \u201cmakes the product usable\u201d. Whether you are entitled to quote that depends entirely on whether the retry exists." }
       ] },
 
     { t: "h2", n: "02", id: "boundary", text: "Why n must exceed k",

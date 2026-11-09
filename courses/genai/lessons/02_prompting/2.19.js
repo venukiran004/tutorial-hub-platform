@@ -1,7 +1,7 @@
 EC.receiveLesson({
   id: "2.19",
 
-  lede: "This module closes its prompting material with a failure-mode table and a debugging procedure, and the procedure's fourth step is \"try different phrasing — models are sensitive to wording\". That is true and it understates the case. Measured here: the same four examples with six different separators give between **1 and 6 correct of 6** — and moving the instruction to the end, which the usual advice is as a fix, took a working prompt from 6 of 6 to **0 of 6**.",
+  lede: "This module closes its prompting material with a failure-mode table and a debugging procedure, and the procedure's fourth step is \"try different phrasing — models are sensitive to wording\". That is true and it understates the case. Measured here: the same four examples with six different separators give between **1 and 6 correct of 6** — and moving the instruction to the end, the usual advice for this failure, took a working prompt from 6 of 6 to **0 of 6**.",
 
   objectives: [
     "Diagnose a failing prompt against the failure-mode table",
@@ -222,7 +222,7 @@ for label, build in (("instruction first", lambda b: "%s\\n%s" % (INSTR, b)),
 
     { t: "callout", kind: "good", title: "Log the prompt and response pair — the step 7",
       body: [
-        { t: "p", text: "The common list has this last and it is a precondition rather than a step. Debugging from reproduction is slow; debugging from a log of what actually happened is fast, and the difference is whether the pair was recorded at the time." },
+        { t: "p", text: "This is usually listed last, and it is a precondition rather than a step. Debugging from reproduction is slow; debugging from a log of what actually happened is fast, and the difference is whether the pair was recorded at the time." },
         { t: "p", text: "2.17's field list is the minimum: prompt version, model, fingerprint. Add the rendered prompt for a sampled fraction of traffic and most of the procedure above collapses into a query (10.10 is about what you can afford to store, and the PII constraint on storing prompts)." }
       ] },
 

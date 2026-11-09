@@ -47,7 +47,7 @@ EC.receiveLesson({
 
     { t: "code", lang: "python", title: "Marian, English to French", code:
 "import torch\nfrom transformers import MarianMTModel, MarianTokenizer\n\nname = \"Helsinki-NLP/opus-mt-en-fr\"\ntok = MarianTokenizer.from_pretrained(name)     # needs sentencepiece\nmod = MarianMTModel.from_pretrained(name).eval()\n\nfor src in [\"Machine learning is transforming the world.\",\n            \"The bank raised interest rates.\",\n            \"The river bank was muddy.\"]:\n    with torch.no_grad():\n        g = mod.generate(**tok(src, return_tensors=\"pt\"),\n                         num_beams=4, max_length=100)\n    print(tok.decode(g[0], skip_special_tokens=True))",
-      caption: "It is commonly called this through `pipeline(\"translation\", ...)`, which transformers 5.x removed. `MarianTokenizer` also requires `sentencepiece`, which is not a transformers dependency — install it separately." },
+      caption: "This is commonly called through `pipeline(\"translation\", ...)`, which transformers 5.x removed. `MarianTokenizer` also requires `sentencepiece`, which is not a transformers dependency — install it separately." },
 
     { t: "out", text:
 "75.1M params - a single-pair translation model is SMALL\n\nEN  Machine learning is transforming the world.\nFR  L'apprentissage automatique transforme le monde.\n\nEN  The bank raised interest rates.\nFR  La banque a relevé les taux d'intérêt.\n\nEN  The river bank was muddy.\nFR  La rive était boueuse." },
@@ -142,7 +142,7 @@ EC.receiveLesson({
     { t: "callout", kind: "crit", title: "The perfect score marks the total failure",
       body: [{ t: "p", text: "*Il a donné un coup de pied au seau* means a man physically kicked a pail. The English idiom means he died. Marian translated it literally, destroying the meaning completely — and because the literal translation round-trips literally, BLEU returned **1.0000**. Meanwhile *La rive était boueuse* is a correct translation, and it scored **0.3328** only because French *rive* already means a river bank, so the word *river* had nowhere to come from on the way back. The metric ranked a catastrophic failure first and a correct translation last." }] },
 
-    { t: "p", text: "The same disagreement shows up without the round trip. Scoring candidates directly against a reference gives a paraphrase 0.0955 and a sentence with the meaning reversed 0.2857 — BLEU preferred the sentence that says the opposite of the truth, because it reuses more of the usual phrasing." },
+    { t: "p", text: "The same disagreement shows up without the round trip. Scoring candidates directly against a reference gives a paraphrase 0.0955 and a sentence with the meaning reversed 0.2857 — BLEU preferred the sentence that says the opposite of the truth, because it reuses more of the reference's phrasing." },
 
     { t: "out", text:
 "reference: the cat sat on the mat\n\nbleu 0.0955   perfect paraphrase   'the feline rested on the rug'\nbleu 0.2857   reversed meaning     'the mat sat on the cat'\nbleu 1.0000   exact match          'the cat sat on the mat'" },

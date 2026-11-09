@@ -181,15 +181,15 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why do modern CNNs end with global average pooling rather than flatten plus a fully connected layer?",
-      options: ["It is faster at inference", "It removes tens of millions of parameters and frees the input size", "It preserves more spatial detail", "It adds a non-linearity"],
+      options: ["It runs faster at inference time", "Far fewer weights; any input size", "It preserves more spatial detail", "It adds an extra non-linearity"],
       answer: 1,
       why: "The measured comparison is 25,089,000 parameters against 513,000 — a 49× saving on one layer, with GAP itself having none. It also removes the fixed input size that a flatten imposes, since averaging works on any spatial extent. It preserves *less* spatial detail, deliberately." },
     { stem: "Two stacked 3×3 convolutions versus one 5×5 — what do you gain?",
-      options: ["A larger receptive field", "The same receptive field with 28 % fewer weights and an extra non-linearity", "Fewer layers to train", "Better translation invariance"],
+      options: ["A larger receptive field", "Same field, fewer weights", "Fewer layers to train", "Better translation invariance"],
       answer: 1,
       why: "The receptive fields are identical at 5×5. The measured weight counts are 73,728 against 102,400, and the pair applies two activations rather than one — cheaper and strictly more expressive, which is why VGG used nothing but 3×3." },
     { stem: "A 2×2 max pool is applied and the input shifts by one pixel. What happens to the output?",
-      options: ["It never changes — pooling is translation invariant", "It changes unless the peak stays inside the same window", "It shifts by one pixel", "It changes only for average pooling"],
+      options: ["Never: pooling is translation-invariant", "It changes unless the peak stays in-window", "It shifts by exactly one pixel", "It changes only for average pooling"],
       answer: 1,
       why: "The executed check shifted a single activation four ways and the pooled output was identical in only one. Invariance holds within a window and stops at its boundary, so pooling buys tolerance of a pixel or two per layer — not robustness to an object moving across the image." },
     { stem: "Four 3×3 layers with strides 1, 2, 1, 2. What is the final receptive field?",

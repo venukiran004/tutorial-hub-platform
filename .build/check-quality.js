@@ -18,7 +18,7 @@ const root = path.join(__dirname, "..");
 const BASE = path.join(__dirname, "quality-baseline.json");
 const update = process.argv.includes("--update");
 
-const LEAK = /common form gives|[Uu]sual treatment|usual output|reproduces it exactly|[Tt]he reference('s)? (is unambiguous|states|quotes|calls|says|insists|specifies|recommends|notes|gives|lists|warns|claims)|absent from the reference/gi;
+const LEAK = /common form gives|[Uu]sual treatment|usual output|reproduces it exactly|[Tt]he reference('s)? (is unambiguous|states|quotes|calls|says|insists|specifies|recommends|notes|gives|lists|warns|claims)|absent from the reference|\bit is commonly (said|called|stated|written) (it|them|this|so plainly)|it is usually put (it|the|real)|the common name is|the common list has|usual advice is (for|as)|quoted figure is is|(containing|reusing|in) the usual phrasing|does the usual advice/gi;
 const NUMPY_GONE = /\bnp\.(in1d|trapz|row_stack|product|cumproduct|alltrue|sometrue|NaN|Inf|infty|float_|complex_|round_|asfarray|msort)\b(?!\s+(was|is|before|in older))/;
 
 function lessonFiles(dir) {
