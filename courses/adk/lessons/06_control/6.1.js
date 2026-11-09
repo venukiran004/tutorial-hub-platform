@@ -194,11 +194,11 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "An agent makes two tool calls in one turn. How many times does before_model_callback fire?",
-      options: ["Once", "Twice", "Three times", "Four times"],
+      options: ["Once a turn", "Twice a turn", "Three times", "Four times"],
       answer: 2,
       why: "One request chooses the first tool, one chooses the second, one produces the final answer — three model requests, so three firings. The executed trace shows exactly this pattern with one tool call producing two. Counting turns in `before_model` is therefore a common and quiet bug." },
     { stem: "Your before_tool_callback returns a dict. What happens?",
-      options: ["The tool runs and your dict is discarded", "The tool does not run and your dict becomes the result", "The tool runs and its result is merged with your dict", "The framework raises"],
+      options: ["The tool runs and your dict is discarded", "The tool is skipped; your dict is the result", "The tool runs and its result merges with yours", "The framework raises an error"],
       answer: 1,
       why: "Returning a value from a before hook replaces the work. The executed run proves it: the tool body's print never appeared, and the model received the callback's dict as an ordinary function response, which it then relayed in its own words." },
     { stem: "You want to strip a secret field from a tool's result before the model sees it. Which hook?",
@@ -206,7 +206,7 @@ agent = LlmAgent(name="b", model=llm, tools=[weather2], before_tool_callback=blo
       answer: 1,
       why: "`after_tool` receives the result and can return a replacement, which is exactly the seam between the tool running and the model reading it. `before_tool` is too early — the result does not exist yet — and `after_model` is too late, since the model has already seen it." },
     { stem: "Which of these genuinely cannot be enforced with an instruction?",
-      options: ["Being polite", "Preferring British spelling", "Never calling the refund tool for accounts under 30 days old", "Keeping answers short"],
+      options: ["Always being polite to the customer", "Preferring British spelling throughout", "No refunds for accounts under 30 days", "Keeping every answer short and direct"],
       answer: 2,
       why: "The first three are style preferences a model will usually honour and where a lapse is cheap. The fourth is a rule with consequences, and a model can be talked out of a preference by a sufficiently persuasive message. A `before_tool_callback` that checks the account age cannot be argued with, which is the whole reason the hook exists." }
   ] },

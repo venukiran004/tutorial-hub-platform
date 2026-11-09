@@ -188,7 +188,7 @@ for i, e in enumerate(back.events):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "The agent answered a question in turn 5 using something said in turn 1. Where did that information live between the turns?",
-      options: ["In the model's memory", "In the session's event list, in the session service", "In the agent object's fields", "In a cache inside the runner"],
+      options: ["In the model's own long-term memory store", "In the session's events, in the session service", "In fields stored on the agent object itself", "In a cache held inside the runner process"],
       answer: 1,
       why: "The model holds nothing between calls and the agent object is reused across users, so neither can carry it. The session service stored the events, and the runner replayed them into turn 5's request as contents — which is also why turn 5 cost more tokens than turn 1." },
     { stem: "Which event in a tool-using turn carries the state_delta?",
@@ -200,7 +200,7 @@ for i, e in enumerate(back.events):
       answer: 1,
       why: "The executed trace shows `len(sessions[0].events) == 0` from a list call on a session that definitely had four events. Listing returns the session rows; fetching the transcript is what `get_session` is for. If listing loaded every event, a sidebar would load the entire history of every conversation." },
     { stem: "A user asks you to delete a conversation. You call delete_session. What might still remain?",
-      options: ["Nothing — the session was the only copy", "State written under the user: prefix, and anything ingested into memory", "The events, until a retention job runs", "The state, but not the events"],
+      options: ["Nothing, as the session was the only copy", "user: state and anything ingested into memory", "The events, until a retention job runs", "The state, but none of the events"],
       answer: 1,
       why: "User-scoped state is keyed by app and user, not by session, so deleting one conversation leaves it untouched. If the session was ever ingested into a memory service, that copy is separate too. Honouring a deletion request means deleting all three, which is a design decision you have to make deliberately." }
   ] },

@@ -170,7 +170,7 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
       answer: 1,
       why: "Two per completed turn plus the new message: the measured sequence is 1, 3, 5, 7, 9, so turn 20 carries 39. A tool-using conversation grows about twice as fast, because a call event and a response event join each pair." },
     { stem: "Compaction is configured with a small interval. Model calls per turn go up. Why?",
-      options: ["Compaction retries failed summaries", "Each compaction is itself a model call to write the summary", "Smaller prompts make the model call tools more often", "The cache is rebuilt on each compaction"],
+      options: ["Compaction retries failed summaries", "Each compaction is itself a model call", "Smaller prompts trigger more tool calls", "The cache is rebuilt on each compaction"],
       answer: 1,
       why: "The executed run made eight requests for six turns, and the two extras were summariser calls. Compaction buys smaller prompts with occasional extra round trips, so an aggressive interval can cost more than it saves." },
     { stem: "Your classifier agent reads its input from state and does not need the conversation. What is the right setting?",
@@ -178,7 +178,7 @@ print({k: (str(v.annotation), v.default) for k, v in ContextCacheConfig.model_fi
       answer: 1,
       why: "It sends no history at all, which is cheaper than any amount of compaction and also improves the classifier — a model that cannot see the user arguing three turns ago is harder to talk out of its category. Its input arrives through state, interpolated into the instruction." },
     { stem: "After enabling compaction, the agent starts losing booking reference numbers mentioned early in long conversations. What is the fix?",
-      options: ["Increase compaction_interval", "Write the reference to state when it is established", "Disable compaction", "Increase the model's context window"],
+      options: ["Increase compaction_interval", "Write the reference to state early", "Disable compaction for the agent", "Increase the model's context window"],
       answer: 1,
       why: "Summarisation is lossy by design and a model chose what to drop. State is never compacted, so a fact written to state is exact on turn fifty and is restated in the instruction on every request. Raising the interval only delays the loss; the durable answer is to stop relying on the transcript to carry identifiers." }
   ] },

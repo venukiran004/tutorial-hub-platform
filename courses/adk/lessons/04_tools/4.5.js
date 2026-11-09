@@ -186,19 +186,19 @@ def scale_service(service: str, replicas: int, tool_context: ToolContext) -> dic
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does the caller's model see when a sub-agent is wrapped in an AgentTool?",
-      options: ["All of the sub-agent's tools", "One tool declaration, named and described by the sub-agent's name and description", "The sub-agent's instruction", "Nothing until it is called"],
+      options: ["Every one of the sub-agent's own tools", "One declaration from its name and description", "The sub-agent's full instruction text", "Nothing at all until the tool is first called"],
       answer: 1,
       why: "The wrapper presents a single function declaration. Everything inside — the sub-agent's model, instruction and tool list — is invisible to the caller's model, and those inner declarations are only sent when the sub-agent actually runs. That is what keeps a large capability from bloating the caller's context." },
     { stem: "A LongRunningFunctionTool returns {'status': 'pending'}. What is true of the resulting events?",
-      options: ["The invocation blocks until the work finishes", "The event carries long_running_tool_ids and the invocation completes", "The tool is retried automatically", "Nothing is recorded until completion"],
+      options: ["The invocation blocks until the work finishes", "It carries long_running_tool_ids; the run completes", "The tool is retried automatically until done", "Nothing is recorded until the work completes"],
       answer: 1,
       why: "The executed trace showed long_running_tool_ids on the event and is_final_response() true on the call event: the agent has done all it can, so the invocation ends and the user is told the work started. The real result arrives later as a function response against that call." },
     { stem: "You want approval only for refunds above ₹10,000. What is the cleanest way?",
-      options: ["A branch inside the tool body", "require_confirmation as a predicate over (args, tool_context)", "Two separate tools", "An instruction telling the model to ask"],
+      options: ["A branch inside the tool body", "A require_confirmation predicate", "Two separate refund tools", "An instruction to ask the user"],
       answer: 1,
       why: "require_confirmation accepts a callable with the signature (args, tool_context) -> bool, so the condition lives in the tool's declaration rather than inside its body. An instruction telling the model to ask is not a control at all — the model can skip it." },
     { stem: "A specialist should answer the user directly and keep the conversation. Which mechanism?",
-      options: ["AgentTool", "LongRunningFunctionTool", "sub_agents and transfer_to_agent", "require_confirmation"],
+      options: ["An AgentTool wrapper", "A LongRunningFunctionTool", "sub_agents with transfer", "A require_confirmation flag"],
       answer: 2,
       why: "AgentTool returns a value to the caller, which then writes the answer. When the specialist should own the conversation — the user is now in the billing flow — it belongs in sub_agents so the model can transfer to it, and the specialist produces the final response itself." }
   ] },

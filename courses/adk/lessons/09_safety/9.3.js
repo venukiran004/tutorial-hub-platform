@@ -194,19 +194,19 @@ async for event in runner.run_async(user_id="u1", session_id=sid, new_message=ap
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "A tool marked require_confirmation is called. What runs?",
-      options: ["The tool body, then the confirmation", "Nothing — the body is intercepted and a confirmation is requested", "The body runs in a sandbox", "The body runs and is rolled back if declined"],
+      options: ["The tool body, then the confirmation", "Nothing; a confirmation is requested", "The body runs inside a sandbox", "The body runs, rolled back if declined"],
       answer: 1,
       why: "The interception happens before the function is invoked, which is the only ordering that is safe — a body that had already run could not be undone by a refusal. The executed trace shows the real tool returning an error saying confirmation is required while the function itself never executed." },
     { stem: "How is an approval delivered back to the agent?",
-      options: ["By calling approve() on the runner", "As a function response addressed to the adk_request_confirmation call id", "By setting state['approved'] = True", "By re-sending the original message"],
+      options: ["By calling approve() on the runner", "As a response to the confirmation call id", "By setting state['approved'] = True", "By re-sending the original message"],
       answer: 1,
       why: "The approval is an ordinary function response with `{\"confirmed\": true}` addressed to the confirmation call's id, sent as the next message. The tool then runs with the original arguments — the ones that were reviewed, not new ones the model might produce on a second attempt." },
     { stem: "Why does the pending confirmation survive a process restart?",
-      options: ["It is held in a background task", "It is recorded as an event in the session", "The runner keeps a queue", "It does not survive"],
+      options: ["It is held in a background task", "It is recorded as a session event", "The runner keeps it in a queue", "It does not survive a restart"],
       answer: 1,
       why: "The request is written into the session as an event carrying `requested_tool_confirmations`, so a different replica or a restarted process can read it and accept the approval later. Nothing is blocked in memory — which is what makes this usable when approval takes an afternoon." },
     { stem: "Approvals for your agent are approved 98% of the time within seconds. What does that indicate?",
-      options: ["The guardrail is working well", "The threshold is wrong and the approval is a rubber stamp", "Reviewers are well trained", "You should add more approval steps"],
+      options: ["The guardrail is working well", "The approval is a rubber stamp", "Reviewers are very well trained", "More approval steps are needed"],
       answer: 1,
       why: "A reviewer clicking through near-identical requests is not exercising judgement, and the step creates the appearance of oversight without the substance. Routine cases should be handled by a tighter tool or a guardrail, so that an interruption means something and gets real attention." }
   ] },

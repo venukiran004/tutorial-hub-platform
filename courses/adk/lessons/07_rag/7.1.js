@@ -164,19 +164,19 @@ on it and continue the turn.
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is the main structural difference between a RAG pipeline and RAG in an agent?",
-      options: ["Agents cannot use vector stores", "The agent decides whether to retrieve at all", "Agents retrieve after generating", "Chunking happens at query time"],
+      options: ["Agents cannot use vector stores at all", "The agent decides whether to retrieve", "Agents retrieve after generating text", "Chunking happens at query time instead"],
       answer: 1,
       why: "A pipeline retrieves unconditionally; an agent calls a tool when it decides to. That saves a search on questions that do not need one, and it introduces the failure mode where the model answers from its own weights without looking — which is why the tool description and the instruction carry so much weight." },
     { stem: "Why does BaseRetrievalTool fix the declaration to a single query string?",
-      options: ["To keep the schema small", "So every retrieval tool presents the same interface and the model only writes a query", "Because vector stores accept one argument", "To prevent injection"],
+      options: ["To keep the declared schema small", "So every retrieval tool shares one interface", "Because vector stores accept one argument", "To prevent prompt injection in queries"],
       answer: 1,
       why: "The model has no sound basis for choosing filters, result counts or page sizes, and offering them invites arbitrary values. Reducing every corpus to one string means the model's only job is writing a good query, and it means three different corpora in one agent are distinguished by their descriptions rather than by their signatures." },
     { stem: "Retrieval finds nothing. What does the tool return?",
-      options: ["It raises a RetrievalError", "None", "A message saying nothing was found", "An empty list"],
+      options: ["It raises a RetrievalError to the runner", "It returns None to the calling model", "A message saying nothing was found", "It returns an empty list of chunks"],
       answer: 2,
       why: "The base class docstring states it outright: matching nothing is a normal outcome, so `run_async` returns a message and the turn continues. That lets the model apologise, ask for clarification, or rephrase and search again — all of which are impossible if the turn has already ended in an exception." },
     { stem: "Your agent gives a fluent, wrong answer about a topic absent from the corpus. What is the first fix?",
-      options: ["A larger model", "An instruction requiring answers to come from retrieved text, plus an evaluation of groundedness", "More chunks per query", "A lower temperature"],
+      options: ["Switch to a larger, more capable model", "Require answers from retrieved text; evaluate it", "Return many more chunks for every query", "Lower the sampling temperature to zero"],
       answer: 1,
       why: "The model filled a gap from its own weights, which is what models do unless told otherwise. The instruction has to make grounding explicit, and because a fluent ungrounded answer is indistinguishable from a grounded one by inspection, the behaviour needs measuring rather than assuming. Bigger models hallucinate more persuasively, not less." }
   ] },

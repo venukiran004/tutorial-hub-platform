@@ -214,19 +214,19 @@ wf = Workflow(name="support", edges=[
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "In a custom BaseAgent, how do you change session state?",
-      options: ["Assign to ctx.session.state", "Yield an Event whose actions carry a state_delta", "Call session_service.update()", "Return a dict from _run_async_impl"],
+      options: ["Assign to ctx.session.state directly", "Yield an Event carrying a state_delta", "Call session_service.update() yourself", "Return a dict from _run_async_impl"],
       answer: 1,
       why: "State changes reach the session only as deltas on events. Assigning to ctx.session.state mutates an in-memory copy that the session service never records, so the change is lost on the next fetch — one of the more confusing bugs in custom agents." },
     { stem: "Why can an LlmAgent be used directly as a node in a Workflow graph?",
-      options: ["A wrapper converts it automatically", "BaseAgent is a subclass of BaseNode, so every agent already is a node", "Only LlmAgent can be a node", "It cannot — Node(agent=…) is required"],
+      options: ["A wrapper converts it automatically", "BaseAgent subclasses BaseNode already", "Only LlmAgent may be used as a node", "It cannot; Node(agent=…) is required"],
       answer: 1,
       why: "BaseAgent's MRO is BaseAgent → BaseNode → BaseModel → ABC, so agents satisfy the node interface. Node itself is abstract and raises NotImplementedError from run_node_impl, which is why you build graphs from agents and FunctionNodes rather than from bare Nodes." },
     { stem: "How does a node tell the graph which conditional edge to follow?",
-      options: ["By returning the edge name", "By setting ctx.route, which is matched against each edge's route value", "By raising an exception", "The graph decides by itself"],
+      options: ["By returning the chosen edge's name", "By setting ctx.route to an edge's value", "By raising a routing exception", "The graph decides on its own"],
       answer: 1,
       why: "The node sets ctx.route — a string, int, bool or list — and the orchestrator follows the edges whose route matches. An edge with no route is unconditional; DEFAULT_ROUTE is the fallback. A route that matches nothing ends the branch with a warning, which is how a misspelled route value shows up." },
     { stem: "Your coordinator routes on state['plan_tier'], a value already known before the request. What should it be?",
-      options: ["An LlmAgent with sub-agents", "A custom agent or a graph edge — the decision is a dict lookup, not a judgement", "A LoopAgent", "A ParallelAgent"],
+      options: ["An LlmAgent with specialist sub-agents", "A custom agent or graph edge: a lookup", "A LoopAgent that retries until it fits", "A ParallelAgent that tries every tier"],
       answer: 1,
       why: "A model call to choose between three known values costs money and latency and can occasionally pick wrongly. Code routing on a field in state is free, instant and deterministic. LLM routing is for branches that depend on meaning — what the user is asking — not on data you already hold." }
   ] },

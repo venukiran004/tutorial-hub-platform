@@ -186,19 +186,19 @@ summariser = LlmAgent(
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What is an agent's `description` field used for?",
-      options: ["Documentation for developers", "It is shown to the end user", "Other agents' models read it to decide whether to route work to this agent", "It is the system instruction"],
+      options: ["Documentation for developers only", "Text shown to the end user", "Other agents read it to route work", "It is the agent's system instruction"],
       answer: 2,
       why: "When an agent has sub-agents, their descriptions are put in front of its model so it can choose a transfer target. An agent with an empty description is effectively invisible to routing, which is one of the commonest causes of a coordinator that never delegates." },
     { stem: "An agent has `output_key='draft'`. Where does its answer end up, and how?",
-      options: ["Returned by run_async", "In session state under 'draft', carried as a state_delta on the agent's final event", "Written to an artifact", "Sent to the parent agent as a message"],
+      options: ["Returned directly by run_async", "In state['draft'], via a state_delta", "Written to a named artifact", "Sent to the parent as a message"],
       answer: 1,
       why: "ADK writes the final text into state[output_key] and attaches it to the final event as a delta, exactly like a tool's state write. That is what lets the next agent in a pipeline read it through instruction templating, and what makes the change part of the replayable record." },
     { stem: "Which agent should have `include_contents='none'`?",
-      options: ["A customer-facing chat agent", "A classifier that maps one message to one label", "A coordinator that routes between specialists", "Any agent with tools"],
+      options: ["A customer-facing chat agent", "A classifier mapping one message to a label", "A coordinator routing between specialists", "Any agent that has tools attached"],
       answer: 1,
       why: "A classifier's answer should depend only on the message in front of it; sending the whole conversation adds cost and lets earlier turns drift the classification. Conversational and routing agents need the history to resolve follow-ups and references." },
     { stem: "In ADK 2.x, what happens if you set both `output_schema` and `tools` on an agent?",
-      options: ["A validation error at construction", "Tools are silently ignored", "It works: tools are available during the loop and only the final output is validated against the schema", "The schema is ignored"],
+      options: ["A validation error at construction time", "Tools are silently ignored by the agent", "It works; only the final output is validated", "The output schema is silently ignored"],
       answer: 2,
       why: "The field's own documentation states that ADK supports using output_schema and tools together, exposing tools during the thought loop and enforcing structure only on the final output. This is a change from 1.x, where output_schema disabled tools and transfer — which is why old tutorials still warn against it." }
   ] },

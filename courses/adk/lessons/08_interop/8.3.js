@@ -210,15 +210,15 @@ same origin as the location the card was fetched from
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does to_a2a return?",
-      options: ["A RemoteA2aAgent", "A Starlette ASGI application", "An agent card", "A Runner"],
+      options: ["A RemoteA2aAgent proxy", "A Starlette ASGI app", "A static agent card", "A Runner for the agent"],
       answer: 1,
       why: "It wraps the agent in an executor, a task store and HTTP routes and hands back an ASGI app you serve with uvicorn or any ASGI server. The card is generated and served by that app at the well-known path rather than being the return value." },
     { stem: "A remote agent calls its own tool. What do you see locally?",
-      options: ["Only the final text answer", "The tool call and its result as events in your session", "Nothing until the task completes", "A single opaque event"],
+      options: ["Only the final text answer from it", "The tool call and result as local events", "Nothing at all until the task completes", "A single opaque summary event per turn"],
       answer: 1,
       why: "The executed run shows `check_stock` and its result as local events authored by the remote agent, even though the function ran in another process. That is what makes a delegation debuggable — and it also means your session grows with the remote agent's activity." },
     { stem: "Your served agent listens on 0.0.0.0:8080 and is reached at https://agents.example.com. What must you set?",
-      options: ["Nothing — the card adapts", "host, port and protocol on to_a2a, to the public values", "The task store", "defaultInputModes"],
+      options: ["Nothing; the card adapts to each request", "Public host, port and protocol on to_a2a", "A persistent task store for the server", "The card's defaultInputModes field"],
       answer: 1,
       why: "The card advertises where to send RPC requests, and clients enforce that this origin matches where the card was fetched from. A card generated from the listening address advertises an unreachable or mismatched origin, and every client refuses — which is the error you would otherwise spend an afternoon on." },
     { stem: "Which of these does NOT cross to the remote agent?",

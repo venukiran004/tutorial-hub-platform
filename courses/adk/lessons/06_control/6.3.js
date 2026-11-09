@@ -167,7 +167,7 @@ delete_artifact(self, *, app_name, user_id, filename, session_id=None) -> None` 
       answer: 1,
       why: "Versioning is automatic and per filename: the executed run returned 0 from the first save and 1 from the second, and `list_versions` reports both. You never need to invent names like report_v2.md, and the earlier version stays retrievable with `load_artifact(version=0)`." },
     { stem: "Why should a tool that generates a PDF return the filename rather than the bytes?",
-      options: ["Bytes cannot be serialised in a function response", "Returned values enter the conversation history and are resent every turn", "The model cannot read binary", "Artifacts are faster to load"],
+      options: ["Bytes cannot go in a function response", "Returned values are resent every turn", "The model cannot read binary content", "Artifacts are faster to load later"],
       answer: 1,
       why: "A function response becomes an event, and events are replayed into every subsequent request. Returning four megabytes once means paying for it on every remaining turn of the conversation. The filename and version are enough for the model to describe what happened and to load the file later if it is actually needed." },
     { stem: "You save an artifact named \"user:passport.jpg\". When is it reachable?",

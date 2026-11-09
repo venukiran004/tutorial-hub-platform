@@ -194,19 +194,19 @@ async def turn(runner, session, text_in):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "With a fake model, what is still real in the test?",
-      options: ["Nothing — it is all mocked", "Everything except the model: tools, state, events, callbacks", "Only the tools", "Only the session service"],
+      options: ["Nothing; everything is mocked", "Everything except the model itself", "Only the tools the agent calls", "Only the session service"],
       answer: 1,
       why: "The fake is a `BaseLlm` subclass, so the runner, the event flow, the state deltas, the tool dispatch and the callbacks all execute normally. That is what makes the traces in this course trustworthy — only the model's judgement was replaced, and that is the part evaluation covers." },
     { stem: "Your test scripts one response but the turn makes a tool call. What happens?",
-      options: ["The test passes", "The second model call falls off the end of the script", "ADK raises immediately", "The tool is skipped"],
+      options: ["The test passes as it was written", "The second model call runs off the script", "ADK raises an error immediately on start", "The tool call is skipped entirely by ADK"],
       answer: 1,
       why: "A tool-using turn needs two entries: one response requesting the tool, one answering afterwards. With a short script the later call gets whatever your fake does when it runs out — in this course's version, a placeholder string — which looks like an agent saying something odd rather than a clean failure." },
     { stem: "Which assertion is worth writing?",
-      options: ["The final text contains 'approval'", "The function response was {'error': …, 'retryable': False} and state has no 'refunded' key", "The agent replied within two seconds", "The model was called twice"],
+      options: ["The final text contains the word 'approval'", "The tool's error result, and no 'refunded' state", "The agent replied within two seconds", "The model was called exactly twice"],
       answer: 1,
       why: "The text is a string you scripted yourself, so asserting on it tests nothing and breaks on rewording. Tool results and state changes are the facts the rest of the system depends on, and they stay stable when someone improves the phrasing." },
     { stem: "What should a fake-model test NOT be used to check?",
-      options: ["That a guardrail blocks a tool", "That state scopes persist correctly", "That the model chooses the right tool for an ambiguous question", "That errors are converted into results"],
+      options: ["That a guardrail blocks a tool call", "That state scopes persist correctly", "That the model picks the right tool", "That errors are converted into results"],
       answer: 2,
       why: "The script decides what the fake model does, so a test of tool choice would be asserting your own script back to you. Whether a real model routes correctly is a stochastic question that belongs in an evaluation set with trajectory metrics." }
   ] },

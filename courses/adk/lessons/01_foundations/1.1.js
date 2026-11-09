@@ -193,19 +193,19 @@ print([n for n in tools.__all__ if "cp" in n.lower()])   # ['RemoteMcpServer', '
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What does `runner.run_async(...)` return?",
-      options: ["The agent's final text response", "An async generator of Event objects", "A Session", "A list of tool results"],
+      options: ["The agent's final text response", "An async generator of Event objects", "A Session holding the new events", "A list of the tool results produced"],
       answer: 1,
       why: "It is an AsyncGenerator[Event, None]: you iterate it, and each event records one thing that happened — a model call, a tool call, a tool result, a state change. The final answer is the event whose is_final_response() is true, which is why streaming and mid-run interception are possible at all." },
     { stem: "In the weather example, three events were streamed but the session ended up with four. Why?",
-      options: ["One event was a duplicate", "The user's own message is appended to the session as an event before the agent runs", "The final event is stored twice", "One event was a partial"],
+      options: ["One event was stored as a duplicate", "The user's message is stored as an event first", "The final event is stored twice by design", "One of the events was only a partial"],
       answer: 1,
       why: "ADK records the user's message as an event in the session so that the next turn can be rebuilt from the event list alone. The stream yields what the agent produced; the session holds the complete transcript including the input." },
     { stem: "How does a tool change session state?",
-      options: ["It writes to the database directly", "It calls session_service.update()", "It assigns to tool_context.state, and the change is attached to the resulting event as a state_delta", "State is read-only for tools"],
+      options: ["It writes to the session database directly", "It calls session_service.update() itself", "It assigns to tool_context.state; the event carries it", "It cannot, because state is read-only for tools"],
       answer: 2,
       why: "The tool mutates its ToolContext's state; ADK collects that as a state_delta on the event the tool call produced, and the session service applies it when appending the event. Because the change travels with the event, replaying events reconstructs the state — the basis for persistence and resumability." },
     { stem: "Which statement about ADK and Agent Engine is correct?",
-      options: ["Agent Engine is the open-source version of ADK", "They are alternatives: you pick one", "ADK is the library you write the agent in; Agent Engine is a managed runtime you can deploy it to", "Agent Engine is required to run ADK"],
+      options: ["Agent Engine is the open-source version of ADK", "They are alternatives, so you must pick one", "ADK is the library; Agent Engine is a runtime for it", "Agent Engine is required to run any ADK agent"],
       answer: 2,
       why: "They sit at different layers. ADK is the framework; Agent Engine is Vertex AI's managed runtime that hosts an agent — and it can host agents built with other frameworks too. You can run ADK locally, in a container, on Cloud Run or on GKE without ever touching Agent Engine (lessons 1.2 and 12.2)." }
   ] },

@@ -193,11 +193,11 @@ system instruction the model received:
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Your instruction provider queries a pricing API. One turn makes two tool calls. How many API calls does it make?",
-      options: ["One", "Two", "Three", "Four"],
+      options: ["One call", "Two calls", "Three calls", "Four calls"],
       answer: 2,
       why: "The provider runs once per model request. Two tool calls means three requests — one that chose the first tool, one that chose the second, one that produced the answer — so three API calls. Fetch once in a `before_agent_callback`, write to state, and have the provider read state." },
     { stem: "Why is an instruction provider given a ReadonlyContext rather than the full one?",
-      options: ["Instructions are cached and must be deterministic", "Because it may run several times per turn, so side effects would be unpredictable", "Because it runs before the session is loaded", "To stop it reading user data"],
+      options: ["Instructions are cached, so must be deterministic", "It may run several times per turn", "It runs before the session has loaded", "To stop it reading any user data"],
       answer: 1,
       why: "It reads state freely — it is only writing and emitting actions that are withheld. The reason is the repetition: a function that runs an unknown number of times per turn must not have side effects, so the type makes prompt construction a pure function of state." },
     { stem: "A colleague writes `if isinstance(ctx, ToolContext): ...` in a helper shared by tools and callbacks. What happens?",

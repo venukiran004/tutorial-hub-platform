@@ -146,15 +146,15 @@ agent = LlmAgent(
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "A colleague asks whether the team should use 'ADK or Agent Engine'. What is wrong with the question?",
-      options: ["Nothing — they are direct competitors", "They sit at different layers: ADK is the framework you write the agent in, Agent Engine is a managed runtime that can host it", "Agent Engine only runs LangGraph", "ADK cannot be deployed to Agent Engine"],
+      options: ["Nothing; they are direct competitors", "They are layers: framework versus runtime", "Agent Engine only runs LangGraph agents", "ADK agents cannot deploy to Agent Engine"],
       answer: 1,
       why: "The choice is not between them. You write the agent in a framework and then choose where to run it: locally, in a container on Cloud Run or GKE, or on Agent Engine, which additionally provides managed sessions, a memory bank and tracing. The real question is usually Cloud Run versus Agent Engine as the deployment target." },
     { stem: "Which is the most accurate statement of ADK's difference from LangGraph?",
-      options: ["ADK is graph-based and LangGraph is not", "ADK's default primitive is the agent, composed with sub-agents and three workflow agents; LangGraph's is the node in an explicit graph", "LangGraph cannot do human-in-the-loop", "ADK has no persistence"],
+      options: ["ADK is graph-based and LangGraph is not", "ADK composes agents; LangGraph composes graph nodes", "LangGraph cannot do any human-in-the-loop", "ADK has no persistence layer of its own"],
       answer: 1,
       why: "Both handle stateful multi-step work. ADK composes agents — a tree plus SequentialAgent, ParallelAgent and LoopAgent — and adds LLM-driven transfer between them; LangGraph asks you to draw nodes and conditional edges explicitly. ADK 2.x also ships a Workflow/Node/Edge API, which narrows the difference." },
     { stem: "Your team has an extensive LangChain retrieval stack and wants ADK's runtime. What is the migration cost?",
-      options: ["Total — LangChain and ADK cannot coexist", "Low for tools: LangChain tools can be wrapped with LangchainTool; the retrieval pipeline itself is unaffected because ADK treats retrieval as a tool", "You must rewrite the vector store", "You must deploy to Agent Engine"],
+      options: ["Total, since LangChain and ADK cannot coexist", "Low: wrap tools with LangchainTool; retrieval is a tool", "High, since you must rewrite the vector store", "Moderate, since you must deploy to Agent Engine"],
       answer: 1,
       why: "ADK does not abstract document loading or retrieval, so an existing pipeline keeps working and is exposed to the agent as a tool. google.adk.tools.langchain_tool wraps LangChain tools directly, and a crewai_tool wrapper exists too, so the integration work is adapting interfaces rather than rewriting the stack." },
     { stem: "Which requirement is a runtime question rather than a framework question?",

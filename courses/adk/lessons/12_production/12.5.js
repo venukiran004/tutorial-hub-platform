@@ -152,19 +152,19 @@ EC.receiveLesson({
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Why does a production agent sit behind your own API rather than being called directly by the client?",
-      options: ["To add caching", "So identity is derived server-side and the client cannot choose whose data to read", "To reduce latency", "Because ADK requires it"],
+      options: ["To add a response cache in front", "So identity is derived server-side", "To reduce latency for the client", "Because ADK requires it to work"],
       answer: 1,
       why: "`user_id` is an unvalidated key into sessions, state and memory, so a client that supplies its own can read anyone's. Your API authenticates the user, derives the id, owns the session id and keeps provider credentials out of the browser — none of which ADK does for you." },
     { stem: "What is the design principle behind having instruction, callback, tool validation and row-level security all check the same rule?",
-      options: ["Redundancy for performance", "Each layer assumes the one above it failed", "Compliance requires four checks", "Different layers check different rules"],
+      options: ["Redundancy for better performance", "Each layer assumes the one above failed", "Compliance rules require four checks", "Different layers check different rules"],
       answer: 1,
       why: "The instruction can be argued with, the callback can have a bug, the tool's query can be wrong — so the database filters regardless. Each layer is cheap and none is sufficient, and the system is judged by what happens when the model does the worst thing available to it." },
     { stem: "Which of these is hardest to change after six months in production?",
-      options: ["The model", "What identifies a user", "The log format", "The system instruction"],
+      options: ["The model in use", "What identifies a user", "The log format", "The system instruction"],
       answer: 1,
       why: "It keys sessions, state and memory, so changing it means migrating every store and reconciling identities across all three. The model, the instruction and the log format are all edits you can make and evaluate in an afternoon." },
     { stem: "Your agent's costs are climbing. Where do you look first?",
-      options: ["Session storage", "Conversation length, and which agent is using the expensive model", "Tool execution time", "The framework's overhead"],
+      options: ["Session storage costs per user", "Conversation length and model use", "Execution time of each tool call", "The framework's per-event overhead"],
       answer: 1,
       why: "Every turn resends the transcript, so long conversations dominate, and a system where a classifier and a formatter both use the strongest model is paying premium rates for cheap work. Storage, tool execution and framework overhead are rarely material next to tokens." }
   ] },

@@ -167,19 +167,19 @@ sees one tool; the ticketing sub-agent faces the 38 with a prompt written for th
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "When are a toolset's tools resolved?",
-      options: ["At construction", "When the request is built, via get_tools — so the list can vary per user or per state", "Once per process", "Only when the model calls one"],
+      options: ["Once, when the toolset is constructed", "Per request via get_tools, so they can vary", "Once per process, at the first request", "Only when the model calls one of them"],
       answer: 1,
       why: "BaseToolset exposes get_tools, which ADK calls while assembling the model request. That is what allows a toolset to return different tools for different users, and what lets a remote toolset such as MCP refresh its list — it also means a toolset can hold a connection, which is why close is part of the contract." },
     { stem: "You generate 60 tools from an OpenAPI spec and attach them to one agent. What goes wrong?",
-      options: ["Nothing", "Tool selection degrades badly and all 60 schemas are sent on every model call", "ADK refuses more than ten tools", "The spec must be JSON"],
+      options: ["Nothing; more tools only help the agent", "Selection degrades; 60 schemas sent per call", "ADK refuses more than ten tools per agent", "The spec must be converted to JSON first"],
       answer: 1,
       why: "Accuracy falls as the declaration list grows past roughly ten, and every call carries every schema as input tokens. The fixes are a tool_filter down to what the agent needs, or putting the whole toolset behind a sub-agent exposed as an AgentTool so the caller sees one declaration." },
     { stem: "What does LangchainTool not fix about a wrapped LangChain tool?",
-      options: ["The calling interface", "Its name and description, which are what the model reads and are often poor", "Its return type", "Its imports"],
+      options: ["The calling interface it exposes", "Its name and description, often poor", "The return type it hands back", "The imports it needs at run time"],
       answer: 1,
       why: "The wrapper adapts the interface so ADK can declare and invoke it, but the text the model uses to choose the tool comes from the wrapped object. That is why LangchainTool accepts name and description overrides — and why a wrapped tool that is never called is usually a description problem." },
     { stem: "The agent needs to 'find a ticket by description'. The API has no such operation. What does that tell you?",
-      options: ["The API needs changing", "A hand-written facade is the right shape: the tool should speak the user's vocabulary, not the API's", "Use a bigger model", "Generate all operations and let the model work it out"],
+      options: ["The API itself needs to be changed first", "A facade in the user's vocabulary is right", "A bigger model would work it out", "Generate every operation and let the model choose"],
       answer: 1,
       why: "Generated tools mirror the API's verbs; the agent's job is expressed in the user's. When those differ — search plus filter plus a status enum to close a ticket — a facade that collapses several calls into one tool is clearer for the model and saves round trips as well." }
   ] },

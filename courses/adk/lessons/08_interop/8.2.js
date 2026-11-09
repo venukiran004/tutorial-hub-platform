@@ -181,19 +181,19 @@ same origin as the location the card was fetched from
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What best distinguishes A2A from MCP?",
-      options: ["A2A is newer", "A2A delegates tasks to agents that do their own reasoning; MCP calls tools", "A2A uses HTTP and MCP does not", "A2A supports streaming"],
+      options: ["A2A is simply the newer of the two protocols", "A2A delegates to reasoning agents; MCP calls tools", "A2A runs over HTTP and MCP does not at all", "A2A supports streaming and MCP never does"],
       answer: 1,
       why: "The shape of the work differs. A tool call is something you have already reasoned about and now want executed. A task is a goal handed to someone whose job is to work out the steps — which is why the lifecycle includes an 'input required' state that a function call has no way to express." },
     { stem: "A client refuses a card whose RPC URL is at a different origin from where the card was served. Why?",
-      options: ["A bug in the a2a SDK", "Because a card is a document telling you where to send requests, so a mismatched origin could redirect your traffic", "To enforce TLS", "Because localhost is never allowed"],
+      options: ["It is a known, unfixed bug in the a2a SDK", "A mismatched origin could redirect your traffic", "To enforce TLS on every connection it makes", "Because localhost origins are never allowed"],
       answer: 1,
       why: "Without the check, anyone who can serve you a card can point your agent's requests — and whatever credentials they carry — somewhere else. The executed error message states the rule directly, and the fix is to make the advertised URL match where the card is actually served." },
     { stem: "Two agents in the same repository, deployed together. Should they talk over A2A?",
-      options: ["Yes, for consistency", "No — a sub-agent is simpler, faster and easier to trace", "Yes, if either uses tools", "Only if they use different models"],
+      options: ["Yes, for consistency across agents", "No; a sub-agent is simpler to run", "Yes, if either of them uses tools", "Only if they use different models"],
       answer: 1,
       why: "A2A buys you a network hop, serialisation, a card, origin rules and a new set of failure modes. Those are worth paying for across an organisational boundary — separate teams, separate releases, an agent you did not write — and are pure cost between two agents you control in one process." },
     { stem: "Text returned by a remote A2A agent enters your agent's context. How should you treat it?",
-      options: ["As trusted, since the team is internal", "As untrusted input that may contain instructions", "As a tool result, which models ignore", "As system instruction"],
+      options: ["As trusted, since the team is internal", "As untrusted input that may hold instructions", "As a tool result, which models ignore", "As part of the system instruction"],
       answer: 1,
       why: "It is text produced by a model you do not control, arriving in a prompt your model reads. Whether the other team is friendly is beside the point — their agent could be relaying content from its own users. Any text crossing a boundary is data, never instructions." }
   ] },

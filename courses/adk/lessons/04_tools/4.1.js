@@ -215,19 +215,19 @@ def show(fn):
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "What becomes the 'description' field of a generated tool declaration?",
-      options: ["The first line of the docstring", "The entire docstring, including the Args section", "The function name, humanised", "A summary ADK generates with a model"],
+      options: ["Only the first line of the docstring", "The entire docstring, Args included", "The function name, made human-readable", "A summary ADK writes using a model"],
       answer: 1,
       why: "The printed declaration on 2.9.2 contains the whole docstring — summary line, blank line and the Args block — as one description string. That is why documenting units, formats and limits in Args is the cheapest way to fix wrong-argument bugs." },
     { stem: "Why does a tool_context parameter not appear in the declaration?",
-      options: ["It is filtered out of the docstring only", "ADK strips it and injects the context itself when calling your function", "It appears but the model ignores it", "Tools cannot take a context"],
+      options: ["It is filtered out of the docstring only", "ADK strips it and injects the context itself", "It appears, but the model learns to ignore it", "Tools cannot take a context parameter at all"],
       answer: 1,
       why: "Verified by printing the schema: a tool with (fact, tool_context) declares only 'fact'. The model asks for the arguments it can supply, and the framework supplies the context object separately — which is how a tool reaches state, artifacts, memory and credentials without the model knowing they exist." },
     { stem: "Your tool returns the upstream API's full 40-field JSON. What is the cost?",
-      options: ["None — more context is better", "The model may quote the wrong field, and the whole payload stays in the conversation and is re-sent on every later call", "The tool runs slower", "ADK truncates it automatically"],
+      options: ["None, because more context is always better", "Wrong fields get quoted and the payload is re-sent", "The tool itself runs noticeably slower", "Nothing, because ADK truncates it automatically"],
       answer: 1,
       why: "The function response becomes part of the model's evidence and part of the history. Forty fields give it forty chances to paraphrase the wrong one, and every subsequent model call in that session re-sends the payload. Returning the four fields the answer needs is both more accurate and cheaper." },
     { stem: "A parameter is annotated `Optional[int] = None`. What does the schema say?",
-      options: ["type integer, required", "anyOf integer or null, with a default, and not in required", "type string", "It is omitted"],
+      options: ["type integer, listed as required", "integer or null, defaulted, not required", "type string, with a null default", "It is omitted from the schema entirely"],
       answer: 1,
       why: "The generated schema showed anyOf [{integer}, {null}] with \"default\": null, and the parameter absent from the required list. That is the idiomatic way to give a tool an argument the model may omit." }
   ] },

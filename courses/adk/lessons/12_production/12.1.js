@@ -207,11 +207,11 @@ app.include_router(my_existing_routes)      # the rest of the service
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "You deploy to Cloud Run without --session_service_uri and scale to three instances. What do users see?",
-      options: ["An error on startup", "Conversations losing history intermittently", "Slower responses", "Sessions shared correctly"],
+      options: ["An error as each instance starts", "History lost intermittently", "Noticeably slower responses", "Sessions shared correctly"],
       answer: 1,
       why: "The default is an in-memory service, one dictionary per process. A follow-up message routed to another instance finds no session, so history vanishes at random — with no error anywhere, which is why it usually arrives as a bug report about the agent being forgetful." },
     { stem: "What does `adk deploy cloud_run` generate?",
-      options: ["A Kubernetes manifest", "A Dockerfile and a FastAPI app around the same server adk api_server runs", "A Terraform module", "An Agent Engine resource"],
+      options: ["A Kubernetes deployment manifest", "A Dockerfile and FastAPI app", "A Terraform module for the service", "An Agent Engine resource"],
       answer: 1,
       why: "The container targets wrap your agent directory in the server you have already been using locally, which is why developing your client against `adk api_server` means integrating with the production surface from the start." },
     { stem: "Which flag would you think hardest about before using in production?",
@@ -219,7 +219,7 @@ app.include_router(my_existing_routes)      # the rest of the service
       answer: 1,
       why: "It deploys the dev UI alongside the agent — an interface for inspecting sessions, state and traces. Excellent for an internal tool behind your own auth, and an alarming amount of visibility to expose publicly. Tracing, by contrast, you want on everywhere." },
     { stem: "What is the strongest reason to prefer Cloud Run over Agent Engine?",
-      options: ["Better latency", "You need conversation data in a database you can join against your own tables", "It supports more tools", "It is cheaper at every scale"],
+      options: ["Better latency on every single turn", "Joining conversations to your own tables", "Support for more kinds of custom tools", "Lower cost at every possible scale"],
       answer: 1,
       why: "Both run the same agent and latency is dominated by the model, so speed is not the differentiator. The real trade is ownership: your own endpoint and your own session database against not having to operate either of them." }
   ] },

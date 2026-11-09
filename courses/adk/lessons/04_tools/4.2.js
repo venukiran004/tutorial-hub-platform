@@ -191,19 +191,19 @@ async def recall(query: str, tool_context: ToolContext) -> dict:
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "A tool writes state['temp:scratch'] = 'x'. What is in the session afterwards?",
-      options: ["temp:scratch = 'x'", "scratch = 'x'", "Nothing — temp: values are discarded after the invocation", "It raises"],
+      options: ["temp:scratch = 'x', kept", "scratch = 'x', prefix dropped", "Nothing; temp: is discarded", "It raises a KeyError"],
       answer: 2,
       why: "The executed run confirmed it: after a tool wrote last_topic, user:seen and temp:scratch, the persisted session state contained the first two and not the third. temp: is for values that matter only within the current invocation, such as a partial result passed between two tools of the same turn." },
     { stem: "What does actions.skip_summarization do?",
-      options: ["Shortens the model's answer", "Makes the function-response event the final response, so no second model call happens", "Skips the tool", "Hides the tool result from the session"],
+      options: ["Shortens the model's final answer", "Makes the tool response final; no second call", "Skips running the tool altogether", "Hides the tool result from the session"],
       answer: 1,
       why: "The trace showed one model call instead of two, with the function-response event marked final. It is the right setting when the tool's output is already the answer — a table, a file reference, a chart — and paraphrasing it would only add latency and a chance of distortion." },
     { stem: "Your tool needs a human to approve before its effect is accepted. What do you do?",
-      options: ["Return {'needs_approval': True} and hope the model asks", "Call tool_context.request_confirmation(...)", "Raise an exception", "Write to state and return"],
+      options: ["Return {'needs_approval': True} and hope", "Call tool_context.request_confirmation(...)", "Raise an exception for the caller to catch", "Write a flag to state and return normally"],
       answer: 1,
       why: "Approval requires the framework to pause the invocation and surface a request to the caller, which a return value cannot do — the model would simply read the dict and carry on, possibly inventing an approval. request_confirmation sets the action that the runtime and the client act on (lesson 9.3)." },
     { stem: "Which id identifies one specific tool call, even when two tools were called in the same model turn?",
-      options: ["session_id", "invocation_id", "function_call_id", "user_id"],
+      options: ["The event's session_id", "The event's invocation_id", "The function call's id", "The event's user_id"],
       answer: 2,
       why: "invocation_id covers the whole turn including both parallel calls; session_id covers the conversation. function_call_id is unique per call, which is what lets a log line or a trace span be attributed to exactly one of two concurrent executions." }
   ] },

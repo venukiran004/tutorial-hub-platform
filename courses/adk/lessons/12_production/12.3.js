@@ -225,19 +225,19 @@ curl -X POST \\
 
   quiz: { title: "Check your understanding", questions: [
     { stem: "Your application calls stream_query without a session_id on every message. What does the user experience?",
-      options: ["An error after the first call", "An agent that never remembers anything said before", "The same conversation, since user_id is enough", "Slower responses as history is rebuilt"],
+      options: ["An error after the first call", "An agent that never remembers anything", "The same conversation, as user_id is enough", "Slower responses as history is rebuilt"],
       answer: 1,
       why: "Each call without a session id is an isolated turn against a fresh session. It works, which is what makes it dangerous — nothing errors, the agent simply has no history, and the symptom looks like a model failing to pay attention rather than a client forgetting to pass an argument." },
     { stem: "How do event objects differ between a local runner and a deployed engine?",
-      options: ["They do not — both yield Event objects", "The deployment yields plain JSON dicts with snake_case keys", "The deployment yields only final text events", "The deployment yields XML"],
+      options: ["They do not; both yield Event objects", "The deployment yields plain snake_case dicts", "The deployment yields only final text events", "The deployment yields XML documents"],
       answer: 1,
       why: "Everything crossing the deployment boundary is JSON, so `event.content.parts[0].text` becomes `ev[\"content\"][\"parts\"][0][\"text\"]`. The full event sequence still crosses — tool calls and responses included — which is what lets a client show progress while a tool runs." },
     { stem: "A Java service needs to call your deployed agent. What is the route?",
-      options: ["Rewrite the caller in Python", "POST to the engine's :streamQuery endpoint with class_method and input", "Deploy a second agent for Java callers", "Use an API key in a header"],
+      options: ["Rewrite the calling service in Python", "POST to :streamQuery with class_method and input", "Deploy a second agent just for Java callers", "Send an API key in a header to the engine"],
       answer: 1,
       why: "Every registered operation is reachable over HTTPS by naming the method in `class_method` and passing its keyword arguments in `input`. Authorisation is an IAM bearer token rather than an API key, because the engine is an ordinary Vertex AI resource behind Google IAM." },
     { stem: "Which identity should be allowed to query the engine?",
-      options: ["Each end user's Google account", "The service account of the backend that fronts the agent", "The service account the engine runs as", "Anyone with the resource name"],
+      options: ["Each end user's Google account", "The fronting backend's service account", "The service account the engine runs as", "Anyone who knows the resource name"],
       answer: 1,
       why: "Your backend authenticates the user, derives `user_id` itself, and calls the engine with its own credentials — which is what stops a caller reading someone else's sessions by supplying their id. The engine's own service account is a different identity again: it is what the agent's tools act as, and it should be scoped to what the tools need." }
   ] },
