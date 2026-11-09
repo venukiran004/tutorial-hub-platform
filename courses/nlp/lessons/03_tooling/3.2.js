@@ -220,14 +220,78 @@ fd.plot(20, cumulative=True)`,
       caption: "**VADER is the baseline that keeps winning on short social text**, because the things it encodes are exactly what that register uses — negation, intensifiers, repeated punctuation, capitals as shouting. It needs no training data at all, which also makes it the honest comparison point for any fine-tuned sentiment model you are about to justify." },
     { t: "p", text: "The weakness is the same as its strength: a fixed lexicon means **a domain word carrying strong sentiment in your data has no entry at all** — \u201csick\u201d in a product review, \u201cflat\u201d in a drinks review — and VADER scores those neutral. `FreqDist.hapaxes()` is worth running early for a related reason: the single-occurrence words are usually most of the vocabulary, and that number decides whether a count-based model has any chance." },
 
-    { t: "exercise", title: "Break the normalisers",
+    { t: "exercise", kind: "Challenge", title: "Break the normalisers", difficulty: "core", minutes: 35,
       requirements: [
         "Find five more word triples that Porter conflates into one stem the way it does universal, university and universe.",
         "Lemmatise a document twice — once with the default noun assumption, once feeding real POS tags from `pos_tag`. Count how many lemmas differ.",
         "Walk the hypernym path from a domain term of yours up to `entity` and note where it stops being useful.",
         "Run PMI collocations on your own corpus with frequency floors of 1, 5, 20 and 100, and describe how the output changes at each.",
         "Use WordNet antonyms to build a negation-aware word list, then test it against the failing sentiment component from lesson 3.1."
-      ] }
+      ],
+      hint: "Map Penn Treebank tags to WordNet's four parts of speech before lemmatising: tags starting with V become 'v', J becomes 'a', R becomes 'r', and everything else stays a noun.",
+      solution: {
+        lang: "python", title: "break_normalisers.py",
+        code: `import itertools, collections
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk import pos_tag, word_tokenize
+from nltk.corpus import wordnet as wn, gutenberg
+from nltk.collocations import BigramCollocationFinder
+from nltk.metrics import BigramAssocMeasures
+
+# 1. Test candidate triples of unrelated meanings and keep the ones Porter merges.
+ps = PorterStemmer()
+cands = [("general", "generous", "generate"), ("organ", "organic", "organize"), ("new", "news", "newness"),
+         ("polite", "police", "policy"), ("arm", "army", "armed"), ("execute", "executive", "execution"),
+         ("author", "authority", "authorize"), ("communism", "community", "commune"), ("past", "pasta", "paste"),
+         ("probe", "probate", "probation"), ("operate", "opera", "operation")]
+for t in cands:
+    st = {ps.stem(w) for w in t}
+    if len(st) == 1: print(f"Porter merges {t} -> {st.pop()!r}")
+# 2. Lemmatise with the noun default and with real POS tags.
+lem = WordNetLemmatizer()
+text = "The teams were running faster and the batteries had stopped charging, so the engineers rebuilt the cells."
+toks = word_tokenize(text)
+wnpos = lambda t: {"V": "v", "J": "a", "R": "r"}.get(t[0], "n")
+default = [lem.lemmatize(w.lower()) for w in toks]
+tagged = [lem.lemmatize(w.lower(), wnpos(p)) for w, p in pos_tag(toks)]
+diff = [(a, b) for a, b in zip(default, tagged) if a != b]
+print(f"\\n{len(diff)} of {len(toks)} lemmas change with POS:", diff)
+
+# 3. Hypernym path from a domain term.
+print("\\nhypernym path:", " -> ".join(s.name().split(".")[0] for s in wn.synset("battery.n.02").hypernym_paths()[0][::-1]))
+
+# 4. PMI collocations at several frequency floors.
+words = [w.lower() for w in gutenberg.words("austen-emma.txt") if w.isalpha()]
+for floor in (1, 5, 20, 100):
+    f2 = BigramCollocationFinder.from_words(words); f2.apply_freq_filter(floor)
+    print(f"floor {floor:3}: {f2.nbest(BigramAssocMeasures.pmi, 5)}")
+
+# 5. Antonym-aware negation list from WordNet.
+def antonyms(w): return sorted({a.name() for s in wn.synsets(w, pos="a") for l in s.lemmas() for a in l.antonyms()})
+for w in ("good", "happy", "useful"): print(f"antonyms({w}) = {antonyms(w)}")
+`,
+        out: `Porter merges ('general', 'generous', 'generate') -> 'gener'
+Porter merges ('organ', 'organic', 'organize') -> 'organ'
+Porter merges ('execute', 'executive', 'execution') -> 'execut'
+Porter merges ('author', 'authority', 'authorize') -> 'author'
+Porter merges ('communism', 'community', 'commune') -> 'commun'
+
+6 of 19 lemmas change with POS: [('were', 'be'), ('running', 'run'), ('had', 'have'), ('stopped', 'stop'), ('charging', 'charge'), ('rebuilt', 'rebuild')]
+
+hypernym path: battery -> electrical_device -> device -> instrumentality -> artifact -> whole -> object -> physical_entity -> entity
+floor   1: [('adequate', 'restoratives'), ('al', 'fresco'), ('baly', 'craig'), ('base', 'aspersion'), ('beet', 'root')]
+floor   5: [('barouche', 'landau'), ('o', 'clock'), ('court', 'plaister'), ('brunswick', 'square'), ('sore', 'throat')]
+floor  20: [('maple', 'grove'), ('colonel', 'campbell'), ('robert', 'martin'), ('depend', 'upon'), ('few', 'minutes')]
+floor 100: [('frank', 'churchill'), ('jane', 'fairfax'), ('every', 'body'), ('miss', 'bates'), ('am', 'sure')]
+antonyms(good) = ['bad', 'evil']
+antonyms(happy) = ['unhappy']
+antonyms(useful) = ['useless']`,
+        notes: [
+          { t: "p", text: "Five of the candidate triples collapsed to one stem: general, generous and generate all became 'gener'; organ, organic and organize became 'organ'. A stemmer has no dictionary, so it cannot know these are unrelated. Testing candidates you choose is more reliable than searching a lexicon automatically: an automatic search mostly finds legitimately related forms such as abrasion and abrasive." },
+          { t: "p", text: "Feeding real POS tags changed 6 of 19 lemmas, every one of them a verb: 'were' to 'be', 'running' to 'run', 'rebuilt' to 'rebuild'. With the default noun assumption the lemmatiser is close to a no-op on verbs, which is why it so often looks broken." },
+          { t: "p", text: "The hypernym path from battery stops being useful after 'device'. 'instrumentality', 'artifact' and 'whole' are too general to group anything usefully. With no frequency floor, PMI ranks one-off pairs such as 'adequate restoratives'. At a floor of 100 it returns character names and stock phrases. A floor of 5–20 is usually where real collocations appear. WordNet antonyms give a clean list for single adjectives ('good' → 'bad', 'evil'). They do nothing for the scope problem the 3.1 component failed on." }
+        ]
+      } }
   ],
 
   takeaways: [

@@ -184,14 +184,72 @@ EC.receiveLesson({
     { t: "callout", kind: "warn", title: "BLEU is only comparable within one test set",
       body: [{ t: "p", text: "These bands are a rough guide, not a scale. BLEU depends on the number of references, the tokenisation, the domain, and the language pair — Chinese-English BLEU is systematically lower than French-English without the translations being worse. A score of 34 on your data and 34 in a paper are not the same measurement. Use `sacrebleu`, which fixes tokenisation and prints a signature describing the exact configuration, and only ever compare systems on identical data. Current practice supplements it with COMET or BLEURT, which are learned metrics that score meaning and do catch the paraphrase case." }] },
 
-    { t: "exercise", title: "Break the metric yourself",
+    { t: "exercise", kind: "Challenge", title: "Break the metric yourself", difficulty: "core", minutes: 40,
       requirements: [
         "Translate ten sentences to French and back, and compute round-trip BLEU for each. Find one where a high score hides a bad translation.",
         "Write a candidate that scores above 0.5 against a reference while meaning something different. Note what you had to preserve.",
         "Compute corpus BLEU over 100 sentence pairs and then the mean of their sentence BLEUs. Explain the gap.",
         "Run the same test set through `sacrebleu` and NLTK and compare. If they differ, find the tokenisation difference responsible.",
         "Score the same outputs with COMET and rank the sentences by each metric. Inspect the ten sentences the two rankings disagree on most."
-      ] }
+      ],
+      hint: "Tokenise the reference and the candidate the same way before scoring, and use NLTK's smoothing for sentence BLEU. Without smoothing, any sentence with no 4-gram match scores exactly zero.",
+      solution: {
+        lang: "python", title: "break_bleu.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import MarianMTModel, MarianTokenizer
+from nltk.translate.bleu_score import sentence_bleu, corpus_bleu, SmoothingFunction
+
+def load(n): return MarianTokenizer.from_pretrained(n), MarianMTModel.from_pretrained(n).eval()
+ef, fe = load("Helsinki-NLP/opus-mt-en-fr"), load("Helsinki-NLP/opus-mt-fr-en")
+def tr(pair, xs):
+    tok, mod = pair
+    with torch.no_grad():
+        g = mod.generate(**tok(xs, return_tensors="pt", padding=True), num_beams=4)
+    return tok.batch_decode(g, skip_special_tokens=True)
+
+src = ["He kicked the bucket last winter.", "It is raining cats and dogs.", "The river bank was muddy.",
+       "She broke the ice at the meeting.", "Please close the window before you leave.",
+       "The meeting has been moved to Thursday.", "I can't wait to see you.", "He is pulling your leg.",
+       "The invoice was paid in full.", "Turn left at the second traffic light."]
+fr = tr(ef, src); back = tr(fe, fr)
+sm = SmoothingFunction().method1
+tk = lambda s: s.lower().replace(".", " .").replace(",", " ,").split()
+print("round-trip BLEU  source -> French -> back")
+for s, f, b in sorted(zip(src, fr, back), key=lambda r: -sentence_bleu([tk(r[0])], tk(r[2]), smoothing_function=sm)):
+    print(f"{sentence_bleu([tk(s)], tk(b), smoothing_function=sm):.4f}  {s} -> {f} -> {b}")
+
+# 2. High BLEU, opposite meaning: keep every n-gram, flip one word.
+ref = "the patient should take the medicine twice a day after meals ."
+cand = "the patient should not take the medicine twice a day after meals ."
+print(f"\\nnegated candidate BLEU = {sentence_bleu([ref.split()], cand.split()):.4f}")
+
+# 3. Corpus BLEU is not the mean of sentence BLEUs.
+refs = [[tk(s)] for s in src]; hyps = [tk(b) for b in back]
+sb = [sentence_bleu(r, h, smoothing_function=sm) for r, h in zip(refs, hyps)]
+print(f"corpus BLEU = {corpus_bleu(refs, hyps):.4f}   mean sentence BLEU = {sum(sb) / len(sb):.4f}")
+`,
+        out: `round-trip BLEU  source -> French -> back
+1.0000  She broke the ice at the meeting. -> Elle a cassé la glace à la réunion. -> She broke the ice at the meeting.
+1.0000  I can't wait to see you. -> J'ai hâte de te voir. -> I can't wait to see you.
+1.0000  The invoice was paid in full. -> La facture a été payée intégralement. -> The invoice was paid in full.
+0.6435  He kicked the bucket last winter. -> Il a frappé le seau l'hiver dernier. -> He hit the bucket last winter.
+0.6130  Turn left at the second traffic light. -> Tournez à gauche au deuxième feu. -> Turn left at the second light.
+0.5789  The river bank was muddy. -> La rive était boueuse. -> The bank was muddy.
+0.5578  Please close the window before you leave. -> Veuillez fermer la fenêtre avant de partir. -> Please close the window before leaving.
+0.5475  He is pulling your leg. -> Il te tire la jambe. -> He's pulling your leg.
+0.4548  It is raining cats and dogs. -> Il pleut des chats et des chiens. -> It rains cats and dogs.
+0.0856  The meeting has been moved to Thursday. -> La réunion a été reportée à jeudi. -> The meeting was postponed until Thursday.
+
+negated candidate BLEU = 0.7612
+corpus BLEU = 0.6658   mean sentence BLEU = 0.6481`,
+        notes: [
+          { t: "p", text: "The ranking is the point. 'He is pulling your leg' came back as 'Il te tire la jambe', which is wrong French; the idiom is 'il te fait marcher'. It still scored 0.55 round-trip, higher than 'The meeting has been moved to Thursday' at 0.09. That sentence was translated correctly and paraphrased back as 'postponed until Thursday'. Round-trip BLEU rewards a literal model and punishes a fluent one." },
+          { t: "p", text: "Adding 'not' to an instruction kept 0.76 BLEU while reversing the advice. Every other n-gram survives, and one inserted word costs only a few higher-order n-grams. Any n-gram metric is blind to a single-token change of meaning." },
+          { t: "p", text: "Corpus BLEU (0.6658) is not the mean of sentence BLEUs (0.6481). Corpus BLEU pools n-gram counts and applies one brevity penalty to the total. The mean gives every sentence equal weight, so short sentences move it more. Report corpus BLEU and name the tokeniser. Steps 4 and 5 need sacrebleu and a COMET checkpoint, which this environment does not have. Run them where you can, and expect the gap between NLTK and sacrebleu to come from tokenisation of punctuation and apostrophes." }
+        ]
+      } }
   ],
 
   takeaways: [

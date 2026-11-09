@@ -218,14 +218,102 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Where spaCy stops being the answer",
       body: [{ t: "p", text: "When the task is classification or generation rather than linguistic annotation, spaCy is the wrong shape — you want HuggingFace and a fine-tuned model, which lesson 3.3 covers. When you need state-of-the-art NER on a specialised domain, spaCy's pretrained pipelines will underperform a domain-tuned transformer, though you can wrap one in a spaCy component and keep the surrounding machinery. And for one-off research or teaching, NLTK's breadth of corpora and algorithms is genuinely more useful, which is the subject of the next lesson." }] },
 
-    { t: "exercise", title: "Take the pipeline apart",
+    { t: "exercise", kind: "Challenge", title: "Take the pipeline apart", difficulty: "core", minutes: 45,
       requirements: [
         "Print `nlp.pipe_names`, then load with each component disabled in turn and find which attributes go empty. Confirm the lemmatiser degrades when the tagger is off.",
         "Time your own workload with and without `nlp.pipe`, and sweep `batch_size` from 1 to 1000. Plot it and find where the curve flattens.",
         "Write a component that tags each sentence with its token count, registered as a `Span` extension rather than a `Doc` one.",
         "Add a negation window to the sentiment component so `not good` scores negative, then find an input that still fools it.",
         "Build a PhraseMatcher over 10,000 terms from your own domain and measure per-document cost. Compare it against the equivalent Matcher patterns."
-      ] }
+      ],
+      hint: "`nlp.select_pipes(disable=[...])` is a context manager, so each component can be removed for one call and restored afterwards. Compare `lemma_`, `pos_` and `ents` across the runs.",
+      solution: {
+        lang: "python", title: "pipeline_apart.py",
+        code: `import time, warnings
+warnings.filterwarnings("ignore")
+import spacy
+from spacy.language import Language
+from spacy.tokens import Span
+from spacy.matcher import Matcher, PhraseMatcher
+from docs import DOCS
+
+nlp = spacy.load("en_core_web_sm")
+print("pipe_names:", nlp.pipe_names)
+
+# 1. Disable each component in turn and see which attributes go empty.
+probe = "The runners were running quickly towards Paris."
+for comp in nlp.pipe_names:
+    with nlp.select_pipes(disable=[comp]):
+        d = nlp(probe)
+        print(f"without {comp:17} lemmas={[t.lemma_ for t in d][1:4]} pos={[t.pos_ for t in d][1:3]} ents={[e.text for e in d.ents]}")
+
+# 2. Loop versus nlp.pipe, sweeping batch_size.
+texts = DOCS * 50
+t = time.perf_counter(); [nlp(x) for x in texts]; loop = time.perf_counter() - t
+print(f"\\nloop over {len(texts)} docs: {loop:.2f}s")
+for bs in (1, 8, 32, 128, 512):
+    t = time.perf_counter(); list(nlp.pipe(texts, batch_size=bs)); print(f"nlp.pipe batch_size={bs:<4} {time.perf_counter() - t:.2f}s")
+
+# 3. A Span extension: token count per sentence.
+Span.set_extension("n_tokens", getter=lambda s: sum(not t.is_punct for t in s), force=True)
+d = nlp(DOCS[0])
+print("\\n" + "\\n".join(f"{s._.n_tokens:3d}  {s.text[:60]}" for s in list(d.sents)[:3]))
+
+# 4. Negation window for a toy lexicon scorer, and an input that still fools it.
+LEX = {"good": 1, "great": 1, "bad": -1, "terrible": -1}
+NEG = {"not", "never", "no", "n't"}
+@Language.component("neg_sentiment")
+def neg_sentiment(doc):
+    score = 0
+    for t in doc:
+        if t.lower_ in LEX:
+            flip = any(w.lower_ in NEG for w in doc[max(0, t.i - 3):t.i])
+            score += -LEX[t.lower_] if flip else LEX[t.lower_]
+    doc.user_data["sentiment"] = score
+    return doc
+nlp.add_pipe("neg_sentiment", last=True)
+for s in ["The food was good.", "The food was not good.", "Nothing about the food was good.", "Not only good, it was great."]:
+    print(f"{nlp(s).user_data['sentiment']:+d}  {s}")
+
+# 5. PhraseMatcher against Matcher over 10,000 terms.
+terms = [f"term{i} widget" for i in range(10_000)] + ["silicon anode", "public transport"]
+pm = PhraseMatcher(nlp.vocab, attr="LOWER"); pm.add("T", list(nlp.tokenizer.pipe(terms)))
+m = Matcher(nlp.vocab); m.add("T", [[{"LOWER": w} for w in t.split()] for t in terms])
+docs = [nlp.make_doc(x) for x in DOCS]
+for name, mt in (("PhraseMatcher", pm), ("Matcher", m)):
+    t = time.perf_counter(); hits = sum(len(mt(x)) for x in docs)
+    print(f"{name:13} {1000 * (time.perf_counter() - t) / len(docs):8.3f} ms/doc, {hits} matches")
+`,
+        out: `pipe_names: ['tok2vec', 'tagger', 'parser', 'attribute_ruler', 'lemmatizer', 'ner']
+without tok2vec           lemmas=['runners', 'were', 'running'] pos=['NOUN', 'NOUN'] ents=['Paris']
+without tagger            lemmas=['runners', 'were', 'running'] pos=['', ''] ents=['Paris']
+without parser            lemmas=['runner', 'be', 'run'] pos=['NOUN', 'AUX'] ents=['Paris']
+without attribute_ruler   lemmas=['runners', 'were', 'running'] pos=['', ''] ents=['Paris']
+without lemmatizer        lemmas=['', 'be', ''] pos=['NOUN', 'AUX'] ents=['Paris']
+without ner               lemmas=['runner', 'be', 'run'] pos=['NOUN', 'AUX'] ents=[]
+
+loop over 300 docs: 6.14s
+nlp.pipe batch_size=1    6.31s
+nlp.pipe batch_size=8    5.23s
+nlp.pipe batch_size=32   4.77s
+nlp.pipe batch_size=128  4.75s
+nlp.pipe batch_size=512  4.41s
+
+  9  The city council approved a new budget on Tuesday.
+ 10  The plan raises spending on public transport by 12 percent.
+ 14  Bus routes in the northern districts will run every ten minu
++1  The food was good.
+-1  The food was not good.
++1  Nothing about the food was good.
++0  Not only good, it was great.
+PhraseMatcher    0.023 ms/doc, 2 matches
+Matcher         96.479 ms/doc, 2 matches`,
+        notes: [
+          { t: "p", text: "Turning off the tagger or the attribute ruler emptied the part-of-speech tags, and the lemmatiser then returned the surface forms ('runners', 'running'). The rule-based lemmatiser needs POS to choose a rule, so it degrades silently. Turning off `tok2vec` also broke lemmas even though the tagger was still there. In this pipeline the tagger listens to the shared `tok2vec`, which is why that component is the real cost." },
+          { t: "p", text: "`nlp.pipe` with a batch size of 1 was no faster than the loop. The gain arrived by 32 and flattened afterwards: 6.14 s for the loop, 4.4–4.8 s batched. On a small CPU model the win is modest. On transformer pipelines it is much larger, so measure on the model you deploy." },
+          { t: "p", text: "The three-token negation window fixed 'not good' and failed on 'Nothing about the food was good.' The negator is more than three tokens away. 'Not only good, it was great' scored zero because 'not' flipped 'good'. Windowed negation is a heuristic; scope needs the dependency parse. At 10,000 terms, PhraseMatcher cost 0.02 ms per document against 96 ms for Matcher, with identical matches. Use Matcher only when the patterns need token attributes that a phrase cannot express." }
+        ]
+      } }
   ],
 
   takeaways: [

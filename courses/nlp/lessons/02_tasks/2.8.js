@@ -143,14 +143,108 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Abstention is a product decision, not a model one",
       body: [{ t: "p", text: "The threshold on `score_best − score_null` sets where your system says \"I don't know\", and there is no correct value in the abstract. A support bot that answers wrongly erodes trust faster than one that declines, so it should abstain readily. A research assistant whose users can check the cited source should surface a low-confidence answer with its citation and let the reader judge. Set the threshold from the cost of a wrong answer in your setting, and measure it: report accuracy on answered questions and abstention rate separately, because a single accuracy number hides which one you traded away." }] },
 
-    { t: "exercise", title: "Build and probe a QA system",
+    { t: "exercise", kind: "Challenge", title: "Build and probe a QA system", difficulty: "core", minutes: 45,
       requirements: [
         "Run the span search on a passage of your own and print the top five candidate spans with their scores, not just the best.",
         "Ask five questions the passage cannot answer and record the null score for each. Find the threshold that separates them from your answerable questions.",
         "Remove the `max_span` cap and find a question where the model returns an absurdly long span.",
         "Index 1,000 documents, ask 50 questions, and measure recall@1, recall@5 and recall@20 for the retriever before touching the reader.",
         "Compare extractive and generative readers on the same retrieved passages. Count how many generative answers assert something no retrieved passage contains."
-      ] }
+      ],
+      hint: "The null score is the start logit plus the end logit at position 0, the `<s>` token. Compare it with the best span's score: a positive margin means 'answer', a negative one means 'abstain'.",
+      solution: {
+        lang: "python", title: "qa_probe.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering
+from sentence_transformers import SentenceTransformer
+from docs import DOCS
+
+name = "deepset/roberta-base-squad2"
+tok = AutoTokenizer.from_pretrained(name); mod = AutoModelForQuestionAnswering.from_pretrained(name).eval()
+
+def spans(q, ctx, k=5, max_span=30):
+    enc = tok(q, ctx, return_tensors="pt", truncation="only_second", return_offsets_mapping=True)
+    off = enc.pop("offset_mapping")[0]; seq = enc.sequence_ids(0)
+    with torch.no_grad(): o = mod(**enc)
+    s, e = o.start_logits[0], o.end_logits[0]
+    null = (s[0] + e[0]).item()
+    ctx_ix = [i for i, t in enumerate(seq) if t == 1]
+    cand = [(s[i] + e[j]).item() for i in ctx_ix for j in ctx_ix if i <= j < i + max_span]
+    pairs = [(i, j) for i in ctx_ix for j in ctx_ix if i <= j < i + max_span]
+    order = np.argsort(cand)[::-1][:k]
+    out = [(cand[n], ctx[off[pairs[n][0]][0]:off[pairs[n][1]][1]]) for n in order]
+    return out, null
+
+# 1. Top five candidate spans, not just the best.
+ctx = DOCS[1]
+best, null = spans("How long does the battery take to charge?", ctx)
+print("top-5 spans for 'How long does the battery take to charge?'")
+for sc, t in best: print(f"  {sc:6.2f}  {t!r}")
+
+# 2. Null score margin for answerable vs unanswerable questions.
+qs = [("What anode does the cell use?", 1), ("How much capacity is kept after 800 cycles?", 1),
+      ("When is commercial production expected?", 1), ("Who asked for samples?", 1),
+      ("What is the price of the battery?", 0), ("Which university ran the test?", 0),
+      ("What colour is the battery?", 0), ("How heavy is the cell?", 0), ("Who leads the team?", 0)]
+print("\\nmargin = best span - null   answerable?  question")
+margins = []
+for q, a in qs:
+    b, n = spans(q, ctx, k=1); margins.append((b[0][0] - n, a))
+    print(f"  {b[0][0] - n:+7.2f}   {'yes' if a else 'no ':3}   {q}  -> {b[0][1]!r}")
+yes = [m for m, a in margins if a]; no = [m for m, a in margins if not a]
+print(f"lowest answerable margin {min(yes):+.2f}, highest unanswerable {max(no):+.2f}"
+      + (" -> separable" if min(yes) > max(no) else " -> overlap: no clean threshold"))
+
+# 3. Without the max_span cap.
+b, _ = spans("What happened?", ctx, k=1, max_span=10_000)
+print(f"\\nno span cap, 'What happened?': {len(b[0][1].split())} words -> {b[0][1][:80]!r}...")
+
+# 4. Retriever recall@k before touching the reader (sentence-level index over the corpus).
+import re
+passages = [s for d in DOCS for s in re.split(r"(?<=\\.)\\s+", d)]
+gold = {"How fast does the new battery charge?": "six minutes", "Why did ticket volume rise?": "password reset",
+        "When does support for the old file format end?": "December", "What did farmers say about wheat?": "wheat",
+        "When is entry free at the museum?": "first Sunday", "How often will buses run at peak?": "every ten minutes"}
+emb = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+P = emb.encode(passages, normalize_embeddings=True)
+for k in (1, 5, 20):
+    hit = 0
+    for q, needle in gold.items():
+        top = np.argsort(-(P @ emb.encode([q], normalize_embeddings=True)[0]))[:k]
+        hit += any(needle in passages[i] for i in top)
+    print(f"retriever recall@{k:<2} = {hit}/{len(gold)}  over {len(passages)} passages")
+`,
+        out: `top-5 spans for 'How long does the battery take to charge?'
+   11.30  'six minutes'
+    7.97  'in six minutes'
+    7.44  'six minutes. The cell uses a silicon anode instead of graphite. After 800 cycles'
+    5.89  'charges in six minutes'
+    5.48  'minutes'
+
+margin = best span - null   answerable?  question
+    +9.25   yes   What anode does the cell use?  -> 'silicon'
+   +11.53   yes   How much capacity is kept after 800 cycles?  -> '91 percent'
+    +2.52   yes   When is commercial production expected?  -> '2028'
+    +4.48   yes   Who asked for samples?  -> 'carmakers'
+    -1.79   no    What is the price of the battery?  -> 'high'
+    -8.39   no    Which university ran the test?  -> 'silicon anode instead of graphite. After 800 cycles it kept 91 percent of its capacity.'
+    -2.75   no    What colour is the battery?  -> 'graphite'
+    -5.72   no    How heavy is the cell?  -> 'silicon'
+   -13.59   no    Who leads the team?  -> 'The team warned that manufacturing costs remain high.'
+lowest answerable margin +2.52, highest unanswerable -1.79 -> separable
+
+no span cap, 'What happened?': 19 words -> 'The cell uses a silicon anode instead of graphite. After 800 cycles it kept 91 p'...
+retriever recall@1  = 5/6  over 36 passages
+retriever recall@5  = 6/6  over 36 passages
+retriever recall@20 = 6/6  over 36 passages`,
+        notes: [
+          { t: "p", text: "The top five spans are mostly the same answer with different boundaries: 'six minutes', 'in six minutes', 'charges in six minutes'. That is normal. The start and end heads score positions independently, so near-duplicates crowd the list. If you show alternatives to a user, deduplicate overlapping spans first." },
+          { t: "p", text: "Every unanswerable question still produced a span, 'high' for the price and 'silicon' for the weight, because the span search always returns something. The margin over the null score separated the two groups here (lowest answerable +2.52, highest unanswerable −1.79). Threshold on that margin. A threshold on the best span's score alone would let these through." },
+          { t: "p", text: "Without the span cap, a vague question returned a 19-word stretch across two sentences. The cap is a guard against the model's own scoring, not just a speed trick. The retriever check uses sentence-level passages from this corpus, not the 1,000 documents the exercise asks for. The pattern is the same: measure recall@k before tuning the reader, because a reader cannot answer from a passage it never saw." }
+        ]
+      } }
   ],
 
   takeaways: [

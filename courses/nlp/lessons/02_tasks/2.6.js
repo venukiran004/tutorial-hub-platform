@@ -220,14 +220,92 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Faithfulness against fluency",
       body: [{ t: "p", text: "In a regulated setting — medical, legal, financial — extraction is often the correct answer not because it reads better but because a summary that cannot invent a fact needs no factuality review. Every sentence traces to a source offset you can cite. The moment you generate, you inherit a verification problem: you need either a human in the loop or an entailment check of each summary sentence against the source. Pick the architecture that matches the review budget you actually have." }] },
 
-    { t: "exercise", title: "Measure your own copy rate",
+    { t: "exercise", kind: "Challenge", title: "Measure your own copy rate", difficulty: "core", minutes: 45,
       requirements: [
         "Run the TF-IDF scorer on a document of your own and check whether the top-scoring sentence is the one you would have picked. Note what it ranked above it.",
         "Normalise the sentence scores by token count and see which sentences change rank. Decide which normalisation you would ship.",
         "Run `bart-large-cnn` over ten documents from your domain and compute the copy rate and longest verbatim run for each.",
         "Plot copy rate against input length. If it falls as documents get longer, you have found where the model starts genuinely composing.",
         "Take one abstractive summary and check every factual claim against the source. Record how long the check took — that is your per-document review cost."
-      ] }
+      ],
+      hint: "Measure the copy rate on lowercased word tokens, and compute the longest verbatim run separately. A summary can reuse every word and still reorder them, so the two numbers can disagree.",
+      solution: {
+        lang: "python", title: "copy_rate.py",
+        code: `import os, re, time
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from sklearn.feature_extraction.text import TfidfVectorizer
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from docs import DOCS
+
+split = lambda t: [s.strip() for s in re.split(r"(?<=[.!?])\\s+", t) if s.strip()]
+
+# 1-2. Summed TF-IDF against length-normalised TF-IDF on one document.
+sents = split(DOCS[2])
+X = TfidfVectorizer().fit_transform(sents)
+summed = np.asarray(X.sum(axis=1)).ravel()
+lengths = np.array([len(s.split()) for s in sents])
+normed = summed / lengths
+print("sentence                                               words  summed  per-word")
+for i in np.argsort(-summed):
+    print(f"{sents[i][:54]:54} {lengths[i]:5d}  {summed[i]:.3f}  {normed[i]:.3f}")
+print("top by sum:", np.argmax(summed), "| top by per-word:", np.argmax(normed))
+
+# 3-4. BART copy rate and longest verbatim run, against input length.
+name = "facebook/bart-large-cnn"
+tok = AutoTokenizer.from_pretrained(name); mod = AutoModelForSeq2SeqLM.from_pretrained(name).eval()
+words = lambda s: re.findall(r"[a-z0-9']+", s.lower())
+def longest_run(src, out):
+    best = 0
+    for i in range(len(out)):
+        for j in range(len(src)):
+            k = 0
+            while i + k < len(out) and j + k < len(src) and out[i + k] == src[j + k]: k += 1
+            best = max(best, k)
+    return best
+print("\\ninput words  summary words  copy rate  longest run")
+rows = []
+for d in DOCS:
+    ids = tok(d, return_tensors="pt", truncation=True)
+    with torch.no_grad():
+        g = mod.generate(**ids, num_beams=4, max_length=60, min_length=15)
+    summ = tok.decode(g[0], skip_special_tokens=True)
+    sw, ow = words(d), words(summ)
+    copy = sum(w in set(sw) for w in ow) / len(ow)
+    rows.append((len(sw), copy))
+    print(f"{len(sw):11d}  {len(ow):13d}  {copy:9.1%}  {longest_run(sw, ow):11d}")
+L, C = np.array(rows).T
+if C.std() == 0:
+    print(f"copy rate is {C[0]:.0%} on all {len(rows)} documents: no length effect to correlate")
+else:
+    print(f"correlation(length, copy rate) = {np.corrcoef(L, C)[0, 1]:+.2f} over {len(rows)} documents")
+print("\\nsummary to fact-check by hand:", summ)
+`,
+        out: `sentence                                               words  summed  per-word
+Most of the increase came from password reset requests    14  3.577  0.255
+We will also add a self-service reset link to the help    12  3.436  0.286
+The goal is to bring response time under four hours by    12  3.434  0.286
+Our support team received 4,200 tickets in June, up fr    13  3.347  0.257
+Average first response time rose to nine hours.            8  2.806  0.351
+Two new agents start next week.                            6  2.449  0.408
+top by sum: 1 | top by per-word: 3
+
+input words  summary words  copy rate  longest run
+         63             29     100.0%           21
+         52             29     100.0%           12
+         68             32     100.0%           24
+         57             27     100.0%           19
+         51             23     100.0%           23
+         57             32     100.0%           23
+copy rate is 100% on all 6 documents: no length effect to correlate
+
+summary to fact-check by hand: The software release fixes a memory leak in the export module. Large reports no longer crash the application after an hour of use. Support for the old file format ends in December.`,
+        notes: [
+          { t: "p", text: "Dividing by length did not fix summed TF-IDF. It replaced one bias with another. The summed score preferred the 14-word sentence about password resets. The per-word score promoted 'Two new agents start next week.', the shortest and least informative sentence in the document. A sentence of a few rare words wins on per-word mass. Neither score is safe to ship alone. A square-root length penalty, or a floor on length, is the usual compromise. Check it on your own documents before you trust it." },
+          { t: "p", text: "BART copied every word on all six documents, with verbatim runs of 12 to 24 words. That is why the length correlation is reported as undefined, not as a number: with constant copy rate there is nothing to correlate. On short, clean news-like text this model is an extractive system that writes like an abstractive one. Run the same loop on long transcripts before you conclude it never composes." },
+          { t: "p", text: "Step 5 cannot be automated honestly. The printed summary is the one to check by hand against its source. Time yourself. Even a fully copied summary needs the check, because selection can change meaning: dropping 'Users should back up their projects' changes the advice a reader takes away." }
+        ]
+      } }
   ],
 
   takeaways: [

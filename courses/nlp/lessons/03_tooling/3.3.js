@@ -208,14 +208,77 @@ EC.receiveLesson({
       ["`.map(batched=True)`", "Caches to disk keyed on a hash of the function, so re-running is free. Change the function and it recomputes."]
     ] },
 
-    { t: "exercise", title: "Verify the abstractions",
+    { t: "exercise", kind: "Challenge", title: "Verify the abstractions", difficulty: "core", minutes: 40,
       requirements: [
         "Encode a batch of ragged sentences and confirm the mask zeros line up with the `[PAD]` positions in `input_ids`.",
         "Reproduce the mask measurement on a model of your choice and record the cosine with and without it.",
         "Feed BERT ids to RoBERTa and look at the output. Confirm nothing raises, then decode the ids with the wrong tokeniser to see what the model actually received.",
         "Load a sequence-classification head, run it untrained, and softmax the logits. Note how confident the meaningless output looks.",
         "Run `fill-mask` on occupation, nationality and religion templates for a model you are about to deploy, and write the results into your test suite as assertions."
-      ] }
+      ],
+      hint: "Compute the [CLS] vector for a sentence alone, then for the same sentence padded in a batch, with and without passing `attention_mask`. The unpadded vector is the reference for the cosine.",
+      solution: {
+        lang: "python", title: "verify_abstractions.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import AutoTokenizer, AutoModel, AutoModelForSequenceClassification, pipeline
+cos = torch.nn.functional.cosine_similarity
+
+# 1. Mask zeros line up with [PAD].
+tok = AutoTokenizer.from_pretrained("bert-base-uncased")
+enc = tok(["short one", "a considerably longer sentence than the first"], padding=True, return_tensors="pt")
+pad = enc["input_ids"] == tok.pad_token_id
+print("mask zeros == PAD positions:", bool(((enc["attention_mask"] == 0) == pad).all()), "| pads per row:", pad.sum(1).tolist())
+
+# 2. The mask measurement on two models.
+for name in ("bert-base-uncased", "distilbert-base-uncased"):
+    t = AutoTokenizer.from_pretrained(name); m = AutoModel.from_pretrained(name).eval()
+    e = t(["hello world", "a much longer second sentence to force padding here"], padding=True, return_tensors="pt")
+    alone = t(["hello world"], return_tensors="pt")
+    with torch.no_grad():
+        ref = m(**alone).last_hidden_state[0, 0]
+        good = m(**e).last_hidden_state[0, 0]
+        bad = m(input_ids=e["input_ids"]).last_hidden_state[0, 0]
+    print(f"{name:24} with mask {cos(ref, good, 0).item():.6f}   without mask {cos(ref, bad, 0).item():.6f}")
+
+# 3. BERT ids into RoBERTa: nothing raises.
+ct = AutoTokenizer.from_pretrained("roberta-large"); cm = AutoModel.from_pretrained("roberta-large").eval()
+ids = tok("The Bank of England raised interest rates.", return_tensors="pt")["input_ids"]
+with torch.no_grad(): out = cm(input_ids=ids).last_hidden_state
+print()
+print("RoBERTa ran on BERT ids, output", tuple(out.shape))
+print("  it actually saw:", repr(ct.decode(ids[0])))
+
+# 4. An untrained head looks confident.
+clf = AutoModelForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3).eval()
+with torch.no_grad(): p = clf(**tok(["Totally meaningless input."], return_tensors="pt")).logits.softmax(-1)
+print("untrained head probabilities:", [round(x, 3) for x in p[0].tolist()])
+
+# 5. fill-mask templates, written as the assertions a test suite would keep.
+fm = pipeline("fill-mask", model="bert-base-uncased")
+for job in ("nurse", "engineer", "receptionist", "surgeon"):
+    r = {x["token_str"]: x["score"] for x in fm(f"The {job} said that [MASK] was tired.", top_k=10)}
+    she, he = r.get("she", 0), r.get("he", 0)
+    print(f"{job:12} P(she)={she:.3f} P(he)={he:.3f}  ratio={max(she, he) / max(min(she, he), 1e-6):5.1f}x")
+`,
+        out: `mask zeros == PAD positions: True | pads per row: [5, 0]
+bert-base-uncased        with mask 1.000000   without mask 0.690134
+distilbert-base-uncased  with mask 1.000000   without mask 0.941638
+
+RoBERTa ran on BERT ids, output (1, 10, 1024)
+  it actually saw: ' like asking newspaper statements clearly changing Pl violations TVa'
+untrained head probabilities: [0.308, 0.207, 0.485]
+nurse        P(she)=0.637 P(he)=0.187  ratio=  3.4x
+engineer     P(she)=0.053 P(he)=0.820  ratio= 15.6x
+receptionist P(she)=0.815 P(he)=0.075  ratio= 10.9x
+surgeon      P(she)=0.267 P(he)=0.609  ratio=  2.3x`,
+        notes: [
+          { t: "p", text: "Without the mask, BERT's [CLS] vector fell to cosine 0.69 against the unpadded reference, and DistilBERT's to 0.94. With the mask, both were exactly 1.000000. The damage differs by model, so a model that 'seems fine' without the mask is not evidence the mask is optional." },
+          { t: "p", text: "RoBERTa accepted BERT's token ids and returned a correctly shaped tensor. Decoded with RoBERTa's own vocabulary, the input was 'like asking newspaper statements clearly changing Pl violations TVa', so the model processed nonsense without complaint. Load the tokeniser and the model from the same checkpoint name, and assert it in code." },
+          { t: "p", text: "The untrained three-label head gave 0.485 to one class on meaningless input. Softmax always sums to one, so probabilities from a random head look like an opinion. For the bias probes, write the ratios as assertions, for example P(he) / P(she) for 'engineer' must stay below a bound you choose. Re-run them on every model update. Here 'engineer' gave a 15.6× ratio and 'receptionist' 10.9× the other way." }
+        ]
+      } }
   ],
 
   takeaways: [
