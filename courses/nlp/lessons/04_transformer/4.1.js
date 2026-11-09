@@ -149,14 +149,71 @@ EC.receiveLesson({
 
     { t: "p", text: "The striking thing is the convergence. Three architectural families branched immediately from the 2017 paper, and by 2023 the decoder-only line had absorbed most of the attention and most of the funding — not because encoder-only models are worse at what they do, but because next-token prediction turned out to be a training objective that scales without needing labelled data. Lesson 5.1 covers what each family is still genuinely better at." },
 
-    { t: "exercise", title: "Measure the crossover yourself",
+    { t: "exercise", kind: "Challenge", title: "Measure the crossover yourself", difficulty: "core", minutes: 35,
       requirements: [
         "Reproduce the LSTM-against-attention benchmark on your hardware and find the sequence length where they cross.",
         "Re-run it on a GPU if you have one and see how far the crossover moves.",
         "Time the backward pass as well as the forward. The gap should widen in attention's favour — explain why.",
         "Compute the FFN-to-attention parameter ratio for a model you use and confirm it is close to 2.",
         "Measure the embedding and positional-encoding magnitudes in a model of your choice and check whether it scales at all."
-      ] }
+      ],
+      hint: "Time with `time.perf_counter()`, discard the first run as warm-up, and take the median of several. For the backward pass, call `.sum().backward()` on the output so both layers get a scalar loss.",
+      solution: {
+        lang: "python", title: "crossover.py",
+        code: `import os, time
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch, torch.nn as nn
+from transformers import AutoModel
+torch.manual_seed(0); torch.set_num_threads(4)
+d, B = 256, 8
+lstm = nn.LSTM(d, d, batch_first=True)
+attn = nn.MultiheadAttention(d, 4, batch_first=True)
+
+def bench(f, x, backward=False, reps=5):
+    ts = []
+    for _ in range(reps + 1):
+        x_ = x.clone().requires_grad_(backward)
+        t = time.perf_counter(); y = f(x_)
+        if backward: y.sum().backward()
+        ts.append(time.perf_counter() - t)
+    return 1000 * sorted(ts[1:])[len(ts) // 2]
+
+# 1 and 3. Forward and forward+backward across sequence lengths.
+print("  T   LSTM fwd  attn fwd   LSTM f+b  attn f+b")
+for T in (32, 64, 128, 256, 512, 1024):
+    x = torch.randn(B, T, d)
+    f_l, f_a = lambda z: lstm(z)[0], lambda z: attn(z, z, z, need_weights=False)[0]
+    print(f"{T:4} {bench(f_l, x):9.2f} {bench(f_a, x):9.2f}  {bench(f_l, x, True):9.2f} {bench(f_a, x, True):9.2f}")
+
+# 4. FFN-to-attention parameter ratio in a real model.
+bert = AutoModel.from_pretrained("bert-base-uncased")
+layer = bert.encoder.layer[0]
+n = lambda m: sum(p.numel() for p in m.parameters())
+ffn = n(layer.intermediate) + n(layer.output.dense)
+att = n(layer.attention.self) + n(layer.attention.output.dense)
+print(f"\\nBERT-base layer: FFN {ffn:,} vs attention {att:,} parameters, ratio {ffn / att:.2f}")
+
+# 5. Token-embedding and positional-embedding magnitudes.
+emb = bert.embeddings
+print(f"mean L2 norm: word embeddings {emb.word_embeddings.weight.norm(dim=1).mean():.3f}, "
+      f"position embeddings {emb.position_embeddings.weight.norm(dim=1).mean():.3f}")
+`,
+        out: `  T   LSTM fwd  attn fwd   LSTM f+b  attn f+b
+  32      5.10      3.17      13.79      4.29
+  64      3.82      2.66      12.22      7.86
+ 128      8.48      7.03      24.89     18.36
+ 256     15.75     12.91      44.64     59.03
+ 512     36.97     35.61     105.59    121.52
+1024     59.15     90.57     190.20    311.38
+
+BERT-base layer: FFN 4,722,432 vs attention 2,362,368 parameters, ratio 2.00
+mean L2 norm: word embeddings 1.401, position embeddings 0.437`,
+        notes: [
+          { t: "p", text: "On this CPU, attention's forward pass was faster up to about 512 tokens and lost clearly at 1,024 (91 ms against 59 ms). The crossover is set by hardware and threading, so expect it to move on yours." },
+          { t: "p", text: "The backward-pass result is the opposite of what the exercise predicts, and it shows where that prediction applies. At 32 tokens attention's forward-plus-backward was 3.2 times faster than the LSTM's. From 256 tokens upward the LSTM was faster, because attention's backward pass is quadratic as well. The 'gap widens in attention's favour' claim is about GPUs, where the LSTM's sequential steps leave the hardware idle and attention's matrix multiplications fill it. On a CPU with four threads there is little idle capacity to fill." },
+          { t: "p", text: "BERT-base's feed-forward block holds exactly twice the attention block's parameters (4.72M against 2.36M), because d_ff is 4 × d_model. Its position embeddings have a mean norm about a third of the word embeddings' (0.44 against 1.40). BERT learns positions rather than adding a fixed sinusoid, so the 'scale embeddings by √d' step from the original paper is not done explicitly here." }
+        ]
+      } }
   ],
 
   takeaways: [

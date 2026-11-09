@@ -194,14 +194,85 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Monitor the inputs, not just the outputs",
       body: [{ t: "p", text: "Accuracy monitoring needs labels, which arrive late or never. Input monitoring needs nothing: track tokens per document, out-of-vocabulary rate, language distribution, and the share of inputs hitting the truncation limit. When those shift, your accuracy has already shifted and you will find out weeks before the labels confirm it. The ragged-batch problem shows up here too — a sudden rise in the tail of the length distribution explains a latency regression that looks inexplicable from the model's side." }] },
 
-    { t: "exercise", title: "Measure your own service",
+    { t: "exercise", kind: "Challenge", title: "Measure your own service", difficulty: "core", minutes: 45,
       requirements: [
         "Benchmark your model after warm-up and report P50, P95 and P99. Compare the P99 with the mean you were previously quoting.",
         "Sweep batch size and find the knee. Then compute the added latency for the first request in a batch of that size.",
         "Construct a ragged batch from your own traffic distribution and measure the padding waste. Implement length bucketing and re-measure.",
         "Quantise your model and run the full evaluation set through it. Report per-class F1, not just accuracy.",
         "Write a test asserting that the training and serving preprocessing produce identical token ids on twenty probe strings, including uppercase, unicode and empty input."
-      ] }
+      ],
+      hint: "Warm the model up before timing, then take percentiles of many single-request timings. For the ragged-batch test, time the mixed batch and the length-bucketed batches with the same median-of-three loop, so the comparison is fair.",
+      solution: {
+        lang: "python", title: "service_bench.py",
+        code: `import os, time
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from sklearn.metrics import f1_score
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+torch.set_num_threads(4)
+name = "distilbert-base-uncased-finetuned-sst-2-english"
+tok = AutoTokenizer.from_pretrained(name); model = AutoModelForSequenceClassification.from_pretrained(name).eval()
+def run(m, texts):
+    with torch.no_grad(): return m(**tok(texts, padding=True, truncation=True, return_tensors="pt")).logits
+def ms(f):
+    t = time.perf_counter(); f(); return 1000 * (time.perf_counter() - t)
+
+# 1. Percentiles after warm-up, against the mean.
+q = "The battery lasts all day and charges quickly."
+for _ in range(5): run(model, [q])
+lat = np.array([ms(lambda: run(model, [q])) for _ in range(100)])
+print(f"single request: mean {lat.mean():.2f}  P50 {np.percentile(lat, 50):.2f}  "
+      f"P95 {np.percentile(lat, 95):.2f}  P99 {np.percentile(lat, 99):.2f} ms")
+
+# 2. Batch-size sweep: per-item cost and whole-batch wait.
+for bs in (1, 4, 16, 32, 64):
+    b = [q] * bs; t = np.median([ms(lambda: run(model, b)) for _ in range(3)])
+    print(f"batch {bs:3}: {t:8.2f} ms total  {t / bs:6.2f} ms/item")
+
+# 3. Ragged batch: one long document pads 31 short ones; bucketing fixes it.
+short = ["Great product."] * 31; long = [" ".join(["The delivery was late and"] * 30)]
+t_mixed = np.median([ms(lambda: run(model, short + long)) for _ in range(3)])
+t_bucket = np.median([ms(lambda: (run(model, short), run(model, long))) for _ in range(3)])
+print(f"\\nragged batch {t_mixed:.1f} ms; bucketed by length {t_bucket:.1f} ms ({t_mixed / t_bucket:.1f}x)")
+
+# 4. Dynamic quantisation: speed, and per-class F1 on a labelled set.
+data = [("I love it", 1), ("Works perfectly", 1), ("Absolutely brilliant service", 1), ("Fast and reliable", 1),
+        ("Exceeded my expectations", 1), ("Would buy again", 1), ("Not bad at all", 1), ("Surprisingly good value", 1),
+        ("Terrible experience", 0), ("It broke after a day", 0), ("Waste of money", 0), ("The support never replied", 0),
+        ("Not worth the price", 0), ("Arrived damaged", 0), ("I want a refund", 0), ("Could have been better", 0)]
+X, y = [d[0] for d in data], np.array([d[1] for d in data])
+qmodel = torch.quantization.quantize_dynamic(model, {torch.nn.Linear}, dtype=torch.qint8)
+for label, m in (("fp32", model), ("int8", qmodel)):
+    pred = run(m, X).argmax(-1).numpy(); t = np.median([ms(lambda: run(m, X)) for _ in range(10)])
+    print(f"{label}: {t:6.1f} ms per batch of 16, per-class F1 {np.round(f1_score(y, pred, average=None), 3)}")
+
+# 5. Train/serve skew test: serving code that strips non-ASCII, unlike training.
+train_pre = lambda s: s
+serve_pre = lambda s: s.encode("ascii", "ignore").decode()
+probes = ["Café au lait", "NAÏVE", "", "Ünïcödé", "plain text", "MIXED Case", "emoji 👍", "tab\\there"]
+bad = [p for p in probes if tok(train_pre(p))["input_ids"] != tok(serve_pre(p))["input_ids"]]
+print(f"\\nskew test: {len(bad)} of {len(probes)} probes tokenise differently: {bad}")
+`,
+        out: `single request: mean 20.85  P50 21.07  P95 22.87  P99 32.25 ms
+batch   1:    20.07 ms total   20.07 ms/item
+batch   4:    38.02 ms total    9.50 ms/item
+batch  16:    98.11 ms total    6.13 ms/item
+batch  32:   177.00 ms total    5.53 ms/item
+batch  64:   386.47 ms total    6.04 ms/item
+
+ragged batch 3145.8 ms; bucketed by length 243.7 ms (12.9x)
+fp32:   87.0 ms per batch of 16, per-class F1 [1. 1.]
+int8:   41.7 ms per batch of 16, per-class F1 [1. 1.]
+
+skew test: 4 of 8 probes tokenise differently: ['Café au lait', 'NAÏVE', 'Ünïcödé', 'emoji 👍']`,
+        notes: [
+          { t: "p", text: "After warm-up, P99 (32 ms) was 1.5 times the mean (21 ms). An SLO written against the mean would be breached on the slowest requests without the dashboard showing it." },
+          { t: "p", text: "Per-item cost fell from 20 ms at batch 1 to 5.5 ms at batch 32, then rose slightly at 64. The knee is around 16–32 here. Past it, larger batches only add latency: the first request in a batch of 64 waits for the whole 386 ms batch." },
+          { t: "p", text: "One 150-token document in a batch of 31 two-token reviews took the batch to 3.1 s. Splitting by length took 0.24 s, 12.9 times faster for the same work. Sort or bucket by length before batching, especially on CPU." },
+          { t: "p", text: "Dynamic int8 quantisation halved the batch time and kept every label on this 16-sentence set. Sixteen sentences is too few to show a small accuracy loss. Run the full evaluation set, per class, before shipping. The skew test caught four of eight probes where a serving-side ASCII strip changed the token ids. Keep that test in the suite; it costs milliseconds and catches a bug that otherwise only shows as accuracy drift." }
+        ]
+      } }
   ],
 
   takeaways: [

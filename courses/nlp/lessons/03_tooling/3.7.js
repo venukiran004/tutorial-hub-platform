@@ -221,14 +221,84 @@ doc._.coref_chains.resolve(doc[13])           # [migration]
       caption: "**The second sentence is ambiguous to a human reader too, and the resolver commits to an answer without reporting that it is a guess.** That matters for the usual downstream use — rewriting pronouns into entity names before indexing or summarising — because the rewrite is a decision nobody reviewed, and it is now in the text as a fact." },
     { t: "p", text: "`coreferee` works over spaCy's existing parse, so the resolver inherits whatever the dependency parse got wrong; the transformer pipeline is worth the cost here for that reason. **The practical pattern is to keep the resolution as an annotation rather than a rewrite** — store the chains alongside the original text, so a later step can see both what was written and what the model thought it meant." },
 
-    { t: "exercise", title: "Map the failure surface",
+    { t: "exercise", kind: "Challenge", title: "Map the failure surface", difficulty: "core", minutes: 40,
       requirements: [
         "Run the extractor on twenty sentences from your own domain and classify every failure by type. Rank the types by frequency.",
         "Add passive-voice handling by walking the `agent` edge, then find a new sentence it still fails on.",
         "Add negation detection using `dep_ == \"neg\"` and check the subtree, not just the root verb's children.",
         "Build a distant-supervision set from Wikidata for one relation, then hand-label 100 sentences and measure the false-positive rate.",
         "Estimate your pipeline's end-to-end accuracy by measuring each stage separately and multiplying. Compare it with end-to-end measurement."
-      ] }
+      ],
+      hint: "Print `[(t.text, t.dep_, t.head.text) for t in doc]` for each failing sentence before writing a rule. The parse shows where the subject actually hangs: under `agent` for passives, and under a `prep` for copular verbs.",
+      solution: {
+        lang: "python", title: "relation_failures.py",
+        code: `import warnings
+warnings.filterwarnings("ignore")
+import collections, spacy
+nlp = spacy.load("en_core_web_sm")
+
+def naive(doc):
+    """The lesson's extractor: subject and object hanging off a VERB root."""
+    out = []
+    for t in doc:
+        if t.dep_ == "ROOT" and t.pos_ == "VERB":
+            s = [c for c in t.children if c.dep_ == "nsubj"]; o = [c for c in t.children if c.dep_ == "dobj"]
+            if s and o: out.append((s[0].text, t.lemma_, o[0].text))
+    return out
+
+def improved(doc):
+    """Adds passive voice (agent edge), copular roots and negation anywhere in the verb's subtree."""
+    out = []
+    for t in doc:
+        if t.dep_ != "ROOT" or t.pos_ not in ("VERB", "AUX"): continue
+        neg = any(c.dep_ == "neg" for c in t.subtree if c.head == t or c.head.head == t)
+        subj = [c for c in t.children if c.dep_ in ("nsubj", "nsubjpass")]
+        obj = [c for c in t.children if c.dep_ in ("dobj", "attr")]
+        agent = [g for c in t.children if c.dep_ == "agent" for g in c.children if g.dep_ == "pobj"]
+        prep = [g for c in t.children if c.dep_ == "prep" for g in c.children if g.dep_ == "pobj"]
+        if agent and subj: out.append((agent[0].text, t.lemma_, subj[0].text, "NEG" if neg else "POS"))
+        elif subj and (obj or prep): out.append((subj[0].text, t.lemma_, (obj or prep)[0].text, "NEG" if neg else "POS"))
+    return out
+
+cases = [("Google acquired YouTube.", "ok"), ("Google did not acquire Yahoo.", "negation"),
+         ("YouTube was acquired by Google.", "passive"), ("Apple is headquartered in Cupertino.", "copula"),
+         ("Microsoft bought LinkedIn and GitHub.", "coordination"), ("Google, the search giant, bought Fitbit.", "apposition"),
+         ("It bought the company in 2016.", "pronoun"), ("Amazon never purchased eBay.", "negation"),
+         ("Netflix was not founded by Steve Jobs.", "negated passive"), ("The board said Oracle acquired Cerner.", "embedded clause")]
+fails = collections.Counter()
+print(f"{'sentence':42} {'naive':34} improved")
+for s, kind in cases:
+    d = nlp(s); n, i = naive(d), improved(d)
+    if not n or kind not in ("ok",): fails[kind] += kind != "ok"
+    print(f"{s:42} {str(n):34} {i}")
+print("\\nfailure types for the naive extractor:", fails.most_common())
+
+# 5. Stage-wise accuracy multiplies into an end-to-end estimate.
+stages = {"sentence split": 0.99, "NER": 0.90, "coreference": 0.75, "relation": 0.70}
+est = 1.0
+for k, v in stages.items(): est *= v
+print(f"end-to-end estimate from {list(stages.values())}: {est:.2f}")
+`,
+        out: `sentence                                   naive                              improved
+Google acquired YouTube.                   [('Google', 'acquire', 'YouTube')] [('Google', 'acquire', 'YouTube', 'POS')]
+Google did not acquire Yahoo.              [('Google', 'acquire', 'Yahoo')]   [('Google', 'acquire', 'Yahoo', 'NEG')]
+YouTube was acquired by Google.            []                                 [('Google', 'acquire', 'YouTube', 'POS')]
+Apple is headquartered in Cupertino.       []                                 [('Apple', 'headquarter', 'Cupertino', 'POS')]
+Microsoft bought LinkedIn and GitHub.      [('Microsoft', 'buy', 'LinkedIn')] [('Microsoft', 'buy', 'LinkedIn', 'POS')]
+Google, the search giant, bought Fitbit.   [('Google', 'buy', 'Fitbit')]      [('Google', 'buy', 'Fitbit', 'POS')]
+It bought the company in 2016.             [('It', 'buy', 'company')]         [('It', 'buy', 'company', 'POS')]
+Amazon never purchased eBay.               [('Amazon', 'purchase', 'eBay')]   [('Amazon', 'purchase', 'eBay', 'NEG')]
+Netflix was not founded by Steve Jobs.     []                                 [('Jobs', 'found', 'Netflix', 'NEG')]
+The board said Oracle acquired Cerner.     []                                 []
+
+failure types for the naive extractor: [('negation', 2), ('passive', 1), ('copula', 1), ('coordination', 1), ('apposition', 1), ('pronoun', 1), ('negated passive', 1), ('embedded clause', 1)]
+end-to-end estimate from [0.99, 0.9, 0.75, 0.7]: 0.47`,
+        notes: [
+          { t: "p", text: "The improved extractor reads the `agent` edge, accepts `AUX` roots and checks for `neg`. It fixed passive voice, the copula, and both negations, which are now tagged NEG instead of being asserted. It still fails on coordination (GitHub is lost), pronouns ('It' needs coreference), and the embedded clause, where the fact sits under 'said' and not under the root. Each fix exposes the next structure the rules do not cover." },
+          { t: "p", text: "Ranking the naive extractor's failures by type puts negation first. It is also the most dangerous, because it produces a confident false fact rather than nothing. A missing extraction lowers recall; a negated one asserted as positive corrupts the knowledge base." },
+          { t: "p", text: "Multiplying stage accuracies (0.99 × 0.90 × 0.75 × 0.70) gives an end-to-end estimate of 0.47. That figure assumes errors are independent, which they usually are not. Measure end to end on a labelled sample as well, and treat the product as a lower-bound sanity check. Building a Wikidata distant-supervision set needs network access and is not run here." }
+        ]
+      } }
   ],
 
   takeaways: [

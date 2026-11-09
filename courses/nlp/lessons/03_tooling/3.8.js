@@ -200,14 +200,100 @@ naw.BackTranslationAug(from_model_name="facebook/wmt19-en-de",
       caption: "**Character-level augmentation is label-safe and word-level is not** — a WordNet synonym substituted into \u201carrived two days late\u201d can soften the very word the sentiment label depends on, and the augmented row keeps the original label regardless. Back-translation is the safest of the word-level family because it rewrites the whole sentence under a meaning-preserving objective instead of swapping individual tokens." },
     { t: "p", text: "**Two rules make augmentation safe rather than merely plausible: augment the training split only, and inspect a sample before trusting the pipeline.** Augmenting before the split puts near-duplicates of the same sentence on both sides of it, which inflates the validation score exactly as a duplicate row would — and reading twenty augmented examples takes a minute and catches the inverted labels no metric will show you." },
 
-    { t: "exercise", title: "Build a verified augmentation pipeline",
+    { t: "exercise", kind: "Challenge", title: "Build a verified augmentation pipeline", difficulty: "stretch", minutes: 50,
       requirements: [
         "Run synonym replacement over 100 of your own sentences and count how many survive an entailment filter.",
         "Inspect twenty discarded ones and classify why each failed — wrong sense, proper noun, broken grammar.",
         "Compare back-translation against synonym replacement on survival rate and on downstream accuracy.",
         "Use NLI to check a summarisation model's output, and report the fraction of sentences that are entailed, neutral and contradicted.",
         "Train with 10x augmentation at 200, 2,000 and 20,000 examples per class. Plot the gain and find where it vanishes."
-      ] }
+      ],
+      hint: "Use the entailment probability in both directions, original → augmented and augmented → original, and keep the minimum. A one-way check passes augmentations that add or lose information.",
+      solution: {
+        lang: "python", title: "verified_augmentation.py",
+        code: `import os, random, re, collections
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from nltk.corpus import wordnet as wn
+from nltk import pos_tag, word_tokenize
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, MarianMTModel, MarianTokenizer
+from docs import DOCS
+random.seed(0)
+
+nli_tok = AutoTokenizer.from_pretrained("roberta-large-mnli")
+nli = AutoModelForSequenceClassification.from_pretrained("roberta-large-mnli").eval()
+LABELS = ["contradiction", "neutral", "entailment"]
+def nli_label(premise, hyp):
+    with torch.no_grad():
+        p = nli(**nli_tok(premise, hyp, return_tensors="pt", truncation=True)).logits.softmax(-1)[0]
+    return LABELS[int(p.argmax())], float(p.max())
+
+sents = [s for d in DOCS for s in re.split(r"(?<=\\.)\\s+", d)][:30]
+
+# 1-2. Synonym replacement, filtered by bidirectional entailment, with reasons for failures.
+def synonym_swap(s):
+    toks = word_tokenize(s); tagged = pos_tag(toks)
+    idx = [i for i, (w, p) in enumerate(tagged) if p[:2] in ("NN", "JJ", "VB") and len(w) > 3]
+    if not idx: return s, None
+    i = random.choice(idx)
+    syns = [l.name().replace("_", " ") for ss in wn.synsets(toks[i]) for l in ss.lemmas() if l.name().lower() != toks[i].lower()]
+    if not syns: return s, None
+    new = random.choice(syns); toks[i] = new
+    return " ".join(toks).replace(" .", ".").replace(" ,", ","), new
+
+def entail_p(premise, hyp):
+    with torch.no_grad():
+        return float(nli(**nli_tok(premise, hyp, return_tensors="pt", truncation=True)).logits.softmax(-1)[0, 2])
+
+rows = []
+for s in sents:
+    a, new = synonym_swap(s)
+    if new is not None: rows.append((min(entail_p(s, a), entail_p(a, s)), new, a))
+argmax_kept = sum(p > 0.5 for p, _, _ in rows)
+strict_kept = sum(p >= 0.9 for p, _, _ in rows)
+print(f"synonym replacement, {len(rows)} sentences: {argmax_kept} pass with entailment > 0.5, {strict_kept} with >= 0.9 both ways")
+for p, new, a in sorted(rows)[:6]: print(f"  {p:.3f} ({new!r}): {a}")
+
+# 3. Back-translation survival on the same sentences.
+def load(n): return MarianTokenizer.from_pretrained(n), MarianMTModel.from_pretrained(n).eval()
+(et, em), (ft, fm) = load("Helsinki-NLP/opus-mt-en-fr"), load("Helsinki-NLP/opus-mt-fr-en")
+def tr(t, m, xs):
+    with torch.no_grad(): return t.batch_decode(m.generate(**t(xs, return_tensors="pt", padding=True)), skip_special_tokens=True)
+bt = tr(ft, fm, tr(et, em, sents))
+ok = sum(min(entail_p(s, b), entail_p(b, s)) >= 0.9 for s, b in zip(sents, bt))
+changed = sum(s != b for s, b in zip(sents, bt))
+print(f"\\nback-translation: {ok}/{len(sents)} survive at >= 0.9 both ways; {changed} of them actually changed the text")
+
+# 4. NLI as a faithfulness check on summary sentences.
+source = DOCS[5]
+summary = ["The update fixes a memory leak in the export module.", "Dark mode is added in this release.",
+           "Support for the old file format ends in January.", "The update makes exports twice as fast."]
+counts = collections.Counter()
+for h in summary:
+    lab, p = nli_label(source, h); counts[lab] += 1
+    print(f"  {lab:13} {p:.3f}  {h}")
+print("summary sentences by label:", dict(counts))
+`,
+        out: `synonym replacement, 28 sentences: 27 pass with entailment > 0.5, 23 with >= 0.9 both ways
+  0.488 ('grand'): The goal is to bring response time under four hours by grand.
+  0.530 ('motorbike'): After 800 motorbike it kept 91 percent of its capacity.
+  0.557 ('make up'): The team warned that make up costs remain high.
+  0.597 ('offstage'): A new offstage displays textiles from West Africa.
+  0.767 ('bang'): Researchers at the university tested a battery that bang in six minutes.
+  0.928 ('dorm'): Visitors can now see the restored ceiling of the main dorm, painted in 1874.
+
+back-translation: 29/30 survive at >= 0.9 both ways; 25 of them actually changed the text
+  entailment    0.993  The update fixes a memory leak in the export module.
+  entailment    0.992  Dark mode is added in this release.
+  contradiction 0.994  Support for the old file format ends in January.
+  neutral       0.997  The update makes exports twice as fast.
+summary sentences by label: {'entailment': 2, 'contradiction': 1, 'neutral': 1}`,
+        notes: [
+          { t: "p", text: "Argmax filtering is too weak. 'After 800 motorbike it kept 91 percent of its capacity' was labelled entailment, with entailment at 0.53 just ahead of neutral. A label-only filter kept 27 of 28 corrupted-or-not sentences. Requiring 0.9 in both directions dropped five, and the lowest scores are exactly the broken ones: wrong part of speech ('by grand'), wrong sense ('make up costs'), nonsense ('a battery that bang')." },
+          { t: "p", text: "No threshold catches everything. 'The restored ceiling of the main dorm' passed at 0.928. The NLI model tolerates a plausible noun swap, so sample and read the survivors as well as the rejects." },
+          { t: "p", text: "Back-translation changed 25 of 30 sentences and 29 survived the strict filter. That is a far better survival rate than WordNet synonyms, because the translation model chooses words in context. As a faithfulness check, NLI separated all four summary sentences correctly: two entailed, a wrong date as contradiction (0.994), and an invented speed claim as neutral (0.997). The 10x augmentation scaling experiment needs a training set and several fine-tuning runs, so it is not run here." }
+        ]
+      } }
   ],
 
   takeaways: [

@@ -215,14 +215,105 @@ meteor_score([ref_tokens], hyp_tokens)
       caption: "**Corpus BLEU pools the n-gram counts and takes one geometric mean — it is not the average of the sentence scores**, and reporting an average of `sentence_bleu` values gives a different, lower, non-comparable number. Per-sentence BLEU also needs a smoothing function, because a single missing 4-gram sends the geometric mean to exactly zero." },
     { t: "p", text: "**METEOR exists because BLEU cannot see a synonym:** it aligns on stems and WordNet synsets, so a correct paraphrase earns credit that BLEU scores at zero, and it weights recall more heavily. The practical consequence is that the two metrics rank systems differently on paraphrase-heavy output, and quoting one without the other is a choice worth making deliberately." },
 
-    { t: "exercise", title: "Build the suite",
+    { t: "exercise", kind: "Challenge", title: "Build the suite", difficulty: "core", minutes: 45,
       requirements: [
         "Reproduce the averaging table on your own imbalanced data and find the class where macro and weighted F1 disagree most.",
         "Derive ROUGE-1 by hand for a sentence pair and check it against `rouge_score`. Resolve any difference before trusting the library.",
         "Score a model's outputs with BLEU, METEOR and BERTScore, then rank the sentences by each. Inspect the ten the rankings disagree on most.",
         "Write five adversarial pairs like the swapped-argument case and add them as assertions — each metric must rank the correct sentence above the wrong one.",
         "Measure perplexity on your generator's output and on the reference text. If the output scores lower, check it for repetition before celebrating."
-      ] }
+      ],
+      hint: "Write each adversarial case as three strings: reference, correct candidate, wrong candidate. Then assert score(correct) > score(wrong) for every metric. The assertion is the test; the scores are only evidence.",
+      solution: {
+        lang: "python", title: "eval_suite.py",
+        code: `import os, math
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from sklearn.metrics import f1_score
+from rouge_score import rouge_scorer
+from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
+from nltk.translate.meteor_score import meteor_score
+from bert_score import BERTScorer
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+
+# 1. Averaging on imbalanced labels: a model that never predicts the rare class.
+rng = np.random.default_rng(0)
+y = rng.choice(3, size=1000, p=[0.90, 0.07, 0.03])
+pred = np.where(y == 2, 0, y); pred[rng.random(1000) < 0.03] = 0
+for avg in ("micro", "macro", "weighted"): print(f"{avg:8} F1 = {f1_score(y, pred, average=avg, zero_division=0):.4f}")
+print("per-class F1:", np.round(f1_score(y, pred, average=None, zero_division=0), 4))
+
+# 2. ROUGE-1 by hand against the library.
+ref, cand = "the cat sat on the mat", "the cat lay on the mat"
+r, c = ref.split(), cand.split()
+overlap = sum(min(r.count(w), c.count(w)) for w in set(c))
+p_, r_ = overlap / len(c), overlap / len(r)
+lib = rouge_scorer.RougeScorer(["rouge1"]).score(ref, cand)["rouge1"].fmeasure
+print(f"\\nROUGE-1 by hand F={2 * p_ * r_ / (p_ + r_):.4f}  library F={lib:.4f}")
+
+# 3-4. Adversarial pairs: each metric must rank the right candidate above the wrong one.
+bs = BERTScorer(model_type="roberta-large", lang="en")
+pairs = [("the cat sat on the mat", "a cat was sitting on the mat", "the mat sat on the cat"),
+         ("the drug lowers blood pressure", "blood pressure falls with the drug", "the drug raises blood pressure"),
+         ("alice paid bob", "bob was paid by alice", "bob paid alice"),
+         ("the meeting is on monday", "monday is when we meet", "the meeting is not on monday"),
+         ("take two tablets daily", "two tablets each day", "take twenty tablets daily")]
+sm = SmoothingFunction().method1
+metrics = {"BLEU": lambda r, h: sentence_bleu([r.split()], h.split(), smoothing_function=sm),
+           "METEOR": lambda r, h: meteor_score([r.split()], h.split()),
+           "BERTScore": lambda r, h: bs.score([h], [r])[2].item()}
+print("\\nreference                         metric       good   wrong  ok?")
+fails = {k: 0 for k in metrics}
+for ref, good, wrong in pairs:
+    for k, f in metrics.items():
+        g, w = f(ref, good), f(ref, wrong); fails[k] += g <= w
+        print(f"{ref[:32]:32}  {k:9} {g:7.4f} {w:7.4f}  {'ok' if g > w else 'FAIL'}")
+print("assertions failed (of 5):", fails)
+
+# 5. Perplexity rewards repetition.
+tok = GPT2TokenizerFast.from_pretrained("gpt2"); lm = GPT2LMHeadModel.from_pretrained("gpt2").eval()
+def ppl(t):
+    ids = tok(t, return_tensors="pt")["input_ids"]
+    with torch.no_grad(): return math.exp(lm(ids, labels=ids).loss.item())
+print()
+for name, t in [("reference", "The council approved the budget and raised spending on public transport."),
+                ("generated, repetitive", "The council approved the budget. The council approved the budget. The council approved the budget.")]:
+    print(f"perplexity {name:22} {ppl(t):8.2f}")
+`,
+        out: `micro    F1 = 0.9650
+macro    F1 = 0.6550
+weighted F1 = 0.9488
+per-class F1: [0.981  0.9839 0.    ]
+
+ROUGE-1 by hand F=0.8333  library F=0.8333
+
+reference                         metric       good   wrong  ok?
+the cat sat on the mat            BLEU       0.1757  0.2857  FAIL
+the cat sat on the mat            METEOR     0.6148  0.8519  FAIL
+the cat sat on the mat            BERTScore  0.9716  0.9704  ok
+the drug lowers blood pressure    BLEU       0.1221  0.1607  FAIL
+the drug lowers blood pressure    METEOR     0.7353  0.7500  FAIL
+the drug lowers blood pressure    BERTScore  0.9361  0.9859  FAIL
+alice paid bob                    BLEU       0.0707  0.1495  FAIL
+alice paid bob                    METEOR     0.4688  0.5000  FAIL
+alice paid bob                    BERTScore  0.8980  0.9308  FAIL
+the meeting is on monday          BLEU       0.0639  0.2541  FAIL
+the meeting is on monday          METEOR     0.3000  0.9490  FAIL
+the meeting is on monday          BERTScore  0.9155  0.9752  FAIL
+take two tablets daily            BLEU       0.1699  0.1880  FAIL
+take two tablets daily            METEOR     0.4688  0.6389  FAIL
+take two tablets daily            BERTScore  0.9462  0.9748  FAIL
+assertions failed (of 5): {'BLEU': 5, 'METEOR': 5, 'BERTScore': 4}
+
+perplexity reference                 62.64
+perplexity generated, repetitive      9.54`,
+        notes: [
+          { t: "p", text: "A model that never predicted the rare class scored 0.965 micro F1 and 0.949 weighted F1. Only macro F1 (0.655) showed the problem, because it averages the per-class scores, and one of them is exactly zero. Weighted F1 multiplies that zero by a 3% share, so it all but disappears. Report macro F1 whenever a rare class matters." },
+          { t: "p", text: "The hand-derived ROUGE-1 matched the library exactly (0.8333): five shared tokens over six on each side. Check a library against a case small enough to compute by hand before trusting it on a corpus." },
+          { t: "p", text: "The adversarial suite is the important result. BLEU and METEOR failed all five cases, ranking the reversed, negated or wrong-number sentence above a correct paraphrase. BERTScore failed four of five: it passed only the swapped arguments in 'the cat sat on the mat', and even that by 0.001. Every one of these metrics measures overlap with the reference, so a sentence that keeps the words and flips the meaning wins. That is why such cases belong in the suite as assertions, and why a faithfulness check (NLI, lesson 3.8) is needed alongside them." },
+          { t: "p", text: "Repeating one sentence three times gave GPT-2 perplexity 9.54 against 62.64 for the varied reference. A lower perplexity on generated text is not good news until you have checked it for repetition." }
+        ]
+      } }
   ],
 
   takeaways: [
