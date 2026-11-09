@@ -589,12 +589,7 @@ def test_hundreds_of_sequential_calls_stay_correct() -> None:
     questions: [
       {
         stem: "A traceback ends in a library file with `TypeError: amount must be numeric`. Where do you start?",
-        options: [
-          "The deepest frame — that is where the error was raised",
-          "The top frame, which is the entry point",
-          "The last frame you own — a library `TypeError` usually means you passed bad data",
-          "The library's source, to check whether it is a known bug"
-        ],
+        options: ["The deepest frame, where the error was raised", "The top frame, which is the entry point", "The last frame you own; you passed bad data", "The library source, to look for a known bug"],
         answer: 2,
         why: "The deepest frame is where the problem *surfaced*; the library is doing exactly what it should by rejecting a bad value. The frame that matters is the last one you control, because that is where the value was passed in — and often the real question is which of your callers produced it, which means reading further up still."
       },

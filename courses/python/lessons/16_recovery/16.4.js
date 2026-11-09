@@ -473,12 +473,7 @@ POLICY["refund"] = Policy.REPLAY
       },
       {
         stem: "An agent has taken 24 steps, is under budget, has not handed off, and is making no progress. Which limit catches it soonest?",
-        options: [
-          "The step cap, at 25",
-          "The budget cap, once spend accumulates",
-          "A progress check comparing state hashes",
-          "The handoff-depth cap"
-        ],
+        options: ["The step cap, at 25 steps", "The budget cap, once spend grows", "A progress check on state hashes", "The handoff-depth cap"],
         answer: 2,
         why: "The step and budget caps are both eventually-correct and expensive: they let the agent retry the same failing call two dozen times first. Hashing the state and comparing it between iterations detects the absence of progress immediately, and a rising stuck-halt metric then points at the tool that is failing uninterpretably."
       }

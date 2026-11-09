@@ -567,12 +567,7 @@ if __name__ == "__main__":
       },
       {
         stem: "What is the main advantage of `Protocol` over an abstract base class for defining an interface?",
-        options: [
-          "Classes conform structurally, so third-party and existing classes need no changes",
-          "Protocols are checked at runtime, ABCs only at type-check time",
-          "Protocols can define concrete method implementations that ABCs cannot",
-          "Protocols are faster because they skip the MRO"
-        ],
+        options: ["Classes conform structurally, with no changes", "Protocols are checked at runtime, ABCs are not", "Protocols can hold concrete methods ABCs cannot", "Protocols are faster because they skip the MRO"],
         answer: 0,
         why: "The decoupling is the point. An ABC requires providers to inherit from it, which means importing it and accepting real coupling — impossible for a vendor SDK class. A protocol is declared by the *consumer* describing what it needs, can be written after the classes exist, and lets a ten-line test fake conform by shape alone. ABCs, by contrast, can share implementation and enforce at instantiation, which protocols cannot."
       },

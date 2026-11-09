@@ -665,12 +665,7 @@ def test_results_stream_rather_than_batching():
       },
       {
         stem: "`future.result(timeout=5)` raises `TimeoutError`. What happened to the task?",
-        options: [
-          "It was cancelled when the timeout expired, and its resources were released",
-          "Nothing — it is still running; only the caller stopped waiting",
-          "It was moved to the back of the queue",
-          "It will be retried automatically"
-        ],
+        options: ["It was cancelled and its resources released", "Nothing: it still runs; the caller stopped waiting", "It was moved to the back of the work queue", "It will be retried automatically by the pool"],
         answer: 1,
         why: "A timeout on a `Future` bounds how long *you* wait, not how long the work takes. The thread stays occupied and any resource it acquired stays held, so a pool can silently fill with tasks nobody is waiting for. The real timeout belongs on the operation itself — the HTTP request, the query — where it can actually stop the work."
       },

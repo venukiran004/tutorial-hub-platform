@@ -829,12 +829,7 @@ async def test_timeout_is_inside_the_semaphore():
       },
       {
         stem: "A handler calls `asyncio.create_task(send_analytics(req))` and keeps no reference. What can go wrong?",
-        options: [
-          "Nothing — the loop owns the task",
-          "The task runs twice",
-          "The loop holds only a weak reference, so it may be collected mid-run",
-          "It blocks the handler until it completes"
-        ],
+        options: ["Nothing, because the event loop owns the task", "The task can end up running twice", "It may be garbage-collected mid-run", "It blocks the handler until it completes"],
         answer: 2,
         why: "The failure rate looks like a flaky upstream rather than a bug in your code, which makes it very hard to find. Keep the task in a module-level set and discard it in a done-callback. Add a second callback that logs the exception, because a background task's failure otherwise surfaces only when the object is finalised — possibly never."
       },

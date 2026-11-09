@@ -685,12 +685,7 @@ if __name__ == "__main__":
       },
       {
         stem: "When is a dispatch dict a better choice than `match`?",
-        options: [
-          "Whenever there are more than three branches",
-          "Never — `match` supersedes dispatch dicts",
-          "When each branch compares one value to a constant with uniform payloads — a plain lookup",
-          "Only when the keys are strings"
-        ],
+        options: ["Whenever there are more than three branches", "Never, since `match` supersedes dispatch dicts", "When each branch is a plain lookup on one value", "Only when every key is a string"],
         answer: 2,
         why: "If every case is `case \"literal\":` with no bindings, `match` is a switch and a dict expresses it better — it is O(1), inspectable, loadable from configuration, and adding a case needs no edit to shared control flow. `match` earns its place when the branches test *different structures* and need different fields extracted, because then the pattern does the check and the binding in one step."
       }

@@ -750,12 +750,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why attach `retry_after` as an attribute rather than putting it in the message?",
-        options: [
-          "Messages have a length limit",
-          "Attributes are faster to access",
-          "Exception messages are stripped in optimised production builds, so the value would be lost",
-          "Otherwise code parses English out of the message, so rewording breaks callers"
-        ],
+        options: ["Exception messages have a length limit", "Attributes are faster to access than text", "Messages are stripped in optimised builds", "Otherwise callers parse English from the message"],
         answer: 3,
         why: "A message is for a human reading a log; an attribute is for code making a decision. When a caller writes `re.search(r\"retry after (\\d+)\", str(err))`, your prose is now part of your public API and any reword breaks their retry loop without a test failing anywhere. `err.retry_after` is stable, typed and obvious."
       },

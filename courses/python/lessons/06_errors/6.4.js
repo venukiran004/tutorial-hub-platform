@@ -784,12 +784,7 @@ if __name__ == "__main__":
       },
       {
         stem: "You need a request ID on every log line in a concurrent service. What is the right mechanism?",
-        options: [
-          "A `ContextVar` read by a logging `Filter`, set per request and reset in a `finally`",
-          "Pass it as a parameter through every function that logs",
-          "A module-level global assigned at the start of each request",
-          "A thread-local, since asyncio tasks share threads safely"
-        ],
+        options: ["A `ContextVar` read by a logging `Filter`", "Pass it through every function that logs", "A module-level global set per request", "A thread-local, shared safely by tasks"],
         answer: 0,
         why: "A filter can modify records, so one object attaches the ID to every line without touching a single call site. A `ContextVar` is isolated per task and per thread, where a module-level global would return whichever request wrote to it last — confidently wrong attribution, which is worse than none. The `reset()` in a `finally` matters: without it the value persists into whatever runs next on that task."
       }

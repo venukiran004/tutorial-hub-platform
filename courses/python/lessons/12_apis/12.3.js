@@ -789,12 +789,7 @@ def test_the_response_exposes_only_the_public_contract(client):
       },
       {
         stem: "Why should a validation failure return 422 rather than 400?",
-        options: [
-          "400 means unparseable; 422 means it parsed but a value is wrong",
-          "422 is retried automatically by HTTP clients",
-          "400 is reserved for authentication problems",
-          "They are interchangeable; 422 is a convention only"
-        ],
+        options: ["400 is unparseable; 422 is a bad value", "422 is retried automatically by clients", "400 is reserved for authentication failures", "They are interchangeable; 422 is a convention"],
         answer: 0,
         why: "The distinction is actionable for the caller. A 400 usually means their serialiser or transport is broken and retrying unchanged will fail identically. A 422 names a field they can correct and resubmit. Collapsing both into 400 means a client cannot tell \"your JSON is broken\" from \"quantity must be positive\"."
       },

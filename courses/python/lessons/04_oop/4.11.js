@@ -703,12 +703,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A `StrictCache` subclass raises `KeyError` on a miss where the base returns `None`. What is wrong, and what catches it?",
-        options: [
-          "It breaks Liskov substitution with an exception callers never expected, and no tool notices",
-          "Nothing — raising is more explicit than returning `None`",
-          "It breaks the interface segregation principle",
-          "mypy catches it because the return types differ"
-        ],
+        options: ["It breaks Liskov substitution, and no tool notices", "Nothing; raising is more explicit than `None`", "It breaks the interface segregation principle", "mypy catches it because the return types differ"],
         answer: 0,
         why: "Every caller written against the base handles `None` and none handles `KeyError`, so substituting the subclass breaks them at runtime. Even if the subclass narrows its return type to drop `None`, mypy accepts that, because a narrower return type is a legal override. The whole class of violation — a new exception type, changed idempotency, different timing — is invisible to every tool. That is why behavioural contracts belong in the docstring and why substitutability must be checked by reasoning."
       },

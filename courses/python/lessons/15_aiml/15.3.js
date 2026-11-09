@@ -870,12 +870,7 @@ def test_every_day_in_a_range_is_either_loaded_or_recorded_failed():
       },
       {
         stem: "A backfill over 1,000 days fails at day 600 inside one transaction. What is the design problem?",
-        options: [
-          "Everything rolls back, so the retry starts again from day one",
-          "The transaction isolation level is too strict",
-          "The database ran out of connections",
-          "Backfills should not use transactions"
-        ],
+        options: ["It all rolls back, so the retry restarts at day one", "The transaction isolation level is too strict", "The database ran out of connections partway", "Backfills should never use transactions at all"],
         answer: 0,
         why: "One transaction per unit of work, plus a completion record and a skip check, makes the job resumable — and because each unit is an upsert, re-running a completed day is harmless, so the resume point does not need to be exact."
       }

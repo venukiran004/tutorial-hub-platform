@@ -773,12 +773,7 @@ def test_the_fake_mailer_rejects_what_the_real_one_would(mailer):
       },
       {
         stem: "A suite is green, but every payment fails in production after the SDK renamed `charge()` to `create_charge()`. What would have caught it?",
-        options: [
-          "Higher line coverage",
-          "Running the tests against the real payment API",
-          "Pinning the SDK version",
-          "`autospec=True`, so missing methods raise"
-        ],
+        options: ["Higher line coverage across the suite", "Running tests against the real payment API", "Pinning the SDK to an exact version", "`autospec=True`, so missing methods raise"],
         answer: 3,
         why: "A bare `Mock` auto-creates any attribute, so `mock.charge(...)` succeeds against a method that no longer exists. `autospec` builds the double from the real object's interface, so the dependency bump fails the suite instead of production. Pinning delays the problem; coverage measures that lines ran, not that they did anything real."
       },

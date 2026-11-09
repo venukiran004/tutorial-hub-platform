@@ -598,23 +598,13 @@ if __name__ == "__main__":
       },
       {
         stem: "A class exposes `def get_items(self): return self._items`. Why does this prevent the class from enforcing its rules?",
-        options: [
-          "Callers get the real internal list and can change it without going through any validation",
-          "It does not — the underscore prefix makes `_items` private",
-          "Returning a list from a method is a performance problem, not a correctness one",
-          "It only matters if the class is used from multiple threads"
-        ],
+        options: ["Callers get the real list and bypass validation", "It does not; the underscore makes `_items` private", "Returning a list is a performance problem only", "It only matters when used from several threads"],
         answer: 0,
         why: "The method hands out the real object, so `cart.get_items().append(x)` skips `add_item` and every check inside it. Any limit, validation or invariant the class intends to maintain becomes advisory. The underscore is a convention that Python does not enforce; what actually closes the leak is returning an immutable type — `tuple(self._items)` — so writing through the returned value is impossible."
       },
       {
         stem: "A data-corruption bug appears only under concurrent load. What is the most likely correct fix?",
-        options: [
-          "Add a lock around every mutation of the shared object",
-          "Switch from threads to processes so memory is not shared",
-          "Increase the isolation level of the database transaction",
-          "Ask whether the state should be shared at all, and remove the sharing rather than locking it"
-        ],
+        options: ["Add a lock around every mutation of the object", "Switch to processes so memory is not shared", "Raise the database transaction isolation level", "Remove the sharing rather than locking it"],
         answer: 3,
         why: "Concurrency reveals mutability bugs rather than causing them — the same corruption exists single-threaded, hidden by the fact that nothing runs between your read and your write. A lock is correct for state that genuinely must be shared and mutated, like a counter or a connection pool. For a template, a default or per-request data, sharing was never intended, and a lock preserves the design flaw while costing throughput and adding deadlock risk."
       },

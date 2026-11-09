@@ -560,12 +560,7 @@ def test_counter_increment_is_not_atomic():
     questions: [
       {
         stem: "Four threads run `counter += 1` a hundred thousand times each. The result is 271,043 rather than 400,000. Why did the GIL not prevent this?",
-        options: [
-          "The GIL only applies to I/O operations",
-          "`counter += 1` is several bytecodes, and threads can switch between them",
-          "Integers above a certain size are not thread-safe",
-          "`global` variables bypass the GIL"
-        ],
+        options: ["The GIL only applies to I/O operations", "`+=` is several bytecodes; threads switch between", "Integers above a certain size are not thread-safe", "`global` variables bypass the GIL entirely"],
         answer: 1,
         why: "The GIL guarantees that the interpreter's own state stays consistent, not that your statements are atomic. Only a single bytecode is indivisible, and a compound assignment is at least four. The fix is the same as in any language: a lock around the critical section, or better, no shared mutable state at all."
       },
@@ -593,12 +588,7 @@ def test_counter_increment_is_not_atomic():
       },
       {
         stem: "What does a free-threaded (no-GIL) build change?",
-        options: [
-          "All Python code becomes faster",
-          "Race conditions become impossible",
-          "`multiprocessing` becomes unnecessary",
-          "Pure-Python threads can run in parallel, at a small single-threaded cost"
-        ],
+        options: ["All Python code becomes noticeably faster", "Race conditions become impossible to write", "`multiprocessing` becomes entirely unnecessary", "Python threads run in parallel, at a small cost"],
         answer: 3,
         why: "It removes the one constraint the GIL imposed. I/O-bound work and C-extension work were never blocked, so they gain nothing, and every single-threaded run pays for per-object atomic refcounts. Races get *worse*, since the coarse interleaving disappears — and the practical blocker today is whether every C extension in your dependency tree ships a free-threaded build."
       }

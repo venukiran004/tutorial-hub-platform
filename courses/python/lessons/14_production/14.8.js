@@ -840,12 +840,7 @@ CMD ["gunicorn", "app.main:app", \\
       },
       {
         stem: "17 workers × pool_size 20 + overflow 10 × 6 pods, against `max_connections = 100`. What happens?",
-        options: [
-          "SQLAlchemy caps the total automatically",
-          "Connections are shared between workers",
-          "The pool silently reduces its size",
-          "Up to 3,060 connections are demanded, so under load Postgres refuses them"
-        ],
+        options: ["SQLAlchemy caps the total connections automatically", "Connections are shared between the workers", "The pool silently reduces its size to fit", "3,060 connections are demanded; Postgres refuses"],
         answer: 3,
         why: "It works while traffic is low enough that pools stay mostly empty, which is why it survives testing. Adding workers makes it worse; the correct responses are smaller pools, fewer workers, and PgBouncer in transaction mode if genuine concurrency is needed."
       },

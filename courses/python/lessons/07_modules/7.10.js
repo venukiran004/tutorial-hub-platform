@@ -415,12 +415,7 @@ $ pytest -q test_dedupe.py
       },
       {
         stem: "What exit code does `argparse` use when the user passes an invalid choice, and why does it matter?",
-        options: [
-          "1 — every failure is the same to a shell",
-          "2 — a usage error, distinct from the job itself failing",
-          "0 — it prints help, so it succeeded",
-          "It raises an exception and leaves the code to you"
-        ],
+        options: ["1, as every failure looks the same to a shell", "2, a usage error distinct from job failure", "0, since printing help counts as success", "None: it raises and leaves the code to you"],
         answer: 1,
         why: "`argparse` calls `parser.error`, which prints the usage line and message to stderr and exits with status 2, the long-standing convention for command-line misuse. Exiting 0 would hide the mistake, and 1 would blur it with runtime failures. It exits via `SystemExit` rather than leaving an ordinary exception for you to handle."
       },

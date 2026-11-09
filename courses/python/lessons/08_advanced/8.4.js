@@ -739,12 +739,7 @@ def test_builder_keeps_the_subclass_through_a_chain() -> None:
       },
       {
         stem: "Why is `list[Dog]` not acceptable where `list[Animal]` is expected?",
-        options: [
-          "Because Python containers are untyped at runtime",
-          "Because `Dog` and `Animal` have different memory layouts",
-          "It is accepted; only the reverse is rejected",
-          "A `list[Animal]` parameter could append a `Cat` into the caller's `list[Dog]`"
-        ],
+        options: ["Python containers are untyped at runtime", "`Dog` and `Animal` have different layouts", "It is accepted; only the reverse is rejected", "The callee could append a `Cat` to it"],
         answer: 3,
         why: "A mutable container both produces and consumes its element type, so allowing subtype substitution would let a legal `append` insert the wrong type into the caller's list. `Sequence[T]` is covariant precisely because it is read-only: `Sequence[Dog]` *is* a `Sequence[Animal]`, which is the deep reason to prefer `Sequence` in parameters."
       },

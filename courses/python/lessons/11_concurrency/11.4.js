@@ -663,23 +663,13 @@ def test_start_method_is_explicit():
     questions: [
       {
         stem: "`pool.map(square, range(1_000_000))` is 155× slower than the serial version. Why?",
-        options: [
-          "Every item pays ~160 µs of pickling and IPC for 0.1 µs of work",
-          "The pool has too many workers",
-          "`range` cannot be parallelised",
-          "The GIL still applies across processes"
-        ],
+        options: ["Each item pays far more in IPC than work", "The pool has too many worker processes", "`range` objects cannot be parallelised", "The GIL still applies across processes"],
         answer: 0,
         why: "Every task is pickled, written to a pipe, unpickled, computed and sent back. When the computation is smaller than that round trip, more workers means more overhead. `chunksize` amortises it over many items — but here the work is so small that even chunked it loses to serial, which is the real answer: this workload should not use processes at all."
       },
       {
         stem: "A job loads an 800 MB model at module level. It works on Linux and exhausts memory on macOS. Why?",
-        options: [
-          "macOS has less memory available to Python",
-          "Linux's `fork` shared the model; macOS's `spawn` reloads it in every child",
-          "The model file is not portable between platforms",
-          "macOS limits the number of child processes"
-        ],
+        options: ["macOS gives Python less memory to work with", "fork shared the model; spawn reloads it per child", "The model file is not portable between platforms", "macOS limits the number of child processes"],
         answer: 1,
         why: "Nothing platform-specific was written — the start-method default did it. Under `fork` the model is inherited and effectively free; under `spawn` the child starts a fresh interpreter and re-imports `__main__` to find the target. Linux itself moved from `fork` to `forkserver` in 3.14, so set the start method explicitly and load heavy resources in an `initializer`."
       },
@@ -696,12 +686,7 @@ def test_start_method_is_explicit():
       },
       {
         stem: "Workers update a shared `Manager().dict()` counter once per row. What does that cost?",
-        options: [
-          "Two IPC round trips per row through one server process, and lost updates",
-          "Nothing measurable — it is a normal dict",
-          "A GIL acquisition per access",
-          "Memory proportional to the number of workers"
-        ],
+        options: ["Two IPC round trips per row, and lost updates", "Nothing measurable; it is a normal dict", "One GIL acquisition per dictionary access", "Memory proportional to the number of workers"],
         answer: 0,
         why: "A `Manager` object is a proxy: every read and write is inter-process communication with one server process, commonly a thousand times slower than a local dict and a global bottleneck besides. It is racy too, since get-then-set spans two round trips. Return the data with the result and aggregate in the parent, where there is no concurrency at all."
       }

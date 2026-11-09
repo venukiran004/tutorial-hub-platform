@@ -845,12 +845,7 @@ def test_the_report_streams(db):
       },
       {
         stem: "Iterating a cursor over 40 million rows still exhausts memory. Why, and what fixes it?",
-        options: [
-          "The rows are too wide — select fewer columns",
-          "`itersize` defaults to zero",
-          "An unnamed cursor buffers everything; a named one streams",
-          "The generator must be consumed lazily by the caller"
-        ],
+        options: ["Rows are too wide; select fewer columns", "`itersize` defaults to zero rows", "Unnamed cursors buffer; named ones stream", "The caller must consume the generator lazily"],
         answer: 2,
         why: "The memory is spent before the loop's first iteration. A named cursor leaves the result on the server and fetches `itersize` rows at a time, so client memory is flat. It holds a transaction open for the scan, which makes it right for a batch job and wrong inside a web request."
       }

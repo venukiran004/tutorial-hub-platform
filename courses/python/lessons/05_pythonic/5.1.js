@@ -588,12 +588,7 @@ def summarise_deploys(records: list[dict]) -> dict[str, dict]:
       },
       {
         stem: "\"Errors should never pass silently. Unless explicitly silenced.\" Which pair of lines is consistent with both halves?",
-        options: [
-          "`try: os.remove(p)` / `except Exception: pass`",
-          "`with contextlib.suppress(FileNotFoundError): os.remove(p)`",
-          "`if os.path.exists(p): os.remove(p)`",
-          "`try: os.remove(p)` / `except: logging.debug(\"oops\")`"
-        ],
+        options: ["`try: os.remove(p)` / `except Exception: pass`", "`with contextlib.suppress(FileNotFoundError): ...`", "`if os.path.exists(p): os.remove(p)`", "`try: os.remove(p)` / `except: logging.debug(\"oops\")`"],
         answer: 1,
         why: "`suppress(FileNotFoundError)` names exactly which error is being ignored, which is what \"explicitly silenced\" means. Option A silences every ordinary exception — `PermissionError`, `IsADirectoryError`, a typo's `NameError` — so a real failure disappears. Option C is a check-then-act race: the file can vanish between the check and the call (Lesson 5.3). Option D uses a bare `except`, logs at a level nobody reads, and gives no indication of which error occurred."
       },

@@ -483,12 +483,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "A nightly job compares 500,000 records against a reference collection using `if rid in reference`. The reference grew from 20,000 to 300,000 rows and the job went from minutes to hours. What is the fix?",
-        options: [
-          "Sort `reference` and use `bisect` for binary search",
-          "Process the records in parallel across multiple processes",
-          "Load the reference data in chunks to reduce memory pressure",
-          "Convert `reference` to a `set` after loading — membership becomes O(1) instead of a linear scan"
-        ],
+        options: ["Sort `reference` and use `bisect` on it", "Process the records across several processes", "Load the reference data in smaller chunks", "Convert `reference` to a `set` after loading"],
         answer: 3,
         why: "Each membership test scans the whole list, so the work is records × reference size. Growing the reference fifteen times multiplied the cost fifteen times. A set hashes and looks in one slot, making each test O(1) and the job linear in the number of records. Bisect would work at O(log n) but needs the list kept sorted and is strictly worse than a set for pure membership. Parallelism buys a constant factor against quadratic growth."
       },

@@ -895,12 +895,7 @@ if __name__ == "__main__":
       },
       {
         stem: "You have inherited an untested 400-line script. What do you do first?",
-        options: [
-          "Split the long function into smaller ones",
-          "Add type hints throughout so a checker can find the bugs",
-          "Rewrite it from scratch against the current requirements",
-          "Pin current behaviour with an outside-in test, fix correctness, then restructure"
-        ],
+        options: ["Split the long function into smaller ones", "Add type hints so a checker finds the bugs", "Rewrite it from scratch to current requirements", "Pin behaviour with a test, fix, then restructure"],
         answer: 3,
         why: "Splitting first is the most common mistake: it changes structure in code where no test can tell you whether the split preserved meaning, and a rewritten condition or a moved side effect will not surface until month-end. Types help but find a different class of bug. Pin behaviour, fix what produces wrong answers, then restructure under the protection of the test you now have."
       },

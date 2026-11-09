@@ -676,23 +676,13 @@ if __name__ == "__main__":
       },
       {
         stem: "A `@contextmanager` function has no `try/finally` around its `yield`. What breaks?",
-        options: [
-          "Nothing — the code after `yield` always runs",
-          "The manager can only be used once",
-          "`as` binds `None` instead of the yielded value",
-          "An exception in the block is raised at the `yield`, so the cleanup after it is skipped"
-        ],
+        options: ["Nothing; code after `yield` always runs", "The manager can then only be used once", "`as` binds `None` instead of the yielded value", "An exception at `yield` skips the cleanup"],
         answer: 3,
         why: "When the block raises, the exception is thrown into the generator at the `yield`. Without a `try/finally` it propagates straight out and everything after the `yield` is skipped — so the manager silently stops guaranteeing cleanup, which was the only reason it existed. The failure is invisible on the happy path, which is what makes it dangerous."
       },
       {
         stem: "A transaction manager's rollback fails inside `__exit__` while handling a `ValueError`. What does the caller see if `__exit__` lets that error propagate?",
-        options: [
-          "Both exceptions, chained automatically",
-          "Only the original `ValueError`",
-          "Only the rollback error, which hides the `ValueError` that caused the failure",
-          "A `RuntimeError` reporting that an exception occurred during cleanup, wrapping both"
-        ],
+        options: ["Both exceptions, chained automatically", "Only the original `ValueError`", "Only the rollback error, hiding the cause", "A `RuntimeError` wrapping both of them"],
         answer: 2,
         why: "An exception raised inside `__exit__` supersedes the one being handled. A caller debugging a business-logic failure would see `ConnectionError: cannot execute 'ROLLBACK'` and never learn the real cause. The correct handling is to catch the cleanup failure, log it, and return `False` so the original propagates with its traceback intact. Python does set `__context__`, but the visible exception is still the wrong one."
       },

@@ -643,12 +643,7 @@ def test_public_surface_is_what_all_says() -> None:
       },
       {
         stem: "What does `if __name__ == \"__main__\":` actually test?",
-        options: [
-          "Whether this file is the one the interpreter was launched with",
-          "Whether the file is a script rather than a module",
-          "Whether the file is being run interactively",
-          "Whether the module has been imported before"
-        ],
+        options: ["Whether this file is the one launched", "Whether the file is a script, not a module", "Whether the file is run interactively", "Whether the module was imported before"],
         answer: 0,
         why: "Every module gets a `__name__`; it equals its import path except for the one file the interpreter was launched with. That is why `python -m myapp.worker` sets `__name__` to `\"__main__\"` while a later `import myapp.worker` finds no cache entry under that name and executes the file a second time — two module objects, two copies of every global."
       },
@@ -665,12 +660,7 @@ def test_public_surface_is_what_all_says() -> None:
       },
       {
         stem: "What does `src/` layout buy you over keeping the package at the project root?",
-        options: [
-          "`import myapp` needs an install, so tests run against the packaged code",
-          "Faster imports",
-          "It is required by `pyproject.toml`",
-          "It allows several top-level packages to live side by side in one project"
-        ],
+        options: ["Tests must import the installed package", "Faster imports at application start-up", "It is required by `pyproject.toml`", "Several top-level packages side by side"],
         answer: 0,
         why: "With a flat layout, running anything from the project directory puts your source on `sys.path` by accident, so a module missing from the wheel passes every local test and fails on install. Under `src/`, the only way to import the package is to install it — usually `pip install -e .` — which also removes the risk of the working directory shadowing the package."
       }

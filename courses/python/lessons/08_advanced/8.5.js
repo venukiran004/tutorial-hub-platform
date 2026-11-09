@@ -658,12 +658,7 @@ def test_no_leak_when_instances_are_collected() -> None:
       },
       {
         stem: "A descriptor stores values in `self._value`. Two instances of the owning class interfere with each other. Why?",
-        options: [
-          "The descriptor is one shared class attribute, so every instance writes to it",
-          "`__set_name__` was not called",
-          "`__get__` is missing the `objtype` parameter",
-          "The class needs `__slots__`"
-        ],
+        options: ["One descriptor is shared by every instance", "`__set_name__` was never called", "`__get__` is missing its `objtype` parameter", "The owning class needs `__slots__`"],
         answer: 0,
         why: "A descriptor is created once, when the class body executes, exactly like any other class attribute. State on `self` is therefore state shared by every instance, which is the same failure mode as a mutable class attribute. Store the value on the instance under a private name; a dict keyed by instance also works but holds strong references and leaks."
       },

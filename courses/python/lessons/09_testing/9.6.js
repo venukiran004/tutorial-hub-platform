@@ -800,12 +800,7 @@ def test_the_suite_takes_no_real_time() -> None:
       },
       {
         stem: "Why is `GRACE_DAYS = int(os.environ[\"GRACE_DAYS\"])` at module level a problem?",
-        options: [
-          "It runs at import, so it crashes when unset and cannot vary per test",
-          "Environment variables are always strings, so `int()` fails on most values",
-          "`int()` is slow at import time",
-          "Module-level constants cannot be typed"
-        ],
+        options: ["It runs at import: crashes when unset, fixed per test", "Environment variables make `int()` fail on most values", "`int()` is slow when called at import time", "Module-level constants cannot carry type hints"],
         answer: 0,
         why: "Import-time work happens before any test can configure anything, so a missing variable becomes an import error in a collector or a linter, and no test can exercise a different value without reimporting the module. Reading it on demand — a function with a default — makes it substitutable and moves the failure to a point where the error message can be useful."
       },

@@ -705,12 +705,7 @@ if __name__ == "__main__":
       },
       {
         stem: "What does `__init_subclass__` let you do that previously needed a metaclass?",
-        options: [
-          "Change what a class call returns",
-          "Add new methods to a class after it is defined, without editing the class body itself",
-          "Run validation or registration once for each subclass as it is defined",
-          "Control attribute lookup order"
-        ],
+        options: ["Change what calling the class returns", "Add methods to a class after it is defined", "Validate or register each subclass as defined", "Control the order of attribute lookup"],
         answer: 2,
         why: "`__init_subclass__` is called on the parent whenever a subclass is defined, which covers registration and convention enforcement — the great majority of what metaclasses were used for. Crucially it can raise, so a subclass missing a required attribute fails at class-definition time rather than at first use. Changing what a class call returns is `__new__` or a metaclass `__call__`; controlling attribute lookup is `__getattr__` and descriptors."
       }

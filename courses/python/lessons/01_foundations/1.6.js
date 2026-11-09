@@ -609,12 +609,7 @@ cursor.execute("SELECT * FROM users WHERE id = %s" % user_id)`,
       },
       {
         stem: "Why is building a large string with `s += chunk` in a loop slow?",
-        options: [
-          "The `+=` operator is unoptimised compared to `+`",
-          "Each `+=` builds a new string and copies everything so far, which is O(n²) overall",
-          "Python re-encodes the string to UTF-8 on every concatenation",
-          "The garbage collector runs after each concatenation"
-        ],
+        options: ["`+=` is unoptimised compared with `+`", "Each `+=` copies everything so far: O(n²)", "Python re-encodes to UTF-8 on every concatenation", "The garbage collector runs after each concatenation"],
         answer: 1,
         why: "Immutability means the existing string cannot be extended, so each iteration allocates a fresh string and copies all previous content into it. Over n iterations that averages n/2 characters copied each time — quadratic work for a linear task. `\"\".join(parts)` computes the total length once, allocates a single buffer and fills it, which is linear. CPython does have an in-place optimisation that sometimes hides this, but it is an unguaranteed implementation detail that vanishes as soon as a second reference exists."
       }

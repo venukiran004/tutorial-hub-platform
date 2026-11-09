@@ -740,23 +740,13 @@ def test_every_subprocess_call_has_a_timeout(tmp_path, monkeypatch):
       },
       {
         stem: "What is wrong with `subprocess.run(f\"tar czf out.tar {path}\", shell=True)`?",
-        options: [
-          "It is slower than passing a list",
-          "`shell=True` is not available on Windows",
-          "The string reaches a shell, so a crafted `path` runs any command",
-          "It cannot capture output"
-        ],
+        options: ["It is slower than passing an argument list", "`shell=True` is not available on Windows", "A crafted `path` can run any shell command", "It cannot capture the command's output"],
         answer: 2,
         why: "This is command injection. Passing a list — `[\"tar\", \"czf\", \"out.tar\", path]` — hands arguments directly to `execve` with no shell parsing, so metacharacters are ordinary characters. If a shell is genuinely required for a pipeline, every interpolated value must go through `shlex.quote`; most such cases are better solved by connecting the processes yourself."
       },
       {
         stem: "Why prefer `tempfile.TemporaryDirectory()` over building a path like `/tmp/job-{pid}.csv`?",
-        options: [
-          "It is faster",
-          "It allows larger files",
-          "An unpredictable, private directory that is removed even on error",
-          "`/tmp` is not writable in containers"
-        ],
+        options: ["It is faster than writing to /tmp directly", "It allows much larger files than /tmp does", "A private, unpredictable dir removed on error", "/tmp is never writable inside containers"],
         answer: 2,
         why: "A predictable name in a world-writable directory is a symlink attack and a collision between concurrent runs. `tempfile` generates names with cryptographic randomness and creates the directory 0700. The context manager also guarantees cleanup on failure, which fixes the separate bug of a half-written archive full of data being left on disk."
       }

@@ -591,12 +591,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why is `any(x > 10 for x in items)` preferable to `any([x > 10 for x in items])`?",
-        options: [
-          "They are identical; the brackets are a style preference",
-          "The list comprehension raises on an empty sequence",
-          "The generator stops at the first true value; the list version tests every element first",
-          "`any()` cannot accept a list argument"
-        ],
+        options: ["They are identical; the brackets are style only", "The list version raises on an empty sequence", "The generator stops at the first true value", "`any()` cannot accept a list as its argument"],
         answer: 2,
         why: "A list comprehension is evaluated fully and then passed in, so every element is tested even though `any` will stop at the first true one. The generator is consumed lazily, so `any` stops as soon as it has an answer. On a large or expensive sequence the difference is substantial, and on an infinite one the list version never returns at all."
       },

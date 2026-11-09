@@ -550,23 +550,13 @@ def test_aggregate_is_cpu_bound():
     questions: [
       {
         stem: "A function reports `wall 8.40s, cpu 0.21s`. What does that tell you?",
-        options: [
-          "It is I/O-bound — it spent 98% of the time waiting, so concurrency helps",
-          "It is CPU-bound and needs more cores",
-          "The measurement is faulty; CPU time cannot be lower than wall time",
-          "The process was starved by other work on the machine"
-        ],
+        options: ["It is I/O-bound, so concurrency will help", "It is CPU-bound and needs more cores", "The measurement is faulty: CPU < wall is impossible", "The process was starved by other work"],
         answer: 0,
         why: "`cpu / wall` near zero means the process spent almost all its time asleep waiting for something external — a socket, a disk, a lock. That waiting is what concurrency overlaps, so threads or `asyncio` will help substantially. `multiprocessing` would also work and would pay for a full interpreter per worker to solve a problem that was never about CPU."
       },
       {
         stem: "Adding eight threads to a pure-Python parsing loop makes it 5% slower. Why?",
-        options: [
-          "Thread creation dominates the runtime",
-          "The parser is not thread-safe",
-          "The list being written to needs a lock",
-          "Only one thread runs bytecode at a time, so threads add contention and no throughput"
-        ],
+        options: ["Thread creation dominates the total runtime", "The parser is not thread-safe, so it retries", "The shared output list needs a lock on writes", "One thread runs bytecode at a time; it is overhead"],
         answer: 3,
         why: "In CPython a thread must hold the GIL to run bytecode. For CPU-bound pure-Python work that means no parallelism is possible, while `sys.getswitchinterval()` forces a handoff every five milliseconds that buys nothing. The same pool around an I/O stage would give a large speed-up, because a thread waiting on a socket releases the lock."
       },

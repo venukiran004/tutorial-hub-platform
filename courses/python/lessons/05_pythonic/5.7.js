@@ -753,12 +753,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why yield a fresh list from a batching generator rather than clearing and reusing one?",
-        options: [
-          "Every batch would be the same list, so a batch a consumer kept would change under it",
-          "Clearing is slower than allocating a new list",
-          "`clear()` is not available on lists inside generators",
-          "It prevents the garbage collector from reclaiming the batches"
-        ],
+        options: ["A kept batch would change under its consumer", "Clearing is slower than allocating a new list", "`clear()` is unavailable inside generators", "It stops the collector reclaiming old batches"],
         answer: 0,
         why: "Reusing one list means every yield hands out the same object, and the next batch overwrites it. A consumer that appends batches to a results list ends up with N references to one list holding only the final batch — the aliasing trap from Lesson 1.4, arriving through a generator. Allocating a new list per batch is cheap and the only correct option."
       }

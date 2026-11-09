@@ -814,12 +814,7 @@ def test_the_risk_score_is_never_serialised(client):
     questions: [
       {
         stem: "What class of bug does the src layout prevent?",
-        options: [
-          "Circular imports",
-          "Namespace collisions between dependencies",
-          "Slow test collection",
-          "\"Works locally, fails on install\" — tests stop seeing the source tree instead of the package"
-        ],
+        options: ["Circular imports between modules", "Namespace collisions between dependencies", "Slow test collection in large repos", "Tests passing locally but failing on install"],
         answer: 3,
         why: "Running pytest from the repository root puts `.` on `sys.path`, so `import myproject` finds the source tree. A missing package entry or an omitted data file then passes every test and fails for the first user who installs the wheel. With `src/`, the only resolvable import is the installed distribution."
       },
@@ -847,12 +842,7 @@ def test_the_risk_score_is_never_serialised(client):
       },
       {
         stem: "Why does `create_engine()` at module level make a codebase hard to test?",
-        options: [
-          "It is slow to construct",
-          "SQLAlchemy engines are not thread-safe",
-          "It prevents dependency injection frameworks from working",
-          "Importing it then needs a database URL, so every test, script and CLI inherits that"
-        ],
+        options: ["The engine is slow to construct", "SQLAlchemy engines are not thread-safe", "It blocks dependency injection frameworks", "Every importer then needs a database URL"],
         answer: 3,
         why: "Importing a module should do nothing observable. Moving construction into a composition root means `import domain.rules` costs nothing, a test supplies a fake in one line, and the module can be used from a CLI without production credentials present."
       }

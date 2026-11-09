@@ -779,34 +779,19 @@ def test_time_ordering_is_respected_in_cv():
     questions: [
       {
         stem: "`X = StandardScaler().fit_transform(X)` before `cross_val_score`. What is wrong?",
-        options: [
-          "Nothing — scaling is not learned from labels",
-          "`fit_transform` cannot be used with cross-validation",
-          "The scaler should be applied after the model",
-          "The scaler saw each validation fold, so every fold's score is optimistic"
-        ],
+        options: ["Nothing, since scaling is not learned from labels", "`fit_transform` cannot be used with cross-validation", "The scaler should be applied after the model", "The scaler saw each validation fold in advance"],
         answer: 3,
         why: "The mean used to scale a fold's validation rows was computed partly from those rows. Putting the scaler inside a `Pipeline` fixes it structurally — cross-validation then fits it on each training fold only, and the same applies inside a grid search."
       },
       {
         stem: "A churn model uses `cancellation_reason` as a feature and scores 0.99 AUC. What happens in production?",
-        options: [
-          "The column is null for everyone being scored, so it is near chance",
-          "It performs as validated",
-          "Predictions become slower",
-          "The encoder raises on the null values, so every prediction request fails"
-        ],
+        options: ["It is null for everyone scored, so near chance", "It performs exactly as it did in validation", "Predictions become noticeably slower to serve", "The encoder raises on nulls, failing every request"],
         answer: 0,
         why: "This is target leakage: a feature that exists only as a consequence of the outcome. The test is whether the column would exist and hold that value at the moment the prediction is needed, which is a different question from whether it is in the training table."
       },
       {
         stem: "You try twelve hyperparameter configurations, score each on the test set, and report the best. What is wrong with the number?",
-        options: [
-          "The test set chose the winner, so the score is biased upward",
-          "Nothing, provided the split was random",
-          "Twelve configurations is too few to be meaningful",
-          "The model should be refit on all data first"
-        ],
+        options: ["The test set picked the winner: biased upward", "Nothing, provided the split was random", "Twelve configurations is too few to matter", "The model should be refit on all data first"],
         answer: 0,
         why: "Even with no other bug that is worth a couple of points of pure optimism. Use cross-validation on a development set for every decision, and score a held-out set exactly once at the end — a number that influenced a choice is no longer an estimate of generalisation."
       },

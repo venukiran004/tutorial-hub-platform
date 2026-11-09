@@ -630,12 +630,7 @@ def test_vat_is_applied_exactly_once():
     questions: [
       {
         stem: "A notebook's cells show execution counts [1], [14], [3], [22]. Why does this matter?",
-        options: [
-          "It affects rendering performance",
-          "The outputs came from a different execution order than the one a reader sees",
-          "Jupyter will renumber them on save",
-          "It indicates the cells were copied from elsewhere"
-        ],
+        options: ["It affects the notebook's rendering speed", "The outputs came from a different run order", "Jupyter renumbers the cells on every save", "The cells were copied in from elsewhere"],
         answer: 1,
         why: "The reader infers a story from the layout; the kernel executed something else, and only the kernel's version produced the outputs. Restarting and running all is the only way to confirm that what is displayed and what the code does are the same thing."
       },

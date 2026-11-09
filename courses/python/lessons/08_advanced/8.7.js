@@ -649,12 +649,7 @@ def test_overrides_take_precedence() -> None:
     questions: [
       {
         stem: "A framework reads handler parameters with `inspect.signature`. After a team adds a decorator, every handler resolves to nothing. Why?",
-        options: [
-          "`inspect.signature` cannot be used on decorated functions, so it returns an empty signature",
-          "Decorators strip annotations from the wrapped function",
-          "The framework must call `inspect.unwrap` first",
-          "Without `functools.wraps` there is no `__wrapped__`, so `signature` sees the wrapper"
-        ],
+        options: ["`inspect.signature` returns nothing on decorated code", "Decorators strip annotations from the function", "The framework must call `inspect.unwrap` first", "Without `wraps` it inspects the wrapper itself"],
         answer: 3,
         why: "`inspect.signature` follows the `__wrapped__` chain by default, and `functools.wraps` is what sets it. Without that, the framework sees the wrapper's own parameters — which is why an undecorated-looking `(*args, **kwargs)` breaks pytest fixtures, FastAPI models and generated documentation all at once, and always silently."
       },
@@ -671,12 +666,7 @@ def test_overrides_take_precedence() -> None:
       },
       {
         stem: "What is the main risk of `inspect.currentframe().f_back` to find the caller's module?",
-        options: [
-          "A decorator above you adds a frame, so `f_back` finds the wrapper",
-          "It is not available in CPython",
-          "It raises when called from a coroutine",
-          "It returns the module where the function was defined"
-        ],
+        options: ["A decorator adds a frame, so it finds the wrapper", "It is not available in CPython at all", "It raises when called from inside a coroutine", "It returns the module the function was defined in"],
         answer: 0,
         why: "The frame count is not a stable contract: decorators, comprehensions and generators all shift it, and the answer changes when someone adds one anywhere above. `inspect.stack()` is worse still because it reads source files for context lines. The robust alternative is asking the caller — which is exactly what `logging.getLogger(__name__)` does."
       },

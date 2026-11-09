@@ -749,12 +749,7 @@ def test_creation_returns_201_and_a_location(client):
       },
       {
         stem: "A payment API returns `HTTP 200` with `{\"success\": false, \"error\": \"declined\"}`. What does that cost callers?",
-        options: [
-          "Nothing, as long as the body is documented",
-          "The response cannot be cached",
-          "Clients must parse the body twice",
-          "`raise_for_status()` passes, so retries, alerts and dashboards all miss the failure"
-        ],
+        options: ["Nothing, as long as the body is documented", "The response can no longer be cached", "Clients must parse the response body twice", "Status checks pass, so retries and alerts miss it"],
         answer: 3,
         why: "The status code is what infrastructure and client libraries act on. A 200 tells proxies, load balancers, monitoring and every HTTP library that the call succeeded. Each consumer then needs custom handling, one of them forgets, and failures are invisible on dashboards while they are happening."
       },
@@ -771,12 +766,7 @@ def test_creation_returns_201_and_a_location(client):
       },
       {
         stem: "`GET /me/orders` returns `Cache-Control: public, max-age=300` with no `Vary`. What happens?",
-        options: [
-          "The response is cached per user by their browser only",
-          "A shared cache keys on the URL alone, so the next user gets the first user's orders",
-          "The cache is bypassed because the response requires authentication",
-          "Only the response headers are shared, not the body"
-        ],
+        options: ["Each user's browser caches only their own copy", "A shared cache serves one user's orders to the next", "Caches bypass it because it requires authentication", "Only the headers are shared, never the body"],
         answer: 1,
         why: "This needs no bug on the cache's side — the response declared itself publicly shareable. Any CDN or corporate proxy will serve one user's data to the next for the full five minutes. Per-user responses need `private` at minimum, `no-store` for anything sensitive, and `Vary: Authorization` so a cache that stores it anyway keys on the credential."
       }

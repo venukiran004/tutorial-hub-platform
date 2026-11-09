@@ -726,12 +726,7 @@ def test_producer_failure_still_shuts_the_pool_down():
       },
       {
         stem: "A consumer calls `work.task_done()` at the end of its loop body, and `transform(item)` sometimes raises. What is the consequence?",
-        options: [
-          "That item is never marked done, so `queue.join()` waits forever",
-          "The failing item is silently retried",
-          "The queue raises `ValueError` on the next `get()`",
-          "Nothing — `task_done()` is optional"
-        ],
+        options: ["That item is never done, so `join()` hangs", "The failing item is silently retried later", "The queue raises `ValueError` on the next get", "Nothing, because `task_done()` is optional"],
         answer: 0,
         why: "`Queue.join()` blocks until `task_done()` has been called once per `put()`. An exception that skips the call leaves the count permanently high. Putting it in a `finally` fixes it, and the same exception also kills the worker, so the pool silently shrinks — two failures from one missing `try`."
       },

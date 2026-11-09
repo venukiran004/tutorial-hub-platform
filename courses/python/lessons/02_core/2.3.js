@@ -655,12 +655,7 @@ print(list(d))`,
       },
       {
         stem: "Why should a function that builds a `defaultdict` convert it to a plain `dict` before returning it?",
-        options: [
-          "Reading a missing key creates it, so a caller's typo adds phantom data instead of raising",
-          "`defaultdict` cannot be serialised to JSON",
-          "`defaultdict` uses significantly more memory",
-          "Plain dicts have faster lookup"
-        ],
+        options: ["Reading a missing key creates it, hiding typos", "`defaultdict` cannot be serialised to JSON", "`defaultdict` uses significantly more memory", "Plain dicts have measurably faster lookups"],
         answer: 0,
         why: "`defaultdict.__missing__` fires on any missing-key access, including reads. A caller writing `report[\"unkown_region\"]` gets an empty value back *and* mutates the report by adding that key — a bug with no exception and no log line. `defaultdict` is an excellent accumulator and a poor return value: build with it, hand back a `dict`. It does serialise fine, being a dict subclass."
       },

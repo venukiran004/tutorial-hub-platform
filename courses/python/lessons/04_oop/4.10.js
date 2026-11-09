@@ -680,12 +680,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why does `@dataclass(frozen=True)` with a `list` field defeat its own purpose?",
-        options: [
-          "Frozen dataclasses cannot have collection fields at all",
-          "The list is shared between instances",
-          "`__post_init__` cannot validate list contents",
-          "`frozen` cannot stop the list being mutated, and the list makes the object unhashable"
-        ],
+        options: ["Frozen dataclasses cannot have collection fields", "The list is shared between all instances", "`__post_init__` cannot validate list contents", "The list stays mutable and makes it unhashable"],
         answer: 3,
         why: "`frozen` is shallow, exactly like a tuple containing a list (Lesson 1.4): `c.hosts = []` raises, but `c.hosts.append(\"x\")` succeeds. Worse, `__hash__` hashes the fields, so an unhashable list makes the whole object unhashable — losing dict-key and set-member use, which is usually why you froze it. Use `tuple[str, ...]`, `frozenset` or a nested frozen dataclass."
       },

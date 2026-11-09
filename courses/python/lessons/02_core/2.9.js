@@ -584,12 +584,7 @@ if __name__ == "__main__":
       },
       {
         stem: "When should nested API data be parsed into typed objects rather than accessed with `get` chains?",
-        options: [
-          "Always — `get` chains are never acceptable",
-          "When it crosses a module or service boundary, or is stored — wherever access would repeat",
-          "Only when the payload exceeds a certain size",
-          "Only when the API provides an OpenAPI schema"
-        ],
+        options: ["Always, because `get` chains are never acceptable", "When it crosses a boundary or is stored", "Only when the payload exceeds a certain size", "Only when the API publishes an OpenAPI schema"],
         answer: 1,
         why: "The deciding factor is how far the data travels. Inside a few lines of one function a `get` chain is fine and a model is ceremony. Once several functions touch the same payload, defensive access gets duplicated, no function can state what it requires, and a missing field produces a `None` far from where it went missing. Parsing at the boundary moves that failure to ingestion, with the field named."
       },

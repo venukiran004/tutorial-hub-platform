@@ -577,12 +577,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "What is the difference between `[x for x in xs if p(x)]` and `[x if p(x) else None for x in xs]`?",
-        options: [
-          "They are equivalent; the second is more explicit about what happens to elements that do not match",
-          "The first filters, so the output can be shorter; the second maps every element",
-          "The second raises a `SyntaxError`",
-          "The first is lazy, the second is eager"
-        ],
+        options: ["They are equivalent; the second is just explicit", "The first filters; the second maps every element", "The second form raises a `SyntaxError`", "The first is lazy, while the second is eager"],
         answer: 1,
         why: "Position is meaning. A trailing `if` decides *whether* an element is included, so the output can be shorter than the input. A leading `if/else` decides *what* each element becomes, so the output is always the same length. Confusing them is the most common comprehension error — usefully, a filtering `if` cannot take an `else`, so that direction is a `SyntaxError` rather than a silent bug."
       },

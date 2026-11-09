@@ -602,12 +602,7 @@ if __name__ == "__main__":
       },
       {
         stem: "When is LBYL faster than EAFP?",
-        options: [
-          "When failure is common — a `try` is nearly free, but raising is expensive",
-          "Always — checking is cheaper than setting up a `try` block",
-          "Never — EAFP is faster in every scenario",
-          "Only for dictionary access, where `in` is optimised"
-        ],
+        options: ["When failure is common: raising is expensive", "Always: a check is cheaper than a `try` block", "Never: EAFP is faster in every scenario", "Only for dicts, where `in` is optimised"],
         answer: 0,
         why: "Entering a `try` costs almost nothing in modern CPython, so EAFP wins on the success path. Raising and handling an exception is comparatively expensive, so a loop where most attempts fail — parsing a file where most lines are malformed — is faster with a check. The guidance is about which path is *expected*, not a blanket preference."
       },

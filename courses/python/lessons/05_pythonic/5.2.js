@@ -582,12 +582,7 @@ Child().show()`,
       },
       {
         stem: "Which of these review comments is worth blocking a pull request on?",
-        options: [
-          "\"Line 42 is 96 characters; our limit is 88\"",
-          "\"I would use double quotes here rather than single quotes, to match the rest of this module\"",
-          "\"These imports should be sorted alphabetically\"",
-          "\"`timeout = 30` — seconds or ms? It's compared with `GATEWAY_TIMEOUT`, which is ms\""
-        ],
+        options: ["\"Line 42 is 96 characters; our limit is 88\"", "\"Use double quotes here to match the module\"", "\"These imports should be sorted alphabetically\"", "\"`timeout = 30`: seconds or ms? It's compared with ms\""],
         answer: 3,
         why: "Options A, B and C are all bucket one: a formatter and linter decide them, and a human raising them in review means the tooling is not wired into CI. Option D is bucket two — a naming decision a machine cannot make, and one that hides a real unit-mismatch bug. The units question is the kind of comment that finds defects, which is what review time is for."
       },

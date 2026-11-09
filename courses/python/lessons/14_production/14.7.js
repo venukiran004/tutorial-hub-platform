@@ -697,23 +697,13 @@ RUN pip install --extra-index-url https://pypi.acme-corp.com/simple/ \\
     questions: [
       {
         stem: "Why is `pip install --extra-index-url https://internal/ mypackage` dangerous?",
-        options: [
-          "pip picks the highest version from either index, so a public upload can win",
-          "The internal index may be slower",
-          "It disables hash checking",
-          "Packages from an internal index cannot be cached by pip, so every build downloads them again"
-        ],
+        options: ["pip takes the highest version, so public uploads win", "The internal index may be slower to respond", "It disables hash checking for every package", "Internal packages cannot be cached by pip"],
         answer: 0,
         why: "This is dependency confusion, and it requires no access to any of your systems — only the name, which leaks through stack traces, job adverts and public Dockerfiles. `--index-url` against an index that proxies public packages is the fix, plus registering placeholder names on public PyPI."
       },
       {
         stem: "You pin `requests==2.32.3` but use no hashes. What remains unprotected?",
-        options: [
-          "Nothing — a pinned version is fully reproducible",
-          "Transitive dependencies are unaffected by hashes",
-          "Only the wheel format is at risk",
-          "You still trust whatever bytes the index serves, so a swapped file ships undetected"
-        ],
+        options: ["Nothing; a pinned version is fully reproducible", "Transitive dependencies are unaffected by hashes", "Only the wheel format remains at risk", "Swapped bytes from the index ship undetected"],
         answer: 3,
         why: "A version is a label; a hash is the artefact's identity. `--require-hashes` makes a tampered or replaced package fail the install rather than run. It also forces the whole tree to be pinned, since an unpinned transitive dependency cannot be hashed."
       },

@@ -590,12 +590,7 @@ def test_a_valid_password_returns_an_empty_list_not_none() -> None:
       },
       {
         stem: "Why prefer `xfail` over `skip` for a known bug?",
-        options: [
-          "It still runs, so the gap stays visible, and `strict=True` flags the fix",
-          "`skip` is deprecated",
-          "`xfail` runs faster",
-          "`skip` cannot take a reason, so nobody can tell later why the case was disabled"
-        ],
+        options: ["It runs, stays visible, and `strict` flags the fix", "`skip` is deprecated in recent pytest releases", "`xfail` tests run faster than skipped ones do", "`skip` cannot take a reason, so nobody knows why"],
         answer: 0,
         why: "A skipped case is invisible: nothing tells you when the bug is fixed, and the marker outlives the problem. An xfailing case documents the expectation, runs on every push, and `strict=True` makes an unexpected pass a failure — so the person who fixes the bug is forced to remove the marker as part of the same change."
       },

@@ -594,23 +594,13 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "A class's `__iter__` returns `self`. What breaks?",
-        options: [
-          "Nothing — that is the standard implementation",
-          "`for` raises `TypeError` because `__next__` is missing",
-          "It becomes single-use: after the first loop, every later loop yields nothing",
-          "Only nested loops over the same object break"
-        ],
+        options: ["Nothing; that is the standard implementation", "`for` raises `TypeError` as `__next__` is missing", "It is single-use: later loops yield nothing", "Only nested loops over the same object break"],
         answer: 2,
         why: "Returning `self` makes the object its own iterator, so there is one shared cursor rather than a fresh one per pass. After the first traversal it is exhausted, and subsequent loops complete immediately with no error — the failure is silent output rather than an exception. An iterable's `__iter__` must return a *new* iterator; writing it as a generator does that automatically."
       },
       {
         stem: "Why does the second loop over an open file read nothing?",
-        options: [
-          "The file handle is closed after the first iteration",
-          "Buffering discards lines once they are read",
-          "Files require an explicit `readlines()` before iterating",
-          "A file object is its own iterator, so one pass leaves it at the end"
-        ],
+        options: ["The handle is closed after the first pass", "Buffering discards lines once they are read", "Files need `readlines()` before iterating", "A file is its own iterator, now at its end"],
         answer: 3,
         why: "File objects implement `__next__` and return `self` from `__iter__`, making them iterators. The position advances as you read and never resets, so a second pass starts from the end. The same is true of generators, `zip`, `map`, `filter` and database cursors. `f.seek(0)` rewinds a file; for other iterators you must materialise with `list()` or restructure to a single pass."
       },
@@ -627,12 +617,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A function does `count = len(list(results))` then iterates `results`. It works with lists and produces empty output for a database cursor. Why?",
-        options: [
-          "Cursors need an explicit `fetchall()` before iteration",
-          "The cursor was closed by the `list()` call",
-          "`list(results)` consumed the cursor, which can only be read once",
-          "Cursors do not implement `__iter__`"
-        ],
+        options: ["Cursors need `fetchall()` before iteration", "The `list()` call closed the cursor", "`list(results)` consumed the one-shot cursor", "Cursors do not implement `__iter__` at all"],
         answer: 2,
         why: "Every test fixture was a list, which can be traversed any number of times, so the bug never appeared. A cursor is an iterator: materialising it exhausts it, and the following loop sees nothing. Fix it by materialising once and using that list throughout, or by restructuring to a single pass. Annotating the parameter `Iterable[Row]` and testing with a generator makes the single-pass assumption explicit."
       }

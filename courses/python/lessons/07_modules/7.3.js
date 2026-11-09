@@ -569,12 +569,7 @@ loaded: {'weights': [0.1, 0.9], 'labels': ['a', 'b']}`,
       },
       {
         stem: "A class was pickled in June from `myapp.model`. In September it lives at `myapp.ml.model` after a refactor. What happens on load?",
-        options: [
-          "`ModuleNotFoundError` — the pickle stores the import path, not the class",
-          "It loads fine — the pickle contains the class definition",
-          "It loads with default values for every attribute",
-          "It loads but the object's type is `dict`"
-        ],
+        options: ["`ModuleNotFoundError`: it stores the import path", "It loads fine: the pickle holds the class code", "It loads with default values for every attribute", "It loads, but the object's type becomes `dict`"],
         answer: 0,
         why: "A pickle stores a *reference* to the class — module path and qualified name — not the class body, and the unpickler imports that path to rebuild the instance. An ordinary, correct refactor therefore invalidates every stored artefact at once, and the only repair is a permanent compatibility shim aliasing the old path. There is no fallback to defaults and no degradation to a dict. The same fragility applies to renaming the class, and to loading under a different version of a library whose internals changed."
       },

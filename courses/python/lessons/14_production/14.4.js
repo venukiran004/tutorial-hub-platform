@@ -735,12 +735,7 @@ def test_the_lint_baseline_does_not_grow():
       },
       {
         stem: "You run a formatter over a 60,000-line codebase. What must you do the same day?",
-        options: [
-          "Add the commit to `.git-blame-ignore-revs`, or blame points at it everywhere",
-          "Tag a release",
-          "Squash the commit into the previous one",
-          "Disable the formatter for existing files, so only new code is reformatted from now on"
-        ],
+        options: ["Add it to `.git-blame-ignore-revs`", "Tag a release straight afterwards", "Squash it into the previous commit", "Exempt existing files from the formatter"],
         answer: 0,
         why: "`git blame` is the main tool for understanding why code is the way it is, and a bulk-formatting commit destroys it for the whole repository. GitHub reads the file automatically once committed. Everyone also needs to rebase that day, or they face 60,000-line conflicts."
       },

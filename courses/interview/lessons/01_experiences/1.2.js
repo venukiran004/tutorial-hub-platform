@@ -447,78 +447,43 @@ def is_prime(n: int) -> bool:
     questions: [
       {
         stem: "A fraud model reports 99.11% accuracy. What should you ask?",
-        options: [
-          "Which model architecture was used",
-          "What the positive rate is — a model predicting \"not fraud\" every time scores 99.11% on a 0.9% positive set while catching nothing",
-          "Whether it was cross-validated",
-          "What the training time was"
-        ],
+        options: ["Which model architecture was used", "What the positive rate is", "Whether it was cross-validated", "How long training took"],
         answer: 1,
         why: "Accuracy on an imbalanced problem is dominated by the majority class. The measured degenerate model had precision, recall and F1 all exactly 0.0 alongside that 99.11%, which is the fastest way to make the point."
       },
       {
         stem: "Which metric would you report on a 0.9%-positive problem: ROC-AUC or average precision?",
-        options: [
-          "ROC-AUC, because it is threshold-free",
-          "Average precision — measured at 0.3564 against ROC-AUC's 0.9496 on the same model, because ROC-AUC is flattered by the vast negative class",
-          "Neither; use accuracy",
-          "Both are equivalent"
-        ],
+        options: ["ROC-AUC, because it is threshold-free and standard", "Average precision; ROC-AUC flatters rare positives", "Neither; plain accuracy is the clearest for anyone", "Both, since they are equivalent on any problem"],
         answer: 1,
         why: "The random baseline for average precision is the positive rate itself, 0.0089 here, so 0.36 is meaningful. ROC-AUC's false-positive rate denominator is huge, which keeps the curve looking good however many false alarms there are."
       },
       {
         stem: "Retrieval returns the right chunk every time and answers are still wrong. What should you not do?",
-        options: [
-          "Rewrite the prompt",
-          "Add hybrid search and query rewriting — they improve retrieval, and retrieval was not the failure",
-          "Check whether the chunk is buried at position 9 and add reranking",
-          "Add a groundedness check"
-        ],
+        options: ["Rewrite the prompt around the chunk", "Add hybrid search and query rewriting", "Check if the chunk sits at position 9; rerank", "Add a groundedness check on the answer"],
         answer: 1,
         why: "The diagnosis — was it retrieved, and was it used — decides which half of the technique list applies. Adding retrieval techniques to a generation problem costs latency and changes nothing."
       },
       {
         stem: "A customer moves from London to Leeds. The dimension uses SCD Type 1. What happens to last year's regional report?",
-        options: [
-          "Nothing — facts store their own region",
-          "It silently changes: every historical order now joins to Leeds, because the old value was overwritten",
-          "The report fails with a null",
-          "Both regions are reported"
-        ],
+        options: ["Nothing, because facts store their own region", "It silently changes: old orders now join to Leeds", "The report fails because of a null region", "Both regions are reported side by side"],
         answer: 1,
         why: "This is the concrete reason Type 2 is the usual answer: a new row per change with valid-from/valid-to means a fact references the version that was current when it happened. A surrogate key per row version is what makes that reference possible."
       },
       {
         stem: "Which SQL construct removes duplicates while making the survivor an explicit decision?",
-        options: [
-          "SELECT DISTINCT",
-          "ROW_NUMBER() OVER (PARTITION BY key ORDER BY updated DESC) and delete where the number is not 1",
-          "GROUP BY with HAVING COUNT(*) > 1",
-          "A unique constraint"
-        ],
+        options: ["SELECT DISTINCT over all the columns", "ROW_NUMBER() by key, keep row 1", "GROUP BY with HAVING COUNT(*) > 1", "A unique constraint on the key"],
         answer: 1,
         why: "GROUP BY/HAVING finds duplicates but does not choose a survivor, and DISTINCT only handles exactly identical rows. The ORDER BY inside the window is the decision, and it needs a tiebreak to be deterministic — then add the unique constraint so they cannot return."
       },
       {
         stem: "When does LangGraph earn its complexity over a LangChain chain?",
-        options: [
-          "Whenever more than one model call is involved",
-          "When the flow needs to loop or pause — retry after a grader, or wait for human approval — because that needs cycles, shared state and checkpointing",
-          "When using a vector store",
-          "When the application has multiple users"
-        ],
+        options: ["Whenever more than one model call is involved", "When the flow must loop or pause for approval", "Whenever the app uses a vector store", "When the application has multiple users"],
         answer: 1,
         why: "Retrieve-then-generate is a straight line and expresses fine as a chain. The honest extra answer is that for a simple pipeline neither is required — an SDK call and a vector client is less abstraction to debug."
       },
       {
         stem: "Why does `n % 2` correctly classify negative numbers in Python?",
-        options: [
-          "Because Python converts them to positive first",
-          "Because Python's modulo result takes the sign of the divisor and is never negative here — `-3 % 2` is 1, where C would give −1",
-          "Because the list comprehension handles it",
-          "It does not; negatives need special handling"
-        ],
+        options: ["Python converts them to positive first", "Python's % takes the divisor's sign: -3 % 2 is 1", "The list comprehension handles the sign", "It does not; negatives need special handling"],
         answer: 1,
         why: "Measured: -8 % 2 == 0 and -3 % 2 == 1. The same code in C or Java would give −1 for -3 % 2, so a `== 1` test would silently misclassify every negative odd number — which is the kind of detail an easy question is really checking."
       }

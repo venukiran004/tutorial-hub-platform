@@ -722,12 +722,7 @@ def test_peak_memory_is_bounded():
       },
       {
         stem: "`np.exp(x) / (1 + np.exp(x))` produces `nan` for some records. Why, and what is the fix?",
-        options: [
-          "Division by zero for negative x; add an epsilon",
-          "The dtype is too narrow; use float64",
-          "NumPy cannot represent the sigmoid function",
-          "`np.exp` overflows to `inf`, giving `inf/inf`; use `scipy.special.expit`"
-        ],
+        options: ["Division by zero for negative x; add an epsilon", "The dtype is too narrow; switch to float64", "NumPy cannot represent the sigmoid function", "`exp` overflows to inf/inf; use `expit`"],
         answer: 3,
         why: "The threshold is around 709 in float64 and 88 in float32, so whether it triggers depends on the input dtype. `nan` then propagates through every downstream aggregate, which is why it presents as a reporting problem rather than a crash."
       },

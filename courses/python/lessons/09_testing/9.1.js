@@ -587,12 +587,7 @@ def test_repeated_post_returns_the_original_refund(client, db) -> None:
       },
       {
         stem: "Your team wants to raise confidence without a coverage-theatre outcome. Which policy does that?",
-        options: [
-          "Cover changed lines with `diff-cover`, add branch coverage, and mutation-test money code",
-          "Set `fail_under = 100` so no line escapes",
-          "Add an end-to-end test for every new endpoint",
-          "Ban mocks from the suite entirely"
-        ],
+        options: ["diff-cover, branch coverage, mutation tests", "Set `fail_under = 100` so no line escapes", "An end-to-end test for every new endpoint", "Ban mocks from the test suite entirely"],
         answer: 0,
         why: "Diff coverage is enforceable at the moment of change and cannot be satisfied by drive-by assertion-free tests; branch coverage stops one-sided `if` statements from reporting as fully exercised; mutation testing directly detects lines that are executed but unverified, which is the exact blind spot. A 100% gate maximises the incentive to write tests that call code and assert nothing. An end-to-end test per endpoint builds the cone, with slow, non-specific failures. And mocks are the right tool at a real boundary — the problem is asserting on the mock's call log instead of on behaviour."
       }

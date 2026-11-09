@@ -288,12 +288,7 @@ model Order {
       },
       {
         stem: "A team wants to adopt Prisma for a new Python service because of the schema-first workflow. What is the decisive fact?",
-        options: [
-          "Prisma does not support PostgreSQL",
-          "Schema-first modelling does not work in Python",
-          "Its Python client is archived and no longer maintained",
-          "It would be slower than SQLAlchemy"
-        ],
+        options: ["Prisma does not support PostgreSQL", "Schema-first modelling fails in Python", "Its Python client is archived", "It would be slower than SQLAlchemy"],
         answer: 2,
         why: "The design is sound and the Python implementation is not current, which are separate judgements. If the polyglot schema is the actual requirement, running Prisma's migrations and reading the database from Python with SQLAlchemy keeps both halves supported."
       },

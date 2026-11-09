@@ -779,12 +779,7 @@ def test_a_double_booking_cannot_be_committed(db):
       },
       {
         stem: "A job retries on `deadlock detected`, and the retry rate has grown steadily for six months. What does that indicate?",
-        options: [
-          "The retry limit is too low",
-          "The database needs more memory",
-          "Inconsistent lock ordering that was never fixed",
-          "Deadlocks are normal at scale"
-        ],
+        options: ["The retry limit is set too low", "The database needs more memory", "Lock ordering was never made consistent", "Deadlocks are simply normal at scale"],
         answer: 2,
         why: "A retry is the correct response to an individual deadlock and the wrong response to a deadlock rate. A bulk `UPDATE` with no `ORDER BY` is the usual cause: two concurrent runs reach rows in different orders, and the frequency grows with data volume until the job spends more time retrying than working."
       }

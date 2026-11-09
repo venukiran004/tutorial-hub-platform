@@ -576,12 +576,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why can a list not be an element of a set?",
-        options: [
-          "Sets only accept scalar values, not containers",
-          "Lists are mutable and so unhashable — a changed hash would leave the element unfindable",
-          "Lists have no `__eq__`, which sets require for deduplication",
-          "It is an arbitrary restriction inherited from the C implementation"
-        ],
+        options: ["Sets only accept scalar values, not containers", "Lists are mutable, so they are unhashable", "Lists have no `__eq__`, which sets require", "It is an arbitrary restriction from the C code"],
         answer: 1,
         why: "A set stores each element in a slot determined by its hash. If an element mutated after insertion, its hash would change and the set would look for it in the wrong slot — it would be present but unfindable, and could be inserted a second time. Immutability is what guarantees hash stability, which is why tuples and frozensets are allowed and lists, dicts and sets are not."
       },
@@ -598,12 +593,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A module defines `VALID_STATUSES = {\"pending\", \"paid\"}`. Why is `frozenset` a better choice?",
-        options: [
-          "It is faster for membership testing than a regular set",
-          "Regular sets cannot be used as module-level constants",
-          "Any importer could mutate a plain set, and the change would persist silently for the whole process",
-          "It reduces memory usage significantly for large collections"
-        ],
+        options: ["It is faster for membership tests than a set", "Plain sets cannot be module-level constants", "Any importer could mutate a plain set silently", "It uses far less memory for large collections"],
         answer: 2,
         why: "A module-level set is shared mutable state — the trap from Lesson 1.4. Any importer can call `.add()` on it, corrupting every subsequent use for the whole process with no exception and no obvious cause. `frozenset` turns that mistake into an immediate `AttributeError` at the offending line. Membership performance is effectively identical, so the safety is free."
       }

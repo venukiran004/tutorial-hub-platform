@@ -944,12 +944,7 @@ def test_connections_are_reused():
     questions: [
       {
         stem: "A partner slows to 90 seconds per response and the whole service becomes unavailable, with an error rate of zero. What was missing?",
-        options: [
-          "A circuit breaker around the partner, so calls fail fast once the partner's error rate climbs above a threshold",
-          "A timeout — without one every worker waited, until even health checks failed",
-          "More worker threads",
-          "Retries with exponential backoff"
-        ],
+        options: ["A circuit breaker that trips on the error rate", "A timeout; every worker waited indefinitely", "More worker threads to absorb the slowness", "Retries with exponential backoff and jitter"],
         answer: 1,
         why: "The error rate was zero because nothing completed, successfully or otherwise. A timeout would have failed checkout fast, spiked the error rate with the partner named, and left the rest of the service serving. A circuit breaker helps too, and is machinery you add after the one argument that prevents the outage."
       },
@@ -977,12 +972,7 @@ def test_connections_are_reused():
       },
       {
         stem: "Why prefer cursor pagination over `?page=N&limit=100` when reading a large collection?",
-        options: [
-          "Cursors are faster for the server to compute",
-          "Page numbers have a maximum value",
-          "Writes during the scan shift offsets, so rows repeat or vanish; a cursor is stable",
-          "Cursors allow parallel fetching"
-        ],
+        options: ["Cursors are faster for the server to compute", "Page numbers have a fixed maximum value", "Concurrent writes shift offsets; cursors are stable", "Cursors allow pages to be fetched in parallel"],
         answer: 2,
         why: "An offset means \"skip the first N rows of the current result\", and the current result changes as data is written — so a row inserted before your position pushes one across a page boundary and you never see it. A cursor names where you were. Bound the loop and track seen cursors too: an API returning the same cursor twice is not hypothetical."
       }

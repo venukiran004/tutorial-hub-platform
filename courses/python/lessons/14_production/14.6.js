@@ -822,12 +822,7 @@ jobs:
     questions: [
       {
         stem: "A pipeline runs `kubectl set image` and then `alembic upgrade head`. What is wrong?",
-        options: [
-          "Migrations should run in a separate pipeline",
-          "`kubectl set image` cannot be scripted safely",
-          "New code runs against the old schema until the migration finishes",
-          "Alembic requires the old pods to be stopped"
-        ],
+        options: ["Migrations should run in a separate pipeline", "`kubectl set image` cannot be scripted safely", "New code runs on the old schema for a while", "Alembic requires the old pods to be stopped"],
         answer: 2,
         why: "Migrations must run first, and must be additive so the old code keeps working — which is also what makes rollback possible. A migration that removes something means rolling the code back leaves the old version against a schema it cannot use."
       },

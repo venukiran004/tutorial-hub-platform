@@ -767,12 +767,7 @@ def test_the_plan_uses_the_index(db):
       },
       {
         stem: "For `WHERE account_id = ? ORDER BY created_at DESC LIMIT 20`, why is `(account_id, created_at DESC)` better than `(account_id)`?",
-        options: [
-          "It is smaller",
-          "It allows an index-only scan",
-          "The index supplies the order, so 20 rows suffice",
-          "Two-column indexes are always faster than one-column ones"
-        ],
+        options: ["It is smaller on disk than `(account_id)`", "It allows a pure index-only scan", "The index supplies the order: 20 rows", "Two-column indexes are always faster"],
         answer: 2,
         why: "With only `account_id` indexed, all 98,000 matching rows are read and sorted before the limit applies — and the sort may spill to disk. The absence of a `Sort` node in the plan is the confirmation that the index matches the `ORDER BY`."
       },
@@ -789,12 +784,7 @@ def test_the_plan_uses_the_index(db):
       },
       {
         stem: "The planner ignores your index on `status` where 60% of rows are `'active'`. Is this a bug?",
-        options: [
-          "Yes — force it with a planner hint",
-          "Yes — run `ANALYZE` to correct it",
-          "No — at 60% a sequential scan is cheaper; use a partial index",
-          "No — B-tree indexes never work on text columns, only on numbers and dates"
-        ],
+        options: ["Yes; force the index with a planner hint", "Yes; run ANALYZE so it picks the index", "No; a scan is cheaper; use a partial index", "No; B-trees never work on text columns"],
         answer: 2,
         why: "Low selectivity is the one case where the planner declining your index is the right call. Random I/O costs far more per page than sequential, so reading 60% of the heap in index order loses. `CREATE INDEX ... WHERE status = 'pending'` gives a small index for the query that actually needs one."
       }

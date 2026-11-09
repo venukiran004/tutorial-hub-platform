@@ -612,12 +612,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A profile factory is written as `def create(self, perms=[\"read\"])`. After hours of production traffic, new profiles have dozens of permissions. Why did unit tests not catch this?",
-        options: [
-          "The tests mocked the factory rather than calling it",
-          "Default arguments behave differently under pytest",
-          "The list only grows across many calls in one process; a test makes one or two objects and asserts",
-          "The list is only shared when the function is called concurrently"
-        ],
+        options: ["The tests mocked the factory instead of calling it", "Default arguments behave differently under pytest", "The list grows across calls; tests make only one or two", "The list is only shared under concurrent calls"],
         answer: 2,
         why: "The default list is created once at `def` time and shared by every call that omits the argument. Mutations accumulate across calls, so the symptom needs many calls in one long-lived process. A unit test creates a couple of objects and asserts straight away, so the list never grows enough to be visible. The reproduction that does catch it is: create object A, mutate it, then create object B and assert B is clean."
       },

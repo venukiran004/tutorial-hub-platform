@@ -413,12 +413,7 @@ THE CI CHECK THAT WOULD HAVE BLOCKED IT.
     questions: [
       {
         stem: "A deploy fails and the team runs `kubectl set image deploy/app app=app:prod`. Why might this change nothing?",
-        options: [
-          "`app:prod` is a tag the release just moved, so it is the same image",
-          "Because the rollout needs a restart to take effect",
-          "Because the image cache has to be cleared first",
-          "Because the readiness probe fails on the old image"
-        ],
+        options: ["`app:prod` was moved, so it is the same image", "The rollout needs a restart to take effect", "The node's image cache must be cleared first", "The readiness probe fails on the old image"],
         answer: 0,
         why: "A tag is a pointer and the release moved it, so the rollback deploys exactly what is already running — an action that looks like a fix and is a no-op. Deploying by digest removes this entire class of incident-time confusion, because a digest cannot be moved."
       },

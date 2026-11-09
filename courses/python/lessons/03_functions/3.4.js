@@ -596,12 +596,7 @@ too_short | must be at least 3 characters`,
       },
       {
         stem: "A webhook handler registered by decorator is silently ignored in production but works in tests. What is the cause?",
-        options: [
-          "Decorators are stripped when Python runs with optimisations enabled",
-          "Production never imports the handler's module, and registration only happens on import",
-          "The decorator must be applied at class level to persist",
-          "Production runs a cached bytecode version without the decorator"
-        ],
+        options: ["Decorators are stripped under optimisation flags", "Production never imports the handler's module", "The decorator must be applied at class level", "Production runs stale cached bytecode"],
         answer: 1,
         why: "Decorator registration runs when the module is imported. A handler in a module that production never imports simply does not exist, and the failure is silence rather than an error. Tests passed because importing the module to test it also registered it. This is why every framework using the pattern — Flask, pytest, Django — has explicit machinery to guarantee the imports happen."
       },

@@ -684,12 +684,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "An aggregation using `groupby` reports a third of the true total after an upstream query lost its `ORDER BY`. Why?",
-        options: [
-          "`groupby` raises on unsorted input, and the error was swallowed by a broad `except` upstream",
-          "The sort order affects hashing, so keys collided",
-          "`groupby` starts a new group on every key change, so each customer split into several",
-          "`groupby` samples large inputs for performance"
-        ],
+        options: ["`groupby` raised on unsorted input, and it was swallowed", "The sort order changes hashing, so keys collided", "A new group starts at every key change, splitting each", "`groupby` samples large inputs for performance"],
         answer: 2,
         why: "`groupby` groups **consecutive runs**, not values — it walks the input once and never looks back. Unsorted input therefore yields the same key in several groups, and building a dict from those keeps only the final one. There is no error and the numbers stay plausible, which is why this class of bug survives for days. Either sort with the same key function, or assert the ordering invariant so a violation fails loudly."
       },

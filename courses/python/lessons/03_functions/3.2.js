@@ -549,12 +549,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "In `def f(a, /, b, *, c)`, how may each parameter be passed?",
-        options: [
-          "All three by position or keyword",
-          "`a` positionally only; `b` either way; `c` by keyword only",
-          "`a` by keyword only; `b` either way; `c` positionally only",
-          "`a` and `b` positionally; `c` either way"
-        ],
+        options: ["All three by position or by keyword", "`a` positional only; `b` either; `c` keyword only", "`a` keyword only; `b` either; `c` positional only", "`a` and `b` positional only; `c` either way"],
         answer: 1,
         why: "The `/` and `*` are boundaries, not parameters. Everything before `/` is positional-only, everything after `*` is keyword-only, and the region between accepts either. So `f(1, 2, c=3)` and `f(1, b=2, c=3)` are valid, while `f(a=1, ...)` and `f(1, 2, 3)` both raise `TypeError`."
       },

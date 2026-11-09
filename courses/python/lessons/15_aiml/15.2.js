@@ -788,12 +788,7 @@ def test_peak_memory_is_bounded():
       },
       {
         stem: "You merge orders with customers and the row count increases. What happened, and what prevents it?",
-        options: [
-          "Duplicate keys on the right fan rows out; `validate=\"many_to_one\"` raises",
-          "An outer join added unmatched rows from both sides — switching to an inner join prevents it",
-          "The index was reset during the merge",
-          "Suffixes created extra rows"
-        ],
+        options: ["Duplicate right keys fan out; `validate` catches it", "An outer join added unmatched rows from both sides", "The index was reset during the merge operation", "The column suffixes created the extra rows"],
         answer: 0,
         why: "A fan-out inflates every subsequent sum with no error, and it is the most common silent data bug in pandas. `validate=` costs one keyword argument, and asserting the row count after any join that should preserve it costs one line."
       },

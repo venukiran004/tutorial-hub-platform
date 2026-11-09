@@ -797,12 +797,7 @@ def test_the_schema_describes_the_responses(client):
       },
       {
         stem: "An endpoint returns an ORM object with no `response_model`. What is the risk?",
-        options: [
-          "The response will not be valid JSON",
-          "FastAPI raises at startup, because the return type is not a Pydantic model it can document",
-          "Every attribute is serialised, including columns added later without review",
-          "The response cannot be cached"
-        ],
+        options: ["The response will not be valid JSON", "FastAPI raises at startup over the return type", "Every attribute is exposed, even new columns", "The response can no longer be cached"],
         answer: 2,
         why: "The API surface becomes whatever the entity happens to have, so a column added for an internal report appears publicly the same afternoon. A response model filters to declared fields, which makes exposure a deliberate act visible in a diff — and keeps the OpenAPI schema accurate at the same time."
       },
@@ -819,12 +814,7 @@ def test_the_schema_describes_the_responses(client):
       },
       {
         stem: "Why prefer `Annotated[int, Query(ge=1)]` over `limit: int = Query(20, ge=1)`?",
-        options: [
-          "The handler stays callable as a plain function, and mypy sees an `int`",
-          "The legacy form is deprecated and will be removed",
-          "`Annotated` supports more constraints",
-          "It generates a better OpenAPI schema"
-        ],
+        options: ["It stays a plain function, typed as `int`", "The legacy form is deprecated and going away", "`Annotated` supports many more constraints", "It generates a better OpenAPI schema"],
         answer: 0,
         why: "With the legacy form, calling the handler directly passes a `Query` object as the value, so a unit test needs an HTTP client. `Annotated` keeps the default a real default, makes the constrained type reusable across endpoints, and lets `mypy` see the declared type rather than a `Query` instance."
       }

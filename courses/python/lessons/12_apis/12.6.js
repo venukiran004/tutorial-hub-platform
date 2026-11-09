@@ -699,12 +699,7 @@ def test_the_schema_has_no_breaking_changes_against_main():
     questions: [
       {
         stem: "A team changes `total` from excluding VAT to including VAT, keeping the name and type. Why is this the most dangerous kind of change?",
-        options: [
-          "It requires a database migration",
-          "No automated check notices — schema, tests and monitoring all stay green",
-          "It breaks JSON serialisation of decimals",
-          "It changes the response size"
-        ],
+        options: ["It requires a database migration to roll out", "Nothing notices: schema, tests, monitors stay green", "It breaks JSON serialisation of decimal values", "It changes the size of every response"],
         answer: 1,
         why: "Every mechanism designed to catch breakage compares structure, and the structure is identical. The failure surfaces weeks later when someone's reconciliation does not balance, with nothing pointing at the API change. The rule is that a field's meaning is immutable: a new meaning needs a new name, which also removes the ambiguity that prompted the request."
       },
@@ -732,12 +727,7 @@ def test_the_schema_has_no_breaking_changes_against_main():
       },
       {
         stem: "`query.order_by(getattr(Order, sort_field))` where `sort_field` comes from a query parameter. What is the risk?",
-        options: [
-          "SQL injection through the column name",
-          "The ORM will raise on an invalid attribute",
-          "Callers can sort by unindexed or internal columns, costing scans and leaking names",
-          "Sorting cannot be combined with pagination"
-        ],
+        options: ["SQL injection through the column name itself", "The ORM raises on any invalid attribute name", "Sorting on unindexed or internal columns", "Sorting can no longer be combined with paging"],
         answer: 2,
         why: "The ORM parameterises values, so classic injection is not the issue — the problem is that the caller chooses the column. An unindexed column means an expensive sort triggered by a query string, and probing for internal column names turns error messages and timing into an enumeration oracle. An explicit allowlist maps public names to columns you have chosen."
       }

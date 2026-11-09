@@ -739,12 +739,7 @@ def test_latency_does_not_degrade_with_tenant_count():
     questions: [
       {
         stem: "Latency is rising, CPU shows 12%, and `py-spy dump` shows every thread executing a Python function. What does this mean?",
-        options: [
-          "It is CPU-bound — one saturated core of eight reads as 12%",
-          "The process is waiting on I/O",
-          "py-spy is sampling incorrectly",
-          "The metric scrape interval is too long"
-        ],
+        options: ["CPU-bound: one saturated core of eight", "The process is mostly waiting on I/O", "py-spy is sampling the threads incorrectly", "The metric scrape interval is too long"],
         answer: 0,
         why: "Container CPU percentage is averaged across cores, so it is the wrong aggregation for a single-threaded event loop. The stack dump is direct evidence of what the process is doing and beats an inference from an aggregate metric — which is why running it early is worth the ten seconds."
       },

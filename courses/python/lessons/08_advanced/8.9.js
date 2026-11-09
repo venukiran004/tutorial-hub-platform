@@ -664,23 +664,13 @@ def test_memory_does_not_grow_across_cycles() -> None:
     questions: [
       {
         stem: "RSS rises during a batch job and stays at the new level afterwards, across many jobs, without climbing further. What is this?",
-        options: [
-          "A slow leak that will eventually exhaust memory if the service runs long enough",
-          "Fragmentation — Python reuses the arenas but cannot return them",
-          "A reference cycle the collector cannot break",
-          "A C-extension leak"
-        ],
+        options: ["A slow leak that will eventually exhaust memory", "Fragmentation: arenas reused but not returned", "A reference cycle the collector cannot break", "A memory leak inside a C extension module"],
         answer: 1,
         why: "The distinguishing feature is that it plateaus rather than climbing across cycles. CPython returns a 1 MiB arena only when every object in it is freed, so survivors scattered after a large batch keep arenas resident. The memory is reusable by Python. The response is to avoid the spike — stream or batch — not to hunt for a defect that is not there."
       },
       {
         stem: "Why does `@lru_cache(maxsize=512)` on a method retain far more than 512 cached values?",
-        options: [
-          "`maxsize` is only a hint and the cache can exceed it",
-          "Method caches store both arguments and return values twice",
-          "The cache is per class with `self` in each key, so 512 instances stay pinned",
-          "The decorator disables garbage collection for the class"
-        ],
+        options: ["`maxsize` is only a hint the cache can exceed", "Method caches store arguments and results twice", "`self` is in each key, pinning 512 instances", "The decorator disables garbage collection"],
         answer: 2,
         why: "The decorator runs once when the class body executes, so all instances share one cache, and each entry holds a strong reference to the instance in its key. Those instances hold connections, buffers and anything else they reference. Memory climbs to a plateau and never falls, which reads as ordinary warm-up — use `cached_property`, or build a per-instance cache in `__init__`."
       },

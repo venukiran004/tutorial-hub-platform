@@ -596,12 +596,7 @@ CMD ["billing"]                            # the entry point, not a path
     questions: [
       {
         stem: "What does `source .venv/bin/activate` actually do?",
-        options: [
-          "Puts `.venv/bin` first on `PATH` and sets `VIRTUAL_ENV`; nothing more",
-          "Rewrites `sys.path` inside the interpreter",
-          "Copies the standard library into the environment",
-          "Starts a subshell isolated from the parent"
-        ],
+        options: ["Prepends `.venv/bin` to `PATH`, sets `VIRTUAL_ENV`", "Rewrites `sys.path` inside the running interpreter", "Copies the standard library into the environment", "Starts a subshell isolated from the parent shell"],
         answer: 0,
         why: "Activation is a shell convenience, nothing more. The isolation comes from the interpreter reading `pyvenv.cfg` beside its own executable, which is why `.venv/bin/python script.py` behaves identically without activating. In CI, Makefiles and service units, use the explicit path — activation does not persist between separate shell invocations, which is a common source of steps silently running outside the environment."
       },
@@ -618,12 +613,7 @@ CMD ["billing"]                            # the entry point, not a path
       },
       {
         stem: "Why should a library declare `requests>=2.31,<3` rather than `requests==2.31.0`?",
-        options: [
-          "Exact pins are not supported in `pyproject.toml`",
-          "An exact pin conflicts with anything needing another version — libraries declare ranges",
-          "Ranges install faster",
-          "`==` prevents security updates from being applied at all"
-        ],
+        options: ["Exact pins are not supported in `pyproject.toml`", "An exact pin conflicts with other packages' needs", "Version ranges install faster than exact pins", "`==` prevents any security update being applied"],
         answer: 1,
         why: "Your users have their own dependency graphs. A library pinning an exact version forces a conflict with any other package that pinned differently, and there is no resolution short of forking one of them. Declare the widest range you actually support and let the application's lockfile decide the exact version — which is precisely why applications lock and libraries do not."
       },

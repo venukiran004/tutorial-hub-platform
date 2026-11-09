@@ -737,12 +737,7 @@ def test_threshold_suppresses_fast_calls(caplog) -> None:
       },
       {
         stem: "What does typing a decorator as `Callable[P, R] -> Callable[P, R]` with `ParamSpec` achieve?",
-        options: [
-          "It makes the wrapper faster",
-          "The wrapper keeps the wrapped function's exact parameters for the type checker",
-          "It removes the need for `functools.wraps`",
-          "It allows the decorator to change the wrapped function's return type without a cast"
-        ],
+        options: ["It makes the wrapper run faster at call time", "The wrapper keeps the exact parameter types", "It removes the need for `functools.wraps`", "It lets the decorator change the return type"],
         answer: 1,
         why: "An untyped decorator makes everything it touches `Callable[..., Any]`, so argument checking and the return type are lost at every call site — one decorator can erase types across a codebase. `ParamSpec` captures the parameter list so `charge(\"nope\")` is still an error after decoration. `Concatenate[Connection, P]` extends this to decorators that inject an argument."
       }

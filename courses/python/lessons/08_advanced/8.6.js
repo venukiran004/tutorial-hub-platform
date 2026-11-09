@@ -701,23 +701,13 @@ def test_incomplete_abc_subclass_still_fails() -> None:
       },
       {
         stem: "Why must `__init_subclass__` call `super().__init_subclass__(**kwargs)`?",
-        options: [
-          "To register the subclass with `type`",
-          "Because the method is abstract in `object`",
-          "To make the keyword arguments available to the subclass",
-          "So hooks further up the MRO still run instead of being silently skipped"
-        ],
+        options: ["To register the subclass with `type`", "Because the method is abstract in `object`", "To pass keyword arguments to the subclass", "So hooks further up the MRO still run"],
         answer: 3,
         why: "`__init_subclass__` participates in the MRO like any other method, so several bases can each define one. Without the `super()` call, the chain stops at yours and any mixin further along contributes nothing — producing a class that quietly lacks behaviour rather than failing. Passing `**kwargs` along is what lets each hook consume the arguments it recognises."
       },
       {
         stem: "A base class marks abstract models with `__abstract__ = True`. Why check `cls.__dict__.get(\"__abstract__\")` rather than `getattr(cls, \"__abstract__\")`?",
-        options: [
-          "`getattr` is slower on classes",
-          "`getattr` inherits the base's `True`, so every subclass looks abstract",
-          "`__dict__` access bypasses descriptors, which is required here",
-          "They are equivalent; `__dict__` is only more explicit"
-        ],
+        options: ["`getattr` is slower when used on classes", "`getattr` inherits the base's `True` value", "`__dict__` access bypasses descriptors here", "They are equivalent; `__dict__` is just explicit"],
         answer: 1,
         why: "`getattr` follows inheritance, so a subclass that never set `__abstract__` inherits the base's `True` and is treated as abstract. The registry then stays empty and the failure is silence, not an error. `cls.__dict__` looks only at attributes defined directly on that class, which is what a per-class marker means."
       }

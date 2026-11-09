@@ -882,12 +882,7 @@ def test_csv_values_are_escaped_and_defused():
     questions: [
       {
         stem: "An `async def` handler calls `psycopg2` directly. What happens?",
-        options: [
-          "FastAPI detects the blocking call and moves it to a thread",
-          "It blocks the event loop, so every request on that process waits",
-          "The request fails with a RuntimeError",
-          "Only that request is slow"
-        ],
+        options: ["FastAPI moves the blocking call to a thread", "It blocks the loop, so every request waits", "The request fails with a RuntimeError", "Only that particular request is slow"],
         answer: 1,
         why: "FastAPI trusts the declaration: `async def` runs on the loop, `def` runs in a threadpool. Blocking the loop raises nothing — latency simply rises across every endpoint on the process, including ones touching nothing, which is why it presents as a service-wide p99 spike with no slow route to blame."
       },
@@ -904,23 +899,13 @@ def test_csv_values_are_escaped_and_defused():
       },
       {
         stem: "A team enables `acks_late=True` on a task that charges cards, without making it idempotent. What is the result?",
-        options: [
-          "Messages are lost more often",
-          "Nothing changes until `max_retries` is reached, after which the task is acknowledged anyway",
-          "The broker rejects the configuration",
-          "A killed worker's message is redelivered and the card is charged again"
-        ],
+        options: ["Messages are lost more often than before", "Nothing changes until `max_retries` is reached", "The broker rejects the configuration outright", "A killed worker's redelivery charges again"],
         answer: 3,
         why: "`acks_late` is what makes retries durable, so it converts a visible failure into an automatic duplicate. Idempotency is a prerequisite for it, not a follow-up — a deterministic idempotency key plus a status check under a row lock is the minimum before turning it on."
       },
       {
         stem: "Why pass `order.id` to a background task rather than the `order` object?",
-        options: [
-          "The object is a snapshot from enqueue time; the row may have changed",
-          "Objects cannot be serialised by the task queue at all, so passing one raises at enqueue time",
-          "Ids are faster to transmit",
-          "Celery only accepts strings"
-        ],
+        options: ["The object is a stale snapshot from enqueue time", "Objects cannot be serialised by the task queue", "Ids are much faster to transmit to workers", "Celery only accepts plain strings as arguments"],
         answer: 0,
         why: "The gap between enqueue and execution can be seconds or hours, and the row may have changed in that window — cancelled, refunded, updated. Re-reading inside the task under a lock is the only way the task sees current state, and it is also what allows the status guard that makes retries safe."
       }

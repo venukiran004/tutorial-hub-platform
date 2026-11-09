@@ -643,12 +643,7 @@ include = ["src/", "tests/", "README.md", "LICENSE", "CHANGELOG.md"]
       },
       {
         stem: "A fully annotated library gets \"missing library stubs\" from users' type checkers. Why?",
-        options: [
-          "The annotations use syntax their Python version does not support",
-          "Annotations are stripped from wheels",
-          "The package has no `py.typed` marker, so checkers ignore its annotations",
-          "The `Typing :: Typed` classifier is missing"
-        ],
+        options: ["The annotations use syntax users cannot parse", "Annotations are stripped from built wheels", "There is no `py.typed` marker in the package", "The `Typing :: Typed` classifier is missing"],
         answer: 2,
         why: "PEP 561 makes inline annotations opt-in through an empty `py.typed` file inside the package. Without it, every hour spent annotating produces nothing for users. The file must also reach the wheel, which means declaring it as package data — creating it and forgetting the declaration gives the identical symptom, so the CI check should grep the built artefact."
       },

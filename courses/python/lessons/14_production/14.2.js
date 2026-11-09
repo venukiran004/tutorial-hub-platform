@@ -766,12 +766,7 @@ def test_no_secrets_are_committed():
       },
       {
         stem: "Why should a missing `STRIPE_KEY` prevent startup rather than defaulting to an empty string?",
-        options: [
-          "Empty strings are invalid Python",
-          "Stripe rejects empty keys with a 500",
-          "It makes local development harder",
-          "Otherwise the service starts, passes readiness, and fails on the first real checkout"
-        ],
+        options: ["Empty strings are invalid values in Python code", "Stripe rejects empty keys with a 500 response", "It makes local development much harder for all", "It starts, then fails on the first real checkout"],
         answer: 3,
         why: "The whole point of validating configuration at startup is to move the failure to a moment when nobody is affected and the cause is obvious. A default for a required value converts a deploy-time error into a production incident with a customer attached."
       },

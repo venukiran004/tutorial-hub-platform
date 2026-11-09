@@ -709,12 +709,7 @@ CMD ["gunicorn", "app.wsgi:application", \\
       },
       {
         stem: "A Dockerfile had `ENV SECRET_KEY=...`. You remove the line and rebuild. Is the old image safe?",
-        options: [
-          "Yes, once the new image is pushed",
-          "No — the old layer still holds it, readable with `docker history`",
-          "Yes, if the tag is overwritten",
-          "Only if the registry supports layer deduplication"
-        ],
+        options: ["Yes, once the new image has been pushed", "No; the old layer still holds the secret", "Yes, provided the tag is overwritten", "Only if the registry deduplicates layers"],
         answer: 1,
         why: "Nothing modifies an earlier layer. The credential must be treated as compromised and rotated, images deleted from the registry as a best effort, and access logs audited for the exposure window. Secrets belong at runtime, or in a BuildKit secret mount which never lands in a layer."
       },

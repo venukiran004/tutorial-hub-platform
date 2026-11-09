@@ -892,12 +892,7 @@ def test_repeated_classification_is_cached(mock_llm):
       },
       {
         stem: "Structured extraction fails validation. What is more effective than retrying the same prompt?",
-        options: [
-          "Increasing the temperature",
-          "Switching to a larger model each retry",
-          "Parsing the output with a regex instead",
-          "Send back the output and the exact validation error to correct"
-        ],
+        options: ["Increase the temperature for variety", "Switch to a larger model on each retry", "Parse the output with a regex instead", "Return the output and the exact error"],
         answer: 3,
         why: "A blind retry sends an identical prompt and often produces an identical failure. Giving the model its own output plus the precise reason it was rejected is a correction rather than a repetition, and it costs one extra turn instead of a full re-run."
       }

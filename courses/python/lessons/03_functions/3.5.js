@@ -432,12 +432,7 @@ if __name__ == "__main__":
       },
       {
         stem: "When is `functools.reduce` the right tool?",
-        options: [
-          "For a custom combine with no built-in, such as intersecting a list of sets",
-          "For summing or multiplying a sequence",
-          "Whenever a loop accumulates into a single value, since `reduce` states that intent directly",
-          "Never — it was removed from Python 3"
-        ],
+        options: ["For a custom combine with no built-in", "For summing or multiplying a sequence", "Whenever a loop accumulates one value", "Never; it was removed from Python 3"],
         answer: 0,
         why: "`sum`, `max`, `min` and `math.prod` already cover the common folds, so reaching for `reduce` there is the canonical misuse. It survives for custom combines like `reduce(set.intersection, permission_sets)`. Even then an explicit loop is often clearer and easier to debug — and the functional form frequently rebuilds the accumulator each step, as `reduce(lambda a, d: {**a, **d}, dicts)` does, turning a linear operation quadratic."
       }

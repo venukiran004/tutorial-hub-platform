@@ -586,12 +586,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "`counts = defaultdict(int)`. What does `if counts[\"typo\"] > 0:` do?",
-        options: [
-          "Returns 0 and leaves the dict unchanged",
-          "Raises `KeyError`, because the key was never assigned and reads do not use the factory",
-          "Returns 0 **and inserts** `\"typo\": 0`, because reads trigger `__missing__` too",
-          "Returns `None`, since `int` needs an argument"
-        ],
+        options: ["Returns 0 and leaves the dict unchanged", "Raises `KeyError`, since reads skip the factory", "Returns 0 and inserts \"typo\": 0 into the dict", "Returns `None`, since `int` needs an argument"],
         answer: 2,
         why: "`__missing__` is called on read as well as write, so probing a key adds it. A later `len()` or iteration then reports data that never really existed, and in a long-lived object the dict grows without bound. Use `counts.get(key, 0)` when you only want to read, and convert to a plain `dict` before returning one from a function."
       },

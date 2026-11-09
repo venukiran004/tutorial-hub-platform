@@ -358,12 +358,7 @@ which is why the stage comes before the mitigation.`,
     questions: [
       {
         stem: "A model's predictions degrade over three weeks with no change to code, data pipeline or deployment. Which stage, and which mitigation?",
-        options: [
-          "Stage 1 or 2 — the inputs drifted, so the fix is per-feature drift alarms",
-          "Stage 3 training — retrain on fresh data",
-          "Stage 4 registry — the artefact was corrupted in storage",
-          "Stage 5 serving — the preprocessing diverged"
-        ],
+        options: ["Stage 1 or 2: inputs drifted; add drift alarms", "Stage 3 training: retrain on fresh data", "Stage 4 registry: the artefact was corrupted", "Stage 5 serving: the preprocessing diverged"],
         answer: 0,
         why: "Nothing you control changed, so the world did — that is input drift, and it is allowed to happen. Prevention is not available; detection is, and three weeks of silent decay is a detection gap rather than a model fault. Retraining may be the eventual response, but only after the drifted feature is identified."
       },

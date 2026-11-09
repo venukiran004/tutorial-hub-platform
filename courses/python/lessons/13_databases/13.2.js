@@ -716,12 +716,7 @@ ALTER TABLE orders ALTER COLUMN user_id SET NOT NULL;
       },
       {
         stem: "Why is `email` a poor primary key even though emails are unique?",
-        options: [
-          "Emails change, and every reference must then change with them",
-          "Emails are too long to index",
-          "Uniqueness is not guaranteed across providers",
-          "Text keys cannot be foreign keys"
-        ],
+        options: ["Emails change, and every reference with them", "Emails are too long to index efficiently", "Uniqueness is not guaranteed across providers", "Text keys cannot be used as foreign keys"],
         answer: 0,
         why: "Natural keys change, and the change propagates to every table referencing them. A surrogate key with a `UNIQUE` constraint on the email gives stable identity and enforced uniqueness together. Case sensitivity is the second problem — a plain `TEXT` unique index lets the same mailbox register twice."
       },
@@ -738,12 +733,7 @@ ALTER TABLE orders ALTER COLUMN user_id SET NOT NULL;
       },
       {
         stem: "`order_items` stores only `product_id`, and invoices reprinted after a rename show the wrong name. What is the fix?",
-        options: [
-          "Copy the name and price onto the line item at the time of sale",
-          "Prevent products from being renamed",
-          "Cache the product table in the application, so reprints use the cached names",
-          "Add a version column to products"
-        ],
+        options: ["Copy name and price onto the line at sale time", "Prevent products from ever being renamed", "Cache the product table inside the application", "Add a version column to the products table"],
         answer: 0,
         why: "This is the case where copying is not denormalisation. The test is whether updating the source would be wrong: renaming a product should not alter a past invoice, so the invoice's name is history rather than a stale cache of the current name."
       }

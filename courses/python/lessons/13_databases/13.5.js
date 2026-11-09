@@ -911,23 +911,13 @@ def test_archiving_does_not_load_rows(db):
     questions: [
       {
         stem: "A module-level `Session` exhausts the connection pool under load. Why?",
-        options: [
-          "It never closes, so it never returns its connection",
-          "Sessions open a new connection per query",
-          "The pool size is too small",
-          "The identity map holds connections"
-        ],
+        options: ["It never closes or returns its connection", "Sessions open a new connection per query", "The pool size is configured too small", "The identity map holds on to connections"],
         answer: 0,
         why: "It is also not thread-safe, so under a threaded server multiple threads can check out connections through it and none are returned. A request-scoped session created by a dependency is closed on the way out whatever happens, which is what makes the connection lifetime bounded."
       },
       {
         stem: "A function commits and returns an ORM object. The caller sometimes gets `DetachedInstanceError` on an attribute. Why?",
-        options: [
-          "Commit expires the object, and reloading needs a session",
-          "The object was never added to the session",
-          "The transaction was rolled back",
-          "The primary key was not assigned"
-        ],
+        options: ["Commit expires it; reloading needs a session", "The object was never added to the session", "The transaction was rolled back underneath", "The primary key was never assigned to it"],
         answer: 0,
         why: "The expiry exists so a long-lived session sees other transactions' changes; a request-scoped session has no such need. Setting `expire_on_commit=False` on the session factory removes both the surprise reload and the intermittent error."
       },

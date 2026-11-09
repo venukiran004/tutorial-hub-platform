@@ -935,12 +935,7 @@ def test_auth_appears_in_the_schema():
     questions: [
       {
         stem: "Authentication middleware is deployed and the load balancer marks every instance unhealthy. Why?",
-        options: [
-          "The middleware is too slow for the probe's timeout",
-          "Middleware cannot access `request.state`",
-          "The probe uses HTTP/1.0, which the middleware rejects",
-          "Middleware runs for every request, so the probe without a token gets a 401"
-        ],
+        options: ["The middleware is too slow for the probe's timeout", "Middleware cannot access `request.state`", "The probe uses HTTP/1.0, which middleware rejects", "The probe has no token, so it receives a 401"],
         answer: 3,
         why: "The usual fix, a path allowlist inside the middleware, drifts — someone adds `/metrics` and the scraper breaks the same way. As a dependency there is nothing to exempt: `/health` does not declare `CurrentUser`. It also puts the security scheme in the OpenAPI document, which middleware cannot do."
       },
@@ -957,12 +952,7 @@ def test_auth_appears_in_the_schema():
       },
       {
         stem: "Why return 404 rather than 403 when a user requests another customer's order?",
-        options: [
-          "403 is reserved for authentication failures",
-          "404 is cacheable and 403 is not",
-          "A 403 confirms the order exists, so valid ids can be enumerated",
-          "Most clients do not handle 403"
-        ],
+        options: ["403 is reserved for authentication failures", "404 is cacheable, while 403 is not", "A 403 confirms existence, enabling enumeration", "Most HTTP clients do not handle 403 well"],
         answer: 2,
         why: "Distinguishing \"does not exist\" from \"exists but is not yours\" turns the endpoint into an oracle: iterate ids and the status reveals which are real. Returning 404 for both leaks nothing. It is one of the few places where a deliberately less precise status is the more correct one."
       },

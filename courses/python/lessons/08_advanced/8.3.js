@@ -667,12 +667,7 @@ def test_functions_do_not_mutate_their_arguments() -> None:
     questions: [
       {
         stem: "Why annotate a parameter as `Sequence[str]` rather than `list[str]`?",
-        options: [
-          "`Sequence` is faster to check",
-          "`list` is deprecated in annotations",
-          "It allows the function to return a different sequence type from the one it was given",
-          "It accepts tuples too, and has no `append`, so mutation is a type error"
-        ],
+        options: ["`Sequence` is faster for the checker", "`list` is deprecated in annotations", "It lets the function return any sequence", "Tuples work too, and mutation is an error"],
         answer: 3,
         why: "The annotation is simultaneously looser in what it accepts and stricter in what the body may do. That is the parameter/return asymmetry: accept the most general type you can handle, return the most specific type you have. Returning `Sequence[str]` would be the mistake in the other direction — you have a list, and hiding that only limits the caller."
       },
@@ -700,12 +695,7 @@ def test_functions_do_not_mutate_their_arguments() -> None:
       },
       {
         stem: "A codebase has 11,000 `# type: ignore` comments and the checker has never caught a bug. What is the fix?",
-        options: [
-          "Remove the type checker",
-          "Annotate every function in one large pull request",
-          "Switch to a different type checker",
-          "Strict by default with a shrinking list of exempt modules, and coded ignores"
-        ],
+        options: ["Remove the type checker from the build", "Annotate every function in one large PR", "Switch to a different type checker", "Strict by default, shrinking exemptions"],
         answer: 3,
         why: "A blanket ignore also hides every future error on that line — and those lines are the ones the checker found suspicious. Strict-by-default means new and touched code is fully checked from the first commit, while the exceptions live in one file where they can be counted and reduced. A gate failing everywhere gets bypassed; one passing everywhere except a named list gets defended."
       }

@@ -734,12 +734,7 @@ def test_no_migration_creates_an_index_without_concurrently():
     questions: [
       {
         stem: "A migration renames a column and the deploy causes 500s for eight minutes. Why?",
-        options: [
-          "During the rollout, old code queries the renamed column",
-          "The rename locked the table",
-          "The index was rebuilt",
-          "Alembic ran the migration twice"
-        ],
+        options: ["Old code queries the renamed column mid-rollout", "The rename locked the table for eight minutes", "The index on the column was rebuilt", "Alembic ran the migration twice in a row"],
         answer: 0,
         why: "The window is the rollout, and it is longer if the rollout fails. The four-step sequence — add, dual-write, switch reads, drop — exists so that no single moment has code and schema disagreeing, and every step before the drop is a redeploy away from rollback."
       },

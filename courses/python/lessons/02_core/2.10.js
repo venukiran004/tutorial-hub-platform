@@ -526,12 +526,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why does `any(check(x) for x in items)` differ from `any([check(x) for x in items])`?",
-        options: [
-          "They are identical — the brackets are stylistic",
-          "The list version is faster because it avoids generator overhead",
-          "The generator stops at the first `True`; the list version evaluates everything first",
-          "The bracketed version raises on an empty list"
-        ],
+        options: ["They are identical; the brackets are stylistic", "The list version avoids generator overhead", "The generator stops at the first `True`", "The bracketed version raises on an empty list"],
         answer: 2,
         why: "A list comprehension is fully evaluated and then passed as an argument, so `any` never gets the chance to stop early. The generator is consumed lazily, so `any` stops as soon as it finds a truthy value — matching the `break` in the loop it replaced. On an expensive predicate this is wasted work; on an infinite generator the list version never returns."
       },

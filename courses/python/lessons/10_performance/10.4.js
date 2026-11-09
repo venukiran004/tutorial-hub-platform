@@ -615,12 +615,7 @@ def test_caching_format_currency_would_be_slower():
     questions: [
       {
         stem: "`@lru_cache` on a method whose result depends on `self.tenant_id`. What is the most serious problem?",
-        options: [
-          "`tenant_id` is not in the key, so a reused service object can serve another tenant's data",
-          "The cache is too small",
-          "`self` is not hashable",
-          "The cache is never cleared"
-        ],
+        options: ["A reused object can serve another tenant's data", "The cache is too small for the tenant count", "`self` is not hashable, so every call fails", "The cache is never cleared between requests"],
         answer: 0,
         why: "The key looks complete because `month` is an explicit argument, which is why it survives review. The tenant is hidden inside `self`, and `self` is keyed by identity — so two objects for the same tenant waste the cache, and any pooling across tenants leaks data. There is a second fault too: the cache lives on the class, so every cached instance is pinned for the life of the process."
       },
@@ -648,12 +643,7 @@ def test_caching_format_currency_would_be_slower():
       },
       {
         stem: "`format_currency(amount: Decimal, code: str)` does a dict lookup and an f-string, and is decorated with `@lru_cache(maxsize=512)`. What does the cache achieve?",
-        options: [
-          "A modest speed-up on repeated values",
-          "It makes it slower — hashing costs more than the body, and almost nothing ever hits",
-          "It prevents formatting errors",
-          "It reduces memory by sharing strings"
-        ],
+        options: ["A modest speed-up on repeated values", "A slowdown: hashing costs more, few hits", "It prevents formatting errors on bad input", "It reduces memory by sharing the strings"],
         answer: 1,
         why: "Measured over 100,000 calls it was about 2.6× slower, with 41 hits against 99,959 misses. The amount varies per row, so a report of 10,000 lines produces 10,000 distinct keys against a maxsize of 512 — constant eviction, cost paid on every call, benefit almost never. This is the most common cache mistake: added by reflex to a function that looked expensive."
       }

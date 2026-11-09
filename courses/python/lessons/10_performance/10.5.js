@@ -635,34 +635,19 @@ def test_output_is_built_by_join_not_concatenation():
       },
       {
         stem: "`new = [r for r in rows if r.id not in set(known)]` is slower than the list version it replaced. Why?",
-        options: [
-          "Sets are slower than lists for small collections",
-          "The comprehension copies `rows` first",
-          "`not in` on a set falls back to a linear scan",
-          "`set(known)` is rebuilt for every row, because the `if` runs per item"
-        ],
+        options: ["Sets are slower than lists for small inputs", "The comprehension copies `rows` before filtering", "`not in` on a set falls back to a linear scan", "`set(known)` is rebuilt once for every row"],
         answer: 3,
         why: "The expression after `if` is evaluated per item. Building the set once outside — `known_ids = set(known)` — makes the whole operation linear. Hoisting it inside the comprehension while trying to fix the O(n) membership test is a genuinely common regression, and it makes the code slower than the bug it was meant to fix."
       },
       {
         stem: "`logger.debug(f\"rendered {order.to_dict()}\")` runs in a loop with the level set to INFO. What does it cost?",
-        options: [
-          "Nothing — the level check skips it",
-          "Full price — the f-string and `to_dict()` run before `debug()` checks the level",
-          "Only the string formatting, not the method call",
-          "It raises because DEBUG is disabled"
-        ],
+        options: ["Nothing, because the level check skips it", "Full price: the argument is built before the check", "Only the formatting, not the method call", "It raises, because DEBUG is disabled"],
         answer: 1,
         why: "Python evaluates arguments before the call, so the serialisation happens and only then does `debug()` check the level and throw the string away. In one real case this was 12 of 40 seconds. Pass values as arguments — `logger.debug(\"rendered %s\", order)` — or as structured `extra` fields, so nothing is formatted unless a handler will emit it."
       },
       {
         stem: "A 12.4-second endpoint has a list comprehension at the top of the profile by `tottime`. Rewriting it saves 50 ms. What went wrong?",
-        options: [
-          "The comprehension was already optimal",
-          "The profiler was misconfigured",
-          "Generators are not faster than comprehensions",
-          "`tottime` excludes callees; `cumtime` would have shown a 12-second HTTP call"
-        ],
+        options: ["The comprehension was already optimal", "The profiler was misconfigured for the run", "Generators are not faster than comprehensions", "`tottime` hid a 12-second HTTP call in callees"],
         answer: 3,
         why: "`tottime` is time in the function body excluding calls, so pure-Python work rises to the top while the actual cost sits inside a call it made. `cumtime` includes callees and points straight at the HTTP request with no timeout, no pooling and no caching. Read `cumtime` first to find where the time goes, then `tottime` to find where it is spent."
       }

@@ -709,12 +709,7 @@ if __name__ == "__main__":
       },
       {
         stem: "Why should `__eq__` return `NotImplemented` rather than `False` for an unsupported type?",
-        options: [
-          "`False` raises a `DeprecationWarning` in recent Python versions",
-          "It lets Python try the other operand's method, so a type that knows yours can compare",
-          "`NotImplemented` is faster because it skips the comparison",
-          "They are equivalent; `NotImplemented` is only a convention"
-        ],
+        options: ["`False` raises a DeprecationWarning nowadays", "Python can try the other operand's method", "`NotImplemented` skips the comparison, so it is faster", "They are equivalent; it is only a convention"],
         answer: 1,
         why: "`False` claims authoritatively that the objects are unequal and ends the negotiation. `NotImplemented` says \"I don't know how\", so Python tries `other.__eq__(self)` — which is what allows a third-party class that understands yours to make the comparison work. If both sides return `NotImplemented`, Python falls back to identity comparison, so you never lose the sensible default. The same applies to every binary operator."
       },
@@ -731,12 +726,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A cache keyed by `Query` objects behaves oddly. `__eq__` compares SQL and parameters; `__hash__` returns `hash(self.sql)` only. What is wrong?",
-        options: [
-          "Nothing — the hash may use a subset of the equality fields, and this one does so correctly",
-          "`hash()` cannot be called on a string attribute",
-          "The class needs `__ne__` defined as well",
-          "The hash ignores a field that equality uses, so unequal queries collide constantly"
-        ],
+        options: ["Nothing; a hash may use a subset of equality's fields", "`hash()` cannot be called on a string attribute", "The class also needs `__ne__` to be defined", "Unequal queries with the same SQL all collide"],
         answer: 3,
         why: "Strictly, using a subset does not violate the invariant — equal objects still hash equally, so nothing crashes. But unequal queries now collide constantly, the dict falls back to `__eq__` on every collision, and the cache's performance degrades toward a linear scan. Any code reasoning about hash equality as a proxy for equality is also wrong. Deriving both from one `_key()` tuple makes the mismatch impossible."
       }

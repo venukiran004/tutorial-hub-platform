@@ -549,12 +549,7 @@ if __name__ == "__main__":
     questions: [
       {
         stem: "Why does `^(a+)+$` take seconds against `\"a\" * 24 + \"!\"` but microseconds against `\"a\" * 24`?",
-        options: [
-          "Failure triggers a slower fallback engine",
-          "The `$` anchor forces the engine to rescan the whole string from every starting position",
-          "The pattern is recompiled when a match fails",
-          "The `!` forces a failure, and only then must the engine try every way to split the a's"
-        ],
+        options: ["Failure triggers a slower fallback engine", "The `$` anchor forces a rescan from every position", "The pattern is recompiled when a match fails", "The `!` forces failure, so every split is tried"],
         answer: 3,
         why: "A successful match stops at the first way that works, so the ambiguity costs nothing. A failure requires the engine to prove **no** way works — and with a quantifier over a quantified group there are exponentially many. This is why catastrophic backtracking survives testing: it appears only on input you did not intend to match. The fix is to remove the ambiguity: `^a+$` accepts the same strings with one way to match each."
       },

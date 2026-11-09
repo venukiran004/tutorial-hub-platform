@@ -620,12 +620,7 @@ if __name__ == "__main__":
       },
       {
         stem: "What does `stacklevel=2` do in `warnings.warn(...)`?",
-        options: [
-          "Raises the warning's severity so it is not suppressed",
-          "Includes two frames of traceback in the warning output",
-          "Attributes the warning to the caller's line rather than the line inside your library",
-          "Delays the warning until the second time the function is called"
-        ],
+        options: ["Raises the warning's severity so it shows", "Includes two traceback frames in the output", "Points the warning at the caller's line", "Delays the warning until the second call"],
         answer: 2,
         why: "By default a warning reports the line where `warn()` was called — inside your library — so a user sees that something is deprecated with no indication which of their calls triggered it. `stacklevel=2` walks one frame up to the caller, making the warning actionable. It is the difference between a deprecation people can migrate from and one they ignore."
       }

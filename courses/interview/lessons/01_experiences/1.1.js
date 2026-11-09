@@ -497,100 +497,55 @@ timing, n = 20,000:
     questions: [
       {
         stem: "Why can a cross-encoder not be the first-stage retriever?",
-        options: [
-          "It is less accurate than a bi-encoder",
-          "It scores the query and document together, so nothing can be precomputed — a million candidates means a million forward passes at query time",
-          "It cannot handle long documents",
-          "It needs a GPU"
-        ],
+        options: ["It is less accurate than a bi-encoder on most queries", "It scores pairs jointly, so nothing can be precomputed", "It cannot handle documents longer than a few hundred tokens", "It needs a GPU, which the retrieval tier lacks"],
         answer: 1,
         why: "The bi-encoder's whole advantage is that the corpus is embedded once and indexed. The cross-encoder's advantage — full attention across the pair — is exactly what makes precomputation impossible, which is why the two-stage design exists."
       },
       {
         stem: "You have no cross-encoder and no budget for an LLM reranker. What do you reach for first?",
-        options: [
-          "Increase k and hope",
-          "Reciprocal rank fusion over dense and BM25 — no model, and it sidesteps the two score scales being incomparable",
-          "Maximal marginal relevance",
-          "Re-embed the corpus with a larger model"
-        ],
+        options: ["Increase k and hope the answer lands in it", "Reciprocal rank fusion over dense and BM25", "Maximal marginal relevance over dense results", "Re-embed the corpus with a larger model"],
         answer: 1,
         why: "RRF combines by rank rather than score, which is why it is robust without calibration. MMR is the next move but it fixes redundancy, which is a different failure from poor relevance."
       },
       {
         stem: "An agentic system's accuracy drops to 60%. What do you establish before forming any hypothesis?",
-        options: [
-          "Which model is being used",
-          "Whether the measurement itself changed, and whether the drop was a cliff or a slope — a cliff points at a deploy or config change, a slope at drift or corpus growth",
-          "The retrieval recall",
-          "The prompt version"
-        ],
+        options: ["Which model and version is being called today", "Whether the metric changed; cliff or slope", "The current retrieval recall at k for the set", "Which prompt version is deployed right now"],
         answer: 1,
         why: "The two shapes have disjoint cause lists, so that single question halves the search space before you look at anything. Starting at 'which layer' is where most people begin, which is why starting earlier reads as experience."
       },
       {
         stem: "A 7B model, 32k context, batch 16, fp16. The KV cache is 250 GiB. Which change gives 32× rather than 4×?",
-        options: [
-          "Quantising the cache to fp8",
-          "Multi-query attention — one KV head for all query heads, against grouped-query attention's eight",
-          "PagedAttention",
-          "Prefix caching"
-        ],
+        options: ["Quantising the KV cache from fp16 to fp8", "Multi-query attention: one KV head for all", "PagedAttention to remove fragmentation", "Prefix caching across shared prompts"],
         answer: 1,
         why: "The cache scales with KV head count, so 32 → 1 is 32× and 32 → 8 is 4×. MQA costs more quality, which is why GQA is the usual compromise; fp8 is another 2× and multiplies with either."
       },
       {
         stem: "Measured on one distribution, top_p=0.9 kept 2 tokens at T=1.0 and 4 tokens at T=2.0. Why?",
-        options: [
-          "top_p is applied before temperature",
-          "Temperature reshapes the distribution that top_p then measures — flattening it spreads probability mass, so more tokens are needed to reach 0.9",
-          "The tokeniser changed",
-          "Because top_p is a token count, not a probability mass"
-        ],
+        options: ["top_p is applied before temperature is", "Higher T flattens the distribution top_p measures", "The tokeniser changed between the two runs", "top_p is a token count, not a probability mass"],
         answer: 1,
         why: "Temperature divides the logits before the softmax and top_p truncates after it, so they are not independent dials. The usual advice follows: tune one and leave the other, and for tool-calling keep temperature near 0."
       },
       {
         stem: "Threads were measured at 0.68× against sequential on CPU-bound Python. Why slower, not just not-faster?",
-        options: [
-          "Thread creation cost dominates",
-          "Only one thread executes Python bytecode at a time, so no work overlaps and the GIL contention and context switching are pure added overhead",
-          "The work was too small",
-          "ThreadPoolExecutor is inefficient"
-        ],
+        options: ["Thread creation cost dominates the run", "The GIL serialises work and adds switching cost", "The work items were too small to split", "ThreadPoolExecutor is inefficient by design"],
         answer: 1,
         why: "On IO the same pool gave 3.97×, because sleeping and socket reads release the GIL. Hence the rule: threads for waiting, processes for computing — and asyncio when the waiting is at high concurrency."
       },
       {
         stem: "Why must a user id never be a Prometheus label?",
-        options: [
-          "It is personal data",
-          "Every distinct label value creates a new time series, so a million users is a million series — it belongs as a span attribute instead",
-          "Labels must be numeric",
-          "It would break the histogram buckets"
-        ],
+        options: ["It is personal data under GDPR and must be hashed", "Each value is a new series; use a span attribute", "Prometheus labels must be numeric, not strings", "It would break the histogram bucket boundaries"],
         answer: 1,
         why: "Cardinality is what kills a metrics backend. The same identifier is invaluable on a trace span, where it costs nothing structural and lets you find one user's failing request."
       },
       {
         stem: "What makes a tool-call check a guardrail rather than an instruction?",
-        options: [
-          "It is written in the system prompt more forcefully",
-          "It runs in code before the side effect and refuses regardless of what the model decided — an instruction is a request, a check is a control",
-          "It is validated by the model",
-          "It is documented in the tool description"
-        ],
+        options: ["It is written more forcefully in the system prompt", "Code refuses before the side effect, whatever the model", "It is validated by a second, independent model call", "It is documented clearly in the tool's description"],
         answer: 1,
         why: "The premise of prompt injection is that the model can be talked out of an instruction, so no security property can rest on one. The implementation detail that shows experience is returning a structured refusal rather than raising, so the model relays it and does not retry."
       },
       {
         stem: "In the two-pointer rain-water solution, why is `left_max` alone sufficient when `h[lo] < h[hi]`?",
-        options: [
-          "Because the array is sorted",
-          "Because h[hi] is at least as tall, so some bar on the right is ≥ h[lo] — the minimum of the two maxima is therefore the left one, and the exact right maximum is never needed",
-          "Because water only flows left",
-          "Because the pointers meet in the middle"
-        ],
+        options: ["Because the array is sorted ascending", "h[hi] ≥ h[lo], so the left maximum is the minimum", "Because water only ever flows to the left", "Because the two pointers meet in the middle"],
         answer: 1,
         why: "The invariant is that water above a bar is min(tallest left, tallest right) − height. Knowing which side is the minimum is enough; the other side's exact value is irrelevant, which is what removes the O(n) space."
       }

@@ -557,12 +557,7 @@ def test_first_seen_is_the_earliest(tmp_path):
     questions: [
       {
         stem: "`sys.getsizeof(rows)` on a list of 1,000 dicts returns about 8,900 bytes. What does that number mean?",
-        options: [
-          "The list and its dicts occupy 8.9 KB",
-          "The list is compressed in memory",
-          "The dicts are interned and shared",
-          "Only the list's own pointer array — nothing about the dicts it points to"
-        ],
+        options: ["The list and its dicts occupy about 8.9 KB", "The list is stored compressed in memory", "The dicts are interned and shared by the list", "Only the list's own pointer array"],
         answer: 3,
         why: "`getsizeof` is shallow: for a container it reports the container's own storage. The real cost here is about 184 KB, a factor of twenty higher, because each dict carries a header, a hash table and a `str` object per key and value. Measure with `tracemalloc`, which reports what was actually allocated."
       },
@@ -579,12 +574,7 @@ def test_first_seen_is_the_earliest(tmp_path):
       },
       {
         stem: "When does `__slots__` genuinely pay for itself?",
-        options: [
-          "On any class, since it is always smaller",
-          "When there are hundreds of thousands of small, fixed-shape instances",
-          "When the class has more than ten attributes",
-          "When instances are stored in a database"
-        ],
+        options: ["On any class, since it is always smaller", "With hundreds of thousands of fixed-shape instances", "When the class has more than ten attributes", "When instances are stored in a database"],
         answer: 1,
         why: "It cuts a small record from roughly 240 bytes to 70 by removing the per-instance `__dict__`, which matters at scale and is invisible at a few hundred objects. It also costs real things: no `cached_property`, no ad-hoc attributes, and no weak references unless `__weakref__` is listed — constraints not worth buying for a saving you cannot measure."
       },

@@ -916,12 +916,7 @@ def test_no_secret_is_hard_coded():
     questions: [
       {
         stem: "`jwt.decode(token, key, algorithms=[\"HS256\", \"none\"])`. What can an attacker do?",
-        options: [
-          "Nothing — HS256 is still checked first",
-          "Forge an unsigned `alg: none` token for any user and be trusted",
-          "Only read the payload, not forge one",
-          "Cause a denial of service"
-        ],
+        options: ["Nothing, because HS256 is still checked first", "Forge an unsigned token for any user", "Only read the payload, not forge one", "Cause a denial of service on the API"],
         answer: 1,
         why: "The `none` algorithm means the signature is not verified at all, so the token is just base64-encoded JSON that anyone can write. Accepting it anywhere is a total bypass. The related attack is RS256-to-HS256 confusion, where a public key is used as the HMAC secret — both are prevented by passing a fixed list you control."
       },
@@ -938,12 +933,7 @@ def test_no_secret_is_hard_coded():
       },
       {
         stem: "Why return 404 rather than 403 when a user requests another account's order?",
-        options: [
-          "403 is not a valid REST status code",
-          "403 confirms the id exists, so ids can be enumerated",
-          "404 is faster to produce",
-          "Clients handle 404 more consistently"
-        ],
+        options: ["403 is not a valid REST status code", "403 confirms the id exists, aiding enumeration", "404 is faster for the server to produce", "Clients handle 404 more consistently"],
         answer: 1,
         why: "The distinction between \"does not exist\" and \"exists but is not yours\" is information, and it is information only an attacker benefits from. Use 403 when the caller already knows the resource exists — their own resource, an action their role forbids — and log the real reason even when you do not return it."
       },

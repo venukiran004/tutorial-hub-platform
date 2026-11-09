@@ -567,12 +567,7 @@ for order in orders:
       },
       {
         stem: "A batch job misses its window. The work is per-customer and independent. What do you try first?",
-        options: [
-          "Check the complexity first — a quadratic scan made linear beats any hardware",
-          "Rewrite the job in a compiled language, which typically runs this kind of loop ten to fifty times faster",
-          "Add more workers immediately",
-          "Move the job to a larger machine"
-        ],
+        options: ["Check complexity: fix the quadratic scan", "Rewrite the job in a compiled language", "Add more workers to the job immediately", "Move the job onto a larger machine"],
         answer: 0,
         why: "A language change buys a constant factor; a complexity change buys a different curve, and the curve wins at every size that matters. Scaling out is the right *second* move here because the work divides and it is reversible within hours — but doing it first means renting machines to run a quadratic algorithm faster."
       }

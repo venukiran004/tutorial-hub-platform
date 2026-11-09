@@ -585,12 +585,7 @@ if __name__ == "__main__":
       },
       {
         stem: "A module contains `client = ApiClient(URL)` at module level, and `ApiClient.__init__` authenticates over the network. What breaks in CI?",
-        options: [
-          "Nothing — module-level code is lazy and only runs on first attribute access, so CI never connects",
-          "Only tests that use the client directly fail",
-          "Every test module importing it fails at import time, because construction does network I/O",
-          "The client is created but its methods raise on first use"
-        ],
+        options: ["Nothing; module-level code runs lazily on first use", "Only tests that use the client directly fail", "Every importing test fails, as import does network I/O", "The client is built but its methods raise on first use"],
         answer: 2,
         why: "Module-level statements execute when the module is imported, in every process that imports it — including the test collector. Since `__init__` does network I/O, the import itself fails and the traceback points at an import line rather than at a test. Two fixes apply: make construction cheap by moving I/O into a `connect()` classmethod, and build shared clients in a startup factory rather than by import side effect."
       },

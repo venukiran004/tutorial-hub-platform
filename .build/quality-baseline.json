@@ -20,7 +20,7 @@
   "unseenSource": 0
  },
  "interview": {
-  "quizByLength": 16,
+  "quizByLength": 0,
   "unseenSource": 0
  },
  "langchain": {
@@ -52,7 +52,7 @@
   "unseenSource": 0
  },
  "python": {
-  "quizByLength": 86,
+  "quizByLength": 0,
   "unseenSource": 0
  },
  "sql": {
