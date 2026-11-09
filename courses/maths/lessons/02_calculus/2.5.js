@@ -619,45 +619,25 @@ def test_active_floor_pins_exactly_and_costs():
     questions: [
       {
         stem: "You solve a constrained problem and one multiplier comes out at 0.0. What does that tell you?",
-        options: [
-          "The solver failed to converge",
-          "That constraint is inactive — the unconstrained optimum already satisfies it, and removing it entirely would change nothing",
-          "The constraint is violated",
-          "The problem is infeasible"
-        ],
+        options: ["The solver failed to converge", "The constraint is inactive", "The constraint is violated", "The problem is infeasible"],
         answer: 1,
         why: "This is complementary slackness: `λᵢ · gᵢ(x) = 0`, so a constraint is either tight with a positive price or slack with zero price. In a problem with 200 constraints, the zero-multiplier ones are irrelevant to the answer, and the usually-small active set is all that determines it."
       },
       {
         stem: "Why does lasso produce exactly-zero coefficients while ridge does not?",
-        options: [
-          "The L1 penalty is stronger",
-          "The L1 constraint set is a diamond with corners on the axes, and a contour arriving from a generic direction is disproportionately likely to touch a corner — where a coordinate is exactly zero",
-          "Lasso uses a different optimiser",
-          "L1 gradients are larger near zero"
-        ],
+        options: ["The L1 penalty is simply stronger than L2", "The L1 diamond's corners lie on the axes", "Lasso uses a different optimiser", "L1 gradients are larger near zero"],
         answer: 1,
         why: "Seeing regularisation as a constrained problem makes this geometric rather than mysterious. An L2 budget is a ball — smooth, no corners — so the optimum touches it at a generic point where every weight is small but non-zero."
       },
       {
         stem: "A training run diverges immediately after a constraint penalty with weight `1e6` is added. What is the most likely cause?",
-        options: [
-          "The constraint is infeasible",
-          "The penalty raised the largest Hessian eigenvalue, so the maximum stable learning rate `2/L` fell far below the rate in use",
-          "The gradient of the penalty is undefined",
-          "The penalty term has the wrong sign"
-        ],
+        options: ["The constraint is infeasible as written", "The stable rate 2/L fell below the rate used", "The penalty's gradient is undefined there", "The penalty term has been given the wrong sign"],
         answer: 1,
         why: "A 100× stronger penalty forces a 100× smaller learning rate. The run did not diverge because of the constraint but because a rate that was fine before is now above the stability threshold — and the right fix is usually to reparameterise so the constraint holds by construction."
       },
       {
         stem: "You need model weights that are non-negative and sum to one. What is the best approach?",
-        options: [
-          "Clip to `[0,1]` and renormalise after each step",
-          "Optimise an unconstrained `z` and use `softmax(z)` — the constraint then holds exactly at every step, with no penalty weight to tune",
-          "Add a large quadratic penalty",
-          "Project onto the simplex once per epoch"
-        ],
+        options: ["Clip to [0, 1] and renormalise each step", "Optimise free z and output softmax(z)", "Add a large quadratic penalty term", "Project onto the simplex once an epoch"],
         answer: 1,
         why: "Reparameterisation makes the constraint structural rather than enforced. Clipping is not projection, does not converge to the constrained optimum, and kills the gradient at the boundary so a weight that reaches zero can never recover."
       }

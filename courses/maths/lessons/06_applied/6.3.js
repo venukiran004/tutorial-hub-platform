@@ -727,45 +727,25 @@ def test_ridge_stabilises_the_split():
     questions: [
       {
         stem: "A point has leverage 0.69 and a studentised residual of 2.4, with Cook's D of 0.09. What is it?",
-        options: [
-          "An influential point that should be removed",
-          "A high-leverage point that sits on the line — it does not move the fit, and it extends the range of `x`, which *shrinks* the standard errors",
-          "An outlier",
-          "A data error"
-        ],
+        options: ["An influential point to remove", "High leverage, on the line", "An outlier in the residuals", "A data entry error"],
         answer: 1,
         why: "Leverage measures unusualness in `x` only. Cook's D combines residual and leverage and is the one that tracks whether the conclusion changes — here 0.09 against a cutoff of 0.07 is unremarkable, and deleting the point would throw away the most informative observation available."
       },
       {
         stem: "A marketing model's coefficients swing every month while R² stays at 0.89. What is happening?",
-        options: [
-          "The relationship is genuinely unstable",
-          "Multicollinearity — the combined effect is precisely identified while the split between correlated channels is not, and R² uses the combination",
-          "There is an outlier each month",
-          "The sample is too small"
-        ],
+        options: ["The relationship is genuinely unstable", "Multicollinearity splits the effect arbitrarily", "There is a new outlier in each month", "The monthly samples are far too small"],
         answer: 1,
         why: "In the worked example the individual coefficients had a bootstrap sd of 0.61 and their scaled sum had 0.09. R² cannot detect the problem, which is why it kept reassuring everyone — and the negative coefficient it produces reads as a finding when it is an artefact."
       },
       {
         stem: "Your cleaning step removes points more than 4σ from the mean. What is the risk?",
-        options: [
-          "None — that is standard practice",
-          "You may be removing a real, distinct population, and validation cannot catch it because the validation set was cleaned the same way",
-          "It removes too few points",
-          "It biases the intercept only"
-        ],
+        options: ["None at all; that is standard practice", "Removing a real population validation can't see", "It removes far too few of the points", "It biases only the regression intercept"],
         answer: 1,
         why: "The credit-model case removed high-income self-employed applicants — real records, not errors — so the model never learned how income behaves at the top of its range. Ask whether a point is *wrong*, which an automatic filter cannot determine."
       },
       {
         stem: "Two predictors have VIF 38 each. One is a genuine confounder. Should you drop it?",
-        options: [
-          "Yes, a VIF above 10 means it should go",
-          "No — omitting a confounder reintroduces bias, and a biased coefficient is worse than an imprecise one",
-          "Yes, if R² does not fall",
-          "Drop whichever has the larger VIF"
-        ],
+        options: ["Yes, a VIF above 10 means it goes", "No: dropping a confounder adds bias", "Yes, if R² does not fall", "Drop whichever has the larger VIF"],
         answer: 1,
         why: "Better options are to combine them into the quantity the data identifies, use ridge to stabilise the split, or — the only real fix — create independent variation through an experiment. No modelling technique estimates a parameter the data does not identify."
       }

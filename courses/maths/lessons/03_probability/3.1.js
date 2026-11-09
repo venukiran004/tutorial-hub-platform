@@ -598,45 +598,25 @@ def test_tiny_probabilities_do_not_underflow_to_zero():
     questions: [
       {
         stem: "You have 40 million rows and deduplicate on a 32-bit hash. Roughly how many collisions should you expect?",
-        options: [
-          "Effectively zero — 2³² is four billion",
-          "About 186 — the expected pairs is `n²/2N = (4×10⁷)²/(2×4.3×10⁹)`",
-          "Exactly one",
-          "About 40,000"
-        ],
+        options: ["Effectively zero: 2³² is four billion", "About 186, from n²/2N", "Exactly one collision", "About 40,000 collisions"],
         answer: 1,
         why: "The comparison is `n²` against `N`, not `n` against `N`. At 0.0004% of the data the loss sits inside most teams' noise tolerance, which is why this design survives review and then silently drops rows for months."
       },
       {
         stem: "A family has two children and at least one is a girl. What is the probability both are girls?",
-        options: [
-          "1/2",
-          "1/3 — the equally likely space is the four ordered pairs, of which three remain and one is GG",
-          "1/4",
-          "2/3"
-        ],
+        options: ["1/2", "1/3", "1/4", "2/3"],
         answer: 1,
         why: "\"One of each\" is two of the four ordered outcomes, so it is twice as likely as \"both girls\". Treating the three unordered outcomes as equally likely is the same error as treating dice sums 2 through 12 as equally likely."
       },
       {
         stem: "Three independent dependencies each fail with probability 0.5. What is the probability at least one fails?",
-        options: [
-          "1.5",
-          "0.875 — that is `1 − 0.5³`; the naive sum of 1.5 is the union bound, which can exceed 1",
-          "0.5",
-          "0.125"
-        ],
+        options: ["1.5, the plain sum", "0.875, which is 1 − 0.5³", "0.5, the single rate", "0.125, all three failing"],
         answer: 1,
         why: "Adding probabilities assumes disjoint events, which independent failures are not. The union bound is still useful because it is always conservative and close for rare events — but it never warns you when it exceeds 1."
       },
       {
         stem: "How many random bits do you need for 10¹² ids with collision probability below 10⁻⁹?",
-        options: [
-          "40 bits — 10¹² is about 2⁴⁰",
-          "About 101 bits — `log₂(n²/2q)`, roughly `2·log₂(n)` plus the budget term",
-          "64 bits is always enough",
-          "It depends on the hash function, not the bit count"
-        ],
+        options: ["40 bits, since 10¹² ≈ 2⁴⁰", "About 101 bits", "64 bits, which always suffices", "It depends on the hash, not bits"],
         answer: 1,
         why: "Bits scale as twice the log of the item count, so the space must be about the square of what intuition suggests. Every 10× growth in volume costs a further 6.6 bits — volume is the expensive term, not the budget."
       }

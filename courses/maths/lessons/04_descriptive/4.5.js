@@ -676,45 +676,25 @@ def test_sample_size_scales_inversely_with_effect_squared():
     questions: [
       {
         stem: "Two independent skills appear strongly negatively correlated among your hires. What is the most likely explanation?",
-        options: [
-          "One skill genuinely detracts from the other",
-          "Selection — you hired people good enough overall, so weakness in one required strength in the other, and the both-weak candidates are absent",
-          "The sample is too small",
-          "Measurement error"
-        ],
+        options: ["One skill genuinely detracts from the other", "Selection: both-weak candidates were never hired", "The sample of hires is too small", "Measurement error in the skill scores"],
         answer: 1,
         why: "This is a collider from lesson 3.6 in a sampling costume. The effect strengthens as selection tightens — at an 8% acceptance rate the induced correlation reaches −0.71 — so elite samples produce the most misleading correlations."
       },
       {
         stem: "Four datasets have identical means, variances, correlations and regression lines. What does this show?",
-        options: [
-          "They are the same data",
-          "Summary statistics cannot distinguish a linear relationship from a curve, an outlier, or a single leverage point — Anscombe's quartet",
-          "The statistics were computed incorrectly",
-          "Correlation is unreliable at small `n`"
-        ],
+        options: ["They are the same underlying data, relabelled", "Summary statistics can hide different shapes", "The statistics were computed incorrectly", "Correlation is unreliable when n is small"],
         answer: 1,
         why: "Plotting separates them instantly, and so do two automatic checks: leverage catches dataset IV at exactly 1.0, and Pearson-versus-Spearman disagreement flags the outlier case."
       },
       {
         stem: "An observational study reports `p < 1e-300` for a retention difference. What has it established?",
-        options: [
-          "A very strong causal effect",
-          "That the difference is not coincidence — which was never the concern, and says nothing about confounding, reverse causation or selection",
-          "That the sample is representative",
-          "That the effect size is large"
-        ],
+        options: ["A very strong causal effect", "Only that it is not chance", "That the sample is representative", "That the effect size is large"],
         answer: 1,
         why: "More observations of a confounded comparison give a more precise estimate of a confounded quantity. A p-value addresses exactly one of the four alternatives, and usually the least likely one."
       },
       {
         stem: "An observed risk ratio of 1.2 comes from observational data. How much should you trust it?",
-        options: [
-          "It is a small but reliable effect",
-          "Very little — the E-value is 1.69, so an unmeasured confounder associated 1.7× with both exposure and outcome would explain it entirely",
-          "It depends only on the p-value",
-          "Trust it if the sample is large"
-        ],
+        options: ["A small but reliable effect", "Very little: E-value is only 1.69", "It depends only on the p-value", "Trust it if the sample is large"],
         answer: 1,
         why: "The E-value turns the slogan into a number, and it is most useful when small because it proves fragility. A risk ratio of 5 would need a 9.5× confounder, which is much harder to imagine going unnoticed."
       }

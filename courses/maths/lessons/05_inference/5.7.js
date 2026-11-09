@@ -712,45 +712,25 @@ def test_confirmatory_test_is_larger_than_what_was_run():
     questions: [
       {
         stem: "A study reports `p = 0.03`. What does that mean?",
-        options: [
-          "There is a 3% chance the null hypothesis is true",
-          "If the null were true, 3% of experiments would produce data at least this extreme",
-          "There is a 97% chance the effect is real",
-          "The effect is small but detectable"
-        ],
+        options: ["A 3% chance that the null hypothesis is true", "3% of null experiments look at least this extreme", "A 97% chance that the effect is real", "The effect is small but statistically detectable"],
         answer: 1,
         why: "Options 1 and 3 reverse the conditional — they ask about `P(H₀|data)`, which needs a prior. At a 10% base rate of true hypotheses, `p = 0.03` corresponds to a 25% chance the null is true, not 3%."
       },
       {
         stem: "Mobile shows `p = 0.001` and desktop `p = 0.21`. Can you conclude the effect is stronger on mobile?",
-        options: [
-          "Yes, the p-values differ by orders of magnitude",
-          "No — you must test the interaction; here the difference of differences gives `p = 0.079`",
-          "Yes, if both samples are large",
-          "Only if desktop's sample is larger"
-        ],
+        options: ["Yes, the p-values differ by orders of magnitude", "No: test the interaction, which gives 0.079", "Yes, provided both samples are large", "Only if desktop's sample is larger"],
         answer: 1,
         why: "This is the difference-of-significance fallacy. Mobile had 2.4× desktop's sample, and desktop was powered to detect only a 3.6pp effect against mobile's 2.1pp — so it could never have seen the effect being claimed."
       },
       {
         stem: "Your field tests hypotheses that are true about 10% of the time, at `α = 0.05` and 80% power. What fraction of your significant findings are false?",
-        options: [
-          "5%, by construction",
-          "36% — the false discovery rate depends on the prior, not on `α`",
-          "20%",
-          "It cannot be determined"
-        ],
+        options: ["5%, by construction", "36%, given the prior", "20%, one minus power", "It cannot be determined"],
         answer: 1,
         why: "At a 1% base rate — exploratory screening, most genomics — it reaches 86%. Low power makes it worse in both directions: at 20% power and a 10% prior, 69% of positive findings are false and the surviving effects are more than twice their true size."
       },
       {
         stem: "You check your A/B test dashboard daily for two weeks and ship when `p` first drops below 0.05. What is your real false-positive rate?",
-        options: [
-          "5%, since each look is a valid test",
-          "About 28% — fourteen looks at a threshold designed for one, and with unlimited patience it converges to 100%",
-          "10%",
-          "It depends on the effect size"
-        ],
+        options: ["5%, as each look is a valid test", "About 28% after fourteen looks", "10%, double the nominal rate", "It depends on the effect size"],
         answer: 1,
         why: "The p-value random-walks and will eventually cross any fixed line. The fix is to fix the sample size in advance, or use a method built for peeking — alpha spending, group-sequential boundaries, or an always-valid confidence sequence."
       }

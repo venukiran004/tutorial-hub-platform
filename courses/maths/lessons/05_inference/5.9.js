@@ -706,45 +706,25 @@ def test_both_components_are_individually_significant():
     questions: [
       {
         stem: "What is Mann-Whitney's null hypothesis?",
-        options: [
-          "The two groups have equal means",
-          "`P(X > Y) = 0.5` — a random member of one group is equally likely to exceed a random member of the other",
-          "The two groups have equal medians",
-          "The two groups are normally distributed"
-        ],
+        options: ["The two groups have equal means", "P(X > Y) = 0.5 between the groups", "The two groups have equal medians", "Both groups are normally distributed"],
         answer: 1,
         why: "It becomes a statement about medians only under the extra assumption that the distributions have the same shape. Without it, Mann-Whitney can return `p = 2×10⁻¹²` on two samples with identical medians."
       },
       {
         stem: "A t-test says treatment is higher; Mann-Whitney says control wins 95% of pairwise comparisons. Which is wrong?",
-        options: [
-          "The t-test, since the data is clearly skewed",
-          "Neither — one asks which group has the larger total, the other which group's typical member is larger",
-          "Mann-Whitney, since it ignores magnitude",
-          "Both, if the sample is small"
-        ],
+        options: ["The t-test, since the data is skewed", "Neither: they answer different questions", "Mann-Whitney, since it ignores size", "Both, if the samples are small"],
         answer: 1,
         why: "This happens when a group has mostly small values and a few enormous ones. Revenue per user is a total question and needs the mean; \"which experience is better for a typical user\" is a pairwise question and needs the rank test."
       },
       {
         stem: "Your data is heavy-tailed. What does switching to Mann-Whitney cost and buy?",
-        options: [
-          "It costs nothing and buys robustness",
-          "It costs about 4.5% of power on normal data and can gain 52% on `t₂` data — but it changes the estimand from a mean to a probability",
-          "It costs half the power",
-          "It buys nothing, since ranks discard information"
-        ],
+        options: ["It costs nothing and buys robustness", "A little power on normal data; a new estimand", "It costs half of the test's power", "It buys nothing, as ranks discard data"],
         answer: 1,
         why: "The power asymmetry is a good trade; the estimand change often is not. A permutation test on the mean gives the robustness without redefining what is being estimated."
       },
       {
         stem: "Two hundred control observations with sd 1, twenty treatment with sd 4. Which test is safe?",
-        options: [
-          "Mann-Whitney, because it is non-parametric",
-          "Welch's t-test — Mann-Whitney's error rate reaches 15% here, while Welch stays at 5%",
-          "Student's t-test",
-          "Either rank test is fine"
-        ],
+        options: ["Mann-Whitney, because it is non-parametric", "Welch's t-test, which holds at 5%", "Student's t-test with pooled variance", "Either rank test is fine here"],
         answer: 1,
         why: "Non-parametric does not mean assumption-free: Mann-Whitney inherits the same unequal-variance failure Student's has, and there is no widely used Welch equivalent. Brunner-Munzel is the rank-based fix if one is needed."
       }

@@ -760,45 +760,25 @@ def test_needs_clean_history_before_alerting():
     questions: [
       {
         stem: "Why does the sample variance divide by `n − 1`?",
-        options: [
-          "To make small samples look more variable",
-          "The sample mean minimises squared deviations for that sample, so deviations from it are biased low by exactly `(n−1)/n`",
-          "It is a convention with no derivation",
-          "To match the degrees of freedom of the t-distribution"
-        ],
+        options: ["To make small samples look more variable", "Deviations from the sample mean are biased low", "A convention with no real derivation", "To match the t-distribution's degrees"],
         answer: 1,
         why: "Deviations from the sample mean sum to exactly zero, so only `n − 1` are free. The denominator counts independent information rather than observations — which is why regression with `p` predictors divides by `n − p − 1`."
       },
       {
         stem: "An alert uses `mean + 3σ` computed over a rolling window that includes the current data. What fails?",
-        options: [
-          "Nothing — it adapts to changing conditions",
-          "A sustained degradation raises its own threshold, so the alert fires once and then goes quiet while things get worse",
-          "It will fire too often",
-          "The window is too long"
-        ],
+        options: ["Nothing; it adapts to changing conditions", "A sustained fault raises its own threshold", "It will fire far too often to be useful", "The rolling window is simply too long"],
         answer: 1,
         why: "A linear ramp is the worst case: the rising mean and rising sd track it almost exactly. Lagging the baseline keeps the developing incident out of its own threshold, and robust statistics stop a single spike blinding it for a day."
       },
       {
         stem: "`np.var(x)` gives 4.0 and `pd.Series(x).var()` gives 4.571 on the same data. Which is wrong?",
-        options: [
-          "NumPy — it should use `n − 1`",
-          "Neither — NumPy defaults to `ddof=0` and pandas to `ddof=1`, so state `ddof` explicitly",
-          "Pandas — it should use `n`",
-          "There must be a dtype difference"
-        ],
+        options: ["NumPy, which should use n − 1", "Neither: their ddof defaults differ", "Pandas, which should use n", "A dtype difference between them"],
         answer: 1,
         why: "A 14% difference at `n = 8`, from which library you happened to use. Moving a calculation between them during a refactor changes the number with no error and no warning."
       },
       {
         stem: "The same temperatures give a coefficient of variation of 0.098 in Celsius and 0.0073 in Kelvin. Why?",
-        options: [
-          "A rounding error",
-          "CV needs a meaningful zero — Celsius has an arbitrary one, so the ratio is an artefact of the unit",
-          "Kelvin values are larger, so more precise",
-          "The standard deviation changes with the unit"
-        ],
+        options: ["A rounding error in one of the units", "CV needs a true zero; Celsius lacks one", "Kelvin values are larger, so more precise", "The standard deviation changes with unit"],
         answer: 1,
         why: "The standard deviation is identical in both; only the mean changes, and it changes by an arbitrary offset. CV is defined for ratio scales, which rules out temperature in Celsius, profit margins, and anything that can be negative."
       }

@@ -628,45 +628,25 @@ def test_more_views_per_user_does_not_help():
     questions: [
       {
         stem: "Your data has standard deviation 43. You take a sample of 100. What is the standard error of the mean?",
-        options: [
-          "43 — the same spread",
-          "4.3 — `σ/√n`, because a mean varies far less than an individual observation",
-          "0.43",
-          "It cannot be computed without the population size"
-        ],
+        options: ["43, the same spread as the data", "4.3, which is σ/√n", "0.43, a hundredth of σ", "Not computable without N"],
         answer: 1,
         why: "A standard deviation describes how individuals vary; a standard error describes how your *estimate* varies. Here they differ tenfold, and reporting one where the other belongs makes every interval wrong by that factor."
       },
       {
         stem: "An A/A test — identical experiences in both arms — comes out significant 31% of the time. What is the most likely cause?",
-        options: [
-          "A bug in the randomisation",
-          "The unit of analysis does not match the unit of randomisation — users are randomised but page views are analysed, so correlated rows are counted as independent",
-          "The significance level is set wrong",
-          "The sample is too small"
-        ],
+        options: ["A bug in the randomisation code", "Analysis unit differs from randomisation unit", "The significance level is set wrongly", "The sample is too small for an A/A test"],
         answer: 1,
         why: "The design effect `1 + (m−1)·ICC` predicts the inflation: at 4.6 here, standard errors are 2.15× too small, so a true z of 0.9 is reported as 1.9. Aggregating each user to one number restores the nominal 5%."
       },
       {
         stem: "A survey of 12,000 responses gives a margin of error of ±0.02. The response rate was 18%. How much should you trust it?",
-        options: [
-          "It is very precise, so highly",
-          "The margin of error covers sampling variability only — non-response bias scales as `0.82 × (responder − non-responder gap)` and does not appear in it at all",
-          "Trust it if the sample is demographically balanced",
-          "Double the margin of error to be safe"
-        ],
+        options: ["It is very precise, so trust it highly", "It omits non-response bias entirely", "Trust it if demographics are balanced", "Double the margin of error to be safe"],
         answer: 1,
         why: "Increasing to 120,000 responses would narrow the interval tenfold and leave the bias untouched. Only observing some of the people you were missing — a small, hard-chased random subsample of non-responders — can measure it."
       },
       {
         stem: "The CLT is often summarised as \"n = 30 is enough\". When is that wrong?",
-        options: [
-          "It is never wrong",
-          "For heavily skewed data, and for tail probabilities — a lognormal still has three times too much tail at `n = 200`",
-          "Only for discrete data",
-          "Only when the population is small"
-        ],
+        options: ["It is never wrong for any kind of data", "Heavily skewed data, and tail probabilities", "Only for discrete data such as counts", "Only when the population itself is small"],
         answer: 1,
         why: "The centre converges long before the tails, so `n = 30` can be fine for a confidence interval about a mean and useless for a p-value of 0.001. The usable rule is `n > 25 × skew²`."
       }

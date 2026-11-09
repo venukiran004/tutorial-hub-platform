@@ -695,45 +695,25 @@ def test_never_decides_on_thin_data():
     questions: [
       {
         stem: "What does Chebyshev's inequality assume?",
-        options: [
-          "Normality",
-          "Only that the variance exists — it holds for any distribution, which is why it is so loose",
-          "Independence of the observations",
-          "That the data is bounded"
-        ],
+        options: ["Normality of the data", "Only that the variance exists", "Independent observations", "That the data is bounded"],
         answer: 1,
         why: "At 5σ it allows 4% of the mass where a normal allows 0.0001% — a 70,000× gap. That gap is the price of the guarantee, and it is worth paying whenever the distribution cannot be verified, because a heavy tail really can put mass out there."
       },
       {
         stem: "You need a sample size for a rare event (`p = 0.002`) with no distributional assumption. Why is Hoeffding a poor choice?",
-        options: [
-          "It requires normality",
-          "It uses only the range `[0,1]`, so it protects against variance 0.25 when the true variance is 0.002 — a 125× penalty",
-          "It only applies to continuous variables",
-          "It needs the sample size in advance"
-        ],
+        options: ["It requires normally distributed data", "It assumes the worst variance for [0,1]", "It only applies to continuous variables", "It needs the sample size in advance"],
         answer: 1,
         why: "Bernstein's inequality uses the variance as well as the range, recovering most of that gap while still assuming only independence and a bound. Knowing where a distribution-free tool is catastrophically loose is as useful as knowing it exists."
       },
       {
         stem: "Guaranteeing 10,000 metrics simultaneously rather than one. How much more data?",
-        options: [
-          "10,000×",
-          "About 3.5× — the union bound gives each a budget of `δ/m`, and `n` grows as `log(m)`",
-          "100×, the square root",
-          "No more; the bounds are independent"
-        ],
+        options: ["10,000 times as much, one per metric", "About 3.5×: n grows with log(m)", "100 times as much, the square root", "No more, since the bounds are independent"],
         answer: 1,
         why: "The log dependence is why monitoring thousands of metrics is affordable and why Bonferroni correction is less punishing than its reputation. The flip side is that *without* correction, at least one of 10,000 breaching its bound is essentially certain."
       },
       {
         stem: "An automated canary runs on 40 deploys a day at a 5% false-alarm rate. What is wrong?",
-        options: [
-          "5% is a standard significance level",
-          "730 false rollbacks a year — two a day — so the canary gets ignored, and an ignored canary is worse than none",
-          "The rate should be 1%",
-          "Nothing, if each decision is independent"
-        ],
+        options: ["5% is a standard significance level", "About two false rollbacks a day; it gets ignored", "The rate should simply be lowered to 1%", "Nothing, provided each decision is independent"],
         answer: 1,
         why: "Budget false alarms over the system's lifetime rather than per decision. Targeting one a month gives `δ = 0.00082`, and because `n` grows as `log(1/δ)` that 60× stricter rate costs only 2.3× the data."
       }

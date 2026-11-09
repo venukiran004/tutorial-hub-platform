@@ -595,45 +595,25 @@ def test_ranking_by_distance_to_floor():
     questions: [
       {
         stem: "A 10-class classifier reaches a validation loss of 3.85 nats. What does that mean?",
-        options: [
-          "It is close to convergence",
-          "It is worse than random guessing (`ln(10) = 2.30`) — the model is confidently wrong, not merely uninformed",
-          "The loss is being computed in the wrong base",
-          "It has 3.85 classes remaining"
-        ],
+        options: ["It is close to convergence", "Worse than chance at ln 10", "The loss base is wrong", "3.85 classes remain"],
         answer: 1,
         why: "Perplexity of 46.9 on a 10-class problem is only possible through confident mistakes, and cross-entropy punishes those without limit. This points at label smoothing specifically — it caps the confidence the model can express — rather than at generic regularisation."
       },
       {
         stem: "Why is minimising cross-entropy not an arbitrary choice of loss?",
-        options: [
-          "It is differentiable, unlike accuracy",
-          "It is maximum likelihood — `−log P(data|model)` equals `N ×` cross-entropy — and equivalently it minimises `KL(p‖q)`",
-          "It is bounded below by zero",
-          "It works well empirically"
-        ],
+        options: ["It is differentiable, unlike accuracy", "It is maximum likelihood, minimising KL", "It is bounded below by exactly zero", "It works well empirically, nothing more"],
         answer: 1,
         why: "`H(p,q) = H(p) + KL(p‖q)`, and `H(p)` does not depend on the model, so minimising the loss can only move the KL term. Differentiability is a convenience; the likelihood identity is the reason."
       },
       {
         stem: "Your generative model produces blurry averages instead of committing to distinct modes. What is the likely cause?",
-        options: [
-          "Insufficient capacity",
-          "Forward KL, which is mass-covering — the model must put mass wherever the data has any, so it straddles modes and fills the gap between them",
-          "The learning rate is too high",
-          "Too much regularisation"
-        ],
+        options: ["Insufficient capacity in the model", "Mass-covering forward KL straddles modes", "The learning rate is set too high", "Too much regularisation on the model"],
         answer: 1,
         why: "Reverse KL is mode-seeking and produces the opposite failure — a tight fit to one mode with whole categories ignored. Neither is wrong; they optimise different things, and this is a modelling decision rather than a bug."
       },
       {
         stem: "You cannot push a classifier's loss below 0.35 despite six weeks of work. What should you check?",
-        options: [
-          "Try a larger model",
-          "The label-noise floor — relabel a sample and compute the entropy of the noisy label distribution, which may already equal 0.35",
-          "Increase the learning rate",
-          "Add more training data"
-        ],
+        options: ["Try a larger model first", "The label-noise entropy floor", "Raise the learning rate", "Add more training rows"],
         answer: 1,
         why: "`H(p)` is irreducible: if annotators disagree 12% of the time, the entropy of that distribution is the floor and no architecture goes below it. A few hundred relabelled examples answer the question, and they are cheaper than the six weeks."
       }

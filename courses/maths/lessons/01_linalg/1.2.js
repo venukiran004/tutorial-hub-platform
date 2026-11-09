@@ -526,45 +526,25 @@ def test_determinants_multiply():
     questions: [
       {
         stem: "What do the columns of a matrix represent?",
-        options: [
-          "The eigenvalues of the transformation",
-          "Where each basis vector lands — so `A @ [1,0]` is the first column",
-          "The rows of the inverse",
-          "The variance along each axis"
-        ],
+        options: ["The eigenvalues of the transformation", "Where each basis vector lands", "The rows of the matrix's inverse", "The variance along each axis"],
         answer: 1,
         why: "This is why a matrix–vector product is a weighted sum of the columns: every vector is a combination of basis vectors, and linearity carries that combination through. It also makes the multiplication rule feel inevitable rather than arbitrary."
       },
       {
         stem: "`PROJECT = [[1,2],[2,4]]` is applied to 2-D data and a downstream classifier drops to 50%. Why?",
-        options: [
-          "The values are too large and need scaling",
-          "Its determinant is zero — both columns point along `[1,2]`, so the plane is flattened onto a line and the discriminating direction is destroyed",
-          "The matrix is not symmetric",
-          "It needs to be transposed"
-        ],
+        options: ["The values are too large and need scaling", "Determinant zero: the plane collapses", "The matrix is not symmetric, so it fails", "It needs to be transposed before use"],
         answer: 1,
         why: "`1·4 − 2·2 = 0`, and rank is 1. Every output is a multiple of `[1,2]`, determined by the single number `x + 2y`. Points differing by `[2,−1]` collide, and 50% is the signature of a balanced binary problem with no surviving signal."
       },
       {
         stem: "Why is `S @ R` different from `R @ S`?",
-        options: [
-          "It is a quirk of the algebra with no meaning",
-          "They are different compositions — matrices apply right to left, so one rotates then stretches and the other stretches then rotates",
-          "Only when the matrices are singular",
-          "They are the same if both are square"
-        ],
+        options: ["A quirk of the algebra with no meaning", "Different compositions, applied right to left", "Only when the matrices are singular", "They match whenever both are square"],
         answer: 1,
         why: "Non-commutativity reports something true about the world: rotate a book then flip it, versus flip then rotate, and you end up in different positions. The order in `M = S @ R` matches nested function calls — `S(R(x))`."
       },
       {
         stem: "Why does a neural network layer compute `Wx + b` rather than just `Wx`?",
-        options: [
-          "The bias speeds up convergence",
-          "A linear map must send the origin to the origin, so without a bias the layer cannot shift data off the origin at all",
-          "The bias prevents overfitting",
-          "It makes the gradient easier to compute"
-        ],
+        options: ["The bias term speeds up convergence", "A linear map fixes the origin; b shifts it", "The bias term prevents overfitting", "It makes the gradient easier to compute"],
         answer: 1,
         why: "Setting `k = 0` in `A(ku) = kA(u)` gives `A(0) = 0` for every matrix, so translation is not a linear operation. The bias is the affine part, and homogeneous coordinates express the same idea by adding a constant coordinate — which is why 3D graphics uses 4×4 matrices."
       }

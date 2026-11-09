@@ -745,45 +745,25 @@ def test_higher_baseline_metric_cuts_the_sample():
     questions: [
       {
         stem: "Your study was not significant, so you compute observed power at 29% and report that it was underpowered. What is wrong?",
-        options: [
-          "Nothing — that explains the null result",
-          "Observed power is a deterministic function of the p-value, so it restates the result rather than explaining it — `p = 0.05` always gives exactly 50%",
-          "You should have used 90% power",
-          "Power cannot be computed after the fact at all"
-        ],
+        options: ["Nothing; it explains the null result", "Observed power just restates the p-value", "The study should have used 90% power", "Power cannot ever be computed afterwards"],
         answer: 1,
         why: "What *is* useful afterwards: what effect the design could have detected, what the confidence interval rules out, and the power for an effect specified in advance. The distinction is whether the effect came from outside the data."
       },
       {
         stem: "Two million users give `p = 0.0009` for a difference with Cohen's `d = 0.003`. What should you do?",
-        options: [
-          "Ship it — the result is highly significant",
-          "Report the effect size: the distributions overlap 99.87% and a random treatment user beats a random control user 50.1% of the time",
-          "Repeat with a smaller sample",
-          "Use a stricter significance threshold"
-        ],
+        options: ["Ship it, as the result is highly significant", "Report the effect size: it is negligible", "Repeat the test with a smaller sample", "Use a stricter significance threshold"],
         answer: 1,
         why: "With enough data any non-zero difference reaches significance. Comparing the interval against the smallest worthwhile effect rather than against zero gives four conclusions — ship, real but too small, harmful, or inconclusive."
       },
       {
         stem: "You want to detect a 1% relative lift on a 5% baseline. How many users per arm?",
-        options: [
-          "About 30,000",
-          "About 3.1 million — `n` scales as `1/effect²`, so a 1% MDE costs 100× a 10% one",
-          "About 300,000",
-          "It depends only on the variance"
-        ],
+        options: ["About 30,000", "About 3.1 million", "About 300,000", "Only the variance matters"],
         answer: 1,
         why: "That number, computed before the experiment, is what tells you whether the question is answerable — and most \"we want to detect a 1% improvement\" conversations end there. A higher-baseline proxy metric is often the only way forward."
       },
       {
         stem: "A 40-patient trial reports a large effect at `p = 0.04`, and three larger trials find nothing. What most likely happened?",
-        options: [
-          "The larger trials were flawed",
-          "A type M error — at low power, only exaggerated estimates clear the threshold, so the surviving effect is inflated more than two-fold",
-          "The original was fraudulent",
-          "The populations differed"
-        ],
+        options: ["The three larger trials were flawed", "A type M error inflated the small trial", "The original trial was fraudulent", "The study populations were different"],
         answer: 1,
         why: "The filter that lets a small study publish is the same filter that selects for exaggeration. A small significant study is weaker evidence than a large null one, which is the opposite of most people's intuition."
       }

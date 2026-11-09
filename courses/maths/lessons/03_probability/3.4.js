@@ -618,45 +618,25 @@ def test_overdispersion_lowers_the_median_and_raises_the_tail():
     questions: [
       {
         stem: "Daily counts have mean 6.8 and variance 31.2. What does that rule out?",
-        options: [
-          "Nothing — counts are always Poisson",
-          "The Poisson, whose defining property is that variance equals the mean; a ratio of 4.6 is overdispersion",
-          "The negative binomial",
-          "Any discrete distribution"
-        ],
+        options: ["Nothing; counts are always Poisson", "The Poisson: variance far exceeds the mean", "The negative binomial distribution", "Any discrete distribution at all"],
         answer: 1,
         why: "The stronger evidence here needs no test: a Poisson with `λ = 6.8` predicts 0.4 zero-incident days per year, and 71 were observed. Overdispersion usually means the rate varies or events cluster — both violations of the Poisson's assumptions."
       },
       {
         stem: "Fitting a Poisson gives p99 = 14 incidents; the negative binomial gives 30. Both have mean 6.8. How can that be?",
-        options: [
-          "One of the fits is wrong",
-          "Overdispersion redistributes mass to both ends — more quiet days *and* more extreme days — so the means agree while the tails do not",
-          "The negative binomial always gives larger values",
-          "The mean is not a meaningful summary here"
-        ],
+        options: ["One of the two fits must be wrong", "Overdispersion fattens both tails, same mean", "The negative binomial is always larger", "The mean is not a meaningful summary here"],
         answer: 1,
         why: "At the median the negative binomial is actually *lower*, 5 against 7. The mean is the one thing both distributions agree on, which is why a well-matched mean is no evidence that a model's tail is right."
       },
       {
         stem: "One upstream batch job emits thousands of messages at once. Why is a Poisson fit to message arrivals wrong?",
-        options: [
-          "The rate is too high for a Poisson",
-          "Messages are not independent — the independent unit is the batch, so you should model batch arrivals and batch size separately",
-          "Poisson only applies to rare events",
-          "The interval is not fixed"
-        ],
+        options: ["The rate is too high for a Poisson model", "Messages are not independent; batches are", "Poisson only applies to rare events", "The counting interval is not fixed"],
         answer: 1,
         why: "You are counting events when you should be counting causes. A compound Poisson — Poisson batch arrivals with a separate size distribution — reproduces the observed variance, and moves the p99.9 by nearly an order of magnitude."
       },
       {
         stem: "Why does every library expose `logpmf` alongside `pmf`?",
-        options: [
-          "Logs are faster to compute",
-          "The intermediate terms overflow — `C(1000,500)` alone exceeds float64's range — so you compute in log space and exponentiate once",
-          "Logs are more accurate for large probabilities",
-          "It is a convention inherited from R"
-        ],
+        options: ["Logarithms are faster to compute", "Intermediate terms overflow float64", "Logs are more accurate for big values", "A convention inherited from R"],
         answer: 1,
         why: "The same reason likelihoods are summed as logs rather than multiplied: a product of 10,000 probabilities underflows to zero regardless of how well conditioned the problem is."
       }

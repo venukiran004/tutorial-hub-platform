@@ -705,45 +705,25 @@ def test_gradient_accuracy_at_normal_scale():
     questions: [
       {
         stem: "Your finite-difference gradient gets *less* accurate as you shrink `h` from 1e-8 to 1e-12. Why?",
-        options: [
-          "The function is not differentiable there",
-          "Round-off dominates — `f(x+h)` and `f(x)` agree to more digits than float64 carries, so the numerator is mostly noise, which dividing by a tiny `h` amplifies",
-          "The step size must always be an exact power of two",
-          "Floating-point subtraction is not associative"
-        ],
+        options: ["The function is not differentiable there", "Round-off dominates the tiny difference", "The step must be an exact power of two", "Float subtraction is not associative"],
         answer: 1,
         why: "Truncation error falls as `h` shrinks while round-off rises as `ε/h`, so total error is minimised near `h = √ε ≈ 1.5e-8` for a forward difference. Below that you are differentiating noise, and at `h = 1e-16` the answer is exactly zero because `x + h` rounds back to `x`."
       },
       {
         stem: "`(x**2).mean() - x.mean()**2` returns 0.0 for data that obviously varies. What happened?",
-        options: [
-          "An integer overflow",
-          "Catastrophic cancellation — the two terms are nearly equal for a large mean, so subtracting them cancels every significant digit",
-          "The array contains NaN",
-          "`mean()` uses a different dtype"
-        ],
+        options: ["An integer overflow in the squares", "Catastrophic cancellation of both terms", "The array contains NaN values", "mean() uses a different dtype"],
         answer: 1,
         why: "Centre the data first and the shared component is gone before it can cancel. A *negative* result from this formula is the clearest giveaway: Jensen's inequality guarantees it cannot happen in exact arithmetic, so it proves numerical failure rather than a data problem."
       },
       {
         stem: "Why does reverse-mode autodiff dominate machine learning rather than forward mode?",
-        options: [
-          "It is more accurate",
-          "It computes the gradient with respect to *all* inputs in roughly two forward passes, regardless of how many there are — forward mode costs one pass per input",
-          "It uses less memory",
-          "It handles control flow better"
-        ],
+        options: ["It is the more numerically accurate method", "One backward pass gives all input gradients", "It always uses less memory than forward mode", "It handles control flow better than forward"],
         answer: 1,
         why: "Both are exact to machine precision; the difference is cost. Reverse mode pays for that with memory — the tape holds every intermediate value, which is what an out-of-memory error during `.backward()` actually is."
       },
       {
         stem: "A model trains cleanly for six hours, then the loss becomes `NaN`. The loss is `log(sigmoid(x))`. What is the most likely cause?",
-        options: [
-          "The learning rate is too high",
-          "A logit reached about −750, `sigmoid` underflowed to exactly 0.0, and `log(0)` gave `−inf`",
-          "The data contains a corrupted row",
-          "Gradient accumulation was not reset"
-        ],
+        options: ["The learning rate is too high for the model", "sigmoid underflowed to 0, so log gave −inf", "A corrupted row in the most recent batch", "Accumulated gradients were not reset"],
         answer: 1,
         why: "`BCEWithLogitsLoss` computes `log σ(x)` as `−logaddexp(0, −x)` and never forms the probability, returning `−800.0` where the naive form gives `−inf`. Stability bugs surface late because they need extreme values — and training is the process of producing them, so an hour of clean running proves nothing."
       }

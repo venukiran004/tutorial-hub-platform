@@ -715,45 +715,25 @@ def test_retransformation_bias_is_material():
     questions: [
       {
         stem: "What does high kurtosis tell you about a distribution?",
-        options: [
-          "It has a sharp peak",
-          "It has heavy tails — the fourth power means a point at 4σ contributes 256 times as much as one at 1σ",
-          "It is asymmetric",
-          "It has high variance"
-        ],
+        options: ["It has a sharp, narrow peak", "It has heavy tails", "It is asymmetric about its mean", "It has a high variance"],
         answer: 1,
         why: "The uniform distribution is perfectly flat with no peak at all and has the lowest kurtosis of any common distribution. In the worked example, contaminating 1% of the tail moved kurtosis from 0 to 4.7 while the density at the centre was unchanged to three decimals."
       },
       {
         stem: "A colleague reports \"skewness 0.6\" from 50 observations. What do you say?",
-        options: [
-          "That is meaningfully skewed",
-          "The standard error is `√(6/50) = 0.35`, so 0.6 is under two standard errors — perfectly normal data produces this routinely",
-          "The sign is wrong",
-          "Kurtosis would be more reliable"
-        ],
+        options: ["That is meaningfully skewed data", "Its standard error is 0.35: within noise", "The sign of the skewness is wrong", "Kurtosis would be a better summary"],
         answer: 1,
         why: "High moments need far more data than a mean, because raising deviations to a power amplifies a handful of observations. Sample skewness is also capped at `(n−2)/√(n−1)`, so small samples cannot reveal extreme skew even when it is real."
       },
       {
         stem: "A Shapiro-Wilk test on 5,000 observations rejects normality with p < 0.001. What should you do?",
-        options: [
-          "Transform the data before proceeding",
-          "Measure the *size* of the departure — at `n = 5,000` the test detects deviations too small to change any conclusion",
-          "Use a non-parametric method",
-          "Collect more data"
-        ],
+        options: ["Transform the data before proceeding", "Measure the size of the departure", "Switch to a non-parametric method", "Collect more data before deciding"],
         answer: 1,
         why: "The same tiny deviation is rejected 8% of the time at `n = 30` and 100% at `n = 5,000`. The useful question is whether your method survives the departure — inference about a mean is protected by the CLT; prediction intervals and σ-based limits are not."
       },
       {
         stem: "Should you log-transform a right-skewed feature before a gradient-boosted tree model?",
-        options: [
-          "Yes, it always helps with skew",
-          "No — trees are invariant to monotonic transforms, so it partitions the data identically and only adds a pipeline step that can fail",
-          "Only if skewness exceeds 2",
-          "Only for the target variable"
-        ],
+        options: ["Yes, since it always helps with skew", "No: trees ignore monotonic transforms", "Only if the skewness exceeds 2", "Only for the target variable"],
         answer: 1,
         why: "A split at `x > 100` and one at `log(x) > 4.6` are the same split. For linear models the reasons to transform are about residuals or the relationship — in one example, log-transforming a genuinely linear relationship cut R² from 1.00 to 0.61."
       }

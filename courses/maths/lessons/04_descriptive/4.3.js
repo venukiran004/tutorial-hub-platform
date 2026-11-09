@@ -652,45 +652,25 @@ def test_interpolation_is_irrelevant_at_this_scale():
     questions: [
       {
         stem: "Ten hosts each report a p99. How do you get the fleet p99?",
-        options: [
-          "Average the ten values",
-          "Merge the underlying distributions — histograms add exactly, and a percentile of a union needs the union",
-          "Take the median of the ten",
-          "Weight each by its request count and average"
-        ],
+        options: ["Average the ten p99 values", "Merge the underlying distributions", "Take the median of the ten values", "Average them weighted by requests"],
         answer: 1,
         why: "Percentiles are not linear. In the worked example the average of per-host p99s gives 1431 ms and the max gives 12,852 ms, while the true merged p99 is 1368 ms — the averaging error has no bound and no consistent sign."
       },
       {
         stem: "A box plot of 10,000 clean lognormal observations shows about 800 outlier points. What does that mean?",
-        options: [
-          "The data has serious quality problems",
-          "The 1.5 × IQR rule assumes symmetry, so on skewed data it flags skew rather than anomalies",
-          "The sample is too large for a box plot",
-          "The quartiles were computed incorrectly"
-        ],
+        options: ["The data has serious quality problems", "The IQR rule assumes symmetry; it flags skew", "The sample is too large for a box plot", "The quartiles were computed incorrectly"],
         answer: 1,
         why: "Even on clean *normal* data the rule flags about 0.7% — 70 points in 10,000 — because the fences sit at ±2.7σ. Tukey chose 1.5 so that a few points show and you learn what the tail looks like, not so that every marked point is anomalous."
       },
       {
         stem: "You compute p99 from 50 observations. What is the problem?",
-        options: [
-          "Nothing, if the sample is representative",
-          "The estimate rests on the top one or two values, with a standard deviation around 18% of the quantity — different interpolation methods also disagree by 0.6σ",
-          "50 is enough for a p99 but not a p99.9",
-          "You need to use the `higher` method"
-        ],
+        options: ["Nothing, if the sample is representative", "It rests on the top one or two values", "50 suffices for p99, though not for p99.9", "You must use the 'higher' interpolation"],
         answer: 1,
         why: "The p99 position at `n = 50` falls between the two largest values, so half the estimate is the single maximum. As a rule you want about ten observations beyond the percentile, meaning 1,000 for a p99."
       },
       {
         stem: "Two dashboards report the p99 of the same log as 340 ms and 412 ms. Where would you look first?",
-        options: [
-          "The interpolation method",
-          "Whether failed requests are included — at a 0.4% error rate they occupy 40% of the top percentile and sit at the very top of it",
-          "Clock skew between the systems",
-          "Floating-point precision"
-        ],
+        options: ["The interpolation method used by each", "Whether failed requests are included", "Clock skew between the two systems", "Floating-point precision differences"],
         answer: 1,
         why: "At 7.2 million requests an hour, interpolation changes the answer by under 0.02%. The 5xx decision is definitional rather than a bug — both answers are legitimate, and the error is failing to label which one each dashboard reports."
       }

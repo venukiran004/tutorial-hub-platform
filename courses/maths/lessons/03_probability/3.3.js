@@ -671,45 +671,25 @@ def test_load_multiplier_grows_with_failure_rate():
     questions: [
       {
         stem: "`n` people have their hats returned at random. What is the expected number who get their own hat?",
-        options: [
-          "`1/n`",
-          "Exactly 1, for any `n` — a sum of `n` indicators each with probability `1/n`",
-          "`√n`",
-          "It depends on `n` in a way with no closed form"
-        ],
+        options: ["1/n hats", "Exactly 1", "√n hats", "No closed form"],
         answer: 1,
         why: "The indicators are strongly dependent — if `n−1` people have their own hat, so does the last — and linearity does not care. That independence-free property is exactly what makes it the most useful fact in the subject."
       },
       {
         stem: "A risk model sums the variances of twelve correlated components. What is the error?",
-        options: [
-          "Variances should be multiplied, not added",
-          "It omits `2ΣCov(Xᵢ,Xⱼ)` — variances add only when the covariance is zero, and correlations rise towards 1 in a crisis",
-          "It should use standard deviations instead",
-          "Nothing, if each component is normally distributed"
-        ],
+        options: ["Variances should be multiplied, not added", "It omits the covariance terms", "It should add standard deviations instead", "Nothing, if each component is normal"],
         answer: 1,
         why: "Normality is irrelevant here; only the covariance is. The assumption is tolerable when correlations sit near 0.1 and fails when they exceed 0.8 — which is precisely when the model is being consulted."
       },
       {
         stem: "Latency variance is 87% between server tiers and 13% within them. What follows?",
-        options: [
-          "The tiers should be merged",
-          "Routing is the lever — tuning any individual tier addresses only 13% of the variance",
-          "The measurement is unreliable",
-          "Add more tiers"
-        ],
+        options: ["The tiers should be merged into one", "Routing is the lever, not tier tuning", "The measurement itself is unreliable", "More server tiers should be added"],
         answer: 1,
         why: "The law of total variance converts \"latency is variable\" into a decision about where to spend effort. It is the same identity behind ANOVA, mixed models and stratified sampling — where you stratify on `Y` precisely to remove the between term from your estimator."
       },
       {
         stem: "A retry policy moves mean latency from 80 ms to 103 ms and standard deviation from 30 ms to 99 ms. What does that tell you?",
-        options: [
-          "The change is small and safe to ship",
-          "The distribution has become bimodal — the mean hides it, so report p99 instead",
-          "The retries are misconfigured",
-          "Variance is not a valid measure here"
-        ],
+        options: ["The change is small and safe to ship", "It went bimodal; report p99, not the mean", "The retries are misconfigured", "Variance is not valid for latency"],
         answer: 1,
         why: "83% of the new variance is between attempt counts rather than within a single attempt. A 29% move in the mean looks harmless on a dashboard while the shape of the distribution changes completely, and the 0.25% of requests taking 1,088 ms is what users actually experience."
       }

@@ -483,45 +483,25 @@ def test_index_normalisation_matches_per_query_cosine():
     questions: [
       {
         stem: "A search ranks by `doc @ query` and long documents dominate regardless of topic. Why?",
-        options: [
-          "Long documents contain more query terms",
-          "The dot product equals ‖doc‖·‖query‖·cos θ, so ranking is relevance multiplied by document norm — and encoder norms grow with length",
-          "The embeddings are not trained on long documents",
-          "argsort is unstable for large arrays"
-        ],
+        options: ["Long documents simply contain more query terms", "The dot product scales relevance by the doc's norm", "The encoder was never trained on long documents", "argsort becomes unstable on very large arrays"],
         answer: 1,
         why: "The query norm is constant across documents, so it does not affect ordering — but the document norm does, and it typically tracks token count. Dividing both norms out gives cosine, which ranks by angle alone. Normalise at index time so the query path stays a plain inner product."
       },
       {
         stem: "For `spread = [3,3,3,3]` and `spike = [6,0,0,0]`, which statement is true?",
-        options: [
-          "Both norms rank them identically",
-          "L1 calls spread larger (12 vs 6), L2 calls them equal (6 vs 6), and L∞ calls spike larger (3 vs 6)",
-          "L2 always agrees with L1 up to a constant",
-          "The spike vector is larger under every norm"
-        ],
+        options: ["All three norms rank the two vectors identically", "L1 says spread, L2 says equal, L∞ says spike", "L2 always agrees with L1 up to a constant", "The spike vector is larger under every norm"],
         answer: 1,
         why: "Three defensible answers to \"which is bigger\". The norm is not an implementation detail — it is the definition of the question, which is why squared error chases outliers while absolute error ignores them, and why L1 regularisation produces exact zeros."
       },
       {
         stem: "After projecting `a` onto `b`, why is the residual `a − proj` orthogonal to `b`?",
-        options: [
-          "It is an assumption that must be checked",
-          "By construction — the projection removes exactly the component along `b`, so nothing along `b` remains",
-          "Only when `a` and `b` are unit vectors",
-          "It is approximately orthogonal, up to floating point"
-        ],
+        options: ["It is an assumption that must be checked", "By construction: the b component is removed", "Only when a and b are both unit vectors", "Only approximately, up to floating point"],
         answer: 1,
         why: "This is why least squares needs no new idea: fitting `y` with `X` projects `y` onto the column space of `X`, and the residual is what the columns cannot reach. \"Residuals are orthogonal to the predictors\" describes the geometry rather than imposing a condition."
       },
       {
         stem: "In 1000 dimensions, the mean absolute cosine between random unit vectors is about 0.025. What follows?",
-        options: [
-          "The random number generator is biased",
-          "Random directions are effectively orthogonal, so a high cosine is strong evidence of a real relationship — and Euclidean nearest-neighbour becomes uninformative",
-          "Cosine similarity cannot be used above 100 dimensions",
-          "The vectors must be normalised again"
-        ],
+        options: ["The random number generator is biased", "Random directions are nearly orthogonal there", "Cosine cannot be used above 100 dimensions", "The vectors must be normalised again"],
         answer: 1,
         why: "There is too much room for two random directions to align. The same geometry makes distances concentrate — the furthest point may be only 30% further than the nearest — which is why raw k-NN degrades in high dimensions and dimensionality reduction is a preprocessing step rather than a nicety."
       }

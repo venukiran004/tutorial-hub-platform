@@ -795,45 +795,25 @@ def test_price_cut_can_reverse_the_business_conclusion():
     questions: [
       {
         stem: "Your ANOVA on five groups gives `p = 0.011`. What have you established?",
-        options: [
-          "That the groups all differ from each other",
-          "Only that not all five means are equal — not which, how many, by how much, or in which direction",
-          "That the largest group mean is significantly the highest",
-          "That the effect is practically important"
-        ],
+        options: ["That all five groups differ from each other", "Only that not all five means are equal", "That the largest mean is the clear winner", "That the effect is practically important"],
         answer: 1,
         why: "Everything anyone would act on requires the post-hoc analysis. The residuals from an equivalent chi-square often localise it immediately — in the worked example only one of five cells exceeded ±2."
       },
       {
         stem: "Why not just run all ten pairwise t-tests on five groups?",
-        options: [
-          "It is computationally expensive",
-          "The chance of at least one false positive rises to about 29% — an omnibus test or a family-wise correction is what controls it",
-          "t-tests cannot be used more than once on the same data",
-          "You can, provided the groups are independent"
-        ],
+        options: ["It is computationally too expensive", "The family-wise error rises to ~29%", "t-tests cannot reuse the same data", "You can, if groups are independent"],
         answer: 1,
         why: "The simulated rate is 29% rather than the naive 40% because the tests share data and are correlated — still six times the nominal rate. Tukey's HSD controls it directly and gives an interval per comparison."
       },
       {
         stem: "A contingency table has a smallest expected count of 1.8 and chi-square gives `p = 0.03`. What should you do?",
-        options: [
-          "Report it, since the test ran without error",
-          "Use Fisher's exact test or a permutation — the chi-square null distribution is an approximation that needs adequate expected counts",
-          "Merge the sparse categories until every expected count exceeds 5",
-          "Increase the significance threshold"
-        ],
+        options: ["Report it, since the test ran without error", "Use Fisher's exact test or a permutation", "Merge sparse categories until counts exceed 5", "Raise the significance threshold instead"],
         answer: 1,
         why: "In the scenario, Fisher's exact test gave `p = 0.14` on the same table. Merging categories is the tempting fix and the dangerous one: choosing which to merge after seeing the data is p-hacking with a methodological justification."
       },
       {
         stem: "Five arms, and the winner shows a 2.2pp lift. How much of that should you expect to be selection bias?",
-        options: [
-          "None, if the test is significant",
-          "About 0.9pp — with five identical arms the maximum overstates by 6.5%, which is roughly 40% of the observed lift",
-          "All of it",
-          "It cannot be estimated"
-        ],
+        options: ["None, provided the test is significant", "About 0.9pp, roughly 40% of the lift", "All of it is selection bias", "It cannot be estimated at all"],
         answer: 1,
         why: "The winner's curse inflates the estimate; it does not manufacture significance after correction. So the effect can be real while the magnitude is overstated — forecast from the interval's lower half rather than the point estimate."
       }

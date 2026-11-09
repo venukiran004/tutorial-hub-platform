@@ -598,45 +598,25 @@ def test_summary_is_stable_for_symmetric_data():
     questions: [
       {
         stem: "A car travels 100 km at 60 km/h and 100 km at 20 km/h. What is the average speed?",
-        options: [
-          "40 km/h",
-          "30 km/h — the harmonic mean, because more time is spent at the slow speed",
-          "35 km/h",
-          "It depends on the acceleration"
-        ],
+        options: ["40 km/h, the average of the speeds", "30 km/h, the harmonic mean", "35 km/h, weighted by distance", "It depends on the acceleration"],
         answer: 1,
         why: "Total distance over total time is 200/(100/60 + 100/20) = 30. The same trap catches requests-per-second averaged across servers and price-per-unit across equal-spend purchases — both are rates over a fixed quantity."
       },
       {
         stem: "Latencies have mean 62 ms and median 16 ms, with a sixfold jump between p70 and p75. What is going on?",
-        options: [
-          "There are outliers to remove",
-          "It is a mixture — probably a 70% cache hit rate, with fast hits and slow misses; nothing actually takes 62 ms",
-          "The measurement is noisy",
-          "The distribution is lognormal"
-        ],
+        options: ["There are outliers that should be removed", "A mixture of cache hits and misses", "The measurement is noisy and unreliable", "The distribution is simply lognormal"],
         answer: 1,
         why: "A smooth distribution cannot increase sixfold across five percentiles. The honest summary reports both components, which is shorter than the paragraph explaining the average — and it points at raising the hit rate as the lever, which \"reduce mean latency\" does not."
       },
       {
         stem: "Returns are +50%, −50%, +50%, −50%. What was the average annual return?",
-        options: [
-          "0% — the arithmetic mean",
-          "−13.4% — the geometric mean, since 1.5 × 0.5 × 1.5 × 0.5 = 0.5625, a 44% loss",
-          "+12.5%",
-          "Undefined for negative returns"
-        ],
+        options: ["0%, the arithmetic mean of the returns", "−13.4%, the geometric mean", "+12.5%, the compounded average", "Undefined, as some returns are negative"],
         answer: 1,
         why: "The arithmetic mean of returns always exceeds the geometric mean, with the gap growing in volatility. Quoting it overstates what an investor actually earned every time, without being incorrect arithmetic — which is what makes it durable."
       },
       {
         stem: "Which estimator can tolerate the most corrupted data before breaking?",
-        options: [
-          "The mean, since it uses every observation",
-          "The median, with a breakdown point of 50% — the theoretical maximum for a location estimator",
-          "The 25% trimmed mean",
-          "The mode"
-        ],
+        options: ["The mean, since it uses every observation", "The median, with a 50% breakdown point", "The 25% trimmed mean, which drops the tails", "The mode, the most frequent value"],
         answer: 1,
         why: "The mean's breakdown point is `1/n`: one value moves it arbitrarily far. That is why a published average starting salary over a 40-person cohort can be a summary of a single graduate's sports contract."
       }

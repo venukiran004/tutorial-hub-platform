@@ -675,45 +675,25 @@ def test_no_p99_improvement_fails_the_superiority_leg():
     questions: [
       {
         stem: "You need to test whether two groups differ in their 95th percentile. Which approach works?",
-        options: [
-          "A t-test, since it compares distributions",
-          "A permutation test — shuffle the labels to generate the exact null distribution for any statistic, including one with no formula",
-          "A chi-square test on binned values",
-          "Compare the two p95 values directly"
-        ],
+        options: ["A t-test, since it compares distributions", "A permutation test on the p95 statistic", "A chi-square test on binned values", "Compare the two p95 values directly"],
         answer: 1,
         why: "The t-test compares means, and a fix to the slow path can halve a p95 while barely moving the mean. Permutation gives the null distribution by brute force, and it reproduces the t-test's p-value when you pass it the mean — a good way to trust it."
       },
       {
         stem: "You run a two-sided test, see the effect is positive, then switch to one-sided. What have you done?",
-        options: [
-          "Increased power legitimately",
-          "Doubled your real false-positive rate to about 10% while reporting 5%",
-          "Nothing — the data is the same",
-          "Made the test more conservative"
-        ],
+        options: ["Increased the power legitimately", "Doubled the real false-positive rate", "Nothing, since the data is the same", "Made the test more conservative"],
         answer: 1,
         why: "The framework's guarantee applies to the test you specified in advance. Choosing the statistic after the fact takes 5% to 8%; choosing the subgroup takes it to 21% — and none of these feels like cheating from the inside."
       },
       {
         stem: "Tightening `α` from 0.05 to 0.001 does what to your error rates?",
-        options: [
-          "Improves both",
-          "Cuts type I errors 50× and more than quadruples type II errors — there is no strictly safer setting",
-          "Has no effect on type II errors",
-          "Only matters for small samples"
-        ],
+        options: ["It improves both error rates", "Fewer type I, many more type II", "It has no effect on type II errors", "It only matters for small samples"],
         answer: 1,
         why: "Sample size is the only lever that moves both down. Which end of the trade you want depends entirely on consequences — particle physics uses `α = 3×10⁻⁷`, screening programmes often use 0.10 or looser."
       },
       {
         stem: "Your claim is \"the p99 improves by 15% *and* the median is unchanged\". How does that affect your `α`?",
-        options: [
-          "Double it — two tests",
-          "No correction needed — a conjunction deflates the false-positive rate rather than inflating it",
-          "Use Bonferroni, so 0.025 each",
-          "Test only the primary claim"
-        ],
+        options: ["Double it, as there are two tests", "None needed: a conjunction is stricter", "Bonferroni, so 0.025 for each", "Test only the primary claim"],
         answer: 1,
         why: "\"Any of `k`\" pushes the rate towards `1 − (1−α)^k`; \"all of `k`\" holds it at or below `α`. Note also that the equivalence leg needs its null inverted — \"the medians differ\" — or an underpowered sample could \"prove\" no change."
       }

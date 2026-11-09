@@ -753,45 +753,25 @@ def test_gini_is_more_stable_than_top_share():
     questions: [
       {
         stem: "You bootstrap the maximum of a sample. What goes wrong?",
-        options: [
-          "Nothing — the bootstrap works for any statistic",
-          "Resampling can never exceed the sample maximum, so the interval is bounded above by it and undercovers badly — with no warning in the output",
-          "It is too slow",
-          "You need more resamples"
-        ],
+        options: ["Nothing; the bootstrap works for any statistic", "Resamples never exceed the max, so it undercovers", "It is too slow to be practical for maxima", "You simply need far more resamples"],
         answer: 1,
         why: "63% of resamples return exactly the sample maximum, which is the diagnostic: a heavily atomic bootstrap distribution means the statistic is not a smooth function of the distribution. Extremes need extreme value theory instead."
       },
       {
         stem: "Your data has 100 users with 40 events each. You bootstrap rows. What happens?",
-        options: [
-          "Nothing, since 4,000 rows is plenty",
-          "The standard error is understated by roughly the design effect — nearly six-fold here — so every interval is six times too narrow",
-          "The bootstrap will fail with an error",
-          "You need more resamples"
-        ],
+        options: ["Nothing, since 4,000 rows is plenty", "The SE is understated about six-fold", "The bootstrap fails with an error", "You need far more resamples"],
         answer: 1,
         why: "The bootstrap faithfully estimates the sampling distribution of a quantity computed from independent rows; the rows are not independent and nothing in the method can know that. Resample clusters, not rows."
       },
       {
         stem: "When would you use a permutation test rather than a bootstrap?",
-        options: [
-          "When the sample is small",
-          "When you want a p-value — permutation builds a null distribution, while the bootstrap estimates a sampling distribution and gives intervals",
-          "When the data is skewed",
-          "They are interchangeable"
-        ],
+        options: ["When the sample is small", "When you want a p-value", "When the data is skewed", "They are interchangeable"],
         answer: 1,
         why: "A \"bootstrap p-value\" is usually the fraction of resamples below zero, which is a rough posterior probability and controls no error rate. Running both costs the same and answers different halves of the question."
       },
       {
         stem: "Two quarters' measurements share 80% of the same sellers. How should you bootstrap the change?",
-        options: [
-          "Bootstrap each quarter independently and compare intervals",
-          "Resample sellers once and carry both quarters' values — the overlap makes the measurements correlated, and ignoring it overstates the variance",
-          "Bootstrap only the sellers present in both",
-          "Use a t-test on the difference"
-        ],
+        options: ["Bootstrap each quarter independently", "Resample sellers once, keep both quarters", "Bootstrap only sellers in both quarters", "Use a t-test on the difference"],
         answer: 1,
         why: "This is pairing applied to resampling, and it is the opposite of the usual clustering error — ignoring positive correlation here makes the interval too *wide*. In the worked example it halved the width and reversed the conclusion."
       }

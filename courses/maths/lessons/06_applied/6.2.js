@@ -655,45 +655,25 @@ def test_narrower_band_needs_more_customers():
     questions: [
       {
         stem: "Adding a control variable flips a coefficient's sign. What does that mean?",
-        options: [
-          "One of the models is misspecified and should be discarded",
-          "A substantial confounder exists — and where one does, others usually do too, so neither coefficient is necessarily the causal effect",
-          "The data has an error",
-          "The sample is too small"
-        ],
+        options: ["One model is misspecified; discard it", "A strong confounder, and likely others", "The data contains a recording error", "The sample is too small to trust it"],
         answer: 1,
         why: "The omitted-variable formula reconstructs the biased coefficient exactly, which confirms the mechanism. But the adjusted estimate is only unconfounded with respect to what you measured — a confounder of ordinary strength can flip it back."
       },
       {
         stem: "A regression with 190 noise predictors on 200 observations gives R² = 0.97. What does that tell you?",
-        options: [
-          "The model fits very well",
-          "That R² never decreases when you add variables — adjusted R² gives 0.25, which is the honest figure",
-          "The predictors are collinear",
-          "The sample is too small for regression"
-        ],
+        options: ["The model fits the data very well", "R² never falls with more variables", "The predictors are collinear", "The sample is too small for regression"],
         answer: 1,
         why: "R² is also silent on functional form — a linear fit to a logarithmic relationship scored 0.90 — and it is not comparable across datasets, since narrowing the range of `x` dropped it eight-fold with no change in the relationship."
       },
       {
         stem: "Your predictor is constant within each of 50 clusters, across 2,000 rows. What happens to the standard errors?",
-        options: [
-          "Nothing, since the coefficient is unbiased",
-          "The naive standard error is about 12× too small — a group-level predictor carries 50 independent observations, not 2,000",
-          "They become too large",
-          "Only the intercept is affected"
-        ],
+        options: ["Nothing, as the coefficient is unbiased", "The naive SE is about 12× too small", "They become too large", "Only the intercept is affected"],
         answer: 1,
         why: "The coefficient stays perfectly unbiased, which is what makes this dangerous — nothing in the estimate looks wrong. Cluster-robust standard errors leave the coefficients alone and fix only the uncertainty around them."
       },
       {
         stem: "Which regression assumption matters least in practice?",
-        options: [
-          "Exogeneity",
-          "Normality of the errors — the CLT covers the coefficients at any reasonable `n`",
-          "Correct functional form",
-          "Independence of the errors"
-        ],
+        options: ["Exogeneity of the predictors", "Normality of the errors", "Correct functional form", "Independence of the errors"],
         answer: 1,
         why: "Only exogeneity and functional form bias the coefficients; the rest affect standard errors. Normality does matter for prediction intervals, which use the error distribution directly rather than through an average."
       }

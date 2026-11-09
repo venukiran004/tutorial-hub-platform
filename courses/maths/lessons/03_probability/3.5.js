@@ -656,45 +656,25 @@ def test_timeout_alone_cannot_meet_the_slo():
     questions: [
       {
         stem: "Latencies have mean 94 ms, median 61 ms and standard deviation 143 ms. What does that tell you?",
-        options: [
-          "The measurements are noisy",
-          "Strongly right-skewed and not normal — the mean/median ratio is 1.54 and a normal with these moments puts 25% of its mass below zero",
-          "There are outliers that should be removed",
-          "The sample is too small"
-        ],
+        options: ["The measurements are noisy", "Strongly right-skewed, not normal", "Outliers that should be removed", "The sample is too small"],
         answer: 1,
         why: "A standard deviation exceeding the mean is impossible for a normal describing a positive quantity. Latency is a chain of stages multiplied together, so a lognormal is what the generating process suggests before any fitting."
       },
       {
         stem: "Why does the sample mean of Cauchy data never settle, however much you collect?",
-        options: [
-          "The samples are correlated",
-          "The Cauchy has infinite variance, so the CLT does not apply — the mean of `n` samples has the same distribution as one sample",
-          "The random number generator is biased",
-          "It does settle, just slowly"
-        ],
+        options: ["The samples are correlated", "Infinite variance: no CLT", "The generator is biased", "It settles, only slowly"],
         answer: 1,
         why: "Averaging a million Cauchy samples buys you exactly nothing. The practical version is an insurer whose standard deviation kept drifting upward as data accumulated — under infinite variance it was not converging to anything."
       },
       {
         stem: "For a lognormal, which lever moves the p99 more: a 1% faster median or a 1% smaller σ?",
-        options: [
-          "They are equivalent",
-          "σ, by a factor of 2.3 — `p99 = median · exp(2.326σ)`, so σ enters exponentially",
-          "The median, since it shifts everything",
-          "Neither; the p99 depends only on the maximum"
-        ],
+        options: ["They are exactly equivalent", "σ, by a factor of about 2.3", "The median, which shifts everything", "Neither; p99 depends on the max"],
         answer: 1,
         why: "The leverage grows for stricter quantiles, reaching 3.09× at p99.9. It also points at cheaper work: reducing spread means capping retries and bounding queues, while speeding up the median means optimising the path that is already optimised."
       },
       {
         stem: "Why do timeouts make sense at all?",
-        options: [
-          "They free resources regardless of the distribution",
-          "Because real request latencies *age* — a long-running request is increasingly unlikely to finish, unlike a memoryless process where killing it would gain nothing",
-          "Because the exponential distribution has a hard upper bound",
-          "They do not; timeouts are always wasteful"
-        ],
+        options: ["They free resources whatever the distribution", "Long requests become less likely to finish", "The exponential has a hard upper bound", "They do not; timeouts are always wasteful"],
         answer: 1,
         why: "The exponential is the only memoryless continuous distribution: under it, a request running for 10 seconds is exactly as likely to finish in the next second as a fresh one. A Weibull shape parameter above 1 is what says a process wears out, and most real requests do."
       }

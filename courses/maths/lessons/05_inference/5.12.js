@@ -804,45 +804,25 @@ def test_voi_increases_with_sample_but_saturates():
     questions: [
       {
         stem: "What does a 95% credible interval mean?",
-        options: [
-          "The same as a 95% confidence interval",
-          "Given the data and the prior, there is a 95% probability the parameter lies inside it",
-          "95% of future observations will fall inside it",
-          "The procedure captures the parameter 95% of the time"
-        ],
+        options: ["The same as a 95% confidence interval", "A 95% probability, given data and prior", "95% of future observations fall inside", "The procedure covers it 95% of the time"],
         answer: 1,
         why: "This is the reading everyone wants from a confidence interval and cannot have. The two usually agree numerically — with a flat prior and a decent sample they match to three decimals — and never agree in meaning."
       },
       {
         stem: "A uniform prior on a probability `p` is often called uninformative. Is it?",
-        options: [
-          "Yes, it expresses no preference",
-          "No — it is not uniform on the odds or log-odds, so it makes a substantive claim; Jeffreys is invariant under reparameterisation and is the principled default",
-          "Yes, provided the sample is large",
-          "Only for proportions"
-        ],
+        options: ["Yes, since it expresses no preference", "No: it is not uniform on the log-odds", "Yes, provided the sample is large", "Only when the parameter is a proportion"],
         answer: 1,
         why: "Uniform on `p` implies odds with a median of 1 and an interquartile range of 0.33 to 3.00 — it says 1000:1 odds are as plausible as even odds. Three standard \"uninformative\" priors give three different answers on 0 successes in 10 trials."
       },
       {
         stem: "You have 14 observations and a decision to make this week. What does Bayes offer that a frequentist test does not?",
-        options: [
-          "A more powerful test",
-          "A way to combine the data with what you already knew, and a posterior that feeds directly into an expected-loss calculation",
-          "A smaller p-value",
-          "Nothing — both need more data"
-        ],
+        options: ["A more powerful hypothesis test on the data", "Prior knowledge plus a posterior for decisions", "A smaller p-value from the same observations", "Nothing, because both approaches need more data"],
         answer: 1,
         why: "At 19% power the frequentist test's null result means only \"14 observations cannot resolve this\". The posterior supports statements like \"not switching carries 4.5× the expected loss\", which is what a decision actually needs."
       },
       {
         stem: "Your conclusion changes depending on which reasonable prior you use. What have you learned?",
-        options: [
-          "That Bayesian methods are unreliable",
-          "That the data alone is insufficient to settle the question — which is itself a finding, and one a p-value would not have surfaced",
-          "That you should use the uniform prior",
-          "That you need a better likelihood"
-        ],
+        options: ["That Bayesian methods are unreliable", "That the data alone cannot settle it", "That you should use the uniform prior", "That you need a better likelihood"],
         answer: 1,
         why: "Sensitivity analysis is what makes a Bayesian conclusion defensible. If the answer survives every reasonable prior, the prior is not doing the work; if it does not, you now know exactly how much more data the question needs."
       }

@@ -626,45 +626,25 @@ def test_marginal_indefiniteness_is_repaired_but_real_breakage_is_not():
     questions: [
       {
         stem: "A linear system has condition number 1e12 and the answer is wrong in the fourth digit. What should you do?",
-        options: [
-          "Switch to a more accurate solver",
-          "Nothing about the code — float64 keeps roughly `16 − log₁₀(cond) = 4` digits, so the problem cannot be solved more accurately as posed",
-          "Increase the number of iterations",
-          "Use `inv` instead of `solve`"
-        ],
+        options: ["Switch to a more accurate linear solver", "Nothing: float64 keeps only ~4 digits here", "Increase the solver's iteration count", "Use inv instead of solve for precision"],
         answer: 1,
         why: "Conditioning belongs to the problem, not the method. The fix is reformulating, gathering more data, or regularising. Checking `cond` first tells you whether to debug your code at all — if it is large, the code is probably fine and the question is the difficulty."
       },
       {
         stem: "`(x**2).mean() - x.mean()**2` returns a negative number. What happened?",
-        options: [
-          "The data contains complex values",
-          "Catastrophic cancellation — the two terms are nearly equal, so subtracting them destroys the leading digits and the sign can flip",
-          "The array contains NaN",
-          "`mean` uses a different denominator than expected"
-        ],
+        options: ["The data contains complex-valued entries", "Catastrophic cancellation of near-equal terms", "The array contains NaN values somewhere", "mean uses an unexpected denominator here"],
         answer: 1,
         why: "A variance cannot be negative, so the result is arithmetically impossible and can only be a numerical artefact. Centring before squaring, or Welford's algorithm for a single pass, avoids it — the formula is a fine derivation and a poor implementation."
       },
       {
         stem: "`np.linalg.cholesky` fails intermittently on a covariance matrix built with pairwise deletion of missing values. Why?",
-        options: [
-          "Cholesky requires more memory than is available",
-          "Each entry is computed on a different subset of rows, so the matrix is the covariance of no actual dataset and need not be positive semi-definite",
-          "The matrix is not square",
-          "Missing values propagate as NaN"
-        ],
+        options: ["Cholesky needs more memory than available", "Pairwise entries need not be jointly PSD", "The matrix is not square", "Missing values propagate as NaN"],
         answer: 1,
         why: "Every individual entry is a valid covariance, which is what makes it so hard to spot. It fails only when the missingness pattern is uneven enough to tip an eigenvalue negative — so a holiday or a suspension triggers it, which is why it looks random."
       },
       {
         stem: "A hand-rolled softmax produces `nan` only after a model becomes confident. Why?",
-        options: [
-          "The learning rate grew too large",
-          "It exponentiates before subtracting the maximum, so once a logit exceeds about 710 `exp` overflows to infinity",
-          "The gradients vanished",
-          "The batch size changed"
-        ],
+        options: ["The learning rate grew too large", "exp overflows before the max is subtracted", "The gradients vanished in later layers", "The batch size changed mid-training"],
         answer: 1,
         why: "Subtracting the maximum first is mathematically identical and numerically safe, which is why every library ships a `logsumexp`. It is a threshold bug: correct on small logits, so it passes every test written before the model got good at its task."
       }

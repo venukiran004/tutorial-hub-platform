@@ -680,45 +680,25 @@ def test_most_of_the_gap_is_application_pattern():
     questions: [
       {
         stem: "`Y = X²` where `X` is uniform on `[−1, 1]`. What is the correlation?",
-        options: [
-          "1.0, since `Y` is determined by `X`",
-          "Zero — the relationship is symmetric about zero, so positive and negative contributions to the covariance cancel",
-          "About 0.5",
-          "Undefined"
-        ],
+        options: ["1.0, as Y is fixed by X", "Zero: the halves cancel", "About 0.5, a partial link", "Undefined for this pair"],
         answer: 1,
         why: "Correlation measures linear association only. Independence implies zero correlation but not the reverse — except for jointly normal variables, which is why classical statistics can often treat them interchangeably and why that habit fails on real data."
       },
       {
         stem: "A portfolio risk model computes `Σwᵢ²σᵢ²`. When is that wrong?",
-        options: [
-          "Whenever the weights are unequal",
-          "Whenever the components are correlated — it drops the `2ΣwᵢwⱼCov(i,j)` terms, understating risk by nearly half in the worked example",
-          "Only for non-normal returns",
-          "Never; it is the standard formula"
-        ],
+        options: ["Whenever the weights are unequal", "Whenever the components are correlated", "Only for non-normal returns", "Never; it is the standard formula"],
         answer: 1,
         why: "`wᵀΣw` is one line and always correct. The same off-diagonal information that fixes the risk estimate is what makes the minimum-variance portfolio possible — 40% less variance here, purely from weighting the uncorrelated asset more heavily."
       },
       {
         stem: "Treatment A beats B in every severity subgroup but loses overall. Which do you act on?",
-        options: [
-          "The overall rate, since it uses all the data",
-          "The subgroup rates — severity is a common cause of both treatment assignment and outcome, so conditioning on it answers the causal question",
-          "Neither; the data is contradictory",
-          "Whichever has the larger sample"
-        ],
+        options: ["The overall rate, which uses all the data", "The subgroup rates; severity confounds it", "Neither, since the data is contradictory", "Whichever has the larger sample"],
         answer: 1,
         why: "Both numbers are true; they answer different questions. The rule is to adjust for a common cause and never for a common effect — and never for a mediator, which would hide the effect you are trying to measure."
       },
       {
         stem: "A feature-selection filter drops predictors with `|r| < 0.05`. What does it risk?",
-        options: [
-          "Nothing — weak correlations are not predictive",
-          "Discarding strong non-linear signal, such as a U-shaped relationship, which a tree model would find immediately",
-          "Overfitting",
-          "Only a small loss in accuracy"
-        ],
+        options: ["Nothing; weak correlations do not predict", "Dropping strong non-linear signal", "Overfitting the selected features", "Only a small loss in accuracy"],
         answer: 1,
         why: "The filter encodes a linearity assumption the downstream model does not share, throwing away exactly the features a non-linear model was chosen for. Filter on mutual information, or plot before filtering."
       }

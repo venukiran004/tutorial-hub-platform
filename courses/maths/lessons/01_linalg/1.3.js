@@ -534,45 +534,25 @@ def test_condition_number_flags_near_dependence():
     questions: [
       {
         stem: "A design matrix has 4 columns and rank 3. Refits give different coefficients but identical predictions. Why?",
-        options: [
-          "The optimiser has not converged",
-          "There is a null direction `d` with `Xd = 0`, so `β + t·d` fits identically for every `t` — the loss floor is flat and the solver returns an arbitrary point on it",
-          "The learning rate is too high",
-          "The data needs standardising"
-        ],
+        options: ["The optimiser has not converged yet", "A null direction leaves the loss floor flat", "The learning rate is set too high", "The data needs to be standardised"],
         answer: 1,
         why: "Nothing has failed — there genuinely is no unique answer. The tell is that the differences between fits are all multiples of one direction, and coefficients not involved in the dependence stay pinned. The fix is removing the redundant column, not tuning the solver."
       },
       {
         stem: "Why is `np.linalg.inv(A) @ b` a poor way to solve `Ax = b`?",
-        options: [
-          "It only works for symmetric matrices",
-          "It does roughly three times the work, computes n² numbers when n were wanted, and amplifies rounding error — `solve` factorises instead",
-          "It returns the wrong answer for singular matrices",
-          "It cannot handle floating point"
-        ],
+        options: ["It only works for symmetric matrices", "More work and more rounding than solve", "It is wrong for singular matrices only", "It cannot handle floating-point input"],
         answer: 1,
         why: "The algebra on paper says `x = A⁻¹b`, but the numerics disagree. `solve` runs an LU factorisation and back-substitution; `lstsq` additionally returns the rank and singular values, which are the numbers telling you whether to trust the result at all."
       },
       {
         stem: "Why is `det(A) == 0` the wrong test for singularity?",
-        options: [
-          "Determinants are expensive to compute",
-          "The determinant scales with the entries raised to the n-th power, so rescaling a matrix changes it without changing the matrix — the condition number is scale-invariant",
-          "`det` is only defined for symmetric matrices",
-          "Floating point cannot represent zero"
-        ],
+        options: ["Determinants are too expensive to compute", "It changes with scale; condition number does not", "det is only defined for symmetric matrices", "Floating point cannot represent zero"],
         answer: 1,
         why: "Multiplying a matrix by 1000 multiplies a 2×2 determinant by a million while leaving the transformation's nature untouched. `matrix_rank` counts singular values above a scaled tolerance, and `cond` reports severity — above roughly 1e10 the solution is dominated by rounding."
       },
       {
         stem: "What would ridge regression do to a design matrix containing distance in both km and miles?",
-        options: [
-          "Correctly identify and drop the duplicate column",
-          "Make the coefficients reproducible by choosing the minimum-norm solution — splitting the effect across both columns, so they become stable and meaningless",
-          "Raise an error about collinearity",
-          "Leave the coefficients unchanged"
-        ],
+        options: ["Identify the duplicate column and drop it", "Split the effect evenly: stable, meaningless", "Raise an error about the collinear columns", "Leave the coefficients exactly unchanged"],
         answer: 1,
         why: "The penalty makes the flat valley floor curve, so one point wins uniquely. But the confounding remains: neither coefficient means \"cost per kilometre\" any more, and because the instability symptom disappears nobody investigates. Ridge suits genuine near-collinearity; an exact duplicate is a column to delete."
       }

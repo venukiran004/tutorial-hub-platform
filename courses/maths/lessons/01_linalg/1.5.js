@@ -600,45 +600,25 @@ def test_added_items_use_the_existing_basis():
     questions: [
       {
         stem: "Why does SVD apply where eigendecomposition does not?",
-        options: [
-          "It is a numerical approximation rather than exact",
-          "It exists for every matrix — any shape, any rank — with real non-negative singular values and orthonormal factors, while eigendecomposition needs a square, diagonalisable matrix",
-          "It only works for symmetric matrices",
-          "It is faster to compute"
-        ],
+        options: ["It is an approximation rather than exact", "It exists for every matrix, any shape or rank", "It only works for symmetric matrices", "It is always faster to compute"],
         answer: 1,
         why: "A shear has a repeated eigenvalue and only one eigenvector, so it has no eigendecomposition — but it has an SVD. For symmetric positive semi-definite matrices the two coincide, which is why PCA can be described through either."
       },
       {
         stem: "You truncate embeddings to keep 90% of the energy. What does that guarantee about ranking quality?",
-        options: [
-          "Rankings change by at most 10%",
-          "Nothing directly — energy bounds the average squared reconstruction error over the whole matrix, while ranking depends on the order of a few near-neighbours for one query",
-          "The top-10 results are preserved",
-          "Cosine similarities shift by at most 0.10"
-        ],
+        options: ["Rankings change by at most 10%", "Nothing directly about query rankings", "The top-10 results are preserved", "Cosine similarities move by at most 0.1"],
         answer: 1,
         why: "The 10% discarded is concentrated in whichever items and directions were dropped, typically hurting long-tail items most. Two items at 0.61 and 0.59 can swap on a far smaller perturbation. Measure recall against the uncompressed index instead — 90% energy often gives recall@10 around 0.85."
       },
       {
         stem: "Why does `np.linalg.lstsq` avoid computing `(XᵀX)⁻¹Xᵀy`?",
-        options: [
-          "The formula is algebraically wrong",
-          "Forming `XᵀX` squares the condition number, so a matrix at 10⁸ becomes 10¹⁶ and is numerically singular in float64",
-          "It cannot handle rectangular matrices",
-          "Matrix inversion is not implemented for large matrices"
-        ],
+        options: ["The normal-equation formula is wrong", "XᵀX squares the condition number", "It cannot handle rectangular matrices", "Inversion is not implemented at scale"],
         answer: 1,
         why: "The normal equations are a valid derivation and a poor implementation. `lstsq` works on `X` directly via SVD, never forming the squared matrix — which is why the textbook formula can work on test data and produce wild coefficients in production."
       },
       {
         stem: "A spectrum reads `[163.9, 118.4, 79.2, 3.1, 3.0, 2.9, ...]`. What does it tell you?",
-        options: [
-          "The matrix is badly conditioned and should be discarded",
-          "There are three genuine components and the rest is a noise floor — the factor-of-25 gap is where the signal stops",
-          "Six components should be retained",
-          "The data needs standardising before decomposition"
-        ],
+        options: ["The matrix is badly conditioned; discard it", "Three real components, then a noise floor", "Six components should be retained", "The data needs standardising first"],
         answer: 1,
         why: "A cliff followed by a plateau is the signature of real low-rank structure plus noise. Truncating at the gap is found from the data rather than imposed by a threshold, and it denoises — the discarded components were fitting randomness, so the approximation can be closer to the truth than the original."
       }

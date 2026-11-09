@@ -914,45 +914,25 @@ def test_no_claim_survives_as_written():
     questions: [
       {
         stem: "You target your 500 highest-risk accounts and their churn falls from 34% to 19%. What should you check first?",
-        options: [
-          "Whether the programme was implemented correctly",
-          "Regression to the mean — `(1 − r) × (34% − 8%)` predicts a fall to 16–21% with no intervention at all",
-          "Whether the sample is large enough",
-          "The statistical significance of the change"
-        ],
+        options: ["Whether the programme ran correctly", "Regression to the mean", "Whether the sample is large enough", "The significance of the change"],
         answer: 1,
         why: "Selecting on an extreme selects partly for extreme noise, which does not repeat. The defence is a control group selected identically, and for a targeted programme it costs nothing — half the eligible accounts simply wait a quarter."
       },
       {
         stem: "A model is 94% accurate on a balanced validation set. The production base rate is 8%. What will you see?",
-        options: [
-          "About 94% accuracy",
-          "Precision around 58% — and always predicting \"no churn\" would be 92% accurate, so the model's lift over doing nothing is small",
-          "Better performance, since real data is easier",
-          "It cannot be predicted"
-        ],
+        options: ["About 94% accuracy, as validated", "Precision near 58%, little lift", "Better, since real data is easier", "It cannot be predicted in advance"],
         answer: 1,
         why: "Sensitivity and specificity belong to the model; precision belongs to the model *and* the population. An accuracy figure from a balanced set is a number that will never be observed in production."
       },
       {
         stem: "Your fleet p99 is computed as the unweighted mean of 40 regional p99s. How wrong is it?",
-        options: [
-          "Within a few percent",
-          "Potentially several-fold — in the worked example it was 2.8× the true figure, because small regions contribute equally while serving a fraction of the traffic",
-          "It is a valid approximation",
-          "Only wrong if the regions differ in latency"
-        ],
+        options: ["Within a few percent", "Several-fold too high", "A valid approximation", "Wrong only if latencies differ"],
         answer: 1,
         why: "Counts add; percentiles do not. It also makes the metric unverifiable over time — a shift in regional traffic mix moves the number with no change in what any user experienced. Merge the histograms and compute once."
       },
       {
         stem: "A trend holds in every subgroup but reverses when pooled. Which table do you report?",
-        options: [
-          "Always the subgroups, since they use finer information",
-          "It depends on the grouping variable's causal role — a confounder means read the subgroups, a mediator means read the pooled table",
-          "Always the pooled table, since it uses all the data",
-          "Neither; the data is contradictory"
-        ],
+        options: ["Always the subgroups, for finer detail", "It depends on the grouping's causal role", "Always the pooled table, for all the data", "Neither, since the data is contradictory"],
         answer: 1,
         why: "Same table shape, opposite answer, decided by which causal story is true — which is a question about the process rather than the data. Standardising to a common mix and reporting both is the practical defence."
       }

@@ -640,45 +640,25 @@ def test_required_sample_scales_inversely_with_mde_squared():
     questions: [
       {
         stem: "A 95% confidence interval is [97, 108]. What does the 95% mean?",
-        options: [
-          "There is a 95% probability the true mean is between 97 and 108",
-          "This interval came from a procedure that captures the true value 95% of the time",
-          "95% of the data lies between 97 and 108",
-          "Repeating the study would land 95% of new estimates in this range"
-        ],
+        options: ["A 95% chance the mean lies in [97, 108]", "The procedure captures the truth 95% of the time", "95% of the data lies between 97 and 108", "95% of repeated estimates land in this range"],
         answer: 1,
         why: "The parameter is fixed, so it is either in the interval or not. Option 3 describes a prediction interval, which is several times wider; option 4 is a different quantity entirely, and its actual figure is about 83%."
       },
       {
         stem: "You observe zero failures in 300 runs. What can you claim about the failure rate?",
-        options: [
-          "It is zero",
-          "It is below about 1% — the rule of three gives a 95% upper bound of `3/300`",
-          "Nothing at all",
-          "It is below 0.33%, since one more run would have been a failure"
-        ],
+        options: ["It is exactly zero", "Below about 1% (rule of three)", "Nothing can be claimed at all", "Below 0.33%, one run more"],
         answer: 1,
         why: "Zero observed events never means a zero rate; it means the rate is below roughly `3/n`, and `n` decides whether that is reassuring. Reporting the bound converts \"we saw nothing\" into a claim someone can act on."
       },
       {
         stem: "Two measurements per subject correlate at 0.8. How much does pairing help?",
-        options: [
-          "It doubles the effective sample",
-          "It multiplies the effective sample by `1/(1−ρ) = 5`, by removing between-subject variance from the comparison",
-          "It has no effect on the interval width",
-          "It helps only if the correlation exceeds 0.9"
-        ],
+        options: ["It doubles the effective sample size", "It multiplies the effective sample by 5", "It has no effect on the interval width", "It helps only if ρ exceeds 0.9"],
         answer: 1,
         why: "Variance reduction is the free lever — pairing, stratifying and covariate adjustment all narrow the interval without collecting more data. Since halving the width otherwise costs 4× the sample, this is a large saving."
       },
       {
         stem: "An A/B test gives `p = 0.13` with a 95% CI on the relative lift of [−1.4%, +10.7%]. What should the write-up say?",
-        options: [
-          "No effect was found, so the feature is neutral",
-          "The result is compatible with anything from a small decline to a large gain, and rules out harm worse than −1.4% — the null result is uninformative about the target effect at 60% power",
-          "The feature should be rejected",
-          "The test should be repeated until significant"
-        ],
+        options: ["No effect was found, so it is neutral", "Compatible with a small loss or a large gain", "The feature should be rejected outright", "Repeat the test until it is significant"],
         answer: 1,
         why: "Failing to reject is not evidence for the null. The interval's upper end is worth £4.5m a year and its lower end costs £586k — an asymmetric bet the phrase \"no significant difference\" hides entirely."
       }

@@ -564,45 +564,25 @@ def test_lowering_the_learning_rate_does_not_change_the_ratio():
     questions: [
       {
         stem: "Gradients fall by roughly the same factor at every layer. What does the consistency tell you?",
-        options: [
-          "One layer has a bug in its implementation",
-          "The cause is multiplicative — the chain rule multiplying a local derivative per layer, most likely activation saturation",
-          "The learning rate is too high",
-          "The data is not shuffled"
-        ],
+        options: ["One layer has a bug in its implementation", "A multiplicative cause, likely saturation", "The learning rate is set too high", "The training data is not shuffled"],
         answer: 1,
         why: "A bug affects one layer; a multiplicative process affects all equally. Checking the mean activation confirms it — near 0.999 means saturated sigmoids, whose derivative `a(1−a)` is about 0.001 against a best case of 0.25."
       },
       {
         stem: "Why can't a lower learning rate fix vanishing gradients?",
-        options: [
-          "It can, but convergence takes longer",
-          "The update is `lr × gradient`, so a global scalar multiplies every layer equally and leaves the ratio between layers unchanged",
-          "Learning rates do not affect early layers",
-          "It would cause the loss to diverge"
-        ],
+        options: ["It can, but convergence takes longer", "A global scalar keeps the layer ratios", "Learning rates do not reach early layers", "It would make the loss diverge"],
         answer: 1,
         why: "The ratio between layers is set by the chain rule, and no global scalar changes a ratio. Raising it is worse — the output layer, with gradients 300× larger, diverges long before the first layer becomes trainable. Only changing the per-layer multipliers helps."
       },
       {
         stem: "With standardised inputs, 256 units per layer and `w ~ N(0, 1)`, what is the standard deviation of the pre-activations?",
-        options: [
-          "About 1 — the inputs were standardised",
-          "About 16, since `Var(z) = n·Var(w)·Var(x) = 256`, which saturates a sigmoid immediately",
-          "About 256",
-          "It depends on the bias initialisation"
-        ],
+        options: ["About 1, as inputs were standardised", "About 16, saturating a sigmoid at once", "About 256, the number of units", "It depends on the bias initialisation"],
         answer: 1,
         why: "A sigmoid saturates beyond about `|z| = 4`, so essentially every unit starts on the flat tail — the network is broken before the first step. Xavier sets `Var(w) = 1/n_in` to bring `Var(z)` back to about 1; He doubles it for ReLU to offset the zeroed half."
       },
       {
         stem: "A norm layer computes `sqrt((v**2).sum())` and produces `nan` gradients. Where does the epsilon go?",
-        options: [
-          "`sqrt(...) + eps` — after the square root",
-          "`sqrt((v**2).sum() + eps)` — inside the root, because outside it the derivative `1/(2√s)` is still infinite at zero",
-          "Either position works equally",
-          "On the input vector, as `v + eps`"
-        ],
+        options: ["`sqrt(...) + eps`, after the root", "`sqrt(sum + eps)`, inside the root", "Either position works equally", "On the input, as `v + eps`"],
         answer: 1,
         why: "The value is perfectly defined at zero; the derivative is not. Adding the epsilon outside shifts the value slightly and leaves the gradient infinite — a common way to write the fix and not fix it, with the added cost that the code now looks defended."
       }

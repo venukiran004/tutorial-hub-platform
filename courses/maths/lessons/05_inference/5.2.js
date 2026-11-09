@@ -675,45 +675,25 @@ def test_halfway_property_at_n_equals_strength():
     questions: [
       {
         stem: "An unbiased estimator has MSE 8.0; a biased one has MSE 5.3. Which should you use?",
-        options: [
-          "The unbiased one — bias is a serious flaw",
-          "The biased one — MSE is the error you actually incur, and unbiasedness is a constraint rather than a goal",
-          "Neither; find an unbiased estimator with lower variance",
-          "It depends on the sample size only"
-        ],
+        options: ["The unbiased one, since bias is a serious flaw", "The biased one: MSE is the error you incur", "Neither; find an unbiased one with lower variance", "It depends on the sample size alone"],
         answer: 1,
         why: "Shrinking towards a prior cuts variance faster than it adds squared bias. This is the entire justification for ridge regression, hierarchical models and smoothed ratings — all of which are deliberately biased."
       },
       {
         stem: "Your \"top rated\" list is dominated by products with two or three reviews. What is the estimator problem?",
-        options: [
-          "The rating scale is wrong",
-          "Sorting by a high-variance estimator selects for variance — the maximum of noisy estimates is systematically an over-estimate",
-          "The raw rate is biased upward",
-          "There are not enough products"
-        ],
+        options: ["The rating scale is the wrong one to use", "Sorting by noisy estimates selects variance", "The raw average rate is biased upwards", "There are not enough products in the list"],
         answer: 1,
         why: "The raw rate is unbiased; only its variance is the problem. Shrinking towards a fitted prior handles it with no threshold — an item with 18,000 views barely moves, while one with a single view goes to the catalogue average."
       },
       {
         stem: "Why does the MLE for a normal's variance divide by `n` rather than `n − 1`?",
-        options: [
-          "It is a mistake in the derivation",
-          "Maximum likelihood optimises the probability of the observed data, which is a different objective from unbiasedness — the two disagree here",
-          "Because `n` is easier to compute",
-          "It only applies to known means"
-        ],
+        options: ["It is a mistake in the derivation", "Likelihood and unbiasedness differ", "Because n is easier to compute", "It only applies to a known mean"],
         answer: 1,
         why: "MLE knows nothing about unbiasedness. Notably its MSE is also *lower* than the unbiased estimator's at small `n`, so the biased answer is the more accurate one by the measure that matters."
       },
       {
         stem: "A logistic regression coefficient grows without bound as you increase `max_iter`. What is happening?",
-        options: [
-          "The learning rate is too high",
-          "Perfect separation — a predictor separates the classes exactly, so the likelihood increases without bound and the MLE does not exist",
-          "The data needs standardising",
-          "There is a numerical overflow"
-        ],
+        options: ["The learning rate is too high", "Perfect separation: no finite MLE", "The data needs standardising", "A numerical overflow occurred"],
         answer: 1,
         why: "The fix is a penalty, which is the same shrinkage that fixed the ranking problem: an L2 term makes the objective finite and produces a stable coefficient. Boundary estimates and too many parameters are the other two classic MLE failures."
       }

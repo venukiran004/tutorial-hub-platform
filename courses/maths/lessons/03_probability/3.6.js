@@ -591,45 +591,25 @@ def test_less_sensitive_more_specific_costs_less():
     questions: [
       {
         stem: "A test is 99% sensitive and 99% specific, and the disease affects 1% of people. You test positive. What is the probability you have it?",
-        options: [
-          "99%",
-          "50% — of 10,000 people, 99 true positives from the 100 sick and 99 false positives from the 9,900 healthy",
-          "1%",
-          "98%"
-        ],
+        options: ["99%", "50%", "1%", "98%"],
         answer: 1,
         why: "Counting people makes it obvious rather than surprising: 1% of a big group can outnumber 99% of a small one. It is also why screening an asymptomatic population and testing a symptomatic patient are different acts with the same instrument — symptoms raise the prior."
       },
       {
         stem: "A vendor reports 97% precision on a balanced dataset. Your base rate is 0.3%. What will you actually see?",
-        options: [
-          "About 97%, since the model does not change",
-          "About 9% — precision depends on the population, and the legitimate group is 332× larger than the fraud group",
-          "Slightly less than 97%",
-          "It cannot be predicted without testing"
-        ],
+        options: ["About 97%, since the model is unchanged", "About 9%, at a 0.3% base rate", "Slightly below 97%", "It cannot be predicted without testing"],
         answer: 1,
         why: "Sensitivity and specificity are properties of the model; precision is not. A precision figure quoted from a balanced set is a number that will never be observed, which is the most common way classifier results get oversold."
       },
       {
         stem: "Among successful people, talent and luck are negatively correlated, yet they are independent in the population. Why?",
-        options: [
-          "The sample is too small",
-          "Collider bias — conditioning on a common *effect* creates an association, because either route was sufficient for success",
-          "Talent causes bad luck",
-          "The correlation estimate is biased"
-        ],
+        options: ["The sample is too small to trust here", "Collider bias from selecting on success", "Talent causes bad luck in practice", "The correlation estimate is biased"],
         answer: 1,
         why: "Conditioning on a common cause removes spurious association; conditioning on a common effect creates it. That asymmetry is why \"control for everything you measured\" is unsafe advice — it manufactures exactly the correlations you were trying to rule out."
       },
       {
         stem: "A DNA match has a 1-in-a-million coincidence rate. The suspect was found by searching a 60-million-profile database. How strong is the evidence?",
-        options: [
-          "Overwhelming — one in a million",
-          "Weak — 60 coincidental matches are expected in a database that size, so the match alone gives roughly a 1.6% probability of guilt",
-          "It cannot be quantified",
-          "The same as if the suspect had been identified another way"
-        ],
+        options: ["Overwhelming: one in a million", "Weak: about 60 chance matches expected", "It cannot be quantified at all", "As strong as any other identification"],
         answer: 1,
         why: "The same evidence supports opposite conclusions depending on how the suspect was found: with an effective pool of 100, it is 99.99% damning. Search size belongs in the calculation, which is the same principle as correcting for multiple comparisons."
       }

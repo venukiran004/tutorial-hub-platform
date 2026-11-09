@@ -723,45 +723,25 @@ def test_bh_finds_far_more_than_bonferroni():
     questions: [
       {
         stem: "Your experiment dashboard shows 25 metrics with uncorrected p-values. How often does at least one turn green under no effect?",
-        options: [
-          "5% of the time",
-          "About 72% — `1 − 0.95²⁵`, so a green metric carries almost no information",
-          "25% of the time",
-          "It depends on the correlation between metrics"
-        ],
+        options: ["5% of the time", "About 72% of the time", "25% of the time", "It depends on correlation"],
         answer: 1,
         why: "Correlation between metrics reduces the rate but never removes it — even at `ρ = 0.95` across 20 tests it is nearly four times nominal. The expected-count form, `α × m`, makes the problem obvious: 1.25 false positives per readout."
       },
       {
         stem: "Screening 20,000 genes, you want to control the proportion of false discoveries among those you report. Which correction?",
-        options: [
-          "Bonferroni",
-          "Benjamini-Hochberg — FDR is the right rate when discoveries are leads that will be followed up",
-          "No correction, since the tests are correlated",
-          "Holm"
-        ],
+        options: ["Bonferroni, across all genes", "Benjamini-Hochberg, for FDR", "No correction, as tests correlate", "Holm's step-down procedure"],
         answer: 1,
         why: "On a 1,000-test screen with 50 real effects, Bonferroni found 4 and BH found 21 with one false positive. Controlling FWER here is not cautious — it discards 34 real findings to avoid a single false one."
       },
       {
         stem: "Should guardrail metrics (error rate, latency, crashes) be corrected for multiplicity?",
-        options: [
-          "Yes, like all other metrics",
-          "No — correcting them makes you less likely to detect harm, and a guardrail's false negative costs users while its false positive costs a review",
-          "Yes, but with a looser `q`",
-          "Only if there are more than ten of them"
-        ],
+        options: ["Yes, like every other metric", "No: correcting them hides harm", "Yes, but with a looser q", "Only if there are more than ten"],
         answer: 1,
         why: "The cost asymmetry runs the opposite way from every other metric class. The price is about 0.2 false alarms per experiment; if that is too many, raise the thresholds rather than applying a correction."
       },
       {
         stem: "A trial misses its primary endpoint but finds significance in one of nine age subgroups. How much should you believe it?",
-        options: [
-          "It is a real effect in that subgroup",
-          "Very little — nine subgroups give a 37% chance of at least one significant band under no effect, and the search was post-hoc",
-          "It is real if the p-value is below 0.01",
-          "It depends on the subgroup's sample size"
-        ],
+        options: ["It is a real effect in that subgroup", "Very little: post-hoc, 37% chance of one", "It is real if the p-value is below 0.01", "It depends on the subgroup's sample size"],
         answer: 1,
         why: "This is the expected yield of a nine-way search. Declaring the family before running anything is the defence — the correction is not the hard part, counting the tests honestly is."
       }

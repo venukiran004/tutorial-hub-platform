@@ -614,45 +614,25 @@ def test_badly_scaled_features_are_rejected_before_training():
     questions: [
       {
         stem: "A function takes 5 inputs and returns 3 outputs. What shape is its derivative?",
-        options: [
-          "A vector of length 5",
-          "A 3×5 Jacobian — one row per output, one column per input",
-          "A 5×5 Hessian",
-          "A scalar"
-        ],
+        options: ["A vector of length 5", "A 3×5 Jacobian", "A 5×5 Hessian", "A single scalar"],
         answer: 1,
         why: "Row `i` is the gradient of output `i`. A gradient is the special case with one output, and a Hessian is the second derivative of a one-output function — so the shape follows from counting, which is how most dimension bugs get caught before they are written."
       },
       {
         stem: "Why does gradient descent become unstable above `lr = 2/λ_max`?",
-        options: [
-          "Floating-point error accumulates",
-          "In the eigendirection with curvature λ, the error is multiplied by `(1 − lr·λ)` each step, and beyond `2/λ` that factor exceeds 1 in magnitude",
-          "The gradient becomes undefined",
-          "The Hessian stops being positive definite"
-        ],
+        options: ["Floating-point error accumulates each step", "The factor (1 − lr·λ) exceeds 1 in size", "The gradient becomes undefined there", "The Hessian stops being positive definite"],
         answer: 1,
         why: "The step overshoots and lands further from the minimum than it started, growing each iteration. The largest eigenvalue is therefore the binding constraint on step size, while the smallest determines how slowly the flattest direction converges."
       },
       {
         stem: "Features are rooms (1–8) and area in square feet (400–6000). What does that imply for the Hessian?",
-        options: [
-          "Nothing — gradient descent is scale-invariant",
-          "The Hessian carries squared units, so a scale ratio near 1000 gives a condition number near 10⁶ and an extremely elongated valley",
-          "The Hessian becomes non-symmetric",
-          "Only the gradient is affected, not the curvature"
-        ],
+        options: ["Nothing: gradient descent is scale-invariant", "Squared units give a huge condition number", "The Hessian becomes non-symmetric", "Only the gradient is affected, not curvature"],
         answer: 1,
         why: "For a squared loss the Hessian is `2XᵀX`, so entries scale with the square of the feature units. The stable learning rate falls by the same factor, which is why the unstandardised run needed `2e-8` — and why the scale ratio is checkable before training begins."
       },
       {
         stem: "Why do practitioners compute Hessian-vector products rather than Hessians?",
-        options: [
-          "Hessian-vector products are more accurate",
-          "The Hessian is `n²` entries — 400 TB at 10 million parameters — while `Hv` costs about one extra gradient with `O(n)` memory",
-          "The Hessian is not defined for neural networks",
-          "Hessian-vector products avoid the symmetry requirement"
-        ],
+        options: ["Hessian-vector products are more accurate", "n² entries versus about one extra gradient", "Hessians are undefined for neural networks", "They avoid the symmetry requirement"],
         answer: 1,
         why: "`Hv = d/dx[(∇f · v)]` — differentiating a scalar once more. It gives top eigenvalues by power iteration, Newton-like steps by conjugate gradient, and sharpness measures, none of which need the matrix. Wanting `H` itself usually means the question was posed wrongly."
       }

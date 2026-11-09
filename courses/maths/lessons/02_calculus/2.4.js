@@ -558,45 +558,25 @@ def test_seed_count_scales_as_one_over_effect_squared():
     questions: [
       {
         stem: "Why is a neural network with hidden layers necessarily non-convex?",
-        options: [
-          "Because ReLU is not differentiable at zero",
-          "Permutation symmetry — swapping two hidden units gives identical output, so a layer of `h` units has `h!` equivalent minima, while a strictly convex function has exactly one",
-          "Because the loss can be negative",
-          "Because gradient descent is stochastic"
-        ],
+        options: ["ReLU is not differentiable at zero", "Swapping units gives h! equal minima", "The loss can take negative values", "Gradient descent is stochastic, not exact"],
         answer: 1,
         why: "The argument needs no nonlinearity and no appeal to intuition — it is a construction. It also explains why comparing two trained networks weight-by-weight is meaningless: they may be the same function with the units in a different order."
       },
       {
         stem: "A team reports 91.9% against a 91.2% baseline, one run each. Baseline seeds were `[0.912, 0.908, 0.919, 0.905, 0.916]`. What does this show?",
-        options: [
-          "A small but real improvement",
-          "Nothing — the baseline already reached 0.919 on one of its own seeds, and the gain is about 1.2 standard deviations of seed noise",
-          "That the new architecture is worse",
-          "That the baseline needs retraining"
-        ],
+        options: ["A small but real improvement", "Nothing: it is within seed noise", "That the new architecture is worse", "That the baseline needs retraining"],
         answer: 1,
         why: "The comparison is one draw against an average. Detecting a true 0.7pp difference at this spread needs about 11 seeds per arm — the `n ≈ 16σ²/d²` relationship is steep, which is why sub-0.5pp claims are usually unaffordable to establish."
       },
       {
         stem: "Two runs of a logistic regression give different results. What does that tell you?",
-        options: [
-          "The initialisation matters and should be tuned",
-          "Something outside the optimiser is varying — logistic regression is convex, so the optimum is unique and runs must agree",
-          "The learning rate is too high",
-          "The model needs more iterations"
-        ],
+        options: ["Initialisation matters and should be tuned", "Something outside the optimiser varies", "The learning rate is set too high", "The model needs more iterations"],
         answer: 1,
         why: "Convexity is a debugging tool here: it narrows the search enormously. A varying train/validation split, non-deterministic data loading or a changing preprocessing step are the usual culprits — not the optimiser."
       },
       {
         stem: "What does Jensen's inequality give you for a convex `f`?",
-        options: [
-          "`f(E[X]) = E[f(X)]`",
-          "`f(E[X]) ≤ E[f(X)]` — the function of the average is at most the average of the function",
-          "`f(E[X]) ≥ E[f(X)]`",
-          "It applies only to probability distributions"
-        ],
+        options: ["f(E[X]) = E[f(X)]", "f(E[X]) ≤ E[f(X)]", "f(E[X]) ≥ E[f(X)]", "Only for discrete laws"],
         answer: 1,
         why: "Applied to `x²` it gives `E[X]² ≤ E[X²]`, which is exactly why variance cannot be negative. Applied to `log`, which is concave, it reverses and gives `log E[p] ≥ E[log p]` — the ELBO, a computable lower bound on an intractable log-likelihood."
       }

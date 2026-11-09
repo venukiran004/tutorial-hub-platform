@@ -639,45 +639,25 @@ def test_mismatched_edges_and_counts_are_rejected():
     questions: [
       {
         stem: "`stats.norm(0, 0.001).pdf(0)` returns 398.94. Is something wrong?",
-        options: [
-          "Yes — a probability cannot exceed 1",
-          "No — that is a density, meaning probability per unit `x`, and packing the same total mass into a narrow range makes the height large",
-          "Yes — the scale parameter is invalid",
-          "No, but the value should be clipped to 1"
-        ],
+        options: ["Yes: a probability cannot exceed 1", "No: it is a density, per unit x", "Yes: the scale parameter is invalid", "No, but it should be clipped to 1"],
         answer: 1,
         why: "The cleanest test is units: measure the same quantity in metres instead of centimetres and every density multiplies by 100. A number that changes when you change units is not a probability."
       },
       {
         stem: "You need `P(X > 230)` for `norm(100, 15)`, where the CDF at 230 rounds to exactly 1.0 in float64. What should you compute?",
-        options: [
-          "`1 - d.cdf(230)`",
-          "`d.sf(230)` — the survival function, computed directly rather than by subtraction",
-          "`d.pdf(230)`",
-          "`1 - d.ppf(230)`"
-        ],
+        options: ["`1 - d.cdf(230)`", "`d.sf(230)`", "`d.pdf(230)`", "`1 - d.ppf(230)`"],
         answer: 1,
         why: "`1 - cdf` gives exactly `0.0` here — the answer has been rounded away — while `sf` gives the correct 2.22e-18. The subtraction cancels every significant digit, which is the same failure as `E[X²] − E[X]²` from lesson 2.6, and it bites exactly in the tail where you need precision."
       },
       {
         stem: "How do you sample from a distribution given only a uniform generator?",
-        options: [
-          "Rejection sampling is the only general method",
-          "Inverse transform: `F⁻¹(U)` has distribution `F` when `U` is uniform on `[0,1]`",
-          "Take the mean of many uniforms",
-          "It is not possible without a library"
-        ],
+        options: ["Rejection sampling is the only method", "Inverse transform: F⁻¹(U)", "Average many uniform draws", "It cannot be done without a library"],
         answer: 1,
         why: "`P(F⁻¹(U) ≤ x) = P(U ≤ F(x)) = F(x)`, and applying `F` to both sides of the inequality is valid because `F` is non-decreasing. Run in reverse, the same fact says `F(X)` is uniform — the basis of the KS test and every QQ plot."
       },
       {
         stem: "94% of users generate zero revenue and the rest spend a variable amount. What is the right model?",
-        options: [
-          "A normal fitted to all the data",
-          "A mixture — a point mass at zero plus a continuous distribution above it, giving conversion rate and conditional spend separately",
-          "A lognormal fitted to the paying users only",
-          "The median, since it is robust"
-        ],
+        options: ["A normal fitted to all of the data", "A point mass at zero plus a spend model", "A lognormal on the paying users only", "The median, since it is robust"],
         answer: 1,
         why: "Revenue per user is conversion rate times average spend, and those two numbers have different owners and different levers. Fitting only the payers discards the conversion rate; fitting a normal to everything puts 44% of its mass below zero."
       }

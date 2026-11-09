@@ -733,45 +733,25 @@ def test_skewed_small_sample_is_flagged():
     questions: [
       {
         stem: "You compare 24 treated subjects against 240 controls, and the treated group is three times as variable. Which test?",
-        options: [
-          "Student's — it uses all the data efficiently",
-          "Welch's — with unequal sizes *and* unequal variances, Student's true error rate reaches around 17%",
-          "Mann-Whitney, since the variances differ",
-          "Levene's first, then decide"
-        ],
+        options: ["Student's, since it uses all the data", "Welch's, for unequal sizes and variances", "Mann-Whitney, since the variances differ", "Levene's test first, then decide"],
         answer: 1,
         why: "The pooled variance is weighted by sample size, so it is dominated by the large tight group and understates the small variable one. Note that unequal variance with *equal* group sizes is harmless — it is the combination that breaks."
       },
       {
         stem: "Should you run a normality test before a t-test?",
-        options: [
-          "Yes, it validates the assumption",
-          "No — the t-test assumes the sampling distribution of the *mean* is normal, and conditioning your test choice on another test's outcome invalidates the error rate of both",
-          "Only for `n < 30`",
-          "Only for the smaller group"
-        ],
+        options: ["Yes, it validates the assumption first", "No: it distorts both tests' error rates", "Only when the sample is below n = 30", "Only for the smaller of the two groups"],
         answer: 1,
         why: "Shapiro's power scales with `n`, so it rejects trivial deviations at large `n` and misses serious ones at small `n` — failing in the damaging direction at both ends. `n > 25 × skew²` targets the assumption that actually matters."
       },
       {
         stem: "Forty subjects measured before and after, with large between-subject differences. Unpaired gives `p = 0.58`, paired gives `p = 0.00004`. Why?",
-        options: [
-          "The paired test is more liberal",
-          "Pairing removes between-subject variance entirely — the comparison's noise fell from sd 24 to sd 4",
-          "The unpaired test used the wrong variance formula",
-          "One of them must be wrong"
-        ],
+        options: ["The paired test is more liberal", "Pairing removes between-subject noise", "The unpaired test used the wrong formula", "One of the two tests must be wrong"],
         answer: 1,
         why: "A paired test is literally a one-sample test on the differences, so everything that makes subjects differ from each other cancels before the test begins. The cost is halved degrees of freedom, which only matters when the correlation is below about 0.5."
       },
       {
         stem: "An analysis helper returns `{\"conclusion\": \"the same\"}` when `p > 0.05`. What is wrong?",
-        options: [
-          "Nothing — that is what non-significance means",
-          "Failing to reject is not evidence of equality, and that string gets pasted verbatim into slides as an established finding",
-          "It should say \"not significant\"",
-          "The threshold should be 0.01"
-        ],
+        options: ["Nothing; that is what non-significance means", "Not rejecting is not evidence of equality", "It should say 'not significant' instead", "The threshold should have been 0.01"],
         answer: 1,
         why: "With `n = 20` a 40% difference is \"not significant\"; with `n = 100,000` a 0.01% difference is \"significant\". A function returning only a p-value and a verdict cannot distinguish these, and neither can anyone reading its output."
       }

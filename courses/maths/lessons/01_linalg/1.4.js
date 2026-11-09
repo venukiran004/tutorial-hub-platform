@@ -542,45 +542,25 @@ def test_a_true_minimum_is_not_reported_as_a_saddle():
     questions: [
       {
         stem: "A Hessian has eigenvalues `[4.0, 0.02, −1.5]` and the gradient is zero. What is this point?",
-        options: [
-          "A local minimum — training has converged",
-          "A saddle point — mixed signs mean the loss curves up in two directions and down in the third, so it can still be reduced",
-          "A local maximum",
-          "A degenerate point requiring higher derivatives"
-        ],
+        options: ["A local minimum: training has converged", "A saddle point that can still be descended", "A local maximum of the loss", "A degenerate point needing higher derivatives"],
         answer: 1,
         why: "All-positive means a minimum; mixed signs mean a saddle. In high dimensions a point is a minimum only if every eigenvalue is positive, so saddles hugely outnumber minima — which is why plateaus in deep learning are usually saddles rather than local minima."
       },
       {
         stem: "Why use `np.linalg.eigh` rather than `eig` on a covariance matrix?",
-        options: [
-          "`eigh` is the only one that handles 3×3 matrices",
-          "A covariance matrix is symmetric, so `eigh` returns real eigenvalues and orthonormal eigenvectors — `eig` returns complex dtype with zero imaginary parts",
-          "`eig` cannot compute eigenvectors",
-          "`eigh` normalises the input first"
-        ],
+        options: ["eigh is the only one that handles 3×3 input", "Symmetric input: real values, orthonormal vectors", "eig cannot compute eigenvectors at all", "eigh normalises the input matrix before solving"],
         answer: 1,
         why: "The spectral theorem guarantees real symmetric matrices have real eigenvalues and a full orthonormal eigenbasis. Using `eig` is numerically harmless but changes the dtype to complex, which alters comparisons and plots downstream for reasons nobody traces back to the function call."
       },
       {
         stem: "A recurrent network's Jacobian has spectral radius 1.1. What happens over 50 timesteps?",
-        options: [
-          "The signal is preserved",
-          "Gradients grow like 1.1⁵⁰ ≈ 117, so they explode",
-          "The gradients vanish",
-          "Behaviour depends on the initialisation only"
-        ],
+        options: ["The signal is preserved exactly", "Gradients grow like 1.1⁵⁰ ≈ 117", "The gradients vanish to zero", "It depends on initialisation only"],
         answer: 1,
         why: "Repeated application raises each eigenvalue to the power of the number of steps, so the largest `|λ|` decides the asymptotic behaviour. Gradient clipping treats the symptom; orthogonal initialisation and gating mechanisms attack the cause by keeping the relevant eigenvalues near 1."
       },
       {
         stem: "A PCA component's sign flipped after a library upgrade. What does that mean?",
-        options: [
-          "The data changed",
-          "Nothing — `v` and `−v` are the same eigendirection, so the sign is an arbitrary choice of representative",
-          "The covariance matrix is no longer positive definite",
-          "The components are no longer orthogonal"
-        ],
+        options: ["The underlying data changed", "Nothing: v and −v are the same direction", "The covariance is no longer definite", "The components are no longer orthogonal"],
         answer: 1,
         why: "An eigenvector defines a direction, not a specific vector, so scale and sign are free. Any code reading meaning from the sign is reading noise. Fix it by forcing the largest-magnitude entry positive at the point components are produced — and note the same applies to ordering when eigenvalues are close."
       }

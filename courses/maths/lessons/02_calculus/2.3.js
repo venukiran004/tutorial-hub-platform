@@ -601,45 +601,25 @@ def test_warmup_bounds_the_early_steps():
     questions: [
       {
         stem: "A 3-class classifier's loss drops smoothly to 1.13 and stays there. Balanced classes. What is happening?",
-        options: [
-          "It has converged to a good solution",
-          "Chance is `ln(3) = 1.0986`, so 1.13 is worse than guessing — the model has learned nothing and this is not an optimiser problem",
-          "The learning rate is too low",
-          "It is overfitting"
-        ],
+        options: ["It has converged to a good solution", "Worse than chance at ln 3: it learned nothing", "The learning rate is too low to progress", "It is overfitting the training set"],
         answer: 1,
         why: "The curve shape looks healthy, which is what makes this dangerous. Comparing to the trivial baseline reframes the diagnosis entirely: the model has settled at the constant-output solution. The next check is whether it can overfit ten samples — if not, the bug is in the model, data or loss."
       },
       {
         stem: "Adam with no warmup: loss is fine at step 1 and explodes at step 2. Why step 2?",
-        options: [
-          "The learning rate is too high",
-          "Bias correction makes step 1 exactly `lr·sign(g)`; at step 2 `v_hat` is estimated from two gradients and can be tiny, so dividing by it gives an enormous step",
-          "The gradients have vanished",
-          "The model weights were initialised badly"
-        ],
+        options: ["The learning rate is simply set too high", "A tiny v_hat from two gradients blows up step 2", "The gradients have already vanished by step 2", "The weights were initialised badly at the start"],
         answer: 1,
         why: "`β₁ = 0.9` adapts in about 10 steps while `β₂ = 0.999` takes about 1000, so the variance estimate is unreliable exactly when the momentum term is not. Warmup keeps steps small through that window; raising `eps`, lowering `β₂`, or RAdam are alternatives."
       },
       {
         stem: "Why can no single learning rate work well on a Hessian with eigenvalues 20 and 1?",
-        options: [
-          "Because the Hessian is not positive definite",
-          "Stability requires `lr < 2/20 = 0.1`, but progress in the flat direction needs a step 20× larger — the constraints are incompatible",
-          "Because gradient descent requires equal curvature",
-          "Because momentum is required for any quadratic"
-        ],
+        options: ["The Hessian is not positive definite", "Stability and the flat direction conflict", "Gradient descent needs equal curvature", "Momentum is required for any quadratic"],
         answer: 1,
         why: "This is the entire motivation for adaptive methods. Plain descent has one scalar for all directions; the problem needs a different step per direction. Adam approximates that by dividing each parameter's step by the root of its recent squared gradient."
       },
       {
         stem: "A team changes the loss from `.mean()` to `.sum()` and training diverges. Why?",
-        options: [
-          "Summing produces numerical overflow",
-          "The gradient scales with batch size, so the effective learning rate is multiplied by the batch size",
-          "The loss is no longer differentiable",
-          "Summing breaks the chain rule"
-        ],
+        options: ["Summing produces numerical overflow", "The effective rate grows with batch size", "The loss is no longer differentiable", "Summing breaks the chain rule"],
         answer: 1,
         why: "Anything that scales the gradient scales the learning rate. Loss reduction, gradient accumulation steps and batch size are all learning-rate changes wearing other names — which is why changing two of them in one release makes each look like the other's fault."
       }

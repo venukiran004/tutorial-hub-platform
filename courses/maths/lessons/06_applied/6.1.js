@@ -813,45 +813,25 @@ def test_secondaries_are_labelled_as_leads():
     questions: [
       {
         stem: "Your 50/50 test delivered 100,800 control and 99,200 treatment users. What do you do?",
-        options: [
-          "Nothing — a 0.8% imbalance is trivial",
-          "Discard the test and fix the assignment pipeline — the SRM p-value is 1.5×10⁻⁵, and whatever caused the imbalance may also affect the outcome",
-          "Reweight the arms to correct for it",
-          "Analyse it but add a caveat"
-        ],
+        options: ["Nothing; a 0.8% imbalance is trivial", "Discard it and fix assignment: SRM", "Reweight the arms to correct for it", "Analyse it, but add a caveat"],
         answer: 1,
         why: "Every cause — bot filtering, redirect latency, crashes in one arm — removes a non-random subset, making it selection bias with a count attached. Reweighting assumes you know the mechanism; if you knew it you would fix it."
       },
       {
         stem: "An experiment shows +24% in week one and +3% in week four. What is the effect?",
-        options: [
-          "The pooled average, about +11%",
-          "Roughly +3% — the pooled figure averages over a decay curve and describes no period at all",
-          "+24%, since that is when the effect was measured cleanly",
-          "It cannot be determined"
-        ],
+        options: ["The pooled average, about +11%", "About +3%, the settled effect", "+24%, measured most cleanly", "It cannot be determined"],
         answer: 1,
         why: "This is a novelty effect: users engage with anything new and the lift decays. A trend test on the daily effects takes one line and reports the slope, both weeks and a projected steady state — new users are usually the cleanest estimate of it."
       },
       {
         stem: "You want to monitor an experiment daily. What is the cost of using a normal confidence interval?",
-        options: [
-          "None, if you only act on the final result",
-          "Checking it ten times gives roughly a 19% error rate — the p-value random-walks and crosses any fixed threshold given enough looks",
-          "It becomes conservative",
-          "Only the last look counts"
-        ],
+        options: ["None, if you act only on the final look", "Ten looks give about a 19% error rate", "It becomes conservative over time", "Only the last look counts anyway"],
         answer: 1,
         why: "Always-valid confidence sequences stay under 5% however often you look, and O'Brien-Fleming alpha spending costs about 3% of power for five planned looks. A rule people route around is worse than a method that permits what they will do anyway."
       },
       {
         stem: "You run a 5% canary rather than a 50/50 split. What does that cost?",
-        options: [
-          "Nothing — the same number of users see the treatment",
-          "5.3× the total traffic for the same power, since the factor is `1/(4k(1−k))`",
-          "Twice the traffic",
-          "It improves power by concentrating the control group"
-        ],
+        options: ["Nothing: the same users see the treatment", "About 5.3× the traffic for equal power", "Twice the traffic for the same power", "It improves power by concentrating control"],
         answer: 1,
         why: "Power depends on the smaller arm, and an extreme split wastes most of the traffic on an already well-measured control. Worth knowing before promising a two-week readout on a cautious rollout."
       }

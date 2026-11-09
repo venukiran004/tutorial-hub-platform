@@ -565,45 +565,25 @@ def test_pca_is_fitted_on_training_data_only():
     questions: [
       {
         stem: "Why does the eigenvector equation appear in PCA?",
-        options: [
-          "It is a computational shortcut chosen for speed",
-          "Maximising `uᵀCu` subject to `‖u‖ = 1` yields `Cu = λu` — the equation is the solution, not an assumption",
-          "Because covariance matrices are always diagonalisable",
-          "It is required to make the components orthogonal"
-        ],
+        options: ["It is a shortcut chosen for speed", "It solves max uᵀCu subject to ‖u‖ = 1", "Covariance matrices are always diagonalisable", "It is needed to make components orthogonal"],
         answer: 1,
         why: "Setting the derivative of the Lagrangian to zero gives exactly the eigenvector equation, and substituting back shows the variance achieved equals the eigenvalue — so the largest eigenvalue wins. PCA is a maximisation whose solution happens to be an eigenproblem."
       },
       {
         stem: "Features are transaction amount (0–50,000) and a binary flag. PCA without scaling gives what?",
-        options: [
-          "Components weighting both features equally",
-          "PC1 is essentially the amount alone, because variance is in squared units and the amount's variance is around 10⁸ times larger",
-          "An error, because the scales are incompatible",
-          "The binary flag dominates as it is bounded"
-        ],
+        options: ["Components weighting both features equally", "PC1 is essentially the amount alone", "An error, as the scales are incompatible", "The bounded binary flag dominates"],
         answer: 1,
         why: "PCA maximises variance, and variance carries the square of the unit. The flag is annihilated for being denominated in 0/1 rather than pounds — which is fatal when small-scale features carry the signal, as binary risk flags usually do."
       },
       {
         stem: "A model's PCA explains 98% of variance yet accuracy dropped. How is that possible?",
-        options: [
-          "The explained variance was computed incorrectly",
-          "PCA is unsupervised — it maximises spread in `X` and never saw the labels, so the predictive direction can sit in the 2% that was discarded",
-          "98% is too low a threshold",
-          "The components need rotating to be useful"
-        ],
+        options: ["The explained variance was computed wrongly", "PCA never saw labels; signal can sit in the 2%", "98% is too low a threshold to keep", "The components need rotating to be useful"],
         answer: 1,
         why: "Explained variance measures reconstruction of `X`, not prediction of `y`. A loud irrelevant feature can hold 99% of the variance while the quiet decisive one is discarded. When the goal is prediction, use a supervised reduction — LDA, feature selection against the label, or partial least squares."
       },
       {
         stem: "Why should PCA not be fitted on the combined train and test sets?",
-        options: [
-          "It is slower on the larger matrix",
-          "Both the centring mean and the components become learned parameters informed by test rows, which leaks information and makes the reported score optimistic",
-          "The components would be unstable",
-          "Test data may have a different number of features"
-        ],
+        options: ["It is slower on the larger matrix", "Test rows shape the mean and axes: a leak", "The components would be unstable", "Test data may have different features"],
         answer: 1,
         why: "The mean is the half people forget — centring test data by a pooled mean is as much a leak as fitting the rotation on it. Fixing it makes the reported number go *down*, which is the correct direction. Putting PCA inside a Pipeline makes the mistake structurally impossible under cross-validation."
       }
