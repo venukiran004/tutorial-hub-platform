@@ -219,14 +219,82 @@ EC.receiveLesson({
         ["ALiBi", "Relative", "Linear logit bias", "0", "Best train-short to test-long", "BLOOM, MPT"]
       ] },
 
-    { t: "exercise", title: "Verify the schemes",
+    { t: "exercise", kind: "Challenge", title: "Verify the schemes", difficulty: "stretch", minutes: 45,
       requirements: [
         "Demonstrate permutation equivariance on your own attention implementation, then add positional encoding and show it breaks.",
         "Implement RoPE and confirm the score for a fixed distance is identical at several absolute positions.",
         "Reproduce the aligned-versus-random decay measurement and explain the difference to someone in two sentences.",
         "Build the ALiBi bias matrix for 8 heads and plot each head's effective attention horizon.",
         "Take a RoPE model, apply Position Interpolation and NTK-aware scaling at 4x, and compare perplexity at the extended length."
-      ] }
+      ],
+      hint: "Implement RoPE as a rotation of each (first-half, second-half) coordinate pair by pos × frequency, in float64. Then the score for a fixed distance should match to every printed digit at any absolute position.",
+      solution: {
+        lang: "python", title: "verify_schemes.py",
+        code: `import torch
+torch.manual_seed(0)
+d = 64
+
+# 1. Attention without positions is permutation-equivariant; adding positions breaks it.
+def attn(x):
+    w = (x @ x.T / d ** 0.5).softmax(-1); return w @ x
+x = torch.randn(6, d); perm = torch.randperm(6)
+print(f"no positions:   max |attn(x[perm]) - attn(x)[perm]| = {(attn(x[perm]) - attn(x)[perm]).abs().max():.2e}")
+P = torch.randn(6, d)
+print(f"with positions: max |attn(x[perm]+P) - (attn(x+P))[perm]| = {(attn(x[perm] + P) - attn(x + P)[perm]).abs().max():.2e}")
+
+# 2. RoPE: the score depends only on the distance.
+def rope(v, pos):
+    half = v.shape[-1] // 2
+    theta = pos / 10000 ** (torch.arange(half, dtype=torch.float64) / half)
+    c, s = torch.cos(theta), torch.sin(theta); a, b = v[..., :half], v[..., half:]
+    return torch.cat([a * c - b * s, a * s + b * c], -1)
+q, k = torch.randn(d, dtype=torch.float64), torch.randn(d, dtype=torch.float64)
+for m in (0, 10, 100, 5000):
+    print(f"positions ({m},{m + 3}): score {float(rope(q, m) @ rope(k, m + 3)):.6f}")
+
+# 3. Decay with distance: aligned q = k against random pairs.
+print("\\ndistance  aligned q=k   random q,k (mean |score|)")
+qs, ks = torch.randn(500, d, dtype=torch.float64), torch.randn(500, d, dtype=torch.float64)
+for dist in (0, 1, 4, 16, 64, 256):
+    al = float(rope(q, 0) @ rope(q, dist)) / float(q @ q)
+    rnd = (rope(qs, 0) * rope(ks, dist)).sum(-1).abs().mean().item()
+    print(f"{dist:8}  {al:11.4f}   {rnd:8.3f}")
+
+# 4. ALiBi slopes and each head's effective horizon (distance where the bias reaches -5).
+heads = 8; slopes = [2 ** (-8 * (i + 1) / heads) for i in range(heads)]
+print("\\nALiBi head  slope      horizon (bias -5)")
+for i, s in enumerate(slopes): print(f"{i:10}  {s:.5f}  {5 / s:10.0f} tokens")
+`,
+        out: `no positions:   max |attn(x[perm]) - attn(x)[perm]| = 7.15e-07
+with positions: max |attn(x[perm]+P) - (attn(x+P))[perm]| = 4.89e+00
+positions (0,3): score -5.729095
+positions (10,13): score -5.729095
+positions (100,103): score -5.729095
+positions (5000,5003): score -5.729095
+
+distance  aligned q=k   random q,k (mean |score|)
+       0       1.0000      6.187
+       1       0.9880      6.130
+       4       0.9028      6.304
+      16       0.8317      6.146
+      64       0.5897      6.018
+     256       0.5492      6.400
+
+ALiBi head  slope      horizon (bias -5)
+         0  0.50000          10 tokens
+         1  0.25000          20 tokens
+         2  0.12500          40 tokens
+         3  0.06250          80 tokens
+         4  0.03125         160 tokens
+         5  0.01562         320 tokens
+         6  0.00781         640 tokens
+         7  0.00391        1280 tokens`,
+        notes: [
+          { t: "p", text: "Without positions, attention was permutation-equivariant to 7e-7. Adding a fixed positional matrix broke that by 4.9, which is the whole purpose of positional information. In float64 the RoPE score for distance 3 was identical to six decimals at absolute positions 0, 10, 100 and 5000. In float32 the lesson saw drift in the sixth decimal at 5000, which is rounding error, not a failure of the identity." },
+          { t: "p", text: "The decay is a property of aligned vectors. When query and key point the same way, the normalised score falls from 1.0 to 0.55 by distance 256, because the high-frequency pairs rotate out of phase. For random query–key pairs the average magnitude stays flat at about 6.2: no decay at all. Long-range decay in RoPE is a tendency on correlated content, not a built-in penalty." },
+          { t: "p", text: "ALiBi's geometric slopes give the 8 heads horizons from 10 to 1,280 tokens, measured as the distance where the bias reaches −5. A few heads see locally and a few see far, with no learned parameters. Step 5 needs a RoPE language model and long evaluation text, so it is not run here." }
+        ]
+      } }
   ],
 
   takeaways: [

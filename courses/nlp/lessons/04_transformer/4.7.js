@@ -151,14 +151,87 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "The missing final norm",
       body: [{ t: "p", text: "In Post-LN every block ends with a normalisation, so the stack output is normalised by construction. In Pre-LN it is not — the last thing that happens is a residual addition. Every real Pre-LN implementation therefore applies a final `LayerNorm` after the loop, and if you write the stack yourself it is the single easiest thing to leave out. The symptom is a model that trains, slowly and badly, with a loss that plateaus higher than it should. Check for it before you check anything else." }] },
 
-    { t: "exercise", title: "Build and instrument a stack",
+    { t: "exercise", kind: "Challenge", title: "Build and instrument a stack", difficulty: "stretch", minutes: 50,
       requirements: [
         "Assemble an encoder block from your own MultiHeadAttention and confirm input and output shapes match exactly.",
         "Count parameters per sublayer and reproduce the 33/67 attention-to-FFN split.",
         "Stack 24 blocks and plot residual-stream RMS against depth. Compare Pre-LN with Post-LN.",
         "Measure each block's relative contribution and see whether a downward trend appears at greater depth than 12.",
         "Build a decoder block, feed it a 5-token target and a 20-token source, and assert the cross-attention weights are (5, 20) with rows summing to 1."
-      ] }
+      ],
+      hint: "Make cross-attention the same module as self-attention, called with a separate memory tensor for keys and values: queries come from the decoder, keys and values from the encoder output.",
+      solution: {
+        lang: "python", title: "build_stack.py",
+        code: `import torch, torch.nn as nn
+torch.manual_seed(0)
+d, h, dff = 512, 8, 2048
+
+class MHA(nn.Module):
+    def __init__(s):
+        super().__init__(); s.q, s.k, s.v, s.o = (nn.Linear(d, d) for _ in range(4))
+    def forward(s, x, mem=None, causal=False):
+        mem = x if mem is None else mem; B, T, _ = x.shape; S = mem.shape[1]
+        split = lambda t, n: t.view(B, n, h, d // h).transpose(1, 2)
+        q, k, v = split(s.q(x), T), split(s.k(mem), S), split(s.v(mem), S)
+        sc = q @ k.transpose(-1, -2) / (d // h) ** 0.5
+        if causal: sc = sc.masked_fill(~torch.ones(T, S, dtype=torch.bool).tril(), float("-inf"))
+        w = sc.softmax(-1); s.last = w
+        return s.o((w @ v).transpose(1, 2).reshape(B, T, d))
+
+class Encoder(nn.Module):
+    def __init__(s):
+        super().__init__(); s.att, s.n1, s.n2 = MHA(), nn.LayerNorm(d), nn.LayerNorm(d)
+        s.ff = nn.Sequential(nn.Linear(d, dff), nn.ReLU(), nn.Linear(dff, d))
+    def forward(s, x): x = x + s.att(s.n1(x)); return x + s.ff(s.n2(x))
+
+class Decoder(Encoder):
+    def __init__(s):
+        super().__init__(); s.cross, s.n3 = MHA(), nn.LayerNorm(d)
+    def forward(s, x, mem):
+        x = x + s.att(s.n1(x), causal=True); x = x + s.cross(s.n3(x), mem); return x + s.ff(s.n2(x))
+
+n = lambda m: sum(p.numel() for p in m.parameters())
+enc = Encoder(); x = torch.randn(2, 12, d)
+print("encoder in", tuple(x.shape), "out", tuple(enc(x).shape))
+tot = n(enc)
+print(f"encoder block {tot:,}: attention {n(enc.att) / tot:.1%}, FFN {n(enc.ff) / tot:.1%}, norms {(n(enc.n1) + n(enc.n2)) / tot:.2%}")
+dec = Decoder()
+print(f"decoder block {n(dec):,} = encoder + cross-attention {n(dec.cross):,} + norm {n(dec.n3):,}; ratio {n(dec) / tot:.2f}x")
+
+# 3-4. 24 Pre-LN encoder blocks: residual RMS and each block's relative contribution.
+stack = nn.ModuleList(Encoder() for _ in range(24)); hcur = torch.randn(2, 32, d)
+print("\\nblock  residual RMS  relative update ||f(x)|| / ||x||")
+with torch.no_grad():
+    for i, b in enumerate(stack, 1):
+        new = b(hcur); rel = (new - hcur).norm() / hcur.norm(); hcur = new
+        if i in (1, 2, 4, 8, 12, 16, 20, 24): print(f"{i:5}  {hcur.pow(2).mean().sqrt():12.3f}  {rel:10.3f}")
+
+# 5. Cross-attention shape: 5 target positions attend over 20 source positions.
+tgt, src = torch.randn(1, 5, d), torch.randn(1, 20, d)
+dec(tgt, src); W = dec.cross.last[0]
+print(f"\\ncross-attention weights per head: {tuple(W.shape[1:])}, rows sum to 1: {torch.allclose(W.sum(-1), torch.ones(h, 5))}")
+`,
+        out: `encoder in (2, 12, 512) out (2, 12, 512)
+encoder block 3,152,384: attention 33.3%, FFN 66.6%, norms 0.06%
+decoder block 4,204,032 = encoder + cross-attention 1,050,624 + norm 1,024; ratio 1.33x
+
+block  residual RMS  relative update ||f(x)|| / ||x||
+    1         1.025       0.245
+    2         1.056       0.248
+    4         1.123       0.242
+    8         1.254       0.230
+   12         1.387       0.219
+   16         1.515       0.206
+   20         1.648       0.191
+   24         1.794       0.188
+
+cross-attention weights per head: (5, 20), rows sum to 1: True`,
+        notes: [
+          { t: "p", text: "The hand-built block reproduces the lesson's counts to the parameter: an encoder block of 3,152,384 split 33.3% attention, 66.6% FFN and 0.06% norms. The decoder adds 1,050,624 for cross-attention plus 1,024 for its third norm, 1.33× in total. Shapes match in and out, which is what allows blocks to be stacked to any depth." },
+          { t: "p", text: "Through 24 Pre-LN blocks the residual RMS rose from 1.03 to 1.79. Each block's relative update fell steadily from 0.25 to 0.19, so the downward trend does continue past 12. Later blocks change a larger stream by a smaller fraction. That is one reason deep Pre-LN models can have redundant late layers." },
+          { t: "p", text: "With a 5-token target and a 20-token source, the cross-attention weights are 5×20 per head and every row sums to 1. Each target position distributes its attention over the whole source, so the output length follows the target, not the source." }
+        ]
+      } }
   ],
 
   takeaways: [

@@ -169,14 +169,76 @@ EC.receiveLesson({
     { t: "callout", kind: "trap", title: "Sinusoidal extrapolation is a theoretical property, not a practical one",
       body: [{ t: "p", text: "The formula computes happily at position 4999 — `|PE[4999]| = 16.0000`, identical to `|PE[10]|` — where a learned table simply has no row 4999 and raises an index error. That is the standard argument for the sinusoidal form. But a model *trained* only on short sequences degrades badly when run on long ones regardless, because the attention patterns above it never saw those positional vectors and have no reason to handle them well. Well-defined input is not the same as useful behaviour. Lesson 4.9 covers what actually works for length extrapolation — ALiBi, RoPE with scaling, and position interpolation." }] },
 
-    { t: "exercise", title: "Probe the encoding",
+    { t: "exercise", kind: "Challenge", title: "Probe the encoding", difficulty: "core", minutes: 35,
       requirements: [
         "Build the encoding and plot it as a heatmap of position against dimension. Identify the fast and slow dimensions visually.",
         "Verify the rotation property at five different positions for three different offsets.",
         "Confirm the norm is constant across positions, and derive why it equals sqrt(d_model / 2).",
         "Extract a real model's learned positional embeddings and compute the same similarity-versus-distance curve. Compare its shape with the sinusoidal one.",
         "Replace sinusoidal with learned embeddings in a small model, train both, and compare validation loss at the training length and beyond it."
-      ] }
+      ],
+      hint: "Each sin/cos pair at frequency w rotates by the angle w·k when the position moves by k. Build that block-diagonal rotation once, and apply it to rows at several starting positions.",
+      solution: {
+        lang: "python", title: "probe_encoding.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import numpy as np, torch
+from transformers import AutoModel
+
+def pe(n, d):
+    pos = np.arange(n)[:, None]; i = np.arange(0, d, 2)[None, :]
+    ang = pos / 10000 ** (i / d)
+    P = np.zeros((n, d)); P[:, 0::2] = np.sin(ang); P[:, 1::2] = np.cos(ang)
+    return P
+d = 512; P = pe(2048, d)
+
+# 1. Fast and slow dimensions: how many sign changes each dimension makes over 2,048 positions.
+flips = (np.diff(np.sign(P), axis=0) != 0).sum(0)
+print("sign changes over 2048 positions, dims 0,2,64,256,510:", [int(flips[k]) for k in (0, 2, 64, 256, 510)])
+
+# 2. PE[pos + k] is the same rotation of PE[pos] at every pos.
+def rot(k):
+    w = 1 / 10000 ** (np.arange(0, d, 2) / d); M = np.zeros((d, d))
+    for j, wj in enumerate(w):
+        c, s = np.cos(wj * k), np.sin(wj * k)
+        # row vector [sin a, cos a] @ M = [sin(a+b), cos(a+b)]
+        M[2 * j:2 * j + 2, 2 * j:2 * j + 2] = [[c, -s], [s, c]]
+    return M
+for k in (1, 7, 100):
+    R = rot(k); err = max(np.abs(P[p] @ R - P[p + k]).max() for p in (0, 10, 50, 500, 1500))
+    print(f"offset {k:3}: max |PE[p]·R_k - PE[p+k]| over five positions = {err:.2e}")
+
+# 3. Constant norm: each sin/cos pair contributes exactly 1.
+norms = np.linalg.norm(P, axis=1)
+print(f"norm min {norms.min():.4f} max {norms.max():.4f}; sqrt(d/2) = {np.sqrt(d / 2):.4f}")
+
+# 4. Similarity against distance: sinusoidal against BERT's learned position embeddings.
+L = AutoModel.from_pretrained("bert-base-uncased").embeddings.position_embeddings.weight.detach().numpy()
+cos = lambda a, b: (a * b).sum(-1) / np.linalg.norm(a, axis=-1) / np.linalg.norm(b, axis=-1)
+print("\\ndistance  sinusoidal  BERT learned")
+for k in (1, 2, 4, 8, 16, 64, 256):
+    print(f"{k:8}  {cos(P[:512 - k], P[k:512]).mean():10.4f}  {cos(L[:512 - k], L[k:512]).mean():12.4f}")
+`,
+        out: `sign changes over 2048 positions, dims 0,2,64,256,510: [652, 629, 207, 7, 1]
+offset   1: max |PE[p]·R_k - PE[p+k]| over five positions = 1.31e-13
+offset   7: max |PE[p]·R_k - PE[p+k]| over five positions = 1.12e-13
+offset 100: max |PE[p]·R_k - PE[p+k]| over five positions = 2.03e-13
+norm min 16.0000 max 16.0000; sqrt(d/2) = 16.0000
+
+distance  sinusoidal  BERT learned
+       1      0.9731        0.6428
+       2      0.9052        0.5178
+       4      0.7683        0.4046
+       8      0.7225        0.2030
+      16      0.6310        0.1661
+      64      0.4854        0.0325
+     256      0.3135       -0.0331`,
+        notes: [
+          { t: "p", text: "Counting sign changes gives the heatmap's message without a plot. Dimension 0 flips 652 times over 2,048 positions, while dimension 510 flips once. Low dimensions are the fast digits of the counter and high dimensions the slow ones." },
+          { t: "p", text: "The rotation property holds to 1e-13 at five starting positions for offsets 1, 7 and 100. A first attempt that wrote the 2×2 block transposed gave errors near 2, so if your check fails by about that much, swap the sign of the sine terms. The norm is exactly sqrt(256) = 16 at every position, because each of the 256 sin/cos pairs contributes sin² + cos² = 1." },
+          { t: "p", text: "BERT's learned position embeddings decay much faster than the sinusoid: cosine 0.64 at distance 1 and about zero by 64, against 0.97 and 0.49 for the sinusoid. The learned table encodes 'nearby' over a few tokens and little beyond. Step 5, training both schemes and testing beyond the training length, needs a training run and is not executed here. Expect the learned embeddings to have no rows past their maximum length." }
+        ]
+      } }
   ],
 
   takeaways: [

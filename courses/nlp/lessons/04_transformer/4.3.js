@@ -47,7 +47,7 @@ EC.receiveLesson({
 
     { t: "h2", n: "02", text: "The worked example", id: "worked" },
 
-    { t: "p", text: "Three tokens, `d_k = d_v = 4`. The matrices are the, and every step below was recomputed rather than copied." },
+    { t: "p", text: "Three tokens, `d_k = d_v = 4`. The matrices are below, and every step was recomputed rather than copied from the commonly published version." },
 
     { t: "out", text:
 "Q = [[1.0, 0.5, 0.3, 0.2]   The     K = [[0.9, 0.4, 0.2, 0.3]\n     [0.2, 1.0, 0.5, 0.8]   cat          [0.3, 0.8, 0.6, 0.7]\n     [0.5, 0.3, 1.0, 0.1]]  sat          [0.4, 0.2, 0.9, 0.2]]\n\nV = [[1.0, 0.0, 0.5, 0.2]   value of The\n     [0.2, 0.8, 0.1, 0.9]   value of cat\n     [0.5, 0.3, 0.7, 0.4]]  value of sat" },
@@ -151,14 +151,78 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Attention is permutation-equivariant",
       body: [{ t: "p", text: "Nothing in the five steps refers to position. Shuffle the input rows and the output rows shuffle identically — the operation cannot tell *the cat sat* from *sat cat the*. That is precisely why positional encoding exists and why it is added to the input rather than being part of attention: the mechanism is deliberately order-blind, and order is injected into the representation beforehand. Lesson 4.5 takes that apart." }] },
 
-    { t: "exercise", title: "Rebuild it and break it",
+    { t: "exercise", kind: "Challenge", title: "Rebuild it and break it", difficulty: "core", minutes: 35,
       requirements: [
         "Implement scaled dot-product attention in twelve lines of NumPy and check it against `torch.nn.functional.scaled_dot_product_attention`.",
         "Recompute the output rows yourself and confirm which entries are wrong.",
         "Sweep d_k from 4 to 1024, measuring score variance, and confirm it tracks d_k.",
         "Remove the scaling and measure the entropy of an untrained attention layer's weights at several d_k values.",
         "Shuffle the rows of X, run attention, and verify the output rows are the same set in shuffled order."
-      ] }
+      ],
+      hint: "Subtract the row maximum before exponentiating in the softmax. It changes nothing mathematically and prevents overflow when the unscaled scores reach the hundreds.",
+      solution: {
+        lang: "python", title: "attention_from_scratch.py",
+        code: `import numpy as np, torch
+import torch.nn.functional as F
+rng = np.random.default_rng(0)
+
+# 1. Scaled dot-product attention in NumPy, checked against PyTorch.
+def attention(Q, K, V, mask=None):
+    s = Q @ K.T / np.sqrt(K.shape[-1])
+    if mask is not None: s = np.where(mask, s, -np.inf)
+    w = np.exp(s - s.max(-1, keepdims=True)); w /= w.sum(-1, keepdims=True)
+    return w @ V, w
+Q, K, V = rng.normal(size=(3, 5, 16))
+ours, _ = attention(Q, K, V)
+ref = F.scaled_dot_product_attention(*(torch.tensor(x)[None] for x in (Q, K, V)))[0].numpy()
+print(f"max |ours - torch| = {np.abs(ours - ref).max():.2e}")
+
+# 2. The lesson's worked example, recomputed against the commonly published output.
+Qw = np.array([[1.0, 0.5, 0.3, 0.2], [0.2, 1.0, 0.5, 0.8], [0.5, 0.3, 1.0, 0.1]])
+Kw = np.array([[0.9, 0.4, 0.2, 0.3], [0.3, 0.8, 0.6, 0.7], [0.4, 0.2, 0.9, 0.2]])
+Vw = np.array([[1.0, 0.0, 0.5, 0.2], [0.2, 0.8, 0.1, 0.9], [0.5, 0.3, 0.7, 0.4]])
+published = np.array([[0.585, 0.356, 0.427, 0.493], [0.487, 0.428, 0.353, 0.560], [0.548, 0.380, 0.439, 0.490]])
+out, _ = attention(Qw, Kw, Vw)
+for tok, row, pub in zip(["The", "cat", "sat"], out, published):
+    big = [i for i in range(4) if abs(row[i] - pub[i]) > 0.01]
+    small = [i for i in range(4) if 0.0006 < abs(row[i] - pub[i]) <= 0.01]
+    print(f"{tok}: {np.round(row, 4)}  published {pub}  wrong: {big or '-'}  off in 3rd decimal: {small or '-'}")
+
+# 3. Score variance tracks d_k.
+print("\\n d_k   var(q·k)   unscaled max-p  entropy   scaled max-p  entropy")
+for dk in (4, 16, 64, 256, 1024):
+    q, k = rng.normal(size=(2, 2000, dk))
+    s = (q[:, None, :] * k[None, :32, :]).sum(-1)
+    def stats(sc):
+        p = np.exp(sc - sc.max(1, keepdims=True)); p /= p.sum(1, keepdims=True)
+        return p.max(1).mean(), (-(p * np.log(p + 1e-12)).sum(1)).mean()
+    (m0, e0), (m1, e1) = stats(s), stats(s / np.sqrt(dk))
+    print(f"{dk:5} {s.var():9.1f}   {m0:13.4f} {e0:8.4f}   {m1:11.4f} {e1:8.4f}")
+
+# 5. Permutation equivariance: shuffling rows shuffles outputs the same way.
+perm = rng.permutation(5)
+a, _ = attention(Q, K, V); b, _ = attention(Q[perm], K[perm], V[perm])
+print(f"\\nmax |attn(shuffled) - shuffled(attn)| = {np.abs(b - a[perm]).max():.2e}")
+`,
+        out: `max |ours - torch| = 4.44e-16
+The: [0.584  0.356  0.4268 0.4928]  published [0.585 0.356 0.427 0.493]  wrong: -  off in 3rd decimal: [0]
+cat: [0.5151 0.4282 0.385  0.557 ]  published [0.487 0.428 0.353 0.56 ]  wrong: [0, 2]  off in 3rd decimal: [3]
+sat: [0.5473 0.3805 0.4362 0.5103]  published [0.548 0.38  0.439 0.49 ]  wrong: [3]  off in 3rd decimal: [0, 2]
+
+ d_k   var(q·k)   unscaled max-p  entropy   scaled max-p  entropy
+    4       4.4          0.3822   2.1484        0.1794   2.9724
+   16      18.2          0.6552   1.0594        0.1776   2.9607
+   64      63.1          0.8253   0.4813        0.1646   3.0179
+  256     256.2          0.9038   0.2445        0.1645   3.0131
+ 1024    1025.1          0.9603   0.1011        0.1667   3.0113
+
+max |attn(shuffled) - shuffled(attn)| = 4.44e-16`,
+        notes: [
+          { t: "p", text: "The NumPy implementation matches PyTorch's fused kernel to 4e-16, which is double-precision noise. Recomputing the worked example confirms the lesson's two large errors in 'cat' and the one in 'sat'. It also finds three entries off in the third decimal (The[0], cat[3], sat[2]), which look like rounding mistakes in the published table rather than wrong arithmetic." },
+          { t: "p", text: "Score variance tracks d_k almost exactly (63.1 at 64, 1025 at 1024). Without scaling, the attention distribution sharpens with d_k: mean maximum weight 0.38 at d_k = 4 and 0.96 at 1024, with entropy falling from 2.1 to 0.1. With scaling, all five settings sit near 0.17 and entropy 3.0. Dividing by sqrt(d_k) makes the starting sharpness independent of head size, which is the point of the scale." },
+          { t: "p", text: "Shuffling the input rows shuffled the output rows identically, to 4e-16. Attention on its own does not know token order, which is why positional information has to be added." }
+        ]
+      } }
   ],
 
   takeaways: [

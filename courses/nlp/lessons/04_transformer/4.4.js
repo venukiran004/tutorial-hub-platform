@@ -136,14 +136,86 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "Layer 2 head 0 has entropy 0.0220",
       body: [{ t: "p", text: "Out of a possible 2.64 at 14 tokens, that is essentially a deterministic pointer — it attends to one position and nothing else, with a mean offset of −0.07, meaning roughly to itself. Early layers do this kind of sharp, local, positional work; later layers drift toward the `[SEP]` sink, from 7.6% at layer 0 to 86.4% at layer 11. This echoes what lesson 3.6 measured about sense separation peaking mid-stack: the interesting representational work happens in the middle, and the top layers specialise toward the pretraining objective." }] },
 
-    { t: "exercise", title: "Probe your own model's heads",
+    { t: "exercise", kind: "Challenge", title: "Probe your own model's heads", difficulty: "stretch", minutes: 50,
       requirements: [
         "Run a sentence through a model with `output_attentions=True` and compute the [SEP] mass for all heads. Rank them.",
         "Search all heads for the strongest previous-token, next-token and self-attention behaviours.",
         "Compute the pairwise cosine between heads in one layer and find the most and least similar pair.",
         "Zero out a single head's output and measure the change in the model's predictions. Find a head that can be removed for free.",
         "Repeat the previous-token search on a decoder-only model and compare what you find against BERT."
-      ] }
+      ],
+      hint: "Load the model with `attn_implementation=\"eager\"` so it returns attention weights, and ablate a head with a forward pre-hook on the attention output projection that zeroes that head's 64-wide slice.",
+      solution: {
+        lang: "python", title: "probe_heads.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import AutoTokenizer, AutoModel, AutoModelForMaskedLM, GPT2LMHeadModel, GPT2TokenizerFast
+
+tok = AutoTokenizer.from_pretrained("bert-base-uncased")
+bert = AutoModel.from_pretrained("bert-base-uncased", attn_implementation="eager").eval()
+text = "The engineer who fixed the server said the outage was caused by a full disk."
+enc = tok(text, return_tensors="pt")
+with torch.no_grad(): A = torch.stack(bert(**enc, output_attentions=True).attentions)[:, 0]  # (layer, head, q, k)
+n = A.shape[-1]; sep = n - 1
+
+# 1. [SEP] mass per head, ranked.
+mass = A[..., sep].mean(-1)
+top = torch.topk(mass.flatten(), 5)
+print("highest [SEP] mass:", [(f"L{i // 12}H{i % 12}", round(v.item(), 3)) for v, i in zip(top.values, top.indices)])
+
+# 2. Strongest previous-token, next-token and self heads (ignoring [CLS] and [SEP] rows).
+inner = slice(1, n - 1)
+def diag(k): return torch.stack([A[..., i, i + k] for i in range(1, n - 1) if 0 <= i + k < n], -1).mean(-1)
+for name, k in (("previous-token", -1), ("next-token", 1), ("self", 0)):
+    s = diag(k); i = int(s.argmax())
+    print(f"{name:15} L{i // 12}H{i % 12}: {s.flatten()[i]:.4f}")
+
+# 3. Most and least similar heads in layer 3.
+L3 = A[3].reshape(12, -1); C = torch.nn.functional.cosine_similarity(L3[:, None], L3[None], dim=-1)
+iu = torch.triu_indices(12, 12, 1); pairs = C[iu[0], iu[1]]
+hi, lo = int(pairs.argmax()), int(pairs.argmin())
+print(f"layer 3: most similar H{iu[0, hi]}/H{iu[1, hi]} {pairs[hi]:.3f}, least similar H{iu[0, lo]}/H{iu[1, lo]} {pairs[lo]:.3f}")
+
+# 4. Ablate one head at a time by zeroing its slice before the output projection.
+#    (\`head_mask\` is accepted and ignored by the current BERT implementation, so a hook does it.)
+mlm = AutoModelForMaskedLM.from_pretrained("bert-base-uncased", attn_implementation="eager").eval()
+m_enc = tok("The outage was caused by a full [MASK].", return_tensors="pt"); mi = int((m_enc["input_ids"][0] == tok.mask_token_id).nonzero())
+with torch.no_grad(): base = mlm(**m_enc).logits[0, mi].softmax(-1)
+deltas = []
+for L in range(12):
+    dense = mlm.bert.encoder.layer[L].attention.output.dense
+    for H in range(12):
+        def zero(mod, args, H=H):
+            x = args[0].clone(); x[..., H * 64:(H + 1) * 64] = 0; return (x,)
+        h = dense.register_forward_pre_hook(zero)
+        with torch.no_grad(): p = mlm(**m_enc).logits[0, mi].softmax(-1)
+        h.remove()
+        deltas.append((0.5 * (p - base).abs().sum().item(), L, H))
+deltas.sort()
+print(f"top prediction: {tok.decode(base.argmax())!r}; free heads (total variation < 0.005): {sum(d < 0.005 for d, _, _ in deltas)} of 144")
+print(f"cheapest L{deltas[0][1]}H{deltas[0][2]} {deltas[0][0]:.5f}, costliest L{deltas[-1][1]}H{deltas[-1][2]} {deltas[-1][0]:.4f}")
+
+# 5. Previous-token heads in GPT-2.
+gt = GPT2TokenizerFast.from_pretrained("gpt2"); g = GPT2LMHeadModel.from_pretrained("gpt2", attn_implementation="eager").eval()
+with torch.no_grad(): GA = torch.stack(g(**gt(text, return_tensors="pt"), output_attentions=True).attentions)[:, 0]
+m = GA.shape[-1]; prev = torch.stack([GA[..., i, i - 1] for i in range(1, m)], -1).mean(-1)
+i = int(prev.argmax()); print(f"GPT-2 strongest previous-token head L{i // 12}H{i % 12}: {prev.flatten()[i]:.4f}; heads above 0.5: {int((prev > 0.5).sum())}")
+`,
+        out: `highest [SEP] mass: [('L7H6', 0.891), ('L7H7', 0.886), ('L8H2', 0.885), ('L7H3', 0.858), ('L8H6', 0.856)]
+previous-token  L3H5: 0.8022
+next-token      L2H9: 0.9997
+self            L2H6: 0.4935
+layer 3: most similar H2/H6 0.847, least similar H2/H5 0.174
+top prediction: 'moon'; free heads (total variation < 0.005): 0 of 144
+cheapest L11H2 0.00518, costliest L9H5 0.3299
+GPT-2 strongest previous-token head L4H11: 0.9998; heads above 0.5: 2`,
+        notes: [
+          { t: "p", text: "The heads with the most [SEP] mass are in layers 7–8, sending 86–89% of their weight there. The clean previous-token head (L3H5, 0.80) is the one the lesson found. L2H9 sends 0.9997 of its weight to the next token, which makes it close to a fixed copy operation." },
+          { t: "p", text: "`head_mask` was accepted and silently ignored by this version of the BERT implementation: every head 'ablated' for free, with a total-variation change of exactly zero. Zeroing the head's slice before the output projection is the reliable method, and with it no head is free. The cheapest (L11H2) moved the prediction by 0.005 and the costliest (L9H5) by 0.33. If an ablation shows that everything is free, check that the ablation took effect before concluding anything." },
+          { t: "p", text: "GPT-2 also has strong previous-token heads, with L4H11 at 0.9998, but only two heads above 0.5. In a decoder the causal mask already makes the previous token one of few options early in the sequence, so compare position-matched rows rather than the raw average." }
+        ]
+      } }
   ],
 
   takeaways: [

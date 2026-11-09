@@ -163,14 +163,110 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Larger vocabulary buys shorter sequences and costs embedding parameters",
       body: [{ t: "p", text: "A bigger vocabulary means fewer tokens per sentence — cheaper inference, more content per context window, better coverage of other languages. It also means a larger embedding matrix at `vocab_size × d_model`, and each token appears less often in training so its embedding is learned from less evidence. At LLaMA 3's 128,000 by 4096, the embedding matrix alone is 524M parameters, and it is typically tied with the output projection to avoid paying twice. The trend is firmly upward — 30k in 2018, 128k now — because context windows grew and multilingual coverage became a priority, and because the embedding cost is a shrinking fraction of a model that is otherwise getting much larger." }] },
 
-    { t: "exercise", title: "Train and measure a tokeniser",
+    { t: "exercise", kind: "Challenge", title: "Train and measure a tokeniser", difficulty: "stretch", minutes: 50,
       requirements: [
         "Implement BPE training and confirm the merge order is strictly by frequency. Encode a word not in the corpus and trace every rule application.",
         "Change the merge order deliberately and find an input whose tokenisation changes as a result.",
         "Measure tokens per character for your own corpus across three tokenisers and pick the cheapest.",
         "If you serve non-English text, compute token cost per language and translate it into money per request.",
         "Tokenise the same numbers with different tokenisers and find one that splits digits in a way that would hurt arithmetic."
-      ] }
+      ],
+      hint: "Count pairs weighted by word frequency, merge the single most frequent pair everywhere, record it, and repeat. Encoding applies the recorded rules in the same order; that order is the trained tokeniser.",
+      solution: {
+        lang: "python", title: "bpe_from_scratch.py",
+        code: `import os, collections
+os.environ["HF_HUB_OFFLINE"] = "1"
+from transformers import AutoTokenizer
+from docs import DOCS
+
+# 1. BPE training from scratch, strictly greedy by pair frequency.
+corpus = {"low": 5, "lower": 2, "newest": 6, "widest": 3, "new": 4, "newer": 3}
+def train(words, n_merges):
+    vocab = {tuple(w) + ("</w>",): c for w, c in words.items()}; rules = []
+    for _ in range(n_merges):
+        pairs = collections.Counter()
+        for sym, c in vocab.items():
+            for a, b in zip(sym, sym[1:]): pairs[a, b] += c
+        (a, b), f = max(pairs.items(), key=lambda kv: (kv[1], kv[0]))
+        rules.append(((a, b), f)); new = {}
+        for sym, c in vocab.items():
+            out, i = [], 0
+            while i < len(sym):
+                if i + 1 < len(sym) and (sym[i], sym[i + 1]) == (a, b): out.append(a + b); i += 2
+                else: out.append(sym[i]); i += 1
+            new[tuple(out)] = c
+        vocab = new
+    return rules
+def encode(word, rules, trace=False):
+    sym = list(word) + ["</w>"]
+    for (a, b), _ in rules:
+        i, changed = 0, False
+        while i < len(sym) - 1:
+            if (sym[i], sym[i + 1]) == (a, b): sym[i:i + 2] = [a + b]; changed = True
+            else: i += 1
+        if trace and changed: print(f"   apply {a}+{b}: {sym}")
+    return sym
+rules = train(corpus, 10)
+print("merge order (pair, frequency):", [(a + b, f) for (a, b), f in rules])
+assert all(rules[i][1] >= rules[i + 1][1] for i in range(len(rules) - 1)), "not monotone"
+print("encoding the unseen word 'lowest':"); encode("lowest", rules, trace=True)
+
+# 2. Reorder two merges and find an input whose tokens change.
+swapped = rules[:]; swapped[2], swapped[5] = swapped[5], swapped[2]
+for w in ["newest", "lowest", "widen", "newer", "lower"]:
+    a, b = encode(w, rules), encode(w, swapped)
+    if a != b: print(f"merge order matters: {w!r} {a} vs {b}")
+
+# 3-4. Tokens per character across tokenisers and languages.
+toks = {n: AutoTokenizer.from_pretrained(n) for n in ("gpt2", "bert-base-uncased", "BAAI/bge-small-en-v1.5", "t5-small")}
+text = " ".join(DOCS)
+print("\\ntokens per 100 characters on the English corpus:")
+for n, t in toks.items(): print(f"  {n:24} {100 * len(t(text, add_special_tokens=False)['input_ids']) / len(text):5.1f}")
+samples = {"English": "The meeting has been moved to Thursday afternoon.",
+           "French": "La réunion a été déplacée à jeudi après-midi.",
+           "Hindi": "बैठक गुरुवार दोपहर तक के लिए टाल दी गई है।",
+           "Japanese": "会議は木曜日の午後に変更されました。"}
+price = 2.50 / 1e6       # dollars per input token, an illustrative rate
+print("\\nGPT-2 tokenizer cost by language (same sentence):")
+base = len(toks["gpt2"](samples["English"])["input_ids"])
+for lang, s in samples.items():
+    n = len(toks["gpt2"](s)["input_ids"])
+    print(f"  {lang:9} {n:3} tokens  {n / base:4.1f}x English  \${n * price * 1e6:.2f} per million such requests")
+
+# 5. How numbers split.
+for num in ("1234567", "2025", "3.14159", "1000000"):
+    print(f"{num:8} gpt2 {toks['gpt2'].tokenize(num)}   t5 {toks['t5-small'].tokenize(num)}")
+`,
+        out: `merge order (pair, frequency): [('ne', 13), ('new', 13), ('t</w>', 9), ('st</w>', 9), ('newe', 9), ('ow', 7), ('low', 7), ('newest</w>', 6), ('r</w>', 5), ('low</w>', 5)]
+encoding the unseen word 'lowest':
+   apply t+</w>: ['l', 'o', 'w', 'e', 's', 't</w>']
+   apply s+t</w>: ['l', 'o', 'w', 'e', 'st</w>']
+   apply o+w: ['l', 'ow', 'e', 'st</w>']
+   apply l+ow: ['low', 'e', 'st</w>']
+merge order matters: 'newest' ['newest</w>'] vs ['newe', 's', 't</w>']
+merge order matters: 'lowest' ['low', 'e', 'st</w>'] vs ['low', 'e', 's', 't</w>']
+
+tokens per 100 characters on the English corpus:
+  gpt2                      19.3
+  bert-base-uncased         19.6
+  BAAI/bge-small-en-v1.5    19.6
+  t5-small                  20.8
+
+GPT-2 tokenizer cost by language (same sentence):
+  English     9 tokens   1.0x English  $22.50 per million such requests
+  French     21 tokens   2.3x English  $52.50 per million such requests
+  Hindi      64 tokens   7.1x English  $160.00 per million such requests
+  Japanese   30 tokens   3.3x English  $75.00 per million such requests
+1234567  gpt2 ['123', '45', '67']   t5 ['▁', '123', '45', '67']
+2025     gpt2 ['20', '25']   t5 ['▁20', '25']
+3.14159  gpt2 ['3', '.', '14', '159']   t5 ['▁3.', '14', '159']
+1000000  gpt2 ['1', '000000']   t5 ['▁1000', '000']`,
+        notes: [
+          { t: "p", text: "The merge frequencies are non-increasing (13, 13, 9, 9, 9, 7 and so on), which is what strict greedy guarantees and what the assertion checks. The unseen word 'lowest' is still encoded, as three tokens, from rules learnt on 'low' and 'newest'. Subword tokenisation never returns an unknown token." },
+          { t: "p", text: "Swapping two rules changed the encoding of both 'newest' (one token against three) and 'lowest'. The ordered rule list is the model: two tokenisers with the same merges in a different order are different tokenisers." },
+          { t: "p", text: "On English text the four tokenisers cost almost the same, 19–21 tokens per 100 characters. Across languages GPT-2's tokeniser is very uneven: the same sentence costs 2.3× in French, 3.3× in Japanese and 7.1× in Hindi. At the illustrative price, Hindi users cost about seven times as much per request. Numbers split irregularly, '1234567' as 123|45|67 and '1000000' as 1|000000, so digit positions are not aligned across numbers. That is one reason arithmetic is hard for such models." }
+        ]
+      } }
   ],
 
   takeaways: [

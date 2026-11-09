@@ -137,14 +137,74 @@ EC.receiveLesson({
     { t: "callout", kind: "tradeoff", title: "Parameters are the wrong headline number",
       body: [{ t: "p", text: "Chinchilla's finding was that most large models of its era were substantially *under-trained* for their size — the compute would have been better spent on more tokens through a smaller model. Since then the trend has run toward smaller models trained far longer, because inference cost scales with parameters and is paid on every request forever, while training cost is paid once. So when you see a parameter count, the useful follow-up question is how many tokens it saw, not how big it is." }] },
 
-    { t: "exercise", title: "Predict before you measure",
+    { t: "exercise", kind: "Challenge", title: "Predict before you measure", difficulty: "core", minutes: 30,
       requirements: [
         "Take a model card's configuration, compute 12·L·d² plus embeddings, then load the model and compare. Aim to be within 1%.",
         "Account for the residual exactly, as this lesson did for GPT-2's 82,944 biases.",
         "Compute the parameter count for the same budget spent on twice the depth against twice the width, and note the difference.",
         "Work out the embedding share for three models at different scales and find where it crosses 10%.",
         "Estimate training memory for a 7B model in fp16 with Adam, then check it against a real configuration."
-      ] }
+      ],
+      hint: "Count only the weight matrices for the prediction: 4d² for attention and 2·d·d_ff for the FFN, plus vocab × d and positions × d. Then sum the one-dimensional tensors separately; they are the biases and norm weights.",
+      solution: {
+        lang: "python", title: "predict_params.py",
+        code: `import os
+os.environ["HF_HUB_OFFLINE"] = "1"
+from transformers import AutoModel
+
+def predict(L, d, vocab, pos, d_ff=None):
+    d_ff = d_ff or 4 * d
+    blocks = L * (4 * d * d + 2 * d * d_ff)
+    return blocks, vocab * d + pos * d
+
+# 1-2. Predict, load, account for the residual.
+for name in ("bert-base-uncased", "gpt2", "distilbert-base-uncased"):
+    m = AutoModel.from_pretrained(name); c = m.config
+    L = getattr(c, "num_hidden_layers", None) or getattr(c, "n_layer", None) or c.n_layers
+    d = getattr(c, "hidden_size", None) or getattr(c, "n_embd", None) or c.dim
+    dff = getattr(c, "intermediate_size", None) or getattr(c, "n_inner", None) or getattr(c, "hidden_dim", None) or 4 * d
+    pos = getattr(c, "max_position_embeddings", None) or c.n_positions
+    blocks, emb = predict(L, d, c.vocab_size, pos, dff)
+    actual = sum(p.numel() for p in m.parameters())
+    resid = actual - blocks - emb
+    print(f"{name:24} predicted {blocks + emb:>12,}  actual {actual:>12,}  ratio {actual / (blocks + emb):.4f}  residual {resid:,}")
+    biases_norms = sum(p.numel() for n, p in m.named_parameters() if p.dim() == 1)
+    print(f"{'':24} 1-D tensors (biases and norm weights): {biases_norms:,}; other residual: {resid - biases_norms:,}")
+
+# 3. Twice the depth against twice the width for a 12-layer, 768-wide base.
+L, d = 12, 768
+print(f"\\nbase 12·L·d² = {12 * L * d * d:,}; 2x depth = {12 * 2 * L * d * d:,} (2x); 2x width = {12 * L * (2 * d) ** 2:,} (4x)")
+
+# 4. Embedding share across scales (vocab 50,257).
+for name, L, d in (("GPT-2 small", 12, 768), ("GPT-2 XL", 48, 1600), ("7B-class", 32, 4096), ("70B-class", 80, 8192)):
+    blocks, emb = 12 * L * d * d, 50257 * d
+    print(f"{name:12} embedding share {emb / (blocks + emb):6.1%}")
+
+# 5. Training memory for 7B in mixed precision with Adam: fp16 weights and grads, fp32 master, two fp32 moments.
+N = 7e9
+print(f"\\n7B training state: weights {2 * N / 1e9:.0f} GB + grads {2 * N / 1e9:.0f} GB + fp32 master {4 * N / 1e9:.0f} GB "
+      f"+ Adam m,v {8 * N / 1e9:.0f} GB = {16 * N / 1e9:.0f} GB before activations")
+`,
+        out: `bert-base-uncased        predicted  108,768,768  actual  109,482,240  ratio 1.0066  residual 713,472
+                         1-D tensors (biases and norm weights): 122,112; other residual: 591,360
+gpt2                     predicted  124,318,464  actual  124,439,808  ratio 1.0010  residual 121,344
+                         1-D tensors (biases and norm weights): 121,344; other residual: 0
+distilbert-base-uncased  predicted   66,301,440  actual   66,362,880  ratio 1.0009  residual 61,440
+                         1-D tensors (biases and norm weights): 61,440; other residual: 0
+
+base 12·L·d² = 84,934,656; 2x depth = 169,869,312 (2x); 2x width = 339,738,624 (4x)
+GPT-2 small  embedding share  31.2%
+GPT-2 XL     embedding share   5.2%
+7B-class     embedding share   3.1%
+70B-class    embedding share   0.6%
+
+7B training state: weights 14 GB + grads 14 GB + fp32 master 28 GB + Adam m,v 56 GB = 112 GB before activations`,
+        notes: [
+          { t: "p", text: "All three predictions land within 1% (ratios 1.0066, 1.0010, 1.0009). For GPT-2 and DistilBERT the residual is exactly the one-dimensional tensors, biases and norm weights, with nothing left over. BERT has 591,360 more, which is precisely its pooler weight matrix (768 × 768 = 589,824) plus the two token-type embeddings (2 × 768 = 1,536); the pooler's bias is already among the one-dimensional tensors. Accounting for the residual to the parameter is what tells you the prediction is understood, not just close." },
+          { t: "p", text: "Doubling depth doubles the parameter count; doubling width quadruples it, because every matrix is d × d. The embedding share falls from 31% at GPT-2 small to 0.6% at 70B scale, so it crosses 10% between GPT-2 small and XL. For small models the vocabulary is a large part of the budget." },
+          { t: "p", text: "Mixed-precision Adam needs 16 bytes per parameter before activations: 2 for fp16 weights, 2 for gradients, 4 for the fp32 master copy, and 8 for Adam's two moments. A 7B model therefore needs 112 GB, which is why it does not train on one 80 GB GPU without sharding or 8-bit optimiser states." }
+        ]
+      } }
   ],
 
   takeaways: [

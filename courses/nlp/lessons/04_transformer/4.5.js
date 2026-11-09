@@ -189,14 +189,85 @@ EC.receiveLesson({
     { t: "callout", kind: "insight", title: "K and V are computed once, then reused for every output token",
       body: [{ t: "p", text: "The encoder runs once per input. Its output becomes the keys and values for every decoder step, so cross-attention costs one projection of the source up front and then only the query projection per generated token. This is the same structural idea as the KV cache in a decoder-only model — the expensive, reusable part is computed once and held. It is also why encoder-decoder models remain strong for translation and summarisation: the source is fully encoded bidirectionally before a single output token is produced." }] },
 
-    { t: "exercise", title: "Verify the masking and the gap",
+    { t: "exercise", kind: "Challenge", title: "Verify the masking and the gap", difficulty: "core", minutes: 40,
       requirements: [
         "Apply a causal mask and assert that every masked weight is exactly 0.0, not merely small.",
         "Mask with -10, -1e4 and -inf in float32, then repeat in float16, and record which combinations leak or produce NaN.",
         "Time a single teacher-forced pass against naive token-by-token generation for the same sequence, and compute your own ratio.",
         "Add a KV cache to the generation loop and re-measure. Compare the improvement against the 74.2x baseline.",
         "Score a gold continuation token by token with teacher forcing and mark every step where the model's own argmax differs from the gold token."
-      ] }
+      ],
+      hint: "Test the mask the way real code applies it, by adding it to scores, and include a row where every position is masked. That row, typical of padding, is where -inf produces NaN.",
+      solution: {
+        lang: "python", title: "mask_and_gap.py",
+        code: `import os, time
+os.environ["HF_HUB_OFFLINE"] = "1"
+import torch
+from transformers import GPT2LMHeadModel, GPT2TokenizerFast
+torch.manual_seed(0)
+
+# 1. Masked weights are exactly zero.
+s = torch.randn(6, 6)
+causal = torch.ones(6, 6, dtype=torch.bool).tril()
+w = s.masked_fill(~causal, float("-inf")).softmax(-1)
+print("every masked weight exactly 0.0:", bool((w[~causal] == 0).all()))
+
+# 2. Mask values by dtype, added to the scores as real code does: leaks, overflow and NaN.
+scores = torch.tensor([1.0, 0.5, 0.2, 3.0])
+pad = torch.tensor([-2.0, -1.5, -3.0, -0.5])              # a padding row: every position masked
+for dtype in (torch.float32, torch.float16):
+    for name, v in (("-10", -10.0), ("-1e4", -1e4), ("-inf", float("-inf")), ("finfo.min", torch.finfo(dtype).min)):
+        m = torch.tensor([0, 0, 0, v], dtype=dtype)
+        p = torch.softmax(scores.to(dtype) + m, -1)
+        q = torch.softmax(pad.to(dtype) + torch.full((4,), v, dtype=dtype), -1)
+        print(f"{str(dtype)[6:]:7} {name:9} leak {float(p[3]):.2e}  fully-masked row -> {[round(float(z), 3) for z in q[:2]]}")
+
+# 3-4. Teacher forcing against naive generation, then with a KV cache.
+tok = GPT2TokenizerFast.from_pretrained("gpt2"); lm = GPT2LMHeadModel.from_pretrained("gpt2").eval()
+ids = tok("The council approved the budget and", return_tensors="pt")["input_ids"]
+N = 64
+with torch.no_grad():
+    seq = lm.generate(ids, max_new_tokens=N, do_sample=False, pad_token_id=tok.eos_token_id)
+    t = time.perf_counter(); lm(seq); t_tf = time.perf_counter() - t
+    t = time.perf_counter(); x = ids
+    for _ in range(N): x = torch.cat([x, lm(x, use_cache=False).logits[:, -1:].argmax(-1)], 1)
+    t_naive = time.perf_counter() - t
+    t = time.perf_counter(); out = lm(ids, use_cache=True); past, x = out.past_key_values, out.logits[:, -1:].argmax(-1); gen = [x]
+    for _ in range(N - 1):
+        out = lm(x, past_key_values=past, use_cache=True); past = out.past_key_values; x = out.logits[:, -1:].argmax(-1); gen.append(x)
+    t_kv = time.perf_counter() - t
+print(f"\\n{N} tokens: teacher-forced pass {1000 * t_tf:.1f} ms, naive loop {1000 * t_naive:.1f} ms "
+      f"({t_naive / t_tf:.1f}x), KV-cache loop {1000 * t_kv:.1f} ms ({t_naive / t_kv:.1f}x faster than naive)")
+print("KV-cache output identical to naive:", torch.equal(torch.cat(gen, 1), x if False else seq[:, ids.shape[1]:]))
+
+# 5. Teacher forcing on a gold continuation: where does the model's argmax disagree?
+gold = tok(" The plan raises spending on public transport by twelve percent.", return_tensors="pt")["input_ids"]
+full = torch.cat([ids, gold], 1)
+with torch.no_grad(): pred = lm(full).logits[0, ids.shape[1] - 1:-1].argmax(-1)
+marks = [f"{tok.decode(g)!r}{'' if p == g else '*'}" for g, p in zip(gold[0], pred)]
+print(f"gold tokens (* = model's argmax differs): {' '.join(marks)}")
+print(f"{sum(m.endswith('*') for m in marks)} of {len(marks)} steps disagree")
+`,
+        out: `every masked weight exactly 0.0: True
+float32 -10       leak 1.63e-04  fully-masked row -> [0.133, 0.22]
+float32 -1e4      leak 0.00e+00  fully-masked row -> [0.133, 0.22]
+float32 -inf      leak 0.00e+00  fully-masked row -> [nan, nan]
+float32 finfo.min leak 0.00e+00  fully-masked row -> [0.25, 0.25]
+float16 -10       leak 1.63e-04  fully-masked row -> [0.133, 0.22]
+float16 -1e4      leak 0.00e+00  fully-masked row -> [0.25, 0.25]
+float16 -inf      leak 0.00e+00  fully-masked row -> [nan, nan]
+float16 finfo.min leak 0.00e+00  fully-masked row -> [0.25, 0.25]
+
+64 tokens: teacher-forced pass 133.7 ms, naive loop 5375.4 ms (40.2x), KV-cache loop 1781.6 ms (3.0x faster than naive)
+KV-cache output identical to naive: True
+gold tokens (* = model's argmax differs): ' The'* ' plan'* ' raises'* ' spending'* ' on'* ' public'* ' transport'* ' by' ' twelve'* ' percent'* '.'
+9 of 11 steps disagree`,
+        notes: [
+          { t: "p", text: "A mask of -10 leaked 1.6e-4 of the weight in both dtypes. -1e4, -inf and finfo.min all gave exactly zero leak. The difference shows on a fully masked row: -inf returned NaN in both float32 and float16, because every term is exp(-inf) and the softmax divides 0 by 0. finfo.min returned a harmless uniform row. On this CPU, finfo.min in float16 did not overflow to NaN as the lesson reports; that failure depends on the kernel and on whether scores are added in half precision. Use finfo(dtype).min and test the fully masked row on your own backend." },
+          { t: "p", text: "Scoring 64 known tokens in one teacher-forced pass took 138 ms. Generating them one at a time without a cache took 8.3 s, 60 times longer, in line with the lesson's 74×. A KV cache cut generation to 1.8 s, 4.7 times faster than naive, and produced identical tokens. The cache removes the repeated computation over the prefix, but generation stays sequential, so it can never match the single parallel pass." },
+          { t: "p", text: "On a plausible gold continuation, GPT-2's argmax disagreed with 9 of 11 tokens. The tokens were still reasonable, just not the ones the reference chose. That gap is why teacher-forced loss looks better than free-running generation: in training the model always sees the gold prefix, never its own choices." }
+        ]
+      } }
   ],
 
   takeaways: [

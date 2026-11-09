@@ -160,14 +160,81 @@ EC.receiveLesson({
     { t: "callout", kind: "note", title: "Pre-LN is not strictly better",
       body: [{ t: "p", text: "The trade is real: because the residual stream is never normalised, its magnitude *grows* with depth in a Pre-LN model, and the relative contribution of later blocks shrinks. Some work finds Post-LN reaches slightly better final quality when you can afford to tune the warmup carefully. The reason Pre-LN won is not that it produces better models but that it produces models that train reliably without a schedule you have to get right — which at scale, where a diverged run costs weeks, matters more. Hybrids exist, and some recent models normalise in both places." }] },
 
-    { t: "exercise", title: "Measure the block yourself",
+    { t: "exercise", kind: "Challenge", title: "Measure the block yourself", difficulty: "stretch", minutes: 45,
       requirements: [
         "Compute LayerNorm and RMSNorm by hand on a vector and check both against PyTorch, including the eps term.",
         "Benchmark LayerNorm against nn.RMSNorm on your hardware and backend, and record which is faster.",
         "Compute the SwiGLU d_ff for a model you use and check it against the published hidden size.",
         "Build 24-block Pre-LN and Post-LN stacks, backpropagate, and plot the gradient norm against depth.",
         "Track the residual stream's magnitude layer by layer in a Pre-LN model and confirm it grows with depth."
-      ] }
+      ],
+      hint: "LayerNorm uses the biased variance (divide by n, not n−1) with eps inside the square root, and RMSNorm skips the mean subtraction. Match both details or your hand computation will disagree by more than rounding.",
+      solution: {
+        lang: "python", title: "measure_block.py",
+        code: `import time, math
+import torch, torch.nn as nn
+torch.manual_seed(0)
+
+# 1. LayerNorm and RMSNorm by hand, including eps.
+x = torch.randn(8); eps = 1e-5
+ln_hand = (x - x.mean()) / torch.sqrt(x.var(unbiased=False) + eps)
+rms_hand = x / torch.sqrt((x ** 2).mean() + eps)
+print(f"LayerNorm max err {(ln_hand - nn.LayerNorm(8, eps=eps, elementwise_affine=False)(x)).abs().max():.2e}, "
+      f"RMSNorm max err {(rms_hand - nn.RMSNorm(8, eps=eps, elementwise_affine=False)(x)).abs().max():.2e}")
+
+# 2. Speed on this machine.
+X = torch.randn(64, 512, 1024)
+for name, m in (("LayerNorm", nn.LayerNorm(1024)), ("RMSNorm", nn.RMSNorm(1024))):
+    with torch.no_grad():
+        m(X); t = time.perf_counter()
+        for _ in range(20): m(X)
+    print(f"{name:9} {1000 * (time.perf_counter() - t) / 20:.2f} ms per call")
+
+# 3. SwiGLU hidden size: 2/3 of 4d, rounded up to a multiple of 256.
+for name, d, published in (("LLaMA-7B", 4096, 11008), ("LLaMA-13B", 5120, 13824)):
+    ideal = 8 * d / 3; rounded = 256 * math.ceil(ideal / 256)
+    print(f"{name}: (8/3)·{d} = {ideal:.1f} -> {rounded} (published {published})")
+
+# 4-5. 24-block Pre-LN and Post-LN stacks: gradient norm by depth and residual growth.
+class Block(nn.Module):
+    def __init__(s, d, pre):
+        super().__init__(); s.pre = pre
+        s.n1, s.n2 = nn.LayerNorm(d), nn.LayerNorm(d)
+        s.att = nn.MultiheadAttention(d, 4, batch_first=True)
+        s.ff = nn.Sequential(nn.Linear(d, 4 * d), nn.GELU(), nn.Linear(4 * d, d))
+    def forward(s, x):
+        if s.pre:
+            h = s.n1(x); x = x + s.att(h, h, h, need_weights=False)[0]
+            return x + s.ff(s.n2(x))
+        x = s.n1(x + s.att(x, x, x, need_weights=False)[0])
+        return s.n2(x + s.ff(x))
+d = 128; inp = torch.randn(4, 32, d)
+for pre in (False, True):
+    torch.manual_seed(0); blocks = nn.ModuleList(Block(d, pre) for _ in range(24))
+    h, rms = inp, []
+    for b in blocks: h = b(h); rms.append(h.pow(2).mean().sqrt().item())
+    h.pow(2).mean().backward()
+    g = [b.ff[0].weight.grad.norm().item() for b in blocks]
+    print(f"\\n{'Pre-LN ' if pre else 'Post-LN'} grad norm, blocks 1/6/12/18/24: " + "  ".join(f"{g[i]:.2e}" for i in (0, 5, 11, 17, 23)))
+    print(f"{'Pre-LN ' if pre else 'Post-LN'} residual RMS, blocks 1/6/12/18/24: " + "  ".join(f"{rms[i]:.2f}" for i in (0, 5, 11, 17, 23)))
+`,
+        out: `LayerNorm max err 1.19e-07, RMSNorm max err 1.19e-07
+LayerNorm 11.28 ms per call
+RMSNorm   26.75 ms per call
+LLaMA-7B: (8/3)·4096 = 10922.7 -> 11008 (published 11008)
+LLaMA-13B: (8/3)·5120 = 13653.3 -> 13824 (published 13824)
+
+Post-LN grad norm, blocks 1/6/12/18/24: 4.53e-07  5.91e-07  6.78e-07  7.52e-07  3.70e-06
+Post-LN residual RMS, blocks 1/6/12/18/24: 1.00  1.00  1.00  1.00  1.00
+
+Pre-LN  grad norm, blocks 1/6/12/18/24: 5.87e-01  6.00e-01  5.48e-01  4.80e-01  3.88e-01
+Pre-LN  residual RMS, blocks 1/6/12/18/24: 1.02  1.15  1.32  1.51  1.73`,
+        notes: [
+          { t: "p", text: "Both hand computations match PyTorch to 1.2e-7. The speed result is the surprise: on this CPU `nn.RMSNorm` took 26.8 ms against 11.3 ms for LayerNorm, the opposite of the usual claim. LayerNorm has a fused native kernel on CPU, and RMSNorm here runs as separate operations. RMSNorm's advantage is real in fused GPU kernels. Measure on your own backend before choosing a norm for speed." },
+          { t: "p", text: "The SwiGLU rule reproduces both published sizes exactly: (8/3)·4096 rounded up to a multiple of 256 is 11008, and (8/3)·5120 gives 13824." },
+          { t: "p", text: "In the 24-block stacks, Post-LN gradients at the first FFN were about 5e-7, and Pre-LN gradients about 0.6, a factor of roughly a million. That matches the lesson. The Pre-LN residual stream grows steadily with depth, from RMS 1.02 after block 1 to 1.73 after block 24, because each block adds to an un-normalised sum. Post-LN renormalises after every block, so its RMS stays at exactly 1." }
+        ]
+      } }
   ],
 
   takeaways: [
