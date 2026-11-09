@@ -331,56 +331,31 @@ SELECT category, SUM(revenue) FROM daily_summary WHERE day >= CURRENT_DATE - 90 
     questions: [
       {
         stem: "Why does aggregating order_items to one row per order before joining to orders speed up a per-customer revenue query?",
-        options: [
-          "Subqueries are cached",
-          "The join carries one row per order instead of one per item, so far fewer rows flow through the join and the outer GROUP BY — and a second one-to-many child can no longer multiply the amounts",
-          "GROUP BY is faster in a subquery",
-          "It avoids reading order_items"
-        ],
+        options: ["Subqueries are cached between executions", "Far fewer rows reach the join, with no fan-out", "GROUP BY runs faster inside a subquery", "It avoids reading order_items at all"],
         answer: 1,
         why: "Rows through a join are the cost. Collapsing the child to parent grain first cuts them by the items-per-order ratio and removes the fan-out risk at the same time."
       },
       {
         stem: "When is `approx_count_distinct` the right choice over `COUNT(DISTINCT …)`?",
-        options: [
-          "Never — approximate is wrong",
-          "For a dashboard figure such as unique visitors, where about 1 % error is acceptable and the exact set of a billion keys would not fit in memory; sketches also merge across days or partitions without re-reading the data",
-          "Only for small tables",
-          "When the column is indexed"
-        ],
+        options: ["Never, because approximate means wrong", "Dashboard counts where ~1% error is fine", "Only for small tables with few keys", "Whenever the column is indexed"],
         answer: 1,
         why: "Exact distinct counts scale with the number of distinct values; sketches scale with nothing. Billing and audit figures stay exact; behavioural metrics usually need not be."
       },
       {
         stem: "What does `REFRESH MATERIALIZED VIEW CONCURRENTLY` require and provide?",
-        options: [
-          "Nothing special; it is always faster",
-          "A unique index on the view, so the new result can be diffed into place while readers continue to see the old version rather than blocking on an exclusive lock",
-          "That the view has no aggregates",
-          "A partitioned base table"
-        ],
+        options: ["Nothing special; it is always faster", "A unique index; readers are not blocked", "That the view contains no aggregates", "A partitioned base table underneath"],
         answer: 1,
         why: "The plain refresh takes an exclusive lock and readers wait. The concurrent form rebuilds beside the old data and applies the difference by unique key, which is why the unique index is mandatory."
       },
       {
         stem: "A five-year events table is partitioned monthly. What does retention become?",
-        options: [
-          "`DELETE FROM events WHERE occurred_at < …` on the parent",
-          "`DROP TABLE events_2020_03` — detaching or dropping the oldest partition removes a month in milliseconds and leaves no bloat, where a DELETE would rewrite and vacuum a billion rows",
-          "VACUUM FULL",
-          "Re-creating the parent"
-        ],
+        options: ["A DELETE on the parent for old rows", "Dropping the oldest partition", "VACUUM FULL on the parent table", "Re-creating the parent table"],
         answer: 1,
         why: "Partition-by-time turns retention from a data operation into a metadata operation. It is often the strongest reason to partition at all."
       },
       {
         stem: "A summary table shows a different March revenue from the base tables. What is the likeliest cause?",
-        options: [
-          "Floating-point drift",
-          "A late-arriving change — a refund or a corrected order — landed in March after the summary's refresh window had moved past it; the refresh window must cover the horizon over which closed periods can still change",
-          "The summary has an index",
-          "Partition pruning skipped March"
-        ],
+        options: ["Floating-point drift in the summed amounts", "A late change after the refresh window passed", "The summary table has an extra index", "Partition pruning skipped the March data"],
         answer: 1,
         why: "A summary is true as of its refresh. Anything that can modify a closed period after that is a freshness gap — the same temporal issue as an unclosed label window, in reporting form."
       }

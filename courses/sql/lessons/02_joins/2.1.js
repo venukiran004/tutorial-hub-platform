@@ -274,56 +274,31 @@ SELECT COUNT(*) FROM customers c CROSS JOIN (SELECT DISTINCT status FROM orders)
     questions: [
       {
         stem: "Why is `customers CROSS JOIN products` 48 rows but `customers JOIN products ON …` impossible to write usefully?",
-        options: [
-          "CROSS JOIN is faster",
-          "There is no column relating a customer directly to a product; the relationship goes through orders and items, so a direct join has no meaningful condition — only the unconditional product exists",
-          "CROSS JOIN ignores NULLs",
-          "Products cannot be joined"
-        ],
+        options: ["CROSS JOIN is faster than a conditioned join", "No column relates the two directly; it goes via orders", "CROSS JOIN ignores NULLs in both tables", "Products cannot be joined to customers at all"],
         answer: 1,
         why: "A join condition expresses a relationship. Customers and products are related only via orders and order_items; joining them directly is either every pair or nothing."
       },
       {
         stem: "A report joins customers to orders and to events and sums order amounts per customer. Asha's total is five times too large. Why?",
-        options: [
-          "Her orders are duplicated in the table",
-          "Orders and events are both one-to-many from customers; joining both multiplies each order by the number of events, so the sum is inflated by the event count — aggregate each child separately before combining",
-          "The events table has NULL amounts",
-          "SUM ignores the join"
-        ],
+        options: ["Her orders are stored twice in the orders table", "Two one-to-many joins multiply her order rows", "The events table has NULL amounts for her", "SUM ignores the join and counts all rows"],
         answer: 1,
         why: "Asha has 3 orders and 5 events, so the join produces 15 rows and each order's amount appears five times. Pre-aggregate orders and events in their own subqueries, then join the two one-row-per-customer results."
       },
       {
         stem: "What is the risk of `NATURAL JOIN`?",
-        options: [
-          "It is slower than ON",
-          "It joins on every column with the same name in both tables, so adding a same-named column later — status, name, created_at — silently changes the join condition and the result",
-          "It only works on primary keys",
-          "It cannot be used with LEFT"
-        ],
+        options: ["It runs more slowly than an explicit ON clause", "It joins on every shared column name, silently", "It only works when joining on primary keys", "It cannot be combined with a LEFT join"],
         answer: 1,
         why: "The join condition is inferred from the schema at execution time, not written in the query. USING names the columns explicitly and gets the same tidy output without the fragility."
       },
       {
         stem: "Which join returns customers who never ordered and orders whose customer row is missing, in one result?",
-        options: [
-          "INNER JOIN",
-          "LEFT JOIN",
-          "FULL OUTER JOIN — every row of both sides appears, unmatched ones padded with NULLs",
-          "CROSS JOIN"
-        ],
+        options: ["INNER JOIN, matching rows from both", "LEFT JOIN, every customer kept", "FULL OUTER JOIN, both sides kept", "CROSS JOIN, every pairing listed"],
         answer: 2,
         why: "LEFT keeps only the left side's unmatched rows; FULL keeps both. It is the join for reconciling two sources — COALESCE(a.key, b.key) gives the key column, and IS NULL on either side classifies the row."
       },
       {
         stem: "A join pairs each order with events of the same customer in the hour before it. Which part of the ON clause keeps it fast?",
-        options: [
-          "The INTERVAL arithmetic",
-          "The equality on customer_id — the engine can hash or index on it, and the range condition is then checked only within one customer's events",
-          "The ORDER BY",
-          "Nothing; range joins are always slow"
-        ],
+        options: ["The INTERVAL arithmetic on the timestamps", "The equality on customer_id", "The ORDER BY on the event timestamps", "Nothing; range joins are always slow"],
         answer: 1,
         why: "Hash joins need an equality. A pure range join compares every order with every event; the equality restricts the range check to matching customers, which is where the cost goes from n × m to roughly n."
       }

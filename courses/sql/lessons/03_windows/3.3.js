@@ -322,56 +322,31 @@ FROM   employees WHERE salary IN (120000, 125000, 131000) ORDER BY salary, emplo
     questions: [
       {
         stem: "Which frame computes a rolling 7-day sum on timestamps that are irregularly spaced?",
-        options: [
-          "`ROWS BETWEEN 6 PRECEDING AND CURRENT ROW`",
-          "`RANGE BETWEEN INTERVAL '7 days' PRECEDING AND CURRENT ROW` — measured in time, so the window is seven days whether that holds two rows or two hundred",
-          "`GROUPS BETWEEN 6 PRECEDING AND CURRENT ROW`",
-          "The default frame"
-        ],
+        options: ["`ROWS BETWEEN 6 PRECEDING AND CURRENT ROW` frame", "`RANGE BETWEEN INTERVAL '7 days' PRECEDING …`", "`GROUPS BETWEEN 6 PRECEDING AND CURRENT ROW`", "The default frame, ordered by the timestamp"],
         answer: 1,
         why: "ROWS counts rows, which is a different number of days each time; GROUPS counts distinct timestamps. Only RANGE with an interval is a window in time."
       },
       {
         stem: "A moving average `ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING` is used as a model feature. What is wrong?",
-        options: [
-          "Nothing — it is a standard smoother",
-          "The frame includes the next row, so each row's feature depends on a future observation; at prediction time that row does not exist, and in training it leaks",
-          "It should be 2 PRECEDING",
-          "AVG cannot take a frame"
-        ],
+        options: ["Nothing; it is a standard smoother", "It includes the next row, a future value", "It should use 2 PRECEDING instead", "AVG cannot take a frame clause"],
         answer: 1,
         why: "Any FOLLOWING bound reaches forward in the ORDER BY. A feature must be computable from the past alone: trailing frames ending at CURRENT ROW or earlier."
       },
       {
         stem: "How does `GROUPS BETWEEN 1 PRECEDING AND CURRENT ROW` differ from `ROWS BETWEEN 1 PRECEDING AND CURRENT ROW` at a tie?",
-        options: [
-          "They are identical",
-          "GROUPS reaches back one whole peer group (all rows tied at the previous value) plus the current row's peers; ROWS reaches back exactly one row and treats tied rows separately",
-          "GROUPS ignores the current row",
-          "ROWS includes peers"
-        ],
+        options: ["They are identical whenever there are ties", "GROUPS steps by peer group; ROWS by single row", "GROUPS leaves out the current row entirely", "ROWS includes the current row's peers"],
         answer: 1,
         why: "GROUPS is defined on peer groups, so it includes every row of the previous distinct value and every row of the current one. ROWS is positional and blind to ties."
       },
       {
         stem: "What does `AVG(x) OVER (PARTITION BY g ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING EXCLUDE CURRENT ROW)` compute?",
-        options: [
-          "The group average",
-          "The average of every other row in the group — the leave-one-out mean, NULL when the row is alone",
-          "The running average",
-          "An error: EXCLUDE needs ORDER BY"
-        ],
+        options: ["The plain average over the group", "The leave-one-out mean of the others", "The running average within the group", "An error, as EXCLUDE needs ORDER BY"],
         answer: 1,
         why: "The frame is the whole partition minus the current row. For a singleton partition nothing remains and AVG over no rows is NULL. It is the SQL form of the out-of-fold statistics used in target encoding."
       },
       {
         stem: "Why does a `ROWS` running total need a tie-breaker in its ORDER BY when the default RANGE one does not?",
-        options: [
-          "ROWS is unstable",
-          "ROWS gives tied rows different frames — one stops at the first tied row, the next includes both — so which tied row gets which total depends on their physical order; RANGE gives them the same frame, so order among peers cannot matter",
-          "RANGE ignores ties",
-          "It does not; both need one"
-        ],
+        options: ["ROWS frames are unstable by design", "Tied rows get different ROWS frames", "RANGE ignores ties altogether", "It does not; both need a tie-breaker"],
         answer: 1,
         why: "Determinism is only at stake where the result differs between tied rows. Under RANGE it cannot; under ROWS it does, so the ORDER BY must make the rows distinct."
       }

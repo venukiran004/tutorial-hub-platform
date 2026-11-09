@@ -317,12 +317,7 @@ ORDER  BY 1;
     questions: [
       {
         stem: "Why is `a.customer_id < b.customer_id` used in a self join for pairs, rather than `<>`?",
-        options: [
-          "It is faster",
-          "`<>` still returns each pair twice (A,B and B,A); `<` returns each unordered pair once and also excludes self-pairs",
-          "`<>` does not work on integers",
-          "There is no difference"
-        ],
+        options: ["`<` runs faster than `<>` in the planner", "`<>` lists each pair twice; `<` lists it once", "`<>` does not work on integer columns", "There is no difference between the two"],
         answer: 1,
         why: "Both exclude a row pairing with itself. Only the strict inequality picks one orientation of each pair, halving the result to the set of unordered pairs."
       },
@@ -339,34 +334,19 @@ ORDER  BY 1;
       },
       {
         stem: "How does PostgreSQL execute `WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)`?",
-        options: [
-          "It runs the subquery once per customer row",
-          "It rewrites the correlated subquery into a Semi Join and executes it with a hash or index lookup, once",
-          "It materialises all orders into memory",
-          "It converts it to a CROSS JOIN"
-        ],
+        options: ["It runs the subquery once for every customer row", "It rewrites it as a semi join, run with a hash", "It materialises all orders into memory first", "It converts the subquery into a CROSS JOIN"],
         answer: 1,
         why: "Correlation in EXISTS is a join condition in disguise. The planner recognises the shape and produces the same plan as an IN over the same key — a single pass with early termination per outer row."
       },
       {
         stem: "A query needs customers who have at least two distinct paid orders. Why is EXISTS alone insufficient?",
-        options: [
-          "EXISTS cannot be used with orders",
-          "EXISTS answers whether at least one match exists; 'at least two' is a count, which needs COUNT in a scalar subquery or a GROUP BY … HAVING",
-          "EXISTS only works with IN",
-          "It needs DISTINCT"
-        ],
+        options: ["EXISTS cannot be used with the orders table", "EXISTS tests for one match; two needs a count", "EXISTS only works when paired with IN", "It needs DISTINCT inside the EXISTS"],
         answer: 1,
         why: "EXISTS is a boolean over the existence of any row. Quantities beyond 'any' need an aggregate; the EXISTS form can still be used with a subquery that groups and filters with HAVING COUNT(DISTINCT …) >= 2."
       },
       {
         stem: "When is `LEFT JOIN … WHERE right.key IS NULL` preferable to `NOT EXISTS`?",
-        options: [
-          "Always — it is faster",
-          "Rarely; both produce the same anti-join plan and NOT EXISTS reads as the question and keeps its condition inside the subquery — the LEFT JOIN form is mainly seen in older code and in engines whose planner handles it better",
-          "When the right table has NULLs",
-          "When you need the right table's columns"
-        ],
+        options: ["Always, because it is faster on every engine", "Rarely: both plan as an anti-join", "When the right table contains NULL keys", "When you need columns from the right table"],
         answer: 1,
         why: "The joined columns in the anti-join idiom are all NULL by construction, so they are never useful. The two forms are equivalent in correctness; NOT EXISTS is harder to break during a refactor because the filter cannot slide from ON into WHERE."
       }

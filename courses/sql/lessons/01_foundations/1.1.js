@@ -479,56 +479,31 @@ SELECT DISTINCT e.department FROM employees e ORDER BY e.department DESC LIMIT 2
     questions: [
       {
         stem: "`SELECT o.order_id FROM orders o JOIN order_items oi ON oi.order_id = o.order_id WHERE o.status = 'paid'` returns 17 rows though there are 10 paid orders. Why?",
-        options: [
-          "The WHERE clause is wrong",
-          "The join runs first and produces one row per line item; SELECT choosing only order_id does not collapse them — DISTINCT or GROUP BY would",
-          "Some orders are duplicated",
-          "The engine ignored the join condition"
-        ],
+        options: ["The WHERE clause filters on the wrong status value", "The join yields one row per line item before SELECT", "Some paid orders are stored twice in the table", "The engine ignored the join condition on order_id"],
         answer: 1,
         why: "FROM/JOIN builds the working set before anything else. Ten paid orders have seventeen line items between them, so the working set has seventeen rows; projecting one column from them leaves seventeen rows."
       },
       {
         stem: "Which clause is the only place a condition on an aggregate can be written?",
-        options: [
-          "WHERE",
-          "HAVING — it is the first stage at which the aggregate exists, because GROUP BY has just computed it",
-          "ORDER BY",
-          "Any of them"
-        ],
+        options: ["WHERE, which runs before rows are grouped", "HAVING, the first stage where aggregates exist", "ORDER BY, which runs after the aggregates", "Any of them, since the engine reorders clauses"],
         answer: 1,
         why: "Aggregates are computed by GROUP BY. WHERE runs before it and cannot see them; HAVING runs immediately after and filters the groups. SELECT and ORDER BY can use aggregates but do not filter."
       },
       {
         stem: "`SELECT DISTINCT country, tier FROM customers` returns two rows for DE. Is that a bug?",
-        options: [
-          "Yes — DISTINCT should give one row per country",
-          "No — DISTINCT removes rows that are identical across every selected column; the two DE rows differ in tier",
-          "Yes — it should be GROUP BY",
-          "It depends on the index"
-        ],
+        options: ["Yes, DISTINCT should give one row per country", "No: the two DE rows differ in the tier column", "Yes, because it should have been written as GROUP BY", "It depends on whether the columns are indexed"],
         answer: 1,
         why: "DISTINCT is a whole-row operation. To get one row per country you either select only country, or group by country and aggregate the tier, or use DISTINCT ON (country) in PostgreSQL."
       },
       {
         stem: "A paginated report shows the same order on page 3 and page 4. The query is `ORDER BY placed_at DESC LIMIT 20 OFFSET 40`. What is the likely cause?",
-        options: [
-          "A duplicate order",
-          "Rows that tie on placed_at have no defined order, so the engine may place them differently on each execution; add a unique tie-breaker such as order_id to ORDER BY",
-          "OFFSET is not supported",
-          "The index is corrupt"
-        ],
+        options: ["A duplicate order row in the orders table", "Ties on placed_at have no defined order; add a key", "OFFSET is not supported together with ORDER BY", "The index on placed_at has become corrupt"],
         answer: 1,
         why: "ORDER BY only fixes the order of rows that differ on its keys. Two orders placed at the same second can swap between runs, and with OFFSET that swap moves one of them across a page boundary."
       },
       {
         stem: "Where does a NULL country sort with `ORDER BY country` and no NULLS clause?",
-        options: [
-          "Always first",
-          "Always last",
-          "It depends on the engine — last in PostgreSQL (NULL is treated as larger), first in MySQL and SQLite — which is why you write NULLS FIRST or NULLS LAST explicitly",
-          "NULL rows are dropped by ORDER BY"
-        ],
+        options: ["Always first, on every database engine", "Always last, on every database engine", "It depends on the engine; say NULLS FIRST or LAST", "NULL rows are dropped by ORDER BY entirely"],
         answer: 2,
         why: "The standard leaves the default to the implementation. Naming it makes the query mean the same thing on every engine, and makes the intent visible to the next reader."
       }

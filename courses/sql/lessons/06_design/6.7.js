@@ -282,56 +282,31 @@ ORDER BY ym, who;`,
     questions: [
       {
         stem: "A query tested on SQLite returns rows; on PostgreSQL it returns none. The WHERE contains `status LIKE 'PAID'`. Why?",
-        options: [
-          "PostgreSQL has no LIKE",
-          "SQLite's LIKE is case-insensitive for ASCII and matches 'paid'; PostgreSQL's is case-sensitive and matches nothing — use = 'paid' or ILIKE / LOWER()",
-          "The data differs",
-          "PostgreSQL needs a wildcard"
-        ],
+        options: ["PostgreSQL has no LIKE operator", "SQLite's LIKE ignores case; PostgreSQL's does not", "The data differs between the two databases", "PostgreSQL needs a wildcard in the pattern"],
         answer: 1,
         why: "An empty result is the most dangerous portability failure because it looks like an absence of data. Spell case handling out."
       },
       {
         stem: "Why do cloud warehouses have no indexes?",
-        options: [
-          "They are not mature",
-          "Columnar, distributed storage answers scans by reading only the needed columns of the needed partitions; partitioning and clustering prune data, which replaces the index's role for analytical access patterns",
-          "Indexes are patented",
-          "They do, but hidden"
-        ],
+        options: ["The warehouse technology is not mature yet", "Column pruning and partitions replace indexes", "Index techniques are patented by OLTP vendors", "They do have indexes; they are just hidden"],
         answer: 1,
         why: "An index accelerates finding a few rows; a warehouse's job is scanning many. Partition by date and cluster by the common filter columns, and the scan reads a fraction of the table."
       },
       {
         stem: "When is PostgreSQL with a JSONB column preferable to a separate document store?",
-        options: [
-          "Never; JSONB is slow",
-          "Almost always when the documents relate to other data: the flexible fields are indexed and queryable, foreign keys and transactions remain, and there is one source of truth",
-          "Only for small data",
-          "Only when the schema is fixed"
-        ],
+        options: ["Never, because JSONB is slow", "When documents relate to other data", "Only when the data is small", "Only when the schema is fixed"],
         answer: 1,
         why: "A second source of truth is the cost of a separate document store; JSONB gives the flexibility without it. Promote fields that become hot to real columns."
       },
       {
         stem: "What does the CAP theorem actually constrain?",
-        options: [
-          "Every database at all times",
-          "Behaviour during a network partition: a distributed store must then either refuse some requests (consistent) or serve possibly stale data (available); outside a partition the trade-off is latency versus consistency",
-          "Single-node databases",
-          "Whether SQL can scale"
-        ],
+        options: ["Every database at every moment", "Behaviour during a network partition", "Only single-node databases", "Whether SQL can scale at all"],
         answer: 1,
         why: "CAP is often quoted as 'pick two of three' — it is narrower than that: the choice arises only while nodes cannot talk to each other."
       },
       {
         stem: "What is the right relationship between a SQL database and a search index or cache?",
-        options: [
-          "Each holds part of the truth",
-          "The SQL database is the source of truth; the search index and cache are derived from it and can be rebuilt from it at any time",
-          "The cache is the source of truth for speed",
-          "They should not coexist"
-        ],
+        options: ["Each system holds part of the truth", "SQL is the truth; the others are derived", "The cache is the truth, for speed", "They should not coexist at all"],
         answer: 1,
         why: "Derived stores are safe because they can be flushed and rebuilt. Divided truth is the design that produces the incidents where two systems disagree and nobody knows which is right."
       }

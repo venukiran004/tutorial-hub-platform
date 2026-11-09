@@ -304,56 +304,31 @@ GROUP BY c.tier, d.is_weekend ORDER BY c.tier, d.is_weekend;`,
     questions: [
       {
         stem: "What is the grain of a fact table, and why decide it first?",
-        options: [
-          "The number of rows",
-          "What one row represents — an order line, a page view — decided first because every measure and key must agree with it, coarser levels can be summed from it, and a finer level cannot be recovered",
-          "The primary key column",
-          "The load frequency"
-        ],
+        options: ["The number of rows that the table holds", "What one row represents; finest level kept", "The table's primary key column or columns", "How often the table is loaded or refreshed"],
         answer: 1,
         why: "Mixing grains in one fact table — order lines and order totals — double-counts under every SUM. The grain is the contract."
       },
       {
         stem: "Why does a fact table use a surrogate `customer_key` rather than the business `customer_id`?",
-        options: [
-          "Integers join faster",
-          "So the dimension can hold several rows for one customer over time (type 2), and each fact can point at the row that was true when the fact happened",
-          "To hide the real id",
-          "It is a warehouse convention with no reason"
-        ],
+        options: ["Integer keys join faster than text ids", "To point at the version true at the time", "To hide the real customer identifier", "A warehouse convention with no reason"],
         answer: 1,
         why: "One business id, many dimension rows, each with a validity range — that is only possible if the fact's key is the row, not the customer."
       },
       {
         stem: "Which statement about columnar storage is correct?",
-        options: [
-          "It makes single-row lookups faster",
-          "It stores each column's values contiguously and compressed, so an aggregate over a few columns of many rows reads only those columns; single-row fetches and frequent small writes are worse than in a row store",
-          "It removes the need for indexes on OLTP tables",
-          "It only works with star schemas"
-        ],
+        options: ["It makes single-row lookups faster than rows", "Columns stored apart and compressed for scans", "It removes the need for indexes on OLTP tables", "It only works when the schema is a star"],
         answer: 1,
         why: "Columnar trades point access and write latency for scan throughput and compression — the OLAP profile exactly."
       },
       {
         stem: "When is a wide table the right shape?",
-        options: [
-          "Always, in a warehouse",
-          "For consumers that want one table with no joins — dashboards, notebooks, feature pipelines — on a columnar engine where repeated attributes compress well, rebuilt from the star when dimensions change",
-          "For the operational database",
-          "Never; it violates 3NF"
-        ],
+        options: ["Always, in any data warehouse design", "For join-free consumers on a columnar engine", "For the operational, transactional database", "Never, because a wide table violates 3NF"],
         answer: 1,
         why: "It violates 3NF on purpose. The star remains the maintained source; the wide table is a derived convenience."
       },
       {
         stem: "A snowflake schema differs from a star in that…",
-        options: [
-          "It has several fact tables",
-          "Its dimensions are normalised into further tables — product to category to department — trading fewer copies for more joins",
-          "It has no date dimension",
-          "It is stored row-wise"
-        ],
+        options: ["It has several fact tables instead of one", "Its dimensions are normalised further", "It has no date dimension at all", "It is stored row-wise, not columnar"],
         answer: 1,
         why: "Snowflaking is normalising the dimensions. Worth it for very large dimensions with independently changing hierarchies; otherwise the star's simplicity wins."
       }

@@ -321,56 +321,31 @@ ALTER TABLE events ADD CONSTRAINT events_type_lower CHECK (event_type = LOWER(ev
     questions: [
       {
         stem: "Why does `LIKE 'abc%'` use a B-tree index while `LIKE '%abc'` does not?",
-        options: [
-          "Because % is only allowed at the end",
-          "A fixed prefix bounds a contiguous range of the sorted leaves — from 'abc' to 'abd' — that the index can seek to; a suffix could match any leaf, so there is nowhere to start (a trigram GIN index is the tool for that)",
-          "LIKE never uses indexes",
-          "Because of collation"
-        ],
+        options: ["Because % is only allowed at the end", "A prefix bounds a sorted range to seek into", "LIKE never uses a B-tree index", "Because of the database's collation"],
         answer: 1,
         why: "Sort order is what a B-tree offers. Collation is the caveat: PostgreSQL serves the prefix only under C collation or text_pattern_ops, and SQLite only with case-sensitive LIKE."
       },
       {
         stem: "When is a partial index the right choice?",
-        options: [
-          "When the table is small",
-          "When queries target a small, consistently defined subset — refunded orders, unprocessed jobs — so the index covers only those rows, is a fraction of the size, and is maintained only when those rows change",
-          "When the column has few distinct values",
-          "When the query uses OR"
-        ],
+        options: ["When the whole table is small", "When queries target a small, fixed subset", "When the column has few distinct values", "When the query uses OR conditions"],
         answer: 1,
         why: "The planner uses a partial index only when the query's predicate implies the index's WHERE clause, so the subset must be stable and written the same way in queries."
       },
       {
         stem: "What does `INCLUDE (status)` on a PostgreSQL index do?",
-        options: [
-          "Adds status to the sort key",
-          "Stores status in the leaf entries without making it part of the sort, so queries that filter on the key columns and read status become index-only scans",
-          "Creates a second index on status",
-          "Makes the index partial on status"
-        ],
+        options: ["It adds status to the index's sort key", "Stores status in leaves for index-only scans", "It creates a second index on status alone", "It makes the index partial, filtered on status"],
         answer: 1,
         why: "Covering without widening the key: the index stays sorted by its key columns and carries the payload the query needs, so the heap is never visited."
       },
       {
         stem: "A 2-billion-row append-only events table needs range queries on `occurred_at`. Which index and why?",
-        options: [
-          "A B-tree — it is the default",
-          "BRIN — insertion order correlates with time, so per-block min/max values let the scan skip every block outside the range, at a few kilobytes and near-zero write cost; a B-tree would be gigabytes and a write per row",
-          "GIN",
-          "Hash"
-        ],
+        options: ["A B-tree, because it is the default type", "BRIN, as block order tracks the timestamps", "GIN, built over the timestamp values", "A hash index on the timestamp column"],
         answer: 1,
         why: "BRIN is coarse — it identifies blocks, not rows — and that is exactly right when the column is physically ordered and the queries are ranges. On a randomly ordered column it would be useless."
       },
       {
         stem: "Inserts into a table are slow; it has eleven indexes. What is the first thing to check?",
-        options: [
-          "Whether the table needs a twelfth index",
-          "Which indexes are never scanned — pg_stat_user_indexes idx_scan — because every insert pays for every index and an unscanned one is pure cost; drop those CONCURRENTLY",
-          "Whether the primary key is clustered",
-          "The transaction isolation level"
-        ],
+        options: ["Whether the table needs a twelfth index", "Which indexes are never scanned at all", "Whether the primary key is clustered", "The transaction isolation level in use"],
         answer: 1,
         why: "Index count is the usual cause of slow writes on a mature table. The usage counters make the cull objective; CONCURRENTLY keeps the table available while it happens."
       }

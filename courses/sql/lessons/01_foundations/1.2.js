@@ -334,56 +334,31 @@ SELECT name, CASE WHEN country IS NULL THEN 'unknown' ELSE country END FROM cust
     questions: [
       {
         stem: "A table has a nullable `status` column. `WHERE status <> 'closed'` returns 900 rows; `WHERE status = 'closed'` returns 80; the table has 1,000 rows. Where are the other 20?",
-        options: [
-          "Deleted rows",
-          "Rows with status NULL — `<> 'closed'` and `= 'closed'` are both unknown for them, so neither filter keeps them",
-          "A caching problem",
-          "Duplicates"
-        ],
+        options: ["They are rows deleted since the counts were taken", "Rows with NULL status, unknown under both filters", "A caching problem that hides them from both filters", "Duplicate rows that both filters skip over"],
         answer: 1,
         why: "Three-valued logic: a NULL status makes both comparisons unknown, and WHERE treats unknown as false. `IS DISTINCT FROM 'closed'` or `OR status IS NULL` would return 920."
       },
       {
         stem: "Which of these is immune to a NULL appearing in the lookup, on either side?",
-        options: [
-          "`x NOT IN (SELECT k FROM t)`",
-          "`NOT EXISTS (SELECT 1 FROM t WHERE t.k = x)`",
-          "`x <> ALL (SELECT k FROM t)`",
-          "`x NOT IN (SELECT k FROM t WHERE k <> 0)`"
-        ],
+        options: ["`x NOT IN (SELECT k FROM t WHERE k IS NOT NULL)`", "`NOT EXISTS (SELECT 1 FROM t WHERE t.k = x)`", "`x <> ALL (SELECT k FROM t WHERE t.k > 0)`", "`x NOT IN (SELECT k FROM t WHERE k <> 0)`"],
         answer: 1,
         why: "NOT EXISTS asks whether a matching row exists; a NULL on either side fails to match, which is the right answer for 'has no match'. NOT IN and <> ALL both expand to a conjunction that a NULL turns unknown."
       },
       {
         stem: "`SELECT AVG(score) FROM results` returns 72 over a table of 100 rows, 20 of which have a NULL score. What is 72 the average of?",
-        options: [
-          "All 100 rows, with NULL as 0",
-          "The 80 non-null scores — AVG skips NULL and divides by COUNT(score), not COUNT(*)",
-          "The 20 NULL rows",
-          "It is an error to average a column with NULLs"
-        ],
+        options: ["All 100 rows, with NULL counted as zero", "The 80 non-null scores; NULLs are skipped", "The 20 rows whose score is NULL", "Nothing: averaging NULLs raises an error"],
         answer: 1,
         why: "Every aggregate except COUNT(*) ignores NULL. If the NULLs mean 'scored zero', COALESCE(score, 0) before averaging gives 57.6; if they mean 'not sat', 72 is right. The query cannot know which — you must."
       },
       {
         stem: "`CASE WHEN country = NULL THEN 'unknown' ELSE country END` never returns 'unknown'. Why?",
-        options: [
-          "CASE does not support NULL",
-          "`country = NULL` is unknown for every row, and CASE takes a WHEN branch only when its condition is true; write `country IS NULL` or use COALESCE",
-          "The ELSE overrides the WHEN",
-          "NULL must be quoted"
-        ],
+        options: ["CASE does not support NULL in a condition", "`= NULL` is never true; use `IS NULL`", "The ELSE branch overrides the WHEN branch", "NULL must be written in quotes there"],
         answer: 1,
         why: "CASE applies the same gate as WHERE: only true selects the branch. `= NULL` is never true, for any row, on any engine."
       },
       {
         stem: "A unique index on `email` exists and there are 300 rows with `email IS NULL`. Is the index broken?",
-        options: [
-          "Yes — a unique index allows at most one NULL",
-          "No — in the SQL standard and in PostgreSQL, MySQL and SQLite, NULLs are distinct from each other for uniqueness; use NOT NULL or PostgreSQL 15's NULLS NOT DISTINCT to change that",
-          "Yes — NULLs cannot be indexed",
-          "Only if the index is clustered"
-        ],
+        options: ["Yes: a unique index allows at most one NULL", "No: NULLs are distinct for uniqueness by default", "Yes: NULL values cannot be indexed at all", "Only if the index happens to be clustered"],
         answer: 1,
         why: "Uniqueness compares values with three-valued logic too: NULL equals nothing, so two NULLs do not conflict. SQL Server is the notable engine that treats NULL as a single value in a unique index."
       }

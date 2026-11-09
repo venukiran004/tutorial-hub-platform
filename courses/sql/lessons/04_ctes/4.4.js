@@ -322,56 +322,31 @@ SELECT 'invented by round trip', * FROM (SELECT * FROM unpivoted EXCEPT SELECT *
     questions: [
       {
         stem: "A wide report's category columns sum to less than its total column for March. What does that tell you?",
-        options: [
-          "A rounding error",
-          "Some category present in the data has no column in the pivot — a NULL category or a new value — so its revenue is in the total and in none of the named columns",
-          "The total is wrong",
-          "A join fanned out"
-        ],
+        options: ["A rounding error across the categories", "A category with no column in the pivot", "The total column is calculated wrongly", "A join fanned out the category rows"],
         answer: 1,
         why: "The total aggregates every row; the named columns aggregate only the listed values. The gap is exactly the unlisted categories, which is why the total column is the pivot's reconciliation check."
       },
       {
         stem: "Which unpivot reads the wide table only once?",
-        options: [
-          "UNION ALL with one branch per column",
-          "A VALUES list in a CROSS JOIN LATERAL that references the row's columns — one pass, n rows out per row in",
-          "A recursive CTE",
-          "DISTINCT ON"
-        ],
+        options: ["UNION ALL, one branch per column", "A VALUES list in CROSS JOIN LATERAL", "A recursive CTE over the columns", "DISTINCT ON over the wide table"],
         answer: 1,
         why: "Each UNION ALL branch is a separate scan of the source. The lateral VALUES produces the long rows from each wide row as it streams past."
       },
       {
         stem: "What is wrong with storing customer event counts as a wide table with a column per event type?",
-        options: [
-          "Nothing; it is faster to read",
-          "Every new event type is a schema migration, every cell exists whether or not anything happened, and the grid cannot hold a second dimension such as month without another table — long storage with a pivot in the report avoids all three",
-          "Wide tables cannot be indexed",
-          "COUNT cannot be used on wide tables"
-        ],
+        options: ["Nothing; a wide table is quicker to read", "A migration per new type, empty cells, no 2nd axis", "Wide tables cannot be indexed by the engine", "COUNT cannot be applied to wide tables"],
         answer: 1,
         why: "Wide encodes the category list in the schema. Long encodes it in the data, where it can change. The wide view is derived on read."
       },
       {
         stem: "An unpivoted result has 32 rows where the original long table had 12. Why?",
-        options: [
-          "The unpivot duplicated rows",
-          "The wide grid had a cell for every (customer, category) pair, filled with zero or NULL where nothing was sold, and each cell became a row; filter out the empty cells to recover the original",
-          "The join fanned out",
-          "COALESCE created extra rows"
-        ],
+        options: ["The unpivot duplicated some of the rows", "Each grid cell became a row, empty ones too", "The join fanned out the category rows", "COALESCE created extra rows for NULLs"],
         answer: 1,
         why: "Pivoting fills the grid; unpivoting turns every cell into an observation. The extra rows are the empty cells. A WHERE on the value column removes them."
       },
       {
         stem: "When generating a pivot statement from the distinct values of a column, why use `FORMAT('%I', value)` for the column alias?",
-        options: [
-          "For readability",
-          "Because the value becomes an identifier in the generated SQL, and %I quotes it safely — a value containing a quote or a keyword would otherwise break the statement or inject into it",
-          "It is required by GROUP BY",
-          "To lowercase it"
-        ],
+        options: ["For readability of the generated pivot statement", "The value becomes an identifier; %I quotes it", "Because GROUP BY requires every alias to be quoted", "To lowercase the generated alias consistently"],
         answer: 1,
         why: "Data used as SQL text is untrusted input. %L quotes literals and %I quotes identifiers; both are what make generated SQL safe (7.1)."
       }

@@ -329,56 +329,31 @@ WHERE  rn = 1 ORDER BY customer_id;
     questions: [
       {
         stem: "A user logged in on 1, 2, 3, 6 and 7 March. What is `day − ROW_NUMBER()` for each?",
-        options: [
-          "1, 2, 3, 6, 7",
-          "28 Feb, 28 Feb, 28 Feb, 2 Mar, 2 Mar — constant within each consecutive run, so grouping by it yields the two streaks",
-          "0, 0, 0, 3, 3",
-          "It is an error to subtract an integer from a date"
-        ],
+        options: ["1, 2, 3, 6, 7", "28 Feb ×3, 2 Mar ×2", "0, 0, 0, 3, 3", "An error: date minus integer"],
         answer: 1,
         why: "Within a run both the date and the row number step by one, so their difference does not move. At the gap the date jumps three days while the row number moves one, and the difference shifts by two."
       },
       {
         stem: "Why can you not write `COUNT(DISTINCT customer_id) OVER (ORDER BY month)` for a cumulative distinct count?",
-        options: [
-          "COUNT does not support windows",
-          "DISTINCT is not permitted in an ordered window on most engines, because the frame would have to track every earlier value; count each customer's first month and running-sum the counts instead",
-          "It works but is slow",
-          "You can, with ROWS UNBOUNDED PRECEDING"
-        ],
+        options: ["COUNT does not support window clauses", "DISTINCT is not allowed in ordered windows", "It works, but runs very slowly", "You can, with ROWS UNBOUNDED PRECEDING"],
         answer: 1,
         why: "PostgreSQL, DuckDB and SQL Server reject DISTINCT in a window with ORDER BY. The first-appearance trick reduces the problem to a plain running sum."
       },
       {
         stem: "How many CTE layers does sessionisation need, and why?",
-        options: [
-          "One — LAG and SUM can be combined",
-          "Two windows in sequence plus a GROUP BY — the flag from LAG, the session number from a running SUM over that flag, then the grouping — because a window function cannot be an argument to another window function",
-          "Zero — GROUP BY alone can do it",
-          "Four, always"
-        ],
+        options: ["One, because LAG and SUM can be combined", "Two windows then a GROUP BY: windows can't nest", "Zero, because GROUP BY alone is enough here", "Four, which sessionisation always requires"],
         answer: 1,
         why: "`SUM(LAG(…) OVER …) OVER …` is invalid. Each window result must be materialised as a column before the next window reads it, which is what the CTE chain does."
       },
       {
         stem: "Two customer-months come from two orders in the same month. What does that do to the islands trick, and what is the fix?",
-        options: [
-          "Nothing",
-          "The row number advances while the month index does not, so the difference changes and a run is falsely split; DISTINCT the (customer, month) pairs first",
-          "It merges two runs",
-          "It raises an error"
-        ],
+        options: ["Nothing changes for the islands trick", "Runs split falsely; DISTINCT the pairs first", "Two separate runs are merged together", "The query raises an error on duplicates"],
         answer: 1,
         why: "The trick assumes exactly one row per step of the sequence. Duplicates break the one-to-one correspondence between rows and steps; de-duplicating restores it."
       },
       {
         stem: "PERCENT_RANK for the two employees tied on 125,000 is 0.56 for both, and CUME_DIST is 0.70 for both. What do the two numbers mean?",
-        options: [
-          "56 % and 70 % of employees earn less",
-          "PERCENT_RANK: (rank − 1)/(n − 1) — five of the nine other employees are strictly below; CUME_DIST: seven of ten employees earn at most 125,000, tied rows included",
-          "They are the same statistic rounded differently",
-          "CUME_DIST counts rows above"
-        ],
+        options: ["56% and 70% of employees earn strictly less", "Rank-based share below, and share at or below", "The same statistic, rounded differently", "CUME_DIST counts the rows above the value"],
         answer: 1,
         why: "PERCENT_RANK is based on RANK, so ties share it and the top row is exactly 1. CUME_DIST is the fraction of the partition at or below the current value, so it counts the peers too."
       }

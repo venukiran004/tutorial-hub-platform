@@ -318,56 +318,31 @@ def fetch_orders(conn, *, customer_ids=None, statuses=None, since=None, sort="pl
     questions: [
       {
         stem: "A function must query a table whose name comes from a request. What is the safe approach?",
-        options: [
-          "Parameterise the table name",
-          "Check the name against a set of allowed tables the code defines, then quote it as an identifier; the request selects from the set and never supplies the text",
-          "Escape quotes in the name",
-          "Use an ORM"
-        ],
+        options: ["Pass the table name as a bound parameter", "Allow-list the name, then quote it", "Escape any quotes in the name", "Use an ORM to build the query"],
         answer: 1,
         why: "Identifiers must be present at parse time, so parameters cannot carry them. An allow-list makes the input a choice rather than a string."
       },
       {
         stem: "A sqlite3 script inserts rows, prints success, and the database is empty afterwards. What happened?",
-        options: [
-          "The disk failed",
-          "The legacy sqlite3 default opened an implicit transaction before the first write and the script exited without committing; make transactions explicit or use `with con:` / `autocommit=False` with a commit",
-          "The rows were rejected silently",
-          "SQLite does not persist inserts"
-        ],
+        options: ["The disk failed after the inserts ran", "An implicit transaction was never committed", "The rows were rejected without an error", "SQLite does not persist inserted rows"],
         answer: 1,
         why: "Uncommitted work is rolled back when the connection closes. Explicit boundaries prevent the surprise."
       },
       {
         stem: "Which errors should a retry loop catch?",
-        options: [
-          "All exceptions",
-          "Transient ones with a specific meaning — serialisation failure, deadlock, connection dropped — and only around idempotent transactions, with backoff and a bound",
-          "Unique violations",
-          "Syntax errors"
-        ],
+        options: ["All exceptions, just to be safe", "Transient errors, around idempotent work", "Unique-constraint violations on insert", "Syntax errors in the SQL statement"],
         answer: 1,
         why: "A unique violation or a syntax error will fail identically every time. Catch-all retries turn a bug into a loop and a non-idempotent write into duplicates."
       },
       {
         stem: "Why set a statement timeout on the server rather than a timeout in the client?",
-        options: [
-          "Client timeouts do not exist",
-          "A client timeout abandons the query while the server keeps running it, holding locks and a connection; a server-side timeout cancels the statement itself",
-          "It is faster",
-          "Servers ignore client timeouts"
-        ],
+        options: ["Client-side timeouts do not exist in drivers", "The server cancels the statement itself", "Server-side timeouts make queries faster", "Servers ignore every client-side timeout"],
         answer: 1,
         why: "Abandoned queries are how a pool fills with connections running work nobody is waiting for. Cancel at the source."
       },
       {
         stem: "What does a connection pool give a web application?",
-        options: [
-          "Faster queries",
-          "Reuse of expensive connections across requests and a cap on concurrent connections below the server's limit, with `with pool.connection()` returning each one on exit",
-          "Automatic retries",
-          "Injection protection"
-        ],
+        options: ["Faster execution of each individual query", "Reused connections, capped below the limit", "Automatic retries whenever a query fails", "Protection against SQL injection attacks"],
         answer: 1,
         why: "Opening a PostgreSQL connection costs a process and a handshake; a pool pays it once and prevents a burst of requests from exhausting max_connections."
       }

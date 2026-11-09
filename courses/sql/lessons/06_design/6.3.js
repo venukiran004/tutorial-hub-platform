@@ -329,56 +329,31 @@ COMMIT;`,
     questions: [
       {
         stem: "What does `EXCLUDED` refer to in `ON CONFLICT DO UPDATE SET tier = EXCLUDED.tier`?",
-        options: [
-          "The existing row in the table",
-          "The row that the INSERT proposed and that conflicted — its values are used to update the existing row",
-          "Rows excluded by the WHERE clause",
-          "The primary key"
-        ],
+        options: ["The row already stored in the table", "The proposed row that hit the conflict", "Rows excluded by the WHERE clause", "The table's primary key value"],
         answer: 1,
         why: "EXCLUDED is the would-be-inserted row; the table name refers to the existing row. `WHERE customers.tier IS DISTINCT FROM EXCLUDED.tier` compares the two."
       },
       {
         stem: "Why must the ON CONFLICT target be a unique index or primary key?",
-        options: [
-          "For syntax reasons only",
-          "Because the uniqueness is what lets the database detect the conflict atomically under concurrency; without it two inserts could both succeed and the upsert would be a check-then-insert race",
-          "To speed up the insert",
-          "It does not have to be"
-        ],
+        options: ["For syntax reasons, and nothing else", "Uniqueness detects conflicts atomically", "To make each insert run faster", "It does not have to be unique at all"],
         answer: 1,
         why: "The upsert's correctness rests on the index. A non-unique column cannot define 'the row this conflicts with'."
       },
       {
         stem: "A soft-deleted account's email must be reusable by a new sign-up. What does the uniqueness constraint look like?",
-        options: [
-          "UNIQUE (email)",
-          "A partial unique index: UNIQUE (email) WHERE deleted_at IS NULL — uniqueness among live rows only",
-          "UNIQUE (email, deleted_at)",
-          "No constraint; check in the application"
-        ],
+        options: ["UNIQUE (email) on the whole table", "A partial unique index on live rows", "UNIQUE (email, deleted_at) together", "No constraint; check in application code"],
         answer: 1,
         why: "UNIQUE (email, deleted_at) would allow two live accounts (both NULL — NULLs are distinct in most engines). The partial index is exactly 'unique among the living'."
       },
       {
         stem: "When is MERGE preferable to ON CONFLICT?",
-        options: [
-          "Always; it is standard SQL",
-          "For batch synchronisation where several branches are needed — matched update, not-matched insert, not-matched-by-source delete — and concurrent inserts are not a concern",
-          "Never",
-          "For single-row upserts under high concurrency"
-        ],
+        options: ["Always, because it is standard SQL", "Batch syncs needing several branches", "Never, as ON CONFLICT covers all cases", "Single-row upserts under concurrency"],
         answer: 1,
         why: "MERGE is the expressive tool for reconciling two tables; ON CONFLICT is the atomic tool for concurrent upserts. PostgreSQL's MERGE can raise a unique violation under a race that ON CONFLICT handles."
       },
       {
         stem: "Which makes the biggest difference when loading a million rows?",
-        options: [
-          "Using executemany instead of a loop",
-          "Wrapping the load in one transaction (or a few large ones) rather than committing per row; after that, COPY-style bulk paths and deferring index builds",
-          "Multi-row VALUES",
-          "Increasing the connection pool"
-        ],
+        options: ["executemany instead of a Python loop", "One transaction instead of one per row", "Multi-row VALUES in each statement", "A larger connection pool"],
         answer: 1,
         why: "The measured gap was 112× for the transaction and 1.5× for everything else combined. Fix the commits first."
       }

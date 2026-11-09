@@ -314,56 +314,31 @@ ORDER  BY paid_revenue DESC;
     questions: [
       {
         stem: "`CASE WHEN salary > 90000 THEN 'C' WHEN salary > 120000 THEN 'B' WHEN salary > 140000 THEN 'A' ELSE 'D' END` grades a 190,000 salary as 'C'. Why?",
-        options: [
-          "The comparisons are the wrong way round",
-          "CASE returns the first true branch; 190,000 > 90,000 is true first, so 'C' is returned and the later branches are never tested — order the branches from the highest threshold down",
-          "'A' needs to be first alphabetically",
-          "The ELSE overrides"
-        ],
+        options: ["The comparisons are written the wrong way round", "CASE takes the first true branch; order high to low", "'A' needs to come first alphabetically in CASE", "The ELSE clause overrides the earlier branches"],
         answer: 1,
         why: "Branches are evaluated top to bottom and evaluation stops at the first true condition. Overlapping ranges must be ordered from most specific to least, or made disjoint."
       },
       {
         stem: "Which expression gives the share of paid orders correctly on every engine?",
-        options: [
-          "`SUM(CASE WHEN status = 'paid' THEN 1 END) / COUNT(*)`",
-          "`AVG(CASE WHEN status = 'paid' THEN 1.0 ELSE 0 END)`",
-          "`COUNT(status = 'paid') / COUNT(*)`",
-          "`SUM(status = 'paid')`"
-        ],
+        options: ["`SUM(CASE WHEN status = 'paid' THEN 1 END) / COUNT(*)`", "`AVG(CASE WHEN status = 'paid' THEN 1.0 ELSE 0 END)`", "`COUNT(status = 'paid') / COUNT(*) * 1.0`", "`SUM(status = 'paid') / CAST(COUNT(*) AS REAL)`"],
         answer: 1,
         why: "AVG of a 0/1 column is the share, and the decimal literal keeps the arithmetic non-integer. The first truncates on PostgreSQL and SQL Server; the third counts non-null booleans (every row); the fourth only works where booleans are integers."
       },
       {
         stem: "A pivot by category loses the revenue of products whose category is NULL. What is wrong with `SUM(CASE WHEN category = NULL THEN … END)`?",
-        options: [
-          "NULL must be quoted",
-          "`category = NULL` is unknown for every row, so that branch never fires; write `category IS NULL`",
-          "SUM cannot handle NULL",
-          "The pivot needs GROUP BY category"
-        ],
+        options: ["NULL must be quoted inside the CASE", "`= NULL` never fires; write `IS NULL`", "SUM cannot add up NULL categories", "The pivot needs a GROUP BY category"],
         answer: 1,
         why: "The same three-valued rule as WHERE: a CASE branch fires only when its condition is true, and `= NULL` never is. The rows are not counted anywhere and no row count reveals it."
       },
       {
         stem: "Why does `GROUP BY status` give a less useful result than three conditional counts when a dashboard wants paid, refunded and cancelled as named cells?",
-        options: [
-          "GROUP BY is slower",
-          "GROUP BY returns one row per status that exists, so a status with no orders produces no row and the caller has to pivot and fill zeros; conditional aggregation returns one row with every column present, zero included",
-          "GROUP BY cannot count",
-          "GROUP BY requires an index"
-        ],
+        options: ["GROUP BY is much slower than conditional counts", "Missing statuses produce no row, so zeros vanish", "GROUP BY cannot count rows within each status", "GROUP BY requires an index on the status column"],
         answer: 1,
         why: "Both scan once. The difference is shape and completeness: rows-per-group versus columns-per-condition, and a missing group versus a zero."
       },
       {
         stem: "`COUNT(*) FILTER (WHERE amount > 100)` fails on MySQL. What is the equivalent?",
-        options: [
-          "`COUNT(amount > 100)`",
-          "`SUM(CASE WHEN amount > 100 THEN 1 ELSE 0 END)` — the CASE form is portable to every engine",
-          "`COUNT(*) WHERE amount > 100`",
-          "There is none"
-        ],
+        options: ["`COUNT(amount > 100)` over the table", "`SUM(CASE WHEN amount > 100 THEN 1 ELSE 0 END)`", "`COUNT(*) WHERE amount > 100` inline", "There is no portable equivalent in MySQL"],
         answer: 1,
         why: "FILTER is standard SQL but MySQL and SQL Server do not implement it. The CASE inside the aggregate is the universal form; for AVG the excluded rows need ELSE NULL rather than ELSE 0."
       }

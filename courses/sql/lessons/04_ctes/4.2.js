@@ -315,56 +315,31 @@ SELECT * FROM promoted ORDER BY customer_id;
     questions: [
       {
         stem: "What does `WITH x AS MATERIALIZED (…)` guarantee that the default does not?",
-        options: [
-          "That x is indexed",
-          "That x is computed exactly once into a temporary result, however many times it is referenced — at the cost of blocking predicate push-down into it",
-          "That x persists after the statement",
-          "That x is faster"
-        ],
+        options: ["That x is indexed for later steps", "That x is computed once, blocking push-down", "That x persists after the statement ends", "That x will run faster than inline"],
         answer: 1,
         why: "MATERIALIZED forces single evaluation; NOT MATERIALIZED forces inlining. Neither is faster in general — reuse favours the first, a selective outer filter favours the second."
       },
       {
         stem: "Why might a temporary table beat a CTE for a large intermediate result?",
-        options: [
-          "Temporary tables are always faster",
-          "A temporary table can be indexed and AnalysEd, so the planner has real row counts for the later steps; a materialised CTE has neither",
-          "CTEs cannot hold more than a million rows",
-          "Temporary tables are transactional"
-        ],
+        options: ["Temporary tables are always faster", "It can be indexed and analysed", "CTEs cannot exceed a million rows", "Temporary tables are transactional"],
         answer: 1,
         why: "A bad row estimate on a CTE scan can lead the planner into a nested loop over millions of rows. Statistics and an index on a temp table remove the guess."
       },
       {
         stem: "In a PostgreSQL data-modifying CTE, the second CTE inserts rows returned by a DELETE in the first. What snapshot does each see?",
-        options: [
-          "The second sees the first's deletions",
-          "Both see the tables as they were at statement start; the second sees the deleted rows only through RETURNING, which is what makes the move consistent",
-          "The first sees the second's inserts",
-          "Each sees the latest committed data"
-        ],
+        options: ["The second sees the first's deletions", "Both see the start; RETURNING links them", "The first sees the second's inserted rows", "Each sees the latest committed data"],
         answer: 1,
         why: "Modifying CTEs run against one snapshot and communicate only via RETURNING. The archive receives exactly the rows the DELETE removed, with no window for the two to diverge."
       },
       {
         stem: "A CTE named `totals` is defined twice in the same WITH clause. What happens?",
-        options: [
-          "The second definition wins",
-          "A syntax error: CTE names must be unique within a WITH list",
-          "The first definition wins",
-          "They are unioned"
-        ],
+        options: ["The second definition silently wins", "A syntax error: names must be unique", "The first definition silently wins", "The two definitions are unioned"],
         answer: 1,
         why: "Each name in a WITH list is declared once and is visible to later CTEs and the main query. Shadowing across nested statements is possible; duplication within one list is not."
       },
       {
         stem: "Which is the best reason to convert a derived table into a CTE?",
-        options: [
-          "Performance — CTEs run faster",
-          "Readability and reuse: the step gets a name, can be referenced more than once, and can be tested in isolation; the plan is typically identical",
-          "CTEs allow ORDER BY",
-          "CTEs are transactional"
-        ],
+        options: ["Performance, because CTEs run faster", "A named, reusable, testable step", "CTEs allow ORDER BY inside them", "CTEs are transactional"],
         answer: 1,
         why: "For a single reference the two forms produce the same plan on modern engines. The gain is in the reading and the maintaining, which is where most query time is actually spent."
       }

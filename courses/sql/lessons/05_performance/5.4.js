@@ -274,56 +274,31 @@ ORDER  BY placed_at, order_id LIMIT 20;
     questions: [
       {
         stem: "Which of these is sargable on a column `amount` with a B-tree index?",
-        options: [
-          "`WHERE amount * 1.2 > 100`",
-          "`WHERE ROUND(amount) = 50`",
-          "`WHERE amount > 100 / 1.2` — the column is bare and the arithmetic is on the constant",
-          "`WHERE COALESCE(amount, 0) > 50`"
-        ],
+        options: ["`WHERE amount * 1.2 > 100`", "`WHERE ROUND(amount) = 50`", "`WHERE amount > 100 / 1.2`", "`WHERE COALESCE(amount, 0) > 50`"],
         answer: 2,
         why: "Only the third compares the stored value directly. The others transform the column per row, which discards the index's sort order."
       },
       {
         stem: "Why is `LIMIT 20 OFFSET 200000` slow even with an index on the ORDER BY column?",
-        options: [
-          "OFFSET disables indexes",
-          "The engine must walk 200,020 index entries in order and discard 200,000 of them; the cost grows linearly with the page number — keyset pagination seeks straight to the last row seen",
-          "LIMIT forces a sort",
-          "It is not slow with an index"
-        ],
+        options: ["OFFSET disables the use of indexes", "It walks and discards 200,000 entries", "LIMIT forces a full sort of the table", "It is not slow when an index exists"],
         answer: 1,
         why: "An index makes each entry cheap but does not change how many are visited. OFFSET's cost is the offset; keyset's cost is the page size."
       },
       {
         stem: "`WHERE name LIKE '%kettle%'` must be fast. What is the answer?",
-        options: [
-          "Rewrite as a range",
-          "A trigram GIN index (`pg_trgm`) — no B-tree rewrite exists for a substring, because the match can start anywhere in the sorted value",
-          "An expression index on LOWER(name)",
-          "A partial index"
-        ],
+        options: ["Rewrite it as a range on the column", "A trigram GIN index", "An expression index on LOWER(name)", "A partial index on name"],
         answer: 1,
         why: "Sort order cannot locate an arbitrary substring. Trigram indexes decompose each value into three-character fragments and can find any substring of three characters or more."
       },
       {
         stem: "What does keyset pagination require that OFFSET pagination does not?",
-        options: [
-          "A larger index",
-          "A total, unique ordering — sort key plus primary key — and a client that carries the last row's key values instead of a page number; in exchange it cannot jump to an arbitrary page",
-          "A materialised view",
-          "Nothing; it is a drop-in replacement"
-        ],
+        options: ["A larger index on the sort column", "A unique ordering and the last row's key", "A materialised view of the results", "Nothing; it is a drop-in replacement"],
         answer: 1,
         why: "The predicate `> (last_ts, last_id)` only works if the ordering is total and the client knows where it stopped. Random access to page 300 is the feature given up."
       },
       {
         stem: "`WHERE customer_id = 5 OR notes LIKE '%urgent%'` with an index on customer_id. What happens?",
-        options: [
-          "An index seek on customer_id plus a filter",
-          "A full scan — one side of the OR has no index to seek, so the whole predicate must be evaluated per row; bitmap OR only helps when every branch is sargable",
-          "A BitmapOr on both",
-          "An error"
-        ],
+        options: ["An index seek on customer_id plus a filter", "A full scan: one OR branch has no index", "A BitmapOr combining both branches", "An error, since OR cannot mix indexes"],
         answer: 1,
         why: "An OR is only as sargable as its least sargable branch. The rows that satisfy the LIKE could be anywhere, so the engine cannot restrict the scan by the customer_id branch alone."
       }

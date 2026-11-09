@@ -337,56 +337,31 @@ CREATE VIEW customers_legacy AS SELECT *, concat_ws(' ', first_name, last_name) 
     questions: [
       {
         stem: "Which of these ALTERs rewrites the table in PostgreSQL?",
-        options: [
-          "ADD COLUMN email TEXT (nullable, no default)",
-          "ALTER COLUMN order_id TYPE BIGINT — every row and every index is rewritten under an exclusive lock",
-          "DROP COLUMN",
-          "ALTER COLUMN SET DEFAULT"
-        ],
+        options: ["ADD COLUMN email TEXT, nullable", "ALTER COLUMN order_id TYPE BIGINT", "DROP COLUMN on an unused column", "ALTER COLUMN SET DEFAULT on a column"],
         answer: 1,
         why: "Type changes and most volatile defaults on old versions rewrite; the others are catalogue changes. Plan the rewrite with expand–contract, or avoid it by choosing the type at creation."
       },
       {
         stem: "A view with a GROUP BY is queried with a WHERE on a column of the outer query and is slow. Why?",
-        options: [
-          "Views are always slow",
-          "The planner could not push the filter beneath the aggregation, so the view computes the full aggregate and filters afterwards; rewrite so the filter can be pushed down or materialise the view",
-          "The view has no index",
-          "GROUP BY is not allowed in views"
-        ],
+        options: ["Views are always slow, whatever they contain", "The filter cannot be pushed below the GROUP BY", "The view has no index of its own to use", "GROUP BY is not permitted inside a view"],
         answer: 1,
         why: "A view is inlined; whether the outer filter reaches the base tables depends on the view's shape. This is the aggregate-then-filter trap from 5.5 wearing a view."
       },
       {
         stem: "What is `REFRESH MATERIALIZED VIEW CONCURRENTLY` for, and what does it require?",
-        options: [
-          "Faster refresh; nothing",
-          "Refreshing without blocking readers — the new result is built alongside and swapped in by diff; it requires a unique index on the materialised view",
-          "Automatic refresh on every write",
-          "Refreshing several views at once"
-        ],
+        options: ["A faster refresh, with no requirements", "No reader blocking; needs a unique index", "Automatic refresh on every write", "Refreshing several views at once"],
         answer: 1,
         why: "The plain REFRESH locks the view against reads for its duration; CONCURRENTLY needs the unique index to compute which rows changed."
       },
       {
         stem: "When is a trigger the right tool?",
-        options: [
-          "For all business logic",
-          "For an audit log that must capture every path including manual changes, and for invariants a constraint cannot express — kept small, and documented, because they are invisible to the code that fires them",
-          "For sending emails",
-          "Never"
-        ],
+        options: ["For all of the application's business logic", "Audit logs and invariants constraints miss", "For sending notification emails on insert", "Never, since triggers are always a mistake"],
         answer: 1,
         why: "Triggers see everything and are seen by nothing — ideal for audit, dangerous for logic that someone will later need to find, test and change."
       },
       {
         stem: "Why keep data backfills in a separate migration from the schema change?",
-        options: [
-          "Tools require it",
-          "The DDL is milliseconds and the backfill may be hours; separating them keeps the schema change's lock short, lets the backfill run in batches and be re-run, and lets it fail without leaving the schema half-applied",
-          "Backfills cannot be rolled back",
-          "So the backfill can run in autocommit"
-        ],
+        options: ["Migration tools require the two to be separate", "Short schema lock; batched, re-runnable backfill", "Because a backfill can never be rolled back", "So the backfill can run under autocommit"],
         answer: 1,
         why: "A backfill inside a DDL transaction holds the DDL's lock for the backfill's duration and turns a re-runnable job into an all-or-nothing one."
       }

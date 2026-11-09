@@ -328,56 +328,31 @@ SELECT SUM(oi.qty * oi.unit_price) FROM order_items oi JOIN orders o ON o.order_
     questions: [
       {
         stem: "After `customers LEFT JOIN orders`, which aggregate gives 0 for a customer with no orders?",
-        options: [
-          "`COUNT(*)`",
-          "`COUNT(o.order_id)` — it counts non-null values, and the padded row's order_id is NULL",
-          "`COUNT(c.customer_id)`",
-          "`SUM(1)`"
-        ],
+        options: ["`COUNT(*)`, every row in the group", "`COUNT(o.order_id)`, non-null ids", "`COUNT(c.customer_id)`, each customer", "`SUM(1)`, one per joined row"],
         answer: 1,
         why: "COUNT(*) and COUNT(c.customer_id) both count the padded row, because the row exists and the left key is not null. Only a right-hand column is NULL in the padding."
       },
       {
         stem: "A join to a lookup table drops rows whose lookup key is NULL, even though the lookup contains a NULL row. Why?",
-        options: [
-          "The lookup is unindexed",
-          "The ON clause uses `=`, and `NULL = NULL` is unknown; use `IS NOT DISTINCT FROM` (or MySQL's `<=>`) to match NULL to NULL",
-          "NULL rows cannot be stored in lookups",
-          "The join needs DISTINCT"
-        ],
+        options: ["The lookup table is missing an index", "`NULL = NULL` is unknown; use IS NOT DISTINCT FROM", "NULL rows cannot be stored in lookup tables", "The join needs DISTINCT to match NULLs"],
         answer: 1,
         why: "A join condition is a comparison under three-valued logic. NULL equals nothing. The null-safe operator is the explicit, and only, way to say NULL should match."
       },
       {
         stem: "A per-customer report joins orders, order_items and events and sums item amounts. The total across customers is more than three times the paid revenue. What happened?",
-        options: [
-          "Prices were updated",
-          "Fan-out: each item row was repeated once per event of the same customer, so the sum was multiplied by each customer's event count; aggregate items and events separately, then join",
-          "Some events are duplicates",
-          "The SUM included refunded orders"
-        ],
+        options: ["Product prices were updated in between", "Fan-out: each item repeated once per event", "Some event rows are exact duplicates", "The sum included refunded orders"],
         answer: 1,
         why: "Two one-to-many relationships from customers joined together produce the product of their counts per customer. The inflation factor differs per customer, so no single division corrects it — the structure must change."
       },
       {
         stem: "Why does `COUNT(DISTINCT order_id)` fix the count but not the revenue in a fanned-out join?",
-        options: [
-          "DISTINCT is not allowed with SUM",
-          "DISTINCT collapses repeated keys, but a repeated amount is indistinguishable from a genuine second item of the same amount, so SUM cannot know which rows are duplicates",
-          "SUM(DISTINCT amount) would fix it",
-          "Revenue is a float"
-        ],
+        options: ["DISTINCT is not allowed together with SUM", "A repeated amount looks like a real second item", "SUM(DISTINCT amount) would fix the revenue", "Because the revenue column is a float"],
         answer: 1,
         why: "SUM(DISTINCT amount) would also drop real duplicates — two items that happen to cost the same. Once rows are multiplied, the information needed to undo it is gone; prevent the multiplication instead."
       },
       {
         stem: "Which single check catches all four outer-join traps in a joined report?",
-        options: [
-          "Running EXPLAIN",
-          "Comparing the report's total to the same total computed on the base table alone — a join must not change a base-table invariant",
-          "Adding LIMIT 10 and eyeballing",
-          "Checking for NULLs in the output"
-        ],
+        options: ["Running EXPLAIN on the joined query", "Reconciling a total against the base table", "Adding LIMIT 10 and eyeballing rows", "Checking the output for NULL values"],
         answer: 1,
         why: "A WHERE that deleted rows lowers the total; a fan-out raises it; a NULL key drops rows; COUNT(*) changes counts. All of them move the reconciliation number away from the base-table figure."
       }

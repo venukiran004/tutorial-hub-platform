@@ -323,56 +323,31 @@ GROUP BY r.cohort, sz.n ORDER BY r.cohort;
     questions: [
       {
         stem: "What does an acquisition cohort's month-0 retention equal, and why?",
-        options: [
-          "It varies",
-          "1.0 by construction: the anchor is the first active month, so every member is active in month 0; a sign-up anchor would allow month 0 below 1.0",
-          "0.0",
-          "The average of later months"
-        ],
+        options: ["It varies from cohort to cohort", "1.0 by construction of the anchor", "0.0, since nobody has returned yet", "The average of the later months"],
         answer: 1,
         why: "The anchor defines the cohort; when the anchor is itself an activity, period 0 is full. That is also why acquisition cohorts exclude customers who never bought."
       },
       {
         stem: "A funnel counts customers with any view, any cart and any checkout as 6, 4, 3. The ordered version gives 6, 4, 2. Which is right?",
-        options: [
-          "The first; it has more data",
-          "The ordered one for a conversion funnel: the third customer's checkout did not follow a cart, so it is not a cart-to-checkout conversion; the unordered count answers a different question ('who has ever done each thing')",
-          "Neither",
-          "Average them"
-        ],
+        options: ["The first, since it is based on more data", "The ordered one, for a conversion funnel", "Neither of the two counts is meaningful", "The average of the two funnel counts"],
         answer: 1,
         why: "The executed ordered funnel gave 6 / 4 / 2 with Emeka excluded for skipping the cart step. Whether skipped steps should count is a definition decision to document, not a bug."
       },
       {
         stem: "Why should RFM use a fixed as-of date rather than now()?",
-        options: [
-          "now() is slow",
-          "Recency and the quantile buckets depend on the date; with now(), the same customer's score changes daily with no change in behaviour, and results cannot be reproduced",
-          "now() returns UTC",
-          "It does not matter"
-        ],
+        options: ["now() is slow to evaluate per row", "Scores drift daily and cannot be reproduced", "now() always returns UTC, not local time", "It does not matter which of them is used"],
         answer: 1,
         why: "A reproducible analysis names its date. It also makes the scores comparable across runs of the same definition."
       },
       {
         stem: "NTILE(4) OVER (ORDER BY monetary) gives a customer a 4. What does that mean?",
-        options: [
-          "They spent over a fixed threshold",
-          "They are in the top quarter of this population by spend on this date; the score is relative, and buckets differ in size by at most one row",
-          "They are the top spender",
-          "They spent four times the average"
-        ],
+        options: ["They spent over a fixed threshold", "Top quarter of this population, relatively", "They are the single top spender", "They spent four times the average"],
         answer: 1,
         why: "NTILE is a ranking, not a measurement. Fixed thresholds via CASE give absolute, cross-period comparable scores when those are needed."
       },
       {
         stem: "Which change makes bounded retention non-monotone while unbounded stays monotone?",
-        options: [
-          "Using weeks instead of months",
-          "A customer inactive in period 3 and active in period 4: bounded retention rises at 4; unbounded counts them for every n up to 4, so it never rises",
-          "Larger cohorts",
-          "Including cancelled orders"
-        ],
+        options: ["Using weeks instead of months", "A customer who lapses, then returns", "Larger cohort sizes per month", "Including cancelled orders too"],
         answer: 1,
         why: "Unbounded retention is 'still around by period n', a set that only shrinks. Bounded is 'active in period n', which can bounce."
       }

@@ -281,56 +281,31 @@ COMMIT;
     questions: [
       {
         stem: "Why are 10,000 single-row INSERTs in autocommit so much slower than the same rows in one transaction?",
-        options: [
-          "Autocommit disables indexes",
-          "Each commit must flush the write-ahead log to durable storage before returning; autocommit does that 10,000 times, one transaction does it once",
-          "Transactions use a faster code path",
-          "Autocommit re-parses the statement each time"
-        ],
+        options: ["Autocommit disables the table's indexes", "Each commit flushes the WAL to disk", "Transactions use a faster code path", "Autocommit re-parses every statement"],
         answer: 1,
         why: "Durability is paid at COMMIT with an fsync. The rows themselves cost the same; the flushes differ by a factor of ten thousand."
       },
       {
         stem: "What does `ROLLBACK TO SAVEPOINT s` do that `ROLLBACK` does not?",
-        options: [
-          "It commits everything before the savepoint",
-          "It undoes only the work since the savepoint and leaves the transaction open, so earlier work is kept pending and can still be committed",
-          "It is the same",
-          "It undoes the savepoint's creation"
-        ],
+        options: ["It commits everything done before the savepoint", "Undoes work since it; the transaction stays open", "It does exactly the same as ROLLBACK", "It only undoes the savepoint's creation"],
         answer: 1,
         why: "Savepoints give partial undo inside a transaction — the mechanism for 'try this, and on failure skip it', and the way around PostgreSQL's whole-transaction abort on error."
       },
       {
         stem: "Which ACID property is enforced by PRIMARY KEY, FOREIGN KEY and CHECK constraints?",
-        options: [
-          "Atomicity",
-          "Consistency — the database refuses a commit that would leave an invalid state, as defined by the constraints declared",
-          "Isolation",
-          "Durability"
-        ],
+        options: ["Atomicity", "Consistency", "Isolation", "Durability"],
         answer: 1,
         why: "Consistency in ACID means 'every constraint holds at commit'. It is only as strong as the constraints you declare, which is the argument of 6.4."
       },
       {
         stem: "A process is killed after inserting into an archive table and before deleting from the live table, inside one transaction. What is the state afterwards?",
-        options: [
-          "Rows exist in both tables",
-          "Neither change happened: an uncommitted transaction is rolled back on crash recovery, so the archive insert is undone with everything else",
-          "The archive insert is kept and the delete is lost",
-          "The database is corrupt"
-        ],
+        options: ["Rows exist in both tables", "Neither change happened", "Only the archive insert survived", "The database is left corrupt"],
         answer: 1,
         why: "Atomicity: no partial transaction survives. The next run sees the original state and does the batch again — which is why the archive insert is written to tolerate that."
       },
       {
         stem: "When is `synchronous_commit = off` an acceptable choice?",
-        options: [
-          "Never",
-          "For data whose last few hundred milliseconds are not worth a flush per commit — metrics, logs, caches — where a crash losing recent commits is tolerable and no corruption results",
-          "For financial transactions under load",
-          "Whenever the disk is slow"
-        ],
+        options: ["Never, under any circumstances at all", "For data that can lose its last instants", "For financial transactions under heavy load", "Whenever the underlying disk is slow"],
         answer: 1,
         why: "The setting weakens durability, not consistency: a crash loses the most recent commits cleanly. That is a business decision per table, and it belongs in the load script where it is visible."
       }

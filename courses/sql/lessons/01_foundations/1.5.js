@@ -331,56 +331,31 @@ SELECT name, LOWER(TRIM(name)) || '-' || LOWER(COALESCE(country, 'xx')) AS key F
     questions: [
       {
         stem: "Why should a `price` column be NUMERIC(10, 2) rather than FLOAT?",
-        options: [
-          "FLOAT is slower",
-          "FLOAT is binary and cannot represent most decimal fractions exactly, so sums drift and equality tests fail; NUMERIC stores exact decimals",
-          "NUMERIC allows NULL and FLOAT does not",
-          "FLOAT cannot be indexed"
-        ],
+        options: ["FLOAT arithmetic is slower than NUMERIC", "FLOAT cannot store most decimals exactly", "NUMERIC allows NULL, while FLOAT does not", "FLOAT columns cannot be indexed at all"],
         answer: 1,
         why: "0.1 has no finite binary representation. Ten thousand such prices summed as FLOAT differ from the true total; a NUMERIC sum is exact to the cent. FLOAT is the right type for measurements and model outputs, where approximation is inherent."
       },
       {
         stem: "`SELECT 'Order ' || order_id || ' for ' || country` returns NULL for some rows. Why, and what is the fix?",
-        options: [
-          "order_id is an integer and cannot be concatenated",
-          "`||` propagates NULL, so any row with a NULL country becomes NULL; use CONCAT, or COALESCE(country, '…')",
-          "The string is too long",
-          "Concatenation requires CAST on every part"
-        ],
+        options: ["order_id is an integer and cannot be concatenated", "`||` turns a NULL part into a NULL result", "The concatenated string is too long for the column", "Concatenation needs CAST on every part first"],
         answer: 1,
         why: "The integer is cast implicitly; the NULL is the problem. CONCAT treats NULL as an empty string; COALESCE lets you choose a placeholder. Which is right depends on whether the label should show something for unknown countries."
       },
       {
         stem: "What does `DATE '2025-01-31' + INTERVAL '1 month'` return?",
-        options: [
-          "2025-03-03 (31 days later)",
-          "2025-02-28 — month arithmetic keeps the month step and clamps the day to the last valid day",
-          "An error, because February has no 31st",
-          "2025-03-01"
-        ],
+        options: ["2025-03-03, thirty-one days later", "2025-02-28, clamped to the month's end", "An error, because February has no 31st", "2025-03-01, the first day after February"],
         answer: 1,
         why: "An interval of one month is a calendar step, not a number of days. The engine advances the month and clamps the day. Adding 31 days would give 3 March; they are different questions."
       },
       {
         stem: "Which duration expression yields a number you can feed to a model?",
-        options: [
-          "`ts2 - ts1`",
-          "`EXTRACT(epoch FROM (ts2 - ts1)) / 3600.0` — the interval converted to seconds, then to decimal hours",
-          "`AGE(ts2, ts1)`",
-          "`ts2 - ts1 AS hours`"
-        ],
+        options: ["`ts2 - ts1`, the raw interval", "`EXTRACT(epoch FROM ts2 - ts1) / 3600.0`", "`AGE(ts2, ts1)`, a symbolic interval", "`ts2 - ts1 AS hours`, an alias only"],
         answer: 1,
         why: "Subtracting timestamps gives an interval — a calendar-aware quantity that is not a single number. EXTRACT(epoch …) turns it into seconds; the decimal divisor keeps the hours from truncating."
       },
       {
         stem: "A weekly series built with a spine shows zero for a week that has an order in it. What is the most likely cause?",
-        options: [
-          "The order was placed on a Sunday",
-          "A condition on the joined orders table — such as status = 'paid' — was written in WHERE instead of ON; or the order is not paid, in which case zero is correct",
-          "generate_series skipped the week",
-          "COALESCE replaced the revenue with 0"
-        ],
+        options: ["The order was placed on a Sunday", "A joined-table filter was put in WHERE, not ON", "generate_series skipped over that week", "COALESCE replaced the week's revenue with zero"],
         answer: 1,
         why: "Check the status first: a cancelled order contributes nothing, and zero is right. If the order is paid, a WHERE on the right-hand table after a LEFT JOIN removes the spine row entirely rather than zeroing it — the row would be missing, not zero — so the remaining suspect is the join condition itself."
       }

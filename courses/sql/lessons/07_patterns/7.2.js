@@ -373,56 +373,31 @@ ORDER BY l.order_id, l.product_id;`,
     questions: [
       {
         stem: "Why is joining the customers table's current tier onto historical orders a leak?",
-        options: [
-          "Tiers are not predictive",
-          "The tier on the row is the value today, which for old orders is information from after the order — it can encode the outcome (a customer who stayed and upgraded) and is unavailable at serving time",
-          "Joins are slow",
-          "It is not a leak if the tier never changed"
-        ],
+        options: ["Tiers are not predictive of anything", "Today's tier is information from later", "Joining the tier table is slow", "It is not a leak if tiers never change"],
         answer: 1,
         why: "The executed contrast showed January orders labelled plus when the customer was standard. A history table and an as-of join fix it; without history, the feature cannot be built honestly."
       },
       {
         stem: "Which as-of join form is portable to every engine?",
-        options: [
-          "ASOF JOIN",
-          "The ranked window: join history rows with valid_from <= as_of, ROW_NUMBER() ordered by valid_from DESC per left row, keep rn = 1",
-          "LATERAL",
-          "None"
-        ],
+        options: ["ASOF JOIN, supported everywhere", "A window ranking history rows, keep rn = 1", "LATERAL, supported everywhere", "None; every engine needs its own form"],
         answer: 1,
         why: "LATERAL needs PostgreSQL or DuckDB; ASOF is native to a few engines; the ranked window is plain window syntax and runs everywhere, at the cost of a fan-out before the filter."
       },
       {
         stem: "For a snapshot feature table on a date grid, what is the label window?",
-        options: [
-          "Before as_of",
-          "At or after as_of, for a fixed horizon — for example orders with as_of <= placed_at < as_of + 30 days — so features and labels never overlap",
-          "The same window as the features",
-          "The whole future"
-        ],
+        options: ["Before the as_of date", "A fixed horizon from as_of onward", "The same window as the features", "The entire future after as_of"],
         answer: 1,
         why: "Features and labels partition time at as_of. A fixed horizon keeps the label comparable across grid dates."
       },
       {
         stem: "How do you prevent train–serve skew in SQL feature pipelines?",
-        options: [
-          "Recompute features in Python at serving time",
-          "Use one SQL definition parameterised by as_of: historical grid dates for training, today for serving, so both are computed by identical code",
-          "Cache the training features",
-          "Serve from the training table"
-        ],
+        options: ["Recompute features in Python when serving", "One SQL definition, parameterised by as_of", "Cache the training features for serving", "Serve directly from the training table"],
         answer: 1,
         why: "Skew is a second implementation. One definition, two as-of times, is the structural fix."
       },
       {
         stem: "A new customer has no orders before as_of. What should their feature row look like?",
-        options: [
-          "Omitted",
-          "Present, with zero counts and sums and a NULL recency — the row a LEFT JOIN from the grid produces, and the same row the serving path will see for new customers",
-          "Filled with averages",
-          "Present with recency 9999"
-        ],
+        options: ["Omitted from the feature table", "Present, with zeros and NULL recency", "Filled with population averages", "Present, with recency set to 9999"],
         answer: 1,
         why: "New customers exist at serving time; the training set must contain them as they will appear. NULL recency is a fact; 9999 is a fiction the model will learn."
       }

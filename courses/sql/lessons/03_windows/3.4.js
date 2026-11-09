@@ -322,56 +322,31 @@ ORDER  BY customer_id, occurred_at;
     questions: [
       {
         stem: "What does `LAG(amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY placed_at)` return on a customer's first order?",
-        options: [
-          "NULL",
-          "0 — the third argument is the default used when no row exists one position back",
-          "The first order's own amount",
-          "An error"
-        ],
+        options: ["NULL, as no earlier order exists", "0, the default given as the third argument", "The first order's own amount", "An error, since there is no prior row"],
         answer: 1,
         why: "LAG's default replaces the NULL that would otherwise mark 'no previous row'. Whether 0 is the right default depends on what the column will be used for — a ratio needs NULLIF protection afterwards."
       },
       {
         stem: "Monthly revenue has no row for December. What does `LAG(revenue) OVER (ORDER BY month)` return for January?",
-        options: [
-          "November's revenue — the previous row",
-          "NULL if January is the first row; otherwise the previous existing row, which may not be the previous month — build a date spine so rows and months coincide",
-          "0",
-          "December's revenue, computed as 0"
-        ],
+        options: ["November's revenue, the previous existing row", "The prior row, maybe not the prior month", "Zero, the default for a missing month", "December's revenue, computed as zero"],
         answer: 1,
         why: "LAG is positional in the row order. Without a row for December, 'one back from January' is whatever month precedes it in the data. A spine with COALESCE(revenue, 0) restores the calendar."
       },
       {
         stem: "Which is a valid model feature for predicting something about an order at the moment it is placed?",
-        options: [
-          "`LEAD(placed_at) OVER (PARTITION BY customer_id ORDER BY placed_at)`",
-          "`LAST_VALUE(amount) OVER (PARTITION BY customer_id ORDER BY placed_at ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)`",
-          "`LAG(amount) OVER (PARTITION BY customer_id ORDER BY placed_at)` — the previous order's amount, known before this order exists",
-          "`NTH_VALUE(amount, 3) OVER (… ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)`"
-        ],
+        options: ["`LEAD(placed_at) OVER (PARTITION BY customer_id ORDER BY placed_at)`", "`LAST_VALUE(amount) OVER (… ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)`", "`LAG(amount) OVER (PARTITION BY customer_id ORDER BY placed_at)`", "`NTH_VALUE(amount, 3) OVER (… ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)`"],
         answer: 2,
         why: "LEAD and any frame reaching UNBOUNDED FOLLOWING read rows that come after the current one. Only the trailing LAG is computable from history alone."
       },
       {
         stem: "How do you forward-fill a sparse column — carry the last non-null value forward?",
-        options: [
-          "`LAG(x)`",
-          "`LAG(x IGNORE NULLS) OVER (ORDER BY t)`, wrapped in COALESCE(x, …) — or, without IGNORE NULLS support, the gaps-and-islands technique",
-          "`COALESCE(x, 0)`",
-          "`FIRST_VALUE(x)`"
-        ],
+        options: ["`LAG(x) OVER (ORDER BY t)` on its own", "`LAG(x IGNORE NULLS)`, or gaps-and-islands", "`COALESCE(x, 0)` over each row", "`FIRST_VALUE(x) OVER (ORDER BY t)`"],
         answer: 1,
         why: "Plain LAG returns the immediately previous row's value, NULL included. IGNORE NULLS skips back to the nearest non-null. Engines without it need a running MAX of the row position of non-null values, then a self-lookup."
       },
       {
         stem: "Why should the first month's month-over-month change stay NULL rather than be set to 0?",
-        options: [
-          "NULL is faster",
-          "Because 'no previous period' and 'no change from the previous period' are different facts, and a chart or model treating the first month as flat growth would be reading a claim the data never made",
-          "COALESCE does not work on LAG",
-          "It should be set to 0"
-        ],
+        options: ["NULL is faster to compute than zero", "No prior period differs from no change", "COALESCE does not work on LAG output", "It should be set to zero, as no change"],
         answer: 1,
         why: "NULL from LAG means the comparison could not be made. Replacing it with a number invents a comparison. Downstream consumers should handle the NULL explicitly."
       }

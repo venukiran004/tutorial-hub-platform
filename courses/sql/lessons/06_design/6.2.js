@@ -265,56 +265,31 @@ INSERT INTO bookings ... ;   -- only if the update hit`,
     questions: [
       {
         stem: "Under READ COMMITTED, a transaction runs the same SELECT twice and gets different rows. What is this and is it a bug in the database?",
-        options: [
-          "A dirty read; yes",
-          "A non-repeatable read or phantom; no — READ COMMITTED gives each statement its own snapshot, so a commit between the two statements is legitimately visible to the second",
-          "A lost update; yes",
-          "Write skew; no"
-        ],
+        options: ["A dirty read, and a database bug", "A non-repeatable read; expected behaviour", "A lost update, and a database bug", "Write skew, which is expected here"],
         answer: 1,
         why: "It is the documented behaviour of the level. If two statements must agree, make them one statement or use REPEATABLE READ for that transaction."
       },
       {
         stem: "Which statement about MVCC is correct?",
-        options: [
-          "Writers block readers until commit",
-          "Readers see a snapshot of committed data as of their statement or transaction start; writers create new row versions without blocking readers; old versions are reclaimed later",
-          "Every read takes a shared lock",
-          "It is only available at SERIALIZABLE"
-        ],
+        options: ["Writers block readers until they commit", "Readers see a snapshot; writers add versions", "Every read takes a shared lock on the row", "It is only available under SERIALIZABLE"],
         answer: 1,
         why: "Multi-version concurrency control is how PostgreSQL, InnoDB, Oracle and SQLite's WAL mode give repeatable reads without read locks — at the cost of storing and later vacuuming old versions."
       },
       {
         stem: "Two sign-ups with the same email both pass a SELECT-then-INSERT check and both succeed. What is the right fix?",
-        options: [
-          "SERIALIZABLE isolation",
-          "A UNIQUE constraint on email: the database serialises the rule under every isolation level, and ON CONFLICT lets the second insert fail gracefully",
-          "A longer transaction",
-          "A retry loop"
-        ],
+        options: ["Switch to SERIALIZABLE isolation", "A UNIQUE constraint on the email column", "Hold the transaction open for longer", "Wrap the check in a retry loop"],
         answer: 1,
         why: "This is write skew on a rule a constraint can express. Declare it and the anomaly is impossible rather than merely unlikely."
       },
       {
         stem: "What does a serialisation failure under SERIALIZABLE mean, and what should the application do?",
-        options: [
-          "The database is corrupt; restart it",
-          "The database detected that the transaction's result could not match any serial ordering of the concurrent transactions and aborted it; retry the whole transaction from the start",
-          "The transaction was too slow; increase the timeout",
-          "Nothing; the write was applied"
-        ],
+        options: ["The database is corrupt; restart it", "No serial order fits; retry the transaction", "It was too slow; raise the timeout", "Nothing; the write was applied anyway"],
         answer: 1,
         why: "The failure is the isolation level doing its job. Code that runs at SERIALIZABLE must be written to retry, which is why the atomic-UPDATE and constraint fixes are preferred where they apply."
       },
       {
         stem: "A job reads a row, computes for a minute, then writes it back. Which fix is appropriate?",
-        options: [
-          "SELECT … FOR UPDATE held for the minute",
-          "A version column: write with WHERE version = the version read, and on rowcount 0 re-read and redo — no lock is held during the computation",
-          "REPEATABLE READ",
-          "Autocommit"
-        ],
+        options: ["SELECT … FOR UPDATE held for the minute", "A version column checked on write", "Switch the session to REPEATABLE READ", "Run the job under autocommit"],
         answer: 1,
         why: "Optimistic concurrency detects the conflict at write time instead of preventing it with a lock that would block everyone for the duration of the work."
       }

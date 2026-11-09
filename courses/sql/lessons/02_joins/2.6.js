@@ -296,56 +296,31 @@ FROM   staged;
     questions: [
       {
         stem: "Why is `UNION ALL` usually faster than `UNION`?",
-        options: [
-          "It uses an index",
-          "It appends without comparing rows; UNION must sort or hash the whole combined result to find and remove duplicates",
-          "It returns fewer rows",
-          "It runs the branches in parallel"
-        ],
+        options: ["It uses an index that UNION cannot use", "It appends without removing duplicates", "It always returns fewer rows", "It runs the branches in parallel"],
         answer: 1,
         why: "De-duplication is a DISTINCT over everything, which costs a sort or a hash table proportional to the result. UNION ALL does no such work."
       },
       {
         stem: "`SELECT name, country FROM customers UNION SELECT department, name FROM employees` runs without error. What is wrong?",
-        options: [
-          "Nothing",
-          "Columns are matched by position, so departments land in the name column and names in the country column; both are TEXT, so the engine cannot tell",
-          "UNION cannot combine different tables",
-          "The result has four columns"
-        ],
+        options: ["Nothing; the query is correct as written", "Columns match by position, so values are swapped", "UNION cannot combine two different tables", "The result ends up with four columns"],
         answer: 1,
         why: "Only types are checked. Semantic alignment is the writer's responsibility, which is why every branch should name its columns in the same order."
       },
       {
         stem: "A staging table has 11 rows, 9 distinct ids and 8 distinct people by (name, country, signed_up). What does `SELECT DISTINCT *` leave?",
-        options: [
-          "8 rows",
-          "9 rows — it removes only exact copies; the person loaded again under a new id differs in the id column and survives",
-          "11 rows",
-          "It depends on the index"
-        ],
+        options: ["8 rows, one per distinct person", "9 rows: only exact copies are removed", "11 rows, since nothing is removed", "It depends on the index on id"],
         answer: 1,
         why: "DISTINCT compares whole rows. A duplicate by business key with a different surrogate id is a different row to it. Grouping by the business key is the only way to see that duplicate."
       },
       {
         stem: "Which de-duplication lets you say 'keep the most recently loaded copy'?",
-        options: [
-          "`SELECT DISTINCT`",
-          "`UNION`",
-          "`ROW_NUMBER() OVER (PARTITION BY key ORDER BY loaded_at DESC)` filtered to 1 — the ORDER BY names the survivor",
-          "`GROUP BY key`"
-        ],
+        options: ["`SELECT DISTINCT` over all columns", "`UNION` of the copies with themselves", "`ROW_NUMBER()` ordered by load time, keep 1", "`GROUP BY key` with any aggregate"],
         answer: 2,
         why: "DISTINCT and UNION keep an arbitrary copy; GROUP BY collapses without choosing a row. The window numbers the copies in preference order, and the preference is a single, editable ORDER BY."
       },
       {
         stem: "Why does `SELECT customer_id FROM orders EXCEPT SELECT customer_id FROM events` give a different result from swapping the two queries?",
-        options: [
-          "It does not; EXCEPT is symmetric",
-          "EXCEPT keeps rows of the first input that are absent from the second; orders-minus-events is people who ordered but never clicked, events-minus-orders is the reverse",
-          "The second form is invalid",
-          "Because of NULLs"
-        ],
+        options: ["It does not, since EXCEPT is symmetric", "EXCEPT keeps rows of the first input only", "The swapped form is not valid SQL", "Because of NULLs in customer_id"],
         answer: 1,
         why: "Set difference is directional, like subtraction. Dalia and Iker in one direction; Mara in the other."
       }

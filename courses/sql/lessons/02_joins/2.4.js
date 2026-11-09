@@ -301,56 +301,31 @@ LIMIT  1;
     questions: [
       {
         stem: "Why does `WHERE status = 'paid'` belong in WHERE rather than HAVING when both give the same result?",
-        options: [
-          "HAVING is deprecated",
-          "WHERE removes rows before grouping, so fewer rows are aggregated and the planner can use an index; HAVING would group everything and then discard",
-          "HAVING cannot compare strings",
-          "They are not the same result"
-        ],
+        options: ["HAVING is deprecated in standard SQL", "WHERE filters before grouping, so less work", "HAVING cannot compare string values", "They do not give the same result"],
         answer: 1,
         why: "Correctness is identical for a non-aggregate condition. Cost is not: filtering first shrinks the input to the aggregation and keeps the predicate on a bare column where an index can serve it."
       },
       {
         stem: "A per-category report shows `office: 8 products`. There are two office products. What did the query count?",
-        options: [
-          "Products, correctly — some are duplicated in the table",
-          "Line-item rows produced by the join to order_items; the fix is COUNT(DISTINCT product_id)",
-          "Orders",
-          "Customers"
-        ],
+        options: ["Products, correctly, since some are duplicated", "Line-item rows from the join; count DISTINCT ids", "The orders that contain office products", "The customers who bought office products"],
         answer: 1,
         why: "Grouping a joined result aggregates joined rows. Two products across eight line items give COUNT(*) = 8. Each count needs the key of the grain it claims to measure."
       },
       {
         stem: "Which expression returns the status of each customer's most recent order?",
-        options: [
-          "`MAX(status)` grouped by customer",
-          "`DISTINCT ON (customer_id) … ORDER BY customer_id, placed_at DESC` — one whole row per customer, chosen by the sort",
-          "`MAX(placed_at)` grouped by customer",
-          "`LAST(status)` grouped by customer"
-        ],
+        options: ["`MAX(status)` with GROUP BY customer_id", "`DISTINCT ON (customer_id)`, newest first", "`MAX(placed_at)` with GROUP BY customer_id", "`LAST(status)` with GROUP BY customer_id"],
         answer: 1,
         why: "MAX(status) is alphabetical and unrelated to the latest row; MAX(placed_at) is the right time but not the status. Selecting a whole row by order is what DISTINCT ON and ROW_NUMBER do."
       },
       {
         stem: "`SELECT COUNT(*) FROM orders HAVING COUNT(*) > 100` returns no rows on a 12-row table. Why not a row with 0?",
-        options: [
-          "COUNT returned NULL",
-          "The whole table is one group; the group's count is 12, which fails the HAVING, so the group is removed and nothing is returned",
-          "HAVING requires GROUP BY",
-          "It should return 12"
-        ],
+        options: ["COUNT returned NULL for the empty group", "One group of 12 fails HAVING and is removed", "HAVING requires a GROUP BY clause", "It should return a row with 12"],
         answer: 1,
         why: "HAVING filters groups. With no GROUP BY there is exactly one, and a failed filter leaves zero groups — an empty result, not a zero."
       },
       {
         stem: "PostgreSQL accepts `SELECT c.customer_id, c.name, COUNT(*) FROM customers c JOIN orders o … GROUP BY c.customer_id` without `c.name` in the GROUP BY. Why?",
-        options: [
-          "It picks an arbitrary name",
-          "customer_id is the primary key of customers, so name is functionally dependent on it and has exactly one value per group",
-          "PostgreSQL ignores the rule",
-          "Because of the JOIN"
-        ],
+        options: ["It picks an arbitrary name per group", "Name depends on the primary key it groups by", "PostgreSQL ignores the grouping rule", "Because of the JOIN to the orders table"],
         answer: 1,
         why: "The standard allows columns functionally dependent on the grouping key. PostgreSQL detects this for primary keys. Naming the column anyway keeps the query portable."
       }

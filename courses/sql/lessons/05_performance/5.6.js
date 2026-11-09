@@ -310,56 +310,31 @@ SELECT COUNT(*), state FROM pg_stat_activity GROUP BY state;    -- 480 active on
     questions: [
       {
         stem: "A query's plan is an Index Scan with accurate estimates and 0.2 ms of execution, yet users see 8-second latency on it. Where do you look?",
-        options: [
-          "At the index definition",
-          "At `pg_stat_activity` for lock waits — the statement is likely blocked behind a transaction holding a lock; the plan describes work, and this query is not working, it is waiting",
-          "At work_mem",
-          "At the statistics target"
-        ],
+        options: ["At the index definition it uses", "At lock waits in pg_stat_activity", "At the work_mem setting for sorts", "At the column's statistics target"],
         answer: 1,
         why: "Execution time and latency differ by the time spent waiting for locks, connections or I/O. When the plan and its actuals are already fast, the delay is outside the executor."
       },
       {
         stem: "Why reproduce a slow query with PREPARE and EXECUTE rather than pasting it with a literal?",
-        options: [
-          "PREPARE is faster",
-          "The application runs a parameterised statement, which may use a cached or generic plan chosen for a different value; the console literal plans fresh each time and can show a plan the application never runs",
-          "Literals are not allowed in EXPLAIN",
-          "There is no difference"
-        ],
+        options: ["PREPARE runs faster than a pasted literal", "The app's cached plan may differ from a fresh one", "Literals are not allowed inside EXPLAIN at all", "There is no difference between the two methods"],
         answer: 1,
         why: "Parameter sniffing and generic plans (5.1) mean the same SQL text can run two different plans. Diagnosing the console's plan can lead to a fix for a problem the application does not have."
       },
       {
         stem: "After a fix, the query runs in 5 ms where the baseline was 400 ms. What must be true for that comparison to mean anything?",
-        options: [
-          "The fix was an index",
-          "Both measurements were taken in the same cache state — a cold baseline against a warm re-run measures the cache, not the fix; run each twice and compare second runs, or compare Buffers read as well as time",
-          "The query was rewritten",
-          "AnalysE was run"
-        ],
+        options: ["The fix was an index on the table", "Both runs used the same cache state", "The query text was rewritten by hand", "ANALYZE was run before both runs"],
         answer: 1,
         why: "The first run of any query pays for disk reads the second run does not. Comparable measurements need comparable cache states, which BUFFERS makes visible."
       },
       {
         stem: "A batch job updates every row of a 4-million-row table in one transaction at 09:00. What are the two effects on everyone else?",
-        options: [
-          "None, if it commits",
-          "Lock waits during the transaction for any statement touching those rows, and afterwards a table with as many dead tuples as live ones until VACUUM reclaims them — batch the update and vacuum after it",
-          "The indexes are dropped",
-          "The statistics are reset"
-        ],
+        options: ["None at all, provided the transaction commits", "Lock waits, then a table full of dead tuples", "The table's indexes are dropped and rebuilt", "The planner's column statistics are reset"],
         answer: 1,
         why: "Row locks are held until commit, and MVCC leaves the old version of every updated row in place. Chunked commits bound both; a WHERE that skips already-correct rows avoids the churn entirely."
       },
       {
         stem: "Which is the right first response to 'a Seq Scan appeared in the plan'?",
-        options: [
-          "Create an index on the scanned table",
-          "Read why: the fraction of rows kept, whether the predicate is sargable, whether the estimate matches the actual — a Seq Scan has at least four causes, and only one of them is fixed by an index",
-          "Increase work_mem",
-          "Rewrite as a CTE"
-        ],
+        options: ["Create an index on the scanned table", "Read why the planner chose it", "Increase work_mem for the query", "Rewrite the query as a CTE"],
         answer: 1,
         why: "A scan is correct for large fractions, unavoidable for unsargable predicates, and a symptom of stale statistics when the estimate is wrong. The index is the fix only for the selective-predicate-no-index signature."
       }

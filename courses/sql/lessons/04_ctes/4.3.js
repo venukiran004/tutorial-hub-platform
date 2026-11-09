@@ -346,56 +346,31 @@ SELECT path FROM walk WHERE is_cycle;
     questions: [
       {
         stem: "A recursive CTE over an org chart runs forever after a data fix. What most likely happened, and what should the query have had?",
-        options: [
-          "The table grew too large",
-          "The fix introduced a cycle — two employees who are each other's manager — and the recursive member kept finding the same rows; a depth guard or a path check in the recursive WHERE would have bounded it",
-          "The anchor returned too many rows",
-          "UNION ALL is not allowed in recursion"
-        ],
+        options: ["The table grew too large to recurse", "A cycle; it needed a depth or path guard", "The anchor returned too many rows", "UNION ALL is not allowed in recursion"],
         answer: 1,
         why: "Termination relies on a round producing nothing. A cycle guarantees that never happens. Guards belong in every recursive CTE because the data can change under the query."
       },
       {
         stem: "How do you get each manager's total number of reports at every level, for all managers, in one query?",
-        options: [
-          "One recursive CTE per manager",
-          "Anchor on every employee carrying `root = employee_id`, recurse downward, and GROUP BY root; each employee appears once per ancestor, so the count per root is the subtree size",
-          "A self-join three deep",
-          "COUNT(*) OVER (PARTITION BY manager_id)"
-        ],
+        options: ["One recursive CTE per manager", "Carry a root, recurse down, GROUP BY root", "A self-join three levels deep", "COUNT(*) OVER (PARTITION BY manager_id)"],
         answer: 1,
         why: "The all-roots anchor produces one row per (ancestor, descendant) pair. Grouping by the ancestor collapses each subtree. The same shape sums a bill of materials."
       },
       {
         stem: "What does replacing UNION ALL with UNION do in a recursive graph walk?",
-        options: [
-          "Nothing",
-          "Rows already in the result are not added again, so a cycle stops producing new rows and the recursion terminates — at the cost of losing multiplicity and the ability to distinguish paths",
-          "It makes the walk faster on trees",
-          "It sorts the output"
-        ],
+        options: ["Nothing changes in the result at all", "Repeats stop, so cycles end; paths lost", "The walk becomes faster on trees only", "The output rows are returned sorted"],
         answer: 1,
         why: "UNION de-duplicates across rounds. For 'which nodes are reachable' that is exactly right; for 'show every path' it is wrong, because two different paths to one node collapse."
       },
       {
         stem: "On SQL Server, a recursive date spine for a full year fails after 100 rows. Why?",
-        options: [
-          "Dates cannot be recursed",
-          "SQL Server limits recursion to 100 rounds by default; the spine needs one round per day, so it needs `OPTION (MAXRECURSION 366)` or 0 for unlimited",
-          "The anchor is wrong",
-          "UNION ALL is required"
-        ],
+        options: ["Dates cannot be generated recursively", "The default limit is 100 recursion rounds", "The anchor member is written wrongly", "UNION ALL is required for recursion"],
         answer: 1,
         why: "Each round adds one row, so a 365-day spine is 365 rounds. The limit is a safety net against runaway recursion, and the option raises it deliberately."
       },
       {
         stem: "Which join direction climbs from an employee to the CEO?",
-        options: [
-          "`employees e JOIN t ON e.manager_id = t.employee_id`",
-          "`employees e JOIN t ON e.employee_id = t.manager_id` — the next row is the one whose id is the current row's manager",
-          "Either; recursion is symmetric",
-          "A LEFT JOIN"
-        ],
+        options: ["`employees e JOIN t ON e.manager_id = t.employee_id`", "`employees e JOIN t ON e.employee_id = t.manager_id`", "Either one, since recursion is symmetric", "A LEFT JOIN on either of the two keys"],
         answer: 1,
         why: "Walking down finds rows whose manager is the current node; walking up finds the row that is the current node's manager. Same CTE structure, join condition reversed."
       }

@@ -293,56 +293,31 @@ ALTER TABLE products_legacy ALTER COLUMN price_pence TYPE INTEGER USING price_pe
     questions: [
       {
         stem: "Why does `WHERE EXTRACT(month FROM placed_at) = 2` become wrong as soon as the table holds two years of data?",
-        options: [
-          "EXTRACT is deprecated",
-          "It selects February of every year, because the year is not part of the predicate; a half-open range on the bare column selects one February and can use an index",
-          "It returns January instead",
-          "It only works on DATE columns"
-        ],
+        options: ["EXTRACT is deprecated and returns wrong months", "It matches February of every year in the table", "It returns January instead of February", "It only works on DATE columns, not timestamps"],
         answer: 1,
         why: "EXTRACT returns one component. Filtering on it is filtering on that component alone. `placed_at >= '2025-02-01' AND placed_at < '2025-03-01'` says which February, and leaves the column bare for the planner."
       },
       {
         stem: "Which LIKE pattern can use an ordinary B-tree index on `name`?",
-        options: [
-          "`'%son'`",
-          "`'And%'` — a literal prefix bounds a sorted range, which is what a B-tree answers",
-          "`'%and%'`",
-          "`'_ndrew'`"
-        ],
+        options: ["`'%son'`, a fixed suffix", "`'And%'`, a literal prefix", "`'%and%'`, an infix", "`'_ndrew'`, a wildcard first character"],
         answer: 1,
         why: "A B-tree is sorted; a fixed prefix maps to a contiguous range of it. Anything with a wildcard before the first literal character could match anywhere in the sort order, so the whole index or table must be scanned."
       },
       {
         stem: "A query `WHERE order_ref = 10045` on a TEXT column ran for a year and now fails with 'invalid input syntax for type integer'. What changed?",
-        options: [
-          "The column type changed",
-          "A row with a non-numeric order_ref was inserted; the predicate has always cast every row to integer, and the first non-numeric value made that cast fail — compare text with text instead",
-          "The index was dropped",
-          "10045 is too large"
-        ],
+        options: ["The column's type was changed to integer", "A non-numeric value arrived and the cast failed", "The index on order_ref was dropped", "10045 is too large for the integer cast"],
         answer: 1,
         why: "Comparing a text column with a numeric literal casts the column, row by row. It silently prevented an index seek all year; the new row made the hidden cast visible. `order_ref = '10045'` fixes both problems."
       },
       {
         stem: "Two users run the same `WHERE created_at >= '2025-03-30 01:00'` against a TIMESTAMP column and get different rows. What is the likeliest cause?",
-        options: [
-          "Caching",
-          "The column is TIMESTAMPTZ, or is being compared with one, and the literal is interpreted in each session's time zone — the same wall-clock string names different instants for the two users",
-          "One user lacks permissions",
-          "The literal needs quotes"
-        ],
+        options: ["Query results are cached per user", "The literal is read in each session's time zone", "One user lacks permission to see some rows", "The timestamp literal needs extra quoting"],
         answer: 1,
         why: "A zone-less literal compared with an instant is interpreted in the session's TimeZone. Give the literal an explicit offset, or compare in UTC, so the predicate means one instant everywhere."
       },
       {
         stem: "Which is the correct and indexable way to select everything on 15 March 2025 from a TIMESTAMP column?",
-        options: [
-          "`placed_at = DATE '2025-03-15'`",
-          "`CAST(placed_at AS DATE) = DATE '2025-03-15'`",
-          "`placed_at >= DATE '2025-03-15' AND placed_at < DATE '2025-03-16'`",
-          "`TO_CHAR(placed_at, 'YYYY-MM-DD') = '2025-03-15'`"
-        ],
+        options: ["`DATE(placed_at) = DATE '2025-03-15'` on the column", "`CAST(placed_at AS DATE) = DATE '2025-03-15'`", "`placed_at >= '2025-03-15' AND placed_at < '2025-03-16'`", "`TO_CHAR(placed_at, 'YYYY-MM-DD') = '2025-03-15'`"],
         answer: 2,
         why: "The first matches only midnight; the second and fourth are correct but transform every row. The half-open range on the bare column is correct for every time of day and can be served by an index seek."
       }

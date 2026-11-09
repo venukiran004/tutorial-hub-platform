@@ -279,56 +279,31 @@ SELECT COUNT(*) FROM orders WHERE status = 'refunded';    -- SEARCH ... USING CO
     questions: [
       {
         stem: "Why does the planner choose a sequential scan for `WHERE status = 'paid'` when an index on status exists?",
-        options: [
-          "The index is broken",
-          "The most-common-values statistic says 'paid' is 90 % of rows; reading 90 % of the table through an index means random access to almost every page, which costs more than one sequential pass",
-          "Sequential scans are always preferred",
-          "Text columns cannot use indexes"
-        ],
+        options: ["The index on status is broken", "'paid' is 90% of rows; a scan is cheaper", "Sequential scans are always preferred", "Text columns cannot use B-tree indexes"],
         answer: 1,
         why: "The choice is a cost comparison driven by selectivity. The same index is used for 'refunded' at 5 %. An index that no query would use at the data's actual selectivity is an index to drop."
       },
       {
         stem: "What does AnalysE do, and what does it not do?",
-        options: [
-          "It rebuilds indexes",
-          "It samples the table and stores per-column statistics — row count, null fraction, distinct count, most common values, histogram — for the planner; it changes no data and builds no index",
-          "It runs the query and reports timing",
-          "It defragments the table"
-        ],
+        options: ["It rebuilds the table's indexes in place", "It samples rows and stores planner statistics", "It runs the query and reports its timing", "It defragments the table's data pages"],
         answer: 1,
         why: "AnalysE refreshes the planner's beliefs. EXPLAIN AnalysE, confusingly, is a different thing: it runs the query and reports actual row counts and times per node."
       },
       {
         stem: "`WHERE city = 'Leeds' AND postcode LIKE 'LS%'` is estimated at 0.04 % of rows and returns 2 %. Why?",
-        options: [
-          "LIKE is not estimable",
-          "The planner multiplied the two selectivities as if independent, but every Leeds address has an LS postcode — extended statistics (CREATE STATISTICS … dependencies) tell it the columns are correlated",
-          "The histogram is stale",
-          "The index is on the wrong column"
-        ],
+        options: ["LIKE predicates cannot be estimated by the planner", "Correlated columns; the planner assumed independence", "The histogram on postcode is stale and needs ANALYZE", "The index was built on the wrong column for this"],
         answer: 1,
         why: "Independence is the default assumption between columns. When two predicates express the same fact, the product of their selectivities is far too small, and the under-estimate cascades into join choices above."
       },
       {
         stem: "A query is fast in psql and slow from the application with identical SQL. What is the likely difference?",
-        options: [
-          "Network latency",
-          "The application uses a prepared statement whose cached plan was made for a different parameter value or a generic one; the console plans with the literal each time",
-          "psql uses a different index",
-          "The application lacks permissions"
-        ],
+        options: ["Network latency between app and database", "A prepared statement's cached generic plan", "psql uses a different index for the query", "The application lacks some permissions"],
         answer: 1,
         why: "Plan caching trades planning time for the risk that one plan does not fit all values. PostgreSQL's plan_cache_mode and SQL Server's OPTION (RECOMPILE) are the controls."
       },
       {
         stem: "Which is the correct order of stages for a query?",
-        options: [
-          "Plan, parse, execute, analyse",
-          "Parse, analyse (bind names and types), rewrite (views, rules, CTE inlining), plan (cost-based search), execute",
-          "Execute, then plan the next run",
-          "Parse, execute, cache"
-        ],
+        options: ["Plan, parse, execute, analyse", "Parse, analyse, rewrite, plan, execute", "Execute, then plan the next run", "Parse, execute, then cache the plan"],
         answer: 1,
         why: "Each stage's errors are recognisable: syntax from the parser, 'does not exist' from the analyser, and slowness from the planner's choices."
       }

@@ -307,56 +307,31 @@ CREATE INDEX orders_meta_gin ON orders_meta USING GIN (doc jsonb_path_ops); -- s
     questions: [
       {
         stem: "A GIN index exists on `doc`, yet `WHERE doc->>'channel' = 'web'` does a sequential scan. Why?",
-        options: [
-          "GIN indexes are read-only",
-          "GIN serves containment and existence operators (`@>`, `?`), not text extraction; write `doc @> '{\"channel\": \"web\"}'`, or add an expression index on `(doc->>'channel')`",
-          "The index needs AnalysE",
-          "->> is not indexable at all"
-        ],
+        options: ["GIN indexes can only be read, never updated", "GIN serves containment, not text extraction", "The index needs ANALYZE before it is used", "The ->> operator can never use any index"],
         answer: 1,
         why: "An index answers the operators it was built for. The inverted index over keys and values knows nothing about the text a `->>` expression produces; a B-tree on that expression does."
       },
       {
         stem: "What does `jsonb_agg(jsonb_build_object('id', o.order_id))` return for a customer with no orders after a LEFT JOIN?",
-        options: [
-          "`[]`",
-          "`[{\"id\": null}]` — the outer join's padded row is aggregated like any other; add FILTER (WHERE o.order_id IS NOT NULL) and COALESCE to '[]'",
-          "NULL",
-          "An error"
-        ],
+        options: ["`[]`, an empty array", "`[{\"id\": null}]`, the padded row", "NULL, as nothing was aggregated", "An error from the NULL id"],
         answer: 1,
         why: "The padded row exists and has NULL columns; the aggregate faithfully builds an object from it. The fix is the JSON form of COUNT(column) rather than COUNT(*)."
       },
       {
         stem: "When should a JSON field become a real column?",
-        options: [
-          "Never — JSON is more flexible",
-          "When queries filter, join, group or sort on it, or it needs a type or a constraint: then it wants an index, statistics and a NOT NULL that JSON cannot give",
-          "Only if it is numeric",
-          "When the document exceeds 1 KB"
-        ],
+        options: ["Never, since JSON is the more flexible choice", "When you filter, join, sort or constrain on it", "Only when the field holds numeric values", "Once the whole document exceeds about 1 KB"],
         answer: 1,
         why: "JSON is for attributes that vary and payloads read whole. A field with a stable meaning that queries depend on is a column in disguise; a generated column promotes it without changing the writers."
       },
       {
         stem: "Order 101's `tags` is `[]` and order 104 has no `tags` key. What does `jsonb_array_elements_text(doc->'tags')` produce for each in a CROSS JOIN LATERAL?",
-        options: [
-          "One row each with NULL",
-          "No rows for either — an empty array has no elements and a NULL array unfolds to nothing; use LEFT JOIN LATERAL … ON TRUE if every order must appear",
-          "One row for 101, an error for 104",
-          "An error for both"
-        ],
+        options: ["One row each, with NULL as the tag", "No rows for either order", "One row for 101 and an error for 104", "An error for both orders"],
         answer: 1,
         why: "A CROSS JOIN LATERAL drops parent rows whose subquery yields nothing, like an inner join. The LEFT form keeps them with a NULL element."
       },
       {
         stem: "Why prefer `jsonb` over `json` in PostgreSQL?",
-        options: [
-          "json is deprecated",
-          "jsonb is stored parsed: querying it does not re-parse text, duplicate keys are resolved, and GIN indexes can be built on it; json preserves the exact original text, which matters only for archival",
-          "jsonb supports larger documents",
-          "They are identical"
-        ],
+        options: ["json is deprecated in current versions", "jsonb is pre-parsed and can be GIN-indexed", "jsonb supports much larger documents", "The two types are identical in practice"],
         answer: 1,
         why: "The binary form trades exact text fidelity for speed and indexability. Unless you must reproduce the bytes you received, jsonb is the type."
       }

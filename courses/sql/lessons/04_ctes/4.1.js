@@ -294,56 +294,31 @@ ORDER  BY 1;
     questions: [
       {
         stem: "What does `salary > ALL (SELECT salary FROM employees WHERE department = 'archive')` return when that department has no employees?",
-        options: [
-          "No rows",
-          "Every row — ALL over an empty set is vacuously true; `> (SELECT MAX(salary) …)` would compare with NULL and return nothing instead",
-          "An error",
-          "NULL"
-        ],
+        options: ["No rows, since the subquery is empty", "Every row: ALL over an empty set is true", "An error, since ALL needs at least one row", "NULL for every row in the outer query"],
         answer: 1,
         why: "Universal quantification over nothing is true; MAX over nothing is NULL. The two rewrites differ precisely on the empty set, which is why the choice should be deliberate."
       },
       {
         stem: "Which correlated subquery can the planner NOT turn into a join?",
-        options: [
-          "`WHERE EXISTS (SELECT 1 FROM o WHERE o.k = c.k)`",
-          "`(SELECT COUNT(*) FROM o WHERE o.k = c.k)`",
-          "`(SELECT status FROM o WHERE o.k = c.k ORDER BY t DESC LIMIT 1)` — the ORDER BY … LIMIT per outer row has no join equivalent, so it runs as a SubPlan per row",
-          "`WHERE c.k IN (SELECT k FROM o)`"
-        ],
+        options: ["`WHERE EXISTS (SELECT 1 FROM o WHERE o.k = c.k)`", "`(SELECT COUNT(*) FROM o WHERE o.k = c.k)`", "A scalar subquery with ORDER BY t DESC LIMIT 1", "`WHERE c.k IN (SELECT k FROM o WHERE o.t > 0)`"],
         answer: 2,
         why: "Existence and equality-keyed aggregates decorrelate into semi joins and grouped joins. A per-row top-1 does not; the rewrite is ROW_NUMBER in a derived table, or LATERAL with an index."
       },
       {
         stem: "What is the difference between `CROSS JOIN LATERAL (…)` and `LEFT JOIN LATERAL (…) ON TRUE`?",
-        options: [
-          "None",
-          "CROSS drops left rows for which the subquery returns nothing; LEFT … ON TRUE keeps them with NULLs — the inner/outer distinction applied to a per-row subquery",
-          "LEFT is faster",
-          "CROSS allows LIMIT and LEFT does not"
-        ],
+        options: ["None; the two forms are interchangeable", "CROSS drops empty matches; LEFT keeps them", "LEFT JOIN LATERAL runs faster than CROSS", "CROSS allows LIMIT, while LEFT does not"],
         answer: 1,
         why: "LATERAL is still a join. A customer with no orders produces zero subquery rows; CROSS JOIN then has nothing to pair and the customer vanishes, exactly as with an inner join."
       },
       {
         stem: "A correlated scalar compares each product's price with the average price of `WHERE q.category = p.category`. What happens to a product whose category is NULL?",
-        options: [
-          "It is compared with the average of all NULL-category products",
-          "`q.category = NULL` matches nothing, the subquery averages no rows and returns NULL, and the comparison with NULL drops the product",
-          "It raises an error",
-          "It is compared with the overall average"
-        ],
+        options: ["It is compared with other NULL-category products", "The subquery returns NULL, so the product drops", "The query raises an error on the NULL category", "It is compared with the overall average price"],
         answer: 1,
         why: "Correlation is a comparison and follows three-valued logic. A window partitioned by category would group the NULLs together instead; the two shapes disagree only on NULL keys."
       },
       {
         stem: "Why is LATERAL with `ORDER BY t DESC LIMIT 1` often faster than a ROW_NUMBER derived table for 'latest per entity' when only some entities are asked about?",
-        options: [
-          "LATERAL caches results",
-          "The window numbers every row of the inner table; LATERAL does one index seek per outer row and reads only the row it needs, so cost scales with the outer rows rather than the inner table",
-          "ROW_NUMBER is not indexable",
-          "It is not; the window is always faster"
-        ],
+        options: ["LATERAL caches the result of each subquery", "One index seek per outer row, not a full scan", "ROW_NUMBER results cannot use an index", "It is not; the window is always faster"],
         answer: 1,
         why: "With an index on (entity, t DESC), each LATERAL probe is a single seek. The window must scan and sort the whole inner table regardless of how many entities the outer query has."
       }

@@ -319,56 +319,31 @@ WHERE  rn = 1 AND status <> 'paid';
     questions: [
       {
         stem: "Why is DENSE_RANK the right function for 'the second-highest salary'?",
-        options: [
-          "It is the fastest",
-          "It numbers distinct values without gaps, so `= 2` is the second distinct salary even when the top salary is tied; RANK would skip 2 after a tie at 1, and ROW_NUMBER = 2 would return one of the tied top rows",
-          "It ignores NULLs",
-          "It is the only one that supports PARTITION BY"
-        ],
+        options: ["It is the fastest of the ranking functions", "It numbers distinct values without gaps", "It ignores NULL salaries when ranking", "It alone supports PARTITION BY"],
         answer: 1,
         why: "'Second-highest' is about values, not rows. DENSE_RANK counts distinct values ahead of a row; the other two count rows, which is a different question."
       },
       {
         stem: "A top-3 query using `ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC)` returns different names on two runs. Why?",
-        options: [
-          "The data changed",
-          "Two employees tie on salary and nothing in the ORDER BY distinguishes them, so ROW_NUMBER assigns 3 and 4 in whatever order the engine encountered them; add a tie-breaker such as employee_id",
-          "ROW_NUMBER is random by design",
-          "PARTITION BY is unstable"
-        ],
+        options: ["The underlying data changed between runs", "A salary tie with no tie-breaker in ORDER BY", "ROW_NUMBER is random by design", "PARTITION BY gives unstable groups"],
         answer: 1,
         why: "ROW_NUMBER always produces distinct numbers, so tied rows must be ordered somehow; without a deterministic key that order is implementation-dependent and can change with the plan."
       },
       {
         stem: "`NTILE(4)` over 10 rows produces buckets of what sizes?",
-        options: [
-          "2, 2, 3, 3",
-          "3, 3, 2, 2 — the remainder goes to the earliest buckets",
-          "2.5 each",
-          "It fails; 10 is not divisible by 4"
-        ],
+        options: ["2, 2, 3, 3", "3, 3, 2, 2", "2.5 each", "It fails, as 10 is not divisible by 4"],
         answer: 1,
         why: "NTILE divides as evenly as possible and gives the extra rows to the lower-numbered buckets. Two rows with equal values can land in different buckets."
       },
       {
         stem: "What does `RANK() OVER (ORDER BY SUM(qty) DESC)` in a GROUP BY query rank?",
-        options: [
-          "Individual line items",
-          "The grouped rows — one per product — by their summed quantity, because windows run after GROUP BY",
-          "It is an error to nest an aggregate in a window",
-          "The products alphabetically"
-        ],
+        options: ["Each individual line item", "Grouped products, by summed quantity", "It errors: aggregates cannot nest", "The products in alphabetical order"],
         answer: 1,
         why: "Grouping happens first and produces one SUM per product; the window then ranks those sums. A three-way tie for third gives three rows at 3 and the next at 6."
       },
       {
         stem: "Which query finds customers whose latest order was cancelled?",
-        options: [
-          "`… WHERE status = 'cancelled'` inside the ranking subquery, then rn = 1",
-          "Rank all orders per customer by time descending, keep rn = 1, then test `status = 'cancelled'` in the outer query",
-          "`MAX(status) = 'cancelled'` grouped by customer",
-          "`DISTINCT customer_id WHERE status = 'cancelled'`"
-        ],
+        options: ["Filter cancelled orders inside the ranking, then rn = 1", "Rank all orders per customer, keep rn = 1, then filter", "Use `MAX(status) = 'cancelled'` grouped by customer", "Select DISTINCT customer_id where status is cancelled"],
         answer: 1,
         why: "The status must be tested on the row chosen as latest. Filtering before ranking finds each customer's latest cancelled order — a different set. MAX(status) is alphabetical."
       }

@@ -322,56 +322,31 @@ GROUP  BY 1 ORDER BY 1;
     questions: [
       {
         stem: "What does `GROUP BY CUBE (a, b)` compute that `ROLLUP (a, b)` does not?",
-        options: [
-          "The grand total",
-          "The per-b margin — the grouping (b) with a rolled up; ROLLUP only walks down the hierarchy (a, b) → (a) → ()",
-          "Nothing; they are equivalent",
-          "The per-a subtotal"
-        ],
+        options: ["The grand total over all rows", "The per-b subtotal with a rolled up", "Nothing; the two are equivalent", "The per-a subtotal with b rolled up"],
         answer: 1,
         why: "ROLLUP gives n + 1 grouping sets along the nesting order; CUBE gives all 2ⁿ subsets. For two columns the difference is exactly the (b) margin."
       },
       {
         stem: "Why does `AVG(price) FILTER (WHERE category = 'office')` not need the `ELSE NULL` that `AVG(CASE WHEN category = 'office' THEN price ELSE NULL END)` does?",
-        options: [
-          "FILTER is faster",
-          "FILTER removes the non-matching rows from the aggregate's input entirely, so there is no excluded row to contribute a value; the CASE form feeds every row and relies on NULL being skipped",
-          "AVG ignores ELSE",
-          "It does need it"
-        ],
+        options: ["FILTER is faster than an equivalent CASE", "FILTER drops other rows before the aggregate", "AVG ignores the ELSE branch of a CASE", "It does need it, just like the CASE form"],
         answer: 1,
         why: "The two are equivalent only because AVG skips NULL. With the CASE form, ELSE 0 would drag the average down; FILTER has no such branch to get wrong."
       },
       {
         stem: "Four sales salaries: 70000, 82000, 91000, 120000. PERCENTILE_CONT(0.5) returns 86500 and PERCENTILE_DISC(0.5) returns 82000. Why do they differ?",
-        options: [
-          "One of them is wrong",
-          "CONT interpolates between the two middle values (82000 and 91000); DISC returns the first actual value at or above the 50 % position",
-          "DISC ignores the largest value",
-          "CONT uses the mean"
-        ],
+        options: ["One of the two functions has a bug", "CONT interpolates; DISC returns a real value", "DISC skips the largest salary in the set", "CONT returns the arithmetic mean instead"],
         answer: 1,
         why: "With an even count there is no single middle row. CONT invents the midpoint; DISC picks a real one. Which is 'the median' is a convention you should state."
       },
       {
         stem: "`STRING_AGG(name, ', ')` gives a different order on two runs of the same query. Why, and what fixes it?",
-        options: [
-          "A bug in the engine",
-          "Aggregate input order is undefined unless specified; add `ORDER BY name` inside the aggregate call",
-          "Add ORDER BY to the outer query",
-          "Use ARRAY_AGG instead"
-        ],
+        options: ["A bug in the engine's aggregate code", "Order is undefined; add ORDER BY in the call", "Add ORDER BY name to the outer query", "Switch from STRING_AGG to ARRAY_AGG"],
         answer: 1,
         why: "The outer ORDER BY sorts result rows, not the rows fed to each aggregate. Only `STRING_AGG(x, sep ORDER BY …)` controls the order inside the cell."
       },
       {
         stem: "Which is the honest way to label subtotal rows 'all' when the grouped column can itself be NULL?",
-        options: [
-          "`COALESCE(country, 'all')`",
-          "`CASE WHEN GROUPING(country) = 1 THEN 'all' ELSE COALESCE(country, 'unknown') END`",
-          "`CASE WHEN country IS NULL THEN 'all' END`",
-          "Filter out the NULL countries first"
-        ],
+        options: ["`COALESCE(country, 'all')` on the output", "Test GROUPING(country), then label NULLs", "`CASE WHEN country IS NULL THEN 'all' END`", "Filter out NULL countries before grouping"],
         answer: 1,
         why: "Only GROUPING() distinguishes a rolled-up NULL from a data NULL; COALESCE alone would label Dalia's unknown country 'all' and merge two meanings into one word."
       }

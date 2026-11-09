@@ -314,56 +314,31 @@ CREATE TABLE enrolments (
     questions: [
       {
         stem: "Which insert does a FOREIGN KEY refuse?",
-        options: [
-          "One whose referencing value is NULL",
-          "One whose referencing value does not exist in the referenced table's key — customer_id 99 when no such customer exists",
-          "One that duplicates an existing row",
-          "One with a negative amount"
-        ],
+        options: ["One whose referencing value is NULL", "One referencing a key that does not exist", "One that duplicates an existing row", "One with a negative amount"],
         answer: 1,
         why: "A NULL foreign key is allowed unless the column is also NOT NULL; the constraint only checks values that are present."
       },
       {
         stem: "Why pair a surrogate primary key with a UNIQUE constraint on the natural identifier?",
-        options: [
-          "For faster joins",
-          "Because the surrogate alone allows two rows for the same real-world entity — two customers with one email — and the UNIQUE is what prevents the duplicate",
-          "It is required by SQL",
-          "To allow NULLs"
-        ],
+        options: ["It makes joins on the key faster", "Without it, one entity can get two rows", "Standard SQL requires the pairing", "It allows NULLs in the natural key"],
         answer: 1,
         why: "The surrogate gives a stable, cheap identity; the natural unique constraint gives correctness. Either alone is half a design."
       },
       {
         stem: "Deleting a product should fail if any historical order contains it. Which ON DELETE action?",
-        options: [
-          "CASCADE",
-          "RESTRICT (or NO ACTION): the delete is refused while references exist",
-          "SET NULL",
-          "SET DEFAULT"
-        ],
+        options: ["CASCADE, deleting the orders", "RESTRICT, or NO ACTION", "SET NULL on the order lines", "SET DEFAULT on the order lines"],
         answer: 1,
         why: "An order item refers to a product but is not owned by it. Cascade would silently erase order history."
       },
       {
         stem: "A table has key `(order_id, product_id)` and a column `customer_name`. Which normal form does it violate?",
-        options: [
-          "1NF",
-          "2NF — customer_name depends on order_id alone, a part of the key, not the whole key",
-          "3NF only",
-          "None"
-        ],
+        options: ["1NF", "2NF", "3NF only", "None"],
         answer: 1,
         why: "Partial dependency on a composite key is the 2NF violation; the customer belongs with the order, and then, by 3NF, with the customer."
       },
       {
         stem: "When is a denormalised copy acceptable?",
-        options: [
-          "Whenever a join is inconvenient",
-          "When the read is hot and the copy is maintained by a single transactional path — an upsert in the load, a trigger, or a materialised view — so it cannot drift from the source",
-          "Never",
-          "Only in NoSQL"
-        ],
+        options: ["Whenever a join is inconvenient to write", "When hot and kept in sync by one path", "Never, under any circumstances at all", "Only inside a NoSQL document database"],
         answer: 1,
         why: "Denormalisation is a performance decision with a maintenance obligation. A copy updated by hand is a future disagreement."
       }

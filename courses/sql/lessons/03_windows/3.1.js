@@ -317,56 +317,31 @@ WHERE  amount > cust_avg ORDER BY order_id;
     questions: [
       {
         stem: "Why does `SELECT name, salary FROM employees WHERE salary > AVG(salary) OVER (PARTITION BY department)` fail?",
-        options: [
-          "AVG cannot be used as a window function",
-          "Window functions are evaluated at the SELECT step, after WHERE; the value does not exist when WHERE runs — compute it in a subquery and filter outside, or use QUALIFY",
-          "PARTITION BY needs an ORDER BY",
-          "salary is an integer"
-        ],
+        options: ["AVG cannot be used as a window function", "Windows run after WHERE; filter in an outer query", "PARTITION BY requires an ORDER BY clause too", "salary is an integer, which windows reject"],
         answer: 1,
         why: "The logical order places windows after HAVING and before DISTINCT. Every engine rejects a window in WHERE; the derived-table wrapper is the portable fix."
       },
       {
         stem: "What does `SUM(amount) OVER (ORDER BY placed_at)` return for each row?",
-        options: [
-          "The grand total",
-          "The sum of amounts for all rows up to and including the current one in placed_at order — a running total",
-          "The amount of the previous row",
-          "The sum for the current row's date only"
-        ],
+        options: ["The grand total over every row", "A running total up to this row", "The previous row's amount", "The total for this row's date only"],
         answer: 1,
         why: "ORDER BY inside OVER makes an aggregate cumulative through the default frame (rows from the start of the partition to the current row, 3.3). Without the ORDER BY it would be the grand total on every row."
       },
       {
         stem: "`SUM(SUM(amount)) OVER ()` appears in a GROUP BY query. Is it valid?",
-        options: [
-          "No — aggregates cannot be nested",
-          "Yes — the inner SUM is the group aggregate computed by GROUP BY; the outer SUM is a window over those grouped values, evaluated afterwards",
-          "Only in DuckDB",
-          "Yes, but it returns the same as the inner SUM"
-        ],
+        options: ["No, because aggregates cannot be nested", "Yes: a window over the grouped sums", "Only on DuckDB, not on PostgreSQL", "Yes, but it equals the inner SUM"],
         answer: 1,
         why: "Windows run after grouping, so the window's input is the grouped result. The nesting expresses share-of-total over groups in one query."
       },
       {
         stem: "Which pandas operation corresponds to `AVG(salary) OVER (PARTITION BY department)`?",
-        options: [
-          "`groupby('department').mean()`",
-          "`groupby('department')['salary'].transform('mean')` — the group mean broadcast back onto every row",
-          "`pivot_table`",
-          "`rolling(3).mean()`"
-        ],
+        options: ["`groupby('department').mean()`", "`groupby('department')['salary'].transform('mean')`", "`pivot_table(index='department', values='salary')`", "`rolling(3).mean()` within each department"],
         answer: 1,
         why: "agg reduces to one row per group; transform returns a value aligned to the original rows. OVER (PARTITION BY) is the SQL of transform."
       },
       {
         stem: "Two window functions in one SELECT use the same `PARTITION BY department`. What does `WINDOW w AS (PARTITION BY department)` buy you?",
-        options: [
-          "Different results",
-          "One definition instead of two repeated clauses, and the planner can partition and sort once for both functions",
-          "It makes the window cumulative",
-          "It is required for two functions"
-        ],
+        options: ["Different results from each function", "One definition, and one shared sort", "It makes the window cumulative", "It is required for two functions"],
         answer: 1,
         why: "Named windows are a readability and efficiency feature. Functions with identical OVER clauses would usually be computed together anyway; the name makes the intent explicit and the query shorter."
       }

@@ -289,56 +289,31 @@ EXPLAIN QUERY PLAN SELECT order_id, placed_at FROM orders ORDER BY placed_at, or
     questions: [
       {
         stem: "What is the difference between `EXPLAIN` and `EXPLAIN ANALYZE`?",
-        options: [
-          "AnalysE refreshes statistics first",
-          "EXPLAIN shows the planned tree with estimates without running the query; EXPLAIN AnalysE executes it and adds actual rows, times and loops per node — including the side effects of a write",
-          "AnalysE shows costs in milliseconds",
-          "There is none in PostgreSQL"
-        ],
+        options: ["ANALYZE refreshes the statistics before planning", "EXPLAIN plans; ANALYZE also runs it, writes and all", "ANALYZE shows the plan's costs in milliseconds", "There is no difference between them in PostgreSQL"],
         answer: 1,
         why: "The estimate-versus-actual comparison is the whole point of AnalysE. The price is that the query really runs: wrap writes in a transaction you roll back."
       },
       {
         stem: "A Hash node shows `Batches: 16`. What does that mean?",
-        options: [
-          "Sixteen parallel workers",
-          "The build side did not fit in work_mem, so it was split into 16 batches written to and read back from disk — raise work_mem, reduce the build input, or check the estimate that sized the hash",
-          "The join has 16 conditions",
-          "It is normal for large joins"
-        ],
+        options: ["Sixteen parallel workers built the hash", "The hash spilled to disk in 16 batches", "The join has sixteen join conditions", "It is normal and harmless for large joins"],
         answer: 1,
         why: "One batch means the hash lived in memory. Several means disk was involved on both the build and probe sides, which is often the difference between seconds and minutes."
       },
       {
         stem: "A Seq Scan reports `rows=12` estimated and `actual rows=2140000`. What should you do first?",
-        options: [
-          "Add an index on the filtered column",
-          "Run AnalysE on the table — the estimate is off by five orders of magnitude, which means the statistics do not describe the current data, and every decision above the scan was made on the wrong number",
-          "Increase work_mem",
-          "Rewrite as a CTE"
-        ],
+        options: ["Add an index on the filtered column", "Run ANALYZE; the statistics are stale", "Increase work_mem for the query", "Rewrite the query as a CTE"],
         answer: 1,
         why: "An index decides how rows are fetched; it does nothing for a planner that thinks there are 12 of them. Fix the belief, re-plan, and then judge whether the scan was the right access path."
       },
       {
         stem: "Which plan node is the sign of a correlated subquery the planner could not flatten?",
-        options: [
-          "Hash Join",
-          "SubPlan with a large `loops=` — executed once per outer row",
-          "Materialise",
-          "Index Only Scan"
-        ],
+        options: ["A Hash Join node over both tables", "A SubPlan node with a large loops count", "A Materialize node above a scan", "An Index Only Scan on the inner table"],
         answer: 1,
         why: "Decorrelated subqueries become joins. A SubPlan node that loops per row is the per-row kind from 4.1; the fix is a window function, a derived table or LATERAL with an index."
       },
       {
         stem: "`Index Only Scan … Heap Fetches: 180000` on a 200,000-row result. What is happening?",
-        options: [
-          "The index is corrupt",
-          "The visibility map is stale, so most index entries needed a heap visit to confirm the row is visible — VACUUM the table to restore the index-only benefit",
-          "The index does not cover the query",
-          "Heap fetches are always required"
-        ],
+        options: ["The index has become corrupt", "A stale visibility map; VACUUM the table", "The index does not cover the query", "Heap fetches are always required"],
         answer: 1,
         why: "An index-only scan avoids the heap only for pages the visibility map marks all-visible. After heavy updates the map is stale until VACUUM runs; the scan still works, but pays the heap visits it was meant to skip."
       }

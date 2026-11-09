@@ -310,56 +310,31 @@ SELECT DISTINCT customer_id FROM (SELECT customer_id, grp, COUNT(*) AS run FROM 
     questions: [
       {
         stem: "Which query returns exactly one employee per department, highest paid, even when two share the top salary?",
-        options: [
-          "DENSE_RANK() = 1",
-          "ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC, hired_on, employee_id) = 1 — a deterministic tiebreak makes the single row reproducible",
-          "RANK() = 1",
-          "MAX(salary) GROUP BY department"
-        ],
+        options: ["DENSE_RANK() = 1 on salary descending", "ROW_NUMBER() with a deterministic tiebreak", "RANK() = 1 on salary descending", "MAX(salary) with GROUP BY department"],
         answer: 1,
         why: "DENSE_RANK and RANK return both tied employees; MAX returns the salary but not the employee. ROW_NUMBER with a stated tiebreak is the only 'exactly one, and I can say which'."
       },
       {
         stem: "Why does the consecutive-days query need `SELECT DISTINCT user_id, login_date` first?",
-        options: [
-          "For performance",
-          "A duplicate date advances ROW_NUMBER without advancing the date, so `date − rn` changes and one streak is split into two",
-          "DISTINCT sorts the rows",
-          "It does not need it"
-        ],
+        options: ["For performance on large login tables", "A duplicate date splits one streak in two", "DISTINCT sorts the rows by login date", "It does not actually need it at all"],
         answer: 1,
         why: "The islands trick relies on both sequences advancing together. Duplicates break the invariant; so do gaps, which is the point."
       },
       {
         stem: "'Customers with no paid orders' — which is correct?",
-        options: [
-          "WHERE customer_id NOT IN (SELECT customer_id FROM orders WHERE status = 'paid')",
-          "WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id AND o.status = 'paid') — the condition inside the subquery, NULL-safe",
-          "LEFT JOIN orders WHERE status <> 'paid'",
-          "JOIN orders WHERE status <> 'paid'"
-        ],
+        options: ["`NOT IN (SELECT customer_id FROM orders WHERE status = 'paid')`", "`NOT EXISTS (… o.customer_id = c.customer_id AND o.status = 'paid')`", "`LEFT JOIN orders o ON … WHERE o.status <> 'paid'` on customers", "`JOIN orders o ON … WHERE o.status <> 'paid'` on customers"],
         answer: 1,
         why: "NOT IN is empty if the subquery ever yields a NULL; the LEFT JOIN with a WHERE on status becomes an inner join and returns customers with any non-paid order, not customers with no paid order."
       },
       {
         stem: "How do you express 'every one of the customer's orders was paid'?",
-        options: [
-          "WHERE status = 'paid' GROUP BY customer_id",
-          "GROUP BY customer_id HAVING COUNT(*) FILTER (WHERE status = 'paid') = COUNT(*) — or NOT EXISTS an order that is not paid",
-          "HAVING COUNT(*) > 0",
-          "WHERE status <> 'refunded'"
-        ],
+        options: ["`WHERE status = 'paid' GROUP BY customer_id` alone", "`HAVING COUNT(*) FILTER (WHERE status = 'paid') = COUNT(*)`", "`GROUP BY customer_id HAVING COUNT(*) > 0` alone", "`WHERE status <> 'refunded' GROUP BY customer_id`"],
         answer: 1,
         why: "A WHERE filters rows, not customers; the first option returns every customer with at least one paid order. Universals need a count comparison or the absence of a counter-example."
       },
       {
         stem: "'Orders above the average order amount' — what is the grain mistake to avoid?",
-        options: [
-          "Using AVG at all",
-          "Averaging line-item amounts (qty × price per line) instead of order amounts; aggregate lines to orders in a CTE first, then compare each order with the average of that CTE",
-          "Using a subquery",
-          "Including cancelled orders"
-        ],
+        options: ["Using AVG at any point", "Averaging lines, not orders", "Using a correlated subquery", "Including cancelled orders"],
         answer: 1,
         why: "The average of lines is lower than the average of orders whenever orders have several lines. Match the grain of the comparison to the grain of the question."
       }

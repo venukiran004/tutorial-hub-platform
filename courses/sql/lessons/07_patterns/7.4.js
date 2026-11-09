@@ -307,56 +307,31 @@ ORDER BY d;`,
     questions: [
       {
         stem: "A model's test AUC is excellent; in production it is poor. The split was `train_test_split` on order rows. What is the likely cause?",
-        options: [
-          "Too little data",
-          "Entity leakage: customers with several orders appear in both folds, so the model memorised customers rather than learning patterns — split by a hash of customer_id, and by time if the task is prediction",
-          "Wrong random seed",
-          "The test set was too large"
-        ],
+        options: ["Too little training data for the model", "Customers in both folds; split by entity", "The wrong random seed was used to split", "The test set was larger than it needed"],
         answer: 1,
         why: "The executed row-level split put customers 1 and 3 in both folds. A grouped split gave zero straddlers."
       },
       {
         stem: "What does `CEIL(n * 0.5)` achieve in the stratified sample?",
-        options: [
-          "Faster execution",
-          "Every stratum keeps at least half its rows rounded up, so a stratum of 3 keeps 2 rather than 1 — small groups stay represented",
-          "Exact 50%",
-          "It removes duplicates"
-        ],
+        options: ["Faster execution of the sampling query", "Small strata keep at least half, rounded up", "Exactly 50% of all rows, in total", "It removes duplicate rows before sampling"],
         answer: 1,
         why: "Rounding down would drop a stratum of one entirely; rounding up over-represents small strata slightly, which is usually the intended direction."
       },
       {
         stem: "Why is a reconciliation stronger than a check?",
-        options: [
-          "It runs faster",
-          "It does not require anticipating the failure: any defect that affects one computation path and not the other shows as a non-zero difference, whereas a check only finds what it was written to find",
-          "It uses fewer tables",
-          "It is not stronger"
-        ],
+        options: ["It runs faster than a check does", "It needs no anticipated failure", "It touches fewer tables per run", "It is not stronger than a check"],
         answer: 1,
         why: "Checks are enumerated; reconciliation is structural. Use both."
       },
       {
         stem: "Why keep known exceptions in a table rather than adjusting the check's SQL?",
-        options: [
-          "SQL cannot express exceptions",
-          "So the expected count and its reason are data that can be reviewed and expire, and a known count that changes — one NULL country becoming two — still surfaces with its reason attached",
-          "For performance",
-          "To avoid UNION ALL"
-        ],
+        options: ["SQL cannot express exceptions at all", "Reasons are reviewable data that expire", "For better query performance on checks", "To avoid needing UNION ALL in the check"],
         answer: 1,
         why: "An exception hard-coded into the WHERE clause silently absorbs growth; a table makes 'expected 1, found 2' a reportable event."
       },
       {
         stem: "When is TABLESAMPLE SYSTEM the wrong tool?",
-        options: [
-          "For very large tables",
-          "For a training or evaluation sample: it picks whole storage pages, which are correlated with insertion order, so the sample is clumpy and biased toward particular periods or batches",
-          "For exploration",
-          "It is never wrong"
-        ],
+        options: ["For very large tables only", "For training samples: pages clump", "For quick exploratory queries", "It is never the wrong tool"],
         answer: 1,
         why: "SYSTEM sampling is fast because it reads few pages; that is exactly what makes it non-random with respect to time. BERNOULLI or a hash filter for anything a model will see."
       }
